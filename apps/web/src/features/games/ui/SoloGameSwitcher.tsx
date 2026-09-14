@@ -105,14 +105,14 @@ export function SoloGameSwitcher({
                 className={cx(
                   'flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-colors',
                   isSelected
-                    ? 'bg-[var(--primary)]/15 text-[var(--primary)]'
+                    ? 'bg-[var(--primary)]/15 text-[var(--color)]'
                     : 'text-[var(--color)] hover:bg-[var(--backgroundHover)]',
                 )}
               >
                 <span className="text-sm leading-none">{game.emoji}</span>
                 <span className="flex-1 text-left">{game.name}</span>
                 {isSelected && (
-                  <span className="text-[10px] text-[var(--primary)] font-bold">
+                  <span className="text-[10px] text-[var(--color)] font-bold">
                     ✓
                   </span>
                 )}

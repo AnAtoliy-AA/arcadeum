@@ -49,6 +49,21 @@ updates:
       # reviewed individually, instead of being silently bundled.
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+      # react-native must stay pinned to the version compatible with our Expo SDK
+      - dependency-name: "react-native"
+      - dependency-name: "@react-native/*"
+
+  # ---- Mobile app: pause all Dependabot PRs ---------------------------------
+  # Expo SDK pins react-native + all @expo/* packages to specific compatible
+  # versions. Letting Dependbot bump these individually breaks builds (e.g.
+  # RN 0.87 removed rn-get-polyfills which @expo/metro-config still needs).
+  # Re-enable once we upgrade Expo or move to RN 0.87+.
+  - package-ecosystem: "npm"
+    directory: "/apps/mobile"
+    target-branch: "develop"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
 
   # ---- GitHub Actions example -----------------------------------------------
   - package-ecosystem: "github-actions"

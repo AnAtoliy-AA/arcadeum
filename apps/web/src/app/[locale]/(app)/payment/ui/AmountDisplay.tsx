@@ -1,4 +1,4 @@
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface AmountDisplayProps {
   amount: string;
@@ -16,7 +16,8 @@ const amountInputStyles = `
     font-weight: 700;
     text-align: center;
     padding: 1.5rem 1rem;
-    outline: none;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
     transition: all 0.3s ease;
     font-feature-settings: 'tnum';
     font-variant-numeric: tabular-nums;

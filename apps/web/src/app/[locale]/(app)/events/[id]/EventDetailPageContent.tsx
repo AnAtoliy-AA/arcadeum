@@ -134,7 +134,7 @@ export default function EventDetailPageContent({
                   {tt.liveBadge ?? 'LIVE NOW'}
                 </span>
               ) : (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)]/20 text-[var(--primary)] border border-[var(--primary)]/40">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)]/20 text-[var(--color)] border border-[var(--primary)]/40">
                   {currentEvent.status === 'upcoming'
                     ? (tt.upcomingBadge ?? 'UPCOMING')
                     : currentEvent.status === 'completed'

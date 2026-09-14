@@ -7,6 +7,8 @@ import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { ChessLandingPreview } from './ChessLandingPreview';
 import { ChessAdvantages } from './ChessAdvantages';
+import { ChessPuzzleTeaser } from './ChessPuzzleTeaser';
+import { ChessPuzzleQuickAccess } from './ChessPuzzleQuickAccess';
 
 type ChessMsg = ChessMessages['chess_v1'];
 type Landing = ChessMsg['landing'];
@@ -30,6 +32,12 @@ interface Props {
     { name?: string; description?: string } | undefined
   >;
   comingSoon?: boolean;
+  puzzleHrefs?: {
+    daily: string;
+    rated: string;
+    rush: string;
+    coordinates: string;
+  };
 }
 
 export default function ChessLanding({
@@ -44,6 +52,7 @@ export default function ChessLanding({
   comingSoon = false,
   navTranslations,
   translatedGames,
+  puzzleHrefs,
 }: Props) {
   if (!landing) return null;
 
@@ -192,6 +201,8 @@ export default function ChessLanding({
         subtitle: landing.hero.subtitle,
         intro:
           'Powered by Stockfish 19 — the strongest open-source chess engine. Play bullet, blitz, rapid, or daily games. Analyze with real-time engine eval, review games with accuracy scores, solve puzzles, and compete in tournaments. Every feature is free, no install required.',
+        directAnswer:
+          'Arcadeum Chess is a free, web-based multiplayer chess platform featuring Stockfish 19 NNUE engine analysis, 20 AI bot personalities, Chess960, live matchmaking, and puzzle tactics—playable instantly with zero downloads or account creation required.',
         category: 'Board Game',
         playersBadge: '2 Players',
         durationBadge: '10–30 min',
@@ -218,6 +229,112 @@ export default function ChessLanding({
         roomsHref,
         createRoomHref,
         heroVisual: <ChessLandingPreview />,
+      }}
+      specifications={{
+        title: 'Arcadeum Chess Technical Specifications',
+        kicker: 'Key Facts & Engine',
+        items: [
+          {
+            label: 'Engine',
+            value: 'Stockfish 19 NNUE',
+            badge: 'SFNNv16',
+            hint: '3500+ Elo rated strength',
+          },
+          {
+            label: 'Variants',
+            value: 'Standard & Chess960',
+            badge: 'Fischer Random',
+            hint: 'Full castling & 960 start positions',
+          },
+          {
+            label: 'Time Controls',
+            value: '1+0 to 14-day Daily',
+            hint: 'Bullet, Blitz, Rapid, Classical',
+          },
+          {
+            label: 'AI Bots',
+            value: '20 Personalities',
+            badge: '250–3200 Elo',
+            hint: 'From beginner to grandmaster',
+          },
+          {
+            label: 'Endgame Tablebases',
+            value: 'Syzygy 7-Piece',
+            hint: '100% theoretical endgame accuracy',
+          },
+          {
+            label: 'Cost & Access',
+            value: '100% Free · Zero Ads',
+            badge: 'No Signup',
+            hint: 'Instant room sharing & guest play',
+          },
+        ],
+      }}
+      comparison={{
+        title: 'Arcadeum Chess Advantages & Capabilities',
+        kicker: 'Platform Capabilities',
+        subtitle:
+          'Grandmaster-grade engine power, unlimited analysis, and competitive features included free for all players.',
+        columns: [
+          {
+            key: 'arcadeum',
+            name: 'Arcadeum',
+            isHighlighted: true,
+            badge: '100% Free · Included',
+            subtext: 'Next-Gen Web',
+          },
+        ],
+        rows: [
+          {
+            feature: 'Stockfish 19 NNUE Engine',
+            hint: 'SFNNv16 neural architecture running at 3500+ Elo depth',
+            values: {
+              arcadeum: 'Full Speed · SFNNv16',
+            },
+          },
+          {
+            feature: 'Unlimited Game Review & Accuracy',
+            hint: 'Move classification & precision evaluation graphs',
+            values: {
+              arcadeum: 'Free & Unlimited',
+            },
+          },
+          {
+            feature: '100% Ad-Free Experience',
+            hint: 'Zero commercial interruptions or video banners during play',
+            values: {
+              arcadeum: true,
+            },
+          },
+          {
+            feature: 'Instant Guest Play (No Signup)',
+            hint: 'Share link or QR code — opponents join directly in browser',
+            values: {
+              arcadeum: true,
+            },
+          },
+          {
+            feature: '20 AI Bot Personalities',
+            hint: 'Rated 250 to 3200 Elo with distinct playstyles and repertoires',
+            values: {
+              arcadeum: '20 Personalities Included',
+            },
+          },
+          {
+            feature: '7-Piece Syzygy Endgame Tablebases',
+            hint: 'Flawless theoretical endgame play with DTZ and DTM distance metrics',
+            values: {
+              arcadeum: 'Instant Syzygy Lookup',
+            },
+          },
+          {
+            feature: 'Chess960 & 5 Action Variants',
+            hint: 'Fischer Random, King of the Hill, 3-Check, Crazyhouse, Atomic',
+            values: {
+              arcadeum: '6 Variants Included',
+            },
+          },
+        ],
       }}
       highlights={{
         title: 'Built for Serious Chess Players',
@@ -278,9 +395,25 @@ export default function ChessLanding({
         backToGamesLabel: landing.hero.backToGames ?? 'All Games',
       }}
       extraSection={
-        landing.advantages ? (
-          <ChessAdvantages advantages={landing.advantages} />
-        ) : undefined
+        <div className="flex flex-col gap-16">
+          {puzzleHrefs ? (
+            <ChessPuzzleQuickAccess
+              dailyPuzzleHref={puzzleHrefs.daily}
+              ratedPuzzlesHref={puzzleHrefs.rated}
+              puzzleRushHref={puzzleHrefs.rush}
+              coordinatesHref={puzzleHrefs.coordinates}
+            />
+          ) : null}
+          {puzzleHrefs ? (
+            <ChessPuzzleTeaser
+              dailyPuzzleHref={puzzleHrefs.daily}
+              puzzleRushHref={puzzleHrefs.rush}
+            />
+          ) : null}
+          {landing.advantages ? (
+            <ChessAdvantages advantages={landing.advantages} />
+          ) : null}
+        </div>
       }
     />
   );

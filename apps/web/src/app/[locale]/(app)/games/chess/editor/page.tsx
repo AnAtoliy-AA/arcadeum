@@ -1,8 +1,9 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 
-const BoardEditor = dynamic(
+
+const BoardEditor = dynamicImport(
   () =>
     import('@/widgets/BoardGames/ChessGame/ui/BoardEditor').then(
       (m) => m.BoardEditor,

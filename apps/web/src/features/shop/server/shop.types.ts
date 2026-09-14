@@ -13,11 +13,7 @@ export type ShopCategory =
 export type ShopRarity = 'common' | 'rare' | 'epic' | 'legendary';
 export type ShopPriceCurrency = 'coins' | 'gems' | 'arcadeum';
 export type ShopAcquiredVia =
-  | 'coins'
-  | 'gems'
-  | 'arcadeum'
-  | 'grant'
-  | 'starter';
+  'coins' | 'gems' | 'arcadeum' | 'grant' | 'starter' | 'gift';
 
 export interface EffectiveShopItem {
   id: string;
@@ -35,6 +31,7 @@ export interface EffectiveShopItem {
   defaultPriceAmount: number;
   defaultPriceCurrency: ShopPriceCurrency;
   starter?: boolean;
+  purchasable?: boolean;
   available: boolean;
   priceAmount: number;
   priceCurrency: ShopPriceCurrency;
@@ -76,6 +73,10 @@ export interface SellResult {
   refundAmount: number;
   refundCurrency: 'coins';
   balance: WalletBalanceView;
+}
+
+export interface GiftResult {
+  inventoryItem: InventoryItemView;
 }
 
 export interface CatalogFilter {

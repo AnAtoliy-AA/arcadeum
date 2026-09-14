@@ -47,6 +47,10 @@ export interface GrantResult {
   inventoryItem: InventoryItemView;
 }
 
+export interface GiftResult {
+  inventoryItem: InventoryItemView;
+}
+
 export interface RevokeResult {
   inventoryItem: InventoryItemView;
   equipped: EquippedView;
@@ -54,4 +58,30 @@ export interface RevokeResult {
 
 export function toUserIdString(value: Types.ObjectId | string): string {
   return typeof value === 'string' ? value : value.toString();
+}
+
+export interface LeanUser {
+  _id: Types.ObjectId;
+  coins?: number;
+  gems?: number;
+  equippedAvatarId?: string | null;
+  equippedBadgeId?: string | null;
+  equippedNameColorId?: string | null;
+  equippedBannerId?: string | null;
+  equippedAuraId?: string | null;
+  equippedFrameId?: string | null;
+  equippedGameSkinId?: string | null;
+  equippedBackgroundId?: string | null;
+}
+
+export interface InventoryRowSnapshot {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  itemId: string;
+  purchaseId: string;
+  acquiredVia: 'coins' | 'gems' | 'grant' | 'starter';
+  paidAmount?: number | null;
+  paidCurrency?: 'coins' | 'gems' | null;
+  soldAt?: Date | null;
+  createdAt?: Date;
 }

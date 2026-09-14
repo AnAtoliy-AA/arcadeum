@@ -73,7 +73,7 @@ export function StatsAnonymousOverview({
               {t?.title ?? 'Registered vs Anonymous Player Segmentation'}
             </Typography>
           </div>
-          <Typography variant="body" uiSize="sm" alpha="medium">
+          <Typography variant="body" uiSize="sm" alpha="high">
             {t?.subtitle ??
               'Complete side-by-side comparison of authenticated user accounts versus unregistered guest players'}
           </Typography>

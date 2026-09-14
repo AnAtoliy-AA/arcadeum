@@ -53,22 +53,68 @@ describe('streak utilities', () => {
 
   describe('nextStreak', () => {
     it('returns 1 for the first claim (no prev)', () => {
-      expect(nextStreak(0, null, '2026-05-11')).toBe(1);
+      expect(nextStreak(0, null, '2026-05-11')).toEqual({
+        streak: 1,
+        freezeUsed: false,
+      });
     });
 
     it('increments when previous claim was yesterday', () => {
-      expect(nextStreak(1, '2026-05-10', '2026-05-11')).toBe(2);
-      expect(nextStreak(3, '2026-05-10', '2026-05-11')).toBe(4);
-      expect(nextStreak(6, '2026-05-10', '2026-05-11')).toBe(7);
+      expect(nextStreak(1, '2026-05-10', '2026-05-11')).toEqual({
+        streak: 2,
+        freezeUsed: false,
+      });
+      expect(nextStreak(3, '2026-05-10', '2026-05-11')).toEqual({
+        streak: 4,
+        freezeUsed: false,
+      });
+      expect(nextStreak(6, '2026-05-10', '2026-05-11')).toEqual({
+        streak: 7,
+        freezeUsed: false,
+      });
     });
 
     it('wraps from Day 7 back to Day 1 on the next consecutive day', () => {
-      expect(nextStreak(7, '2026-05-10', '2026-05-11')).toBe(1);
+      expect(nextStreak(7, '2026-05-10', '2026-05-11')).toEqual({
+        streak: 1,
+        freezeUsed: false,
+      });
     });
 
-    it('resets to 1 when previous claim was earlier than yesterday', () => {
-      expect(nextStreak(3, '2026-05-08', '2026-05-11')).toBe(1);
-      expect(nextStreak(7, '2026-01-01', '2026-05-11')).toBe(1);
+    it('resets to 1 when previous claim was earlier than yesterday and no freeze', () => {
+      expect(nextStreak(3, '2026-05-08', '2026-05-11')).toEqual({
+        streak: 1,
+        freezeUsed: false,
+      });
+      expect(nextStreak(7, '2026-01-01', '2026-05-11')).toEqual({
+        streak: 1,
+        freezeUsed: false,
+      });
+    });
+
+    it('preserves streak when freeze tokens are available', () => {
+      expect(nextStreak(3, '2026-05-08', '2026-05-11', 1)).toEqual({
+        streak: 3,
+        freezeUsed: true,
+      });
+      expect(nextStreak(7, '2026-01-01', '2026-05-11', 3)).toEqual({
+        streak: 7,
+        freezeUsed: true,
+      });
+    });
+
+    it('resets streak when freeze tokens are 0', () => {
+      expect(nextStreak(5, '2026-05-08', '2026-05-11', 0)).toEqual({
+        streak: 1,
+        freezeUsed: false,
+      });
+    });
+
+    it('does not use freeze when prevStreak is 0', () => {
+      expect(nextStreak(0, '2026-05-08', '2026-05-11', 5)).toEqual({
+        streak: 1,
+        freezeUsed: false,
+      });
     });
 
     it('throws when previous claim was today (caller must guard before)', () => {

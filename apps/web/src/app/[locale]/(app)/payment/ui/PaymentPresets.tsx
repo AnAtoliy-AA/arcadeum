@@ -1,5 +1,5 @@
 import { Typography, Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface PaymentPresetsProps {
   amount: string;
@@ -42,7 +42,7 @@ export function PaymentPresets({ amount, onSelect }: PaymentPresetsProps) {
               {preset.emoji}
             </Typography>
             <div className="flex flex-col items-center gap-1">
-              <Typography variant="label" uiSize="xs" alpha="medium" textCenter>
+              <Typography variant="label" uiSize="xs" alpha="high" textCenter>
                 {preset.label}
               </Typography>
               <Typography

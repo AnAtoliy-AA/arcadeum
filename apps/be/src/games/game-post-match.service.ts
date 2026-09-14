@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { DailyChallengesService } from '../daily-challenges/daily-challenges.service';
 import { AchievementsService } from '../achievements/achievements.service';
 import { WalletService } from '../wallet/wallet.service';
@@ -6,8 +8,11 @@ import { EconomySettingsService } from '../economy/economy-settings.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { PlayerStatsService } from './player-stats.service';
-import { BattlePassService } from '../battle-pass/battle-pass.service';
 import { ChessProfilesService } from './chess/profiles/chess-profiles.service';
+import { XpSettingsService } from '../xp/xp-settings.service';
+import { User } from '../auth/schemas/user.schema';
+import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
+import { ActivityFeedService } from './activity-feed/activity-feed.service';
 
 @Injectable()
 export class GamePostMatchService {
@@ -20,8 +25,11 @@ export class GamePostMatchService {
     private readonly wallet: WalletService,
     private readonly economy: EconomySettingsService,
     private readonly playerStats: PlayerStatsService,
-    private readonly battlePass: BattlePassService,
     private readonly chessProfiles: ChessProfilesService,
+    private readonly xpSettings: XpSettingsService,
+    @InjectModel(User.name, OCI_CONNECTION)
+    private readonly userModel: Model<User>,
+    private readonly activityFeed: ActivityFeedService,
   ) {}
 
   async onGameCompleted(
@@ -68,20 +76,42 @@ export class GamePostMatchService {
       );
     }
 
-    try {
-      await this.battlePass.awardGameXp(playerIds, winners);
-    } catch (err) {
-      this.logger.warn(
-        `Battle pass XP award failed: ${(err as Error).message}`,
-      );
-    }
-
     if (gameId === 'chess_v1') {
       try {
         await this.updateChessElo(playerIds, winners);
       } catch (err) {
         this.logger.warn(`Chess Elo update failed: ${(err as Error).message}`);
       }
+    }
+
+    try {
+      await this.awardMultiplayerXp(playerIds, winners, gameId);
+    } catch (err) {
+      this.logger.warn(
+        `Multiplayer XP award failed: ${(err as Error).message}`,
+      );
+    }
+
+    try {
+      const humanPlayerIds = playerIds.filter((id) => !id.startsWith('bot-'));
+      const isDraw = winners.length === 0;
+      const detail = isDraw
+        ? 'played a draw'
+        : winners.length === 1
+          ? 'won a game'
+          : 'won a team game';
+      for (const playerId of humanPlayerIds) {
+        await this.activityFeed.recordEvent({
+          type: 'game_completed',
+          userId: playerId,
+          gameId,
+          detail,
+        });
+      }
+    } catch (err) {
+      this.logger.warn(
+        `Activity feed recording failed: ${(err as Error).message}`,
+      );
     }
   }
 
@@ -159,6 +189,37 @@ export class GamePostMatchService {
         'won',
         winnerChange,
       );
+    }
+  }
+
+  private async awardMultiplayerXp(
+    playerIds: string[],
+    winners: string[],
+    gameId: string,
+  ): Promise<void> {
+    const humanIds = playerIds.filter((id) => !id.startsWith('bot-'));
+    if (humanIds.length === 0) return;
+
+    const hasBots = playerIds.some((id) => id.startsWith('bot-'));
+
+    for (const userId of humanIds) {
+      const isWinner = winners.includes(userId);
+      const isDraw = winners.length === 0;
+      const result: 'won' | 'lost' | 'draw' = isWinner
+        ? 'won'
+        : isDraw
+          ? 'draw'
+          : 'lost';
+
+      const amount = await this.xpSettings.getXpReward(
+        gameId,
+        result,
+        false,
+        hasBots,
+      );
+      if (amount > 0) {
+        await this.xpSettings.awardXp(userId, this.userModel, amount);
+      }
     }
   }
 

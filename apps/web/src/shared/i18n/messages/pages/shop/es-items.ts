@@ -97,24 +97,70 @@ export const shopItemsEs = {
   },
   badge: {
     newcomer: { name: 'Recién llegado', desc: 'Bienvenido a Arcadeum.' },
+    scout: { name: 'Explorador', desc: 'Un ambicioso explorador del reino.' },
     veteran: { name: 'Veterano', desc: 'Un jugador experimentado.' },
-    champion: { name: 'Campeón', desc: 'Un campeón probado.' },
-    legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
-    elite: {
-      name: 'Escudo de Élite',
-      desc: 'Un escudo cibernético prestigioso.',
+    gladiator: {
+      name: 'Gladiador',
+      desc: 'Un feroz guerrero de arena probado en combate.',
     },
-    mythic: {
-      name: 'Estrella Mítica',
-      desc: 'Un emblema de estrella celestial dorada.',
+    guardian: { name: 'Guardián', desc: 'Un firme defensor del honor.' },
+    champion: { name: 'Campeón', desc: 'Un campeón probado.' },
+    conqueror: {
+      name: 'Conquistador',
+      desc: 'Un campeón despiadado que domina reinos.',
+    },
+    paladin: {
+      name: 'Paladín',
+      desc: 'Un emblema de escudo alado sagrado con núcleo de zafiro radiante.',
+    },
+    warlord: {
+      name: 'Señor de la Guerra',
+      desc: 'Un maestro estratega forjado en el fuego.',
+    },
+    juggernaut: {
+      name: 'Juggernaut',
+      desc: 'Una pesada armadura de combate cibernética forjada en magma.',
     },
     vanguard: {
       name: 'Escudo de Vanguardia',
       desc: 'Un blasón defensivo blindado.',
     },
+    paragon: {
+      name: 'Paragón',
+      desc: 'Un blasón cristalino etéreo que irradia aura celestial.',
+    },
+    grandmaster: {
+      name: 'Gran Maestro',
+      desc: 'El pináculo de la brillantez estratégica.',
+    },
+    titan: {
+      name: 'Titán',
+      desc: 'Un blasón colosal forjado en el trueno que chispea con relámpagos.',
+    },
+    ascendant: {
+      name: 'Ascendente',
+      desc: 'Una radiante entidad trascendente de triunfo puro.',
+    },
+    elite: {
+      name: 'Escudo de Élite',
+      desc: 'Un escudo cibernético prestigioso.',
+    },
+    archon: {
+      name: 'Arcón',
+      desc: 'Un halo celestial supremo que se arremolina con nebulosa cósmica.',
+    },
+    sovereign: {
+      name: 'Soberano',
+      desc: 'Un gobernante imperial de suprema majestad.',
+    },
+    legend: { name: 'Leyenda', desc: 'Un jugador legendario.' },
     nexus: {
       name: 'Estrella Nexo',
       desc: 'Una poderosa estrella cósmica futurista.',
+    },
+    mythic: {
+      name: 'Estrella Mítica',
+      desc: 'Un emblema de estrella celestial dorada.',
     },
   },
   name_color: {

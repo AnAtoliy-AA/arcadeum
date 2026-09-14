@@ -3,6 +3,7 @@ import {
   CELL_STATE,
   GAME_PHASE,
   getActiveShips,
+  SHIP_ABILITIES,
   type CellState,
 } from './sea-battle.constants';
 import {
@@ -364,6 +365,32 @@ export function validateUseRadar(
   const gSize = state.gridSize ?? BOARD_SIZE;
   if (hasRow && (payload.row! < 0 || payload.row! >= gSize)) return false;
   if (hasCol && (payload.col! < 0 || payload.col! >= gSize)) return false;
+
+  return true;
+}
+
+export function validateUseShipAbility(
+  state: SeaBattleState,
+  player: SeaBattlePlayer,
+  payload: { abilityId: string; targetPlayerId?: string; row?: number; col?: number },
+): boolean {
+  if (state.phase !== GAME_PHASE.BATTLE) return false;
+  if (!player.alive) return false;
+  if (!state.shipAbilities) return false;
+  if (!payload?.abilityId) return false;
+
+  // Check if ability is on cooldown
+  const cooldowns = state.abilityCooldowns?.[player.playerId];
+  if (cooldowns && (cooldowns[payload.abilityId] ?? 0) > 0) return false;
+
+  // Check if player has a ship of the required type
+  const abilityDef = SHIP_ABILITIES.find((a) => a.id === payload.abilityId);
+  if (!abilityDef) return false;
+
+  const hasRequiredShip = player.ships.some(
+    (s) => !s.sunk && abilityDef.shipTypes.includes(s.name),
+  );
+  if (!hasRequiredShip) return false;
 
   return true;
 }

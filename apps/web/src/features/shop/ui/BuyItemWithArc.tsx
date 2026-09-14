@@ -88,7 +88,7 @@ export function BuyItemWithArc({
   if (step === 'confirming') {
     return (
       <div className="flex flex-col items-center p-4">
-        <Typography variant="body" alpha="medium">
+        <Typography variant="body" alpha="high">
           Verifying payment...
         </Typography>
       </div>

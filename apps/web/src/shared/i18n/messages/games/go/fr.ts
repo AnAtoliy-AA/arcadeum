@@ -110,12 +110,43 @@ export const frMessages = {
           answer:
             'Les parties en 9×9 durent environ 10 minutes, parfaites pour apprendre. Le 13×13 est un compromis, tandis que le 19×19 offre l’expérience classique complète utilisée par les professionnels.',
         },
+        liberties: {
+          question: 'Que sont les libertés et comment capture-t-on au Go ?',
+          answer:
+            'Une liberté est une intersection vide adjacente à une pierre ou un groupe. Lorsque toutes les libertés sont occupées par l’adversaire, le groupe est capturé et retiré du goban.',
+        },
+        twoEyes: {
+          question: 'Qu’est-ce que la règle des deux yeux ?',
+          answer:
+            'Un groupe possédant deux yeux distincts et indépendants ne peut jamais être capturé, car l’adversaire ne peut pas y jouer sans suicide immédiat.',
+        },
+        suicide: {
+          question: 'Le suicide est-il autorisé au Go ?',
+          answer:
+            'Non. Il est interdit de poser une pierre sur une intersection sans liberté, sauf si ce coup capture instantanément une ou plusieurs pierres adverses.',
+        },
+        friends: {
+          question: 'Comment jouer au Go en ligne avec des amis ?',
+          answer:
+            'Cliquez sur Créer une salle, choisissez la taille du goban (9×9, 13×13 ou 19×19) et envoyez le lien d’invitation pour jouer sans inscription.',
+        },
+        bots: {
+          question: 'Peut-on s’entraîner au Go contre des bots IA ?',
+          answer:
+            'Oui. Arcadeum propose des bots IA intégrés avec plusieurs niveaux pour perfectionner vos tactiques et la vision du territoire.',
+        },
+        free: {
+          question: 'Le Go est-il gratuit sur Arcadeum ?',
+          answer:
+            'Oui. Le Go sur Arcadeum est 100% gratuit avec décompte de territoire, salons instantanés, historique (kifu) et sans publicité intrusive.',
+        },
       },
     },
     lobby: {
       boardSize: 'Taille du plateau',
       boardSizeHint: '9×9 ≈ 10 min · 13×13 ≈ 20 min · 19×19 ≈ 40+ min',
       startWithBots: 'Commencer avec des bots',
+      aiDifficulty: 'Difficulté IA',
     },
     status: {
       yourTurn: 'À vous de jouer',
@@ -125,6 +156,25 @@ export const frMessages = {
     },
     game: {
       pass: 'Passer',
+      territory: 'Territoire',
+      resign: 'Abandonner',
+    },
+    kifu: {
+      title: 'Historique des coups',
+      moves: 'coups',
+      ariaLabel: 'Historique des coups',
+      empty: 'Aucun coup pour le moment',
+      first: 'Premier coup',
+      prev: 'Coup précédent',
+      next: 'Coup suivant',
+      last: 'Dernier coup',
+    },
+    resign: {
+      title: 'Abandonner la partie',
+      message:
+        'Êtes-vous sûr de vouloir abandonner ? Cela comptera comme une défaite.',
+      confirm: 'Abandonner',
+      cancel: 'Continuer à jouer',
     },
     board: {
       ariaLabel: 'Plateau de Go ({{size}}×{{size}})',
@@ -172,6 +222,9 @@ export const frMessages = {
       scoringTitle: 'Comptage',
       scoring:
         'Comptage par aire chinois : pierres + territoire entouré ; les blancs débutent avec 7,5 points de komi.',
+      territoryWarningTitle: 'Avertissement Territoire',
+      territoryWarning:
+        'Remplir votre propre territoire est dangereux ! Un groupe sans liberté est capturé. Si vous vous entourez sans points vides, votre adversaire pourra capturer toutes vos pierres en un seul coup.',
     },
   },
 };

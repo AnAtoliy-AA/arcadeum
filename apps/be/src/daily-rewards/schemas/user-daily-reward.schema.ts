@@ -33,6 +33,9 @@ export class UserDailyReward extends Document {
   @Prop({ type: Number, required: true, min: 0, max: 7 })
   currentStreak: number;
 
+  @Prop({ type: Number, default: 0, min: 0 })
+  freezeTokens: number;
+
   createdAt: Date;
   updatedAt: Date;
 }

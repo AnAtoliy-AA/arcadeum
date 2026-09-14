@@ -25,17 +25,12 @@ export function useSessionTokens(): SessionTokensValue {
   const setTokens = useSessionStore((state) => state.setTokens);
   const clearTokens = useSessionStore((state) => state.clearTokens);
   const storeRefreshTokens = useSessionStore((state) => state.refreshTokens);
+  const anonId = useSessionStore((state) => state.anonId);
 
   const reload = useCallback(async () => {
-    // Rehydration is automatic in Zustand, but we can force a re-read if needed or just return current.
-    // For compatibility, we'll return current snapshot.
-    // UseStore automatically listens to storage changes across tabs too!
     return snapshot;
   }, [snapshot]);
 
-  // Auto-refresh logic (from store or keep here?)
-  // Keeping it here allows the hook to drive the refresh cycle based on component lifecycle,
-  // while the store handles the actual async operation and state update.
   useEffect(() => {
     const expiresAt = snapshot.accessTokenExpiresAt;
     if (!expiresAt) {
@@ -48,13 +43,11 @@ export function useSessionTokens(): SessionTokensValue {
     }
 
     const now = Date.now();
-    const lead = 60 * 1000; // refresh one minute before expiry
+    const lead = 60 * 1000;
     const delay = expiresAtMs - now - lead;
 
     if (delay <= 0) {
-      storeRefreshTokens().catch(() => {
-        // errors already handled
-      });
+      storeRefreshTokens().catch(() => {});
       return;
     }
 
@@ -64,9 +57,8 @@ export function useSessionTokens(): SessionTokensValue {
 
   const userId = useMemo(() => {
     if (snapshot.userId && snapshot.accessToken) return snapshot.userId;
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('arcadeum_anon_id');
-  }, [snapshot.userId, snapshot.accessToken]);
+    return anonId;
+  }, [snapshot.userId, snapshot.accessToken, anonId]);
 
   const finalSnapshot = useMemo(
     () => ({

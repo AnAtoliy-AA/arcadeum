@@ -80,7 +80,7 @@ export const EntryRoomName = ({
   <Typography
     className={entryTextClasses}
     uiSize="sm"
-    alpha="medium"
+    alpha="high"
     title={title}
   >
     {children}
@@ -119,7 +119,7 @@ export function EntryFooter({ children }: { children?: ReactNode }) {
 
 export function EntryTimestamp({ children }: { children?: ReactNode }) {
   return (
-    <Typography uiSize="xs" alpha="medium">
+    <Typography uiSize="xs" alpha="high">
       {children}
     </Typography>
   );
@@ -155,7 +155,7 @@ export function EndOfListText({ children }: { children?: ReactNode }) {
     <Typography
       className={'p-8 w-full [grid-column:1/-1]'}
       uiSize="sm"
-      alpha="medium"
+      alpha="high"
       textCenter
     >
       {children}

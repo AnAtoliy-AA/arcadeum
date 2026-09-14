@@ -2,9 +2,10 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { useLocalStatsStore } from '@/features/stats/store/statsStore';
-import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
-import { useSessionStore } from '@/entities/session/store/sessionStore';
+import {
+  finishIfOver,
+  undoReducer,
+} from '@/features/games/lib/solo-game-store';
 import {
   applyMove,
   deal,
@@ -27,52 +28,13 @@ interface SolitaireStoreState {
   game: SolitaireState;
   startedAt: number;
   finishedAt: number | null;
-  /** Set once per completed game; consumed by the UI to show the result dialog. */
   finished: FinishedGameInfo | null;
+  history: SolitaireState[];
+  usedUndo: boolean;
   draw: () => void;
   move: (source: MoveSource, target: MoveTarget) => void;
+  undo: () => void;
   newGame: () => void;
-}
-
-function finishIfOver(
-  game: SolitaireState,
-  startedAt: number,
-): Pick<SolitaireStoreState, 'finishedAt' | 'finished'> | null {
-  const outcome = evaluateOutcome(game);
-  if (!outcome.won && !outcome.stuck) return null;
-
-  const finishedAt = Date.now();
-  const durationMs = finishedAt - startedAt;
-  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
-  const sessionId = `sol_${userId}_${finishedAt}`;
-  const won = outcome.won;
-
-  void useLocalStatsStore.getState().recordGameResult({
-    gameId: SOLITAIRE_GAME_ID,
-    result: won ? 'won' : 'lost',
-    timestamp: finishedAt,
-  });
-
-  useSoloScoreStore.getState().addScore({
-    gameId: SOLITAIRE_GAME_ID,
-    difficulty: 'default',
-    score: won ? game.score : 0,
-    moves: game.moves,
-    durationMs,
-    result: won ? 'won' : 'lost',
-    sessionId,
-    timestamp: finishedAt,
-  });
-
-  return {
-    finishedAt,
-    finished: {
-      won,
-      score: won ? game.score : 0,
-      moves: game.moves,
-      durationMs,
-    },
-  };
 }
 
 export const useSolitaireStore = create<SolitaireStoreState>()(
@@ -82,13 +44,31 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
       startedAt: Date.now(),
       finishedAt: null,
       finished: null,
+      history: [],
+      usedUndo: false,
 
       draw: () =>
         set((state) => {
           if (state.finishedAt !== null) return state;
           const game = drawFromStock(state.game);
           if (game === state.game) return state;
-          return { game, ...finishIfOver(game, state.startedAt) };
+          const outcome = evaluateOutcome(game);
+          const result = finishIfOver({
+            gameId: SOLITAIRE_GAME_ID,
+            sessionPrefix: 'sol',
+            difficulty: 'default',
+            isOver: outcome.won || outcome.stuck,
+            won: outcome.won,
+            score: outcome.won ? game.score : 0,
+            moves: game.moves,
+            startedAt: state.startedAt,
+            usedUndo: state.usedUndo,
+          });
+          return {
+            history: [...state.history, state.game],
+            game,
+            ...(result ?? {}),
+          };
         }),
 
       move: (source, target) =>
@@ -96,7 +76,29 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
           if (state.finishedAt !== null) return state;
           if (!isValidMove(state.game, source, target)) return state;
           const game = applyMove(state.game, source, target);
-          return { game, ...finishIfOver(game, state.startedAt) };
+          const outcome = evaluateOutcome(game);
+          const result = finishIfOver({
+            gameId: SOLITAIRE_GAME_ID,
+            sessionPrefix: 'sol',
+            difficulty: 'default',
+            isOver: outcome.won || outcome.stuck,
+            won: outcome.won,
+            score: outcome.won ? game.score : 0,
+            moves: game.moves,
+            startedAt: state.startedAt,
+            usedUndo: state.usedUndo,
+          });
+          return {
+            history: [...state.history, state.game],
+            game,
+            ...(result ?? {}),
+          };
+        }),
+
+      undo: () =>
+        set((state) => {
+          const update = undoReducer(state.history, state.finishedAt);
+          return update ?? state;
         }),
 
       newGame: () =>
@@ -105,6 +107,8 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
           startedAt: Date.now(),
           finishedAt: null,
           finished: null,
+          history: [],
+          usedUndo: false,
         }),
     }),
     {
@@ -115,6 +119,8 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
         startedAt: state.startedAt,
         finishedAt: state.finishedAt,
         finished: state.finished,
+        history: state.history,
+        usedUndo: state.usedUndo,
       }),
     },
   ),

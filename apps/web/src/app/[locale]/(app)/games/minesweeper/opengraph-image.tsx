@@ -1,232 +1,114 @@
-import { ImageResponse } from 'next/og';
+import {
+  OG_CONTENT_TYPE,
+  OG_SIZE,
+  renderGameOgCard,
+} from '@/shared/seo/ogImageTemplate';
+import { getTranslations } from '@/shared/i18n/server';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
-export const alt = 'Minesweeper — free online logic puzzle on Arcadeum';
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+export const alt =
+  'Minesweeper — free online retro logic mine puzzle on Arcadeum Games';
 
-/** Cell states: number (revealed), flag, mine, or hidden. */
-type Cell =
-  | { kind: 'num'; n: number }
-  | { kind: 'flag' }
-  | { kind: 'mine' }
-  | { kind: 'hidden' };
+type Props = { params: Promise<{ locale: string }> };
 
-const BOARD: Cell[][] = [
-  [
-    { kind: 'hidden' },
-    { kind: 'num', n: 1 },
-    { kind: 'hidden' },
-    { kind: 'num', n: 1 },
-  ],
-  [
-    { kind: 'flag' },
-    { kind: 'num', n: 2 },
-    { kind: 'hidden' },
-    { kind: 'num', n: 1 },
-  ],
-  [
-    { kind: 'num', n: 1 },
-    { kind: 'num', n: 1 },
-    { kind: 'num', n: 2 },
-    { kind: 'mine' },
-  ],
-];
-
-const NUM_COLORS: Record<number, string> = {
-  1: '#60a5fa',
-  2: '#34d399',
-};
-
-function cellStyle(cell: Cell): {
-  background: string;
-  border: string;
-} {
-  switch (cell.kind) {
-    case 'mine':
-      return {
-        background: 'rgba(248, 113, 113, 0.22)',
-        border: '2px solid rgba(248, 113, 113, 0.45)',
-      };
-    case 'flag':
-      return {
-        background: 'rgba(251, 191, 36, 0.18)',
-        border: '2px solid rgba(251, 191, 36, 0.4)',
-      };
-    case 'num':
-      return {
-        background: 'rgba(255, 255, 255, 0.08)',
-        border: '2px solid rgba(255, 255, 255, 0.12)',
-      };
-    default:
-      return {
-        background: 'rgba(0, 0, 0, 0.3)',
-        border: '2px solid rgba(255, 255, 255, 0.06)',
-      };
-  }
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
 }
 
-function cellGlyph(cell: Cell): { text: string; color: string; size: number } {
-  switch (cell.kind) {
-    case 'mine':
-      return { text: '●', color: '#f87171', size: 44 };
-    case 'flag':
-      return { text: '⚑', color: '#fbbf24', size: 48 };
-    case 'num':
-      return {
-        text: String(cell.n),
-        color: NUM_COLORS[cell.n] ?? '#e2e8f0',
-        size: 52,
-      };
-    default:
-      return { text: '', color: 'transparent', size: 52 };
-  }
-}
+function MinesweeperVisual() {
+  const grid = [
+    ['1', '1', '2', '🚩'],
+    [' ', ' ', '2', '💣'],
+    [' ', ' ', '1', '1'],
+    ['1', '1', ' ', ' '],
+  ];
 
-export default function OpengraphImage() {
-  return new ImageResponse(
+  const colors: Record<string, string> = {
+    '1': '#3b82f6',
+    '2': '#10b981',
+    '3': '#ef4444',
+  };
+
+  return (
     <div
       style={{
-        width: 1200,
-        height: 630,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 80px',
-        background:
-          'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        color: 'white',
-        fontFamily: 'system-ui, sans-serif',
-        position: 'relative',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        padding: 20,
       }}
     >
-      {/* Background glow */}
       <div
         style={{
-          position: 'absolute',
-          right: -70,
-          top: -70,
-          width: 380,
-          height: 380,
-          borderRadius: 190,
-          background:
-            'radial-gradient(circle, rgba(248, 113, 113, 0.16) 0%, transparent 60%)',
-        }}
-      />
-
-      <div
-        style={{
+          width: 320,
+          height: 320,
+          borderRadius: 16,
+          background: '#1e293b',
+          border: '3px solid #38bdf8',
+          padding: 11,
           display: 'flex',
-          flexDirection: 'column',
-          gap: 32,
-          maxWidth: 560,
-          position: 'relative',
-          zIndex: 1,
+          flexWrap: 'wrap',
+          gap: 8,
+          boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
-          ARCADEUM
-        </div>
-        <div
-          style={{
-            fontSize: 84,
-            fontWeight: 900,
-            lineHeight: 1,
-            display: 'flex',
-          }}
-        >
-          Minesweeper
-        </div>
-        <div
-          style={{
-            fontSize: 30,
-            opacity: 0.9,
-            lineHeight: 1.3,
-            display: 'flex',
-          }}
-        >
-          Classic logic puzzle · beginner to expert grids
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            fontSize: 18,
-            flexWrap: 'wrap',
-            opacity: 0.95,
-          }}
-        >
-          <span
+        {grid.flat().map((c, i) => (
+          <div
+            key={i}
             style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
+              width: 68.5,
+              height: 68.5,
+              borderRadius: 8,
+              background:
+                c === ' ' ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 32,
+              fontWeight: 900,
+              color: colors[c] ?? '#ffffff',
             }}
           >
-            Single-player
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            No signup
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Free forever
-          </span>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 20,
-          background: 'rgba(255, 255, 255, 0.06)',
-          borderRadius: 24,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        {BOARD.map((row, ri) => (
-          <div key={ri} style={{ display: 'flex', gap: 8 }}>
-            {row.map((cell, ci) => {
-              const glyph = cellGlyph(cell);
-              const style = cellStyle(cell);
-              return (
-                <div
-                  key={ci}
-                  style={{
-                    width: 104,
-                    height: 104,
-                    borderRadius: 16,
-                    ...style,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: glyph.size,
-                    fontWeight: 800,
-                    color: glyph.color,
-                  }}
-                >
-                  {glyph.text}
-                </div>
-              );
-            })}
+            {c}
           </div>
         ))}
       </div>
-    </div>,
-    { ...size },
+    </div>
   );
+}
+
+export default async function MinesweeperOpengraphImage({ params }: Props) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
+  const game = messages.games?.minesweeper_v1;
+  const gameName = game?.name ?? 'Minesweeper';
+
+  return renderGameOgCard({
+    kicker: 'Retro Logic · 1 Player',
+    title: gameName,
+    subtitle:
+      game?.description ??
+      'Classic minefield clearing with flagged tiles, chord opening, and custom difficulty.',
+    accent: '#38bdf8',
+    gradient: ['#082f49', '#021522'],
+    badges: [
+      'First Click Safe',
+      'Chording Support',
+      'Flag Counter',
+      'Custom Grids',
+      '100% Free',
+    ],
+    stats: [
+      { label: 'Category', value: 'Minefield Puzzle' },
+      { label: 'Safety', value: 'Safe First Click' },
+      { label: 'Control', value: 'Flag & Chord' },
+    ],
+    visual: <MinesweeperVisual />,
+  });
 }

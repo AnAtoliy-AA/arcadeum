@@ -229,7 +229,7 @@ describe('PachisiBoard', () => {
     renderBoard(mockState);
     const board = screen.getByTestId('pachisi-board');
     expect(board.classList.contains('pachisi-board')).toBe(true);
-    expect(screen.queryByTestId('pachisi-die')).toBeNull();
+    expect(screen.queryByTestId('pachisi-die-result')).toBeNull();
   });
 
   it('renders die and visible numeric number badge when die is rolled', () => {
@@ -239,10 +239,9 @@ describe('PachisiBoard', () => {
       die: 5,
     };
     renderBoard(dieRolledState);
-    expect(screen.getByTestId('pachisi-die')).toBeInTheDocument();
-    const numberBadge = screen.getByTestId('pachisi-die-number');
-    expect(numberBadge).toBeInTheDocument();
-    expect(numberBadge).toHaveTextContent('5');
+    const dieResult = screen.getByTestId('pachisi-die-result');
+    expect(dieResult).toBeInTheDocument();
+    expect(dieResult).toHaveTextContent('5');
   });
 
   it('allows clicking movable token even if actionBusy is true', () => {

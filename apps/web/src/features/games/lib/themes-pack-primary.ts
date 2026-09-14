@@ -9,7 +9,7 @@ export const PRIMARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #4F566B 0%, #FF4D4D 100%)',
     bgImage: '/images/variants/adventure_bg.webp',
     colors: {
-      primary: '#4F566B',
+      primary: '#94a3b8',
       accent: '#FF4D4D',
       background: '#10131a',
       surface: '#1b2029',
@@ -169,7 +169,7 @@ export const PRIMARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #7928CA 0%, #FF0080 100%)',
     bgImage: '/images/variants/horror_bg.webp',
     colors: {
-      primary: '#7928CA',
+      primary: '#a855f7',
       accent: '#FF0080',
       background: '#12060d',
       surface: '#1f0d1a',

@@ -170,11 +170,11 @@ export default function GeoBlockClient() {
             </Typography>
 
             {loading ? (
-              <Typography variant="body" alpha="medium">
+              <Typography variant="body" alpha="high">
                 Loading...
               </Typography>
             ) : countries.filter((c) => c.active).length === 0 ? (
-              <Typography variant="body" alpha="medium">
+              <Typography variant="body" alpha="high">
                 No countries blocked. ARC payments are available worldwide.
               </Typography>
             ) : (
@@ -192,7 +192,7 @@ export default function GeoBlockClient() {
                           {country.countryCode}
                         </Typography>
                         {country.reason && (
-                          <Typography variant="caption" alpha="medium">
+                          <Typography variant="caption" alpha="high">
                             {country.reason}
                           </Typography>
                         )}

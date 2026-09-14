@@ -1,8 +1,9 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 
-const AnalysisBoard = dynamic(
+
+const AnalysisBoard = dynamicImport(
   () =>
     import('@/widgets/BoardGames/ChessGame/ui/AnalysisBoard').then(
       (m) => m.AnalysisBoard,

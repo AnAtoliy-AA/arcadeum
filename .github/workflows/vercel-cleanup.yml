@@ -1,0 +1,51 @@
+name: Vercel Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+  schedule:
+    - cron: '0 3 * * 0' # every Sunday at 3am
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old preview deployments
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "VERCEL_TOKEN not set, skipping"
+            exit 0
+          fi
+
+          # Get all deployments
+          DEPLOYMENTS=$(curl -s -H "Authorization: Bearer $VERCEL_TOKEN" \
+            "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&limit=100&target=preview")
+
+          # Filter: keep only the 3 most recent Ready/Error deployments, delete the rest
+          echo "$DEPLOYMENTS" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          deployments = data.get('deployments', [])
+          # Sort by created timestamp descending
+          deployments.sort(key=lambda d: d.get('created', 0), reverse=True)
+          # Keep the 3 most recent, delete the rest
+          to_delete = deployments[3:]
+          for d in to_delete:
+              uid = d.get('uid', '')
+              name = d.get('name', '')
+              created = d.get('created', 0)
+              if uid:
+                  print(f'{uid}|{name}|{created}')
+          " | while IFS='|' read -r uid name created; do
+            echo "Deleting deployment $name ($uid)..."
+            curl -s -X DELETE \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              "https://api.vercel.com/v13/deployments/$uid" || true
+          done
+
+          echo "Cleanup complete"

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Badge, Button } from '@arcadeum/ui';
@@ -8,6 +9,7 @@ import { useGameLandingTheme } from './GameLandingThemeContext';
 import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
+import { GameInviteModal } from './GameInviteModal';
 
 export function GameLandingHero({
   gameId,
@@ -15,6 +17,7 @@ export function GameLandingHero({
   eyebrow,
   subtitle,
   intro,
+  directAnswer,
   category,
   playersBadge,
   durationBadge,
@@ -32,6 +35,7 @@ export function GameLandingHero({
   comingSoon = false,
 }: GameLandingHeroProps) {
   const { theme } = useGameLandingTheme();
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   const createHref = createRoomHref
     ? createRoomHref.includes('?')
@@ -76,14 +80,25 @@ export function GameLandingHero({
               {title}
             </h1>
             {subtitle ? (
-              <p className="box-border m-0 text-lg sm:text-xl font-medium text-[var(--primary)] leading-snug">
+              <p className="box-border m-0 text-lg sm:text-xl font-medium text-[var(--color)] leading-snug">
                 {subtitle}
               </p>
             ) : null}
             {intro ? (
-              <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-85 leading-relaxed max-w-2xl">
+              <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 leading-relaxed max-w-2xl">
                 {intro}
               </p>
+            ) : null}
+            {directAnswer ? (
+              <div className="box-border flex flex-col gap-1.5 p-4 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/10 backdrop-blur-sm max-w-2xl">
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--color)]">
+                  <span>✦</span>
+                  <span>Quick Overview</span>
+                </div>
+                <p className="m-0 text-sm font-medium text-[var(--foreground)] opacity-95 leading-relaxed">
+                  {directAnswer}
+                </p>
+              </div>
             ) : null}
           </div>
 
@@ -129,6 +144,14 @@ export function GameLandingHero({
                 </Link>
               )
             ) : null}
+
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setIsInviteOpen(true)}
+            >
+              Invite / Share 🔗
+            </Button>
           </div>
 
           {chips && chips.length > 0 ? (
@@ -136,7 +159,7 @@ export function GameLandingHero({
               {chips.map((chip) => (
                 <span
                   key={chip}
-                  className="box-border inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--glassBg)] border border-[var(--borderColor)] text-[var(--foreground)] opacity-90 backdrop-blur-sm"
+                  className="box-border inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--glassBg)] border border-[var(--borderColor)] text-[var(--foreground)] opacity-95 backdrop-blur-sm"
                 >
                   {chip}
                 </span>
@@ -153,6 +176,13 @@ export function GameLandingHero({
           </div>
         ) : null}
       </div>
+
+      <GameInviteModal
+        open={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+        gameId={gameId}
+        gameTitle={title}
+      />
     </header>
   );
 }

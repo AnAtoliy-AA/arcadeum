@@ -98,21 +98,16 @@ test.describe('Locale JSON-LD — structured data per page', () => {
     expect(items[1]?.item).toMatch(/\/ru\/nastroyki$/);
   });
 
-  test('sea-battle landing keeps its VideoGame + BreadcrumbList without deprecated FAQPage', async ({
+  test('sea-battle landing emits VideoGame, SoftwareApplication, BreadcrumbList, and FAQPage', async ({
     page,
   }) => {
     await page.goto('/en/games/sea-battle', { waitUntil: 'domcontentloaded' });
-    // The landing is server-rendered and streamed — on a cold dev-server
-    // compile (common on CI Firefox) DOMContentLoaded can fire on the shell
-    // before the route's JSON-LD block has streamed in. Wait for the block
-    // instead of assuming it exists at domcontentloaded.
     await page.waitForSelector('#json-ld-sea-battle', { state: 'attached' });
     const blobs = await collectJsonLd(page);
     expect(findByType(blobs, 'VideoGame')).toBeDefined();
+    expect(findByType(blobs, 'SoftwareApplication')).toBeDefined();
     expect(findByType(blobs, 'BreadcrumbList')).toBeDefined();
-    // FAQPage rich results are restricted to government/health sites since
-    // Aug 2023 — the landing must not emit it (visible FAQ content stays).
-    expect(findByType(blobs, 'FAQPage')).toBeUndefined();
+    expect(findByType(blobs, 'FAQPage')).toBeDefined();
   });
 
   test('player profile page emits ProfilePage + Person', async ({ page }) => {

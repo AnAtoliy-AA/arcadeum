@@ -13,6 +13,7 @@ describe('routes config', () => {
     expect(routes.gameDetail('123')).toBe('/en/games/123');
     expect(routes.gameRoom('abc')).toBe('/en/rooms/abc');
     expect(routes.chatDetail('chat-1')).toBe('/en/chat/chat-1');
+    expect(routes.playerProfile('user-42')).toBe('/en/players/user-42');
   });
 
   it('French routes use French top-level slugs', () => {

@@ -2,6 +2,7 @@ import type { TicTacToeMessages } from '@/shared/i18n/messages/games/tic-tac-toe
 import {
   UnifiedGameLanding,
   getRelatedGames,
+  GameAcademySection,
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
@@ -200,6 +201,7 @@ export default function TicTacToeLanding({
         kicker: 'FAQ',
         items: faqItems,
       }}
+      extraSection={<GameAcademySection gameKey="ticTacToeLanding" />}
       relatedGames={{
         title: 'Discover More Games',
         kicker: 'Discover',

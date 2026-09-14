@@ -1,5 +1,7 @@
+import { useCallback, useRef } from 'react';
 import { create } from 'zustand';
 import { resolveApiUrl } from '@/shared/lib/api-base';
+import { useSocket } from '@/shared/lib/socket-hooks';
 
 export interface LivePopularGame {
   gameId: string;
@@ -71,9 +73,9 @@ interface LiveStatsState {
   isPopoverOpen: boolean;
   lastFetchedAt: number | null;
   fetchLiveStats: (force?: boolean) => Promise<void>;
-  setLiveStats: (data: Partial<LiveStatsData>) => void;
   togglePopover: () => void;
   setPopoverOpen: (open: boolean) => void;
+  applyWsStats: (data: LiveStatsData) => void;
 }
 
 export const useLiveStatsStore = create<LiveStatsState>((set, get) => ({
@@ -115,15 +117,6 @@ export const useLiveStatsStore = create<LiveStatsState>((set, get) => ({
     }
   },
 
-  setLiveStats: (data: Partial<LiveStatsData>) => {
-    set((state) => ({
-      stats: {
-        ...state.stats,
-        ...data,
-      },
-    }));
-  },
-
   togglePopover: () => {
     set((state) => ({ isPopoverOpen: !state.isPopoverOpen }));
   },
@@ -131,4 +124,29 @@ export const useLiveStatsStore = create<LiveStatsState>((set, get) => ({
   setPopoverOpen: (open: boolean) => {
     set({ isPopoverOpen: open });
   },
+
+  applyWsStats: (data: LiveStatsData) => {
+    set({
+      stats: { ...DEFAULT_STATS, ...data },
+      lastFetchedAt: Date.now(),
+    });
+  },
 }));
+
+export function useLiveStatsWs(): void {
+  const applyWsStats = useLiveStatsStore((s) => s.applyWsStats);
+  const lastCountRef = useRef<number>(0);
+
+  const handler = useCallback(
+    (payload: unknown) => {
+      const data = payload as LiveStatsData;
+      if (!data || typeof data.onlineUsers !== 'number') return;
+      if (data.onlineUsers === lastCountRef.current) return;
+      lastCountRef.current = data.onlineUsers;
+      applyWsStats(data);
+    },
+    [applyWsStats],
+  );
+
+  useSocket('games.live_stats', handler);
+}

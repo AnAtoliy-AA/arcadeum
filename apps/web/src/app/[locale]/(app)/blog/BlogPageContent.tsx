@@ -11,7 +11,7 @@ import {
   Section,
   Button,
 } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { Locale } from '@/shared/i18n';
@@ -109,7 +109,7 @@ export default function BlogPageContent({
             <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[var(--gold)] opacity-10 blur-3xl" />
 
             <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color)]">
                 📰 {blog?.subtitle ?? 'Guides, Updates & Stories'}
               </span>
               <PageTitle size="xl" gradient>
@@ -128,14 +128,21 @@ export default function BlogPageContent({
                   placeholder={
                     blog?.searchPlaceholder ?? 'Search articles and guides…'
                   }
+                  aria-label={
+                    blog?.searchPlaceholder ?? 'Search articles and guides'
+                  }
                   className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] px-5 py-3.5 pl-12 text-sm text-[var(--color)] placeholder-[var(--colorMuted)] outline-none backdrop-blur-md transition-all duration-200 focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20"
                 />
-                <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[var(--colorMuted)]">
+                <span
+                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[var(--colorMuted)]"
+                  aria-hidden="true"
+                >
                   🔍
                 </span>
                 {searchQuery && (
                   <button
                     type="button"
+                    aria-label="Clear search"
                     onClick={() => setSearchQuery('')}
                     className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 px-2 py-0.5 text-xs text-[var(--colorMuted)] hover:text-white"
                   >
@@ -235,7 +242,7 @@ export default function BlogPageContent({
 
               {filteredPosts.length === 0 ? (
                 <GlassCard className="p-8 text-center">
-                  <Typography variant="body" uiSize="md" alpha="medium">
+                  <Typography variant="body" uiSize="md" alpha="high">
                     No articles found matching your query.
                   </Typography>
                 </GlassCard>
@@ -275,7 +282,7 @@ export default function BlogPageContent({
                           <Typography
                             variant="body"
                             uiSize="sm"
-                            alpha="medium"
+                            alpha="high"
                             className="line-clamp-3 leading-relaxed"
                           >
                             {post.excerpt}
@@ -307,7 +314,7 @@ export default function BlogPageContent({
                   <Typography variant="heading" uiSize="lg" weight="800">
                     {newsletter.title}
                   </Typography>
-                  <Typography variant="body" uiSize="sm" alpha="medium">
+                  <Typography variant="body" uiSize="sm" alpha="high">
                     {newsletter.subtitle}
                   </Typography>
                 </div>
@@ -344,7 +351,7 @@ export default function BlogPageContent({
                 <Typography variant="heading" uiSize="lg" weight="800">
                   {cta.title}
                 </Typography>
-                <Typography variant="body" uiSize="sm" alpha="medium">
+                <Typography variant="body" uiSize="sm" alpha="high">
                   {cta.description}
                 </Typography>
               </div>

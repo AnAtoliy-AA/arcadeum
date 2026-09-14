@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface HouseRulesSectionProps {
   room: { gameOptions?: Record<string, unknown> };
@@ -92,6 +92,7 @@ export function HouseRulesSection({
           {t('games.create.rules.firstPlayer.title')}
         </span>
         <select
+          aria-label="First Player"
           value={
             optFirstPlayer ??
             (room.gameOptions?.firstPlayer as string) ??

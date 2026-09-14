@@ -1,6 +1,7 @@
 import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { ChatScope } from './engines/base/game-engine.interface';
 import { GameRoomsService } from './rooms/game-rooms.service';
+import { GameRoomsBotService } from './rooms/game-rooms.bot.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
 import { GamesHistoryFacade } from './games-history.facade';
@@ -30,13 +31,13 @@ import {
   touchEngineSession,
   type RematchHistoryOptions,
 } from './games.service-helpers';
-
 @Injectable()
 export class GamesService {
   private readonly logger = new Logger(GamesService.name);
 
   constructor(
     private readonly roomsService: GameRoomsService,
+    private readonly botService: GameRoomsBotService,
     private readonly sessionsService: GameSessionsService,
     private readonly archiveService: GameSessionsArchiveService,
     private readonly historyFacade: GamesHistoryFacade,
@@ -54,19 +55,15 @@ export class GamesService {
     private readonly ruleVisibility: GameRuleVisibilityService,
     private readonly replayService: GameReplayService,
   ) {}
-
   // ========== Room Operations ==========
-
   async createRoom(userId: string, dto: CreateGameRoomDto) {
     const room = await this.roomsService.createRoom(userId, dto);
     this.realtimeService.emitRoomCreated(room);
     return room;
   }
-
   async countHostRooms(userId: string) {
     return this.roomsService.countHostRooms(userId);
   }
-
   async quickplay(
     userId: string,
     gameId: string,
@@ -98,11 +95,9 @@ export class GamesService {
   async listRooms(filters: ListRoomsFilters = {}, viewerId?: string) {
     return this.roomsService.listRooms(filters, viewerId);
   }
-
   async getRoom(roomId: string, userId?: string) {
     return this.roomsService.getRoom(roomId, userId);
   }
-
   async findRoomByInviteCode(code: string, viewerId?: string) {
     return this.roomsService.findByInviteCode(code, viewerId);
   }
@@ -322,11 +317,12 @@ export class GamesService {
   ) {
     return this.historyFacade.listHistoryForUser(userId, options);
   }
-
   async getHistoryEntry(userId: string, roomId: string) {
     return this.historyFacade.getHistoryEntry(userId, roomId);
   }
-
+  async getRoomResult(roomId: string) {
+    return this.historyFacade.getRoomResult(roomId);
+  }
   async hideHistoryEntry(userId: string, roomId: string) {
     return this.historyFacade.hideHistoryEntry(userId, roomId);
   }
@@ -486,6 +482,17 @@ export class GamesService {
       userId,
       newOrder,
     );
+    this.realtimeService.emitRoomUpdate(room);
+    return room;
+  }
+
+  async addBotToRoom(roomId: string, hostId: string) {
+    const room = await this.botService.addBotToRoom(roomId, hostId);
+    this.realtimeService.emitRoomUpdate(room);
+    return room;
+  }
+  async removeBotFromRoom(roomId: string, hostId: string, botId: string) {
+    const room = await this.botService.removeBotFromRoom(roomId, hostId, botId);
     this.realtimeService.emitRoomUpdate(room);
     return room;
   }

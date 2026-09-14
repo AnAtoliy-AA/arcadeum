@@ -150,6 +150,44 @@ export class AchievementsService {
     return this.getCachedDefinitions();
   }
 
+  async getUserAchievements(userId: string): Promise<AchievementView[]> {
+    const definitions = await this.getCachedDefinitions();
+    const progress = await this.progressModel.findOne({
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!progress) return [];
+
+    return definitions
+      .filter((def) => {
+        const ua = progress.achievements.find(
+          (a) => a.achievementId === def.achievementId,
+        );
+        return !!ua?.unlockedAt;
+      })
+      .map((def) => {
+        const ua = progress.achievements.find(
+          (a) => a.achievementId === def.achievementId,
+        );
+        return {
+          achievementId: def.achievementId,
+          name: def.name,
+          description: def.description,
+          category: def.category,
+          rarity: def.rarity,
+          iconUrl: def.iconUrl,
+          unlocked: true,
+          unlockedAt: ua?.unlockedAt?.toISOString(),
+          claimed: ua?.claimed ?? false,
+          xpReward: def.xpReward,
+          coinReward: def.coinReward,
+          gemReward: def.gemReward,
+          progress: 1,
+          targetProgress: 1,
+        };
+      });
+  }
+
   async checkAndUnlockWithDefinitions(
     userId: string,
     definitions: AchievementDefinition[],

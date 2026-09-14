@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from 'react';
 import type { AchievementPopupLabels } from '@/shared/i18n/messages/pages/achievements/en';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { checkNewlyUnlockedAchievements } from '../actions';
 import { useAchievementsPopupStore } from '../store/achievementsPopupStore';

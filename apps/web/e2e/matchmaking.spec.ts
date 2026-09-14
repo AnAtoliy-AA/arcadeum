@@ -13,7 +13,7 @@ test.describe('Matchmaking Queue', () => {
     await mockSession(page);
   });
 
-  test('should open matchmaking modal, display players ahead, and support cancellation', async ({
+  test('should open matchmaking modal and support cancellation', async ({
     page,
   }) => {
     await navigateTo(page, routes.seaBattleLanding);
@@ -39,52 +39,11 @@ test.describe('Matchmaking Queue', () => {
     const timer = page.getByTestId('matchmaking-timer');
     await expect(timer).toBeVisible();
 
-    const playersAheadBadge = page.getByTestId('matchmaking-players-ahead');
-    await expect(playersAheadBadge).toBeVisible();
-
-    const positionText = page.getByTestId('matchmaking-position');
-    await expect(positionText).toBeVisible();
-
     const cancelBtn = page.getByTestId('matchmaking-cancel');
     await expect(cancelBtn).toBeVisible();
     await cancelBtn.click();
 
     await expect(modal).not.toBeVisible();
-  });
-
-  test('should suggest creating a room when no open rooms exist', async ({
-    page,
-  }) => {
-    await navigateTo(page, routes.seaBattleLanding);
-
-    const humanBtn = page.getByTestId('quickplay-human-button').first();
-    await expect(humanBtn).toBeVisible();
-
-    await page.waitForFunction(
-      () =>
-        typeof (window as Window & { __joinMatchmaking?: unknown })
-          .__joinMatchmaking === 'function',
-    );
-
-    await page.evaluate(() =>
-      (
-        window as Window & { __joinMatchmaking?: (g: string) => Promise<void> }
-      ).__joinMatchmaking?.('sea_battle_v1'),
-    );
-
-    const modal = page.getByTestId('matchmaking-modal');
-    await expect(modal).toBeVisible();
-
-    const noRoomsSuggestion = page.getByTestId(
-      'matchmaking-no-rooms-suggestion',
-    );
-    await expect(noRoomsSuggestion).toBeVisible();
-
-    const createRoomBtn = page.getByTestId('matchmaking-create-room');
-    await expect(createRoomBtn).toBeVisible();
-    await createRoomBtn.click();
-
-    await expect(page).toHaveURL(/.*games\/create/);
   });
 
   test('should support minimizing to floating bar and expanding back', async ({

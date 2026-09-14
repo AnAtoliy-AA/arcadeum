@@ -8,6 +8,7 @@ import {
   EN_SLUGS,
   SUPPORTED_LOCALES,
 } from './src/shared/config/locale-slugs';
+import { buildGameOgRewrites } from './src/shared/seo/gameOgRewrites';
 
 // Build rewrite rules that map localized URLs (`/fr/jeux/...`) to the
 // English filesystem directories Next.js actually serves
@@ -352,7 +353,7 @@ const nextConfig: NextConfig = {
               key: 'Cache-Control',
               value: isDev
                 ? 'no-cache, no-store, must-revalidate'
-                : 'public, s-maxage=60, stale-while-revalidate=300',
+                : 'public, s-maxage=300, stale-while-revalidate=3600',
             },
           ],
         }));
@@ -399,6 +400,20 @@ const nextConfig: NextConfig = {
           ],
         }));
       })(),
+      // Embed routes allow frame-ancestors * so external sites can embed games
+      {
+        source: '/:locale/embed/:game*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: 'frame-ancestors *;',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOWALL',
+          },
+        ],
+      },
     ];
   },
   env: {
@@ -416,12 +431,9 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       'lucide-react',
       '@arcadeum/ui',
-      'recharts',
       '@dnd-kit/core',
       '@dnd-kit/sortable',
       '@dnd-kit/utilities',
-      'pixi.js',
-      'pixi-filters',
       'qrcode.react',
       'posthog-js',
       'zustand',
@@ -445,9 +457,7 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
-      // Run BEFORE Next.js route matching so /fr/jeux is served by the
-      // /fr/games filesystem directory.
-      beforeFiles: buildLocaleRewrites(),
+      beforeFiles: [...buildLocaleRewrites(), ...buildGameOgRewrites()],
       afterFiles: [
         {
           source: '/.well-known/security.txt',

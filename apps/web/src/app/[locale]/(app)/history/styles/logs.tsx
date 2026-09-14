@@ -51,7 +51,7 @@ export function LogTimestamp({
     <Typography
       className={cx('font-mono', className)}
       uiSize="xs"
-      alpha="medium"
+      alpha="high"
     >
       {children}
     </Typography>
@@ -73,7 +73,7 @@ export function LogScope({
       )}
       uiSize="xs"
       weight="600"
-      alpha="medium"
+      alpha="high"
     >
       {children}
     </Typography>

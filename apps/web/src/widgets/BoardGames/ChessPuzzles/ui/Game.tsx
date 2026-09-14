@@ -5,14 +5,27 @@ import { usePuzzleState } from '../hooks/usePuzzleState';
 import { PuzzleBoard } from './PuzzleBoard';
 import { PuzzleControls } from './PuzzleControls';
 
+import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
+
 interface PuzzleGameProps {
   mode?: 'daily' | 'rated' | 'themed';
   theme?: string;
+  onSolved?: (result: {
+    puzzle: ChessPuzzle;
+    moves: string[];
+    timeMs: number;
+  }) => void;
+  onShare?: () => void;
 }
 
-function PuzzleGameImpl({ mode = 'rated', theme }: PuzzleGameProps) {
+function PuzzleGameImpl({
+  mode = 'rated',
+  theme,
+  onSolved,
+  onShare,
+}: PuzzleGameProps) {
   const { puzzle, phase, result, loading, loadPuzzle, makeMove } =
-    usePuzzleState({ mode, theme });
+    usePuzzleState({ mode, theme, onSolved });
 
   const handleNext = useCallback(() => {
     loadPuzzle();
@@ -41,11 +54,7 @@ function PuzzleGameImpl({ mode = 'rated', theme }: PuzzleGameProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-start gap-3 w-full max-w-[900px] mx-auto p-3">
       <div className="flex flex-col gap-2 md:flex-none md:w-[min(70vmin,560px)] md:sticky md:top-3">
-        <PuzzleBoard
-          puzzle={puzzle}
-          phase={phase}
-          onMove={makeMove}
-        />
+        <PuzzleBoard puzzle={puzzle} phase={phase} onMove={makeMove} />
       </div>
 
       <div className="flex flex-col gap-3 flex-1 min-w-0 md:max-w-[280px]">
@@ -53,7 +62,9 @@ function PuzzleGameImpl({ mode = 'rated', theme }: PuzzleGameProps) {
           phase={phase}
           rating={puzzle.rating}
           ratingChange={result?.ratingChange}
+          mode={mode}
           onNext={handleNext}
+          onShare={onShare}
         />
 
         {puzzle.themes.length > 0 && (

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import type { SoloPauseState } from './useSoloPause';
@@ -85,7 +85,7 @@ export function SoloControlPanel({
           className={cx(
             'inline-flex items-center justify-center gap-1 rounded-lg border px-2 h-7.5 text-xs font-semibold transition-colors shadow-xs active:scale-95 select-none',
             autoPauseEnabled
-              ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--primary)] hover:bg-[var(--primary)]/25'
+              ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--color)] hover:bg-[var(--primary)]/25'
               : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
           )}
         >
@@ -121,7 +121,7 @@ export function SoloControlPanel({
             className={cx(
               'flex items-center justify-center h-6.5 px-1.5 text-xs font-semibold rounded-md transition-colors active:scale-95 select-none',
               soundEnabled
-                ? 'bg-[var(--glassBg)] text-[var(--primary)] shadow-xs'
+                ? 'bg-[var(--glassBg)] text-[var(--color)] shadow-xs'
                 : 'text-[var(--textSecondary)] opacity-60 hover:opacity-100 hover:text-[var(--color)]',
             )}
           >
@@ -138,7 +138,7 @@ export function SoloControlPanel({
             className={cx(
               'flex items-center justify-center h-6.5 px-1.5 text-xs font-semibold rounded-md transition-colors active:scale-95 select-none',
               musicEnabled
-                ? 'bg-[var(--glassBg)] text-[var(--primary)] shadow-xs'
+                ? 'bg-[var(--glassBg)] text-[var(--color)] shadow-xs'
                 : 'text-[var(--textSecondary)] opacity-60 hover:opacity-100 hover:text-[var(--color)]',
             )}
           >
@@ -159,7 +159,7 @@ export function SoloControlPanel({
             className={cx(
               'inline-flex items-center justify-center gap-1 rounded-lg border px-2 h-7.5 text-xs font-semibold transition-colors shadow-xs active:scale-95 select-none',
               showLeaderboard
-                ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--primary)] hover:bg-[var(--primary)]/25'
+                ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--color)] hover:bg-[var(--primary)]/25'
                 : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
             )}
           >

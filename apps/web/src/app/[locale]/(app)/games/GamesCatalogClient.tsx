@@ -114,7 +114,7 @@ export function GamesCatalogClient({
             >
               <span className="mr-1.5">{cat.icon}</span>
               <span>{categoryLabels[cat.key] ?? cat.label}</span>
-              <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-current/10 opacity-80">
+              <span className="ml-1.5 px-1.5 py-0.2 rounded-full text-[10px] bg-current/10 opacity-95">
                 {count}
               </span>
             </FilterChip>
@@ -140,10 +140,10 @@ export function GamesCatalogClient({
       ) : (
         <div className="box-border flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)]">
           <span className="text-4xl mb-3">🔍</span>
-          <h3 className="box-border m-0 text-lg font-bold text-[var(--foreground)]">
+          <h2 className="box-border m-0 text-lg font-bold text-[var(--foreground)]">
             No games found
-          </h3>
-          <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-70 mt-1 max-w-sm">
+          </h2>
+          <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-90 mt-1 max-w-sm">
             Try adjusting your search query or selecting a different category
             filter.
           </p>
@@ -152,10 +152,10 @@ export function GamesCatalogClient({
 
       <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md shadow-xl">
         <div className="box-border flex flex-col gap-1 text-center sm:text-left">
-          <h3 className="box-border m-0 text-base sm:text-lg font-bold text-[var(--foreground)]">
+          <h2 className="box-border m-0 text-base sm:text-lg font-bold text-[var(--foreground)]">
             Looking for live multiplayer action?
-          </h3>
-          <p className="box-border m-0 text-xs sm:text-sm text-[var(--foreground)] opacity-80">
+          </h2>
+          <p className="box-border m-0 text-xs sm:text-sm text-[var(--foreground)] opacity-95">
             Browse open rooms with real players or host your own match in
             seconds.
           </p>

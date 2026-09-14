@@ -140,6 +140,8 @@ export default function BackgammonLanding({
         subtitle: landing.hero.subtitle,
         intro:
           'A game of skill and strategy with checker moves, dice rolling, and bearing off.',
+        directAnswer:
+          'Arcadeum Backgammon is a free online 24-point board game featuring authentic dice rolling, hitting blots, bearing off, and heuristic AI opponents—play instantly with friends or bots without downloads or registration.',
         category: 'Board Game',
         playersBadge: '2 Players',
         durationBadge: '15–25 min',
@@ -152,6 +154,34 @@ export default function BackgammonLanding({
         roomsHref,
         createRoomHref,
         heroVisual: <BackgammonLandingPreview />,
+      }}
+      specifications={{
+        title: 'Backgammon Technical Specifications',
+        kicker: 'Key Facts',
+        items: [
+          {
+            label: 'Board',
+            value: '24 Points (Triangles)',
+            hint: 'Outer & home board division',
+          },
+          {
+            label: 'Checkers',
+            value: '15 per player',
+            hint: 'Race from opponent home to your home',
+          },
+          {
+            label: 'Dice',
+            value: 'Pair of 6-sided dice',
+            hint: 'Doubles played four times',
+          },
+          { label: 'Rules', value: 'Standard Bearing Off', badge: 'Official' },
+          {
+            label: 'Platform',
+            value: 'Web & Mobile',
+            hint: 'Zero installation required',
+          },
+          { label: 'Cost', value: '100% Free', badge: 'No Ads' },
+        ],
       }}
       highlights={{
         title: 'Ancient Heritage, Modern Experience',

@@ -56,6 +56,19 @@ export const post: BlogPost = {
       text: "A fork is a position where you create two simultaneous winning threats. Your opponent can only block one, so you win on the next move. Build forks via opposite corners or L-shaped setups. Before every move, scan for potential forks — both creating your own and blocking your opponent's.",
     },
     {
+      type: 'interactive-puzzle',
+      id: 'fork-challenge-1',
+      title: 'Spot the Unstoppable Fork',
+      prompt:
+        'You play as X. Find the winning square that creates two simultaneous three-in-a-row threats!',
+      gameId: 'tic-tac-toe',
+      board: ['X', '', '', '', 'O', '', '', '', 'X'],
+      solutionIndex: 2,
+      explanation:
+        'Playing in the top-right corner (square 3) threatens both the top row (with square 1) and the right column (with square 9). O can only block one, securing your win on the next turn!',
+      playHref: '/games/tic-tac-toe',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Priority checklist',

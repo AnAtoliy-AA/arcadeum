@@ -98,7 +98,7 @@ export function FreshnessIndicator({
           animation: pulse ? 'arcadeum-freshness-pulse 2s ease-out' : undefined,
         }}
       />
-      <span className="text-[12px] tracking-[1px] opacity-[0.7]">
+      <span className="text-[12px] tracking-[1px] opacity-[0.9]">
         {updatedLabel}
       </span>
     </div>

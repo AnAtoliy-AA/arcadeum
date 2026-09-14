@@ -5,28 +5,7 @@ import {
   SUPPORTED_LOCALES,
   type SlugKey,
 } from '@/shared/config/locale-slugs';
-
-/**
- * Slug keys whose pages we never want indexed (per-user dashboards,
- * payment flows, the OAuth callback, admin). Mirrors `PRIVATE_SLUG_KEYS`
- * in `src/proxy.ts` so robots.txt, the `x-robots-tag` header, and
- * the sitemap give Google the same signal in three places. Belt and
- * braces — but cheap, and search-console reports get cleaner.
- */
-const PRIVATE_SLUG_KEYS: readonly SlugKey[] = [
-  'auth',
-  'chat',
-  'chats',
-  'history',
-  'settings',
-  'stats',
-  'referrals',
-  'admin',
-  'payment',
-  'wallet',
-  'shop',
-  'rooms',
-];
+import { NOINDEX_SLUGS } from '@/shared/config/noindex-pages';
 
 export default function robots(): MetadataRoute.Robots {
   // Build a localized disallow list for every private slug across every
@@ -34,7 +13,9 @@ export default function robots(): MetadataRoute.Robots {
   // the per-locale variants, Googlebot would still attempt to crawl them
   // and the `x-robots-tag` header is the only thing that would catch it.
   const localizedPrivatePaths = SUPPORTED_LOCALES.flatMap((locale) =>
-    PRIVATE_SLUG_KEYS.map((key) => `/${locale}/${LOCALE_SLUGS[locale][key]}/`),
+    [...NOINDEX_SLUGS].map(
+      (key) => `/${locale}/${LOCALE_SLUGS[locale][key]}/`,
+    ),
   );
 
   // /games is public, but creating a room is not. Room detail pages live

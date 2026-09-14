@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { ReplaySummary } from '@/features/replay/lib/types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface ReplayCardProps {
   replay: ReplaySummary;
@@ -89,7 +89,7 @@ export function ReplayCard({ replay, t }: ReplayCardProps) {
         )}
       </div>
 
-      <span className="text-[12px] font-semibold text-[var(--primary)] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+      <span className="text-[12px] font-semibold text-[var(--color)] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         {t('games.replay.card.watch')} →
       </span>
     </Link>

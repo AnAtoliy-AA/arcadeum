@@ -68,7 +68,7 @@ export function FeaturesStatsGrid({
           <Typography
             variant="caption"
             uiSize="xs"
-            alpha="medium"
+            alpha="high"
             className="font-semibold uppercase tracking-wider text-[var(--foregroundSecondary)]"
           >
             {stat.label}

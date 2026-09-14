@@ -7,22 +7,23 @@ import type { CascadeCard } from '../types';
 // Map the themed-card translation keys to their EN bundle values so the
 // Card's aria-label can be asserted against the themed name without booting
 // the full i18n stack.
-const THEMED_NAMES: Record<string, string> = {
-  'games.cascade_v1.themedCards.cyberpunk.SKIP': 'Eclipse',
-  'games.cascade_v1.themedCards.cyberpunk.REVERSE': 'Wormhole',
-  'games.cascade_v1.themedCards.cyberpunk.DRAW_TWO': 'Meteor Shower',
-  'games.cascade_v1.themedCards.cyberpunk.WILD': 'Singularity',
-  'games.cascade_v1.themedCards.cyberpunk.WILD_DRAW_FOUR': 'Supernova',
-  'games.cascade_v1.cardColors.R': 'Red',
-  'games.cascade_v1.cardColors.B': 'Blue',
-  'games.cascade_v1.cardColors.G': 'Green',
-  'games.cascade_v1.cardColors.Y': 'Yellow',
-  'games.cascade_v1.hiddenCard': 'Hidden card',
-};
-
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
-    t: (key: string) => THEMED_NAMES[key] ?? key,
+    t: (key: string) => {
+      const THEMED_NAMES: Record<string, string> = {
+        'games.cascade_v1.themedCards.cyberpunk.SKIP': 'Eclipse',
+        'games.cascade_v1.themedCards.cyberpunk.REVERSE': 'Wormhole',
+        'games.cascade_v1.themedCards.cyberpunk.DRAW_TWO': 'Meteor Shower',
+        'games.cascade_v1.themedCards.cyberpunk.WILD': 'Singularity',
+        'games.cascade_v1.themedCards.cyberpunk.WILD_DRAW_FOUR': 'Supernova',
+        'games.cascade_v1.cardColors.R': 'Red',
+        'games.cascade_v1.cardColors.B': 'Blue',
+        'games.cascade_v1.cardColors.G': 'Green',
+        'games.cascade_v1.cardColors.Y': 'Yellow',
+        'games.cascade_v1.hiddenCard': 'Hidden card',
+      };
+      return THEMED_NAMES[key] ?? key;
+    },
   }),
 }));
 

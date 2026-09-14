@@ -102,6 +102,37 @@ export const frMessages = {
           answer:
             'L’IA évalue les positions tactiques, la sécurité des pions et la course.',
         },
+        doublingCube: {
+          question: 'Comment fonctionne le videau (dé doubleur) ?',
+          answer:
+            'Un joueur peut proposer de doubler l’enjeu avant son lancer. L’adversaire peut accepter ou abandonner immédiatement la manche.',
+        },
+        gammon: {
+          question:
+            'Quelle est la différence entre un Gammon et un Backgammon ?',
+          answer:
+            'Un Gammon survient si le perdant n’a sorti aucun pion (gain doublé). Un Backgammon survient s’il n’a sorti aucun pion et en a encore sur la barre ou dans le jan du gagnant (gain triplé).',
+        },
+        pipCount: {
+          question: 'Qu’est-ce que le décompte de pips au Backgammon ?',
+          answer:
+            'Le décompte de pips correspond à la somme des points restants à parcourir pour sortir tous ses pions. Un score plus bas indique une avance dans la course.',
+        },
+        modes: {
+          question: 'Quelles variantes de backgammon sont disponibles ?',
+          answer:
+            'Arcadeum propose le Backgammon standard, le Nardi long, l’Hypergammon (3 pions), la Tavla, le Nackgammon et la Gulbara.',
+        },
+        free: {
+          question: 'Le Backgammon en ligne est-il gratuit ?',
+          answer:
+            'Oui. Le Backgammon sur Arcadeum est 100% gratuit avec multijoueur en direct, niveaux d’IA et sans inscription obligatoire.',
+        },
+        mobile: {
+          question: 'Peut-on jouer au Backgammon sur mobile et tablette ?',
+          answer:
+            'Oui. Le plateau s’adapte à toutes les tailles d’écran avec commandes tactiles fluides par glisser-déposer ou toucher direct.',
+        },
       },
     },
     lobby: {

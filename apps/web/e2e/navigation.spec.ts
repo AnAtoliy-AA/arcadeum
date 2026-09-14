@@ -100,4 +100,14 @@ test.describe('Navigation', () => {
       await expect(page).toHaveURL(/\/auth/);
     }
   });
+
+  test('should navigate to leaderboards page', async ({ page }) => {
+    await ensureNavigationVisible(page);
+    const leaderboardsLink = getIsMobile(page)
+      ? page.getByTestId('mobile-nav-leaderboards')
+      : page.getByTestId('nav-leaderboards');
+    await expect(leaderboardsLink).toBeVisible();
+    await leaderboardsLink.click();
+    await expect(page).toHaveURL(/leaderboards/);
+  });
 });

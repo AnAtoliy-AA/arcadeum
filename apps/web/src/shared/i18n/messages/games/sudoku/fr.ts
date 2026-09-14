@@ -87,6 +87,41 @@ export const frMessages = {
           answer:
             'Bien sûr. Le pavé numérique est adapté au tactile et le mode Notes permet de noter les candidats comme sur papier.',
         },
+        q4: {
+          question: 'Quelles sont les règles fondamentales du Sudoku ?',
+          answer:
+            'Remplissez la grille 9×9 pour que chaque ligne, colonne et région 3×3 contienne les chiffres de 1 à 9 sans répétition.',
+        },
+        q5: {
+          question: 'Comment le mode Notes aide-t-il à résoudre les grilles ?',
+          answer:
+            'Le mode Notes permet d’inscrire des candidats au crayon dans les cases vides pour suivre facilement les options possibles.',
+        },
+        q6: {
+          question: 'Que sont les singles nus et les singles cachés ?',
+          answer:
+            'Un single nu est une case où un seul chiffre est autorisé ; un single caché est un chiffre qui ne peut aller que dans une seule case d’une unité.',
+        },
+        q7: {
+          question: 'Faut-il deviner au hasard pour réussir ?',
+          answer:
+            'Jamais. Chaque grille sur Arcadeum est mathématiquement vérifiée pour offrir une solution unique déductible par pure logique.',
+        },
+        q8: {
+          question: 'Quels niveaux de difficulté sont proposés ?',
+          answer:
+            'Choisissez parmi Facile (accessible), Moyen (déduction équilibrée) et Difficile (requiert des techniques d’élimination avancées).',
+        },
+        q9: {
+          question: 'Le jeu signale-t-il les conflits de chiffres ?',
+          answer:
+            'Oui. Une mise en évidence facultative des conflits vous prévient aussitôt lorsqu’un chiffre fait doublon dans une ligne ou une région.',
+        },
+        q10: {
+          question: 'Les temps de résolution sont-ils enregistrés ?',
+          answer:
+            'Oui. Chaque succès est mesuré par le chronomètre et consigné dans vos statistiques personnelles sur Arcadeum.',
+        },
       },
       steps: {
         create: {

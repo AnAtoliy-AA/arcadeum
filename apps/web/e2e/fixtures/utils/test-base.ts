@@ -465,6 +465,11 @@ export const test = base.extend({
       route.fulfill({ status: 200, body: '' }),
     );
 
+    // Mock R2 CDN requests to avoid external network noise in E2E
+    await page.route('**/*.r2.dev/**', (route) =>
+      route.fulfill({ status: 200, body: '' }),
+    );
+
     // Global payment gateway mocks to prevent 404s and external network noise
     await page.route(
       /.*(?:checkout\.stripe\.com|sandbox\.paypal\.com).*/,

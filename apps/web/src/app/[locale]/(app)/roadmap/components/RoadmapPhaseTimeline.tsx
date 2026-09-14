@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { Phase } from '../roadmap-parser';
 
 export function RoadmapPhaseTimeline({
@@ -55,7 +55,7 @@ export function RoadmapPhaseTimeline({
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="px-2.5 py-0.5 rounded-full bg-[var(--primary)]/15 border border-[var(--primary)]/30 flex items-center justify-center shrink-0">
                     <Typography
-                      className="font-bold text-[var(--primary)] text-xs font-mono"
+                      className="font-bold text-[var(--color)] text-xs font-mono"
                       variant="caption"
                       uiSize="xs"
                     >
@@ -91,7 +91,7 @@ export function RoadmapPhaseTimeline({
                 <Typography
                   variant="body"
                   uiSize="sm"
-                  alpha="medium"
+                  alpha="high"
                   className="leading-relaxed"
                 >
                   {p.features}
@@ -119,7 +119,7 @@ export function RoadmapPhaseTimeline({
                 >
                   {p.days}
                 </Typography>
-                <Typography variant="caption" uiSize="xs" alpha="medium">
+                <Typography variant="caption" uiSize="xs" alpha="high">
                   {t('pages.roadmap.timeline.daysEst')}
                 </Typography>
               </div>

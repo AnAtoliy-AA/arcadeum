@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { RoomCardComponent } from '../RoomCardComponent';
 import { Spinner, EndOfListText } from '../styles';

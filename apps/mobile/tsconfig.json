@@ -2,7 +2,9 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@arcadeum/games-core": ["../../packages/games-core/src"],
+      "@arcadeum/games-core/*": ["../../packages/games-core/src/*"]
     },
     "jsx": "react-jsx",
     "customConditions": ["react-native", "react-native-legacy-deep-imports"]

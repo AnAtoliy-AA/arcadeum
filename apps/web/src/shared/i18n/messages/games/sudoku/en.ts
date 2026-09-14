@@ -87,6 +87,41 @@ export const enMessages = {
           answer:
             'Absolutely. The number pad is touch-friendly, and Notes mode lets you jot candidates just like on paper.',
         },
+        q4: {
+          question: 'What are the basic rules of Sudoku?',
+          answer:
+            'Fill each cell in the 9×9 grid so that every row, column, and 3×3 box contains numbers 1 to 9 with no repetition.',
+        },
+        q5: {
+          question: 'How does Notes mode help me solve grids?',
+          answer:
+            'Toggling Notes mode lets you pencil in candidate digits in empty squares, making it simple to track possibilities and spot patterns.',
+        },
+        q6: {
+          question: 'What are naked singles and hidden singles?',
+          answer:
+            'A naked single is a cell with only one valid digit remaining, while a hidden single is a digit that can only appear in one position in a unit.',
+        },
+        q7: {
+          question: 'Is guessing ever required to finish a puzzle?',
+          answer:
+            'Never. Every board on Arcadeum is mathematically proven to have a unique solution that can be reached purely through logic.',
+        },
+        q8: {
+          question: 'What difficulty settings are available?',
+          answer:
+            'Choose from Easy (introductory), Medium (balanced reasoning), and Hard (demands advanced deduction techniques).',
+        },
+        q9: {
+          question: 'Does the game alert me to conflicting entries?',
+          answer:
+            'Yes. Optional conflict highlights immediately show duplicate digits in rows, columns, or 3×3 boxes to help you learn.',
+        },
+        q10: {
+          question: 'Are my solve times recorded in statistics?',
+          answer:
+            'Yes. Every successful solve is tracked by the built-in timer and recorded in your personal Arcadeum performance stats.',
+        },
       },
       steps: {
         create: {

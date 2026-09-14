@@ -46,6 +46,10 @@ export const ECONOMY_KEYS_CONFIG = {
   signup_reward_gems: { env: 'SIGNUP_REWARD_GEMS', default: 0 },
   social_reward_gems: { env: 'SOCIAL_REWARD_GEMS', default: 1 },
   stockfish_deep_analysis: { env: 'STOCKFISH_DEEP_ANALYSIS', default: 0 },
+  streak_freeze_price_coins: {
+    env: 'STREAK_FREEZE_PRICE_COINS',
+    default: 100,
+  },
 } as const;
 
 export type EconomyKey = keyof typeof ECONOMY_KEYS_CONFIG;

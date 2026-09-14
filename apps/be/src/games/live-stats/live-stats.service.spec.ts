@@ -36,6 +36,9 @@ describe('LiveStatsService', () => {
   let mockRealtimeService: {
     lobbyChannel: jest.Mock;
     emitToRoom: jest.Mock;
+    getConnectedUsersCount: jest.Mock;
+    trackPeakRooms: jest.Mock;
+    getPeaks: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -145,8 +148,14 @@ describe('LiveStatsService', () => {
     mockRealtimeService = {
       lobbyChannel: jest.fn().mockReturnValue('games-lobby'),
       emitToRoom: jest.fn(),
-      getConnectedUsersCount: jest.fn().mockReturnValue(12),
-      getConnectedSocketsCount: jest.fn().mockReturnValue(15),
+      getConnectedUsersCount: jest.fn().mockResolvedValue(12),
+      trackPeakRooms: jest.fn().mockResolvedValue(undefined),
+      getPeaks: jest.fn().mockResolvedValue({
+        peakOnlineUsers: 0,
+        peakOnlineUsersAt: 0,
+        peakActiveRooms: 0,
+        peakActiveRoomsAt: 0,
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -216,6 +225,12 @@ describe('LiveStatsService', () => {
       popularGames: [],
       openRooms: [],
       recentActivity: [],
+      peaks: {
+        peakOnlineUsers: 0,
+        peakOnlineUsersAt: 0,
+        peakActiveRooms: 0,
+        peakActiveRoomsAt: 0,
+      },
     };
     service.broadcastLiveStats(mockData);
     expect(mockRealtimeService.emitToRoom).toHaveBeenCalledWith(

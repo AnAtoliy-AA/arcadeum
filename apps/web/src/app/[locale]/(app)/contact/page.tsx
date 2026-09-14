@@ -6,6 +6,9 @@ import { getTranslations } from '@/shared/i18n/server';
 import { appConfig } from '@/shared/config/app-config';
 import ContactView from './ContactView';
 
+export const dynamic = 'force-static';
+export const revalidate = 2592000; // 30 days – ISR: render on first request, cache until user changes language
+
 export async function generateMetadata({
   params,
 }: {

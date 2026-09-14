@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GamesService } from './games.service';
 import { GameRoomsService } from './rooms/game-rooms.service';
+import { GameRoomsBotService } from './rooms/game-rooms.bot.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
 import { GamesHistoryFacade } from './games-history.facade';
@@ -162,6 +163,10 @@ describe('GamesService', () => {
         { provide: PlayerStatsService, useValue: mockPlayerStats },
         { provide: RankingService, useValue: mockRankingService },
         { provide: GameReplayService, useValue: mockReplayService },
+        {
+          provide: GameRoomsBotService,
+          useValue: { addBotToRoom: jest.fn(), removeBotFromRoom: jest.fn() },
+        },
       ],
     }).compile();
 

@@ -4,7 +4,7 @@ import { useState, useCallback, useId } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,
@@ -220,7 +220,7 @@ export function GamesFilters({
           aria-label="Filter by category: All"
           className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
             categoryFilter === ''
-              ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold shadow-sm'
+              ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--color)] font-bold shadow-sm'
               : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:border-[var(--glassBorderStrong)] hover:text-[var(--color)]'
           }`}
         >
@@ -244,7 +244,7 @@ export function GamesFilters({
               aria-label={`Filter by category: ${label}`}
               className={`inline-flex shrink-0 h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-all select-none cursor-pointer ${
                 isActive
-                  ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold shadow-sm'
+                  ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--color)] font-bold shadow-sm'
                   : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:border-[var(--glassBorderStrong)] hover:text-[var(--color)]'
               }`}
             >
@@ -307,7 +307,7 @@ export function GamesFilters({
             aria-pressed={aiVsAiFilter === 'ai_vs_ai'}
             className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all select-none cursor-pointer ${
               aiVsAiFilter === 'ai_vs_ai'
-                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--color)] font-bold'
                 : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)]'
             }`}
           >
@@ -323,7 +323,7 @@ export function GamesFilters({
             aria-label="Toggle participation filters"
             className={`inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all select-none cursor-pointer ${
               hasParticipation || showAdvanced
-                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] font-bold'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--color)] font-bold'
                 : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)]'
             }`}
           >
@@ -372,7 +372,7 @@ export function GamesFilters({
                   isDisabled
                     ? 'opacity-40 cursor-not-allowed border-[var(--glassBorder)] bg-transparent text-[var(--textSecondary)]'
                     : isActive
-                      ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--primary)] font-bold cursor-pointer'
+                      ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--color)] font-bold cursor-pointer'
                       : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] hover:bg-[var(--glassBgHover)] hover:text-[var(--color)] cursor-pointer'
                 }`}
               >
@@ -383,7 +383,7 @@ export function GamesFilters({
           })}
 
           {!canFilterParticipation && (
-            <span className="text-[11px] italic text-[var(--textSecondary)] opacity-75 ml-1">
+            <span className="text-[11px] italic text-[var(--textSecondary)] opacity-90 ml-1">
               ({t('games.create.loginRequired').toLowerCase()})
             </span>
           )}

@@ -38,6 +38,12 @@ import { post as howToPlayHeartsFr } from './posts/how-to-play-hearts/fr';
 import { post as howToPlayHeartsRu } from './posts/how-to-play-hearts/ru';
 import { post as howToPlayHeartsBy } from './posts/how-to-play-hearts/by';
 
+import { post as howToPlaySpadesEn } from './posts/how-to-play-spades/en';
+import { post as howToPlaySpadesEs } from './posts/how-to-play-spades/es';
+import { post as howToPlaySpadesFr } from './posts/how-to-play-spades/fr';
+import { post as howToPlaySpadesRu } from './posts/how-to-play-spades/ru';
+import { post as howToPlaySpadesBy } from './posts/how-to-play-spades/by';
+
 import { post as howToPlaySolitaireEn } from './posts/how-to-play-solitaire/en';
 import { post as howToPlaySolitaireEs } from './posts/how-to-play-solitaire/es';
 import { post as howToPlaySolitaireFr } from './posts/how-to-play-solitaire/fr';
@@ -63,11 +69,13 @@ import { post as howToWin2048Ru } from './posts/how-to-win-2048/ru';
 import { post as howToWin2048By } from './posts/how-to-win-2048/by';
 
 import { post as howToWinTicTacToeEn } from './posts/how-to-win-tic-tac-toe/en';
+import { post as howToWinTicTacToeEs } from './posts/how-to-win-tic-tac-toe/es';
 import { post as howToWinTicTacToeFr } from './posts/how-to-win-tic-tac-toe/fr';
 import { post as howToWinTicTacToeRu } from './posts/how-to-win-tic-tac-toe/ru';
 import { post as howToWinTicTacToeBy } from './posts/how-to-win-tic-tac-toe/by';
 
 import { post as howToPlayGoEn } from './posts/how-to-play-go/en';
+import { post as howToPlayGoEs } from './posts/how-to-play-go/es';
 import { post as howToPlayGoFr } from './posts/how-to-play-go/fr';
 import { post as howToPlayGoRu } from './posts/how-to-play-go/ru';
 import { post as howToPlayGoBy } from './posts/how-to-play-go/by';
@@ -156,6 +164,13 @@ const POSTS: Record<string, Partial<Record<Locale, BlogPost>>> = {
     ru: howToPlayHeartsRu,
     by: howToPlayHeartsBy,
   },
+  'how-to-play-spades': {
+    en: howToPlaySpadesEn,
+    es: howToPlaySpadesEs,
+    fr: howToPlaySpadesFr,
+    ru: howToPlaySpadesRu,
+    by: howToPlaySpadesBy,
+  },
   'how-to-play-solitaire': {
     en: howToPlaySolitaireEn,
     es: howToPlaySolitaireEs,
@@ -186,12 +201,14 @@ const POSTS: Record<string, Partial<Record<Locale, BlogPost>>> = {
   },
   'how-to-win-tic-tac-toe': {
     en: howToWinTicTacToeEn,
+    es: howToWinTicTacToeEs,
     fr: howToWinTicTacToeFr,
     ru: howToWinTicTacToeRu,
     by: howToWinTicTacToeBy,
   },
   'how-to-play-go': {
     en: howToPlayGoEn,
+    es: howToPlayGoEs,
     fr: howToPlayGoFr,
     ru: howToPlayGoRu,
     by: howToPlayGoBy,

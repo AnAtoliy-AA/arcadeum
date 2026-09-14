@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom';
 import { Button } from '@arcadeum/ui';
 import { ProgressBar } from '@arcadeum/ui/components/Progress/Progress';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { TUTORIAL_UI_KEYS, getTutorialDefinition } from '../lib/tutorial-steps';
 import {
   TUTORIAL_TARGET_SELECTORS,
@@ -45,6 +45,7 @@ export function TutorialOverlay({
   const { t } = useTranslation();
   const markCompleted = useTutorialStore((s) => s.markCompleted);
   const markDismissed = useTutorialStore((s) => s.markDismissed);
+  const setExpectedAction = useTutorialStore((s) => s.setExpectedAction);
 
   const def = useMemo(() => getTutorialDefinition(gameId), [gameId]);
   const steps: ResolvedTutorialStep[] = useMemo(
@@ -116,6 +117,19 @@ export function TutorialOverlay({
   const goBack = useCallback(() => {
     setIndex((i) => Math.max(i - 1, 0));
   }, []);
+
+  useEffect(() => {
+    if (!open || !step?.interactiveAction) {
+      setExpectedAction(null);
+      return;
+    }
+    setExpectedAction(step.interactiveAction.type, () => {
+      goNext();
+    });
+    return () => {
+      setExpectedAction(null);
+    };
+  }, [open, step?.interactiveAction, setExpectedAction, goNext]);
 
   useEffect(() => {
     if (!open) return;
@@ -192,9 +206,12 @@ export function TutorialOverlay({
       }
     >
       <div
-        className="absolute inset-0 cursor-pointer"
+        className={cx(
+          'absolute inset-0',
+          step?.interactiveAction ? 'pointer-events-none' : 'cursor-pointer',
+        )}
         data-testid="tutorial-blocker"
-        onClick={() => handleClose(false)}
+        onClick={step?.interactiveAction ? undefined : () => handleClose(false)}
       />
 
       {targetRect && (
@@ -294,6 +311,22 @@ export function TutorialOverlay({
             <p className="text-[14px] leading-[22px] opacity-80">
               {t(step!.bodyKey)}
             </p>
+
+            {step?.interactiveAction && (
+              <div
+                className="flex items-center gap-2 rounded-lg bg-[var(--primary)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--primary)]"
+                data-testid="interactive-step-badge"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--primary)] opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--primary)]" />
+                </span>
+                <span>
+                  {step.interactiveAction.hint ??
+                    'Make a move on the board to advance'}
+                </span>
+              </div>
+            )}
 
             <ProgressBar value={progressValue} height={6} />
 

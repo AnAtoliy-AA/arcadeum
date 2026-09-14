@@ -12,7 +12,7 @@ import {
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 
 export const EMOTES = [
   { id: 'good_move', emoji: '👍' },

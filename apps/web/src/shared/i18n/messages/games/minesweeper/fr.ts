@@ -31,8 +31,7 @@ export const frMessages = {
       wonTitle: 'Terrain déblayé !',
       wonBody: 'Toutes les cases sûres sont révélées. Un déminage impeccable.',
       lostTitle: 'Boum !',
-      lostBody:
-        'C’était une mine. Étudiez les chiffres et réessayez.',
+      lostBody: 'C’était une mine. Étudiez les chiffres et réessayez.',
       playAgain: 'Rejouer',
     },
     rules: {
@@ -46,7 +45,8 @@ export const frMessages = {
     landing: {
       tagline: 'Solo · Sans inscription',
       meta: {
-        title: 'Démineur — Jeu de réflexion classique gratuit en ligne | Arcadeum',
+        title:
+          'Démineur — Jeu de réflexion classique gratuit en ligne | Arcadeum',
         description:
           'Jouez gratuitement au Démineur en ligne sur Arcadeum. Grilles de débutant à expert, drapeaux, chrono et progression sauvegardée. Sans téléchargement ni inscription.',
         keywords:
@@ -87,6 +87,41 @@ export const frMessages = {
           question: 'Ma progression est-elle sauvegardée ?',
           answer:
             'Oui. Le terrain en cours, la difficulté et vos statistiques sont stockés localement pour reprendre à tout moment.',
+        },
+        q4: {
+          question: 'Que signifient les numéros sur les cases ?',
+          answer:
+            'Chaque chiffre dévoilé indique le nombre exact de mines cachées dans les huit cases immédiatement adjacentes.',
+        },
+        q5: {
+          question: 'Peut-on perdre dès le premier clic ?',
+          answer:
+            'Non. Le Démineur d’Arcadeum garantit que votre tout premier clic est toujours sécurisé et libère un espace de jeu.',
+        },
+        q6: {
+          question: 'Qu’est-ce que le chording et comment s’en servir ?',
+          answer:
+            'Le chording permet de révéler instantanément toutes les cases voisines non marquées dès que les drapeaux adjacents sont posés.',
+        },
+        q7: {
+          question: 'Quels niveaux de difficulté sont proposés ?',
+          answer:
+            'Jouez en Débutant (9×9 avec 10 mines), Intermédiaire (16×16 avec 40 mines) ou Expert (30×16 avec 99 mines).',
+        },
+        q8: {
+          question: 'Quelle est la meilleure tactique face à une incertitude ?',
+          answer:
+            'Analysez les probabilités de mines entre groupes de chiffres croisés pour choisir la case présentant le risque minimal.',
+        },
+        q9: {
+          question: 'Peut-on personnaliser les dimensions de la grille ?',
+          answer:
+            'Oui. Le mode personnalisé permet d’ajuster largeur, hauteur et densité de mines selon votre niveau de défi souhaité.',
+        },
+        q10: {
+          question: 'Les meilleurs temps de victoire sont-ils conservés ?',
+          answer:
+            'Oui. Un chronomètre précis enregistre vos temps de déminage sur chaque difficulté et conserve vos records personnels.',
         },
       },
       steps: {

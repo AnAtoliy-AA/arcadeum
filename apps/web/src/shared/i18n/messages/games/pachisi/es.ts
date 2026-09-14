@@ -132,6 +132,36 @@ export const esMessages = {
           answer:
             'La IA valora salidas, capturas, aterrizajes seguros y zonas de peligro para desafiarte en cada nivel.',
         },
+        safeSquares: {
+          question: '¿Qué son las casillas seguras en Pachisi?',
+          answer:
+            'Las casillas con estrella y las salidas de color son refugios seguros donde las fichas no pueden ser capturadas.',
+        },
+        blockades: {
+          question: '¿Pueden dos fichas formar una barrera o bloqueo?',
+          answer:
+            'Sí. Dos fichas del mismo color en la misma casilla crean un bloqueo que ningún rival puede saltar ni ocupar.',
+        },
+        exactRoll: {
+          question: '¿Se necesita tirada exacta para entrar a meta?',
+          answer:
+            'Sí. Una ficha debe entrar al centro con el número exacto necesario. Si la tirada es superior, la ficha no puede moverse.',
+        },
+        friends: {
+          question: '¿Cuántos jugadores pueden jugar a Pachisi online?',
+          answer:
+            'Pachisi admite de 2 a 4 jugadores. Puedes crear una sala privada para amigos o jugar con bots.',
+        },
+        history: {
+          question: '¿Cuál es el origen de Pachisi?',
+          answer:
+            'Pachisi es un juego milenario originario de la India, considerado el antecesor histórico del Parchís y Ludo.',
+        },
+        free: {
+          question: '¿Es gratis jugar a Pachisi en Arcadeum?',
+          answer:
+            'Sí. Pachisi en Arcadeum es completamente gratis, con tableros dinámicos y sin descargas.',
+        },
       },
     },
     lobby: {

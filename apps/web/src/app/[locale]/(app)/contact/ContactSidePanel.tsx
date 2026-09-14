@@ -35,7 +35,7 @@ export function ContactSidePanel({
               {formatMessage(side?.onCallTeam, { extra: '2' }) ??
                 'Maria, Anatoliy +2'}
             </Typography>
-            <Typography variant="caption" alpha="medium">
+            <Typography variant="caption" alpha="high">
               {side?.onCallRegion ?? 'Support · EU + LATAM'}
             </Typography>
           </div>
@@ -46,7 +46,7 @@ export function ContactSidePanel({
         />
         <div className="flex flex-col items-stretch gap-2">
           <div className="flex justify-between items-center text-[13.5px]">
-            <Typography alpha="medium">
+            <Typography alpha="high">
               {side?.medianFirstReply ?? 'Median first reply'}
             </Typography>
             <Typography weight="700">
@@ -54,13 +54,13 @@ export function ContactSidePanel({
             </Typography>
           </div>
           <div className="flex justify-between items-center text-[13.5px]">
-            <Typography alpha="medium">
+            <Typography alpha="high">
               {side?.workingHours ?? 'Working hours'}
             </Typography>
             <Typography weight="700">{workingHours}</Typography>
           </div>
           <div className="flex justify-between items-center text-[13.5px]">
-            <Typography alpha="medium">
+            <Typography alpha="high">
               {side?.coverage ?? 'Coverage'}
             </Typography>
             <Typography weight="700">
@@ -77,7 +77,7 @@ export function ContactSidePanel({
         <Typography variant="heading" uiSize="md" className="mt-2">
           {side?.devsTitle ?? 'Bugs & integration'}
         </Typography>
-        <Typography variant="body" alpha="medium" className="mt-1">
+        <Typography variant="body" alpha="high" className="mt-1">
           {side?.devsBody ??
             'Reproducible bugs, API issues, and SDK questions are tracked in GitHub. We triage within 24 hours.'}
         </Typography>
@@ -108,7 +108,7 @@ export function ContactSidePanel({
             {appConfig.supportEmail}
           </a>
         </Typography>
-        <Typography variant="caption" alpha="medium" className="mt-1">
+        <Typography variant="caption" alpha="high" className="mt-1">
           {side?.pressBody ?? 'For media, creators, and partner studios.'}
         </Typography>
       </GlassCard>
@@ -126,7 +126,7 @@ export function ContactSidePanel({
             {side?.statusTitle ?? 'All systems operational'}
           </Typography>
         </div>
-        <Typography variant="caption" alpha="medium" className="mt-1">
+        <Typography variant="caption" alpha="high" className="mt-1">
           {side?.statusBody ?? '99.98% uptime over the last 30 days.'}
         </Typography>
         {/* TODO(ARC-575): restore status-page CTA once status.arcadeum.games

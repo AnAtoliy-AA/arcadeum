@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'chats' }) : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'chats', noIndex: true }) : {};
 }
 
 export default async function ChatsRoute({

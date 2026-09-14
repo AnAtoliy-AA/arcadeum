@@ -41,28 +41,32 @@ These cards are part of the core game and always included:
 | Attack of the Dead | ✅ Done | Low        | 3 turns × dead players    |
 | Super Skip         | ✅ Done | Low        | End ALL turns             |
 | Reverse            | ✅ Done | Medium     | Reverse play direction    |
+| Chain Strike       | ✅ Done | Medium     | Two consecutive players   |
+| Shield Bash        | ✅ Done | Medium     | Reflect strike back       |
 
-#### Expansion 2: Future Pack
+#### Expansion 2: Future Pack ✅
 
 | Card                  | Status  | Complexity | Notes                        |
 | --------------------- | ------- | ---------- | ---------------------------- |
-| See the Future (5x)   | ❌ TODO | Low        | View top 5 cards             |
-| Alter the Future (3x) | ❌ TODO | Medium     | View & rearrange top 3 cards |
-| Alter the Future (5x) | ❌ TODO | Medium     | View & rearrange top 5 cards |
-| Reveal the Future     | ❌ TODO | Low        | Show all players top 3       |
-| Share the Future      | ❌ TODO | Medium     | Rearrange + show next player |
-| Draw From Bottom      | ❌ TODO | Low        | Draw bottom card             |
-| Swap Top and Bottom   | ❌ TODO | Low        | Swap deck positions          |
-| Bury                  | ❌ TODO | Low        | Draw then reinsert secretly  |
+| See the Future (5x)   | ✅ Done | Low        | View top 5 cards             |
+| Alter the Future (3x) | ✅ Done | Medium     | View & rearrange top 3 cards |
+| Alter the Future (5x) | ✅ Done | Medium     | View & rearrange top 5 cards |
+| Reveal the Future     | ✅ Done | Low        | Show all players top 3       |
+| Share the Future      | ✅ Done | Medium     | Rearrange + show next player |
+| Draw From Bottom      | ✅ Done | Low        | Draw bottom card             |
+| Swap Top and Bottom   | ✅ Done | Low        | Swap deck positions          |
+| Bury                  | ✅ Done | Low        | Draw then reinsert secretly  |
 
-#### Expansion 3: Theft Pack
+#### Expansion 3: Theft Pack ✅
 
 | Card           | Status  | Complexity | Notes                 |
 | -------------- | ------- | ---------- | --------------------- |
-| Feral Cat      | ❌ TODO | Low        | Wildcard for combos   |
-| Mark           | ❌ TODO | Medium     | Tag card in hand      |
-| I'll Take That | ❌ TODO | Medium     | Steal next drawn card |
-| Tower of Power | ❌ TODO | High       | Stash protection      |
+| Wildcard       | ✅ Done | Low        | Wildcard for combos   |
+| Mark           | ✅ Done | Medium     | Tag card in hand      |
+| I'll Take That | ✅ Done | Medium     | Steal next drawn card |
+| Tower of Power | ✅ Done | High       | Stash protection      |
+| Swap Hands     | ✅ Done | Medium     | Swap entire hands     |
+| Snatch         | ✅ Done | Medium     | Steal specific card   |
 
 #### Expansion 4: Chaos Pack ✅
 
@@ -73,29 +77,34 @@ These cards are part of the core game and always included:
 | Fission            | ✅ Done | High       | Logic implemented         |
 | Tribute            | ✅ Done | Medium     | Logic implemented         |
 | Blackout           | ✅ Done | Medium     | Logic implemented         |
+| Echo               | ✅ Done | Medium     | Re-execute discard top    |
+| Scramble           | ✅ Done | Medium     | Rotate all hands          |
 
-#### Expansion 5: Deity Pack
+#### Expansion 5: Deity Pack ✅
 
-| Card          | Status  | Complexity | Notes                  |
-| ------------- | ------- | ---------- | ---------------------- |
-| Zombie Kitten | ❌ TODO | High       | Revive dead player     |
-| Devilcat      | ❌ TODO | Medium     | Armageddon interaction |
-| Armageddon    | ❌ TODO | High       | Godcat interaction     |
-| Godcat        | ❌ TODO | High       | Wildcard for any card  |
+| Card         | Status  | Complexity | Notes                     |
+| ------------ | ------- | ---------- | ------------------------- |
+| Omniscience  | ✅ Done | Low        | See everyone's hands      |
+| Miracle      | ✅ Done | Low        | Gain a Defuse             |
+| Smite        | ✅ Done | Medium     | Targeted Attack x3        |
+| Rapture      | ✅ Done | Medium     | All players give 1 card   |
+| Resurrection | ✅ Done | High       | Revive dead player        |
+| Judgment     | ✅ Done | Medium     | All discard to 3 cards    |
+| Prophecy     | ✅ Done | Medium     | Peek top 5, reorder top 2 |
 
 ---
 
 ## Summary
 
-| Category            | Count  | Status           |
-| ------------------- | ------ | ---------------- |
-| Basic Deck          | 13     | ✅ Implemented   |
-| Expansion 1: Attack | 5      | ✅ Implemented   |
-| Expansion 2: Future | 8      | ❌ TODO          |
-| Expansion 3: Theft  | 4      | ❌ TODO          |
-| Expansion 4: Chaos  | 5      | ❌ TODO          |
-| Expansion 5: Deity  | 4      | ❌ TODO          |
-| **Total**           | **39** | 18 done, 21 TODO |
+| Category            | Count  | Status         |
+| ------------------- | ------ | -------------- |
+| Basic Deck          | 13     | ✅ Implemented |
+| Expansion 1: Attack | 7      | ✅ Implemented |
+| Expansion 2: Future | 8      | ✅ Implemented |
+| Expansion 3: Theft  | 6      | ✅ Implemented |
+| Expansion 4: Chaos  | 7      | ✅ Implemented |
+| Expansion 5: Deity  | 7      | ✅ Implemented |
+| **Total**           | **48** | ✅ All done    |
 
 ---
 
@@ -105,41 +114,40 @@ When creating a game, host can select expansion packs via checkboxes:
 
 ```
 ☑️ Base Game (required)
-☐ Attack Pack (+5 cards)
+☐ Attack Pack (+7 cards)
 ☐ Future Pack (+8 cards)
-☐ Theft Pack (+4 cards)
-☐ Chaos Pack (+5 cards)
-☐ Deity Pack (+4 cards)
+☐ Theft Pack (+6 cards)
+☐ Chaos Pack (+7 cards)
+☐ Deity Pack (+7 cards)
 ```
 
 ---
 
 ## Implementation Details
 
-### Phase 1: State Changes
+### State Changes
 
-Add to `CriticalState`:
-
-```typescript
-expansions: string[];  // ['attack', 'future', 'theft', 'chaos', 'deity']
-```
-
-Add to `createInitialCriticalState`:
+Added to `CriticalState`:
 
 ```typescript
-function createInitialCriticalState(
-  playerIds: string[],
-  expansions: string[] = [], // New parameter
-): CriticalState;
+expansions: CriticalExpansion[];  // ['attack', 'future', 'theft', 'chaos', 'deity']
 ```
 
-### Phase 2: New Utility Files
+### Utility Files
 
-1. **`critical-turn.utils.ts`** - Attack Pack cards
-2. **`critical-future.utils.ts`** - Future Pack cards
-3. **`critical-theft.utils.ts`** - Theft Pack cards
-4. **`critical-chaos.utils.ts`** - Chaos Pack cards
-5. **`critical-deity.utils.ts`** - Deity Pack cards
+1. **`critical-attack.utils.ts`** — Attack Pack cards
+2. **`critical-future.utils.ts`** — Future Pack cards
+3. **`critical-theft.utils.ts`** — Theft Pack cards
+4. **`critical-chaos.utils.ts`** — Chaos Pack cards
+5. **`critical-deity.utils.ts`** — Deity Pack cards
+6. **`critical-combo.utils.ts`** — Collection combos (Pair/Trio/Fiver)
+7. **`critical-cancel.utils.ts`** — Cancel/Nope reversal logic
+8. **`critical-defuse.utils.ts`** — Defuse logic
+9. **`critical-favor.utils.ts`** — Favor logic
+10. **`critical-validation.utils.ts`** — Action validation
+11. **`critical-available-actions.utils.ts`** — Available actions per player
+12. **`critical-theft-mark-check.utils.ts`** — Mark trigger logic
+13. **`critical-theft-snatch.utils.ts`** — Snatch logic
 
 ---
 

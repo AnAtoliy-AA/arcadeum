@@ -43,7 +43,7 @@ function Column({
         borderTopColor: accent,
       }}
     >
-      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+      <span className="text-[14px] tracking-[2px] opacity-[0.9] uppercase">
         {title}
       </span>
       <div className="flex flex-col items-stretch gap-2">

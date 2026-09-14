@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import styles from './TokenInfo.module.scss';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 interface Props {
   mintAddress?: string;
@@ -44,27 +44,33 @@ export function TokenInfo({ mintAddress, metadata }: Props) {
     <div
       style={{ maxWidth: '900px', margin: '0 auto', padding: '0 16px 32px' }}
     >
-      <div className={styles.tokenCard}>
-        <div className={styles.header}>
+      <div className="rounded-xl border border-[rgba(52,211,153,0.2)] bg-[rgba(52,211,153,0.05)] p-6">
+        <div className="flex items-center gap-4 mb-4">
           {metadata?.image ? (
             <Image
               src={metadata.image}
               alt={displayName}
               width={64}
               height={64}
-              className={styles.tokenImage}
+              className="w-16 h-16 rounded-full object-cover shrink-0"
               unoptimized
             />
           ) : (
-            <div className={styles.icon}>A</div>
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#34d399] to-[#059669] flex items-center justify-center text-[28px] font-bold text-white shrink-0">
+              A
+            </div>
           )}
           <div>
-            <h3 className={styles.name}>{displayName}</h3>
-            <span className={styles.ticker}>{displayTicker}</span>
+            <h3 className="text-[22px] font-bold text-[#f4f4f5] m-0 mb-[2px]">
+              {displayName}
+            </h3>
+            <span className="inline-block text-sm text-[#34d399] font-semibold bg-[rgba(52,211,153,0.12)] px-2 py-[2px] rounded">
+              {displayTicker}
+            </span>
           </div>
         </div>
 
-        <p className={styles.description}>
+        <p className="text-sm text-[#a1a1aa] leading-[1.6] m-0 mb-4">
           {displayDescription
             .split(
               new RegExp(
@@ -75,7 +81,7 @@ export function TokenInfo({ mintAddress, metadata }: Props) {
             .map((part, i) =>
               part.toLowerCase() === displayName.toLowerCase() ||
               part.toLowerCase() === displayTicker.toLowerCase() ? (
-                <strong key={i} className={styles.highlight}>
+                <strong key={i} className="text-[#34d399] font-semibold">
                   {part}
                 </strong>
               ) : (
@@ -85,14 +91,19 @@ export function TokenInfo({ mintAddress, metadata }: Props) {
         </p>
 
         {mintAddress && (
-          <div className={styles.mintRow}>
-            <span className={styles.mintLabel}>
+          <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)]">
+            <span className="text-xs text-[#71717a] whitespace-nowrap">
               {t('wallet.tokenInfo.mint')}:
             </span>
-            <code className={styles.mintValue}>{mintAddress}</code>
+            <code className="text-xs text-[#a1a1aa] font-mono overflow-hidden text-ellipsis flex-1">
+              {mintAddress}
+            </code>
             <button
               onClick={handleCopy}
-              className={copied ? styles.copyBtnCopied : styles.copyBtn}
+              className={cx(
+                'px-3 py-1 rounded-md border border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.06)] text-xs cursor-pointer whitespace-nowrap transition-colors',
+                copied ? 'text-[#34d399]' : 'text-[#a1a1aa]',
+              )}
             >
               {copied
                 ? t('wallet.tokenInfo.copied')
@@ -106,7 +117,7 @@ export function TokenInfo({ mintAddress, metadata }: Props) {
             href={metadata.pumpfunUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className={styles.pumpfunLink}
+            className="inline-block mt-3 text-[13px] font-semibold text-[#34d399] no-underline transition-colors hover:text-[#6ee7b7]"
           >
             View on pump.fun ↗
           </a>
@@ -121,8 +132,8 @@ export function TokenInfo({ mintAddress, metadata }: Props) {
             textAlign: 'center',
           }}
         >
-          ARCADEUM tokens are utility assets for in-platform use only. They
-          have no inherent monetary value and are not investments.
+          ARCADEUM tokens are utility assets for in-platform use only. They have
+          no inherent monetary value and are not investments.
         </p>
       </div>
     </div>

@@ -4,8 +4,8 @@ import { useCallback, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import { useLanguage } from '@/shared/i18n/useLanguage';
+} from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import { formatRelative } from '@/shared/i18n/formatters';
 import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -73,6 +73,19 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
     ? `${translatedGameName}: ${translatedVariantName}`
     : translatedGameName;
 
+  const hostDisplayName = useMemo(() => {
+    if (room.host?.displayName && !room.host.displayName.startsWith('anon_')) {
+      return room.host.displayName;
+    }
+    if (room.hostId.startsWith('anon_')) {
+      return `Guest #${room.hostId.slice(5, 9)}`;
+    }
+    if (room.hostId.startsWith('bot-')) {
+      return 'Bot';
+    }
+    return room.hostId;
+  }, [room.host?.displayName, room.hostId]);
+
   const formatMemberLabel = useCallback(
     (member: {
       id: string;
@@ -81,8 +94,18 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       email?: string | null;
       isHost: boolean;
     }) => {
-      if (member.displayName && member.displayName.trim().length > 0) {
+      if (
+        member.displayName &&
+        member.displayName.trim().length > 0 &&
+        !member.displayName.startsWith('anon_')
+      ) {
         return member.displayName;
+      }
+      if (member.id.startsWith('anon_')) {
+        return `Guest #${member.id.slice(5, 9)}`;
+      }
+      if (member.id.startsWith('bot-')) {
+        return 'Bot';
       }
       return member.username ?? member.email ?? member.id;
     },
@@ -154,9 +177,28 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
             <MetaGrid>
               <MetaRow>
                 <MetaIcon>👑</MetaIcon>
-                <div className="flex flex-col items-stretch">
+                <div className="flex flex-col items-stretch min-w-0">
                   <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
-                  <MetaValue>{room.host?.displayName || room.hostId}</MetaValue>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <EquippedPlayerAvatar
+                      name={hostDisplayName}
+                      size="icon"
+                      equippedAvatarId={room.host?.equippedAvatarId ?? null}
+                      equippedBadgeId={room.host?.equippedBadgeId ?? null}
+                      equippedNameColorId={room.host?.equippedNameColorId}
+                      equippedFrameId={room.host?.equippedFrameId}
+                      equippedAuraId={room.host?.equippedAuraId}
+                      equippedBannerId={room.host?.equippedBannerId}
+                      fallbackAvatarUrl={
+                        room.hostId?.startsWith('anon_')
+                          ? '/shop/avatars/default-01.png'
+                          : undefined
+                      }
+                    />
+                    <MetaValue className="truncate">
+                      {hostDisplayName}
+                    </MetaValue>
+                  </div>
                 </div>
               </MetaRow>
               <MetaRow>
@@ -223,6 +265,11 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                           equippedFrameId={member.equippedFrameId}
                           equippedAuraId={member.equippedAuraId}
                           equippedBannerId={member.equippedBannerId}
+                          fallbackAvatarUrl={
+                            member.id.startsWith('anon_')
+                              ? '/shop/avatars/default-01.png'
+                              : undefined
+                          }
                         />
                       </div>
                     ))}
@@ -261,6 +308,11 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                       equippedFrameId={member.equippedFrameId}
                       equippedAuraId={member.equippedAuraId}
                       equippedBannerId={member.equippedBannerId}
+                      fallbackAvatarUrl={
+                        member.id.startsWith('anon_')
+                          ? '/shop/avatars/default-01.png'
+                          : undefined
+                      }
                     />
                   </div>
                 ))}

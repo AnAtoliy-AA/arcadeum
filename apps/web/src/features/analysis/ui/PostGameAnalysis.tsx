@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { cx } from '@arcadeum/ui/utils/cx';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { analyzeGame, type MoveQuality } from '../lib/analyzeGame';
 import {
   analyzeGameWithStockfish,
@@ -31,9 +31,12 @@ interface PostGameAnalysisProps {
 
 const SUMMARY_COLORS = {
   brilliant: 'text-[#06b6d4] border-[rgba(6,182,212,0.35)]',
-  great: 'text-[#8b5cf6] border-[rgba(139,92,246,0.35)]',
+  great: 'text-[#16a34a] border-[rgba(22,163,74,0.35)]',
+  best: 'text-[#22c55e] border-[rgba(34,197,94,0.35)]',
+  excellent: 'text-[#22c55e] border-[rgba(34,197,94,0.35)]',
   good: 'text-[#22c55e] border-[rgba(34,197,94,0.35)]',
-  inaccuracy: 'text-[#f59e0b] border-[rgba(245,158,11,0.35)]',
+  book: 'text-[#9ca3af] border-[rgba(156,163,175,0.35)]',
+  inaccuracy: 'text-[#eab308] border-[rgba(234,179,8,0.35)]',
   mistake: 'text-[#f97316] border-[rgba(249,115,22,0.35)]',
   blunder: 'text-[#ef4444] border-[rgba(239,68,68,0.35)]',
 } as const;
@@ -100,14 +103,27 @@ export function PostGameAnalysis({
 
   useEffect(() => {
     let cancelled = false;
-    analyzeGameWithStockfish(positionHistory, notations).then((result) => {
-      if (!cancelled) {
-        setStockfishResult(result);
-        setLoading(false);
-      }
-    });
+    const timeout = setTimeout(() => {
+      if (!cancelled) setLoading(false);
+    }, 60_000);
+
+    analyzeGameWithStockfish(positionHistory, notations)
+      .then((result) => {
+        if (!cancelled) {
+          clearTimeout(timeout);
+          setStockfishResult(result);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          clearTimeout(timeout);
+          setLoading(false);
+        }
+      });
     return () => {
       cancelled = true;
+      clearTimeout(timeout);
     };
   }, [positionHistory, notations]);
 
@@ -155,6 +171,9 @@ export function PostGameAnalysis({
   const blunders = moves.filter((m) => m.quality === 'blunder');
   const brilliants = moves.filter((m) => m.quality === 'brilliant');
   const greats = moves.filter((m) => m.quality === 'great');
+  const bests = moves.filter((m) => m.quality === 'best');
+  const excellents = moves.filter((m) => m.quality === 'excellent');
+  const books = moves.filter((m) => m.quality === 'book');
 
   const turningPoint = (() => {
     let max = -1;
@@ -178,14 +197,17 @@ export function PostGameAnalysis({
 
   const qualityLabels = useMemo<Record<MoveQuality, string>>(
     () => ({
-      good: t('games.chess_v1.analysis.quality.good'),
-      inaccuracy: t('games.chess_v1.analysis.quality.inaccuracy'),
-      mistake: t('games.chess_v1.analysis.quality.mistake'),
-      blunder: t('games.chess_v1.analysis.quality.blunder'),
       brilliant: 'Brilliant',
       great: 'Great',
+      best: 'Best',
+      excellent: 'Excellent',
+      good: 'Good',
+      book: 'Book',
+      inaccuracy: 'Inaccuracy',
+      mistake: 'Mistake',
+      blunder: 'Blunder',
     }),
-    [t],
+    [],
   );
 
   const unitLabel = t('games.chess_v1.analysis.centipawns');
@@ -217,6 +239,33 @@ export function PostGameAnalysis({
             label: 'Great',
             count: greats.length,
             color: SUMMARY_COLORS.great,
+          },
+        ]
+      : []),
+    ...(bests.length > 0
+      ? [
+          {
+            label: 'Best',
+            count: bests.length,
+            color: SUMMARY_COLORS.best,
+          },
+        ]
+      : []),
+    ...(excellents.length > 0
+      ? [
+          {
+            label: 'Excellent',
+            count: excellents.length,
+            color: SUMMARY_COLORS.excellent,
+          },
+        ]
+      : []),
+    ...(books.length > 0
+      ? [
+          {
+            label: 'Book',
+            count: books.length,
+            color: SUMMARY_COLORS.book,
           },
         ]
       : []),

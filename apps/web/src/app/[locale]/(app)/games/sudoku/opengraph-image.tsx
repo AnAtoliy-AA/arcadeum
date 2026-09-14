@@ -1,170 +1,194 @@
-import { ImageResponse } from 'next/og';
+import {
+  OG_CONTENT_TYPE,
+  OG_SIZE,
+  renderGameOgCard,
+} from '@/shared/seo/ogImageTemplate';
+import { getTranslations } from '@/shared/i18n/server';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
-export const alt =
-  'Sudoku — free online puzzles with unique solutions on Arcadeum';
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+export const alt = 'Sudoku — free online number logic puzzle on Arcadeum Games';
 
-const BOARD: number[][] = [
-  [5, 3, 0, 0],
-  [6, 0, 0, 9],
-  [0, 9, 8, 0],
-  [4, 0, 0, 1],
-];
+type Props = { params: Promise<{ locale: string }> };
 
-const ACCENT = '#a78bfa';
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
+}
 
-export default function OpengraphImage() {
-  return new ImageResponse(
+function SudokuVisual() {
+  const sample = [
+    5,
+    3,
+    null,
+    null,
+    7,
+    null,
+    null,
+    null,
+    null,
+    6,
+    null,
+    null,
+    1,
+    9,
+    5,
+    null,
+    null,
+    null,
+    null,
+    9,
+    8,
+    null,
+    null,
+    null,
+    null,
+    6,
+    null,
+    8,
+    null,
+    null,
+    null,
+    6,
+    null,
+    null,
+    null,
+    3,
+    4,
+    null,
+    null,
+    8,
+    null,
+    3,
+    null,
+    null,
+    1,
+    7,
+    null,
+    null,
+    null,
+    2,
+    null,
+    null,
+    null,
+    6,
+    null,
+    6,
+    null,
+    null,
+    null,
+    null,
+    2,
+    8,
+    null,
+    null,
+    null,
+    null,
+    4,
+    1,
+    9,
+    null,
+    null,
+    5,
+    null,
+    null,
+    null,
+    null,
+    8,
+    null,
+    null,
+    7,
+    9,
+  ];
+
+  return (
     <div
       style={{
-        width: 1200,
-        height: 630,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 80px',
-        background:
-          'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        color: 'white',
-        fontFamily: 'system-ui, sans-serif',
-        position: 'relative',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        padding: 20,
       }}
     >
-      {/* Background glow */}
       <div
         style={{
-          position: 'absolute',
-          right: -60,
-          top: -60,
-          width: 360,
-          height: 360,
-          borderRadius: 180,
-          background:
-            'radial-gradient(circle, rgba(167, 139, 250, 0.18) 0%, transparent 60%)',
-        }}
-      />
-
-      <div
-        style={{
+          width: 324,
+          height: 324,
+          background: '#0f172a',
+          border: '3px solid #0284c7',
+          borderRadius: 12,
           display: 'flex',
-          flexDirection: 'column',
-          gap: 32,
-          maxWidth: 560,
-          position: 'relative',
-          zIndex: 1,
+          flexWrap: 'wrap',
+          boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
-          ARCADEUM
-        </div>
-        <div
-          style={{
-            fontSize: 84,
-            fontWeight: 900,
-            lineHeight: 1,
-            display: 'flex',
-          }}
-        >
-          Sudoku
-        </div>
-        <div
-          style={{
-            fontSize: 30,
-            opacity: 0.9,
-            lineHeight: 1.3,
-            display: 'flex',
-          }}
-        >
-          Unique-solution puzzles · easy, medium &amp; hard · pencil marks
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            fontSize: 18,
-            flexWrap: 'wrap',
-            opacity: 0.95,
-          }}
-        >
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Single-player
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            No signup
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Free forever
-          </span>
-        </div>
+        {sample.map((num, idx) => {
+          const col = idx % 9;
+          const row = Math.floor(idx / 9);
+          const rightBorder = (col + 1) % 3 === 0 && col !== 8;
+          const bottomBorder = (row + 1) % 3 === 0 && row !== 8;
+          return (
+            <div
+              key={idx}
+              style={{
+                width: 36,
+                height: 36,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRight: rightBorder
+                  ? '2px solid #0284c7'
+                  : '1px solid rgba(255,255,255,0.1)',
+                borderBottom: bottomBorder
+                  ? '2px solid #0284c7'
+                  : '1px solid rgba(255,255,255,0.1)',
+                fontSize: 18,
+                fontWeight: num ? 800 : 400,
+                color: num ? '#38bdf8' : 'transparent',
+                background:
+                  row === 4 && col === 4
+                    ? 'rgba(56, 189, 248, 0.25)'
+                    : 'transparent',
+              }}
+            >
+              {num ?? ''}
+            </div>
+          );
+        })}
       </div>
-
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 12,
-          background: 'rgba(255, 255, 255, 0.06)',
-          borderRadius: 24,
-          border: `2px solid ${ACCENT}55`,
-          boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        {BOARD.map((row, ri) => (
-          <div key={ri} style={{ display: 'flex' }}>
-            {row.map((n, ci) => {
-              // Thicker separators through the middle of the 4×4 board to
-              // suggest the classic sub-grid structure of a sudoku puzzle.
-              const midRight = ci === 1;
-              const midBottom = ri === 1;
-              return (
-                <div
-                  key={ci}
-                  style={{
-                    width: 104,
-                    height: 104,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 56,
-                    fontWeight: 800,
-                    color: n ? '#f1f5f9' : 'rgba(255,255,255,0.15)',
-                    borderRight: midRight
-                      ? `3px solid ${ACCENT}aa`
-                      : '1px solid rgba(255,255,255,0.08)',
-                    borderBottom: midBottom
-                      ? `3px solid ${ACCENT}aa`
-                      : '1px solid rgba(255,255,255,0.08)',
-                  }}
-                >
-                  {n || '·'}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>,
-    { ...size },
+    </div>
   );
+}
+
+export default async function SudokuOpengraphImage({ params }: Props) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
+  const game = messages.games?.sudoku_v1;
+  const gameName = game?.name ?? 'Sudoku';
+
+  return renderGameOgCard({
+    kicker: 'Logic Puzzle · 1 Player',
+    title: gameName,
+    subtitle:
+      game?.description ??
+      'Classic 9×9 number puzzle with 4 difficulty levels, pencil notes, and auto-validation.',
+    accent: '#38bdf8',
+    gradient: ['#082f49', '#021522'],
+    badges: [
+      'Easy to Expert',
+      'Pencil Notes',
+      'Auto Check',
+      'Daily Puzzles',
+      '100% Free',
+    ],
+    stats: [
+      { label: 'Category', value: 'Logic Grid' },
+      { label: 'Difficulty', value: '4 Levels' },
+      { label: 'Grid', value: '9×9 Matrix' },
+    ],
+    visual: <SudokuVisual />,
+  });
 }

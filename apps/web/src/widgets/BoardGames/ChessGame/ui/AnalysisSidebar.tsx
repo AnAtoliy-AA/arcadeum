@@ -134,7 +134,7 @@ export function AnalysisSidebar({
           ))}
         </div>
         {moveHistory.length === 0 && (
-          <div className="text-xs text-[var(--textSecondary)] opacity-60">
+          <div className="text-xs text-[var(--textSecondary)] opacity-85">
             Click pieces on the board to make moves
           </div>
         )}

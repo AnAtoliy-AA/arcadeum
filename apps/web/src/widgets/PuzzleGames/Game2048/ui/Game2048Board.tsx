@@ -82,7 +82,7 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
       className={cx(
         'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-black/20 p-2 sm:p-3 shadow-2xl select-none transition-all duration-200',
         isFullscreen
-          ? 'max-w-[min(94vw,min(calc(100vh-12rem),40rem))]'
+          ? 'max-w-[min(94vw,min(calc(100dvh-12rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))]',
       )}
       onTouchStart={handleTouchStart}
@@ -93,19 +93,26 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
         aria-label="2048 board"
         className="grid h-full w-full grid-cols-4 grid-rows-4 gap-2 sm:gap-2.5"
       >
-        {grid.map((value, index) => (
-          <div
-            key={index}
-            role={value !== 0 ? 'gridcell' : undefined}
-            aria-label={value !== 0 ? String(value) : undefined}
-            data-testid={`tile-${index}`}
-            className={cx(
-              'flex select-none items-center justify-center rounded-2xl font-black transition-all duration-150',
-              getTileClasses(value),
-              isFullscreen && 'md:text-4xl',
-            )}
-          >
-            {value !== 0 && value}
+        {Array.from({ length: 4 }, (_, rowIdx) => (
+          <div key={rowIdx} role="row" className="contents">
+            {grid.slice(rowIdx * 4, rowIdx * 4 + 4).map((value, colIdx) => {
+              const index = rowIdx * 4 + colIdx;
+              return (
+                <div
+                  key={index}
+                  role={value !== 0 ? 'gridcell' : undefined}
+                  aria-label={value !== 0 ? String(value) : undefined}
+                  data-testid={`tile-${index}`}
+                  className={cx(
+                    'flex select-none items-center justify-center rounded-2xl font-black transition-all duration-150',
+                    getTileClasses(value),
+                    isFullscreen && 'md:text-4xl',
+                  )}
+                >
+                  {value !== 0 && value}
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>

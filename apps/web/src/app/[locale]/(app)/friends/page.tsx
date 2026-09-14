@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'friends' }) : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'friends', noIndex: true }) : {};
 }
 
 export default async function FriendsPage({

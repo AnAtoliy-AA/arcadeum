@@ -2,7 +2,7 @@
 import { CountdownClock, LiveChip } from '@arcadeum/ui';
 import type { CupSnapshot } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatCurrency, formatNumber } from '@/shared/i18n/formatters';
 
 // Temporary: tournaments aren't live yet. Flip to `true` to render the
@@ -25,13 +25,13 @@ export function CupCountdown({
         className="flex flex-col gap-3 p-5 rounded-2xl border border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] items-center"
         data-testid="cup-coming-soon"
       >
-        <span className="text-[12px] tracking-[2px] opacity-[0.7] uppercase">
+        <span className="text-[12px] tracking-[2px] opacity-[0.9] uppercase">
           {tt.eyebrow ?? 'Tournament'}
         </span>
         <span className="text-[32px] font-extrabold text-[var(--mythicAccent)] text-center">
           {tt.comingSoon ?? 'Coming soon'}
         </span>
-        <span className="text-[16px] opacity-[0.75] text-center max-w-[520px]">
+        <span className="text-[16px] opacity-[0.9] text-center max-w-[520px]">
           {tt.comingSoonBody ??
             'Live tournaments and prize pools are coming soon.'}
         </span>
@@ -49,7 +49,7 @@ export function CupCountdown({
         <div className="flex flex-col items-stretch gap-2 flex-1 min-w-[220px]">
           <div className="flex flex-row gap-3 items-center">
             <LiveChip label={(t?.live as string) ?? 'Live'} />
-            <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+            <span className="text-[14px] tracking-[2px] opacity-[0.9] uppercase">
               {tt.eyebrow ?? 'Tournament'}
             </span>
           </div>
@@ -71,7 +71,7 @@ export function CupCountdown({
           </div>
         </div>
         <div className="flex flex-col gap-2 items-end">
-          <span className="text-[14px] opacity-[0.7] uppercase">
+          <span className="text-[14px] opacity-[0.9] uppercase">
             {tt.endsIn ?? 'Ends in'}
           </span>
           <CountdownClock
@@ -83,7 +83,7 @@ export function CupCountdown({
 
       {visiblePills.length > 0 ? (
         <div className="flex flex-col items-stretch gap-2">
-          <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase">
+          <span className="text-[12px] tracking-[2px] opacity-[0.9] uppercase">
             {tt.qualifiedLabel ?? 'Qualified'}
           </span>
           <div className="flex flex-row items-stretch gap-6 flex-wrap">
@@ -103,7 +103,7 @@ export function CupCountdown({
             ))}
             {overflow > 0 ? (
               <div className="w-[28px] h-[28px] rounded-[14px] border border-[var(--borderColor)] items-center justify-center bg-[rgba(255,255,255,0.04)]">
-                <span className="text-[11px] opacity-[0.7]">+{overflow}</span>
+                <span className="text-[11px] opacity-[0.9]">+{overflow}</span>
               </div>
             ) : null}
           </div>
@@ -124,7 +124,7 @@ function Stat({
 }) {
   return (
     <div className="flex flex-col items-stretch">
-      <span className="text-[12px] opacity-[0.6] uppercase">{label}</span>
+      <span className="text-[12px] opacity-[0.9] uppercase">{label}</span>
       <span
         className="text-[20px] font-bold tracking-[1px]"
         style={{

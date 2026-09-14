@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactNode, useEffect } from 'react';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useLiveStatsStore } from '@/features/live-stats';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import { Container } from '@arcadeum/ui/components/Container/Container';
@@ -26,7 +26,6 @@ import { ContactFaq, getFaqItems } from './ContactFaq';
 import { ContactAvatars } from './ContactAvatars';
 import { ContactForm } from './ContactForm';
 import { ContactTips } from './ContactTips';
-import styles from './ContactView.module.scss';
 
 export interface ContactViewProps {
   t?: ContactMessages;
@@ -164,8 +163,14 @@ export default function ContactView({
       <Container size="lg" className="max-w-[1120px]">
         <div className="flex flex-col items-stretch gap-8">
           <div className="relative overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[radial-gradient(80%_80%_at_50%_100%,rgba(56,189,248,0.18),transparent_70%),radial-gradient(60%_60%_at_0%_0%,rgba(3,105,161,0.22),transparent_65%),var(--background)] p-[clamp(28px,5vw,56px)_clamp(20px,3vw,32px)]">
-            <span aria-hidden="true" className={styles.orb1} />
-            <span aria-hidden="true" className={styles.orb2} />
+            <span
+              aria-hidden="true"
+              className="absolute w-[360px] h-[360px] top-[-160px] left-[-80px] rounded-full bg-[rgba(56,189,248,0.45)] blur-[60px] opacity-55 pointer-events-none"
+            />
+            <span
+              aria-hidden="true"
+              className="absolute w-[320px] h-[320px] top-[-100px] left-[70%] rounded-full bg-[rgba(244,114,182,0.45)] blur-[60px] opacity-55 pointer-events-none"
+            />
             <div className="flex flex-col items-stretch gap-4 relative z-10">
               <div className="flex flex-row flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold tracking-[1.2px] uppercase text-[var(--accent)] border border-[var(--glassBorder)] bg-[var(--glassBg)]">
@@ -175,7 +180,7 @@ export default function ContactView({
                   />
                   {hero?.eyebrow ?? 'Player support'}
                 </span>
-                <Typography variant="caption" alpha="medium">
+                <Typography variant="caption" alpha="high">
                   arcadeum.games / contact
                 </Typography>
               </div>
@@ -193,8 +198,7 @@ export default function ContactView({
                   <span
                     aria-hidden="true"
                     className={cx(
-                      'h-[7px] w-[7px] rounded-full',
-                      styles.statusDot,
+                      'h-[7px] w-[7px] rounded-full bg-[#34d399] shadow-[0_0_8px_#34d399]',
                     )}
                   />
                   {hero?.statusOk ?? 'All systems operational'}
@@ -263,12 +267,12 @@ export default function ContactView({
             ))}
           </div>
 
-          <div className={styles.row}>
-            <div className={styles.formCol}>
+          <div className="flex flex-col gap-6 max-[800px]:flex-row max-[800px]:items-stretch [&>*]:min-w-0">
+            <div className="flex flex-col gap-4 max-[800px]:flex-[1.6_1_0] max-[800px]:[&>:last-child]:flex-1">
               <ContactForm form={form} />
               <ContactTips tips={sections?.tips} />
             </div>
-            <div className={styles.sideCol}>
+            <div className="max-[800px]:flex-1 max-[800px]:flex max-[800px]:flex-col max-[800px]:[&>*]:flex-1 max-[800px]:[&>*]:flex max-[800px]:[&>*]:flex-col max-[800px]:[&>*>:last-child]:flex-1">
               <ContactSidePanel side={side} workingHours={WORKING_HOURS} />
             </div>
           </div>

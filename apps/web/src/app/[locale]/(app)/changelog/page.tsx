@@ -4,6 +4,7 @@ import { join } from 'path';
 import { appConfig } from '@/shared/config/app-config';
 import ChangelogClient from './ChangelogClient';
 
+
 export type ChangelogEntry = {
   version: string;
   date: string;

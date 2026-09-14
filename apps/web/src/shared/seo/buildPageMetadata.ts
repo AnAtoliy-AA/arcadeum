@@ -52,6 +52,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   goLanding: (r) => r.goLanding,
   solitaireLanding: (r) => r.solitaireLanding,
   minesweeperLanding: (r) => r.minesweeperLanding,
+  minesweeperPlay: (r) => r.minesweeperPlay,
   sudokuLanding: (r) => r.sudokuLanding,
   game2048Landing: (r) => r.game2048Landing,
   settings: (r) => r.settings,
@@ -74,6 +75,8 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   chats: (r) => r.chats,
   chat: (r) => r.chat,
   auth: (r) => r.auth,
+  authForgot: (r) => r.authForgot,
+  authReset: (r) => r.authReset,
   support: (r) => r.support,
   contact: (r) => r.contact,
   help: (r) => r.help,
@@ -85,8 +88,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   developers: (r) => r.developers,
   features: (r) => r.features,
   admin: (r) => r.admin,
-  // playerProfile is dynamic — callers must pass `pathFor`, but we map it
-  // here to the locale root so hreflang at least covers all locales.
+  dailyChessPuzzle: (r) => `${r.chess}/puzzles/daily`,
   playerProfile: (r) => r.home,
   notFound: (r) => r.home,
 };

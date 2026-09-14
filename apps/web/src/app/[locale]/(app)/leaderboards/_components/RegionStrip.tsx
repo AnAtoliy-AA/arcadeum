@@ -23,7 +23,7 @@ export function RegionStrip({
   const title = tRegions.title ?? 'By region';
   return (
     <div className="flex flex-col items-stretch gap-3">
-      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+      <span className="text-[14px] tracking-[2px] opacity-[0.9] uppercase">
         {title}
       </span>
       <div className="flex flex-row items-stretch h-[14px] rounded-[7px] overflow-hidden border border-[var(--borderColor)]">
@@ -48,7 +48,7 @@ export function RegionStrip({
             <span className="text-[14px] opacity-[0.85]">
               {tRegions[r.region] ?? r.region.toUpperCase()}
             </span>
-            <span className="text-[14px] opacity-[0.6] tracking-[1px]">
+            <span className="text-[14px] opacity-[0.9] tracking-[1px]">
               {Math.round(r.share * 100)}%
             </span>
           </div>

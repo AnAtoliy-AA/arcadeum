@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { appConfig } from '@/shared/config/app-config';
 
 export const OG_SIZE = { width: 1200, height: 630 };
 export const OG_CONTENT_TYPE = 'image/png';
@@ -161,7 +162,7 @@ export function renderOgCard(opts: RenderOpts): ImageResponse {
                 textTransform: 'uppercase',
               }}
             >
-              Arcadeum
+              {appConfig.appName}
             </span>
           </div>
 
@@ -315,3 +316,5 @@ export function renderOgCard(opts: RenderOpts): ImageResponse {
     { ...OG_SIZE },
   );
 }
+
+export { renderGameOgCard, type GameOgCardOpts } from './renderGameOgCard';

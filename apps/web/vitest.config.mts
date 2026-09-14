@@ -10,6 +10,12 @@ export default defineConfig({
     // root, so map the shared games package explicitly (ARC-900).
     alias: [
       {
+        find: /^@\//,
+        replacement: fileURLToPath(
+          new URL('./src/', import.meta.url),
+        ),
+      },
+      {
         find: /^@arcadeum\/games-core$/,
         replacement: fileURLToPath(
           new URL('../../packages/games-core/src/index.ts', import.meta.url),

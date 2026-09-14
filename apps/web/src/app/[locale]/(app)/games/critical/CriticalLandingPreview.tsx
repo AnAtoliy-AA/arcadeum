@@ -39,7 +39,7 @@ export function CriticalLandingPreview() {
                 <span className="text-center text-xs font-bold leading-tight">
                   {card.name}
                 </span>
-                <span className="text-[10px] font-mono opacity-80 self-end">
+                <span className="text-[10px] font-mono opacity-95 self-end">
                   #0{idx + 1}
                 </span>
               </div>

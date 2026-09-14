@@ -1,186 +1,117 @@
-import { ImageResponse } from 'next/og';
+import {
+  OG_CONTENT_TYPE,
+  OG_SIZE,
+  renderGameOgCard,
+} from '@/shared/seo/ogImageTemplate';
+import { getTranslations } from '@/shared/i18n/server';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
-export const alt = 'Solitaire — free online Klondike card game on Arcadeum';
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+export const alt =
+  'Solitaire (Klondike) — free online card game on Arcadeum Games';
 
-interface FanCard {
-  rank: string;
-  suit: string;
-  red: boolean;
-  offsetTop: number;
+type Props = { params: Promise<{ locale: string }> };
+
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
 }
 
-const FAN: FanCard[] = [
-  { rank: 'Q', suit: '♦', red: true, offsetTop: 0 },
-  { rank: 'K', suit: '♥', red: true, offsetTop: 28 },
-  { rank: 'A', suit: '♠', red: false, offsetTop: 56 },
-];
+function SolitaireVisual() {
+  const cards = [
+    { rank: 'K', suit: '♠', red: false, top: 20 },
+    { rank: 'Q', suit: '♥', red: true, top: 70 },
+    { rank: 'J', suit: '♣', red: false, top: 120 },
+    { rank: '10', suit: '♦', red: true, top: 170 },
+  ];
 
-export default function OpengraphImage() {
-  return new ImageResponse(
+  return (
     <div
       style={{
-        width: 1200,
-        height: 630,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 80px',
-        background:
-          'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        color: 'white',
-        fontFamily: 'system-ui, sans-serif',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
         position: 'relative',
+        padding: 20,
       }}
     >
-      {/* Background glow */}
-      <div
-        style={{
-          position: 'absolute',
-          right: -60,
-          top: -60,
-          width: 380,
-          height: 380,
-          borderRadius: 190,
-          background:
-            'radial-gradient(circle, rgba(251, 113, 133, 0.18) 0%, transparent 60%)',
-        }}
-      />
-
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: 32,
-          maxWidth: 560,
           position: 'relative',
-          zIndex: 1,
+          width: 220,
+          height: 320,
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
-          ARCADEUM
-        </div>
-        <div
-          style={{
-            fontSize: 84,
-            fontWeight: 900,
-            lineHeight: 1,
-            display: 'flex',
-          }}
-        >
-          Solitaire
-        </div>
-        <div
-          style={{
-            fontSize: 30,
-            opacity: 0.9,
-            lineHeight: 1.3,
-            display: 'flex',
-          }}
-        >
-          Classic Klondike · plays instantly in your browser
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            fontSize: 18,
-            flexWrap: 'wrap',
-            opacity: 0.95,
-          }}
-        >
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Single-player
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            No signup
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Free forever
-          </span>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          padding: '24px 32px 56px',
-          background: 'rgba(255, 255, 255, 0.06)',
-          borderRadius: 24,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        {FAN.map((card) => (
+        {cards.map((c, i) => (
           <div
-            key={card.suit}
+            key={i}
             style={{
-              width: 150,
-              height: 210,
-              marginTop: card.offsetTop,
-              marginLeft: card === FAN[0] ? 0 : -40,
-              background: '#f8fafc',
-              borderRadius: 16,
-              border: '1px solid rgba(15, 23, 42, 0.2)',
-              boxShadow: '0 12px 30px rgba(0,0,0,0.45)',
-              color: card.red ? '#dc2626' : '#0f172a',
+              position: 'absolute',
+              left: 20,
+              top: c.top,
+              width: 180,
+              height: 120,
+              background: '#ffffff',
+              borderRadius: 14,
+              border: '2px solid rgba(0,0,0,0.1)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              padding: '10px 16px',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              color: c.red ? '#ef4444' : '#18181b',
             }}
           >
             <div
               style={{
-                position: 'absolute',
-                top: 10,
-                left: 14,
                 display: 'flex',
-                fontSize: 26,
-                fontWeight: 800,
+                flexDirection: 'column',
+                alignItems: 'center',
               }}
             >
-              {card.rank}
+              <span style={{ fontSize: 24, fontWeight: 900, lineHeight: 1 }}>
+                {c.rank}
+              </span>
+              <span style={{ fontSize: 18 }}>{c.suit}</span>
             </div>
-            <div style={{ fontSize: 72, display: 'flex' }}>{card.suit}</div>
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 10,
-                right: 14,
-                display: 'flex',
-                fontSize: 26,
-                fontWeight: 800,
-                transform: 'rotate(180deg)',
-              }}
-            >
-              {card.rank}
-            </div>
+            <span style={{ fontSize: 32 }}>{c.suit}</span>
           </div>
         ))}
       </div>
-    </div>,
-    { ...size },
+    </div>
   );
+}
+
+export default async function SolitaireOpengraphImage({ params }: Props) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
+  const game = messages.games?.solitaire_v1;
+  const gameName = game?.name ?? 'Solitaire';
+
+  return renderGameOgCard({
+    kicker: 'Classic Patience · 1 Player',
+    title: gameName,
+    subtitle:
+      game?.description ??
+      'Classic Klondike Solitaire with Turn 1 and Turn 3 modes, undo, hints, and score tracking.',
+    accent: '#fb7185',
+    gradient: ['#2e0915', '#120207'],
+    badges: [
+      'Turn 1 & 3',
+      'Unlimited Undo',
+      'Smart Hints',
+      'Vegas Scoring',
+      '100% Free',
+    ],
+    stats: [
+      { label: 'Category', value: 'Klondike Patience' },
+      { label: 'Draw Mode', value: '1 or 3 Cards' },
+      { label: 'Platform', value: 'Zero Install' },
+    ],
+    visual: <SolitaireVisual />,
+  });
 }

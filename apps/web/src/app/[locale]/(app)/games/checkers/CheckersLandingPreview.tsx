@@ -1,6 +1,5 @@
 'use client';
 
-import { getCheckersTheme } from '@/widgets/BoardGames/CheckersGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 
 const DEMO_BOARD: Array<Array<string | null>> = [
@@ -18,16 +17,11 @@ export function CheckersLandingPreview() {
   return (
     <GameLandingPreview
       testId="checkers-landing-preview"
-      render={(themeId) => {
-        const theme = getCheckersTheme(themeId);
+      render={() => {
         return (
           <div
             aria-hidden="true"
-            className="box-border w-full max-w-[320px] mx-auto aspect-square p-2.5 rounded-2xl border shadow-xl grid grid-cols-8 grid-rows-8 gap-0.5"
-            style={{
-              background: theme.boardBackground,
-              borderColor: theme.textColor + '40',
-            }}
+            className="box-border w-full max-w-[320px] mx-auto aspect-square p-[10px] rounded-[16px] border-2 border-[rgba(239,68,68,0.4)] shadow-[0_16px_40px_rgba(0,0,0,0.5)] grid grid-cols-8 grid-rows-8 gap-[2px] bg-[#1c1917]"
           >
             {DEMO_BOARD.map((row, rowIdx) =>
               row.map((cell, colIdx) => {
@@ -35,33 +29,16 @@ export function CheckersLandingPreview() {
                 return (
                   <div
                     key={`${rowIdx}-${colIdx}`}
-                    className="box-border flex items-center justify-center rounded-sm"
-                    style={{
-                      background: isDark ? theme.darkSquare : theme.lightSquare,
-                    }}
+                    className={
+                      isDark
+                        ? 'box-border flex items-center justify-center rounded-sm bg-[#44403c]'
+                        : 'box-border flex items-center justify-center rounded-sm bg-[#f5f5f4]'
+                    }
                   >
                     {cell === 'b' ? (
-                      <span
-                        className="box-border w-5 h-5 sm:w-6 sm:h-6 rounded-full shadow-md flex items-center justify-center text-[10px] font-bold"
-                        style={{
-                          background: theme.darkPiece,
-                          border: `2px solid ${theme.darkPieceBorder}`,
-                          color: theme.lightPiece,
-                        }}
-                      >
-                        ●
-                      </span>
+                      <span className="box-border w-[22px] h-[22px] rounded-full bg-[radial-gradient(circle,#ef4444_30%,#991b1b_100%)] border-2 border-[#7f1d1d] shadow-[0_4px_6px_rgba(0,0,0,0.4)]" />
                     ) : cell === 'w' ? (
-                      <span
-                        className="box-border w-5 h-5 sm:w-6 sm:h-6 rounded-full shadow-md flex items-center justify-center text-[10px] font-bold"
-                        style={{
-                          background: theme.lightPiece,
-                          border: `2px solid ${theme.lightPieceBorder}`,
-                          color: theme.darkPiece,
-                        }}
-                      >
-                        ●
-                      </span>
+                      <span className="box-border w-[22px] h-[22px] rounded-full bg-[radial-gradient(circle,#ffffff_30%,#e4e4e7_100%)] border-2 border-[#a1a1aa] shadow-[0_4px_6px_rgba(0,0,0,0.4)]" />
                     ) : null}
                   </div>
                 );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { BotCountSelector, BotCountLabel } from './lobbyStyles';
 
 export type BotDifficulty =
@@ -53,6 +53,7 @@ export function DifficultySelector({
     <BotCountSelector>
       <BotCountLabel>{t('games.lobby.difficultyLabel')}</BotCountLabel>
       <select
+        aria-label="Bot Difficulty"
         value={value}
         onChange={(e) => onChange(e.target.value as BotDifficulty)}
         className="rounded-[8px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-1.5 text-sm font-semibold text-[var(--color)] hover:bg-[var(--glassBgHover)] focus:border-[rgba(99,102,241,0.5)] focus:outline-none"

@@ -16,6 +16,9 @@ import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { getPost, POST_SLUGS } from '@/features/blog/registry';
 import { BlogPostView } from './BlogPostView';
 
+export const dynamic = 'force-static';
+export const revalidate = 2592000; // 30 days – ISR: render on first request, cache until user changes language
+
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };

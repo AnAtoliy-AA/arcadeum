@@ -4,7 +4,10 @@ export interface EngineLine {
   quality:
     | 'brilliant'
     | 'great'
+    | 'best'
+    | 'excellent'
     | 'good'
+    | 'book'
     | 'inaccuracy'
     | 'mistake'
     | 'blunder';
@@ -30,7 +33,10 @@ export interface GameAnalysisResult {
   summary: {
     brilliant: number;
     great: number;
+    best: number;
+    excellent: number;
     good: number;
+    book: number;
     inaccuracy: number;
     mistake: number;
     blunder: number;
@@ -59,10 +65,12 @@ export async function analyzeGameWithStockfish(
   notations?: string[],
 ): Promise<GameAnalysisResult | null> {
   try {
-    return await apiClient.post<GameAnalysisResult>(
+    const result = await apiClient.post<GameAnalysisResult>(
       '/chess/engine/analyze-game',
       { positionHistory, notations, depth: 18, timeMsPerPly: 3000 },
     );
+    if (result && 'error' in result) return null;
+    return result;
   } catch {
     return null;
   }

@@ -19,6 +19,7 @@ export const en = {
   menuLabel: 'Menu',
   accountLabel: 'Account',
   helpLabel: 'Help',
+  discordCommunity: 'Discord Community',
 };
 
 export const es = {
@@ -40,6 +41,7 @@ export const es = {
   menuLabel: 'Menú',
   accountLabel: 'Cuenta',
   helpLabel: 'Ayuda',
+  discordCommunity: 'Comunidad de Discord',
 };
 
 export const fr = {
@@ -61,6 +63,7 @@ export const fr = {
   menuLabel: 'Menu',
   accountLabel: 'Compte',
   helpLabel: 'Aide',
+  discordCommunity: 'Communauté Discord',
 };
 
 export const ru = {
@@ -82,6 +85,7 @@ export const ru = {
   menuLabel: 'Меню',
   accountLabel: 'Аккаунт',
   helpLabel: 'Помощь',
+  discordCommunity: 'Discord сообщество',
 };
 
 export const by = {
@@ -103,6 +107,7 @@ export const by = {
   menuLabel: 'Меню',
   accountLabel: 'Уліковы запіс',
   helpLabel: 'Дапамога',
+  discordCommunity: 'Discord супольнасць',
 };
 
 export const navigationMessages = {

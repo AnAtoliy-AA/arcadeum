@@ -1,11 +1,11 @@
 'use client';
 
-import { useCallback, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useState, type RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useSoundSetting } from '@/shared/hooks/useSoundSetting';
 import { useMusicSetting } from '@/shared/hooks/useMusicSetting';
 import { gameSocket } from '@/shared/lib/socket';
@@ -27,6 +27,7 @@ import { MoveControls } from './MoveControls';
 import { MoreOptionsMenu } from './MoreOptionsMenu';
 import { DesktopSecondaryControls } from './DesktopSecondaryControls';
 import { sendFriendRequestByUserId } from '@/shared/api/friends';
+import { getFriends } from '@/shared/api/friends';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -78,6 +79,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [friendRequestSent, setFriendRequestSent] = useState(false);
   const [friendRequestLoading, setFriendRequestLoading] = useState(false);
+  const [isAlreadyFriend, setIsAlreadyFriend] = useState(false);
 
   const rematchStoreIsGameOver = useGameRematchStore((s) => s.isGameOver);
   const rematchStoreOnRematch = useGameRematchStore((s) => s.onRematch);
@@ -140,6 +142,21 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     } finally {
       setFriendRequestLoading(false);
     }
+  }, [snapshot.accessToken, opponentUserId]);
+
+  useEffect(() => {
+    if (!snapshot.accessToken || !opponentUserId) return;
+    let cancelled = false;
+    getFriends(snapshot.accessToken)
+      .then((friends) => {
+        if (!cancelled) {
+          setIsAlreadyFriend(friends.some((f) => f.userId === opponentUserId));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [snapshot.accessToken, opponentUserId]);
 
   const handleCenterView = () => {
@@ -271,7 +288,8 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
         {opponentUserId &&
           snapshot.userId &&
-          opponentUserId !== snapshot.userId && (
+          opponentUserId !== snapshot.userId &&
+          !isAlreadyFriend && (
             <Button
               className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
               variant={friendRequestSent ? 'glass' : 'secondary'}

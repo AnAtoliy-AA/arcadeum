@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useLiveStatsStore } from '@/features/live-stats';
 import { appConfig } from '@/shared/config/app-config';
@@ -48,7 +48,7 @@ const NETWORK_CONFIGS: NetworkConfig[] = [
     key: 'discord',
     titleKey: 'discord',
     icon: DiscordIcon,
-    color: '#5865F2',
+    color: '#818CF8',
     gradientBg:
       'linear-gradient(135deg, rgba(88, 101, 242, 0.25) 0%, rgba(88, 101, 242, 0.05) 100%)',
     fallbackHref: 'https://discord.gg/arcadeum',
@@ -58,7 +58,7 @@ const NETWORK_CONFIGS: NetworkConfig[] = [
     key: 'telegram',
     titleKey: 'telegram',
     icon: TelegramIcon,
-    color: '#26A5E4',
+    color: '#67D4F7',
     gradientBg:
       'linear-gradient(135deg, rgba(38, 165, 228, 0.25) 0%, rgba(38, 165, 228, 0.05) 100%)',
     fallbackHref: 'https://t.me/arcadeum',
@@ -88,7 +88,7 @@ const NETWORK_CONFIGS: NetworkConfig[] = [
     key: 'youtube',
     titleKey: 'youtube',
     icon: YouTubeIcon,
-    color: '#FF0000',
+    color: '#FF6B6B',
     gradientBg:
       'linear-gradient(135deg, rgba(255, 0, 0, 0.25) 0%, rgba(255, 0, 0, 0.05) 100%)',
     fallbackHref: 'https://youtube.com/@arcadeum',
@@ -98,7 +98,7 @@ const NETWORK_CONFIGS: NetworkConfig[] = [
     key: 'instagram',
     titleKey: 'instagram',
     icon: InstagramIcon,
-    color: '#E1306C',
+    color: '#F472B6',
     gradientBg:
       'linear-gradient(135deg, rgba(225, 48, 108, 0.25) 0%, rgba(225, 48, 108, 0.05) 100%)',
     fallbackHref: 'https://instagram.com/arcadeum',
@@ -128,7 +128,7 @@ const NETWORK_CONFIGS: NetworkConfig[] = [
     key: 'facebook',
     titleKey: 'facebook',
     icon: FacebookIcon,
-    color: '#1877F2',
+    color: '#60A5FA',
     gradientBg:
       'linear-gradient(135deg, rgba(24, 119, 242, 0.25) 0%, rgba(24, 119, 242, 0.05) 100%)',
     fallbackHref: 'https://facebook.com/arcadeum',
@@ -138,7 +138,7 @@ const NETWORK_CONFIGS: NetworkConfig[] = [
     key: 'linkedin',
     titleKey: 'linkedin',
     icon: LinkedInIcon,
-    color: '#0A66C2',
+    color: '#38BDF8',
     gradientBg:
       'linear-gradient(135deg, rgba(10, 102, 194, 0.25) 0%, rgba(10, 102, 194, 0.05) 100%)',
     fallbackHref: 'https://linkedin.com/company/arcadeum',
@@ -208,7 +208,12 @@ export default function CommunityPageContent({
               </PageTitle>
 
               {t?.subtitle && (
-                <Typography variant="subheading" uiSize="md" alpha="medium">
+                <Typography
+                  variant="heading"
+                  uiSize="md"
+                  alpha="high"
+                  style={{ color: 'white' }}
+                >
                   {t.subtitle}
                 </Typography>
               )}
@@ -217,6 +222,7 @@ export default function CommunityPageContent({
                 variant="body"
                 uiSize="lg"
                 alpha="high"
+                style={{ color: 'white !important' }}
                 className="mt-2"
               >
                 {t?.description}
@@ -236,7 +242,11 @@ export default function CommunityPageContent({
                 >
                   {displayPlayersCount}
                 </Typography>
-                <Typography variant="caption" alpha="medium">
+                <Typography
+                  variant="caption"
+                  alpha="high"
+                  style={{ color: 'white !important' }}
+                >
                   {stats.playersLabel ?? 'Active Players'}
                 </Typography>
               </div>
@@ -253,7 +263,11 @@ export default function CommunityPageContent({
                 >
                   {displayDiscordCount}
                 </Typography>
-                <Typography variant="caption" alpha="medium">
+                <Typography
+                  variant="caption"
+                  alpha="high"
+                  style={{ color: 'white !important' }}
+                >
                   {stats.discordLabel ?? 'Discord Gamers'}
                 </Typography>
               </div>
@@ -270,7 +284,11 @@ export default function CommunityPageContent({
                 >
                   {stats.githubStars ?? 'Open Source'}
                 </Typography>
-                <Typography variant="caption" alpha="medium">
+                <Typography
+                  variant="caption"
+                  alpha="high"
+                  style={{ color: 'white !important' }}
+                >
                   {stats.githubLabel ?? 'Community Driven'}
                 </Typography>
               </div>
@@ -309,7 +327,11 @@ export default function CommunityPageContent({
               <Typography variant="heading" uiSize="md">
                 Official Networks & Socials
               </Typography>
-              <Typography variant="caption" alpha="medium">
+              <Typography
+                variant="caption"
+                alpha="high"
+                style={{ color: 'white !important' }}
+              >
                 {NETWORK_CONFIGS.length} Channels Connected
               </Typography>
             </div>
@@ -363,6 +385,7 @@ export default function CommunityPageContent({
                           <Typography
                             variant="heading"
                             uiSize="sm"
+                            style={{ color: 'white' }}
                             className="font-bold"
                           >
                             {title}
@@ -371,7 +394,8 @@ export default function CommunityPageContent({
                             <Typography
                               variant="body"
                               uiSize="sm"
-                              alpha="medium"
+                              alpha="high"
+                              style={{ color: 'white' }}
                               className="line-clamp-3 text-xs leading-relaxed"
                             >
                               {description}
@@ -380,15 +404,8 @@ export default function CommunityPageContent({
                         </div>
                       </div>
 
-                      <div
-                        className="flex items-center gap-2 mt-4 font-semibold text-xs"
-                        style={{ color: net.color }}
-                      >
-                        <Typography
-                          variant="caption"
-                          style={{ color: net.color }}
-                          className="font-bold"
-                        >
+                      <div className="flex items-center gap-2 mt-4 font-semibold text-xs">
+                        <Typography variant="caption" className="font-bold">
                           {actionText} →
                         </Typography>
                       </div>

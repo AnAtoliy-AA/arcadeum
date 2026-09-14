@@ -11,7 +11,7 @@ export function GameFaqSection({
     <section id="faq" className="box-border flex flex-col gap-6 py-8">
       <div className="box-border flex flex-col gap-1">
         {kicker ? (
-          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
             {kicker}
           </span>
         ) : null}
@@ -33,7 +33,7 @@ export function GameFaqSection({
                 ▾
               </span>
             </summary>
-            <div className="box-border mt-3 pt-3 border-t border-[var(--borderColor)] text-sm sm:text-base text-[var(--foreground)] opacity-85 leading-relaxed">
+            <div className="box-border mt-3 pt-3 border-t border-[var(--borderColor)] text-sm sm:text-base text-[var(--foreground)] opacity-90 leading-relaxed">
               {item.answer}
             </div>
           </details>

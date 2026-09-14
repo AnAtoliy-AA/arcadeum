@@ -85,6 +85,36 @@ export const frMessages = {
           answer:
             'Le bot utilise un algorithme minimax avec évaluation positionnelle. Il joue à un niveau intermédiaire fort.',
         },
+        backwardCaptures: {
+          question: 'Les pions simples peuvent-ils capturer vers l’arrière ?',
+          answer:
+            'Aux dames américaines, les pions capturent uniquement vers l’avant. Aux dames internationales (10×10) et russes, ils peuvent sauter vers l’avant et l’arrière.',
+        },
+        flyingKings: {
+          question: 'Qu’est-ce qu’une dame volante ?',
+          answer:
+            'Une dame volante peut se déplacer et capturer sur plusieurs cases vides le long d’une diagonale libre, selon les règles internationales et russes.',
+        },
+        variants: {
+          question: 'Quelles variantes de dames sont disponibles ?',
+          answer:
+            'Arcadeum propose le Checkers américain (8×8), le Jeu de dames international (10×10) et les Dames russes (8×8 avec dames volantes).',
+        },
+        friends: {
+          question: 'Comment inviter des amis à une partie de dames ?',
+          answer:
+            'Cliquez sur Créer une salle, choisissez vos règles et partagez le lien d’invitation. Vos amis rejoignent sans inscription.',
+        },
+        free: {
+          question: 'Le jeu de dames est-il gratuit sur Arcadeum ?',
+          answer:
+            'Oui, le jeu de dames sur Arcadeum est 100% gratuit avec multijoueur en direct, adversaires IA et sans aucun téléchargement.',
+        },
+        mobile: {
+          question: 'Peut-on jouer aux dames sur mobile ?',
+          answer:
+            'Oui. Le damier est optimisé pour les navigateurs mobiles avec déplacements tactiles précis en un clic.',
+        },
       },
     },
     lobby: {

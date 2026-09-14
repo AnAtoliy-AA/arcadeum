@@ -261,7 +261,7 @@ export function BoardEditor() {
           className="flex gap-1 items-stretch"
           style={{ maxWidth: 'min(60vmin, 480px)' }}
         >
-          <div className="flex flex-col justify-between py-1 text-[10px] text-[var(--textSecondary)] opacity-60 w-4 text-center">
+          <div className="flex flex-col justify-between py-1 text-[10px] text-[var(--textSecondary)] opacity-85 w-4 text-center">
             {ranks.map((r) => (
               <span key={r}>{r}</span>
             ))}

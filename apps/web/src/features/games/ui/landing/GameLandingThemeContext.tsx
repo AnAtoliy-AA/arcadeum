@@ -18,24 +18,19 @@ export const DEFAULT_LANDING_THEME: string =
   LANDING_THEME_IDS[0] ?? 'adventure';
 
 export interface GameLandingThemeValue {
-  /** Currently selected theme id (shared theme id, e.g. `cyberpunk`). */
   theme: string;
   setTheme: (theme: string) => void;
-  /** Advance to the next theme in the shared catalog. */
   cycleTheme: () => void;
+  cyclePrevTheme: () => void;
 }
 
 const GameLandingThemeContext = createContext<GameLandingThemeValue>({
   theme: DEFAULT_LANDING_THEME,
   setTheme: () => {},
   cycleTheme: () => {},
+  cyclePrevTheme: () => {},
 });
 
-/**
- * Client-side theme state shared across a landing page's hero preview and
- * its quickplay CTAs. Selecting a theme on the preview board preselects it
- * for "Play vs AI" / matchmaking without restyling the whole landing.
- */
 export function GameLandingThemeProvider({
   children,
   initialTheme = DEFAULT_LANDING_THEME,
@@ -71,6 +66,17 @@ export function GameLandingThemeProvider({
           activeTheme;
         setInternalTheme(next);
         onThemeChange?.(next);
+      },
+      cyclePrevTheme: () => {
+        const idx = LANDING_THEME_IDS.indexOf(activeTheme);
+        const prev =
+          LANDING_THEME_IDS[
+            (idx - 1 + LANDING_THEME_IDS.length) % LANDING_THEME_IDS.length
+          ] ??
+          LANDING_THEME_IDS[0] ??
+          activeTheme;
+        setInternalTheme(prev);
+        onThemeChange?.(prev);
       },
     }),
     [activeTheme, onThemeChange],

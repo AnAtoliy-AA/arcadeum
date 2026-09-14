@@ -120,7 +120,7 @@ export function SolanaPayQR({
   if (loading) {
     return (
       <div className="flex flex-col items-center p-4">
-        <Typography variant="body" alpha="medium">
+        <Typography variant="body" alpha="high">
           Creating payment request...
         </Typography>
       </div>
@@ -158,7 +158,7 @@ export function SolanaPayQR({
       </Typography>
 
       <div className="flex flex-col items-center gap-1">
-        <Typography variant="caption" alpha="medium">
+        <Typography variant="caption" alpha="high">
           Amount
         </Typography>
         <Typography
@@ -181,7 +181,7 @@ export function SolanaPayQR({
       </div>
 
       <div className="flex flex-col items-center gap-2 p-2 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] w-full">
-        <Typography className={'text-[11px]'} variant="caption" alpha="medium">
+        <Typography className={'text-[11px]'} variant="caption" alpha="high">
           Recipient
         </Typography>
         <Typography

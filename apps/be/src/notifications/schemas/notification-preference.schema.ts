@@ -34,6 +34,10 @@ export class NotificationPreference {
     default: () => buildCategoryMap(false),
   })
   categories!: NotificationCategoryMap<boolean>;
+
+  /** IANA timezone identifier (e.g. "America/New_York"). null = UTC default. */
+  @Prop({ type: String, default: null })
+  timezone?: string | null;
 }
 
 export type NotificationPreferenceDocument = NotificationPreference & Document;

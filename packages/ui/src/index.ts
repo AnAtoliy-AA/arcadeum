@@ -31,6 +31,7 @@ export * from './components/ErrorState/ErrorState';
 export * from './components/Skeleton/Skeleton';
 export * from './components/Progress/Progress';
 export * from './components/CosmeticBadge/CosmeticBadge';
+export * from './components/CosmeticSprite';
 export * from './components/RarityBorder/RarityBorder';
 export * from './components/ShopItemCard/ShopItemCard';
 export * from './components/RoleBadge/RoleBadge';
@@ -68,4 +69,5 @@ export * from './components/ProfileMenu';
 export * from './components/TableOfContents';
 export * from './components/AnimatedDice';
 export * from './components/InfiniteScroll';
-
+export * from './components/GameSpecTable';
+export * from './components/PlatformComparisonTable';

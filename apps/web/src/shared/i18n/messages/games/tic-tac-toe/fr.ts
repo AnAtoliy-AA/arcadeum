@@ -91,6 +91,42 @@ export const frMessages = {
           answer:
             'En 3×3 le bot joue un minimax parfait — il ne perd jamais. En 5×5 il bloque les menaces immédiates et privilégie le centre. En 7×7 et 9×9 il joue une heuristique rapide gagner/bloquer avec un espacement aléatoire.',
         },
+        firstPlayerAdvantage: {
+          question: 'Le premier joueur a-t-il un avantage au Morpion ?',
+          answer:
+            'Sur une grille 3×3, un jeu parfait mène toujours au nul. Cependant, le premier joueur jouant dans un coin a le plus d’opportunités de créer une double menace.',
+        },
+        forkStrategy: {
+          question: 'Qu’est-ce qu’une fourchette (fork) au Morpion ?',
+          answer:
+            'C’est un coup créant deux menaces d’alignement simultanées, rendant impossible tout blocage complet par l’adversaire.',
+        },
+        infinityMode: {
+          question: 'Comment fonctionne le mode plateau Infini ?',
+          answer:
+            'Sur un plateau Infini, la grille grandit dynamiquement à mesure que les joueurs posent des symboles près des bords.',
+        },
+        friends: {
+          question: 'Comment inviter des amis à jouer au Morpion ?',
+          answer:
+            'Cliquez sur Créer une salle, choisissez votre grille et partagez le lien pour jouer directement.',
+        },
+        drawStrategy: {
+          question:
+            'Le deuxième joueur peut-il toujours forcer le nul en 3×3 ?',
+          answer:
+            'Oui. En prenant le centre ou en contrôlant les coins opposés, le deuxième joueur garantit toujours le nul.',
+        },
+        mobile: {
+          question: 'Peut-on jouer au Morpion sur mobile ?',
+          answer:
+            'Oui. Le jeu dispose de commandes tactiles instantanées sur smartphone et tablette.',
+        },
+        free: {
+          question: 'Le Morpion est-il gratuit sur Arcadeum ?',
+          answer:
+            'Oui. Le jeu est 100% gratuit avec des thèmes visuels variés, le mode en équipes et sans publicité.',
+        },
       },
     },
     lobby: {

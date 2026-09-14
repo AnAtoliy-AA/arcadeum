@@ -17,6 +17,7 @@ import { adminGamesRu } from './admin-games/ru';
 import { adminBlockedIpsRu } from './admin-blocked-ips/ru';
 import { adminUsersRu } from './admin-users/ru';
 import { adminBulkRewardsRu } from './admin-bulk-rewards/ru';
+import { adminXpBackfillRu } from './admin-xp-backfill/ru';
 import { friendsRu } from './friends/ru';
 import { clansRu } from './clans/ru';
 import { eventsRu } from './events/ru';
@@ -39,6 +40,7 @@ export const ru = {
     nav: {
       dashboard: 'Панель',
       statistics: 'Статистика',
+      monitoring: 'Мониторинг',
       users: 'Пользователи',
       payments: 'Платежи',
       announcements: 'Объявления',
@@ -49,6 +51,7 @@ export const ru = {
       games: 'Игры',
       gameRules: 'Правила игр',
       bulkRewards: 'Массовые Награды',
+      xpBackfill: 'XP Backfill',
       blockedIps: 'Заблокированные IP',
       geoBlock: 'Геоблокировка',
       comingSoon: 'Скоро',
@@ -140,7 +143,8 @@ export const ru = {
       environment: 'Окружение',
       serverResources: {
         title: 'Ресурсы сервера',
-        subtitle: 'Мониторинг CPU, памяти и системных метрик в реальном времени',
+        subtitle:
+          'Мониторинг CPU, памяти и системных метрик в реальном времени',
         cpu: 'Процессор',
         ram: 'ОЗУ',
         perCore: 'По ядрам',
@@ -160,6 +164,18 @@ export const ru = {
         free: 'Свободно',
         total: 'Всего',
       },
+    },
+    monitoring: {
+      title: 'Мониторинг',
+      loading: 'Загрузка метрик...',
+      enableHint: 'Включите METRICS_ENABLED=true в .env для просмотра метрик',
+      status: 'Статус',
+      uptime: 'Время работы',
+      connections: 'Соединения',
+      memory: 'Память (RSS)',
+      details: 'Сведения о сервере',
+      heap: 'Всего кучи',
+      lastCheck: 'Последняя проверка',
     },
     error: {
       title: 'Что-то пошло не так',
@@ -207,6 +223,7 @@ export const ru = {
     wallet: adminWalletRu,
     blockedIps: adminBlockedIpsRu,
     bulkRewards: adminBulkRewardsRu,
+    adminXpBackfill: adminXpBackfillRu,
   },
   tournaments: tournamentsRu,
   blog: blogRu,

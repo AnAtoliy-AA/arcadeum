@@ -137,14 +137,14 @@ export function AdminStatisticsView({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-row items-center gap-2.5">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[rgba(87,195,255,0.15)] text-[var(--primary)] print:hidden">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[rgba(87,195,255,0.15)] text-[var(--color)] print:hidden">
                 <BarChartIcon size={20} />
               </div>
               <PageTitle size="lg" gradient>
                 {t?.title ?? 'Platform Analytics & Statistics'}
               </PageTitle>
             </div>
-            <Typography variant="body" uiSize="md" alpha="medium">
+            <Typography variant="body" uiSize="md" alpha="high">
               {t?.subtitle ??
                 'Real-time intelligence on MAU, DAU, engagement retention, playtime, and treasury flow'}
             </Typography>

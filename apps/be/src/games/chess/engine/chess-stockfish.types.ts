@@ -30,7 +30,15 @@ export interface EngineEval {
 export interface EngineLine {
   /** Move quality classification. */
   quality:
-    'brilliant' | 'great' | 'good' | 'inaccuracy' | 'mistake' | 'blunder';
+    | 'brilliant'
+    | 'great'
+    | 'best'
+    | 'excellent'
+    | 'good'
+    | 'book'
+    | 'inaccuracy'
+    | 'mistake'
+    | 'blunder';
   /** The move played (UCI format). */
   move: string;
   /** Centipawn evaluation after this move. */
@@ -66,7 +74,10 @@ export interface GameAnalysisResult {
   summary: {
     brilliant: number;
     great: number;
+    best: number;
+    excellent: number;
     good: number;
+    book: number;
     inaccuracy: number;
     mistake: number;
     blunder: number;

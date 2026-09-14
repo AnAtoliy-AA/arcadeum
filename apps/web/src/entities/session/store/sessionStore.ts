@@ -24,6 +24,8 @@ const defaultSnapshot: SessionTokensSnapshot = {
   displayName: null,
   role: null,
   xp: 0,
+  level: 1,
+  prestige: 0,
   equippedAvatarId: null,
   equippedBadgeId: null,
   equippedNameColorId: null,
@@ -38,6 +40,7 @@ interface SessionState {
   hydrated: boolean;
   refreshInFlight: boolean;
   refreshTimeoutId: ReturnType<typeof setTimeout> | null;
+  anonId: string | null;
 
   mode: LocalAuthMode;
   setMode: (mode: LocalAuthMode) => void;
@@ -76,6 +79,8 @@ function buildSnapshot(
     displayName: input.displayName ?? current.displayName ?? null,
     role: input.role ?? current.role ?? null,
     xp: input.xp ?? current.xp ?? 0,
+    level: input.level ?? current.level ?? 1,
+    prestige: input.prestige ?? current.prestige ?? 0,
     equippedAvatarId:
       input.equippedAvatarId === undefined
         ? (current.equippedAvatarId ?? null)
@@ -129,6 +134,8 @@ function enrichWithResponse(
       null,
     role: response.user?.role ?? snapshot.role ?? null,
     xp: response.user?.xp ?? snapshot.xp ?? 0,
+    level: response.user?.level ?? snapshot.level ?? 1,
+    prestige: response.user?.prestige ?? snapshot.prestige ?? 0,
     equippedAvatarId:
       response.user?.equippedAvatarId ?? snapshot.equippedAvatarId ?? null,
     equippedBadgeId:
@@ -155,6 +162,7 @@ export const useSessionStore = create<SessionState>()(
       hydrated: false,
       refreshInFlight: false,
       refreshTimeoutId: null,
+      anonId: null,
       mode: 'login',
 
       setMode: (mode: LocalAuthMode) => set({ mode }),
@@ -254,25 +262,31 @@ export const useSessionStore = create<SessionState>()(
                 }),
           },
           mode: s.mode,
+          anonId: s.anonId,
         };
       },
       onRehydrateStorage: () => {
         if (typeof window === 'undefined') return () => {};
 
-        const handleStorage = (e: StorageEvent) => {
-          if (e.key !== 'web_session_tokens_v1') return;
-          if (e.newValue) return;
+        return (_state, error) => {
+          if (error) return;
+
+          const ANON_KEY = 'arcadeum_anon_id';
+          const stored = localStorage.getItem(ANON_KEY);
           const current = useSessionStore.getState();
-          if (current.snapshot.userId) {
-            current.clearTokens();
+          if (stored && stored !== current.anonId) {
+            useSessionStore.setState({ anonId: stored });
           }
-        };
 
-        window.addEventListener('storage', handleStorage);
+          const handleStorage = (e: StorageEvent) => {
+            if (e.key !== 'web_session_tokens_v1') return;
+            if (e.newValue) return;
+            if (current.snapshot.userId) {
+              current.clearTokens();
+            }
+          };
 
-        // Return cleanup function to prevent memory leaks
-        return () => {
-          window.removeEventListener('storage', handleStorage);
+          window.addEventListener('storage', handleStorage);
         };
       },
     },

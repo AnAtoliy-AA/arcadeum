@@ -16,7 +16,7 @@ export const enMessages = {
         howToPlayTitle: 'How to play {{gameName}}',
       },
       hero: {
-        title: 'Chess — the timeless strategy game',
+        title: 'Chess — The Ultimate Strategy Game',
         subtitle:
           'Powered by Stockfish 19. Bullet, blitz, rapid, daily, and Chess960. Play against friends, 20 AI personalities, or the entire community.',
         createRoom: 'Create a room',
@@ -72,7 +72,7 @@ export const enMessages = {
         stockfish: {
           question: 'What is Stockfish 19?',
           answer:
-            "Stockfish 19 is the latest release of the world's strongest open-source chess engine. It uses the SFNNv16 neural network architecture and powers all live analysis, game review, and AI bot difficulty on Arcadeum.",
+            "Stockfish 19 is the latest release of the world's strongest open-source chess engine. It uses the SFNNv16 neural network architecture and powers all live analysis, game review, and AI bot difficulty on Arcadeum Games.",
         },
         takeback: {
           question: 'Can I undo a move?',
@@ -84,9 +84,29 @@ export const enMessages = {
           answer:
             'Puzzle Rush is a timed puzzle mode. In Survival, you get 3 lives and try to solve as many puzzles as possible. In Timed mode, you have 3 minutes to solve as many as you can.',
         },
+        tablebases: {
+          question: 'What are Syzygy endgame tablebases?',
+          answer:
+            'Syzygy endgame tablebases provide mathematically perfect play for any position with 7 or fewer pieces on the board, showing instant theoretical win, draw, or loss.',
+        },
+        mobile: {
+          question: 'Can I play chess on mobile without installing an app?',
+          answer:
+            'Yes. Arcadeum Games runs entirely in any modern mobile browser with full touch controls, responsive board resizing, and smooth piece dragging.',
+        },
+        pgn: {
+          question: 'Can I import and export PGN or FEN positions?',
+          answer:
+            'Yes. The analysis board supports one-click PGN copy/paste, FEN position setup, and custom board editing for post-game study.',
+        },
+        free: {
+          question: 'Is chess analysis and game review really 100% free?',
+          answer:
+            'Yes. Full-depth Stockfish 19 analysis, evaluation graphs, accuracy scores, and mistake classification are completely free with zero limits or paywalls.',
+        },
       },
       advantages: {
-        kicker: 'Why Players Choose Arcadeum',
+        kicker: 'Why Players Choose Arcadeum Games',
         title: 'Everything you need to play, learn, and improve',
         items: [
           {

@@ -53,19 +53,19 @@ export type EnglishTranslations = {
  */
 export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
   const [
-    auth,
+    authMod,
     pages,
     chat,
     common,
     history,
     homeMod,
-    legal,
+    legalMod,
     navigation,
     payments,
     pwa,
     settings,
     referrals,
-    seo,
+    seoMod,
     stats,
     support,
     notifications,
@@ -94,10 +94,13 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./wallet'),
   ]);
 
-  const [gamesModule, homeData] = await Promise.all([
+  const [gamesModule, authData, legalData, seoData, homeData] = await Promise.all([
     import('./games/load-games').then(async (m) => ({
       data: await m.loadGames(locale),
     })),
+    authMod.loadAuthMessages(locale),
+    legalMod.loadLegalMessages(locale),
+    seoMod.loadSeoMessages(locale),
     homeMod.loadHomeMessages(locale),
   ]);
 
@@ -107,18 +110,18 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     home: homeData,
     settings: settings[locale],
     support: support[locale],
-    auth: auth[locale],
+    auth: authData,
     navigation: navigation[locale],
     chat: chat.chatMessages[locale],
     chatList: chat.chatListMessages[locale],
     games: gamesModule.data as GamesMessagesBundle,
     history: history[locale],
     payments: payments[locale],
-    legal: legal[locale],
+    legal: legalData,
     stats: stats[locale],
     pwa: pwa[locale],
     referrals: referrals[locale],
-    seo: seo[locale],
+    seo: seoData,
     notifications: notifications[locale],
     battlePass: battlePass[locale],
     musicPlayer: musicPlayer[locale],

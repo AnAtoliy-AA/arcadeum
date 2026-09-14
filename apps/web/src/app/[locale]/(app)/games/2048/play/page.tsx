@@ -4,6 +4,9 @@ import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { PageLayout } from '@arcadeum/ui';
 import { Game2048Client } from './Game2048Client';
 
+export const dynamic = 'force-static';
+export const revalidate = 2592000; // 30 days – ISR: render on first request, cache until user changes language
+
 type PageProps = {
   params: Promise<{ locale: string }>;
 };

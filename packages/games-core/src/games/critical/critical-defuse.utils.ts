@@ -3,7 +3,7 @@ import {
   CriticalPlayerState,
 } from './critical.state';
 import { GameActionResult, GameLogEntry } from '../../base/game-engine.interface';
-import { LogEntryOptions } from './critical-logic.utils';
+import { LogEntryOptions } from './critical-shared.types';
 
 /**
  * Execute Defuse — insert exploding cat back in deck and advance turn

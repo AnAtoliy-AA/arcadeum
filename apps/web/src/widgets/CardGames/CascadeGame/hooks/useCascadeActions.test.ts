@@ -2,7 +2,7 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useCascadeActions } from './useCascadeActions';
 
-const emit = vi.fn();
+const emit = vi.hoisted(() => vi.fn());
 
 vi.mock('@/shared/lib/socket', () => ({
   gameSocket: {

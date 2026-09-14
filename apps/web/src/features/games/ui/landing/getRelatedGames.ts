@@ -18,7 +18,7 @@ const ALL_GAMES: GameInfo[] = [
     category: 'Board Game',
     players: '2 Players',
     description:
-      'The timeless strategy duel with clocks, classic modes, and Chess960 variants.',
+      'The strategy duel with clocks, classic modes, and Chess960 variants.',
     path: (r) => r.chessLanding,
   },
   {

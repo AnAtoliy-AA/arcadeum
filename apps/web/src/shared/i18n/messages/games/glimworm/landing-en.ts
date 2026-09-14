@@ -94,6 +94,31 @@ export const landing = {
         answer:
           'Move your glowing worm around the arena, eat lights to grow longer, and avoid colliding with another worm’s trail. The last worm alive (or the highest-scoring worm at the end of the timer, depending on the mode) wins the round.',
       },
+      controls: {
+        question: 'What controls are supported in Glimworm?',
+        answer:
+          'You can steer your worm using arrow keys, WASD on desktop, or intuitive touch swipe controls on smartphones and tablets.',
+      },
+      tactics: {
+        question: 'What is the best survival tactic in Glimworm?',
+        answer:
+          'Coil defensively around newly spawned glowing orbs and cut off opponent turning angles by predicting their trajectory while avoiding the outer perimeter.',
+      },
+      boost: {
+        question: 'Is there a speed boost mechanic in Glimworm?',
+        answer:
+          'Yes, holding the spacebar or boost icon grants a surge of speed to overtake rivals, consuming a fraction of your worm’s length.',
+      },
+      friends: {
+        question: 'How do I play Glimworm with friends?',
+        answer:
+          'Click Create Room, adjust arena settings, and share your private room link. Your friends can join instantly in any modern web browser without an account.',
+      },
+      noDownload: {
+        question: 'Do I need to download or install an app to play Glimworm?',
+        answer:
+          'No. Glimworm runs at 60 FPS directly in your browser using high-performance WebGL technology on both desktop and mobile devices.',
+      },
     },
   },
   breadcrumb: {

@@ -5,38 +5,8 @@ import {
 } from './critical.state';
 import {
   GameActionResult,
-  GameLogEntry,
-  ChatScope,
 } from '../../base/game-engine.interface';
-
-export interface LogEntryOptions {
-  kind?: string;
-  scope?: ChatScope;
-  senderId?: string | null;
-  senderName?: string | null;
-  targetId?: string | null;
-}
-
-export interface EngineHelpers {
-  addLog: (state: CriticalState, entry: GameLogEntry) => void;
-  createLogEntry: (
-    type: string,
-    message: string,
-    options?: LogEntryOptions,
-  ) => GameLogEntry;
-  advanceTurn: (state: CriticalState) => void;
-  shuffleArray: <T>(array: T[]) => void;
-  findPlayer: (
-    state: CriticalState,
-    playerId: string,
-  ) => CriticalPlayerState | undefined;
-  dispatchCard?: (
-    state: CriticalState,
-    playerId: string,
-    card: CriticalCard,
-    targetPlayerId?: string,
-  ) => GameActionResult<CriticalState> | null;
-}
+import { EngineHelpers } from './critical-shared.types';
 
 /** Cards that cannot be re-executed via echo */
 const ECHO_FORBIDDEN = [
@@ -203,16 +173,15 @@ export function executeFission(
   // Shuffle others
   helpers.shuffleArray(others);
 
-  // Reassemble: Criticals on TOP (index 0), then others
-  // Wait, index 0 is TOP?
-  // In `draw_card`, we use `state.deck.shift()`. Yes, index 0 is top.
-  state.deck = [...criticals, ...others];
+  // Reassemble: Criticals on BOTTOM (last), then shuffled others on top
+  // state.deck.shift() draws from top (index 0), so non-criticals first
+  state.deck = [...others, ...criticals];
 
   helpers.addLog(
     state,
     helpers.createLogEntry(
       'action',
-      `Played Fission: Deck shuffled, Criticals moved to top!`,
+      `Played Fission: Deck shuffled, Criticals moved to bottom!`,
       {
         scope: 'all',
         senderId: playerId,
@@ -276,7 +245,7 @@ export function executeBlackout(
 
   helpers.addLog(
     state,
-    helpers.createLogEntry('action', `Played Blackout!`, {
+    helpers.createLogEntry('action', `Played Blackout! Target is now blind!`, {
       scope: 'all',
       senderId: playerId,
       targetId,

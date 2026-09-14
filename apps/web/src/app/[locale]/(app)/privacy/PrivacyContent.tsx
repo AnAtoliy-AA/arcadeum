@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { appConfig } from '@/shared/config/app-config';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   PageLayout,
   Container,
@@ -106,7 +106,7 @@ export default function PrivacyContent({
               {t?.lastUpdated && (
                 <Typography
                   variant="caption"
-                  alpha="medium"
+                  alpha="high"
                   className="text-xs uppercase tracking-wider text-[var(--textSecondary)]"
                 >
                   {t.lastUpdated}

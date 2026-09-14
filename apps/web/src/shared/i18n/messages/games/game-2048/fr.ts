@@ -38,7 +38,8 @@ export const frMessages = {
     landing: {
       tagline: 'Solo · Sans inscription',
       meta: {
-        title: '2048 — Jeu de puzzle à fusion de tuiles gratuit en ligne | Arcadeum',
+        title:
+          '2048 — Jeu de puzzle à fusion de tuiles gratuit en ligne | Arcadeum',
         description:
           'Jouez gratuitement à 2048 en ligne sur Arcadeum. Glissez et fusionnez des tuiles sur une grille 4×4, battez votre record, progression sauvegardée. Sans téléchargement ni inscription.',
         keywords:
@@ -79,6 +80,43 @@ export const frMessages = {
           question: 'Que se passe-t-il après 2048 ?',
           answer:
             'Vous gagnez — et vous pouvez continuer sur la même grille pour un score encore plus élevé.',
+        },
+        q4: {
+          question: 'Quelle est la meilleure stratégie pour atteindre 2048 ?',
+          answer:
+            'Fixez votre plus grande tuile dans un coin désigné et construisez des chaînes décroissantes le long de ce bord sans jamais bouger le coin.',
+        },
+        q5: {
+          question: 'Quelles nouvelles tuiles apparaissent après chaque coup ?',
+          answer:
+            'Chaque mouvement valide fait apparaître une tuile sur une case vide : 90 % de chances pour un 2 et 10 % de chances pour un 4.',
+        },
+        q6: {
+          question: 'Comment le score est-il calculé dans 2048 ?',
+          answer:
+            'À chaque fusion de deux tuiles identiques, la valeur de la nouvelle tuile créée s’ajoute directement à votre score total.',
+        },
+        q7: {
+          question: 'Quand la partie est-elle perdue ?',
+          answer:
+            'La partie s’achève lorsque les 16 cases sont occupées et qu’aucun mouvement ni fusion adjacente n’est plus possible.',
+        },
+        q8: {
+          question:
+            'Une tuile peut-elle fusionner deux fois de suite en un coup ?',
+          answer:
+            'Non. Une tuile issue d’une fusion ne peut pas se recombiner lors du même glissement, conformément aux règles officielles de 2048.',
+        },
+        q9: {
+          question: 'Peut-on annuler un coup involontaire ?',
+          answer:
+            'Oui. Le 2048 d’Arcadeum propose un bouton d’annulation pour corriger une erreur de glissement et maintenir votre schéma de jeu.',
+        },
+        q10: {
+          question:
+            'Quelle est la tuile maximale atteignable sur une grille 4×4 ?',
+          answer:
+            'La limite mathématique maximale est la tuile 131 072, bien qu’atteindre 4 096 ou 8 192 soit déjà un exploit remarquable.',
         },
       },
       steps: {

@@ -29,6 +29,7 @@ import {
   ensureUserUsername,
   resolveDisplayName,
 } from './auth-helpers';
+import { levelFromXp } from '../xp/lib/xp-level';
 import type {
   AuthUserProfile,
   AuthTokensResponse,
@@ -361,12 +362,15 @@ export class AuthService {
     if (!doc) {
       throw new NotFoundException('User not found');
     }
+    const xp = (doc as { xp?: number }).xp ?? 0;
     return {
       id: String(doc._id),
       username: doc.username,
       displayName: (doc as { displayName?: string }).displayName ?? null,
       role: doc.role ?? 'free',
-      xp: (doc as { xp?: number }).xp ?? 0,
+      xp,
+      level: levelFromXp(xp),
+      prestige: (doc as { prestige?: number }).prestige ?? 0,
       equippedAvatarId:
         (doc as { equippedAvatarId?: string | null }).equippedAvatarId ?? null,
       equippedBadgeId:

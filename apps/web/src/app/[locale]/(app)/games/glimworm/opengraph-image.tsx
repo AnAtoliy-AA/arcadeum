@@ -8,7 +8,8 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
-export const alt = 'Glimworm — free online glow-worm snake arena on Arcadeum';
+export const alt =
+  'Glimworm — free online glow-worm snake arena on Arcadeum Games';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -64,6 +65,7 @@ function GlimwormVisual() {
   return (
     <div
       style={{
+        display: 'flex',
         position: 'relative',
         width: 380,
         height: 380,
@@ -81,7 +83,10 @@ function GlimwormVisual() {
       />
 
       {WORMS.map((worm, wi) => (
-        <div key={wi} style={{ position: 'absolute', inset: 0 }}>
+        <div
+          key={wi}
+          style={{ display: 'flex', position: 'absolute', inset: 0 }}
+        >
           {worm.dots.map((dot, di) => (
             <div
               key={di}

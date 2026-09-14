@@ -49,7 +49,7 @@ export const WeeklyLeagueCard: React.FC<WeeklyLeagueCardProps> = ({
           <span className="text-xs text-[var(--mutedForeground)] block">
             Season ends in
           </span>
-          <span className="text-xs font-mono font-bold text-[var(--primary)]">
+          <span className="text-xs font-mono font-bold text-[var(--color)]">
             {formatLeagueTimeRemaining(timeRemaining)}
           </span>
         </div>
@@ -81,7 +81,7 @@ export const WeeklyLeagueCard: React.FC<WeeklyLeagueCardProps> = ({
                   key={p.userId}
                   className={`transition-colors ${zoneColor} ${
                     isMe
-                      ? 'bg-[var(--primary)]/10 font-bold text-[var(--primary)]'
+                      ? 'bg-[var(--primary)]/10 font-bold text-[var(--color)]'
                       : 'hover:bg-[var(--surfaceHover)] text-[var(--foreground)]'
                   }`}
                 >

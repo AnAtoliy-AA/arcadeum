@@ -19,7 +19,7 @@ import { Typography, type GameVariant } from '@arcadeum/ui';
 import { CardImage } from './styles/card-image';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import type { OmniscienceModalState } from '../types';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface OmniscienceModalProps {
   omniscienceModal: OmniscienceModalState | null;
@@ -62,7 +62,7 @@ export default function OmniscienceModal({
               {resolveDisplayName(hand.playerId, 'Player')}
             </SectionLabel>
             {hand.cards.length === 0 ? (
-              <Typography className={'text-center'} uiSize="sm" alpha="medium">
+              <Typography className={'text-center'} uiSize="sm" alpha="high">
                 {t('games.table.modals.omniscience.emptyHand') ||
                   'No cards in hand.'}
               </Typography>

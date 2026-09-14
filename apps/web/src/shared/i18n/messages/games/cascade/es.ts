@@ -113,6 +113,41 @@ export const esMessages = {
           answer:
             'Los bots prefieren jugadas que coincidan en color, guardan el Comodín +4 para turnos atascados, y eligen el color del que tienen más cartas al nombrar después de un comodín. Casuales pero creíbles.',
         },
+        lastCard: {
+          question: '¿Qué es el aviso de Última Carta (Cascade)?',
+          answer:
+            'Cuando te queda una sola carta debes pulsar Cascade. Si otro jugador te delata antes, debes robar cartas de penalización.',
+        },
+        actionCards: {
+          question: '¿Qué cartas de acción existen en Cascade?',
+          answer:
+            'Cascade incluye Salto, Cambio de Sentido, Roba Dos (+2), Comodín y Comodín Roba Cuatro (+4).',
+        },
+        winCondition: {
+          question: '¿Cómo se gana una partida en Cascade?',
+          answer:
+            'El primer jugador en vaciar su mano gana la ronda. Los puntos de las cartas restantes de los rivales se acumulan en tu marcador.',
+        },
+        jumpIn: {
+          question: '¿Está permitida la regla Intercepción (Jump-In)?',
+          answer:
+            'En salas con Jump-In, si tienes la carta exactamente idéntica (mismo color y número) puedes jugarla de inmediato fuera de turno.',
+        },
+        friends: {
+          question: '¿Cuántos jugadores pueden jugar a Cascade?',
+          answer:
+            'Cascade admite de 2 a 8 jugadores por sala con enlaces directos y bots automáticos.',
+        },
+        mobile: {
+          question: '¿Está Cascade optimizado para móviles?',
+          answer:
+            'Sí. Las cartas se despliegan en abanico con gestos táctiles fluidos para arrastrar y soltar.',
+        },
+        free: {
+          question: '¿Es gratis jugar a Cascade online?',
+          answer:
+            'Sí. Cascade es 100% gratuito en tu navegador sin micropagos ni registros obligatorios.',
+        },
       },
     },
     lobby: {

@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { BCRYPT_SALT_ROUNDS } from '../../common/constants/bcrypt';
 import {
   Injectable,

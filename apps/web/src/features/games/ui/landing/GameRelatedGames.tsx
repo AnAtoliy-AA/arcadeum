@@ -15,7 +15,7 @@ export function GameRelatedGames({
     <section className="box-border flex flex-col gap-6 py-8">
       <div className="box-border flex flex-col gap-1">
         {kicker ? (
-          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
             {kicker}
           </span>
         ) : null}
@@ -37,7 +37,7 @@ export function GameRelatedGames({
                   <Badge variant="neutral" size="sm">
                     {game.category}
                   </Badge>
-                  <span className="box-border text-xs text-[var(--foreground)] opacity-70">
+                  <span className="box-border text-xs text-[var(--foreground)] opacity-85">
                     {game.players}
                   </span>
                 </div>
@@ -46,12 +46,12 @@ export function GameRelatedGames({
                   {game.name}
                 </h3>
 
-                <p className="box-border m-0 text-xs sm:text-sm text-[var(--foreground)] opacity-75 line-clamp-2 leading-relaxed">
+                <p className="box-border m-0 text-xs sm:text-sm text-[var(--foreground)] opacity-90 line-clamp-2 leading-relaxed">
                   {game.description}
                 </p>
               </div>
 
-              <span className="box-border mt-4 text-xs font-bold text-[var(--primary)] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+              <span className="box-border mt-4 text-xs font-bold text-[var(--color)] inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                 Play {game.name} →
               </span>
             </article>

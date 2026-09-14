@@ -85,7 +85,7 @@ export function StatsEngagementRetention({
                 <span className="text-[var(--colorTextSecondary,#a1a1aa)]">
                   {t?.dauMauLabel ?? 'DAU / MAU'}
                 </span>
-                <span className="font-bold text-[var(--primary)]">{dauMau}%</span>
+                <span className="font-bold text-[var(--color)]">{dauMau}%</span>
               </div>
               <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <svg viewBox="0 0 100 6" className="w-full h-full block">

@@ -104,25 +104,25 @@ export function RankTable({
       data-testid="leaderboard-table"
     >
       <HeaderRow>
-        <span className="w-[56px] text-[12px] opacity-[0.6] uppercase">
+        <span className="w-[56px] text-[12px] opacity-[0.9] uppercase">
           {labels.rank ?? '#'}
         </span>
-        <span className="flex-1 text-[12px] opacity-[0.6] uppercase">
+        <span className="flex-1 text-[12px] opacity-[0.9] uppercase">
           {labels.player ?? 'Player'}
         </span>
-        <span className="w-[80px] text-[12px] opacity-[0.6] uppercase">
+        <span className="w-[80px] text-[12px] opacity-[0.9] uppercase">
           {labels.region ?? 'Region'}
         </span>
-        <span className="w-[240px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
+        <span className="w-[240px] text-[12px] opacity-[0.9] uppercase max-[800px]:hidden">
           {labels.rating ?? 'Rating'}
         </span>
-        <span className="w-[140px] text-[12px] opacity-[0.6] uppercase max-[800px]:hidden">
+        <span className="w-[140px] text-[12px] opacity-[0.9] uppercase max-[800px]:hidden">
           {labels.form ?? 'Form'}
         </span>
-        <span className="w-[120px] text-[12px] opacity-[0.6] uppercase max-[1150px]:hidden">
+        <span className="w-[120px] text-[12px] opacity-[0.9] uppercase max-[1150px]:hidden">
           Tags
         </span>
-        <span className="w-[72px] text-[12px] opacity-[0.6] uppercase">
+        <span className="w-[72px] text-[12px] opacity-[0.9] uppercase">
           {labels.trend ?? 'Trend'}
         </span>
       </HeaderRow>
@@ -233,7 +233,7 @@ function RankRow({
             </div>
           ) : null}
           {p.elo ? (
-            <span className="text-[12px] opacity-[0.5] tracking-[1px]">
+            <span className="text-[12px] opacity-[0.9] tracking-[1px]">
               {p.elo} ELO
             </span>
           ) : null}

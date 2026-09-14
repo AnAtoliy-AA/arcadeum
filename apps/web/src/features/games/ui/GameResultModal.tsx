@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { Button, CloseIcon, LinkButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useSound } from '@/shared/lib/sound';
 import { CloseButton } from './SharedModal';
 import { VictoryCelebration } from './VictoryCelebration';
@@ -193,10 +193,17 @@ export function GameResultModal({
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto px-5 pb-4" style={{ minHeight: 0 }}>
+          <div
+            className="flex-1 overflow-y-auto px-5 pb-4"
+            style={{ minHeight: 0 }}
+          >
             {/* Hero: emoji + title */}
             <div className="mb-3 flex flex-col items-center gap-1">
-              <span className="text-6xl select-none" role="img" aria-label={result}>
+              <span
+                className="text-6xl select-none"
+                role="img"
+                aria-label={result}
+              >
                 {emoji}
               </span>
               <h1
@@ -247,7 +254,7 @@ export function GameResultModal({
                       <button
                         type="button"
                         onClick={() => setShowAnalysis(false)}
-                        className="text-[10px] text-[var(--primary)] hover:underline cursor-pointer bg-transparent border-0 p-0"
+                        className="text-[10px] text-[var(--color)] hover:underline cursor-pointer bg-transparent border-0 p-0"
                       >
                         {analysis.backLabel}
                       </button>
@@ -282,9 +289,25 @@ export function GameResultModal({
 
           {/* Fixed Footer — compact row */}
           <div className="flex shrink-0 items-center gap-2 border-t border-[var(--glassBorder)] px-4 py-3">
-            <LinkButton href="/" variant="ghost" size="sm" className="flex-shrink-0">
+            <LinkButton
+              href="/"
+              variant="ghost"
+              size="sm"
+              className="flex-shrink-0"
+            >
               {t('games.common.actions.backToHome')}
             </LinkButton>
+
+            {roomId && (
+              <LinkButton
+                href={`/replay/by-room/${roomId}`}
+                variant="ghost"
+                size="sm"
+                className="flex-shrink-0"
+              >
+                {t('games.replay.card.watch')}
+              </LinkButton>
+            )}
 
             <div className="flex-1" />
 
@@ -299,7 +322,8 @@ export function GameResultModal({
               >
                 {rematchLoading
                   ? t('games.table.rematch.loading' as TranslationKey)
-                  : (rematchLabel ?? t('games.table.rematch.button' as TranslationKey))}
+                  : (rematchLabel ??
+                    t('games.table.rematch.button' as TranslationKey))}
               </Button>
             )}
 
@@ -308,7 +332,9 @@ export function GameResultModal({
                 variant="ghost"
                 size="sm"
                 onClick={secondaryAction.onClick}
-                data-testid={secondaryAction.testId ?? 'result-secondary-button'}
+                data-testid={
+                  secondaryAction.testId ?? 'result-secondary-button'
+                }
               >
                 {secondaryAction.label}
               </Button>

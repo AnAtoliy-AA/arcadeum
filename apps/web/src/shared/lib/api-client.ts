@@ -71,6 +71,19 @@ export async function getOrCreateAnonymousId(): Promise<string | null> {
 
   mirrorAnonymousIdCookie(id);
 
+  if (typeof window !== 'undefined') {
+    try {
+      const { useSessionStore } =
+        await import('@/entities/session/store/sessionStore');
+      const current = useSessionStore.getState();
+      if (current.anonId !== id) {
+        useSessionStore.setState({ anonId: id });
+      }
+    } catch {
+      // Store may not be loaded yet during early initialization
+    }
+  }
+
   return id;
 }
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { Button } from '@arcadeum/ui/components/Button/Button';
 import { CollapsibleSection } from '@arcadeum/ui/components/CollapsibleSection/CollapsibleSection';
 

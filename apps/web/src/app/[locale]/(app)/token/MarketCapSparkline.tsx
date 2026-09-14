@@ -16,7 +16,7 @@ import {
   fetchPoolStats,
   fetchOHLCV,
 } from './chartHelpers';
-import styles from './Sparkline.module.scss';
+import { cx } from '@arcadeum/ui/utils/cx';
 
 const LazyComposedChart = lazy(() =>
   import('recharts').then((m) => ({
@@ -64,27 +64,35 @@ function ChartTooltip({
   const isUp = change >= 0;
 
   return (
-    <div className={styles.chartTooltip}>
-      <div className={styles.tooltipTime}>
+    <div className="p-3 rounded-[10px] bg-[var(--background)] border border-[var(--glassBorderStrong)] shadow-[0_8px_24px_rgba(0,0,0,0.25)] min-w-[160px]">
+      <div className="text-[11px] text-[var(--textSecondary)] mb-2 pb-1.5 border-b border-[var(--glassBorder)]">
         {label ? formatTooltipLabel(Number(label)) : ''}
       </div>
-      <div className={styles.tooltipGrid}>
-        <span className={styles.tooltipKey}>Open</span>
-        <span className={styles.tooltipVal}>{formatPrice(open)}</span>
-        <span className={styles.tooltipKey}>High</span>
-        <span className={styles.tooltipVal}>{formatPrice(high)}</span>
-        <span className={styles.tooltipKey}>Low</span>
-        <span className={styles.tooltipVal}>{formatPrice(low)}</span>
-        <span className={styles.tooltipKey}>Close</span>
+      <div className="grid grid-cols-[auto_1fr] gap-[3px]_2.5">
+        <span className="text-[11px] text-[var(--textSecondary)]">Open</span>
+        <span className="text-[11px] font-semibold text-[var(--color)] text-right">
+          {formatPrice(open)}
+        </span>
+        <span className="text-[11px] text-[var(--textSecondary)]">High</span>
+        <span className="text-[11px] font-semibold text-[var(--color)] text-right">
+          {formatPrice(high)}
+        </span>
+        <span className="text-[11px] text-[var(--textSecondary)]">Low</span>
+        <span className="text-[11px] font-semibold text-[var(--color)] text-right">
+          {formatPrice(low)}
+        </span>
+        <span className="text-[11px] text-[var(--textSecondary)]">Close</span>
         <span
-          className={styles.tooltipVal}
+          className="text-[11px] font-semibold text-right"
           style={{ color: isUp ? '#34d399' : '#f87171' }}
         >
           {formatPrice(close)} ({isUp ? '+' : ''}
           {changePct.toFixed(2)}%)
         </span>
-        <span className={styles.tooltipKey}>Vol</span>
-        <span className={styles.tooltipVal}>{formatVolume(vol)}</span>
+        <span className="text-[11px] text-[var(--textSecondary)]">Vol</span>
+        <span className="text-[11px] font-semibold text-[var(--color)] text-right">
+          {formatVolume(vol)}
+        </span>
       </div>
     </div>
   );
@@ -146,17 +154,29 @@ export default function MarketCapSparkline() {
   const periodVol = data.reduce((a, d) => a + (d.volume ?? 0), 0);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <span className={styles.label}>Price (USD)</span>
-        <div className={styles.priceRow}>
-          <span className={styles.value}>
+    <div className="mb-8 p-5 rounded-[16px] bg-[var(--background)] border border-[var(--glassBorder)]">
+      <style>{`
+        .dark .sp-change-up { color: #34d399; }
+        .dark .sp-change-down { color: #f87171; }
+      `}</style>
+
+      <div className="mb-4">
+        <span className="text-xs text-[var(--textSecondary)] uppercase tracking-[0.08em]">
+          Price (USD)
+        </span>
+        <div className="flex items-baseline gap-3 mt-1">
+          <span className="text-2xl font-bold text-[var(--color)]">
             {formatPriceWithUsdc(
               Number(poolStats?.priceUsd ?? data[data.length - 1]?.value ?? 0),
             )}
           </span>
           <span
-            className={`${styles.change} ${isUp ? styles.changeUp : styles.changeDown}`}
+            className={cx(
+              'text-[13px] font-semibold',
+              isUp
+                ? 'text-[#10b981] sp-change-up'
+                : 'text-[#ef4444] sp-change-down',
+            )}
           >
             {isUp ? '+' : ''}
             {priceChange.toFixed(2)}% ({RANGE_LABEL[selectedRange]})
@@ -164,15 +184,19 @@ export default function MarketCapSparkline() {
         </div>
       </div>
 
-      <div className={styles.chart}>
+      <div className="w-full h-60">
         {loading ? (
-          <div className={styles.loading} />
+          <div className="w-full h-60 rounded-lg bg-[linear-gradient(110deg,var(--backgroundHover)_30%,var(--glassBgHover)_50%,var(--backgroundHover)_70%)] bg-[length:200%_100%] animate-shimmer" />
         ) : data.length === 0 ? (
-          <div className={styles.empty}>
+          <div className="w-full h-60 flex items-center justify-center text-[13px] text-[var(--textSecondary)]">
             No price data available for this range yet.
           </div>
         ) : (
-          <Suspense fallback={<div className={styles.loading} />}>
+          <Suspense
+            fallback={
+              <div className="w-full h-60 rounded-lg bg-[linear-gradient(110deg,var(--backgroundHover)_30%,var(--glassBgHover)_50%,var(--backgroundHover)_70%)] bg-[length:200%_100%] animate-shimmer" />
+            }
+          >
             <LazyResponsiveContainer width="100%" height={240}>
               <LazyComposedChart
                 data={data}
@@ -238,11 +262,16 @@ export default function MarketCapSparkline() {
         )}
       </div>
 
-      <div className={styles.timeRangeButtons}>
+      <div className="flex gap-1 mt-4 justify-center">
         {TIME_RANGES.map((range) => (
           <button
             key={range}
-            className={`${styles.timeRangeBtn} ${selectedRange === range ? styles.timeRangeBtnActive : ''}`}
+            className={cx(
+              'px-3 py-1.5 rounded-lg border border-[var(--glassBorder)] bg-transparent text-[var(--textSecondary)] text-xs font-semibold cursor-pointer transition-all duration-[0.15s] ease-out',
+              'hover:text-[var(--color)] hover:border-[var(--glassBorderStrong)] hover:bg-[var(--backgroundHover)]',
+              selectedRange === range &&
+                'text-[#6366f1] border-[rgba(99,102,241,0.4)] bg-[rgba(99,102,241,0.12)] hover:text-[#818cf8] hover:border-[rgba(99,102,241,0.5)] hover:bg-[rgba(99,102,241,0.18)]',
+            )}
             onClick={() => setSelectedRange(range)}
           >
             {range}
@@ -250,52 +279,58 @@ export default function MarketCapSparkline() {
         ))}
       </div>
 
-      <div className={styles.periodStats}>
-        <div className={styles.periodStat}>
-          <span className={styles.periodStatLabel}>
+      <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-[var(--glassBorder)] max-[480px]:grid-cols-2">
+        <div className="flex flex-col gap-[2px]">
+          <span className="text-[10px] text-[var(--textSecondary)] uppercase tracking-[0.06em]">
             {RANGE_LABEL[selectedRange]} High
           </span>
-          <span className={styles.periodStatValue}>
+          <span className="text-[13px] font-semibold text-[var(--color)]">
             {formatPrice(periodHigh)}
           </span>
         </div>
-        <div className={styles.periodStat}>
-          <span className={styles.periodStatLabel}>
+        <div className="flex flex-col gap-[2px]">
+          <span className="text-[10px] text-[var(--textSecondary)] uppercase tracking-[0.06em]">
             {RANGE_LABEL[selectedRange]} Low
           </span>
-          <span className={styles.periodStatValue}>
+          <span className="text-[13px] font-semibold text-[var(--color)]">
             {formatPrice(periodLow)}
           </span>
         </div>
-        <div className={styles.periodStat}>
-          <span className={styles.periodStatLabel}>
+        <div className="flex flex-col gap-[2px]">
+          <span className="text-[10px] text-[var(--textSecondary)] uppercase tracking-[0.06em]">
             {RANGE_LABEL[selectedRange]} Vol
           </span>
-          <span className={styles.periodStatValue}>
+          <span className="text-[13px] font-semibold text-[var(--color)]">
             {formatVolume(periodVol)}
           </span>
         </div>
         {poolStats && (
           <>
-            <div className={styles.periodStat}>
-              <span className={styles.periodStatLabel}>Liquidity</span>
-              <span className={styles.periodStatValue}>
+            <div className="flex flex-col gap-[2px]">
+              <span className="text-[10px] text-[var(--textSecondary)] uppercase tracking-[0.06em]">
+                Liquidity
+              </span>
+              <span className="text-[13px] font-semibold text-[var(--color)]">
                 {formatVolume(poolStats.liquidity)}
               </span>
             </div>
-            <div className={styles.periodStat}>
-              <span className={styles.periodStatLabel}>Buys (24h)</span>
+            <div className="flex flex-col gap-[2px]">
+              <span className="text-[10px] text-[var(--textSecondary)] uppercase tracking-[0.06em]">
+                Buys (24h)
+              </span>
               <span
-                className={styles.periodStatValue}
+                className="text-[13px] font-semibold"
                 style={{ color: '#34d399' }}
               >
                 {poolStats.txns24h.buys}
               </span>
             </div>
-            <div className={styles.periodStat}>
-              <span className={styles.periodStatLabel}>Sells (24h)</span>
+            <div className="flex flex-col gap-[2px]">
+              <span className="text-[10px] text-[var(--textSecondary)] uppercase tracking-[0.06em]">
+                Sells (24h)
+              </span>
               <span
-                className={styles.periodStatValue}
+                className="text-[13px] font-semibold"
                 style={{ color: '#f87171' }}
               >
                 {poolStats.txns24h.sells}

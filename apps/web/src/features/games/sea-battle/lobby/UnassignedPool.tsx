@@ -2,7 +2,7 @@
 
 import { Button, Card, Typography } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { SeaBattleTeam } from './team-mode.types';
 
 export interface UnassignedPoolMember {

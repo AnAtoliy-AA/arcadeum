@@ -21,6 +21,7 @@ interface AdminNavTranslations {
   games?: string;
   gameRules?: string;
   bulkRewards?: string;
+  xpBackfill?: string;
   blockedIps?: string;
   geoBlock?: string;
   comingSoon?: string;
@@ -58,6 +59,7 @@ export default async function AdminLayoutShell({
       games: navT?.games,
       gameRules: navT?.gameRules,
       bulkRewards: navT?.bulkRewards,
+      xpBackfill: navT?.xpBackfill,
       blockedIps: navT?.blockedIps,
       geoBlock: navT?.geoBlock,
     },

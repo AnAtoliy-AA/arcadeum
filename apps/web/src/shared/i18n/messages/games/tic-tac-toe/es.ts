@@ -84,6 +84,42 @@ export const esMessages = {
           answer:
             'En 3×3 el bot juega minimax perfecto — nunca pierde. En 5×5 bloquea amenazas inmediatas y prefiere el centro. En 7×7 y 9×9 juega heurísticas rápidas de ganar/bloquear con espaciado aleatorio.',
         },
+        firstPlayerAdvantage: {
+          question: '¿Tiene ventaja el primer jugador en Tres en Raya?',
+          answer:
+            'En 3×3 clásico, el juego perfecto siempre lleva al empate. No obstante, quien empieza en una esquina tiene mayores opciones de crear trampas dobles (forks).',
+        },
+        forkStrategy: {
+          question: '¿Qué es una bifurcación o trampa doble (fork)?',
+          answer:
+            'Es una jugada que amenaza ganar en dos líneas simultáneamente, haciendo imposible que el rival bloquee ambas.',
+        },
+        infinityMode: {
+          question: '¿Cómo funciona el modo de tablero Infinito?',
+          answer:
+            'En el tablero Infinito la cuadrícula se expande automáticamente al colocar marcas cerca del borde, evitando empates forzados.',
+        },
+        friends: {
+          question: '¿Cómo invito a mis amigos a jugar a Tres en Raya?',
+          answer:
+            'Haz clic en Crear sala, selecciona el tamaño del tablero y comparte el enlace de invitación.',
+        },
+        drawStrategy: {
+          question:
+            '¿Puede el segundo jugador forzar siempre el empate en 3×3?',
+          answer:
+            'Sí. Tomando el centro o respondiendo en esquinas opuestas, el segundo jugador siempre puede asegurar las tablas.',
+        },
+        mobile: {
+          question: '¿Puedo jugar a Tres en Raya en el móvil?',
+          answer:
+            'Sí. Cuenta con controles táctiles optimizados y respuesta inmediata en cualquier teléfono o tableta.',
+        },
+        free: {
+          question: '¿Es gratis jugar a Tres en Raya en Arcadeum?',
+          answer:
+            'Sí. Es 100% gratis con múltiples temas visuales, modo por equipos y sin anuncios intrusivos.',
+        },
       },
     },
     lobby: {

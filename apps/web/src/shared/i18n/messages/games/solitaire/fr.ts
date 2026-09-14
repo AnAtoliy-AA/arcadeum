@@ -79,6 +79,44 @@ export const frMessages = {
           answer:
             'Oui. Votre donne en cours, votre score et vos statistiques sont stockés localement pour reprendre à tout moment.',
         },
+        q4: {
+          question: 'Quel est l’objectif du Solitaire Klondike ?',
+          answer:
+            'Construire quatre piles de fondation par couleur de l’As au Roi, tout en classant les colonnes du tableau en ordre décroissant de couleurs alternées.',
+        },
+        q5: {
+          question:
+            'Peut-on placer n’importe quelle carte sur un espace vide ?',
+          answer:
+            'Selon les règles officielles du Klondike, seul un Roi ou une suite débutant par un Roi peut occuper une colonne vide.',
+        },
+        q6: {
+          question:
+            'Quelle est la différence entre la donne 1 carte et 3 cartes ?',
+          answer:
+            'Tirer 1 carte retourne une seule carte du talon pour un jeu détendu, tandis que tirer 3 cartes demande une gestion stratégique plus poussée.',
+        },
+        q7: {
+          question: 'Toutes les donnes de Solitaire sont-elles gagnables ?',
+          answer:
+            'Toutes les donnes ne sont pas solvables mathématiquement, mais révéler les cartes cachées au plus tôt optimise fortement vos chances.',
+        },
+        q8: {
+          question:
+            'Peut-on redescendre des cartes des fondations vers le tableau ?',
+          answer:
+            'Oui. Vous pouvez redescendre une carte d’une fondation vers le tableau pour débloquer des cartes face cachée cruciales.',
+        },
+        q9: {
+          question: 'Peut-on jouer au Solitaire sur smartphone et tablette ?',
+          answer:
+            'Oui. Le Solitaire Arcadeum propose des commandes tactiles réactives et des animations douces adaptées à tous les écrans mobiles.',
+        },
+        q10: {
+          question: 'Existe-t-il une option d’annulation des coups ?',
+          answer:
+            'Oui. Vous pouvez annuler vos mouvements à tout moment pour corriger un mauvais coup ou tester une autre séquence de jeu.',
+        },
       },
       steps: {
         create: {

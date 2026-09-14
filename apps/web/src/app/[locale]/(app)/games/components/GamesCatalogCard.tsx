@@ -83,12 +83,12 @@ export function GamesCatalogCard({
         <div className="box-border p-5 pb-3 flex flex-col flex-1 justify-between gap-3">
           <div className="box-border flex flex-col gap-2">
             <div className="box-border flex items-center justify-between gap-2">
-              <h3 className="box-border m-0 text-xl font-bold text-[var(--color)] group-hover:text-[var(--primary)] transition-colors truncate">
+              <h2 className="box-border m-0 text-xl font-bold text-[var(--color)] group-hover:text-[var(--primary)] transition-colors truncate">
                 {game.name}
-              </h3>
+              </h2>
             </div>
 
-            <p className="box-border m-0 text-xs sm:text-sm text-[var(--color)] opacity-75 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+            <p className="box-border m-0 text-xs sm:text-sm text-[var(--color)] opacity-90 line-clamp-2 leading-relaxed min-h-[2.5rem]">
               {game.description}
             </p>
           </div>
@@ -106,7 +106,7 @@ export function GamesCatalogCard({
           <Link
             href={`/${locale}/offline/${game.offlineSlug}`}
             data-testid={`games-catalog-offline-${game.id}`}
-            className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/40 hover:bg-[var(--primary)]/25 transition-colors"
+            className="box-border inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-md bg-[var(--primary)]/15 text-[var(--color)] border border-[var(--primary)]/40 hover:bg-[var(--primary)]/25 transition-colors"
           >
             📶 {offlineBadgeLabel}
           </Link>

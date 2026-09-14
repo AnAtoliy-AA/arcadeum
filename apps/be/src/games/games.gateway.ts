@@ -35,12 +35,15 @@ import {
 } from './games.gateway.room';
 import { registerChatHandlers } from './games.gateway.chat-handlers';
 // prettier-ignore
-import { maybeEncrypt, isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
+import { isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
 import { verifySocketJwt } from '../common/utils/socket-jwt.util';
 import type { GameMessageHandler } from './game-message-handler.interface';
 import { GAME_GATEWAYS } from './game-message-handler.interface';
-
+import {
+  handleMatchmakingJoin,
+  handleMatchmakingLeave,
+} from './games.gateway.matchmaking';
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -103,12 +106,10 @@ export class GamesGateway {
         }
       });
     });
-
     this.logger.debug(
       `Games gateway initialized with ${registry.size} game event handlers.`,
     );
   }
-
   async handleConnection(client: Socket): Promise<void> {
     this.logger.verbose(`Client connected ${client.id}`);
     const authUserId = await verifySocketJwt(
@@ -123,27 +124,25 @@ export class GamesGateway {
       this.logger.debug(
         `Authenticated user ${authUserId} connected to games namespace`,
       );
-      this.realtime.trackSocket(authUserId, client.id);
+      void this.realtime.trackSocket(authUserId, client.id);
     } else {
+      const h = client.handshake;
+      const a = (h?.auth as Record<string, unknown> | undefined)?.anonId;
+      const q = (h?.query as Record<string, unknown> | undefined)?.anonId;
       const anonId =
-        typeof client.handshake?.query?.anonId === 'string'
-          ? client.handshake.query.anonId
-          : undefined;
+        typeof a === 'string' ? a : typeof q === 'string' ? q : undefined;
       const guestId = anonId || `guest_${client.id}`;
       (client.data as Record<string, unknown>).anonId = guestId;
-      this.realtime.trackSocket(guestId, client.id);
+      void this.realtime.trackSocket(guestId, client.id);
       this.logger.verbose(
         `Client connected to games namespace: ${client.id} (${guestId})`,
       );
     }
 
     if (isSocketEncryptionEnabled()) {
-      const hasIdentity =
-        authUserId ||
-        (typeof client.handshake?.query?.anonId === 'string' &&
-          client.handshake.query.anonId.startsWith('anon_'));
-
-      if (hasIdentity) {
+      const aid = (client.data as Record<string, unknown>)?.anonId as
+        string | undefined;
+      if (authUserId || (aid !== undefined && aid.startsWith('anon_'))) {
         try {
           const encryptionKey = getEncryptionKeyHex();
           client.emit('socket.encryption_key', { key: encryptionKey });
@@ -157,13 +156,24 @@ export class GamesGateway {
         );
       }
     }
-
     void client.join(this.realtime.lobbyChannel());
-    if (this.liveStatsService) {
-      void this.liveStatsService.getLiveStats().then((stats) => {
-        this.liveStatsService?.broadcastLiveStats(stats);
-      });
-    }
+
+    void this.realtime.getConnectedUsersCount().then((count) => {
+      client.emit('games.live_stats', { onlineUsers: count });
+    });
+
+    client.on('ping', () => {
+      const uid = (client.data as Record<string, unknown>)?.userId as
+        string | undefined;
+      const aid = (client.data as Record<string, unknown>)?.anonId as
+        string | undefined;
+      void this.realtime.refreshSocket(
+        client.id,
+        uid || aid || `guest_${client.id}`,
+      );
+    });
+
+    this.liveStatsService?.scheduleBroadcast();
   }
 
   handleDisconnect(client: Socket): void {
@@ -175,16 +185,11 @@ export class GamesGateway {
       string | undefined;
     const activeUserId = userId || anonId || `guest_${client.id}`;
     if (activeUserId) {
-      this.realtime.untrackSocket(activeUserId, client.id);
+      void this.realtime.untrackSocket(activeUserId, client.id);
       void this.matchmakingService.leaveQueue(activeUserId);
     }
-    if (this.liveStatsService) {
-      void this.liveStatsService.getLiveStats().then((stats) => {
-        this.liveStatsService?.broadcastLiveStats(stats);
-      });
-    }
+    this.liveStatsService?.scheduleBroadcast();
     if (!activeUserId || !this.server) return;
-
     for (const room of client.rooms) {
       if (room.startsWith('game-room:')) {
         const data = { userId: activeUserId, idle: true };
@@ -323,7 +328,6 @@ export class GamesGateway {
 
     this.realtime.emitSessionSnapshotToClient(client, roomId, diffSession);
   }
-
   @SubscribeMessage('games.player.idle')
   handlePlayerIdle(
     @ConnectedSocket() client: Socket,
@@ -376,6 +380,31 @@ export class GamesGateway {
     );
   }
 
+  @SubscribeMessage('games.room.add_bot')
+  async onAddBot(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { roomId?: string; userId?: string },
+  ): Promise<void> {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    if (!roomId || !userId) throw new WsException('roomId and userId required');
+    this.validateUserId(client, userId);
+    await this.gamesService.addBotToRoom(roomId, userId);
+  }
+  @SubscribeMessage('games.room.remove_bot')
+  async onRemoveBot(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: { roomId?: string; userId?: string; botId?: string },
+  ): Promise<void> {
+    const roomId = extractString(payload, 'roomId');
+    const userId = extractString(payload, 'userId');
+    const botId = extractString(payload, 'botId');
+    if (!roomId || !userId || !botId)
+      throw new WsException('roomId, userId, and botId required');
+    this.validateUserId(client, userId);
+    await this.gamesService.removeBotFromRoom(roomId, userId, botId);
+  }
   @SubscribeMessage('games.session.undo_request')
   onUndoRequest(
     @ConnectedSocket() client: Socket,
@@ -405,7 +434,6 @@ export class GamesGateway {
   ): void {
     handleEmote(this.logger, this.server, client, this.realtime, payload);
   }
-
   @SubscribeMessage('games.session.hint')
   async onRequestHint(
     @ConnectedSocket() client: Socket,
@@ -422,9 +450,8 @@ export class GamesGateway {
       this.chessBotService!,
     );
   }
-
   @SubscribeMessage('games.matchmaking.join')
-  handleMatchmakingJoin(
+  onMatchmakingJoin(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: {
@@ -432,47 +459,30 @@ export class GamesGateway {
       gameId: string;
       variant?: string;
       ranked?: boolean;
+      rating?: number;
     },
   ): void {
-    const userId = extractString(payload, 'userId');
-    const gameId = extractString(payload, 'gameId');
-    const variant = payload.variant ? String(payload.variant) : undefined;
-    const ranked = payload.ranked === true;
-
-    this.validateUserId(client, userId);
-
-    const ipHeader = client.handshake.headers['x-forwarded-for'];
-    const ip =
-      typeof ipHeader === 'string'
-        ? ipHeader.split(',')[0].trim()
-        : client.handshake.address;
-
-    void this.matchmakingService.joinQueue(
-      userId,
-      client.id,
-      gameId,
-      variant,
-      ranked,
-      undefined,
-      ip,
-    );
-    client.emit(
-      'games.matchmaking.joined',
-      maybeEncrypt({ gameId, variant, ranked }),
+    handleMatchmakingJoin(
+      this.logger,
+      client,
+      this.matchmakingService,
+      (c, u) => this.validateUserId(c, u),
+      payload,
     );
   }
-
   @SubscribeMessage('games.matchmaking.leave')
-  handleMatchmakingLeave(
+  onMatchmakingLeave(
     @ConnectedSocket() client: Socket,
     @MessageBody()
     payload: {
       userId: string;
     },
   ): void {
-    const userId = extractString(payload, 'userId');
-    this.validateUserId(client, userId);
-    void this.matchmakingService.leaveQueue(userId);
-    client.emit('games.matchmaking.left', maybeEncrypt({}));
+    handleMatchmakingLeave(
+      client,
+      this.matchmakingService,
+      (c, u) => this.validateUserId(c, u),
+      payload,
+    );
   }
 }

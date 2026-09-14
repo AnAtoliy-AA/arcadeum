@@ -5,12 +5,15 @@ import { analyzeGame } from '../lib/analyzeGame';
 import type { MoveQuality } from '../lib/analyzeGame';
 
 const qualityLabels: Record<MoveQuality, string> = {
+  brilliant: 'Brilliant',
+  great: 'Great',
+  best: 'Best',
+  excellent: 'Excellent',
   good: 'Good',
+  book: 'Book',
   inaccuracy: 'Inaccuracy',
   mistake: 'Mistake',
   blunder: 'Blunder',
-  brilliant: 'Brilliant',
-  great: 'Great',
 };
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
@@ -40,7 +43,7 @@ describe('MoveTimeline', () => {
     );
     expect(screen.getByText('e4')).toBeInTheDocument();
     expect(screen.getByText('Qxd1')).toBeInTheDocument();
-    expect(screen.getAllByText('Good').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Excellent').length).toBeGreaterThan(0);
   });
 
   it('labels a blunder move as a blunder', () => {

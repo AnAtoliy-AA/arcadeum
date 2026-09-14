@@ -177,11 +177,8 @@ export function AppThemeProvider({
 
       // Expose theme switcher to window for E2E audits to avoid full page reloads
       if (process.env.NEXT_PUBLIC_E2E === 'true') {
-        (
-          window as Window & {
-            __SET_THEME__: (theme: string) => void;
-          }
-        ).__SET_THEME__ = (theme: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as unknown as { __SET_THEME__: (theme: string) => void }).__SET_THEME__ = (theme: string) => {
           setThemePreference(theme as ThemePreference);
         };
       }

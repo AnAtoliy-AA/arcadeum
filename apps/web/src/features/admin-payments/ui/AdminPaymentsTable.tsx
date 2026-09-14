@@ -75,7 +75,7 @@ export function AdminPaymentsTable({
         className="p-8 items-center justify-center border border-[var(--borderColor)]"
         data-testid="admin-payments-empty"
       >
-        <Typography variant="body" uiSize="md" alpha="medium">
+        <Typography variant="body" uiSize="md" alpha="high">
           {hasFilter ? labels.empty.noResults : labels.empty.noNotes}
         </Typography>
       </GlassCard>

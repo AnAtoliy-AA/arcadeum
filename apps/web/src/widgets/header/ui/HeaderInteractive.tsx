@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useEffect } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { usePendingFriendRequestCount } from '@/shared/hooks/usePendingFriendRequestCount';
 import { getNotificationsSocket } from '@/shared/lib/socket';
@@ -15,24 +14,6 @@ import {
   CloseIcon,
   GiftIcon,
 } from '@arcadeum/ui/components/Icons/index';
-
-const GearIcon = ({ size = 20 }: { size?: number }) => (
-  <span className="gear-icon-wrapper">
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  </span>
-);
 import { MobileLoginIndicator } from '@arcadeum/ui/components/MobileLoginIndicator/MobileLoginIndicator';
 import ProfileMenu from '@/widgets/header/ui/ProfileMenu';
 import dynamic from 'next/dynamic';
@@ -46,7 +27,11 @@ const NotificationBell = dynamic(
   { ssr: false },
 );
 import LanguageSwitcher from '@/widgets/header/ui/LanguageSwitcher';
-import { LivePulseBadge, LiveActivityPopover } from '@/features/live-stats';
+import {
+  LivePulseBadge,
+  LiveActivityPopover,
+  useLiveStatsWs,
+} from '@/features/live-stats';
 
 import {
   DesktopOnly,
@@ -79,6 +64,8 @@ export function HeaderInteractive({
   const pendingFriendCount = usePendingFriendRequestCount();
   const { snapshot } = useSessionTokens();
 
+  useLiveStatsWs();
+
   useEffect(() => {
     if (!isAuthenticated) return;
     const s = getNotificationsSocket();
@@ -90,6 +77,7 @@ export function HeaderInteractive({
     () => [
       { href: routes.games, label: t('navigation.gamesTab') },
       { href: routes.rooms, label: t('navigation.roomsTab') },
+      { href: routes.leaderboards, label: t('navigation.leaderboardsTab') },
       {
         href: routes.shop,
         label: t('navigation.shopTab'),
@@ -146,12 +134,14 @@ export function HeaderInteractive({
               <HeaderMobileHidden>{balanceChip}</HeaderMobileHidden>
             )}
 
-            <HeaderMobileHidden>
-              <LanguageSwitcher
-                data-testid="header-language-switcher"
-                className="header-language-switcher"
-              />
-            </HeaderMobileHidden>
+            {!isAuthenticated && (
+              <HeaderMobileHidden>
+                <LanguageSwitcher
+                  data-testid="header-language-switcher"
+                  className="header-language-switcher"
+                />
+              </HeaderMobileHidden>
+            )}
 
             {isAuthenticated && (
               <HeaderMobileHidden>
@@ -159,30 +149,12 @@ export function HeaderInteractive({
               </HeaderMobileHidden>
             )}
 
-            {isAuthenticated && displayName && (
-              <HeaderMobileHidden>
-                <ProfileMenu />
-              </HeaderMobileHidden>
-            )}
+            <HeaderMobileHidden>
+              <ProfileMenu />
+            </HeaderMobileHidden>
 
             {!isAuthenticated && (
               <DesktopOnly>
-                <Link
-                  href={routes.settings}
-                  aria-label={t('navigation.settingsTab')}
-                  style={{ textDecoration: 'none', display: 'inline-flex' }}
-                  data-testid="desktop-settings-button"
-                >
-                  <Button
-                    variant="icon"
-                    size="md"
-                    aria-label={t('navigation.settingsTab')}
-                    tabIndex={-1}
-                    className="hover:-translate-y-[2px] hover:scale-[1.1] hover:bg-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.25)]"
-                  >
-                    <GearIcon size={20} />
-                  </Button>
-                </Link>
                 <LinkButton
                   variant="primary"
                   size="sm"

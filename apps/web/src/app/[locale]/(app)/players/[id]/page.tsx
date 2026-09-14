@@ -41,9 +41,27 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale, id } = await params;
   const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  let title: string | undefined;
+  let description: string | undefined;
+
+  try {
+    const profile = await getPlayer(id);
+    if (profile?.player?.name) {
+      const p = profile.player;
+      const rankPart = p.rank ? ` (#${p.rank} ${p.tier})` : '';
+      title = `${p.name}${rankPart} — Player Profile, Stats & Match History`;
+      description = `View ${p.name}'s combat record, ${p.wins} wins (${Math.round(p.winrate * 100)}% win rate), favorite game modes, and ranking history on Arcadeum Games.`;
+    }
+  } catch {
+    title = undefined;
+    description = undefined;
+  }
+
   return buildPageMetadata({
     locale,
     page: 'playerProfile',
+    title,
+    description,
     // /<locale>/players/<id> — same shape across locales.
     pathFor: (r) => `${r.home}/players/${encodeURIComponent(id)}`,
   });
@@ -106,6 +124,7 @@ export default async function PlayerProfilePage({ params }: PageProps) {
       <PlayerProfileClient
         id={id}
         t={t}
+        isSelf={isSelf}
         initialProfile={initialProfile}
         achievementsSlot={
           isSelf ? await AchievementsList({ locale, userId: id }) : undefined

@@ -1,43 +1,14 @@
 import {
   CriticalState,
   CriticalCard,
-  CriticalPlayerState,
 } from './critical.state';
 import {
   GameActionResult,
-  GameLogEntry,
-  ChatScope,
 } from '../../base/game-engine.interface';
 import { CriticalLogic } from './critical-logic.utils';
+import { LogEntryOptions, EngineHelpers } from './critical-shared.types';
 
-export interface LogEntryOptions {
-  kind?: string;
-  scope?: ChatScope;
-  senderId?: string | null;
-  senderName?: string | null;
-  targetId?: string | null;
-}
-
-export interface EngineHelpers {
-  addLog: (state: CriticalState, entry: GameLogEntry) => void;
-  createLogEntry: (
-    type: string,
-    message: string,
-    options?: LogEntryOptions,
-  ) => GameLogEntry;
-  advanceTurn: (state: CriticalState) => void;
-  shuffleArray: <T>(array: T[]) => void;
-  findPlayer: (
-    state: CriticalState,
-    playerId: string,
-  ) => CriticalPlayerState | undefined;
-  dispatchCard?: (
-    state: CriticalState,
-    playerId: string,
-    card: CriticalCard,
-    targetPlayerId?: string,
-  ) => GameActionResult<CriticalState> | null;
-}
+export type { LogEntryOptions, EngineHelpers };
 
 /**
  * Dispatcher for all Future Pack cards.
@@ -189,11 +160,19 @@ export function executeCommitAlterFuture(
     return { success: false, error: 'Invalid number of cards returned' };
   }
 
-  // Validate that the returned cards match the actual top cards (integrity check)
-  // This is a loose check; essentially we trust the reordering but could verify exact multiset match.
-  // For now, simpler implementation:
-  // Sort both and compare for basic integrity?
-  // skipping complex validation for MVP, assuming client sends valid reorder of what they got.
+  // Validate that the returned cards are a permutation of the original top cards
+  const originalTop = state.deck.slice(0, state.pendingAlter.count);
+  const sortedOriginal = [...originalTop].sort();
+  const sortedNew = [...newOrder].sort();
+  if (
+    sortedOriginal.length !== sortedNew.length ||
+    sortedOriginal.some((c, i) => c !== sortedNew[i])
+  ) {
+    return {
+      success: false,
+      error: 'Invalid card reorder: must be a permutation of the original top cards',
+    };
+  }
 
   // Apply new order
   state.deck.splice(0, state.pendingAlter.count, ...newOrder);

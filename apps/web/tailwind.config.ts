@@ -133,6 +133,19 @@ export default {
           '0%': { backgroundPosition: '200% 0' },
           '100%': { backgroundPosition: '-200% 0' },
         },
+        'capture-remove': {
+          '0%': { transform: 'translate(-50%, -50%) scale(1)', opacity: '1' },
+          '50%': {
+            transform: 'translate(-50%, -50%) scale(1.3)',
+            opacity: '0.7',
+          },
+          '100%': { transform: 'translate(-50%, -50%) scale(0)', opacity: '0' },
+        },
+        'animated-dice-shake': {
+          '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
+          '25%': { transform: 'rotate(-8deg) scale(1.06)' },
+          '75%': { transform: 'rotate(8deg) scale(1.06)' },
+        },
       },
       animation: {
         'hero-float-3d': 'hero-float-3d 6s ease-in-out infinite',
@@ -140,6 +153,7 @@ export default {
         'hero-color-shift': 'hero-color-shift 15s linear infinite',
         'pulse-ring': 'pulse-animation 2s infinite',
         shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',
+        'capture-remove': 'capture-remove 0.4s ease-out forwards',
       },
     },
   },

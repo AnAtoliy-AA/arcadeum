@@ -1,10 +1,15 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TUTORIALS_STORAGE_KEY, useTutorialStore } from './tutorialStore';
 
 describe('tutorialStore', () => {
   beforeEach(() => {
     localStorage.clear();
-    useTutorialStore.setState({ completedAt: {}, dismissedAt: {} });
+    useTutorialStore.setState({
+      completedAt: {},
+      dismissedAt: {},
+      activeExpectedAction: null,
+      interactiveCallback: null,
+    });
   });
 
   it('starts with nothing seen or completed', () => {
@@ -59,5 +64,29 @@ describe('tutorialStore', () => {
       state: { completedAt: Record<string, number> };
     };
     expect(parsed.state.completedAt['pachisi_v1']).toBeGreaterThan(0);
+  });
+
+  it('records matching game action and triggers callback', () => {
+    const callback = vi.fn();
+    useTutorialStore.getState().setExpectedAction('move', callback);
+
+    const wrongMatch = useTutorialStore.getState().recordGameAction('click');
+    expect(wrongMatch).toBe(false);
+    expect(callback).not.toHaveBeenCalled();
+
+    const rightMatch = useTutorialStore.getState().recordGameAction('move');
+    expect(rightMatch).toBe(true);
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    expect(useTutorialStore.getState().activeExpectedAction).toBeNull();
+  });
+
+  it('matches any action when configured with any', () => {
+    const callback = vi.fn();
+    useTutorialStore.getState().setExpectedAction('any', callback);
+
+    const match = useTutorialStore.getState().recordGameAction('card_played');
+    expect(match).toBe(true);
+    expect(callback).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Matches } from 'class-validator';
 
 export class UpdatePreferencesDto {
   @IsOptional()
@@ -16,4 +16,13 @@ export class UpdatePreferencesDto {
   @IsOptional()
   @IsBoolean()
   announcement_new?: boolean;
+
+  /**
+   * IANA timezone identifier (e.g. "America/New_York", "Europe/London").
+   * null resets to UTC. Validated loosely — the cron will skip invalid values.
+   */
+  @IsOptional()
+  @IsString()
+  @Matches(/^[A-Za-z_]+\/[A-Za-z_]+([A-Za-z_]*\/[A-Za-z_]*)?$/)
+  timezone?: string;
 }

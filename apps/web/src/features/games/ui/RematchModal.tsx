@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface PlayerInfo {
   playerId: string;
@@ -119,11 +119,12 @@ const MessageInput = ({
 }) => (
   <textarea
     className={cx(
-      'w-full p-3 mb-4 bg-[var(--glassBg)] border border-[var(--glassBorder)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] outline-none transition-colors placeholder:text-[var(--textSecondary)] focus:border-indigo-500 focus:bg-[var(--glassBgHover)]',
+      'w-full p-3 mb-4 bg-[var(--glassBg)] border border-[var(--glassBorder)] rounded-[12px] text-[var(--color)] min-h-[80px] text-[16px] transition-colors placeholder:text-[var(--textSecondary)] focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/50 focus:bg-[var(--glassBgHover)]',
     )}
     value={value}
     onChange={onChange}
     placeholder={placeholder}
+    aria-label={placeholder}
     disabled={disabled}
   />
 );

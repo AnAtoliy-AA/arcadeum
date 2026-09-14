@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Typography, FilterChip, EmptyState } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { Tier, TierFeature } from '../roadmap-data';
 import { StatusBadge } from '../TierCard';
 
@@ -56,15 +56,17 @@ export function RoadmapFeaturesTable({ tiers }: { tiers: Tier[] }) {
             🔍
           </div>
           <input
-            type="text"
+            type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('pages.roadmap.filters.searchPlaceholder')}
+            aria-label={t('pages.roadmap.filters.searchPlaceholder')}
             className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-[var(--bgCard)] border border-[var(--glassBorder)] text-sm text-[var(--foreground)] placeholder:text-[var(--foregroundSecondary)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors"
           />
           {searchQuery && (
             <button
               type="button"
+              aria-label="Clear search"
               onClick={() => setSearchQuery('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--foregroundSecondary)] hover:text-[var(--foreground)] w-5 h-5 rounded-full bg-[var(--glassBg)] flex items-center justify-center"
             >
@@ -170,7 +172,7 @@ export function RoadmapFeaturesTable({ tiers }: { tiers: Tier[] }) {
                       {f.title}
                     </Typography>
                     {f.arc && (
-                      <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/25">
+                      <span className="px-1.5 py-0.2 rounded font-mono text-[10px] font-semibold bg-[var(--primary)]/15 text-[var(--color)] border border-[var(--primary)]/25">
                         {f.arc}
                       </span>
                     )}
@@ -182,7 +184,7 @@ export function RoadmapFeaturesTable({ tiers }: { tiers: Tier[] }) {
                   <Typography
                     variant="body"
                     uiSize="sm"
-                    alpha="medium"
+                    alpha="high"
                     className="leading-relaxed line-clamp-2"
                   >
                     {f.desc}

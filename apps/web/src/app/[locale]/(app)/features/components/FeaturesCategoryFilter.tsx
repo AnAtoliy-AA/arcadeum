@@ -58,11 +58,11 @@ export function FeaturesCategoryFilter({
             type="button"
             data-testid="features-clear-filters"
             onClick={onClearFilters}
-            className="px-3 py-1 rounded-lg font-bold text-[var(--primary)] hover:bg-[var(--primary)]/10 transition-colors"
+            className="px-3 py-1 rounded-lg font-bold text-[var(--color)] hover:bg-[var(--primary)]/10 transition-colors"
           >
             {clearFiltersText}
           </button>
-          <Typography variant="caption" uiSize="xs" alpha="medium">
+          <Typography variant="caption" uiSize="xs" alpha="high">
             {filteredCount} of {totalCount} sections match
           </Typography>
         </div>

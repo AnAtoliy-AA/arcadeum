@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useMemo, type ComponentType } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { logoutSession } from '@/entities/session/api/authApi';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useCosmeticBadges } from '@/features/referrals/hooks/useCosmeticBadges';
 import { CosmeticBadge } from '@arcadeum/ui/components/CosmeticBadge/CosmeticBadge';
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -39,11 +40,13 @@ import {
   UserIcon,
   WalletIcon,
   PlayIcon,
+  DiscordIcon,
 } from '@arcadeum/ui/components/Icons/index';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useHeaderAuth } from './useHeaderAuth';
 import LanguagePills from './LanguagePills';
 import { usePWAOptional } from '@/features/pwa/context';
+import { canonicalKeyFor, type Locale } from '@/shared/config/locale-slugs';
 
 interface MobileMenuProps {
   navItems: Array<{
@@ -71,8 +74,13 @@ const NAV_ICON_BY_SLUG: Record<string, IconComponent> = {
 };
 
 function iconForHref(href: string): IconComponent | undefined {
-  const last = href.split('/').filter(Boolean).pop();
-  return last ? NAV_ICON_BY_SLUG[last] : undefined;
+  const parts = href.split('/').filter(Boolean);
+  const last = parts[parts.length - 1];
+  if (!last) return undefined;
+  if (NAV_ICON_BY_SLUG[last]) return NAV_ICON_BY_SLUG[last];
+  const locale = parts[0] as Locale;
+  const canonical = canonicalKeyFor(locale, last);
+  return canonical ? NAV_ICON_BY_SLUG[canonical] : undefined;
 }
 
 export default function MobileMenu({
@@ -86,6 +94,19 @@ export default function MobileMenu({
   const routes = useRoutes();
   const mounted = useIsMounted();
   const { isAuthenticated, displayName } = useHeaderAuth();
+  const isAnonymous = !snapshot.accessToken;
+  const anonSuffix = snapshot.userId?.startsWith('anon_')
+    ? snapshot.userId.slice(5, 9)
+    : snapshot.userId
+      ? snapshot.userId.slice(0, 4)
+      : '';
+  const guestName = anonSuffix ? `Guest #${anonSuffix}` : 'Guest';
+  const resolvedDisplayName =
+    displayName ||
+    snapshot.displayName ||
+    snapshot.username ||
+    snapshot.email ||
+    guestName;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
   const pwa = usePWAOptional();
@@ -126,10 +147,20 @@ export default function MobileMenu({
 
   return (
     <MobileNav data-mobile-menu data-testid="mobile-nav">
-      {isAuthenticated && displayName ? (
+      <Link
+        href={
+          !isAnonymous &&
+          snapshot.userId &&
+          typeof routes.profile === 'function'
+            ? routes.profile(snapshot.userId)
+            : routes.auth || '/auth'
+        }
+        className="block link-no-decoration"
+        data-testid="mobile-user-card-link"
+      >
         <MobileUserCard data-testid="mobile-user-card">
           <EquippedPlayerAvatar
-            name={displayName}
+            name={resolvedDisplayName}
             size="md"
             equippedAvatarId={snapshot.equippedAvatarId}
             equippedBadgeId={snapshot.equippedBadgeId}
@@ -138,15 +169,22 @@ export default function MobileMenu({
             equippedAuraId={snapshot.equippedAuraId}
             equippedBannerId={snapshot.equippedBannerId}
             equippedGameSkinId={snapshot.equippedGameSkinId}
+            fallbackAvatarUrl={
+              isAnonymous ? '/shop/avatars/default-01.png' : undefined
+            }
           />
           <div className="flex min-w-[120px] flex-1 flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
-              <UserNameEllipsis>{displayName}</UserNameEllipsis>
-              {role !== 'free' && (
+              <UserNameEllipsis>{resolvedDisplayName}</UserNameEllipsis>
+              {!isAnonymous && role !== 'free' && (
                 <RoleBadge role={role}>{t(`common.roles.${role}`)}</RoleBadge>
               )}
             </div>
-            {cosmeticBadges?.length ? (
+            {isAnonymous ? (
+              <span className="text-[11px] text-[var(--textSecondary)]">
+                {t('common.actions.login')} &rarr;
+              </span>
+            ) : cosmeticBadges?.length ? (
               <div className="flex flex-wrap gap-1">
                 {cosmeticBadges.map((badgeId) => (
                   <CosmeticBadge key={badgeId} badgeId={badgeId} />
@@ -155,7 +193,9 @@ export default function MobileMenu({
             ) : null}
           </div>
         </MobileUserCard>
-      ) : (
+      </Link>
+
+      {isAnonymous && (
         <LinkButton
           href={routes.auth}
           variant="primary"
@@ -243,6 +283,16 @@ export default function MobileMenu({
         >
           {t('common.actions.support')}
         </NavMobileLink>
+        <a
+          href={appConfig.social.discord ?? 'https://discord.gg/arcadeum'}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="mobile-discord-link"
+          className="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-[16px] text-[var(--color)] hover:bg-[var(--backgroundHover)] transition-colors"
+        >
+          <DiscordIcon size={18} />
+          <span>{t('navigation.discordCommunity')}</span>
+        </a>
       </MobileSection>
 
       {isAuthenticated && (

@@ -72,8 +72,11 @@ export function CreateClanModal({ open, onClose }: CreateClanModalProps) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium">Description</label>
+          <label htmlFor="clan-description" className="text-sm font-medium">
+            Description
+          </label>
           <textarea
+            id="clan-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe your clan..."

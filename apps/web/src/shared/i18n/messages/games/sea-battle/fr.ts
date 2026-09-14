@@ -419,6 +419,17 @@ export const frMessages = {
             answer:
               'Chaque joueur place secrètement une flotte sur une grille 10×10, puis les joueurs tirent à tour de rôle sur une case de la grille de chaque adversaire. Les touches sont marquées en rouge, les ratés en blanc. Quand toutes les cases d’un navire sont touchées, il coule. Le dernier joueur avec au moins un navire à flot gagne.',
           },
+          parity: {
+            question:
+              'Qu’est-ce que la recherche par parité dans la Bataille Navale ?',
+            answer:
+              'Comme tout navire multi-cases occupe au moins deux cases consécutives, cibler un motif de damier en alternant les cases garantit de localiser chaque bateau en réduisant le nombre de tirs de moitié.',
+          },
+          mobile: {
+            question: 'Peut-on jouer à la Bataille Navale sur mobile ?',
+            answer:
+              'Oui. La Bataille Navale tourne directement dans votre navigateur mobile avec commandes tactiles, création de salon instantanée et sans installation.',
+          },
         },
       },
       finalCta: {

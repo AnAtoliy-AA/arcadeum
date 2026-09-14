@@ -39,7 +39,18 @@ const PLAYABLE_CARD_IDS: readonly string[] = [
   'bury', // Other Future
   'trade', // Favor
   'mark',
-  'steal_draw', // Theft
+  'steal_draw',
+  'swap_hands',
+  'snatch', // Theft
+  'scramble',
+  'echo', // Chaos
+  'omniscience',
+  'miracle',
+  'smite',
+  'rapture',
+  'resurrection',
+  'judgment',
+  'prophecy', // Deity
 ];
 
 /** Hostile actions a bot wants to Nope. */
@@ -50,6 +61,9 @@ const HOSTILE_ACTIONS: readonly string[] = [
   'recursive_strike',
   'mark',
   'steal_draw',
+  'smite',
+  'rapture',
+  'snatch',
 ];
 
 /**
@@ -114,19 +128,23 @@ export class CriticalBot {
     if (difficulty === 'expert') {
       // Bury any bombs to the back so the next player won't draw them.
       const bombs = newOrder.filter(
-        (c): c is CriticalCard => c === 'critical_event',
+        (c): c is CriticalCard =>
+          c === 'critical_event' || c === 'critical_implosion',
       );
       const remaining = newOrder.filter(
-        (c): c is CriticalCard => c !== 'critical_event',
+        (c): c is CriticalCard =>
+          c !== 'critical_event' && c !== 'critical_implosion',
       );
       newOrder = remaining.concat(bombs);
     } else if (difficulty === 'hard' && Math.random() < 0.5) {
       // Hard bots bury bombs half the time, otherwise shuffle randomly.
       const bombs = newOrder.filter(
-        (c): c is CriticalCard => c === 'critical_event',
+        (c): c is CriticalCard =>
+          c === 'critical_event' || c === 'critical_implosion',
       );
       const remaining = newOrder.filter(
-        (c): c is CriticalCard => c !== 'critical_event',
+        (c): c is CriticalCard =>
+          c !== 'critical_event' && c !== 'critical_implosion',
       );
       newOrder = remaining.concat(bombs);
     } else {

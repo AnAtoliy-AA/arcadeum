@@ -156,7 +156,7 @@ export function SocialRewardsSection({
         <Typography variant="heading" uiSize="xl" weight="800">
           {title}
         </Typography>
-        <Typography variant="body" uiSize="md" alpha="medium">
+        <Typography variant="body" uiSize="md" alpha="high">
           {subtitle}
         </Typography>
       </div>

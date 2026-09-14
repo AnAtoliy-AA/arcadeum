@@ -6,7 +6,7 @@ import { gameFactory } from '@/features/games/lib/gameFactory';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { setOfflineGameRouter } from '@/shared/lib/socket';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   handleOfflineGameEvent,
   attachSession,
@@ -175,7 +175,7 @@ function OfflineNotice({
         {message}
       </p>
       <a
-        className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
+        className="text-sm text-[var(--color)] underline-offset-4 hover:underline"
         href="../games"
       >
         {linkLabel}

@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import { GlimwormLandingView } from './GlimwormLandingView';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const GLIMWORM_SLUG = 'glimworm_v1';
 const GLIMWORM_MIN_PLAYERS = 2;
@@ -77,27 +81,46 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
   const gameName = messages.games?.glimworm_v1?.name ?? 'Glimworm';
   const description = landing?.meta?.description ?? '';
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: GLIMWORM_SLUG,
-      gameName,
-      description,
-      locale,
-      minPlayers: GLIMWORM_MIN_PLAYERS,
-      maxPlayers: GLIMWORM_MAX_PLAYERS,
-      genre: GLIMWORM_GENRE,
-      alternateName: [
-        'Glimworm Online',
-        'Glow Snake Arena',
-        'Neon Snake Multiplayer',
-      ],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: GLIMWORM_SLUG,
+    slug: 'glimworm',
+    gameName,
+    description,
+    locale,
+    minPlayers: GLIMWORM_MIN_PLAYERS,
+    maxPlayers: GLIMWORM_MAX_PLAYERS,
+    genre: GLIMWORM_GENRE,
+    alternateName: [
+      'Glimworm Online',
+      'Glow Snake Arena',
+      'Neon Snake Multiplayer',
+    ],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing?.howToPlay?.steps
+      ? {
+          name:
+            landing.howToPlay.title ??
+            `How to Play Glimworm on ${appConfig.appName}`,
+          description:
+            landing.meta?.description ??
+            'Play Glimworm — a neon multiplayer snake arena for 2 to 10 players. No download or signup required.',
+          steps: Object.values(landing.howToPlay.steps).map((s) => ({
+            name: s.title,
+            text: s.body,
+          })),
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq?.items
+      ? Object.values(landing.faq.items).map((f) => ({
+          question: f.question,
+          answer: f.answer,
+        }))
+      : undefined,
+  });
 
   const relatedPosts = getPostsByTag(locale, ['Glimworm', 'Snake', 'Arcade']);
 

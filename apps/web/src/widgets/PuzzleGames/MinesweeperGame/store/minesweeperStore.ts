@@ -2,9 +2,10 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { useLocalStatsStore } from '@/features/stats/store/statsStore';
-import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
-import { useSessionStore } from '@/entities/session/store/sessionStore';
+import {
+  finishIfOver,
+  undoReducer,
+} from '@/features/games/lib/solo-game-store';
 import { newGame, revealCell, toggleFlag } from '../lib/engine';
 import type { Difficulty, MinesweeperState } from '../types';
 
@@ -12,59 +13,21 @@ export const MINESWEEPER_GAME_ID = 'minesweeper_v1';
 
 export interface FinishedGameInfo {
   won: boolean;
-  /** Seconds elapsed between the first reveal and the final move. */
   durationSeconds: number | null;
 }
 
 interface MinesweeperStoreState {
   game: MinesweeperState;
-  /** Timestamp of the first reveal — the classic minesweeper clock. */
   startedAt: number | null;
   finishedAt: number | null;
-  /** Set once per completed game; consumed by the UI to show the result dialog. */
   finished: FinishedGameInfo | null;
+  history: MinesweeperState[];
+  usedUndo: boolean;
   reveal: (index: number) => void;
   flag: (index: number) => void;
+  undo: () => void;
   changeDifficulty: (difficulty: Difficulty) => void;
   newGame: () => void;
-}
-
-function finishIfOver(
-  game: MinesweeperState,
-  startedAt: number | null,
-): Pick<MinesweeperStoreState, 'finishedAt' | 'finished'> | null {
-  if (game.status === 'playing') return null;
-
-  const finishedAt = Date.now();
-  const durationMs = startedAt === null ? 0 : finishedAt - startedAt;
-  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
-  const sessionId = `ms_${userId}_${finishedAt}`;
-
-  void useLocalStatsStore.getState().recordGameResult({
-    gameId: MINESWEEPER_GAME_ID,
-    result: game.status === 'won' ? 'won' : 'lost',
-    timestamp: finishedAt,
-  });
-
-  useSoloScoreStore.getState().addScore({
-    gameId: MINESWEEPER_GAME_ID,
-    difficulty: game.difficulty,
-    score: durationMs,
-    moves: 0,
-    durationMs,
-    result: game.status === 'won' ? 'won' : 'lost',
-    sessionId,
-    timestamp: finishedAt,
-  });
-
-  return {
-    finishedAt,
-    finished: {
-      won: game.status === 'won',
-      durationSeconds:
-        startedAt === null ? null : Math.round((finishedAt - startedAt) / 1000),
-    },
-  };
 }
 
 export const useMinesweeperStore = create<MinesweeperStoreState>()(
@@ -74,21 +37,41 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
       startedAt: null,
       finishedAt: null,
       finished: null,
+      history: [],
+      usedUndo: false,
 
       reveal: (index) =>
         set((state) => {
           if (state.finishedAt !== null) return state;
-          // Engine handles hidden reveals, chords on satisfied numbers,
-          // and no-ops (flagged/revealed cells return the same reference).
           const game = revealCell(state.game, index);
           if (game === state.game) return state;
-          // The classic clock starts ticking on the very first reveal.
           const startedAt =
             state.startedAt ?? (game.generated ? Date.now() : state.startedAt);
+          const effectiveStartedAt = startedAt ?? Date.now();
+          const isOver = game.status !== 'playing';
+          const result = finishIfOver<FinishedGameInfo>(
+            {
+              gameId: MINESWEEPER_GAME_ID,
+              sessionPrefix: 'ms',
+              difficulty: game.difficulty,
+              isOver,
+              won: game.status === 'won',
+              score: 0,
+              moves: 0,
+              startedAt: effectiveStartedAt,
+              usedUndo: state.usedUndo,
+            },
+            (info) => ({
+              won: info.won,
+              durationSeconds:
+                startedAt === null ? null : Math.round(info.durationMs / 1000),
+            }),
+          );
           return {
+            history: [...state.history, state.game],
             game,
             startedAt,
-            ...finishIfOver(game, startedAt),
+            ...(result ?? {}),
           };
         }),
 
@@ -97,7 +80,16 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
           if (state.finishedAt !== null) return state;
           const game = toggleFlag(state.game, index);
           if (game === state.game) return state;
-          return { game };
+          return {
+            history: [...state.history, state.game],
+            game,
+          };
+        }),
+
+      undo: () =>
+        set((state) => {
+          const update = undoReducer(state.history, state.finishedAt);
+          return update ?? state;
         }),
 
       changeDifficulty: (difficulty) =>
@@ -106,6 +98,8 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
           startedAt: null,
           finishedAt: null,
           finished: null,
+          history: [],
+          usedUndo: false,
         }),
 
       newGame: () =>
@@ -114,6 +108,8 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
           startedAt: null,
           finishedAt: null,
           finished: null,
+          history: [],
+          usedUndo: false,
         })),
     }),
     {
@@ -124,6 +120,8 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
         startedAt: state.startedAt,
         finishedAt: state.finishedAt,
         finished: state.finished,
+        history: state.history,
+        usedUndo: state.usedUndo,
       }),
     },
   ),

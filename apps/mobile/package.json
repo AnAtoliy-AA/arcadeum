@@ -1,7 +1,7 @@
 {
   "name": "mobile",
   "main": "expo-router/entry",
-  "version": "1.28.54",
+  "version": "1.29.48",
   "scripts": {
     "postinstall": "sh scripts/fix-hermesc.sh",
     "dev": "node ./scripts/dev.js",
@@ -30,6 +30,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@arcadeum/games-core": "workspace:*",
     "@expo/metro-runtime": "~57.0.15",
     "@expo/vector-icons": "^15.1.1",
     "@noble/ciphers": "^2.4.0",
@@ -58,7 +59,7 @@
     "expo-web-browser": "~57.0.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-native": "0.87.1",
+    "react-native": "~0.86.2",
     "react-native-app-auth": "^8.4.1",
     "react-native-draggable-flatlist": "^4.0.3",
     "react-native-gesture-handler": "~2.32.0",
@@ -83,7 +84,7 @@
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.2.0",
-    "@react-native/assets-registry": "^0.87.1",
+    "@react-native/assets-registry": "~0.86.2",
     "babel-preset-expo": "~57.0.10",
     "dotenv": "^17.4.2",
     "eas-cli": "^16.32.0",

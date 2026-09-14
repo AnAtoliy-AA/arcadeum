@@ -71,7 +71,7 @@ export function GameName({
     <span
       style={gradient ? { backgroundImage: gradient } : undefined}
       className={cx(
-        'text-[15px] font-bold text-[var(--color)] opacity-[0.9] truncate',
+        'text-[15px] font-bold text-[var(--color)] opacity-100 truncate',
         gradient ? 'text-gradient' : undefined,
         className,
       )}
@@ -166,7 +166,7 @@ export function MetaIcon({
   children?: ReactNode;
 }) {
   return (
-    <span className={cx('text-[16px] opacity-[0.8]', className)}>
+    <span className={cx('text-[16px] opacity-[0.95]', className)}>
       {children}
     </span>
   );
@@ -182,7 +182,7 @@ export function MetaLabel({
   return (
     <span
       className={cx(
-        'text-[12px] leading-[16px] font-medium text-[var(--color)] opacity-[0.5]',
+        'text-[12px] leading-[16px] font-medium text-[var(--color)] opacity-[0.85]',
         className,
       )}
     >
@@ -220,7 +220,7 @@ export function ParticipantsLabel({
   return (
     <span
       className={cx(
-        'text-[11px] leading-[14px] font-semibold uppercase tracking-[1px] text-[var(--color)] opacity-[0.5] mb-2',
+        'text-[11px] leading-[14px] font-semibold uppercase tracking-[1px] text-[var(--color)] opacity-[0.85] mb-2',
         className,
       )}
     >

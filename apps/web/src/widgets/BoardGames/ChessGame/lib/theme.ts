@@ -2,7 +2,8 @@ import {
   getThemeById,
   SHARED_THEMES,
 } from '@/features/games/lib/shared-themes';
-import { sharedThemeToChess } from './theme-adapter';
+import { sharedThemeToChess, boardVars } from './theme-adapter';
+export { boardVars };
 
 export interface ChessTheme {
   background: string;

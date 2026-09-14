@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
@@ -66,6 +67,7 @@ describe('BattlePassService (integration)', () => {
     moduleRef = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({ isGlobal: true }),
+        CacheModule.register({ isGlobal: true }),
         MongooseModule.forRoot(getSharedMongoUri(), {
           dbName: 'battle-pass-integration',
         }),

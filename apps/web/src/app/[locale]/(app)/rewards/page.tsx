@@ -15,7 +15,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'rewards' }) : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'rewards', noIndex: true }) : {};
 }
 
 export default async function RewardsPage({

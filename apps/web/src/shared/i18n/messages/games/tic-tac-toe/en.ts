@@ -83,6 +83,41 @@ export const enMessages = {
           answer:
             'On 3×3 the bot plays perfect minimax — it never loses. On 5×5 it blocks immediate threats and biases the centre. On 7×7 and 9×9 it plays a fast win/block heuristic with random spacing.',
         },
+        firstPlayerAdvantage: {
+          question: 'Does the first player have an advantage in Tic-Tac-Toe?',
+          answer:
+            'In classic 3×3, perfect play from both players always leads to a draw. However, the first player who occupies a corner has the most strategic fork opportunities.',
+        },
+        forkStrategy: {
+          question: 'What is a fork in Tic-Tac-Toe?',
+          answer:
+            'A fork is a move that threatens to win in two different directions at once, making it impossible for the opponent to block both threats.',
+        },
+        infinityMode: {
+          question: 'How does the Infinity board mode work?',
+          answer:
+            'On Infinity boards, the grid expands dynamically as players place marks near the outer boundaries, ensuring games never end in stalemate.',
+        },
+        friends: {
+          question: 'How do I invite friends to play Tic-Tac-Toe?',
+          answer:
+            'Click Create Room, choose your grid size (3×3 up to 9×9 or Infinity), and copy your room link to play in any web browser.',
+        },
+        drawStrategy: {
+          question: 'Can a player always force a draw in 3×3?',
+          answer:
+            'Yes. By securing the center or counter-occupying opposite corners against an opening corner move, the second player can always guarantee a draw.',
+        },
+        mobile: {
+          question: 'Can I play Tic-Tac-Toe on mobile devices?',
+          answer:
+            'Yes. Tic-Tac-Toe features instant responsive touch controls with tap feedback on any smartphone or tablet.',
+        },
+        free: {
+          question: 'Is Tic-Tac-Toe free on Arcadeum?',
+          answer:
+            'Yes. Tic-Tac-Toe is 100% free with multiple visual themes, team modes, and zero ads interrupting play.',
+        },
       },
     },
     lobby: {

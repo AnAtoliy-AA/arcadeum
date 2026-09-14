@@ -12,7 +12,7 @@ export function GameHighlightsGrid({
       {kicker || title ? (
         <div className="box-border flex flex-col gap-1">
           {kicker ? (
-            <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+            <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
               {kicker}
             </span>
           ) : null}
@@ -38,7 +38,7 @@ export function GameHighlightsGrid({
             <h3 className="box-border m-0 text-lg font-bold text-[var(--foreground)]">
               {item.title}
             </h3>
-            <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-80 leading-relaxed">
+            <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-90 leading-relaxed">
               {item.body}
             </p>
           </article>

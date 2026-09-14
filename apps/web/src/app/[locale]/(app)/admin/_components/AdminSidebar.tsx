@@ -54,6 +54,8 @@ function getItemIcon(id: AdminSidebarItem['id']): ReactElement {
       return <GiftIcon size={18} />;
     case 'bulkRewards':
       return <GiftIcon size={18} />;
+    case 'xpBackfill':
+      return <BarChartIcon size={18} />;
     case 'games':
       return <SettingsIcon size={18} />;
     case 'gameRules':
@@ -110,7 +112,7 @@ export function AdminSidebar({ labels }: AdminSidebarProps) {
                   weight={active ? '800' : '700'}
                   className={`truncate ${
                     active
-                      ? 'text-[var(--primary)]'
+                      ? 'text-[var(--color)]'
                       : 'text-[var(--colorText,#ffffff)]'
                   }`}
                 >

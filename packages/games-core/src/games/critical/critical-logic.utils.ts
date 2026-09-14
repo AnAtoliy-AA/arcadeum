@@ -6,7 +6,6 @@ import {
 import {
   GameActionResult,
   GameLogEntry,
-  ChatScope,
 } from '../../base/game-engine.interface';
 import {
   executePersonalAttack,
@@ -19,14 +18,9 @@ import { executeCollectionCombo as executeCollectionComboHelper } from './critic
 import { executeCancel } from './critical-cancel.utils';
 export { executeCancel };
 import { executeDefuse as executeDefuseHelper } from './critical-defuse.utils';
+import { LogEntryOptions } from './critical-shared.types';
 
-export interface LogEntryOptions {
-  kind?: string;
-  scope?: ChatScope;
-  senderId?: string | null;
-  senderName?: string | null;
-  targetId?: string | null;
-}
+export type { LogEntryOptions };
 
 /** Utility class for Critical game logic */
 export class CriticalLogic {
@@ -61,6 +55,11 @@ export class CriticalLogic {
     const player = this.findPlayer(state, playerId);
     if (!player) return { success: false, error: 'Player not found' };
 
+    // Blackout auto-cleanup: clear blind state when player draws
+    if (player.isBlind) {
+      player.isBlind = false;
+    }
+
     // Capture pending action before clearing (needed for chain_strike carry-over)
     const priorPendingAction = state.pendingAction;
 
@@ -72,6 +71,12 @@ export class CriticalLogic {
     if (card === 'critical_event') {
       // Check for Containment Field (Chaos Pack)
       if (this.hasCard(player, 'containment_field')) {
+        // Consume the Containment Field
+        const cfIndex = player.hand.indexOf('containment_field');
+        if (cfIndex > -1) {
+          player.hand.splice(cfIndex, 1);
+          state.discardPile.push('containment_field');
+        }
         player.hand.push(card);
         helpers.addLog(
           state,

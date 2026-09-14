@@ -1,7 +1,7 @@
 'use client';
 
 import { GlassCard, Typography, Button } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 
 interface AdminErrorTranslations {
   title?: string;
@@ -25,7 +25,7 @@ export default function AdminError({
       <Typography className={'font-bold'} variant="label" uiSize="lg">
         {t?.title ?? 'Something went wrong'}
       </Typography>
-      <Typography variant="body" uiSize="md" alpha="medium">
+      <Typography variant="body" uiSize="md" alpha="high">
         {t?.body ?? 'An error occurred while loading this admin page.'}
       </Typography>
       <Button className={'mt-3'} onClick={reset}>

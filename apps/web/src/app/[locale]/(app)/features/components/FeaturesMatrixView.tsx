@@ -30,7 +30,7 @@ export function FeaturesMatrixView({
                   #{section.number}
                 </span>
               </div>
-              <span className="text-xs font-bold text-[var(--primary)] bg-[var(--primary)]/10 px-2.5 py-1 rounded-full border border-[var(--primary)]/20">
+              <span className="text-xs font-bold text-[var(--color)] bg-[var(--primary)]/10 px-2.5 py-1 rounded-full border border-[var(--primary)]/20">
                 {section.badge}
               </span>
             </div>
@@ -53,7 +53,7 @@ export function FeaturesMatrixView({
                 </div>
               ))}
               {section.subsections.length > 3 && (
-                <span className="text-[10px] font-semibold text-[var(--primary)]">
+                <span className="text-[10px] font-semibold text-[var(--color)]">
                   +{section.subsections.length - 3} more areas
                 </span>
               )}
@@ -62,7 +62,7 @@ export function FeaturesMatrixView({
 
           <div className="flex items-center justify-between pt-3 mt-3 border-t border-[var(--glassBorder)] text-xs text-[var(--foregroundSecondary)]">
             <span className="font-semibold">{section.totalCount} items</span>
-            <span className="text-[var(--primary)] font-bold group-hover:translate-x-1 transition-transform">
+            <span className="text-[var(--color)] font-bold group-hover:translate-x-1 transition-transform">
               Explore →
             </span>
           </div>

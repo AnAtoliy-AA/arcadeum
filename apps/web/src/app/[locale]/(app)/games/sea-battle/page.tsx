@@ -5,19 +5,20 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SeaBattleLanding from './SeaBattleLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
+
 const SEA_BATTLE_SLUG = 'sea_battle_v1';
 const SEA_BATTLE_MIN_PLAYERS = 2;
 const SEA_BATTLE_MAX_PLAYERS = 4;
 const SEA_BATTLE_GENRE = 'Strategy';
-// Image URL for JSON-LD only — for OG/Twitter unfurls we let Next's
-// file-based opengraph-image.tsx / twitter-image.tsx generate a real
-// 1200×630 game-themed preview at build/request time.
-const JSON_LD_IMAGE = `${appConfig.siteUrl}/logo.png`;
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -79,70 +80,61 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
-  const pageUrl = `${appConfig.siteUrl}${routes.seaBattleLanding}`;
   const comingSoon = await isGameComingSoon(SEA_BATTLE_SLUG);
   const messages = await getTranslations(locale);
   const landing = messages.games?.sea_battle_v1?.landing;
-  const jsonLd: Record<string, unknown>[] = [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'VideoGame',
-      name: landing?.hero?.title ?? 'Sea Battle',
-      alternateName: [
-        'Battleship',
-        'Sea Battle Online',
-        'Bataille Navale',
-        'Морской бой',
-      ],
-      description: landing?.meta?.description,
-      url: pageUrl,
-      image: JSON_LD_IMAGE,
-      genre: SEA_BATTLE_GENRE,
-      gamePlatform: ['Web Browser'],
-      operatingSystem: 'Any',
-      applicationCategory: 'GameApplication',
-      playMode: ['MultiPlayer', 'CoOp', 'SinglePlayer'],
-      numberOfPlayers: {
-        '@type': 'QuantitativeValue',
-        minValue: SEA_BATTLE_MIN_PLAYERS,
-        maxValue: SEA_BATTLE_MAX_PLAYERS,
-      },
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: appConfig.appName,
-        url: appConfig.siteUrl,
-      },
+  const gameName = landing?.hero?.title ?? 'Sea Battle';
+  const description = landing?.meta?.description ?? '';
+
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: SEA_BATTLE_SLUG,
+    slug: 'sea-battle',
+    gameName,
+    description,
+    locale,
+    minPlayers: SEA_BATTLE_MIN_PLAYERS,
+    maxPlayers: SEA_BATTLE_MAX_PLAYERS,
+    genre: SEA_BATTLE_GENRE,
+    alternateName: [
+      'Battleship',
+      'Sea Battle Online',
+      'Bataille Navale',
+      'Морской бой',
+    ],
+    breadcrumb: {
+      home: landing?.breadcrumb?.home ?? messages.navigation?.homeTab ?? 'Home',
+      games:
+        landing?.breadcrumb?.games ?? messages.navigation?.gamesTab ?? 'Games',
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: landing?.breadcrumb?.home,
-          item: `${appConfig.siteUrl}${routes.home}`,
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: landing?.breadcrumb?.games,
-          item: `${appConfig.siteUrl}${routes.games}`,
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
-          name: landing?.breadcrumb?.seaBattle,
-          item: pageUrl,
-        },
-      ],
-    },
-  ];
+    howTo: landing
+      ? {
+          name: `How to Play Sea Battle on ${appConfig.appName}`,
+          description:
+            'Play Sea Battle (Battleship) online — free multiplayer for 2 to 4 players. No download or signup required.',
+          steps: [
+            {
+              name: 'Place your ships',
+              text: 'Arrange your fleet on the grid before the battle begins.',
+            },
+            {
+              name: 'Invite opponents',
+              text: 'Share the room link with 1 to 3 opponents or use Quick Play matchmaking.',
+            },
+            {
+              name: 'Fire and sink',
+              text: 'Take turns firing at opponent grids. Sink all enemy ships first to win.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq?.items
+      ? Object.values(landing.faq.items).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const relatedPosts = getPostsByTag(locale, [
     'Sea Battle',

@@ -3,7 +3,7 @@
 import { useMemo, useCallback } from 'react';
 import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { Select } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, Locale } from '@/shared/i18n';
 
 const LOCALES_LABELS: Record<Locale, string> = {
@@ -46,13 +46,12 @@ export default function LanguageSwitcher({
   );
 
   return (
-    <div className={`flex items-center gap-2 md:mx-5 ${className ?? ''}`}>
+    <div className={`flex items-center gap-2 ${className ?? ''}`}>
       <Select
         value={locale}
         onValueChange={handleLocaleChange}
         options={options}
         size="sm"
-        aria-label="Select language"
         data-testid={testId}
       />
     </div>

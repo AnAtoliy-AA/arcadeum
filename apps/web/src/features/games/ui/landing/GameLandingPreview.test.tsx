@@ -7,7 +7,7 @@ import {
 } from './GameLandingThemeContext';
 import { GameLandingPreview } from './GameLandingPreview';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => (key.startsWith('games.') ? key.split('.').pop() : key),
   }),
@@ -31,6 +31,19 @@ function CycleProbeButton() {
   return (
     <button type="button" data-testid="cycle-probe" onClick={cycleTheme}>
       cycle
+    </button>
+  );
+}
+
+function CyclePrevProbeButton() {
+  const { cyclePrevTheme } = useGameLandingTheme();
+  return (
+    <button
+      type="button"
+      data-testid="cycle-prev-probe"
+      onClick={cyclePrevTheme}
+    >
+      prev
     </button>
   );
 }
@@ -59,6 +72,20 @@ describe('GameLandingThemeProvider', () => {
     expect(screen.getByTestId('theme-probe')).toHaveTextContent(first);
     fireEvent.click(screen.getByTestId('cycle-probe'));
     expect(screen.getByTestId('theme-probe')).toHaveTextContent(second);
+  });
+
+  it('cycles to the previous theme in the catalog', () => {
+    const first = LANDING_THEME_IDS[0] ?? 'adventure';
+    const last = LANDING_THEME_IDS[LANDING_THEME_IDS.length - 1];
+    render(
+      <Harness>
+        <ThemeProbe />
+        <CyclePrevProbeButton />
+      </Harness>,
+    );
+    expect(screen.getByTestId('theme-probe')).toHaveTextContent(first);
+    fireEvent.click(screen.getByTestId('cycle-prev-probe'));
+    expect(screen.getByTestId('theme-probe')).toHaveTextContent(last!);
   });
 
   it('rejects unknown initial themes', () => {

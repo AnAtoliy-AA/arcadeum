@@ -7,7 +7,4 @@ export {
   executeTribute,
   executeBlackout,
 } from '@arcadeum/games-core/games/critical/critical-chaos.utils';
-export type {
-  LogEntryOptions,
-  EngineHelpers,
-} from '@arcadeum/games-core/games/critical/critical-chaos.utils';
+export type { EngineHelpers } from '@arcadeum/games-core/games/critical/critical-shared.types';

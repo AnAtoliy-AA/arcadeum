@@ -16,7 +16,7 @@ export function DetailTimestamp({
         className,
       )}
       uiSize="sm"
-      alpha="medium"
+      alpha="high"
     >
       {children}
     </Typography>
@@ -72,7 +72,7 @@ export function SectionDescription({
     <Typography
       className={cx('leading-[28px]', className)}
       uiSize="sm"
-      alpha="medium"
+      alpha="high"
     >
       {children}
     </Typography>

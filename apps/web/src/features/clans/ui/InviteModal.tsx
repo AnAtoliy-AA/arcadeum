@@ -51,7 +51,7 @@ export function InviteModal({ open, onClose, clanId }: InviteModalProps) {
               <span className="flex-1 truncate text-sm">{inviteLink}</span>
               <button
                 onClick={copyToClipboard}
-                className="text-xs font-medium text-[var(--primary)] hover:underline"
+                className="text-xs font-medium text-[var(--color)] hover:underline"
               >
                 {copied ? 'Copied!' : 'Copy'}
               </button>

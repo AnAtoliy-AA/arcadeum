@@ -34,6 +34,7 @@ backend-e2e-errors.log
 
 # Lighthouse audit reports (large auto-generated JSON)
 docs/superpowers/specs/lighthouse/
+apps/web/lighthouse-urls.json
 
 # E2E test results
 test-results/
@@ -55,3 +56,4 @@ output/
 raw_captures/
 .env.monitoring
 apps/be/bin/stockfish
+apps/web/.lighthouseci/

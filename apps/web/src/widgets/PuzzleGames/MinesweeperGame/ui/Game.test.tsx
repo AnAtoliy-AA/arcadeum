@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import MinesweeperGame from './Game';
 import { useMinesweeperStore } from '../store/minesweeperStore';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),

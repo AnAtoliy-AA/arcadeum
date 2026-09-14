@@ -25,6 +25,7 @@ function buildCron(overrides: {
     listUserIdsWithCategoryEnabled: jest
       .fn()
       .mockResolvedValue(overrides.optedIn),
+    getTimezones: jest.fn().mockResolvedValue(new Map()),
   } as unknown as NotificationsService;
 
   const cron = new DailyRewardsNotificationCron(

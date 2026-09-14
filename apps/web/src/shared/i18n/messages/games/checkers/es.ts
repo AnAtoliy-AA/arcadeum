@@ -82,6 +82,36 @@ export const esMessages = {
           answer:
             'El bot utiliza un algoritmo minimax con evaluación posicional. Juega a nivel intermedio fuerte.',
         },
+        backwardCaptures: {
+          question: '¿Pueden las fichas normales capturar hacia atrás?',
+          answer:
+            'En damas americanas solo capturan hacia adelante. En damas internacionales (10×10) y rusas, los peones pueden saltar tanto hacia adelante como hacia atrás.',
+        },
+        flyingKings: {
+          question: '¿Qué son las damas voladoras?',
+          answer:
+            'Las damas voladoras pueden moverse y capturar a lo largo de cualquier número de casillas vacías en una diagonal libre.',
+        },
+        variants: {
+          question: '¿Qué variantes de damas están disponibles?',
+          answer:
+            'Arcadeum cuenta con Damas Americanas (8×8), Damas Internacionales (10×10) y Damas Rusas (8×8 con damas voladoras).',
+        },
+        friends: {
+          question: '¿Cómo invito a mis amigos a jugar a las damas?',
+          answer:
+            'Pulsa en Crear sala, elige el reglamento y copia el enlace de invitación. Tus amigos entrarán desde cualquier dispositivo sin cuenta.',
+        },
+        free: {
+          question: '¿Es gratis jugar a las damas en Arcadeum?',
+          answer:
+            'Sí, jugar a las damas en Arcadeum es 100% gratis con multijugador en tiempo real, bots de IA y sin descargas.',
+        },
+        mobile: {
+          question: '¿Puedo jugar a las damas en el móvil?',
+          answer:
+            'Sí. El tablero está optimizado para cualquier navegador móvil con gestos táctiles y movimiento con un toque.',
+        },
       },
     },
     lobby: {

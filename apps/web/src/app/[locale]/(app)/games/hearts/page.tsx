@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import HeartsLanding from './HeartsLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const HEARTS_SLUG = 'hearts_v1';
 const HEARTS_MIN_PLAYERS = 4;
@@ -63,23 +67,55 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.hearts_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: HEARTS_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: HEARTS_MIN_PLAYERS,
-      maxPlayers: HEARTS_MAX_PLAYERS,
-      genre: HEARTS_GENRE,
-      alternateName: ['Hearts Card Game', 'Hearts Online'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: HEARTS_SLUG,
+    slug: 'hearts',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: HEARTS_MIN_PLAYERS,
+    maxPlayers: HEARTS_MAX_PLAYERS,
+    genre: HEARTS_GENRE,
+    alternateName: ['Hearts Card Game', 'Hearts Online'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Hearts on ${appConfig.appName}`,
+          description:
+            'Play Hearts card game online with 4 players — no download or signup needed.',
+          steps: [
+            {
+              name: landing.steps.create.title ?? 'Create a room',
+              text:
+                landing.steps.create.body ??
+                'Set up a Hearts room and choose your visual theme.',
+            },
+            {
+              name: landing.steps.join.title ?? 'Invite friends',
+              text:
+                landing.steps.join.body ??
+                'Share the link with 3 friends or wait for Quick Play matchmaking.',
+            },
+            {
+              name: landing.steps.play.title ?? 'Play',
+              text:
+                landing.steps.play.body ??
+                'Avoid taking hearts and the Queen of Spades to win.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(HEARTS_SLUG);
 

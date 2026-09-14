@@ -24,7 +24,7 @@ export function RewardLadder({
   >;
   return (
     <div className="flex flex-col items-stretch gap-3">
-      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+      <span className="text-[14px] tracking-[2px] opacity-[0.9] uppercase">
         {rTitles.title ?? 'Reward ladder'}
       </span>
       <div className="flex flex-row items-stretch gap-3 flex-wrap">
@@ -58,7 +58,7 @@ export function RewardLadder({
               >
                 {r.tier}
               </span>
-              <span className="text-[12px] opacity-[0.6] tracking-[1px]">
+              <span className="text-[12px] opacity-[0.9] tracking-[1px]">
                 {range}
               </span>
               <span className="text-[14px] text-center opacity-[0.9]">

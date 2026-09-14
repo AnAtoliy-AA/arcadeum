@@ -8,12 +8,12 @@ import { getActiveAnnouncement } from '@/widgets/AnnouncementBanner/server/getAc
 import { LayoutFooter } from '@/widgets/footer';
 import { LanguageProvider } from '@/app/i18n/LanguageProvider';
 import { PWAProvider } from '@/features/pwa/PWAContext';
-import { StatsReplay } from '@/shared/ui/StatsReplay';
-import { RootModals } from './RootModals';
 import { SoundProvider } from '@/shared/lib/sound';
+import { InteractiveShell } from '@/shared/ui/InteractiveShell';
 import {
   isLocale,
   SUPPORTED_LOCALES,
+  DEFAULT_LOCALE,
   localeToHreflang,
   type Locale,
 } from '@/shared/i18n';
@@ -50,7 +50,12 @@ const OG_LOCALE_MAP: Record<Locale, string> = {
 };
 
 export function generateStaticParams() {
-  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+  // Only pre-render the default locale at build time.
+  // Other locales are generated on first visit via ISR and cached for 30 days.
+  // This reduces build output from 5× to 1× and avoids creating 5 serverless
+  // functions per route. Language changes trigger a cookie update + redirect
+  // which renders the new locale on-demand.
+  return [{ locale: DEFAULT_LOCALE }];
 }
 
 export async function generateMetadata({
@@ -178,16 +183,16 @@ export default async function LocaleLayout({
       <LanguageProvider locale={locale} initialMessages={initialMessages}>
         <PWAProvider>
           <SoundProvider>
-            <LayoutShell>
-              <AnnouncementBanner initialAnnouncement={announcement} />
-              <Header />
-              <main id="main-content" className="layout-main">
-                {children}
-              </main>
-              <LayoutFooter />
-            </LayoutShell>
-            <RootModals />
-            <StatsReplay />
+            <InteractiveShell>
+              <LayoutShell>
+                <AnnouncementBanner initialAnnouncement={announcement} />
+                <Header />
+                <main id="main-content" className="layout-main">
+                  {children}
+                </main>
+                <LayoutFooter />
+              </LayoutShell>
+            </InteractiveShell>
           </SoundProvider>
         </PWAProvider>
       </LanguageProvider>

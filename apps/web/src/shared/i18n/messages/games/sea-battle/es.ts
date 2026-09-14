@@ -419,6 +419,17 @@ export const esMessages = {
             answer:
               'Cada jugador coloca en secreto una flota en una cuadrícula 10×10, luego los jugadores se turnan para disparar a una celda en la cuadrícula de cada oponente. Los aciertos se marcan en rojo y los fallos en blanco. Cuando todas las celdas de un barco son alcanzadas, el barco se hunde. Gana el último jugador con al menos un barco a flote.',
           },
+          parity: {
+            question:
+              '¿Qué es el método de búsqueda por paridad en Batalla Naval?',
+            answer:
+              'Dado que los barcos de varias celdas ocupan al menos dos casillas adyacentes, disparar según un patrón de tablero de ajedrez garantiza encontrar todos los barcos reduciendo los turnos de búsqueda a la mitad.',
+          },
+          mobile: {
+            question: '¿Puedo jugar a Batalla Naval en móviles?',
+            answer:
+              'Sí. Batalla Naval funciona directamente en el navegador de tu móvil con controles táctiles optimizados, enlaces instantáneos y sin descargas.',
+          },
         },
       },
       finalCta: {

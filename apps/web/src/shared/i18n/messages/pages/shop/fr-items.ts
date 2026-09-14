@@ -97,24 +97,70 @@ export const shopItemsFr = {
   },
   badge: {
     newcomer: { name: 'Nouveau venu', desc: 'Bienvenue sur Arcadeum.' },
+    scout: { name: 'Éclaireur', desc: 'Un explorateur ambitieux du royaume.' },
     veteran: { name: 'Vétéran', desc: 'Un joueur expérimenté.' },
-    champion: { name: 'Champion', desc: 'Un champion confirmé.' },
-    legend: { name: 'Légende', desc: 'Un joueur légendaire.' },
-    elite: {
-      name: 'Bouclier d’Élite',
-      desc: 'Un bouclier cybernétique prestigieux.',
+    gladiator: {
+      name: 'Gladiateur',
+      desc: 'Un féroce guerrier d’arène éprouvé au combat.',
     },
-    mythic: {
-      name: 'Étoile Mythique',
-      desc: 'Un emblème d’étoile céleste dorée.',
+    guardian: { name: 'Gardien', desc: 'Un vaillant défenseur de l’honneur.' },
+    champion: { name: 'Champion', desc: 'Un champion confirmé.' },
+    conqueror: {
+      name: 'Conquérant',
+      desc: 'Un champion impitoyable qui domine les royaumes.',
+    },
+    paladin: {
+      name: 'Paladin',
+      desc: 'Un emblème de bouclier ailé sacré avec un cœur de saphir éclatant.',
+    },
+    warlord: {
+      name: 'Seigneur de guerre',
+      desc: 'Un maître tacticien forgé dans le feu.',
+    },
+    juggernaut: {
+      name: 'Mastodonte',
+      desc: 'Une lourde armure de combat cybernétique forgée dans le magma.',
     },
     vanguard: {
       name: 'Bouclier de l’Avant-garde',
       desc: 'Un blason défensif blindé.',
     },
+    paragon: {
+      name: 'Parangon',
+      desc: 'Un blason cristallin éthéré rayonnant d’une aura céleste.',
+    },
+    grandmaster: {
+      name: 'Grand maître',
+      desc: 'Le summum de la virtuosité stratégique.',
+    },
+    titan: {
+      name: 'Titan',
+      desc: 'Un blason de guerre colossal forgé par le tonnerre et crépitant d’éclairs.',
+    },
+    ascendant: {
+      name: 'Ascendant',
+      desc: 'Une entité transcendante rayonnante de pure victoire.',
+    },
+    elite: {
+      name: 'Bouclier d’Élite',
+      desc: 'Un bouclier cybernétique prestigieux.',
+    },
+    archon: {
+      name: 'Archonte',
+      desc: 'Un halo céleste suprême tourbillonnant dans une nébuleuse cosmique.',
+    },
+    sovereign: {
+      name: 'Souverain',
+      desc: 'Un dirigeant impérial d’une majesté suprême.',
+    },
+    legend: { name: 'Légende', desc: 'Un joueur légendaire.' },
     nexus: {
       name: 'Étoile du Nexus',
       desc: 'Une puissante étoile cosmique futuriste.',
+    },
+    mythic: {
+      name: 'Étoile Mythique',
+      desc: 'Un emblème d’étoile céleste dorée.',
     },
   },
   name_color: {

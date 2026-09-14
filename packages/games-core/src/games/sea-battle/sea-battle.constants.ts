@@ -89,6 +89,7 @@ export const GAME_MODE_VARIANTS = {
   SPEED: 'speed',
   BATTLE_ROYALE: 'battle_royale',
   TEAM_2V2: 'team_2v2',
+  SALVO: 'salvo',
 } as const;
 
 export type GameModeVariant =
@@ -146,4 +147,58 @@ export const COL_LABELS = [
   '18',
   '19',
   '20',
+];
+
+// Ship abilities — each ship type gets a unique power with cooldown
+export interface ShipAbility {
+  id: string;
+  name: string;
+  description: string;
+  cooldownTurns: number;
+  shipTypes: string[];
+}
+
+export const SHIP_ABILITIES: ShipAbility[] = [
+  {
+    id: 'scout',
+    name: 'Scout',
+    description: 'Reveal a 3×3 area on any opponent board',
+    cooldownTurns: 3,
+    shipTypes: ['Carrier'],
+  },
+  {
+    id: 'barrage',
+    name: 'Barrage',
+    description: 'Fire 3 extra shots at random cells on one opponent',
+    cooldownTurns: 4,
+    shipTypes: ['Battleship'],
+  },
+  {
+    id: 'sonar_ping',
+    name: 'Sonar Ping',
+    description: 'Reveal if any ship is within 2 cells of a target',
+    cooldownTurns: 2,
+    shipTypes: ['Cruiser', 'Frigate'],
+  },
+  {
+    id: 'torpedo',
+    name: 'Torpedo',
+    description: 'Guaranteed hit on a targeted cell (if ship is there)',
+    cooldownTurns: 5,
+    shipTypes: ['Destroyer'],
+  },
+  {
+    id: 'silent_run',
+    name: 'Silent Run',
+    description: 'Immune to opponent sonar for 1 turn',
+    cooldownTurns: 3,
+    shipTypes: ['Submarine'],
+  },
+  {
+    id: 'patrol_scout',
+    name: 'Patrol Scout',
+    description: 'Reveal a single cell on any opponent board',
+    cooldownTurns: 1,
+    shipTypes: ['Patrol'],
+  },
 ];

@@ -8,38 +8,10 @@ export { executeSnatch } from './critical-theft-snatch.utils';
 import { executeSnatch } from './critical-theft-snatch.utils';
 import {
   GameActionResult,
-  GameLogEntry,
-  ChatScope,
 } from '../../base/game-engine.interface';
+import { LogEntryOptions, EngineHelpers } from './critical-shared.types';
 
-export interface LogEntryOptions {
-  kind?: string;
-  scope?: ChatScope;
-  senderId?: string | null;
-  senderName?: string | null;
-  targetId?: string | null;
-}
-
-export interface EngineHelpers {
-  addLog: (state: CriticalState, entry: GameLogEntry) => void;
-  createLogEntry: (
-    type: string,
-    message: string,
-    options?: LogEntryOptions,
-  ) => GameLogEntry;
-  advanceTurn: (state: CriticalState) => void;
-  shuffleArray: <T>(array: T[]) => void;
-  findPlayer: (
-    state: CriticalState,
-    playerId: string,
-  ) => CriticalPlayerState | undefined;
-  dispatchCard?: (
-    state: CriticalState,
-    playerId: string,
-    card: CriticalCard,
-    targetPlayerId?: string,
-  ) => GameActionResult<CriticalState> | null;
-}
+export type { LogEntryOptions, EngineHelpers };
 
 // Maximum number of cards that can be stored in stash
 const MAX_STASH_SIZE = 3;

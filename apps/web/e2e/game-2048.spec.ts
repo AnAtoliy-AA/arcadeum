@@ -1,13 +1,11 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('2048 Puzzle Game', () => {
   test('renders 2048 board, HUD, and moves tiles via keyboard controls', async ({
     page,
   }) => {
-    await page.goto('/en/games/2048/play', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/games/2048/play');
 
     const board = page.getByTestId('game-2048-board');
     await expect(board).toBeVisible();
@@ -32,9 +30,7 @@ test.describe('2048 Puzzle Game', () => {
   test('displays GameResultModal upon win or lose state in store', async ({
     page,
   }) => {
-    await page.goto('/en/games/2048/play', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/games/2048/play');
 
     await expect(page.getByTestId('game-2048-board')).toBeVisible();
 
@@ -64,7 +60,7 @@ test.describe('2048 Puzzle Game', () => {
       );
     });
 
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.reload({ waitUntil: 'load' });
 
     const resultModal = page.getByTestId('game-result-modal');
     await expect(resultModal).toBeVisible();

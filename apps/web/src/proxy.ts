@@ -7,6 +7,10 @@ import {
   type Locale,
   type SlugKey,
 } from '@/shared/config/locale-slugs';
+import {
+  NOINDEX_SLUGS,
+  PRIVATE_GAME_SUBPATHS,
+} from '@/shared/config/noindex-pages';
 
 const PUBLIC_FILE =
   /\.(?:png|jpg|jpeg|webp|avif|svg|ico|txt|xml|js|map|json|woff2?|css|mp4|mp3|pdf)$/i;
@@ -38,42 +42,15 @@ const EN_SLUG_TO_KEY: Record<string, SlugKey> = Object.fromEntries(
   Object.entries(EN_SLUGS).map(([key, slug]) => [slug, key as SlugKey]),
 );
 
-/**
- * Slug keys whose pages must never be indexed (per-user, transactional,
- * or internal). We emit `<meta name="robots">` via `buildPageMetadata`
- * already; this header is defense in depth — it takes effect on non-HTML
- * responses too and survives any future page-level oversight.
- */
-const PRIVATE_SLUG_KEYS: ReadonlySet<SlugKey> = new Set([
-  'auth',
-  'chat',
-  'chats',
-  'history',
-  'settings',
-  'stats',
-  'referrals',
-  'admin',
-  'payment',
-  'wallet',
-  'shop',
-  'rooms',
-]);
-
-/**
- * Within /games, these sub-paths are private even though /games itself is
- * public. The middleware looks at the third URL segment to decide.
- */
-const PRIVATE_GAMES_SUBPATHS: ReadonlySet<string> = new Set(['create']);
-
 function isPrivatePath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   const [first, second] = segmentsAfterLocale;
   if (!first) return false;
 
   const slugMap = LOCALE_SLUGS[locale];
-  for (const key of PRIVATE_SLUG_KEYS) {
+  for (const key of NOINDEX_SLUGS) {
     if (slugMap[key] === first) return true;
   }
-  if (slugMap.games === first && second && PRIVATE_GAMES_SUBPATHS.has(second)) {
+  if (slugMap.games === first && second && PRIVATE_GAME_SUBPATHS.has(second)) {
     return true;
   }
   return false;

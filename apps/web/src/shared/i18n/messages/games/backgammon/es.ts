@@ -103,6 +103,36 @@ export const esMessages = {
           answer:
             'La IA evalúa posiciones tácticas, puntos seguros y carreras de pips.',
         },
+        doublingCube: {
+          question: '¿Cómo funciona el dado de doblar?',
+          answer:
+            'Un jugador puede proponer duplicar la apuesta antes de tirar. El rival puede aceptar el doble o retirarse de inmediato.',
+        },
+        gammon: {
+          question: '¿Qué diferencia hay entre Gammon y Backgammon?',
+          answer:
+            'Hay Gammon si el perdedor no ha sacado ninguna ficha (vale el doble). Hay Backgammon si no ha sacado fichas y conserva fichas en la barra o en el tablero del ganador (vale el triple).',
+        },
+        pipCount: {
+          question: '¿Qué es el conteo de pips en Backgammon?',
+          answer:
+            'El conteo de pips es la suma total de casillas que tus fichas deben recorrer para salir del tablero. Menos pips indican ventaja en la carrera.',
+        },
+        modes: {
+          question: '¿Qué variantes de backgammon están disponibles?',
+          answer:
+            'Arcadeum ofrece Backgammon clásico, Nardos largos (Long Nardy), Hypergammon (3 fichas), Tavla, Nackgammon y Gulbara.',
+        },
+        free: {
+          question: '¿Es gratis jugar al Backgammon online?',
+          answer:
+            'Sí. Backgammon en Arcadeum es 100% gratuito con multijugador en tiempo real, bots avanzados y sin registro obligatorio.',
+        },
+        mobile: {
+          question: '¿Puedo jugar al Backgammon en móviles y tabletas?',
+          answer:
+            'Sí. El tablero se ajusta a cualquier pantalla con controles táctiles fluidos tanto para arrastrar como para pulsar en cualquier navegador móvil.',
+        },
       },
     },
     lobby: {

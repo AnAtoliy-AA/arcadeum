@@ -1,12 +1,380 @@
-import type {
-  CriticalState,
-  CriticalCard,
-} from './critical.state';
+import type { CriticalState, CriticalCard } from './critical.state';
 import type {
   GameLogEntry,
   GameActionResult,
 } from '../../base/game-engine.interface';
-import { CriticalLogic, LogEntryOptions } from './critical-logic.utils';
+import { CriticalLogic } from './critical-logic.utils';
+import { LogEntryOptions } from './critical-shared.types';
+
+type CancelHelpers = {
+  addLog: (state: CriticalState, entry: GameLogEntry) => void;
+  createLogEntry: (
+    type: string,
+    message: string,
+    options?: LogEntryOptions,
+  ) => GameLogEntry;
+  advanceTurn: (state: CriticalState) => void;
+  shuffleArray: <T>(array: T[]) => void;
+};
+
+type PendingAction = NonNullable<CriticalState['pendingAction']>;
+
+// ── Cancel handlers (reverse the action) ────────────────────────────
+
+const cancelHandlers: Record<
+  string,
+  (state: CriticalState, action: PendingAction, helpers: CancelHelpers) => void
+> = {
+  strike(state, action) {
+    const attackerIndex = state.playerOrder.findIndex(
+      (id) => id === action.playerId,
+    );
+    if (attackerIndex !== -1) {
+      state.currentTurnIndex = attackerIndex;
+      const payload = action.payload as { previousPendingDraws?: number };
+      state.pendingDraws = payload?.previousPendingDraws ?? 1;
+    }
+  },
+  targeted_strike(state, action) {
+    const attackerIndex = state.playerOrder.findIndex(
+      (id) => id === action.playerId,
+    );
+    if (attackerIndex !== -1) {
+      state.currentTurnIndex = attackerIndex;
+      const payload = action.payload as { previousPendingDraws?: number };
+      state.pendingDraws = payload?.previousPendingDraws ?? 1;
+    }
+  },
+  evade(state, action) {
+    const skipperIndex = state.playerOrder.findIndex(
+      (id) => id === action.playerId,
+    );
+    if (skipperIndex !== -1) {
+      state.currentTurnIndex = skipperIndex;
+      state.pendingDraws = 1;
+    }
+  },
+  reorder(_state, _action, helpers) {
+    helpers.shuffleArray(_state.deck);
+  },
+  trade(state) {
+    state.pendingFavor = null;
+  },
+  smite(state, action) {
+    const payload = action.payload as {
+      previousTurnIndex: number;
+      previousPendingDraws?: number;
+    };
+    state.currentTurnIndex = payload.previousTurnIndex;
+    state.pendingDraws = payload?.previousPendingDraws ?? 1;
+  },
+  miracle(state, action) {
+    const player = state.players.find((p) => p.playerId === action.playerId);
+    if (player) {
+      const idx = player.hand.lastIndexOf('neutralizer');
+      if (idx > -1) player.hand.splice(idx, 1);
+    }
+  },
+  rapture(state, action) {
+    const payload = action.payload as {
+      stolenCards: { victimId: string; card: string }[];
+    };
+    const rapturePlayer = state.players.find(
+      (p) => p.playerId === action.playerId,
+    );
+    if (rapturePlayer && payload?.stolenCards) {
+      for (const stolen of payload.stolenCards) {
+        const idx = rapturePlayer.hand.indexOf(stolen.card as CriticalCard);
+        if (idx > -1) {
+          rapturePlayer.hand.splice(idx, 1);
+          const victim = state.players.find(
+            (p) => p.playerId === stolen.victimId,
+          );
+          if (victim) victim.hand.push(stolen.card as CriticalCard);
+        }
+      }
+    }
+  },
+  mark(state, action) {
+    const payload = action.payload as {
+      targetPlayerId: string;
+      cardIndex: number;
+    };
+    const markTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (markTarget?.markedCards) {
+      markTarget.markedCards = markTarget.markedCards.filter(
+        (m) =>
+          !(m.cardIndex === payload.cardIndex && m.markedBy === action.playerId),
+      );
+    }
+  },
+  steal_draw(state, action) {
+    const payload = action.payload as { targetPlayerId: string };
+    const stealTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (stealTarget) {
+      stealTarget.pendingStealDraw = undefined;
+    }
+  },
+  swap_hands(state, action) {
+    const payload = action.payload as {
+      targetPlayerId: string;
+      originalPlayerHand: string[];
+      originalTargetHand: string[];
+    };
+    const swapInitiator = state.players.find(
+      (p) => p.playerId === action.playerId,
+    );
+    const swapTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (swapInitiator && swapTarget) {
+      swapInitiator.hand = payload.originalPlayerHand as CriticalCard[];
+      swapTarget.hand = payload.originalTargetHand as CriticalCard[];
+    }
+  },
+  scramble(state, action) {
+    const payload = action.payload as {
+      handSnapshots: { playerId: string; hand: CriticalCard[] }[];
+    };
+    for (const snap of payload.handSnapshots) {
+      const pl = state.players.find((p) => p.playerId === snap.playerId);
+      if (pl) pl.hand = [...snap.hand];
+    }
+  },
+  snatch(state, action) {
+    const payload = action.payload as {
+      targetPlayerId: string;
+      requestedCard: string;
+    };
+    const snatchInitiator = state.players.find(
+      (p) => p.playerId === action.playerId,
+    );
+    const snatchTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (snatchInitiator && snatchTarget) {
+      const cardIdx = snatchInitiator.hand.indexOf(
+        payload.requestedCard as CriticalCard,
+      );
+      if (cardIdx > -1) {
+        snatchInitiator.hand.splice(cardIdx, 1);
+        snatchTarget.hand.push(payload.requestedCard as CriticalCard);
+      }
+    }
+  },
+  resurrection(state, action) {
+    const payload = action.payload as { targetPlayerId: string };
+    const target = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (target) {
+      target.alive = false;
+      if (!state.eliminatedPlayers) state.eliminatedPlayers = [];
+      if (!state.eliminatedPlayers.includes(payload.targetPlayerId)) {
+        state.eliminatedPlayers.push(payload.targetPlayerId);
+      }
+      const givenCards = target.hand.splice(-3);
+      state.deck.push(...givenCards);
+    }
+  },
+  judgment(state, action) {
+    for (const p of state.players) {
+      p.pendingJudgment = undefined;
+    }
+    const judgeIndex = state.playerOrder.findIndex(
+      (id) => id === action.playerId,
+    );
+    if (judgeIndex !== -1) {
+      state.currentTurnIndex = judgeIndex;
+      state.pendingDraws = 1;
+    }
+  },
+};
+
+// ── Uncancel handlers (re-apply the action) ─────────────────────────
+
+const uncancelHandlers: Record<
+  string,
+  (state: CriticalState, action: PendingAction, helpers: CancelHelpers) => void
+> = {
+  strike(state, action, helpers) {
+    helpers.advanceTurn(state);
+    const payload = action.payload as { previousPendingDraws?: number };
+    const previousDraws = payload?.previousPendingDraws ?? 1;
+    const extraTurns = previousDraws > 1 ? previousDraws : 0;
+    state.pendingDraws = extraTurns + 2;
+  },
+  targeted_strike(state, action) {
+    const payload = action.payload as {
+      previousPendingDraws?: number;
+      targetPlayerId: string;
+    };
+    const targetIndex = state.playerOrder.indexOf(payload.targetPlayerId);
+    if (targetIndex !== -1) {
+      state.currentTurnIndex = targetIndex;
+      const previousDraws = payload?.previousPendingDraws ?? 1;
+      const extraTurns = previousDraws > 1 ? previousDraws : 0;
+      state.pendingDraws = extraTurns + 2;
+    }
+  },
+  evade(_state, _action, helpers) {
+    helpers.advanceTurn(_state);
+  },
+  reorder(_state, _action, helpers) {
+    helpers.shuffleArray(_state.deck);
+  },
+  trade(state, action) {
+    const payload = action.payload as { targetPlayerId: string };
+    state.pendingFavor = {
+      requesterId: action.playerId,
+      targetId: payload.targetPlayerId,
+    };
+  },
+  smite(state, action) {
+    const payload = action.payload as { targetPlayerId: string };
+    const smiteTargetIndex = state.playerOrder.indexOf(payload.targetPlayerId);
+    if (smiteTargetIndex !== -1) {
+      state.currentTurnIndex = smiteTargetIndex;
+      state.pendingDraws = 3;
+    }
+  },
+  miracle(state, action) {
+    const player = state.players.find((p) => p.playerId === action.playerId);
+    if (player) {
+      player.hand.push('neutralizer');
+    }
+  },
+  rapture(state, action) {
+    const payload = action.payload as {
+      stolenCards: { victimId: string; card: string }[];
+    };
+    const rapturePlayer = state.players.find(
+      (p) => p.playerId === action.playerId,
+    );
+    if (rapturePlayer && payload?.stolenCards) {
+      for (const stolen of payload.stolenCards) {
+        const victim = state.players.find(
+          (p) => p.playerId === stolen.victimId,
+        );
+        if (victim) {
+          const idx = victim.hand.indexOf(stolen.card as CriticalCard);
+          if (idx > -1) {
+            victim.hand.splice(idx, 1);
+            rapturePlayer.hand.push(stolen.card as CriticalCard);
+          }
+        }
+      }
+    }
+  },
+  mark(state, action) {
+    const payload = action.payload as {
+      targetPlayerId: string;
+      cardIndex: number;
+    };
+    const markTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (markTarget) {
+      if (!markTarget.markedCards) markTarget.markedCards = [];
+      markTarget.markedCards.push({
+        cardIndex: payload.cardIndex,
+        markedBy: action.playerId,
+      });
+    }
+  },
+  steal_draw(state, action) {
+    const payload = action.payload as { targetPlayerId: string };
+    const stealTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (stealTarget) {
+      stealTarget.pendingStealDraw = action.playerId;
+    }
+  },
+  swap_hands(state, action) {
+    const payload = action.payload as {
+      targetPlayerId: string;
+      originalPlayerHand: string[];
+      originalTargetHand: string[];
+    };
+    const swapInitiator = state.players.find(
+      (p) => p.playerId === action.playerId,
+    );
+    const swapTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (swapInitiator && swapTarget) {
+      swapInitiator.hand = payload.originalTargetHand as CriticalCard[];
+      swapTarget.hand = payload.originalPlayerHand as CriticalCard[];
+    }
+  },
+  scramble(state, action) {
+    const payload = action.payload as {
+      handSnapshots: { playerId: string; hand: CriticalCard[] }[];
+      direction: number;
+    };
+    const scrambleN = payload.handSnapshots.length;
+    const scrambleDir = payload.direction ?? 1;
+    const restored = payload.handSnapshots.map((s) => ({
+      ...s,
+      hand: [...s.hand],
+    }));
+    for (let i = 0; i < scrambleN; i++) {
+      const sourceIndex = (i - scrambleDir + scrambleN) % scrambleN;
+      const pl = state.players.find(
+        (p) => p.playerId === payload.handSnapshots[i].playerId,
+      );
+      if (pl) pl.hand = [...restored[sourceIndex].hand];
+    }
+  },
+  snatch(state, action) {
+    const payload = action.payload as {
+      targetPlayerId: string;
+      requestedCard: string;
+    };
+    const snatchInitiator = state.players.find(
+      (p) => p.playerId === action.playerId,
+    );
+    const snatchTarget = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (snatchInitiator && snatchTarget) {
+      const cardIdx = snatchTarget.hand.indexOf(
+        payload.requestedCard as CriticalCard,
+      );
+      if (cardIdx > -1) {
+        snatchTarget.hand.splice(cardIdx, 1);
+        snatchInitiator.hand.push(payload.requestedCard as CriticalCard);
+      }
+    }
+  },
+  resurrection(state, action) {
+    const payload = action.payload as { targetPlayerId: string };
+    const target = state.players.find(
+      (p) => p.playerId === payload.targetPlayerId,
+    );
+    if (target) {
+      target.alive = true;
+      state.eliminatedPlayers = (state.eliminatedPlayers || []).filter(
+        (id) => id !== payload.targetPlayerId,
+      );
+      const cardsFromBottom = state.deck.splice(-3);
+      target.hand.push(...cardsFromBottom);
+    }
+  },
+  judgment(state, action, helpers) {
+    state.players.forEach((p) => {
+      if (p.playerId !== action.playerId && p.alive) {
+        p.pendingJudgment = true;
+      }
+    });
+    helpers.advanceTurn(state);
+  },
+};
 
 /**
  * Execute Cancel - cancels/toggles the pending action
@@ -14,16 +382,7 @@ import { CriticalLogic, LogEntryOptions } from './critical-logic.utils';
 export function executeCancel(
   state: CriticalState,
   playerId: string,
-  helpers: {
-    addLog: (state: CriticalState, entry: GameLogEntry) => void;
-    createLogEntry: (
-      type: string,
-      message: string,
-      options?: LogEntryOptions,
-    ) => GameLogEntry;
-    advanceTurn: (state: CriticalState) => void;
-    shuffleArray: <T>(array: T[]) => void;
-  },
+  helpers: CancelHelpers,
 ): GameActionResult<CriticalState> {
   const player = CriticalLogic.findPlayer(state, playerId);
   if (!player) return { success: false, error: 'Player not found' };
@@ -44,443 +403,18 @@ export function executeCancel(
   state.pendingAction.nopeCount++;
 
   const isCanceled = state.pendingAction.nopeCount % 2 === 1;
+  const actionType = state.pendingAction.type;
 
-  // Toggle the effect based on whether action is now canceled or un-canceled
+  // Dispatch to the appropriate handler
   if (isCanceled) {
-    // Cancel the action - reverse effects
-    switch (state.pendingAction.type) {
-      case 'strike': {
-        // Attack was: advance turn, set pendingDraws = turns + 2
-        // Reverse: go back to attacker's turn, restore pendingDraws
-        const attackerIndex = state.playerOrder.findIndex(
-          (id) => id === state.pendingAction!.playerId,
-        );
-        if (attackerIndex !== -1) {
-          state.currentTurnIndex = attackerIndex;
-          const payload = state.pendingAction.payload as {
-            previousPendingDraws?: number;
-          };
-          state.pendingDraws = payload?.previousPendingDraws ?? 1;
-        }
-        break;
-      }
-      case 'targeted_strike': {
-        // Targeted Attack was: move turn to target, set pendingDraws = turns + 2
-        // Reverse: go back to attacker's turn, restore pendingDraws
-        const attackerIndex = state.playerOrder.findIndex(
-          (id) => id === state.pendingAction!.playerId,
-        );
-        if (attackerIndex !== -1) {
-          state.currentTurnIndex = attackerIndex;
-          const payload = state.pendingAction.payload as {
-            previousPendingDraws?: number;
-          };
-          // For Targeted Attack, the attacker (now active again) likely had 1 draw (normal turn)
-          // or more (if they were under attack but played targeted attack to pass it).
-          // We restore whatever valid draws they had.
-          state.pendingDraws = payload?.previousPendingDraws ?? 1;
-        }
-        break;
-      }
-      case 'evade': {
-        // Skip was: advance turn
-        // Reverse: go back to skipper's turn
-        const skipperIndex = state.playerOrder.findIndex(
-          (id) => id === state.pendingAction!.playerId,
-        );
-        if (skipperIndex !== -1) {
-          state.currentTurnIndex = skipperIndex;
-          state.pendingDraws = 1;
-        }
-        break;
-      }
-      case 'reorder':
-        // Shuffle can't really be undone, but we can re-shuffle
-        helpers.shuffleArray(state.deck);
-        break;
-      case 'trade':
-        // Cancel pending favor request
-        state.pendingFavor = null;
-        break;
-      case 'smite': {
-        // Smite was: move turn to target, set pendingDraws = 3
-        // Reverse: go back to attacker's turn, restore pendingDraws
-        const payload = state.pendingAction.payload as {
-          previousTurnIndex: number;
-          previousPendingDraws?: number;
-        };
-        state.currentTurnIndex = payload.previousTurnIndex;
-        state.pendingDraws = payload?.previousPendingDraws ?? 1;
-        break;
-      }
-      case 'miracle': {
-        // Miracle adds a neutralizer to hand - remove it
-        const miraclePlayer = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        if (miraclePlayer) {
-          const idx = miraclePlayer.hand.lastIndexOf('neutralizer');
-          if (idx > -1) miraclePlayer.hand.splice(idx, 1);
-        }
-        break;
-      }
-      case 'rapture': {
-        // Rapture stole cards - return them
-        const rapturePayload = state.pendingAction.payload as {
-          stolenCards: { victimId: string; card: string }[];
-        };
-        const rapturePlayer = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        if (rapturePlayer && rapturePayload?.stolenCards) {
-          for (const stolen of rapturePayload.stolenCards) {
-            const idx = rapturePlayer.hand.indexOf(stolen.card as CriticalCard);
-            if (idx > -1) {
-              rapturePlayer.hand.splice(idx, 1);
-              const victim = state.players.find(
-                (p) => p.playerId === stolen.victimId,
-              );
-              if (victim) victim.hand.push(stolen.card as CriticalCard);
-            }
-          }
-        }
-        break;
-      }
-      case 'mark': {
-        // Mark was: add a mark to target's card - remove the mark
-        const markPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-          cardIndex: number;
-        };
-        const markTarget = state.players.find(
-          (p) => p.playerId === markPayload.targetPlayerId,
-        );
-        if (markTarget?.markedCards) {
-          markTarget.markedCards = markTarget.markedCards.filter(
-            (m) =>
-              !(
-                m.cardIndex === markPayload.cardIndex &&
-                m.markedBy === state.pendingAction!.playerId
-              ),
-          );
-        }
-        break;
-      }
-      case 'steal_draw': {
-        // Steal draw was: set pendingStealDraw on target - clear it
-        const stealPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-        };
-        const stealTarget = state.players.find(
-          (p) => p.playerId === stealPayload.targetPlayerId,
-        );
-        if (stealTarget) {
-          stealTarget.pendingStealDraw = undefined;
-        }
-        break;
-      }
-      case 'swap_hands': {
-        // Restore original hands
-        const swapPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-          originalPlayerHand: string[];
-          originalTargetHand: string[];
-        };
-        const swapInitiator = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        const swapTarget = state.players.find(
-          (p) => p.playerId === swapPayload.targetPlayerId,
-        );
-        if (swapInitiator && swapTarget) {
-          swapInitiator.hand = swapPayload.originalPlayerHand as CriticalCard[];
-          swapTarget.hand = swapPayload.originalTargetHand as CriticalCard[];
-        }
-        break;
-      }
-      case 'scramble': {
-        // Restore original hands
-        const scramblePayload = state.pendingAction.payload as {
-          handSnapshots: { playerId: string; hand: CriticalCard[] }[];
-        };
-        for (const snap of scramblePayload.handSnapshots) {
-          const pl = state.players.find((p) => p.playerId === snap.playerId);
-          if (pl) pl.hand = [...snap.hand];
-        }
-        break;
-      }
-      case 'snatch': {
-        // Return stolen card from initiator's hand back to target's hand
-        const snatchPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-          requestedCard: string;
-        };
-        const snatchInitiator = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        const snatchTarget = state.players.find(
-          (p) => p.playerId === snatchPayload.targetPlayerId,
-        );
-        if (snatchInitiator && snatchTarget) {
-          const cardIdx = snatchInitiator.hand.indexOf(
-            snatchPayload.requestedCard as CriticalCard,
-          );
-          if (cardIdx > -1) {
-            snatchInitiator.hand.splice(cardIdx, 1);
-            snatchTarget.hand.push(snatchPayload.requestedCard as CriticalCard);
-          }
-        }
-        break;
-      }
-      case 'resurrection': {
-        // Resurrection revived a player and gave them 3 cards - reverse it
-        const p = state.pendingAction.payload as { targetPlayerId: string };
-        const resurrectTarget = state.players.find(
-          (pl) => pl.playerId === p.targetPlayerId,
-        );
-        if (resurrectTarget) {
-          resurrectTarget.alive = false;
-          if (!state.eliminatedPlayers) state.eliminatedPlayers = [];
-          if (!state.eliminatedPlayers.includes(p.targetPlayerId)) {
-            state.eliminatedPlayers.push(p.targetPlayerId);
-          }
-          // Remove the 3 given cards (last 3 in hand) back to bottom of deck
-          const givenCards = resurrectTarget.hand.splice(-3);
-          state.deck.push(...givenCards);
-        }
-        break;
-      }
-      case 'judgment': {
-        // Clear pendingJudgment from all players
-        for (const p of state.players) {
-          p.pendingJudgment = undefined;
-        }
-        // Reverse turn advance (go back to the judgment player)
-        const judgeIndex = state.playerOrder.findIndex(
-          (id) => id === state.pendingAction!.playerId,
-        );
-        if (judgeIndex !== -1) {
-          state.currentTurnIndex = judgeIndex;
-          state.pendingDraws = 1;
-        }
-        break;
-      }
+    const handler = cancelHandlers[actionType];
+    if (handler) {
+      handler(state, state.pendingAction, helpers);
     }
   } else {
-    // Un-cancel the action - re-apply effects
-    switch (state.pendingAction.type) {
-      case 'strike': {
-        helpers.advanceTurn(state);
-        const payload = state.pendingAction.payload as {
-          previousPendingDraws?: number;
-        };
-        const previousDraws = payload?.previousPendingDraws ?? 1;
-        const extraTurns = previousDraws > 1 ? previousDraws : 0;
-        state.pendingDraws = extraTurns + 2;
-        break;
-      }
-      case 'targeted_strike': {
-        const payload = state.pendingAction.payload as {
-          previousPendingDraws?: number;
-          targetPlayerId: string;
-        };
-        const targetIndex = state.playerOrder.indexOf(payload.targetPlayerId);
-        if (targetIndex !== -1) {
-          state.currentTurnIndex = targetIndex;
-          const previousDraws = payload?.previousPendingDraws ?? 1;
-          const extraTurns = previousDraws > 1 ? previousDraws : 0;
-          state.pendingDraws = extraTurns + 2;
-        }
-        break;
-      }
-      case 'evade':
-        helpers.advanceTurn(state);
-        break;
-      case 'reorder':
-        helpers.shuffleArray(state.deck);
-        break;
-      case 'trade': {
-        // Restore pending favor request
-        const favorPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-        };
-        state.pendingFavor = {
-          requesterId: state.pendingAction.playerId,
-          targetId: favorPayload.targetPlayerId,
-        };
-        break;
-      }
-      case 'smite': {
-        // Re-apply smite: move turn to target, set pendingDraws = 3
-        const smitePayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-        };
-        const smiteTargetIndex = state.playerOrder.indexOf(
-          smitePayload.targetPlayerId,
-        );
-        if (smiteTargetIndex !== -1) {
-          state.currentTurnIndex = smiteTargetIndex;
-          state.pendingDraws = 3;
-        }
-        break;
-      }
-      case 'miracle': {
-        // Re-apply miracle: add neutralizer back
-        const miraclePlayer = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        if (miraclePlayer) {
-          miraclePlayer.hand.push('neutralizer');
-        }
-        break;
-      }
-      case 'rapture': {
-        // Re-apply rapture: steal cards again
-        const rapturePayload = state.pendingAction.payload as {
-          stolenCards: { victimId: string; card: string }[];
-        };
-        const rapturePlayer = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        if (rapturePlayer && rapturePayload?.stolenCards) {
-          for (const stolen of rapturePayload.stolenCards) {
-            const victim = state.players.find(
-              (p) => p.playerId === stolen.victimId,
-            );
-            if (victim) {
-              const idx = victim.hand.indexOf(stolen.card as CriticalCard);
-              if (idx > -1) {
-                victim.hand.splice(idx, 1);
-                rapturePlayer.hand.push(stolen.card as CriticalCard);
-              }
-            }
-          }
-        }
-        break;
-      }
-      case 'mark': {
-        // Re-apply mark: add the mark back
-        const markPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-          cardIndex: number;
-        };
-        const markTarget = state.players.find(
-          (p) => p.playerId === markPayload.targetPlayerId,
-        );
-        if (markTarget) {
-          if (!markTarget.markedCards) markTarget.markedCards = [];
-          markTarget.markedCards.push({
-            cardIndex: markPayload.cardIndex,
-            markedBy: state.pendingAction.playerId,
-          });
-        }
-        break;
-      }
-      case 'steal_draw': {
-        // Re-apply steal draw: set pendingStealDraw on target
-        const stealPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-        };
-        const stealTarget = state.players.find(
-          (p) => p.playerId === stealPayload.targetPlayerId,
-        );
-        if (stealTarget) {
-          stealTarget.pendingStealDraw = state.pendingAction.playerId;
-        }
-        break;
-      }
-      case 'swap_hands': {
-        // Re-apply swap using stored original hands
-        const swapPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-          originalPlayerHand: string[];
-          originalTargetHand: string[];
-        };
-        const swapInitiator = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        const swapTarget = state.players.find(
-          (p) => p.playerId === swapPayload.targetPlayerId,
-        );
-        if (swapInitiator && swapTarget) {
-          swapInitiator.hand = swapPayload.originalTargetHand as CriticalCard[];
-          swapTarget.hand = swapPayload.originalPlayerHand as CriticalCard[];
-        }
-        break;
-      }
-      case 'scramble': {
-        // Re-apply rotation using stored snapshots
-        const scramblePayload = state.pendingAction.payload as {
-          handSnapshots: { playerId: string; hand: CriticalCard[] }[];
-          direction: number;
-        };
-        // Re-apply rotation
-        const scrambleN = scramblePayload.handSnapshots.length;
-        const scrambleDir = scramblePayload.direction ?? 1;
-        const restored = scramblePayload.handSnapshots.map((s) => ({
-          ...s,
-          hand: [...s.hand],
-        }));
-        for (let i = 0; i < scrambleN; i++) {
-          const sourceIndex = (i - scrambleDir + scrambleN) % scrambleN;
-          const pl = state.players.find(
-            (p) => p.playerId === scramblePayload.handSnapshots[i].playerId,
-          );
-          if (pl) pl.hand = [...restored[sourceIndex].hand];
-        }
-        break;
-      }
-      case 'snatch': {
-        // Re-steal: move card from target back to initiator
-        const snatchPayload = state.pendingAction.payload as {
-          targetPlayerId: string;
-          requestedCard: string;
-        };
-        const snatchInitiator = state.players.find(
-          (p) => p.playerId === state.pendingAction!.playerId,
-        );
-        const snatchTarget = state.players.find(
-          (p) => p.playerId === snatchPayload.targetPlayerId,
-        );
-        if (snatchInitiator && snatchTarget) {
-          const cardIdx = snatchTarget.hand.indexOf(
-            snatchPayload.requestedCard as CriticalCard,
-          );
-          if (cardIdx > -1) {
-            snatchTarget.hand.splice(cardIdx, 1);
-            snatchInitiator.hand.push(
-              snatchPayload.requestedCard as CriticalCard,
-            );
-          }
-        }
-        break;
-      }
-      case 'resurrection': {
-        // Re-resurrect: revive again and give 3 more cards from deck bottom
-        const p = state.pendingAction.payload as { targetPlayerId: string };
-        const resurrectTarget = state.players.find(
-          (pl) => pl.playerId === p.targetPlayerId,
-        );
-        if (resurrectTarget) {
-          resurrectTarget.alive = true;
-          state.eliminatedPlayers = (state.eliminatedPlayers || []).filter(
-            (id) => id !== p.targetPlayerId,
-          );
-          const cardsFromBottom = state.deck.splice(-3);
-          resurrectTarget.hand.push(...cardsFromBottom);
-        }
-        break;
-      }
-      case 'judgment': {
-        // Re-apply judgment: set pendingJudgment on all other alive players
-        state.players.forEach((p) => {
-          if (p.playerId !== state.pendingAction!.playerId && p.alive) {
-            p.pendingJudgment = true;
-          }
-        });
-        helpers.advanceTurn(state);
-        break;
-      }
+    const handler = uncancelHandlers[actionType];
+    if (handler) {
+      handler(state, state.pendingAction, helpers);
     }
   }
 
@@ -490,7 +424,7 @@ export function executeCancel(
     state,
     helpers.createLogEntry(
       'action',
-      `Played Cancel! ${state.pendingAction.type} is now ${actionStatus}!`,
+      `Played Cancel! ${actionType} is now ${actionStatus}!`,
       { scope: 'all', senderId: playerId },
     ),
   );

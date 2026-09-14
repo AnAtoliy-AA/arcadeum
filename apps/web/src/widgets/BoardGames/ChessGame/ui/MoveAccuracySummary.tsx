@@ -8,7 +8,10 @@ interface PlayerAccuracy {
   accuracy: number;
   brilliant: number;
   great: number;
+  best: number;
+  excellent: number;
   good: number;
+  book: number;
   inaccuracies: number;
   mistakes: number;
   blunders: number;
@@ -24,10 +27,13 @@ const QUALITY_CONFIG: Record<
   MoveQuality,
   { label: string; color: string; symbol: string }
 > = {
-  brilliant: { label: 'Brilliant', color: 'text-cyan-400', symbol: '✦' },
-  great: { label: 'Great', color: 'text-purple-400', symbol: '!' },
+  brilliant: { label: 'Brilliant', color: 'text-cyan-400', symbol: '!!' },
+  great: { label: 'Great', color: 'text-green-600', symbol: '!' },
+  best: { label: 'Best', color: 'text-emerald-400', symbol: '✓' },
+  excellent: { label: 'Excellent', color: 'text-emerald-400', symbol: '✓' },
   good: { label: 'Good', color: 'text-emerald-400', symbol: '✓' },
-  inaccuracy: { label: 'Inaccuracy', color: 'text-amber-400', symbol: '?!' },
+  book: { label: 'Book', color: 'text-gray-400', symbol: '' },
+  inaccuracy: { label: 'Inaccuracy', color: 'text-yellow-400', symbol: '?!' },
   mistake: { label: 'Mistake', color: 'text-orange-400', symbol: '?' },
   blunder: { label: 'Blunder', color: 'text-red-400', symbol: '??' },
 };
@@ -89,6 +95,26 @@ function AccuracyColumn({
             </span>
             <span className="font-mono text-[var(--textSecondary)]">
               {data.great}
+            </span>
+          </div>
+        )}
+        {data.best > 0 && (
+          <div className="flex items-center justify-between text-[10px]">
+            <span className={cx('font-bold', QUALITY_CONFIG.best.color)}>
+              {QUALITY_CONFIG.best.symbol} Best
+            </span>
+            <span className="font-mono text-[var(--textSecondary)]">
+              {data.best}
+            </span>
+          </div>
+        )}
+        {data.excellent > 0 && (
+          <div className="flex items-center justify-between text-[10px]">
+            <span className={cx('font-bold', QUALITY_CONFIG.excellent.color)}>
+              {QUALITY_CONFIG.excellent.symbol} Excellent
+            </span>
+            <span className="font-mono text-[var(--textSecondary)]">
+              {data.excellent}
             </span>
           </div>
         )}
@@ -164,7 +190,10 @@ export function computePlayerAccuracy(
       accuracy: 100,
       brilliant: 0,
       great: 0,
+      best: 0,
+      excellent: 0,
       good: 0,
+      book: 0,
       inaccuracies: 0,
       mistakes: 0,
       blunders: 0,
@@ -179,7 +208,10 @@ export function computePlayerAccuracy(
     accuracy,
     brilliant: playerMoves.filter((m) => m.quality === 'brilliant').length,
     great: playerMoves.filter((m) => m.quality === 'great').length,
+    best: playerMoves.filter((m) => m.quality === 'best').length,
+    excellent: playerMoves.filter((m) => m.quality === 'excellent').length,
     good: playerMoves.filter((m) => m.quality === 'good').length,
+    book: playerMoves.filter((m) => m.quality === 'book').length,
     inaccuracies: playerMoves.filter((m) => m.quality === 'inaccuracy').length,
     mistakes: playerMoves.filter((m) => m.quality === 'mistake').length,
     blunders: playerMoves.filter((m) => m.quality === 'blunder').length,

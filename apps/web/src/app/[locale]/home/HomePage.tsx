@@ -22,6 +22,10 @@ const ActivityBanner = dynamic(() =>
   import('@/features/activity/ui/ActivityBanner').then((m) => m.ActivityBanner),
 );
 
+const ActivityFeed = dynamic(() =>
+  import('@/features/activity/ui/ActivityFeed').then((m) => m.ActivityFeed),
+);
+
 // Single concatenated bundle of hero + presentation + section styles.
 // The originals each became a separate render-blocking chunk under the
 // Lighthouse simulator's per-chunk model (~303ms penalty each). Bundling
@@ -57,6 +61,10 @@ export default function HomePage({ locale }: { locale: Locale }) {
       <DailyRewardChip />
       <HomeLivePulse />
       <HomeGames />
+      <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-3 px-4 py-8">
+        <h2 className="text-[24px] font-bold text-color">Recent Activity</h2>
+        <ActivityFeed />
+      </section>
       <HomeHowItWorks />
       <HomeFeatures />
       <HomePresentation />

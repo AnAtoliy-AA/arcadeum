@@ -53,8 +53,8 @@ test.describe('Shop redesign · Showcase Locker', () => {
     page,
   }) => {
     await navigateTo(page, '/shop');
-    await page.getByTestId('shop-slot-badge').first().click();
-    await expect(page.getByTestId('shop-row-row-badges')).toHaveAttribute(
+    await page.getByTestId('shop-slot-avatar').first().click();
+    await expect(page.getByTestId('shop-row-row-avatars')).toHaveAttribute(
       'data-active',
       'true',
     );
@@ -109,7 +109,7 @@ test.describe('Shop redesign · Showcase Locker', () => {
     expect(radiusPx).toBeGreaterThanOrEqual(width / 2 - 1);
   });
 
-  test('renders and allows preview of new premium items (Cyber Wolf, Cyber Panther, Cyber Tiger, Cyber Eagle, Elite Shield, Mythic Star, Vanguard Shield, Nexus Star)', async ({
+  test('renders and allows preview of new premium avatar items', async ({
     page,
   }) => {
     await navigateTo(page, '/shop');
@@ -137,10 +137,6 @@ test.describe('Shop redesign · Showcase Locker', () => {
       { id: 'avatar-bear-cyber', name: 'Cyber Bear' },
       { id: 'avatar-lion-cyber', name: 'Cyber Lion Elite' },
       { id: 'avatar-shark-cyber', name: 'Cyber Shark Elite' },
-      { id: 'badge-elite', name: 'Elite Shield' },
-      { id: 'badge-mythic', name: 'Mythic Star' },
-      { id: 'badge-vanguard', name: 'Vanguard Shield' },
-      { id: 'badge-nexus', name: 'Nexus Star' },
     ];
 
     for (const item of items) {

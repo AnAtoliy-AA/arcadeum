@@ -5,13 +5,21 @@ import { parseFenPiecePlacement } from './fen';
 /**
  * Post-game analysis built from the chess `positionHistory` (a FEN per ply,
  * including the initial position) persisted in the session state. For each
- * position we run a static evaluation and then grade every move by how much
- * evaluation the mover lost compared to before their move. Grading thresholds
- * follow common conventions (centipawns lost): <= 50 good, <= 150 inaccuracy,
- * <= 300 mistake, > 300 blunder.
+ * position we run a static evaluation and then grade every move using a
+ * winning-chances sigmoid formula to convert centipawn loss into
+ * a classification (brilliant / great / best / excellent / good / book / inaccuracy / mistake / blunder).
  */
 
-export type MoveQuality = 'good' | 'inaccuracy' | 'mistake' | 'blunder' | 'brilliant' | 'great';
+export type MoveQuality =
+  | 'brilliant'
+  | 'great'
+  | 'best'
+  | 'excellent'
+  | 'good'
+  | 'book'
+  | 'inaccuracy'
+  | 'mistake'
+  | 'blunder';
 
 export interface AnalyzedMove {
   /** 0-indexed ply. Even = White's move, odd = Black's move. */
@@ -42,14 +50,34 @@ export interface GameAnalysis {
   finalEval: number;
 }
 
-const LOSS_GOOD = 50;
-const LOSS_INACCURACY = 150;
-const LOSS_MISTAKE = 300;
+/**
+ * Convert centipawns to winning chances using a sigmoid formula.
+ * Returns a value in [-1, 1] where 1 = certain win, -1 = certain loss.
+ */
+function winningChances(cp: number): number {
+  return 2 / (1 + Math.exp(-0.004 * cp)) - 1;
+}
 
-function qualityForLoss(loss: number): MoveQuality {
-  if (loss <= LOSS_GOOD) return 'good';
-  if (loss <= LOSS_INACCURACY) return 'inaccuracy';
-  if (loss <= LOSS_MISTAKE) return 'mistake';
+/**
+ * Classify move quality using winning-chance delta.
+ * Uses the same thresholds as the backend Stockfish classification.
+ * Note: 'best' and 'book' require engine data, so this fallback only
+ * produces brilliant/great/excellent/good/inaccuracy/mistake/blunder.
+ */
+function qualityForLoss(
+  loss: number,
+  evalBefore: number,
+  evalAfter: number,
+): MoveQuality {
+  const lossDelta = winningChances(evalBefore) - winningChances(evalAfter);
+
+  if (loss === 0 && Math.abs(evalAfter) > 200) return 'brilliant';
+  if (loss <= 5 && lossDelta < 0.05 && Math.abs(evalAfter) > 100)
+    return 'great';
+  if (loss <= 3 && lossDelta < 0.05) return 'excellent';
+  if (lossDelta < 0.1) return 'good';
+  if (lossDelta < 0.2) return 'inaccuracy';
+  if (lossDelta < 0.3) return 'mistake';
   return 'blunder';
 }
 
@@ -87,7 +115,11 @@ export function analyzeGame(
       evalAfter,
       delta,
       loss,
-      quality: qualityForLoss(loss),
+      quality: qualityForLoss(
+        loss,
+        color === 'white' ? evalBefore : -evalBefore,
+        color === 'white' ? evalAfter : -evalAfter,
+      ),
     });
   }
 

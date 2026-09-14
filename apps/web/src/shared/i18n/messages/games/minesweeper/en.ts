@@ -86,6 +86,41 @@ export const enMessages = {
           answer:
             'Yes. Your current field, difficulty, and statistics are stored locally so you can continue anytime.',
         },
+        q4: {
+          question: 'What do the numbers on the board mean?',
+          answer:
+            'Each revealed number indicates the exact count of hidden mines in the eight squares immediately surrounding that cell.',
+        },
+        q5: {
+          question: 'Can you lose on the very first click?',
+          answer:
+            'No. Arcadeum Minesweeper guarantees that your initial click is always safe and generates an opening area.',
+        },
+        q6: {
+          question: 'What is chording and how does it work?',
+          answer:
+            'Chording quickly opens all unflagged neighbors around a revealed number once you have flagged the correct number of adjacent mines.',
+        },
+        q7: {
+          question: 'What difficulty levels are available?',
+          answer:
+            'Play Beginner (9×9 with 10 mines), Intermediate (16×16 with 40 mines), or Expert (30×16 with 99 mines).',
+        },
+        q8: {
+          question: 'What is the best strategy when forced to guess?',
+          answer:
+            'Calculate the mine probabilities of adjacent intersecting numbers and reveal the cell that belongs to the lowest risk grouping.',
+        },
+        q9: {
+          question: 'Can I set custom board sizes and mine counts?',
+          answer:
+            'Yes. Custom settings allow you to adjust width, height, and total mine density to create your ideal puzzle challenge.',
+        },
+        q10: {
+          question: 'Are my best completion times recorded?',
+          answer:
+            'Yes. Built-in high-precision timers record your clear times across all difficulties and store your personal bests.',
+        },
       },
       steps: {
         create: {

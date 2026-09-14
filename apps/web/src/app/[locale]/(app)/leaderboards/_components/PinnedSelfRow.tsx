@@ -39,7 +39,7 @@ export function PinnedSelfRow({
       data-testid="leaderboard-self-row"
     >
       <div className="flex flex-row items-center gap-3 flex-nowrap">
-        <span className="text-[12px] tracking-[2px] opacity-[0.6] uppercase max-[800px]:hidden">
+        <span className="text-[12px] tracking-[2px] opacity-[0.9] uppercase max-[800px]:hidden">
           {tt.pinned ?? 'Your rank'}
         </span>
         {isAnon ? (

@@ -95,6 +95,31 @@ export const landing = {
         answer:
           "Déplacez votre ver lumineux dans l'arène, mangez des lumières pour grandir et évitez d'entrer en collision avec la traînée d'un autre ver. Le dernier ver en vie (ou le ver au meilleur score à la fin du temps, selon le mode) remporte la manche.",
       },
+      controls: {
+        question: 'Quelles sont les commandes dans Glimworm ?',
+        answer:
+          'Vous pouvez diriger votre ver avec les touches fléchées ou ZQSD sur ordinateur, ou via des commandes tactiles intuitives par glissement sur smartphone et tablette.',
+      },
+      tactics: {
+        question: 'Quelle est la meilleure tactique de survie dans Glimworm ?',
+        answer:
+          "Enroulez-vous en cercle protecteur autour des orbes d'énergie et coupez la route de vos rivaux en anticipant leurs virages sans percuter les bordures.",
+      },
+      boost: {
+        question: 'Existe-t-il une accélération turbo dans Glimworm ?',
+        answer:
+          'Oui, maintenir la barre d’espace ou le bouton turbo procure une poussée de vitesse pour doubler les rivaux, au prix d’une petite portion de votre taille.',
+      },
+      friends: {
+        question: 'Comment jouer à Glimworm avec des amis ?',
+        answer:
+          'Cliquez sur « Créer une salle », configurez l’arène et envoyez le lien direct. Vos amis rejoignent immédiatement dans leur navigateur sans inscription.',
+      },
+      noDownload: {
+        question: 'Faut-il télécharger un jeu ou une application ?',
+        answer:
+          'Non. Glimworm fonctionne à 60 FPS directement dans votre navigateur Web grâce à la technologie WebGL sur mobile comme sur ordinateur.',
+      },
     },
   },
   breadcrumb: {

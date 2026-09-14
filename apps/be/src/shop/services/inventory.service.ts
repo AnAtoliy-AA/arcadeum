@@ -19,6 +19,8 @@ import type {
   InventoryItemView,
   InventoryView,
 } from '../interfaces/shop-views';
+import { levelFromXp as computeLevelFromXp } from '../../xp/lib/xp-level';
+import { getBadgesUnlockedAtLevel } from '../../xp/lib/level-rewards';
 
 interface LeanInventoryRow {
   _id: Types.ObjectId;
@@ -33,6 +35,7 @@ interface LeanInventoryRow {
 }
 
 interface LeanUser {
+  xp?: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
@@ -75,6 +78,7 @@ export class InventoryService {
         .lean<LeanInventoryRow[]>(),
       this.userModel
         .findById(userId, {
+          xp: 1,
           equippedAvatarId: 1,
           equippedBadgeId: 1,
           equippedNameColorId: 1,
@@ -102,8 +106,25 @@ export class InventoryService {
         createdAt: new Date(0).toISOString(),
       }));
 
+    const userLevel = user?.xp ? computeLevelFromXp(user.xp) : 1;
+    const unlockedBadges = getBadgesUnlockedAtLevel(userLevel);
+    const implicitBadges: InventoryItemView[] = unlockedBadges
+      .filter(
+        (bId) => !ownedItemIds.has(bId) && !starters.some((s) => s.id === bId),
+      )
+      .map((badgeId) => ({
+        rowId: `level-reward-${badgeId}`,
+        itemId: badgeId,
+        purchaseId: `level-reward-${userId}-${badgeId}`,
+        acquiredVia: 'grant',
+        paidAmount: null,
+        paidCurrency: null,
+        soldAt: null,
+        createdAt: new Date(0).toISOString(),
+      }));
+
     return {
-      items: [...implicitStarters, ...rows.map(this.toView)],
+      items: [...implicitStarters, ...implicitBadges, ...rows.map(this.toView)],
       equipped: this.equippedFromUser(user),
     };
   }
@@ -126,6 +147,16 @@ export class InventoryService {
     const def = getCatalogItem(itemId);
     if (def?.starter === true) {
       return true;
+    }
+    if (def?.category === 'badge') {
+      const user = await this.userModel
+        .findById(userId, { xp: 1 })
+        .lean<{ xp?: number } | null>();
+      const level = user?.xp ? computeLevelFromXp(user.xp) : 1;
+      const unlocked = getBadgesUnlockedAtLevel(level);
+      if (unlocked.includes(itemId)) {
+        return true;
+      }
     }
     const userObjId = new Types.ObjectId(userId);
     const row = await this.inventoryModel

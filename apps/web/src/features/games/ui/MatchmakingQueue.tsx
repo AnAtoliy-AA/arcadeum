@@ -8,13 +8,14 @@ import { gameSocket, emitEncrypted, useSocket } from '@/shared/lib/socket';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getOrCreateAnonymousId } from '@/shared/lib/api-client';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   trackSocialMatchmakingJoined,
   trackSocialMatchmakingMatched,
   trackSocialQuickplayStarted,
 } from '@/shared/analytics/funnel';
 import { gamesApi } from '@/features/games/api';
+import { useRankingStore } from '@/features/ranking/store/rankingStore';
 import {
   useMatchmakingStore,
   type MatchmakingStatus,
@@ -27,6 +28,7 @@ export function useMatchmaking() {
   const { snapshot } = useSessionTokens();
   const router = useRouter();
   const routes = useRoutes();
+  const ratings = useRankingStore((s) => s.ratings);
 
   const isQueued = useMatchmakingStore((s) => s.isQueued);
   const isMinimized = useMatchmakingStore((s) => s.isMinimized);
@@ -34,14 +36,8 @@ export function useMatchmaking() {
   const variant = useMatchmakingStore((s) => s.variant);
   const ranked = useMatchmakingStore((s) => s.ranked);
   const startTime = useMatchmakingStore((s) => s.startTime);
-  const queueSize = useMatchmakingStore((s) => s.queueSize);
-  const position = useMatchmakingStore((s) => s.position);
-  const playersAhead = useMatchmakingStore((s) => s.playersAhead);
-  const estimatedWaitSeconds = useMatchmakingStore(
-    (s) => s.estimatedWaitSeconds,
-  );
-  const openRoomsCount = useMatchmakingStore((s) => s.openRoomsCount);
   const activeQueues = useMatchmakingStore((s) => s.activeQueues);
+  const friendsInQueue = useMatchmakingStore((s) => s.friendsInQueue);
   const startQueue = useMatchmakingStore((s) => s.startQueue);
   const stopQueue = useMatchmakingStore((s) => s.stopQueue);
   const setMinimized = useMatchmakingStore((s) => s.setMinimized);
@@ -58,6 +54,8 @@ export function useMatchmaking() {
       }
       if (!userId) return;
 
+      const userRating = ratings[targetGameId]?.elo;
+
       startQueue(targetGameId, targetVariant, isRanked);
       trackSocialMatchmakingJoined(targetGameId);
       void emitEncrypted(gameSocket, 'games.matchmaking.join', {
@@ -65,9 +63,10 @@ export function useMatchmaking() {
         gameId: targetGameId,
         variant: targetVariant,
         ranked: isRanked,
+        rating: userRating,
       });
     },
-    [snapshot.userId, startQueue],
+    [snapshot.userId, ratings, startQueue],
   );
 
   const leaveQueue = useCallback(async () => {
@@ -100,13 +99,6 @@ export function useMatchmaking() {
     }
   }, [leaveQueue, router, routes, snapshot.accessToken]);
 
-  const createRoomAndHost = useCallback(async () => {
-    const currentGameId = useMatchmakingStore.getState().gameId;
-    if (!currentGameId) return;
-    await leaveQueue();
-    router.push(`${routes.gameCreate}?gameId=${currentGameId}`);
-  }, [leaveQueue, router, routes.gameCreate]);
-
   const switchGame = useCallback(
     async (nextGameId: string) => {
       await leaveQueue();
@@ -122,17 +114,12 @@ export function useMatchmaking() {
     variant,
     ranked,
     startTime,
-    queueSize,
-    position,
-    playersAhead,
-    estimatedWaitSeconds,
-    openRoomsCount,
     activeQueues,
+    friendsInQueue,
     joinQueue,
     leaveQueue,
     setMinimized,
     playVsAiNow,
-    createRoomAndHost,
     switchGame,
   };
 }
@@ -145,22 +132,16 @@ export function MatchmakingQueueModal() {
     isQueued,
     isMinimized,
     gameId,
-    variant,
-    ranked,
+    activeQueues,
+    friendsInQueue,
     leaveQueue,
     joinQueue,
     setMinimized,
     playVsAiNow,
-    createRoomAndHost,
     switchGame,
     startTime,
-    queueSize,
-    position,
-    playersAhead,
-    estimatedWaitSeconds,
-    openRoomsCount,
-    activeQueues,
   } = useMatchmaking();
+  const ratings = useRankingStore((s) => s.ratings);
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -175,12 +156,8 @@ export function MatchmakingQueueModal() {
   }, [joinQueue]);
 
   useEffect(() => {
-    if (!isQueued || !startTime) {
-      return;
-    }
-    const timer = setInterval(() => {
-      setNow(Date.now());
-    }, 1000);
+    if (!isQueued || !startTime) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [isQueued, startTime]);
 
@@ -228,23 +205,19 @@ export function MatchmakingQueueModal() {
     return `${m}:${s}`;
   };
 
-  const gameLabel = gameId
-    ? gameId.replace('_v1', '').replace(/_/g, ' ').toUpperCase()
-    : 'GAME';
+  const gameLabel = gameId ? gameId.replace('_v1', '').replace(/_/g, ' ') : '';
 
-  const otherActiveQueues = Object.entries(activeQueues).filter(
-    ([qGameId, count]) => qGameId !== gameId && count > 0,
+  const otherGames = Object.entries(activeQueues).filter(
+    ([id, count]) => id !== gameId && count > 0,
   );
 
-  const isNextInLine = playersAhead === 0 || position === 1;
-  const showNoRoomsSuggestion = openRoomsCount === 0 || openRoomsCount === null;
+  const friendsInThisGame = friendsInQueue.filter((f) => f.gameId === gameId);
+  const friendsInOtherGames = friendsInQueue.filter((f) => f.gameId !== gameId);
 
   if (isMinimized) {
     return createPortal(
       <MatchmakingFloatingBar
         gameLabel={gameLabel}
-        isNextInLine={isNextInLine}
-        playersAhead={playersAhead}
         elapsedTime={formatTime(elapsed)}
         onExpand={() => setMinimized(false)}
         onLeave={leaveQueue}
@@ -255,21 +228,22 @@ export function MatchmakingQueueModal() {
 
   return createPortal(
     <>
-      <div className="fixed inset-0 z-[1299] bg-black/80 backdrop-blur-sm" />
+      <div
+        className="fixed inset-0 z-[1299] bg-black/60 backdrop-blur-sm"
+        onClick={leaveQueue}
+      />
       <div
         data-testid="matchmaking-modal"
-        className="fixed left-1/2 top-1/2 z-[1300] w-[92%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-fuchsia-500/40 bg-[#18001e]/95 p-6 shadow-2xl backdrop-blur-xl text-slate-100"
+        className="fixed left-1/2 top-1/2 z-[1300] w-[92%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/10 bg-[var(--background)] shadow-2xl overflow-hidden"
       >
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--borderColor)]">
           <div className="flex items-center gap-2">
-            <span className="rounded-md bg-fuchsia-500/20 px-2 py-0.5 text-xs font-bold uppercase text-fuchsia-300 border border-fuchsia-500/30">
-              {ranked
-                ? t('games.matchmaking.modeRanked')
-                : t('games.matchmaking.modeCasual')}
+            <span className="text-sm font-semibold text-[var(--foreground)]">
+              {gameLabel && <span className="capitalize">{gameLabel}</span>}
             </span>
-            {variant && (
-              <span className="rounded-md bg-cyan-500/20 px-2 py-0.5 text-xs font-semibold text-cyan-300 border border-cyan-500/30">
-                {variant}
+            {gameId && ratings[gameId] && (
+              <span className="rounded-md bg-[var(--primary)]/10 px-2 py-0.5 text-[11px] font-bold text-[var(--color)]">
+                {ratings[gameId].elo}
               </span>
             )}
           </div>
@@ -277,119 +251,104 @@ export function MatchmakingQueueModal() {
             type="button"
             onClick={() => setMinimized(true)}
             data-testid="matchmaking-minimize"
-            className="rounded-lg p-1 text-slate-400 hover:bg-white/10 hover:text-white transition-colors text-xs font-medium px-2"
+            className="rounded-lg p-1 text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--foreground)] transition-colors text-xs"
           >
             {t('games.matchmaking.minimize')}
           </button>
         </div>
 
-        <div className="flex flex-col items-center gap-4 py-4">
+        <div className="flex flex-col items-center gap-5 py-8 px-5">
           <div className="relative flex items-center justify-center">
-            <div className="absolute h-24 w-24 rounded-full border border-fuchsia-500/30 animate-ping opacity-60" />
-            <div className="absolute h-16 w-16 rounded-full border border-cyan-400/40 animate-pulse" />
-            <Spinner size="large" color="#d946ef" />
+            <div className="absolute h-20 w-20 rounded-full border border-[var(--primary)]/20 animate-ping opacity-40" />
+            <div className="absolute h-14 w-14 rounded-full border border-[var(--primary)]/30 animate-pulse" />
+            <Spinner size="large" color="var(--primary)" />
           </div>
 
           <div className="text-center">
-            <h3 className="m-0 text-xl font-bold text-slate-100">
+            <h3 className="m-0 text-lg font-bold text-[var(--foreground)]">
               {t('games.matchmaking.searchingTitle')}
             </h3>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1.5 text-sm text-[var(--textSecondary)]">
               {t('games.matchmaking.searchingSubtitle', { game: gameLabel })}
             </p>
           </div>
 
           <p
             data-testid="matchmaking-timer"
-            className="m-0 text-center text-3xl font-mono font-extrabold text-cyan-400 tracking-wider"
+            className="m-0 text-4xl font-mono font-bold text-[var(--primary)] tracking-wider"
           >
             {formatTime(elapsed)}
           </p>
 
-          <div className="w-full rounded-2xl bg-white/[0.04] p-3.5 border border-white/10 flex flex-col gap-2">
-            <div
-              data-testid="matchmaking-players-ahead"
-              className={`flex items-center justify-center gap-2 rounded-xl p-2 text-center text-xs font-bold ${
-                isNextInLine
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30'
-              }`}
-            >
-              <span>{isNextInLine ? '🎯' : '👥'}</span>
-              <span>
-                {isNextInLine
-                  ? t('games.matchmaking.nextInLine')
-                  : playersAhead === 1
-                    ? t('games.matchmaking.playersAheadSingle')
-                    : t('games.matchmaking.playersAheadMultiple', {
-                        count: playersAhead ?? 0,
-                      })}
+          {friendsInThisGame.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-emerald-400 text-center">
+                {t('games.matchmaking.friendsSearching')}
               </span>
-            </div>
-
-            <div className="flex items-center justify-between text-xs px-1 text-slate-400">
-              <span data-testid="matchmaking-position">
-                {t('games.matchmaking.queuePosition', {
-                  position: position ?? 1,
-                  total: queueSize ?? 1,
-                })}
-              </span>
-              <span
-                data-testid="matchmaking-estimated-wait"
-                className="text-fuchsia-400 font-medium"
-              >
-                {t('games.matchmaking.estimatedWait', {
-                  seconds: estimatedWaitSeconds ?? 30,
-                })}
-              </span>
-            </div>
-          </div>
-
-          {showNoRoomsSuggestion && (
-            <div
-              data-testid="matchmaking-no-rooms-suggestion"
-              className="w-full flex items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-left"
-            >
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-amber-300">
-                  {t('games.matchmaking.noRoomsSuggestTitle')}
-                </span>
-                <span className="text-[11px] text-slate-300">
-                  {t('games.matchmaking.noRoomsSuggestSubtitle')}
-                </span>
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {friendsInThisGame.map((f) => (
+                  <span
+                    key={f.userId}
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 text-xs font-medium text-emerald-300"
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                    </span>
+                    {f.userId.slice(0, 8)}
+                    {f.rating !== undefined && (
+                      <span className="text-emerald-400/60">{f.rating}</span>
+                    )}
+                  </span>
+                ))}
               </div>
-              <button
-                type="button"
-                onClick={createRoomAndHost}
-                data-testid="matchmaking-create-room"
-                className="shrink-0 rounded-xl border border-amber-500/40 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-amber-500/30 transition-colors"
-              >
-                {t('games.matchmaking.createRoomAction')}
-              </button>
             </div>
           )}
 
-          {otherActiveQueues.length > 0 && (
-            <div className="w-full flex flex-col gap-1.5 pt-1">
-              <span className="text-[11px] font-semibold uppercase text-slate-400">
-                {t('games.matchmaking.activeQueuesTitle')}
+          {friendsInOtherGames.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--textSecondary)] text-center">
+                {t('games.matchmaking.friendsInOtherGames')}
               </span>
-              <div className="flex flex-wrap gap-1.5">
-                {otherActiveQueues.map(([qGameId, count]) => {
-                  const targetLabel = qGameId
-                    .replace('_v1', '')
-                    .replace(/_/g, ' ')
-                    .toUpperCase();
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {friendsInOtherGames.map((f) => {
+                  const label = f.gameId.replace('_v1', '').replace(/_/g, ' ');
                   return (
                     <button
-                      key={qGameId}
+                      key={f.userId}
                       type="button"
-                      onClick={() => switchGame(qGameId)}
-                      data-testid={`matchmaking-switch-${qGameId}`}
-                      className="flex items-center gap-1.5 rounded-lg bg-cyan-500/10 px-2.5 py-1 text-xs font-medium text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors"
+                      onClick={() => switchGame(f.gameId)}
+                      className="flex items-center gap-1.5 rounded-lg bg-[var(--backgroundHover)] border border-[var(--borderColor)] px-2.5 py-1 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--borderColor)]"
                     >
-                      <span>{targetLabel}</span>
-                      <span className="rounded-full bg-cyan-400/20 px-1.5 py-0.2 text-[10px] font-bold">
+                      <span className="relative flex h-2 w-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                      </span>
+                      <span className="capitalize">{label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {otherGames.length > 0 && (
+            <div className="w-full flex flex-col gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-[var(--textSecondary)] text-center">
+                {t('games.matchmaking.alsoSearching')}
+              </span>
+              <div className="flex flex-wrap justify-center gap-1.5">
+                {otherGames.map(([id, count]) => {
+                  const label = id.replace('_v1', '').replace(/_/g, ' ');
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => switchGame(id)}
+                      className="flex items-center gap-1.5 rounded-lg bg-[var(--backgroundHover)] border border-[var(--borderColor)] px-2.5 py-1 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--borderColor)]"
+                    >
+                      <span className="capitalize">{label}</span>
+                      <span className="rounded-full bg-[var(--primary)]/15 text-[var(--color)] px-1.5 py-0.5 text-[10px] font-bold">
                         {count}
                       </span>
                     </button>
@@ -399,20 +358,20 @@ export function MatchmakingQueueModal() {
             </div>
           )}
 
-          <div className="w-full flex flex-col gap-2 pt-2">
+          <div className="w-full flex flex-col gap-2.5 pt-1">
             <button
               type="button"
               onClick={playVsAiNow}
               data-testid="matchmaking-play-ai"
-              className="w-full rounded-xl border border-fuchsia-500/30 bg-fuchsia-950/40 px-4 py-2.5 text-center text-sm font-semibold text-fuchsia-200 transition-colors hover:bg-fuchsia-900/50 hover:text-white"
+              className="w-full rounded-xl bg-[var(--primary)] px-4 py-3 text-center text-sm font-semibold text-[var(--primaryText)] transition-all hover:opacity-90 active:scale-[0.98]"
             >
-              🤖 {t('games.matchmaking.playAiNow')}
+              {t('games.matchmaking.playAiNow')}
             </button>
             <button
               type="button"
               onClick={leaveQueue}
               data-testid="matchmaking-cancel"
-              className="w-full rounded-xl bg-red-600 px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-red-700 active:scale-[0.99]"
+              className="w-full rounded-xl border border-[var(--borderColor)] bg-transparent px-4 py-3 text-center text-sm font-medium text-[var(--textSecondary)] transition-colors hover:bg-[var(--backgroundHover)] hover:text-[var(--foreground)]"
             >
               {t('games.matchmaking.cancel')}
             </button>

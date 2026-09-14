@@ -17,6 +17,8 @@ export interface DailyRewardStatus {
   nextRewardGems: number;
   /** ISO timestamp of the next UTC midnight — when canClaim flips back. */
   nextResetAt: string;
+  freezeTokens?: number;
+  canUseFreeze?: boolean;
 }
 
 /**

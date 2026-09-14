@@ -79,6 +79,41 @@ export const enMessages = {
           answer:
             'Yes. Your current board, score, and statistics are stored locally so you can continue anytime.',
         },
+        q4: {
+          question: 'What is the objective of Klondike Solitaire?',
+          answer:
+            'Build four suit foundation piles in ascending order from Ace to King while sequencing tableau columns in descending order with alternating colors.',
+        },
+        q5: {
+          question: 'Can any card be placed on an empty column?',
+          answer:
+            'Under standard Klondike rules, only a King or a sequence headed by a King may be moved into an empty tableau space.',
+        },
+        q6: {
+          question: 'What is the difference between Turn 1 and Turn 3?',
+          answer:
+            'Turn 1 flips a single card from the stockpile at a time for a relaxing experience, while Turn 3 flips three cards at once for greater challenge.',
+        },
+        q7: {
+          question: 'Is every Solitaire deal winnable?',
+          answer:
+            'Not all deals are mathematically winnable, but uncovering face-down cards early and keeping empty spaces flexible gives you the best odds.',
+        },
+        q8: {
+          question: 'Can cards be moved back down from foundations?',
+          answer:
+            'Yes. You can return foundation cards back to the tableau whenever it helps reveal trapped face-down cards in other columns.',
+        },
+        q9: {
+          question: 'Can I play Solitaire on mobile phones?',
+          answer:
+            'Yes. Arcadeum Solitaire supports intuitive touch controls, tap-to-move, and fluid card animations on all iOS and Android devices.',
+        },
+        q10: {
+          question: 'Does Solitaire offer an undo option?',
+          answer:
+            'Yes. You can undo moves at any point to correct misclicks or explore alternative card paths without penalty.',
+        },
       },
       steps: {
         create: {

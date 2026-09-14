@@ -19,16 +19,19 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { historyApi } from '@/features/history/api';
 import { useStats } from './hooks/useStats';
 import { useLeaderboard } from './hooks/useLeaderboard';
 import {
   StatsHeader,
+  StatsHeroBanner,
   StatsOverview,
   GameBreakdown,
   Leaderboard,
+  LevelProgression,
+  BadgesShowcase,
 } from './components';
 import { getAllSupportedGameIds } from '@/features/games/lib/gameIdMapping';
 import type { PlayerStats, LeaderboardResponse } from '@/features/history/api';
@@ -49,16 +52,13 @@ export default function StatsPage({
   const router = useRouter();
   const pathname = usePathname();
 
-  // URL state management for filters
   const selectedGame = searchParams?.get('game') || '';
   const [activeTab, setActiveTab] = useState<TabType>('leaderboard');
 
   const { snapshot, hydrated } = useSessionTokens();
 
   const isLoggedIn = useMemo(() => {
-    // During hydration/SSR, we trust initialStats presence (server source of truth)
     if (!hydrated) return !!initialStats;
-    // After hydration, we trust the store (client source of truth)
     return !!snapshot.accessToken;
   }, [hydrated, snapshot.accessToken, initialStats]);
 
@@ -69,7 +69,6 @@ export default function StatsPage({
 
   const records = useLocalStatsStore((s) => s.records);
 
-  // Single-pass computation over records — avoids 4 separate array scans
   const { localBreakdown, localStats, localStreaks, localFavoriteGame } =
     useMemo(() => {
       const byGame = new Map<
@@ -81,7 +80,6 @@ export default function StatsPage({
       let draws = 0;
 
       for (const record of records) {
-        // Breakdown
         const existing = byGame.get(record.gameId) ?? {
           totalGames: 0,
           wins: 0,
@@ -104,12 +102,12 @@ export default function StatsPage({
 
       const totalGames = records.length;
       const breakdown = Array.from(byGame.entries())
-        .map(([gameId, stats]) => ({
+        .map(([gameId, gameStats]) => ({
           gameId,
-          ...stats,
+          ...gameStats,
           winRate:
-            stats.totalGames > 0
-              ? Math.round((stats.wins / stats.totalGames) * 100)
+            gameStats.totalGames > 0
+              ? Math.round((gameStats.wins / gameStats.totalGames) * 100)
               : 0,
         }))
         .sort((a, b) => b.totalGames - a.totalGames);
@@ -123,7 +121,6 @@ export default function StatsPage({
         byGameType: breakdown,
       };
 
-      // Streaks and favorite game from store
       const streaks = useLocalStatsStore.getState().getStreaks();
       const favoriteGame = useLocalStatsStore.getState().getFavoriteGame();
 
@@ -212,31 +209,39 @@ export default function StatsPage({
 
   return (
     <PageLayout>
-      <Container>
+      <div className="flex flex-col items-stretch gap-4 sm:gap-6 max-w-[1240px] w-full mx-auto">
         <StatsHeader
           loading={activeTab === 'my-stats' ? loading : leaderboardLoading}
           refreshing={refreshing}
           onRefresh={handleRefresh}
         />
 
-        <TabGroup role="group" aria-label={t('stats.myStatsTab')}>
-          <TabButton
-            isActive={activeTab === 'my-stats'}
+        <div
+          role="group"
+          aria-label={t('stats.myStatsTab')}
+          className="flex items-center gap-2 p-1 rounded-xl bg-[var(--surfaceSecondary)]/60 border border-[var(--borderColor)]/60 w-fit"
+        >
+          <Button
+            variant={activeTab === 'my-stats' ? 'primary' : 'ghost'}
+            size="sm"
             onClick={() => startTransition(() => setActiveTab('my-stats'))}
             aria-pressed={activeTab === 'my-stats'}
             data-testid="stats-tab-my-stats"
+            className="min-w-[120px] justify-center text-[13px] font-bold"
           >
-            {t('stats.myStatsTab')}
-          </TabButton>
-          <TabButton
-            isActive={activeTab === 'leaderboard'}
+            📊 {t('stats.myStatsTab')}
+          </Button>
+          <Button
+            variant={activeTab === 'leaderboard' ? 'primary' : 'ghost'}
+            size="sm"
             onClick={() => startTransition(() => setActiveTab('leaderboard'))}
             aria-pressed={activeTab === 'leaderboard'}
             data-testid="stats-tab-leaderboard"
+            className="min-w-[120px] justify-center text-[13px] font-bold"
           >
-            {t('stats.leaderboardTab')}
-          </TabButton>
-        </TabGroup>
+            🏆 {t('stats.leaderboardTab')}
+          </Button>
+        </div>
 
         {error && (
           <ErrorState
@@ -248,7 +253,13 @@ export default function StatsPage({
 
         {activeTab === 'my-stats' ? (
           isLoggedIn ? (
-            <>
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <StatsHeroBanner
+                snapshot={snapshot}
+                stats={stats}
+                currentStreak={serverStreaks.currentStreak}
+                currentStreakType={serverStreaks.currentStreakType}
+              />
               <StatsOverview
                 stats={stats}
                 loading={loading}
@@ -256,16 +267,32 @@ export default function StatsPage({
                 currentStreakType={serverStreaks.currentStreakType}
                 bestWinStreak={serverStreaks.bestWinStreak}
                 favoriteGame={serverFavoriteGame}
+                level={snapshot.level}
+                xp={snapshot.xp}
               />
+              <BadgesShowcase currentLevel={snapshot.level} />
+              <LevelProgression currentLevel={snapshot.level} />
               <GameBreakdown stats={stats} loading={loading} />
-            </>
+            </div>
           ) : hasLocalStats ? (
-            <>
-              <LocalStatsBanner>
-                <span className="text-[14px] text-[var(--textSecondary)]">
-                  {t('stats.localStatsNotice')}
-                </span>
-              </LocalStatsBanner>
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 px-5 rounded-2xl border border-amber-500/30 bg-amber-500/10 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <span className="text-[20px]">⚠️</span>
+                  <span className="text-[13px] sm:text-[14px] font-medium text-[var(--color)]">
+                    {t('stats.localStatsNotice')}
+                  </span>
+                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => router.push('/auth')}
+                  className="flex-shrink-0"
+                >
+                  {t('stats.syncToAccount')}
+                </Button>
+              </div>
+
               <StatsOverview
                 stats={{
                   totalGames: localStats.totalGames,
@@ -279,6 +306,8 @@ export default function StatsPage({
                   favoriteGame: localFavoriteGame,
                 }}
                 loading={false}
+                level={snapshot.level}
+                xp={snapshot.xp}
               />
               <GameBreakdown
                 stats={{
@@ -294,18 +323,9 @@ export default function StatsPage({
                 }}
                 loading={false}
               />
-              <div className="flex flex-col items-center gap-3 my-4 sm:my-6">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => router.push('/auth')}
-                >
-                  {t('stats.syncToAccount')}
-                </Button>
-              </div>
-            </>
+            </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 sm:gap-5 p-6 sm:p-10">
+            <div className="flex flex-col items-center justify-center gap-5 p-8 sm:p-14 rounded-2xl border border-[var(--borderColor)]/50 bg-[var(--surfaceSecondary)]/30 text-center">
               <EmptyState icon="📊" message={t('stats.noLocalStats')} />
               <Button
                 variant="primary"
@@ -317,15 +337,19 @@ export default function StatsPage({
             </div>
           )
         ) : (
-          <>
-            <FilterContainer>
-              <FilterLabel>{t('stats.filterByGame')}</FilterLabel>
-              <Select
-                value={selectedGame}
-                onValueChange={updateParams}
-                options={gameOptions}
-              />
-            </FilterContainer>
+          <div className="flex flex-col gap-4 sm:gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3.5 px-4 rounded-xl border border-[var(--borderColor)]/70 bg-[var(--surfaceSecondary)]/40">
+              <span className="text-[13px] sm:text-[14px] font-bold text-[var(--color)] whitespace-nowrap">
+                {t('stats.filterByGame')}
+              </span>
+              <div className="w-full sm:w-64">
+                <Select
+                  value={selectedGame}
+                  onValueChange={updateParams}
+                  options={gameOptions}
+                />
+              </div>
+            </div>
             <Leaderboard
               leaderboard={leaderboard}
               loading={leaderboardLoading}
@@ -334,91 +358,9 @@ export default function StatsPage({
               onLoadMore={loadMore}
               currentUserId={snapshot.userId || undefined}
             />
-          </>
+          </div>
         )}
-      </Container>
+      </div>
     </PageLayout>
-  );
-}
-
-function Container({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-col items-stretch gap-3 sm:gap-4 lg:gap-5 max-w-[1200px]">
-      {children}
-    </div>
-  );
-}
-
-function TabGroup({
-  role,
-  'aria-label': ariaLabel,
-  children,
-}: {
-  role?: React.AriaRole;
-  'aria-label'?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <div
-      role={role}
-      aria-label={ariaLabel}
-      className="flex flex-row items-stretch gap-2 sm:gap-3"
-    >
-      {children}
-    </div>
-  );
-}
-
-interface TabButtonProps {
-  isActive?: boolean;
-  onClick?: () => void;
-  children?: React.ReactNode;
-  'aria-pressed'?: boolean;
-  'data-testid'?: string;
-}
-
-const TabButton = ({
-  isActive,
-  onClick,
-  children,
-  'aria-pressed': ariaPressed,
-  'data-testid': dataTestId,
-}: TabButtonProps) => (
-  <Button
-    className={
-      'min-w-[100px] sm:min-w-[120px] justify-center text-[13px] sm:text-[14px]'
-    }
-    variant={isActive ? 'primary' : 'chip'}
-    size="sm"
-    active={isActive}
-    onClick={onClick}
-    aria-pressed={ariaPressed}
-    data-testid={dataTestId}
-  >
-    {children}
-  </Button>
-);
-
-function FilterContainer({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 px-4 sm:px-5 rounded-xl sm:rounded-2xl border border-[var(--borderColor)] bg-[var(--background)]">
-      {children}
-    </div>
-  );
-}
-
-function FilterLabel({ children }: { children?: React.ReactNode }) {
-  return (
-    <span className="text-[14px] sm:text-[16px] leading-[18px] sm:leading-[20px] font-semibold tracking-[0.5px] select-none text-[var(--color)] whitespace-nowrap">
-      {children}
-    </span>
-  );
-}
-
-function LocalStatsBanner({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-row items-center p-3 sm:p-4 px-4 sm:px-5 rounded-lg sm:rounded-xl border border-[rgba(255,200,50,0.2)] bg-[rgba(255,200,50,0.08)]">
-      {children}
-    </div>
   );
 }

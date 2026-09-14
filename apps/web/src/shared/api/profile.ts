@@ -1,5 +1,6 @@
 import { apiClient } from '@/shared/lib/api-client';
 import type { Friend } from '@/shared/api/friends';
+import type { Achievement } from '@/features/achievements/server/achievements.types';
 
 export interface PublicUserProfile {
   id: string;
@@ -7,6 +8,8 @@ export interface PublicUserProfile {
   displayName: string | null;
   role: string;
   xp: number;
+  level: number;
+  prestige: number;
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
   equippedNameColorId: string | null;
@@ -29,4 +32,10 @@ export async function getUserFriends(
   options?: { token?: string },
 ): Promise<Friend[]> {
   return apiClient.get<Friend[]>(`/friends/user/${userId}`, options);
+}
+
+export async function getUserAchievements(
+  userId: string,
+): Promise<Achievement[]> {
+  return apiClient.get<Achievement[]>(`/achievements/user/${userId}`);
 }

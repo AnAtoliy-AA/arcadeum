@@ -76,7 +76,7 @@ test.describe('Sea Battle Game', () => {
     const createBtn = page.getByTestId('create-room-button');
 
     if (await createBtn.isVisible()) {
-      await createBtn.click();
+      await createBtn.click({ force: true });
 
       // Wait for navigation to room
       await page.waitForURL(/\/rooms\/.*/, {}).catch(() => {

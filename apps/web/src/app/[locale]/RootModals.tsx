@@ -26,20 +26,21 @@ const AchievementPopupHost = dynamic(
   { ssr: false },
 );
 
-/**
- * Client-mounted modals that render nothing in the initial HTML:
- * the matchmaking queue is only shown while queuing and the wallet
- * bridge only connects for authenticated sessions (it reads the token
- * from the client session store). `ssr: false` keeps their chunks
- * (and the socket client they import) out of the critical path on the
- * marketing home page.
- */
+const LevelUpModalHost = dynamic(
+  () =>
+    import('@/features/level-rewards/ui/LevelUpModalHost').then(
+      (m) => m.LevelUpModalHost,
+    ),
+  { ssr: false },
+);
+
 export function RootModals() {
   return (
     <>
       <WalletLiveBridge />
       <MatchmakingQueueModal />
       <AchievementPopupHost />
+      <LevelUpModalHost />
     </>
   );
 }

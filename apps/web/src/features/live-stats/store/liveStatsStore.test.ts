@@ -44,10 +44,20 @@ describe('liveStatsStore', () => {
     expect(useLiveStatsStore.getState().isPopoverOpen).toBe(false);
   });
 
-  it('should update live stats via setLiveStats', () => {
-    useLiveStatsStore.getState().setLiveStats({
+  it('should update live stats via applyWsStats', () => {
+    useLiveStatsStore.getState().applyWsStats({
       onlineUsers: 120,
+      totalUsers: 0,
+      totalMatches: 0,
+      totalSubscribers: 0,
+      platformSubscribers: {},
       activeGames: 18,
+      waitingRooms: 0,
+      waitingPlayers: 0,
+      matchesToday: 0,
+      popularGames: [],
+      openRooms: [],
+      recentActivity: [],
     });
     const { stats } = useLiveStatsStore.getState();
     expect(stats.onlineUsers).toBe(120);

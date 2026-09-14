@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import { getTranslations } from '@/shared/i18n/server';
+
+export const revalidate = 60;
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
 import { buildCollectionPageJsonLd } from '@/shared/seo/collectionPageJsonLd';

@@ -1,19 +1,38 @@
 'use client';
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ReactElement,
-} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import dynamic from 'next/dynamic';
 import { routes } from '@/shared/config/routes';
 import { trackInviteShared } from '@/shared/analytics/funnel';
 import { cx } from '@arcadeum/ui/utils/cx';
+import {
+  ShareChannelsPopover,
+  TelegramIcon,
+  WhatsAppIcon,
+  TwitterIcon,
+  FacebookIcon,
+  CopyLinkIcon,
+  QrCodeIcon,
+  NativeShareIcon,
+  buildChannels,
+  type ShareChannel,
+} from '@/features/games/ui/share/ShareChannelsMenu';
+
+export {
+  ShareChannelsPopover,
+  TelegramIcon,
+  WhatsAppIcon,
+  TwitterIcon,
+  FacebookIcon,
+  CopyLinkIcon,
+  QrCodeIcon,
+  NativeShareIcon,
+  buildChannels,
+};
+export type { ShareChannel };
 
 const RoomQrModal = dynamic(
   () => import('./RoomQrModal').then((m) => m.RoomQrModal),
@@ -23,136 +42,6 @@ const RoomQrModal = dynamic(
 interface ShareGameMenuProps {
   roomId: string;
   inviteCode?: string;
-}
-
-interface ShareChannel {
-  key: 'telegram' | 'whatsapp' | 'twitter' | 'facebook';
-  label: string;
-  href: string;
-  icon: ReactElement;
-}
-
-const ICON_SIZE = 18;
-
-function TelegramIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="#229ED9"
-      aria-hidden
-    >
-      <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71l-4.13-3.05-1.98 1.93c-.23.23-.42.42-.85.41z" />
-    </svg>
-  );
-}
-
-function WhatsAppIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="#25D366"
-      aria-hidden
-    >
-      <path d="M17.47 14.38c-.3-.15-1.74-.86-2.01-.96-.27-.1-.47-.15-.66.15-.2.3-.76.96-.93 1.15-.17.2-.34.22-.64.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.05-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.51.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.9-2.18-.24-.58-.48-.5-.66-.51l-.56-.01c-.2 0-.52.07-.79.37-.27.3-1.03 1.01-1.03 2.46 0 1.45 1.06 2.85 1.21 3.05.15.2 2.09 3.2 5.07 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.74-.71 1.99-1.4.25-.69.25-1.28.17-1.4-.07-.12-.27-.2-.57-.35zM12.04 21.36h-.01a9.27 9.27 0 01-4.72-1.3l-.34-.2-3.51.92.93-3.42-.22-.35a9.32 9.32 0 01-1.42-4.94c0-5.14 4.19-9.33 9.33-9.33 2.49 0 4.83.97 6.59 2.73a9.27 9.27 0 012.73 6.6c-.01 5.14-4.2 9.33-9.34 9.33zm7.94-17.27A11.13 11.13 0 0012.04 1C5.9 1 .93 5.97.93 12.1c0 1.96.51 3.87 1.48 5.55L.83 23l5.49-1.44a11.16 11.16 0 005.72 1.46h.01c6.13 0 11.1-4.97 11.1-11.1 0-2.97-1.15-5.76-3.25-7.86z" />
-    </svg>
-  );
-}
-
-function TwitterIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.659l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
-    </svg>
-  );
-}
-
-function FacebookIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="#1877F2"
-      aria-hidden
-    >
-      <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.13 8.44 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99C18.34 21.13 22 16.99 22 12z" />
-    </svg>
-  );
-}
-
-function CopyLinkIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-    </svg>
-  );
-}
-
-function QrCodeIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <path d="M14 14h3v3h-3z" />
-      <path d="M21 14v3" />
-      <path d="M14 21h3" />
-      <path d="M21 21h0.01" />
-    </svg>
-  );
-}
-
-function NativeShareIcon() {
-  return (
-    <svg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <circle cx="18" cy="5" r="3" />
-      <circle cx="6" cy="12" r="3" />
-      <circle cx="18" cy="19" r="3" />
-      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-    </svg>
-  );
 }
 
 export function buildInviteUrl(roomId: string, inviteCode?: string): string {
@@ -165,41 +54,6 @@ export function buildInviteUrl(roomId: string, inviteCode?: string): string {
     ...(inviteCode ? { inviteCode } : {}),
   });
   return `${window.location.origin}${routes.gameRoom(roomId)}?${params.toString()}`;
-}
-
-function buildChannels(
-  t: ReturnType<typeof useTranslation>['t'],
-  url: string,
-  text: string,
-): ShareChannel[] {
-  const u = encodeURIComponent(url);
-  const txt = encodeURIComponent(text);
-  return [
-    {
-      key: 'telegram',
-      label: t('games.common.shareVia.telegram'),
-      href: `https://t.me/share/url?url=${u}&text=${txt}`,
-      icon: <TelegramIcon />,
-    },
-    {
-      key: 'whatsapp',
-      label: t('games.common.shareVia.whatsapp'),
-      href: `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`,
-      icon: <WhatsAppIcon />,
-    },
-    {
-      key: 'twitter',
-      label: t('games.common.shareVia.twitter'),
-      href: `https://twitter.com/intent/tweet?url=${u}&text=${txt}`,
-      icon: <TwitterIcon />,
-    },
-    {
-      key: 'facebook',
-      label: t('games.common.shareVia.facebook'),
-      href: `https://www.facebook.com/sharer/sharer.php?u=${u}`,
-      icon: <FacebookIcon />,
-    },
-  ];
 }
 
 export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
@@ -296,7 +150,6 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
 
   const url = buildInviteUrl(roomId, inviteCode);
   const text = t('games.common.shareMessage');
-  const channels = buildChannels(t, url, text);
 
   return (
     <div ref={containerRef} className="relative inline-flex z-[100]">
@@ -319,71 +172,21 @@ export function ShareGameMenu({ roomId, inviteCode }: ShareGameMenuProps) {
       </Button>
 
       {isOpen && (
-        <div
+        <ShareChannelsPopover
+          url={url}
+          text={text}
+          title={t('games.common.shareTitle')}
+          isCopied={isCopied}
+          onCopy={handleCopy}
+          onShowQr={handleShowQr}
+          onChannelClick={handleChannelClick}
+          onNativeShare={handleNativeShare}
+          hasNativeShare={hasNativeShare}
           className={cx(
-            'flex flex-col items-stretch absolute right-0 min-w-[240px] bg-[var(--background)] border border-[var(--glassBorderStrong)] rounded-2xl p-2.5 gap-1 z-[1000] shadow-2xl backdrop-blur-xl',
+            'absolute right-0 min-w-[240px] z-[1000]',
             openPlacement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
           )}
-          id="share-game-menu-popover"
-          role="menu"
-          aria-label={t('games.common.shareTooltip')}
-          data-testid="share-game-popover"
-        >
-          {channels.map((c) => (
-            <div
-              className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--color)]"
-              onClick={() => handleChannelClick(c.key, c.href)}
-              key={c.key}
-              role="menuitem"
-              tabIndex={0}
-              data-testid={`share-via-${c.key}`}
-            >
-              {c.icon}
-              <span className="text-sm font-semibold text-[var(--color)]">
-                {c.label}
-              </span>
-            </div>
-          ))}
-          <div
-            className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--color)]"
-            onClick={handleCopy}
-            role="menuitem"
-            tabIndex={0}
-            data-testid="share-via-copy"
-          >
-            <CopyLinkIcon />
-            <span className="text-sm font-semibold text-[var(--color)]">
-              {isCopied
-                ? t('games.common.shareVia.copied')
-                : t('games.common.shareVia.copyLink')}
-            </span>
-          </div>
-          <div className="mx-2 border-t border-[var(--glassBorder)] my-1" />
-          <div
-            className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--color)]"
-            onClick={handleShowQr}
-            role="menuitem"
-            tabIndex={0}
-            data-testid="share-via-qr"
-          >
-            <QrCodeIcon />
-            <span className="text-sm font-semibold text-[var(--color)]">
-              {t('games.common.roomQr.menu')}
-            </span>
-          </div>
-          {hasNativeShare && (
-            <div
-              className="flex flex-row items-center gap-3 px-3 py-2 rounded-xl cursor-pointer hover:bg-[var(--backgroundHover)] transition-colors text-[var(--primary)] font-semibold"
-              onClick={handleNativeShare}
-              role="menuitem"
-              tabIndex={0}
-              data-testid="share-via-native"
-            >
-              <NativeShareIcon />
-              <span className="text-sm">More Options...</span>
-            </div>
-          )}
-        </div>
+        />
       )}
 
       <RoomQrModal

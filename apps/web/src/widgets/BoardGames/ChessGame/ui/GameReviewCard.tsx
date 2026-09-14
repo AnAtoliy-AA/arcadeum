@@ -4,7 +4,16 @@ import { useMemo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 
 interface MoveClassification {
-  type: 'brilliant' | 'great' | 'good' | 'inaccuracy' | 'mistake' | 'blunder';
+  type:
+    | 'brilliant'
+    | 'great'
+    | 'best'
+    | 'excellent'
+    | 'good'
+    | 'book'
+    | 'inaccuracy'
+    | 'mistake'
+    | 'blunder';
   count: number;
 }
 
@@ -33,12 +42,19 @@ const CLASSIFICATION_CONFIG: Record<
   string,
   { color: string; bg: string; symbol: string }
 > = {
-  brilliant: { color: 'text-purple-400', bg: 'bg-purple-500/15', symbol: '!!' },
-  great: { color: 'text-sky-400', bg: 'bg-sky-500/15', symbol: '!' },
-  good: { color: 'text-emerald-400', bg: 'bg-emerald-500/15', symbol: '' },
+  brilliant: { color: 'text-cyan-400', bg: 'bg-cyan-500/15', symbol: '!!' },
+  great: { color: 'text-green-600', bg: 'bg-green-600/15', symbol: '!' },
+  best: { color: 'text-emerald-400', bg: 'bg-emerald-500/15', symbol: '✓' },
+  excellent: {
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/15',
+    symbol: '✓',
+  },
+  good: { color: 'text-emerald-400', bg: 'bg-emerald-500/15', symbol: '✓' },
+  book: { color: 'text-gray-400', bg: 'bg-gray-500/15', symbol: '' },
   inaccuracy: {
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/15',
+    color: 'text-yellow-400',
+    bg: 'bg-yellow-500/15',
     symbol: '?!',
   },
   mistake: { color: 'text-orange-400', bg: 'bg-orange-500/15', symbol: '?' },
@@ -180,10 +196,7 @@ function EvalGraph({
           strokeWidth="0.5"
         />
         {fillPoints && (
-          <polygon
-            points={fillPoints}
-            fill="rgba(99,102,241,0.1)"
-          />
+          <polygon points={fillPoints} fill="rgba(99,102,241,0.1)" />
         )}
         {points && (
           <polyline
@@ -211,7 +224,9 @@ export function GameReviewCard({
   t,
 }: GameReviewCardProps) {
   const whiteGrade = getGradeFromAccuracy(whiteReview.accuracy);
-  const blackGrade = getGradeFromAccuracy(typeof blackReview === 'string' ? 50 : 50);
+  const blackGrade = getGradeFromAccuracy(
+    typeof blackReview === 'string' ? 50 : 50,
+  );
 
   return (
     <div className="flex flex-col gap-4 p-4 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
@@ -224,7 +239,9 @@ export function GameReviewCard({
           <span className="text-[10px] text-[var(--textSecondary)] font-medium">
             White
           </span>
-          <span className={cx('text-3xl font-black', getGradeColor(whiteGrade))}>
+          <span
+            className={cx('text-3xl font-black', getGradeColor(whiteGrade))}
+          >
             {whiteGrade}
           </span>
           <AccuracyBar accuracy={whiteReview.accuracy} />
@@ -233,7 +250,9 @@ export function GameReviewCard({
           <span className="text-[10px] text-[var(--textSecondary)] font-medium">
             Black
           </span>
-          <span className={cx('text-3xl font-black', getGradeColor(blackGrade))}>
+          <span
+            className={cx('text-3xl font-black', getGradeColor(blackGrade))}
+          >
             {blackGrade}
           </span>
           <AccuracyBar accuracy={typeof blackReview === 'string' ? 50 : 50} />
@@ -244,7 +263,9 @@ export function GameReviewCard({
         <span className="text-[10px] font-semibold text-[var(--textSecondary)] uppercase">
           Move Breakdown
         </span>
-        <ClassificationBreakdown classifications={whiteReview.classifications} />
+        <ClassificationBreakdown
+          classifications={whiteReview.classifications}
+        />
       </div>
 
       <div className="flex flex-col gap-2">

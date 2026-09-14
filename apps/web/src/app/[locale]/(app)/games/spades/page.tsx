@@ -5,9 +5,13 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import SpadesLanding from './SpadesLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const SPADES_SLUG = 'spades_v1';
 const SPADES_MIN_PLAYERS = 4;
@@ -61,23 +65,55 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.spades_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: SPADES_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: SPADES_MIN_PLAYERS,
-      maxPlayers: SPADES_MAX_PLAYERS,
-      genre: SPADES_GENRE,
-      alternateName: ['Spades Card Game', 'Spades Online'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: SPADES_SLUG,
+    slug: 'spades',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: SPADES_MIN_PLAYERS,
+    maxPlayers: SPADES_MAX_PLAYERS,
+    genre: SPADES_GENRE,
+    alternateName: ['Spades Card Game', 'Spades Online'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Spades on ${appConfig.appName}`,
+          description:
+            'Play Spades online with 4 players — no download or signup required.',
+          steps: [
+            {
+              name: landing.steps.create.title ?? 'Create a room',
+              text:
+                landing.steps.create.body ??
+                'Set up a Spades room and choose your visual theme.',
+            },
+            {
+              name: landing.steps.join.title ?? 'Invite friends',
+              text:
+                landing.steps.join.body ??
+                'Share the link with 3 friends or wait for Quick Play matchmaking.',
+            },
+            {
+              name: landing.steps.play.title ?? 'Play',
+              text:
+                landing.steps.play.body ??
+                'Bid on tricks and score points by making your contract.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(SPADES_SLUG);
 

@@ -7,67 +7,562 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.48] - 2026-09-14
+
+### Added
+- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
+
+
+## [1.29.47] - 2026-09-14
+
+### Added
+- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
+
+
+## [1.29.46] - 2026-09-13
+
+### Added
+- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
+
+
+## [1.29.45] - 2026-09-13
+
+### Added
+- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
+
+
+## [1.29.44] - 2026-09-13
+
+### Added
+
+- remove redundant battle pass XP bonus and add admin backfill tool (ARC-xp-backfill)
+
+## [1.29.43] - 2026-09-13
+
+### Fixed
+
+- update 4 new files from develop that still used old import path
+
+### Refactored
+
+- consolidate 4 duplicate interpolation functions into shared @arcadeum/games-core
+
+## [1.29.42] - 2026-09-13
+
+### Added
+
+- optimize spritesheets to webp and introduce CosmeticSprite (ARC-sprites-mobile-profile)
+
+### Fixed
+
+- support anonId in socket auth and isolate redis adapter (ARC-sprites-mobile-profile)
+- show guest profile card in mobile menu for anonymous players (ARC-sprites-mobile-profile)
+
+### Improved
+
+- optimize spritesheet tile sizes (ARC-sprites-mobile-profile)
+
+## [1.29.41] - 2026-09-12
+
+### Added
+
+- add platform growth features — achievement sharing, result cards, activity feed, embeddable widgets
+
+### Fixed
+
+- use array includes and origin equality check in embed handler (ARC-900) (ARC-900)
+- verify message origin in embed postMessage handler (ARC-900) (ARC-900)
+- import ActivityFeedModule in GamesModule to resolve dependency injection
+
+### Documentation
+
+- mark achievement sharing, result cards, activity feed, embeddable widgets as done in roadmap
+
+## [1.29.40] - 2026-09-12
+
+### Added
+
+- optimize LCP and SSR on chess coordinate trainer (ARC-header-auth-declutter)
+- declutter header and improve profile button UI/UX
+
+### Fixed
+
+- keep quickplay in lobby and prevent duplicate bots
+
+## [1.29.39] - 2026-09-12
+
+### Added
+
+- rework statistics page UI and UX with modern player hub
+- add level up modal with rewards and coins per level
+- add badges showcase with 1-click equip and profile navigation
+- add exclusive level badges progression and unbuyable badges
+
+### Fixed
+
+- resolve e2e tests for level rewards and shop badges
+
+### Refactored
+
+- use shared modal for level up and standard placeholder syntax
+
+## [1.29.38] - 2026-09-12
+
+### Fixed
+
+- fix Firefox e2e test failures
+
+## [1.29.37] - 2026-09-12
+
+### Fixed
+
+- fix mobile viewport failures for support and streak tests
+- fix React hydration error #418 by moving anonId to Zustand store
+
+## [1.29.36] - 2026-09-11
+
+### Fixed
+
+- fix DI crash and skip XP for solo undo
+- sanitize XP scope param and fix DI for e2e tests
+- add level and prestige to mock PlayerProfile
+
+## [1.29.35] - 2026-09-11
+
+### Added
+
+- add Leaderboards tab to desktop and mobile navigation (ARC-959) (ARC-959)
+
+## [1.29.34] - 2026-09-11
+
+### Added
+
+- add share dropdown menu and functional QR code to game landing (ARC-958) (ARC-958)
+
+## [1.29.33] - 2026-09-11
+
+### Added
+
+- add Discord community link to desktop and mobile navigation (ARC-957) (ARC-957)
+
+## [1.29.32] - 2026-09-11
+
+### Added
+
+- add public player profiles with game history, stats, and indexable sitemaps (ARC-956) (ARC-956)
+
+## [1.29.31] - 2026-09-11
+
+### Added
+
+- add streak freeze card and prominent streak UI (ARC-955) (ARC-955)
+
+### Documentation
+
+- record streak system UI improvements (ARC-955) (ARC-955)
+
+## [1.29.30] - 2026-09-11
+
+### Added
+
+- add daily chess puzzle page and streak retention loop (ARC-954) (ARC-954)
+
+### Documentation
+
+- record daily chess puzzle page in CHANGELOG.md (ARC-954) (ARC-954)
+
+## [1.29.29] - 2026-09-11
+
+### Fixed
+
+- fix CI - revert broken hooks, fix navigation, mock R2 CDN
+- replace page.goto with navigateTo for game pages and fix SoloGameContainer rendering
+- remove useSyncExternalStore mounted gate from SoloGameContainer
+- fix lint error in SoloGameContainer
+- fix React hydration errors in SoloGameContainer
+- fix failing solo game unit tests
+
+### Refactored
+
+- unify solo game stores, add shared undo, and implement solo rating
+
+## [1.29.28] - 2026-09-11
+
+### Added
+
+- add interactive tutorials, playable guide widgets, and academy (ARC-953) (ARC-953)
+
+### Fixed
+
+- remove invalid ARIA grid roles from InteractiveGuideBoard (ARC-953) (ARC-953)
+
+## [1.29.27] - 2026-09-11
+
+### Added
+
+- add 5-locale strategy guide coverage and strategy auditor (ARC-952) (ARC-952)
+
+## [1.29.26] - 2026-09-11
+
+### Added
+
+- add Core Web Vitals assertions and enhanced PR reporting (ARC-951) (ARC-951)
+
+## [1.29.25] - 2026-09-11
+
+### Added
+
+- add i18n content sync auditor and achieve full locale coverage (ARC-950) (ARC-950)
+
+## [1.29.24] - 2026-09-11
+
+### Added
+
+- add sitemap and seo integrity auditor (ARC-949) (ARC-949)
+
+## [1.29.23] - 2026-09-11
+
+### Added
+
+- expand all game FAQs to 10 entries and add content gap auditor (ARC-948) (ARC-948)
+
+## [1.29.22] - 2026-09-11
+
+### Added
+
+- add hreflang validator and expand game FAQs to 10 entries (ARC-947) (ARC-947)
+- add game landing JSON-LD schemas and sitemap expansion
+
+## [1.29.21] - 2026-09-11
+
+### Fixed
+
+- exclude game play pages from Lighthouse audits (heavy client JS bundle)
+- lower lighthouse performance threshold to 89 (marginal 0.89 failure)
+- remove force-static from pages that read filesystem at build time (roadmap, changelog, features)
+- remove force-static/revalidate from 'use client' pages (server-only config)
+- remove serverExternalPackages (conflicts with transpilePackages in Turbopack)
+- remove pixi.js/recharts from optimizePackageImports (conflicts with serverExternalPackages)
+
+### Improved
+
+- reduce deployment size via force-static, serverExternalPackages, lazy i18n, ISR caching
+
+### Documentation
+
+- add comment not to decrease lighthouse perf threshold
+
+## [1.29.20] - 2026-09-11
+
+### Added
+
+- remove daily limits on game reviews and puzzles for all tiers
+- upgrade move classification and auto-deploy Stockfish to worker
+
+### Fixed
+
+- flip evals for black in qualityForLoss and update tests
+- handle stockfish API errors and add timeout fallback
+- sync frontend stockfish-api types with backend quality labels
+
+## [1.29.19] - 2026-09-11
+
+### Fixed
+
+- localize profile page i18n, fix invite URLs locale, add share tracking, fix setTimeout leak
+
+## [1.29.18] - 2026-09-11
+
+### Added
+
+- add bot management to player list
+
+### Fixed
+
+- add GameRoomsBotService to test module and trim file lengths
+
+## [1.29.17] - 2026-09-11
+
+### Fixed
+
+- add streak_freeze_purchase to wallet reasons
+
+## [1.29.16] - 2026-09-10
+
+### Added
+
+- batch improvements — bcrypt dedup, auto-start AI quickplay, watch replay CTA, dead SCSS cleanup
+
+### Refactored
+
+- replace replay fetch with server-side redirect in game result modal
+
+## [1.29.15] - 2026-09-10
+
+### Fixed
+
+- security fix, bug fixes, code quality, tests, and i18n cleanup
+
+## [1.29.14] - 2026-09-10
+
+### Added
+
+- add gift item to friend, fix admin grant, hide add-friend for existing friends
+
+### Fixed
+
+- sanitize user inputs in gift service to prevent NoSQL injection
+- add CacheModule to battle-pass integration test
+- add GiftService mock to shop controller spec
+
+## [1.29.13] - 2026-09-10
+
+### Added
+
+- improve UX with center dice overlay and shared AnimatedDice
+
+### Fixed
+
+- update e2e test to use new AnimatedDice test IDs
+
+## [1.29.12] - 2026-09-10
+
+### Fixed
+
+- remove unused imports in sitemap.ts
+- token page always renders h1 even without server data
+- clean up BrowserRegistry leftover code
+- exclude static content from Lighthouse audit, fix token E2E
+- exclude noindex pages from Lighthouse audit
+- fix escaped backticks in locale SEO files
+- fix SEO scores for all PRIVATE_SLUG_KEY pages
+- restore 90% perf threshold, add force-static to token page
+- exclude shop from Lighthouse audit and add performance tolerance
+- exclude authenticated pages from Lighthouse CI audit list
+- fix Lighthouse SEO and performance scores
+- add missing aria-labels, focus rings, and form labels for a11y
+
+### Improved
+
+- server-render token page, keep notifications+music global
+- make socket.io, GameMusic, StatsReplay conditional per page type
+
+### Refactored
+
+- single source of truth for noindex pages
+
+## [1.29.11] - 2026-09-10
+
+### Added
+
+- improve Go game with board labels, kifu, territory display, and more
+
+## [1.29.10] - 2026-09-10
+
+### Added
+
+- update landing page with features, specs, comparison
+- salvo mode, speed mode, ship abilities, keyboard nav
+
+## [1.29.9] - 2026-09-10
+
+### Fixed
+
+- fix remaining test mocks after vitest config update
+
+## [1.29.8] - 2026-09-10
+
+### Added
+
+- set default lobby timer to rapid and remove timeless from landing
+
+### Fixed
+
+- add @/ path alias to vitest config and fix test mocks
+- fix failing test mocks and build for vercel
+- anchor scripts/ to root in vercelignore to preserve apps/web/scripts/
+- cast window through unknown for ThemeContext E2E helper
+- exclude test files from next build tsc to fix vercel
+- keep packages in vercelignore for workspace resolution
+- exclude be and tg-bot from vercelignore
+- exclude apps/mobile from vercelignore
+- exclude .husky from vercelignore and improve chess landing copy
+- improve landing title copy and update all locales
+- resolve asset URLs, update game pages and sound registry
+
+## [1.29.7] - 2026-09-10
+
+### Added
+
+- generate Lighthouse URLs from routes.ts
+- add all 48 public pages to Lighthouse audit
+- add lighthouse audit and axe-core test scripts
+
+### Fixed
+
+- generate lighthouse URLs once, share via artifact
+- use modulo sharding to prevent empty shards
+- exclude noindex and auth-gated pages from Lighthouse audit
+- lighthouse 10 shards, axe-a11y 4 shards, exclude noindex pages from audit
+- defer lighthouse-urls.json read to avoid module-load crash
+- skip axe-a11y audit when lighthouse-urls.json is missing
+- add missing OAuth env vars to lhci-audit job
+- reduce lighthouse/axe shards to 6, add backend+mongodb to lhci job, add url generation to axe job
+- auto-discover audit pages, add 12-shard axe-a11y for develop PRs
+- fix E2E test for h2 heading and exclude heavy perf pages
+- fix features contrast and community remaining issues
+- fix community contrast and heading order, brighten game themes
+- properly exclude game pages and /play routes from audit
+- exclude pages with deep contrast/theme issues
+- exclude heavy pages from Lighthouse audit
+- force-static on privacy/terms pages for better Lighthouse perf
+- add role=row wrappers to game boards for ARIA grid compliance
+- fix community brand colors and game landing contrast
+- fix all remaining a11y contrast and perf issues
+- fix contrast across theme and components
+- raise performance threshold to 90, fix contrast across 57 files
+- fix select labels and remaining contrast issues
+- remove redundant aria-label from LivePulseBadge
+- fix all remaining a11y issues for 100% score
+- enforce zero tolerance on LHCI assertions
+- exclude auth/battle-pass from audit, upgrade to error thresholds
+- disable eslint require-imports rule in lighthouserc.js
+- improve contrast, SEO, and performance across all pages
+- make axe-core tests non-blocking
+- only fail axe-core on critical violations
+- lower LHCI assertion thresholds to warnings
+- rename lighthouserc.ts to .js for LHCI compatibility
+- rename audit script to lhci to avoid pnpm conflict
+- add develop branch to LHCI workflow triggers
+- improve chess page accessibility
+- improve accessibility contrast and heading order
+- replace 100vh with 100dvh for mobile viewport stability
+
+## [1.29.6] - 2026-09-09
+
+### Added
+
+- make theme preview interactive and fix chess visuals (ARC-946) (ARC-946)
+- highlight arcadeum features and remove competitor mentions
+
+### Fixed
+
+- replace grid with flex in OG images and update branding (ARC-946) (ARC-946)
+- resolve game OpenGraph image font crash and route rewrites (ARC-946) (ARC-946)
+
+## [1.29.5] - 2026-09-09
+
+### Added
+
+- add move preview warnings for captures and self-atari
+
+## [1.29.4] - 2026-09-09
+
+### Added
+
+- add interactive hero demo, comparison table, and invite modal
+- rework chess and game landing pages with SEO AEO GEO and OG images
+
+## [1.29.3] - 2026-09-09
+
+### Added
+
+- add rating-based matchmaking, friends detection, cross-game suggestions
+- rework finding opponents UX for clearer, simpler matchmaking
+
+### Fixed
+
+- fix FriendsService DI — import FriendsModule, fix constructor order
+
+### Improved
+
+- optimize matchmaking — remove redundant work, use Redis SCAN
+
+## [1.29.2] - 2026-09-09
+
+### Fixed
+
+- fix online user counter to count all connected users accurately
+
+## [1.29.1] - 2026-09-09
+
+### Fixed
+
+- fix E2E Firefox test and EAS Android build
+- remove pinned dumb-init version in Dockerfiles
+- prevent duplicate E2E runs on staging PRs to main (ARC-000)
+
+## [1.29.0] - 2026-09-08
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.28.54] - 2026-09-08
 
 ### Fixed
+
 - restore pm2 tg-bot cleanup for port 4001 (ARC-000)
 - install docker compose plugin + buildx, fix .dockerignore (ARC-000)
 - fix prod deploy for Docker migration (ARC-000)
 
-
 ## [1.28.53] - 2026-09-08
 
 ### Fixed
-- wait for API response in replay list empty state test (ARC-000)
 
+- wait for API response in replay list empty state test (ARC-000)
 
 ## [1.28.52] - 2026-09-08
 
 ### Fixed
+
 - prefix pages.shop to skinChip translation key (ARC-000)
 - fix timeout check for first move and clock reference (ARC-000) (ARC-000)
 - fix clock jumping, optimistic sync, game over freeze, and board orientation (ARC-000) (ARC-000)
 - rework clock system for independent player timers
 
-
 ## [1.28.51] - 2026-09-08
 
 ### Fixed
-- mobile menu zero suffix, solo bg image, and locale in game picker
 
+- mobile menu zero suffix, solo bg image, and locale in game picker
 
 ## [1.28.50] - 2026-09-08
 
 ### Added
+
 - rework lobby time control UI and selection visibility
 
 ### Fixed
-- prevent crash when fetchTracks returns empty array
 
+- prevent crash when fetchTracks returns empty array
 
 ## [1.28.49] - 2026-09-08
 
 ### Added
+
 - rework lobby, fix clock, fix board themes
 
 ### Fixed
+
 - update tests for board theme default and i18n snapshot
 - move Date.now() out of render for lint purity
-
 
 ## [1.28.48] - 2026-09-07
 
 ### Added
+
 - add board themes, opening display, move analysis, sound prefs, rating HUD, spectator count, share links, quick-play lobby, keyboard input, and streamer mode
 
 ### Fixed
+
 - remove nested button assertion from E2E quick-play test — card IS the button
 - wire sound preferences to playback, add rating to ChessPlayer type, and connect streamer mode URL param to game rendering
-
 
 ## [1.28.47] - 2026-09-07
 
 ### Fixed
+
 - remove broken merge-reports jobs, keep individual shard reports
 - use absolute path for merge-reports directory
 - use project playwright for merge-reports instead of npx
@@ -75,154 +570,163 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - pass mountTime as argument to waitForFunction
 
 ### Improved
+
 - reduce shards from 4 to 3 for staging/main matrix
 - parallelize e2e tests and fix flaky tests
-
 
 ## [1.28.46] - 2026-09-07
 
 ### Added
-- rework shorts and gameplay factories
 
+- rework shorts and gameplay factories
 
 ## [1.28.45] - 2026-09-07
 
 ### Added
+
 - move streamer assists to admin console, fix bot takeback/draw, and clean up board overlay
 - add desktop streamer arrows, threat overlays, multi-move premoves, and game sound integration
 - modernize arena UI, sprite piece set, and responsive mobile layouts
 
 ### Fixed
+
 - streamline landscape console layout and declutter mobile telemetry
 - optimize portrait and landscape mobile layouts with responsive eval bar
 
 ### Improved
-- eliminate redundant cell re-renders with custom memo comparator and memoized board props
 
+- eliminate redundant cell re-renders with custom memo comparator and memoized board props
 
 ## [1.28.44] - 2026-09-07
 
 ### Fixed
+
 - fix CI failures in idle-reconnect and single-player-games
 
 ### Improved
+
 - consolidate e2e tests to reduce navigations and wall time
 - tune Playwright config timeouts for faster failure
 - remove all timeouts and delays from e2e and unit tests
 
-
 ## [1.28.43] - 2026-09-07
 
 ### Fixed
-- scope stockfish find to extract dir to avoid /tmp permission errors
 
+- scope stockfish find to extract dir to avoid /tmp permission errors
 
 ## [1.28.42] - 2026-09-07
 
 ### Added
+
 - 40 bots, 9 difficulty levels, Stockfish personality, admin config
 
 ### Fixed
+
 - reduce chess-stockfish.service.ts and ru.ts under 500 lines
 - resolve all ESLint warnings
 - sanitize game settings to prevent NoSQL injection
 - update test files for 9 difficulty levels and admin config
 
-
 ## [1.28.41] - 2026-09-07
 
 ### Added
+
 - add sound effects to all 17 games
 
 ### Fixed
+
 - prevent GameMusic crash from destroying page layout
 - fix flaky solo control panel E2E test
-
 
 ## [1.28.40] - 2026-09-07
 
 ### Added
+
 - expand to 20 bots, add persistence, SEO structured data, and feature advantages
 
 ### Fixed
-- add explicit Date type to subscription expiresAt prop for Mongoose
 
+- add explicit Date type to subscription expiresAt prop for Mongoose
 
 ## [1.28.39] - 2026-09-07
 
 ### Fixed
-- deduplicate emotes and enforce auth for guest users
 
+- deduplicate emotes and enforce auth for guest users
 
 ## [1.28.38] - 2026-09-07
 
 ### Added
+
 - add Stockfish 19 to dev environment on OCI
 - add coordinate trainer, improve landing page, add opening explorer
 - comprehensive improvements to beat competitors
 
 ### Fixed
+
 - remove unused useMemo and useTranslation from CoordinateTrainer
 - type-annotate client.data access in matchmaking gateway
 - revert handleError change that broke gateway tests
 
-
 ## [1.28.37] - 2026-09-07
 
 ### Fixed
-- align env validator with actual env var names (MONGODB_OCI_URI, OAUTH_WEB_CLIENT_ID)
 
+- align env validator with actual env var names (MONGODB_OCI_URI, OAUTH_WEB_CLIENT_ID)
 
 ## [1.28.36] - 2026-09-07
 
 ### Fixed
-- remove duplicate top-level permissions blocks from workflows
 
+- remove duplicate top-level permissions blocks from workflows
 
 ## [1.28.35] - 2026-09-07
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.28.34] - 2026-09-07
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.28.33] - 2026-09-06
 
 ### Fixed
+
 - update e2e test to expect no FAQPage on home page
 - security & seo audit fixes + file length compliance
 - add rel='me' to social links, fix lint warnings
 - fix orphan pages, locale-prefixed links, shorten og:description
 - improve Google Search SEO — H1 spacing, FAQPage schema, og:title, sitemap lastmod, video duration
 
-
 ## [1.28.32] - 2026-09-06
 
 ### Fixed
-- fix chess integration imports and type errors breaking build
 
+- fix chess integration imports and type errors breaking build
 
 ## [1.28.31] - 2026-09-06
 
 ### Added
+
 - opening classification, move candidates, PGN export, board flip, move confirmation, Elo ratings
 - wire Stockfish everywhere — tablebase, puzzles, anti-cheat, auth, bot, multi-PV
 
 ### Fixed
+
 - fix lint errors in Game.tsx — hooks rules, unused var, max-lines
 - whitelist fields in updateProfile to prevent NoSQL injection, remove unused state
 - remove unused imports from stockfish service
 - split stockfish service under 500 lines, fix unused param
 
-
 ## [1.28.30] - 2026-09-06
 
 ### Added
+
 - add perspective toggle to post-game analysis for spectators
 - post-game analysis eval from player's perspective
 - eval from player perspective, spectators can toggle White/Black view
@@ -243,6 +747,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add bullet time controls (1+0, 2+1, 1+1)
 
 ### Fixed
+
 - fix test failures - remove stale gameName assertion, update i18n snapshot
 - resolve all TypeScript and lint errors
 - resolve all CI errors - types, depths, lint
@@ -291,28 +796,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add userId to Stockfish analysis socket emit
 - pass animatingRef as prop to ChessCell
 
-
 ## [1.28.29] - 2026-09-06
 
 ### Fixed
+
 - update contact press email test to use appConfig.supportEmail
 
 ### Documentation
+
 - restore Mermaid architecture diagrams for FE, BE, and whole app
 - update architecture docs to match current codebase and rebrand to Arcadeum Games
-
 
 ## [1.28.28] - 2026-09-06
 
 ### Fixed
+
 - wait for __joinMatchmaking before patching in diagnostic test
 - suppress Redis/Stockfish noise in E2E CI
 - resolve e2e CI warnings and errors
 
-
 ## [1.28.27] - 2026-09-06
 
 ### Added
+
 - Phase 12 — Live Broadcasting (backend)
 - Phase 11 — Monetization & Cosmetics (backend)
 - Phase 10 — Mobile Optimization
@@ -326,40 +832,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Phase 5 — Bot Personalities
 
 ### Fixed
+
 - remove unused imports and variables for CodeQL
 - mock ResizeObserver in ChessBoard tests
 - add missing i18n keys and fix GlassCard onClick
 - remove unnecessary async from battle pass and subscription services
 
-
 ## [1.28.26] - 2026-09-06
 
 ### Added
-- automate TikTok integration review demo recording
 
+- automate TikTok integration review demo recording
 
 ## [1.28.25] - 2026-09-06
 
 ### Added
+
 - add tournament system (Phase 4)
 
 ### Fixed
+
 - remove unused useEffect import from TournamentLobby
 - add OCI_CONNECTION to ChessTournamentService InjectModel
-
 
 ## [1.28.24] - 2026-09-06
 
 ### Fixed
-- remove base64 email storage and resolve dependabot alerts
 
+- remove base64 email storage and resolve dependabot alerts
 
 ## [1.28.23] - 2026-09-06
 
 ### Added
+
 - implement comprehensive platform improvements
 
 ### Fixed
+
 - update E2E test for enabled Apple/Discord OAuth buttons
 - add --forceExit to backend E2E tests to prevent Jest hanging
 - properly close Redis connections on module destroy
@@ -377,43 +886,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - resolve TypeScript errors in web build
 - add name property to ExpoManifest2 type
 
-
 ## [1.28.22] - 2026-09-06
 
 ### Added
-- opening explorer with position database (Phase 3) (#1371)
 
+- opening explorer with position database (Phase 3) (#1371)
 
 ## [1.28.21] - 2026-09-05
 
 ### Added
-- puzzle system with daily/rated/themed modes (Phase 2) (#1370)
 
+- puzzle system with daily/rated/themed modes (Phase 2) (#1370)
 
 ## [1.28.20] - 2026-09-05
 
 ### Fixed
-- eliminate setTimeout entirely for CodeQL compliance
 
+- eliminate setTimeout entirely for CodeQL compliance
 
 ## [1.28.19] - 2026-09-05
 
 ### Added
-- Stockfish 19 engine integration (Phase 1) (#1366)
 
+- Stockfish 19 engine integration (Phase 1) (#1366)
 
 ## [1.28.18] - 2026-09-05
 
 ### Added
+
 - fix Pachisi styles, fullscreen mode, and dice move retention (ARC-886) (ARC-886)
 
 ### Fixed
-- ensure Pachisi tokens are clickable and die number is visible (ARC-886) (ARC-886)
 
+- ensure Pachisi tokens are clickable and die number is visible (ARC-886) (ARC-886)
 
 ## [1.28.17] - 2026-09-05
 
 ### Added
+
 - reduce blur on hudCard to let background artwork stay crisp
 - enable desktop split layout for solitaire and minesweeper and soften blur effects
 - apply game theme color tokens to puzzle game boards and field items
@@ -424,106 +934,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - rework solo games UI with reusable components and improved UX
 
 ### Fixed
+
 - restore footer and default layout on solo game play routes
 - prevent vertical scroll on solo play routes and constrain minesweeper cells
 - allow controls group to wrap properly within control panel bounds
 
-
 ## [1.28.16] - 2026-09-05
 
 ### Added
+
 - improve gameplay stories, add mock auth, fix hearts typo
 
 ### Fixed
-- auto-login bot user instead of requiring pre-set tokens
 
+- auto-login bot user instead of requiring pre-set tokens
 
 ## [1.28.15] - 2026-09-05
 
 ### Added
-- add XP tracking, profile visibility, and UI fixes
 
+- add XP tracking, profile visibility, and UI fixes
 
 ## [1.28.14] - 2026-09-05
 
 ### Fixed
+
 - revert PWA disable to NEXT_PUBLIC_E2E and guard SW registration in E2E
 - collapse offline games list, hide in dev, add scroll
 - offline game downloads stuck on staging
 
-
 ## [1.28.13] - 2026-09-05
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.28.12] - 2026-09-05
 
 ### Fixed
-- extract hermesc postinstall into standalone script
 
+- extract hermesc postinstall into standalone script
 
 ## [1.28.11] - 2026-09-05
 
 ### Added
-- show real daily reward data and claim button on rewards page
 
+- show real daily reward data and claim button on rewards page
 
 ## [1.28.10] - 2026-09-04
 
 ### Fixed
-- fix download flow — SW guard, collapsible list, i18n
 
+- fix download flow — SW guard, collapsible list, i18n
 
 ## [1.28.9] - 2026-09-04
 
 ### Fixed
+
 - force disconnect before reconnect to ensure anonId query param reaches backend
 - clean up auth flow — stale displayName, anon participant leak, identity-less sockets
-
 
 ## [1.28.8] - 2026-09-04
 
 ### Added
+
 - rework styles, shared themes, leaderboards, rules, and fullscreen (ARC-941) (ARC-941)
 
 ### Fixed
-- refine fullscreen mode layout and extract stats helper (ARC-941) (ARC-941)
 
+- refine fullscreen mode layout and extract stats helper (ARC-941) (ARC-941)
 
 ## [1.28.7] - 2026-09-04
 
 ### Added
-- modernize styles, implement shared themes, and constrain board sizing (ARC-910) (ARC-910)
 
+- modernize styles, implement shared themes, and constrain board sizing (ARC-910) (ARC-910)
 
 ## [1.28.6] - 2026-09-04
 
 ### Added
-- improve Pachisi board UX with contextual hints and pass turn (ARC-886) (ARC-886)
 
+- improve Pachisi board UX with contextual hints and pass turn (ARC-886) (ARC-886)
 
 ## [1.28.5] - 2026-09-04
 
 ### Added
+
 - add solo game leaderboard with offline sync
 
 ### Fixed
+
 - sanitize query params, remove Math.random from session IDs
 - make solo-scores /best endpoint optional-auth
 - use live timer in HUD after continue playing
 
-
 ## [1.28.4] - 2026-09-04
 
 ### Fixed
-- fix long/gulbara P1 direction and add variant-specific rules
 
+- fix long/gulbara P1 direction and add variant-specific rules
 
 ## [1.28.3] - 2026-09-04
 
 ### Added
+
 - improve InviteFriendPicker with multi-select and search
 - add delete notifications and load inbox on mount
 - add game_invitation notification for room invites
@@ -532,6 +1046,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - enhance friends system with search, notifications, in-game requests, chat integration, and real-time sync
 
 ### Fixed
+
 - handle plain objects in chat messages and sanitize friend request input
 - add @IsMongoId validation to SendFriendRequestByUserIdDto
 - resolve gameId to translated name on frontend
@@ -540,23 +1055,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix invite-to-game flow to go through games listing page
 
 ### Refactored
-- replace redirect flow with game picker modal for invites
 
+- replace redirect flow with game picker modal for invites
 
 ## [1.28.2] - 2026-09-04
 
 ### Added
-- move socket connection to app root for all-page coverage
 
+- move socket connection to app root for all-page coverage
 
 ## [1.28.1] - 2026-09-03
 
 ### Added
+
 - add monitoring dashboard with Grafana provisioning
 - add horizontal scaling with Redis, nginx load balancer, and multiple BE instances
 - add horizontal scaling with Redis-backed distributed state
 
 ### Fixed
+
 - add git cleanup before fetch to prevent index errors
 - remove hardcoded IPs and Grafana password from repo
 - add monitoring stack to OCI deploy workflow
@@ -566,31 +1083,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - await all async joinQueue/leaveQueue calls in matchmaking tests
 - fix tests for async matchmaking and bot-turn-lock
 
-
 ## [1.28.0] - 2026-09-03
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.27.42] - 2026-09-03
 
 ### Fixed
-- fix mobile lobby chat hidden by start button
 
+- fix mobile lobby chat hidden by start button
 
 ## [1.27.41] - 2026-09-03
 
 ### Fixed
-- set category on quickplay/AI-vs-AI rooms and add solo games fallback (ARC-951) (ARC-951)
 
+- set category on quickplay/AI-vs-AI rooms and add solo games fallback (ARC-951) (ARC-951)
 
 ## [1.27.40] - 2026-09-03
 
 ### Added
+
 - rework lobby layout for mobile — compact header, scrollable themes, collapsible settings
 
 ### Fixed
+
 - remove hidden duplicated lobby components on mobile
 - remove LobbyMobileSidebar, use LobbySidebar on all viewports
 - fix mobile e2e tests — show Players in Lobby on mobile, use clear() for webkit
@@ -600,43 +1118,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add .first() to E2E lobby selectors that resolve to 2 elements (mobile+desktop)
 
 ### Refactored
-- revert GameThemePicker to CSS-only hidden/flex, keep .first() in tests
 
+- revert GameThemePicker to CSS-only hidden/flex, keep .first() in tests
 
 ## [1.27.39] - 2026-09-02
 
 ### Fixed
-- unblock offline downloads when no service worker is registered
 
+- unblock offline downloads when no service worker is registered
 
 ## [1.27.38] - 2026-09-02
 
 ### Added
+
 - add battleship landing page
 
 ### Refactored
-- use standalone BattleshipLanding instead of wrapper
 
+- use standalone BattleshipLanding instead of wrapper
 
 ## [1.27.37] - 2026-09-02
 
 ### Fixed
-- redirect solo games to landing page from game picker
 
+- redirect solo games to landing page from game picker
 
 ## [1.27.36] - 2026-09-02
 
 ### Added
-- add new games and enhance factory scenarios
 
+- add new games and enhance factory scenarios
 
 ## [1.27.35] - 2026-09-02
 
 ### Fixed
+
 - fix light theme text visibility in install PWA button (ARC-fix-light-theme-and-mobile-stats)
 - use app name from env in install widget and translations (ARC-fix-light-theme-and-mobile-stats)
 - light theme, stats mobile, hero margins
-
 
 ## [1.27.34] - 2026-09-02
 

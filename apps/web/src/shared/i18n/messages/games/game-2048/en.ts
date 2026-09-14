@@ -22,7 +22,8 @@ export const enMessages = {
       wonBody:
         'You built the legendary tile. Keep going for an even bigger score?',
       lostTitle: 'Board jammed',
-      lostBody: 'No moves left — every square is full. Shuffle up and try again!',
+      lostBody:
+        'No moves left — every square is full. Shuffle up and try again!',
       playAgain: 'Play again',
       keepGoing: 'Keep going',
     },
@@ -78,6 +79,41 @@ export const enMessages = {
           question: 'What happens after I reach 2048?',
           answer:
             'You win — and you can keep playing the same board for an even higher score.',
+        },
+        q4: {
+          question: 'What is the optimal strategy to reach the 2048 tile?',
+          answer:
+            'Anchor your highest-value tile in one chosen corner and build descending numerical chains along that border without moving the corner tile.',
+        },
+        q5: {
+          question: 'What tiles spawn after each move?',
+          answer:
+            'Every valid slide spawns a new tile on an empty cell — with a 90% probability of a 2 and a 10% chance of a 4.',
+        },
+        q6: {
+          question: 'How is the score calculated?',
+          answer:
+            'Whenever two matching tiles collide and merge, the value of the newly created tile is added directly to your total score.',
+        },
+        q7: {
+          question: 'When is a game considered game over?',
+          answer:
+            'Game over occurs when all 16 cells are filled with tiles and no adjacent horizontal or vertical matches exist to merge.',
+        },
+        q8: {
+          question: 'Can a newly merged tile merge again in the same move?',
+          answer:
+            'No. A tile formed by a merge cannot combine again during that same slide, following standard 2048 rules.',
+        },
+        q9: {
+          question: 'Can I undo an accidental move?',
+          answer:
+            'Yes. Arcadeum 2048 includes an undo option so you can reverse an accidental swipe and keep your strategy intact.',
+        },
+        q10: {
+          question: 'What is the maximum achievable tile on a 4×4 board?',
+          answer:
+            'The theoretical mathematical limit is the 131,072 tile, while reaching 4,096 or 8,192 is already an exceptional accomplishment.',
         },
       },
       steps: {

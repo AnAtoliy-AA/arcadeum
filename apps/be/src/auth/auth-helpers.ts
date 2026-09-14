@@ -9,6 +9,7 @@ import type {
   DiscordUserProfile,
   AuthUserProfile,
 } from './lib/types';
+import { levelFromXp } from '../xp/lib/xp-level';
 
 /**
  * Extract common profile fields from any OAuth provider profile.
@@ -125,13 +126,16 @@ export function resolveDisplayName(
 }
 
 export function buildAuthUserProfile(user: UserDocument): AuthUserProfile {
+  const xp = user.xp ?? 0;
   const profile: AuthUserProfile = {
     id: String(user.id),
     email: user.email,
     username: user.username,
     displayName: resolveDisplayName(user),
     role: user.role ?? 'free',
-    xp: user.xp ?? 0,
+    xp,
+    level: levelFromXp(xp),
+    prestige: user.prestige ?? 0,
     equippedAvatarId: user.equippedAvatarId ?? null,
     equippedBadgeId: user.equippedBadgeId ?? null,
     equippedNameColorId: user.equippedNameColorId ?? null,

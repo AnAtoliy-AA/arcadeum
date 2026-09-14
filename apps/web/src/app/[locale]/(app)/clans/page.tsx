@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'clans' }) : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'clans', noIndex: true }) : {};
 }
 
 export default async function ClansPage({

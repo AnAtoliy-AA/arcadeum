@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { GlassCard, Typography } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 
 interface TournamentTimerProps {
   tournamentId: string;
@@ -51,7 +51,7 @@ export function TournamentTimer({
   if (status === 'completed') {
     return (
       <GlassCard className="p-3 text-center">
-        <Typography variant="body" alpha="medium">
+        <Typography variant="body" alpha="high">
           {t?.timer?.ended ?? 'Tournament ended'}
         </Typography>
       </GlassCard>
@@ -61,7 +61,7 @@ export function TournamentTimer({
   if (status === 'live' && diff > 0) {
     return (
       <GlassCard className="p-3 text-center border border-emerald-500/30">
-        <Typography variant="caption" alpha="medium" className="text-[11px]">
+        <Typography variant="caption" alpha="high" className="text-[11px]">
           {t?.timer?.timeRemaining ?? 'Time remaining'}
         </Typography>
         <div className="text-2xl font-mono font-bold text-emerald-400">
@@ -74,7 +74,7 @@ export function TournamentTimer({
   if (diff > 0) {
     return (
       <GlassCard className="p-3 text-center">
-        <Typography variant="caption" alpha="medium" className="text-[11px]">
+        <Typography variant="caption" alpha="high" className="text-[11px]">
           {t?.timer?.startsIn ?? 'Starts in'}
         </Typography>
         <div className="text-2xl font-mono font-bold text-[var(--primary)]">

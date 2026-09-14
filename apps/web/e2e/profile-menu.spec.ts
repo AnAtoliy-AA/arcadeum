@@ -87,4 +87,24 @@ test.describe('Profile Menu Modernization', () => {
     await triggerAfter.click();
     await expect(page.getByTestId('header-admin-link')).not.toBeVisible();
   });
+
+  test('clicking identity card in profile menu opens profile page', async ({
+    page,
+    viewport,
+  }) => {
+    test.skip(
+      !!viewport && viewport.width < 768,
+      'Profile menu is hidden on small screens',
+    );
+    const trigger = page.locator('[data-profile-menu] button').first();
+    await trigger.click();
+    const dropdown = page.getByTestId('profile-dropdown');
+    await dropdown.waitFor({ state: 'visible' });
+
+    const identityCard = page.getByTestId('profile-identity-card');
+    await expect(identityCard).toBeVisible();
+    await identityCard.click();
+
+    await expect(page).toHaveURL(/\/profile\//);
+  });
 });

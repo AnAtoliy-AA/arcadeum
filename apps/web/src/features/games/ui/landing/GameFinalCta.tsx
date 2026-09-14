@@ -30,7 +30,7 @@ export function GameFinalCta({
         <h2 className="box-border m-0 text-2xl sm:text-4xl font-extrabold text-[var(--foreground)] tracking-tight">
           {title}
         </h2>
-        <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-85 leading-relaxed">
+        <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 leading-relaxed">
           {subtitle}
         </p>
       </div>

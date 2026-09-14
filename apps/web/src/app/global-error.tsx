@@ -45,7 +45,7 @@ export default function GlobalError({
       >
         <div
           style={{
-            height: '100vh',
+            height: '100dvh',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -101,7 +101,7 @@ export default function GlobalError({
                 gap: '0.5rem',
               }}
             >
-              <h3
+              <h1
                 style={{
                   margin: 0,
                   fontSize: '1.125rem',
@@ -111,7 +111,7 @@ export default function GlobalError({
                 }}
               >
                 Something went wrong
-              </h3>
+              </h1>
               <p
                 style={{
                   margin: 0,

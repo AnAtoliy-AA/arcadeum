@@ -1,7 +1,9 @@
+
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
 import { getRoadmapData } from './roadmap-parser';
 import RoadmapClient from './RoadmapClient';
+
 
 export async function generateMetadata({
   params,

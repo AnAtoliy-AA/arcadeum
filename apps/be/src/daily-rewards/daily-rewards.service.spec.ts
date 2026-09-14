@@ -20,7 +20,7 @@ describe('DailyRewardsService', () => {
   };
   let connection: { startSession: jest.Mock };
   let session: { withTransaction: jest.Mock; endSession: jest.Mock };
-  let walletService: { credit: jest.Mock };
+  let walletService: { credit: jest.Mock; debit: jest.Mock };
   let economy: { getNumber: jest.Mock };
 
   // Freeze the clock so YYYY-MM-DD is deterministic.
@@ -45,6 +45,7 @@ describe('DailyRewardsService', () => {
     };
     walletService = {
       credit: jest.fn().mockResolvedValue({}),
+      debit: jest.fn().mockResolvedValue({}),
     };
     economy = {
       getNumber: jest.fn().mockImplementation((key: string) => {

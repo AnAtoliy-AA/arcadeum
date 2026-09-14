@@ -1,30 +1,28 @@
 import type { Metadata } from 'next';
-import { getTranslations } from '@/shared/i18n/server';
-import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
+import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
+import { isLocale } from '@/shared/i18n';
 import { PageLayout } from '@arcadeum/ui';
 import { MinesweeperGameClient } from './MinesweeperGameClient';
+
+export const dynamic = 'force-static';
+export const revalidate = 2592000; // 30 days – ISR: render on first request, cache until user changes language
 
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
-function resolveLocale(raw: string): Locale {
-  return isLocale(raw) ? raw : DEFAULT_LOCALE;
-}
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale } = await params;
-  const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
-  const name = messages.games?.minesweeper_v1?.name ?? 'Minesweeper';
-  return { title: `${name} · Arcadeum` };
+  return isLocale(rawLocale)
+    ? buildPageMetadata({ locale: rawLocale, page: 'minesweeperPlay' })
+    : {};
 }
 
 export default async function MinesweeperPlayRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
-  resolveLocale(rawLocale);
+  isLocale(rawLocale);
 
   return (
     <PageLayout>

@@ -10,7 +10,7 @@ import {
   EmptyState,
   InfiniteScroll,
 } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ChangelogEntry } from './page';
 import { ChangelogStats } from './components/ChangelogStats';
 import { ChangelogFilters } from './components/ChangelogFilters';
@@ -196,7 +196,7 @@ export default function ChangelogView({
               <Typography
                 variant="body"
                 uiSize="md"
-                alpha="medium"
+                alpha="high"
                 className="max-w-2xl leading-relaxed"
               >
                 {t('pages.changelog.subtitle')}

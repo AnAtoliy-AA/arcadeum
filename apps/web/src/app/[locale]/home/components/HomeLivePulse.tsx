@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useLiveStatsStore } from '@/features/live-stats';
 
@@ -13,12 +13,6 @@ export function HomeLivePulse() {
 
   useEffect(() => {
     void fetchLiveStats();
-    const interval = setInterval(() => {
-      void fetchLiveStats();
-    }, 30_000);
-    return () => {
-      clearInterval(interval);
-    };
   }, [fetchLiveStats]);
 
   return (

@@ -31,7 +31,8 @@ export const esMessages = {
       wonTitle: '¡Campo despejado!',
       wonBody: 'Has revelado todas las casillas seguras. Impecable.',
       lostTitle: '¡Boom!',
-      lostBody: 'Ahí había una mina. Estudia los números y vuelve a intentarlo.',
+      lostBody:
+        'Ahí había una mina. Estudia los números y vuelve a intentarlo.',
       playAgain: 'Jugar de nuevo',
     },
     rules: {
@@ -45,7 +46,8 @@ export const esMessages = {
     landing: {
       tagline: 'Un jugador · Sin registro',
       meta: {
-        title: 'Buscaminas — Juego de rompecabezas clásico gratis online | Arcadeum',
+        title:
+          'Buscaminas — Juego de rompecabezas clásico gratis online | Arcadeum',
         description:
           'Juega al Buscaminas gratis online en Arcadeum. Tableros de principiante a experto, banderas, cronómetro y progreso guardado. Sin descargas ni registro.',
         keywords:
@@ -86,6 +88,41 @@ export const esMessages = {
           question: '¿Se guarda mi progreso?',
           answer:
             'Sí. El campo actual, la dificultad y tus estadísticas se guardan localmente para continuar cuando quieras.',
+        },
+        q4: {
+          question: '¿Qué significan los números en las casillas?',
+          answer:
+            'Cada número descubierto indica la cantidad exacta de minas ocultas en las ocho casillas que lo rodean directamente.',
+        },
+        q5: {
+          question: '¿Es posible perder en el primer clic?',
+          answer:
+            'No. El Buscaminas de Arcadeum garantiza que tu primer clic sea siempre seguro y abra una zona despejada.',
+        },
+        q6: {
+          question: '¿Qué es el acorde y cómo se utiliza?',
+          answer:
+            'Hacer acorde abre rápidamente todas las casillas vecinas sin bandera alrededor de un número cuando ya marcaste todas sus minas adyacentes.',
+        },
+        q7: {
+          question: '¿Qué niveles de dificultad hay disponibles?',
+          answer:
+            'Puedes jugar en Principiante (9×9 con 10 minas), Intermedio (16×16 con 40 minas) o Experto (30×16 con 99 minas).',
+        },
+        q8: {
+          question: '¿Cuál es la mejor estrategia cuando hay que adivinar?',
+          answer:
+            'Calcula las probabilidades de minas entre números vecinos y despeja la casilla perteneciente a la intersección de menor riesgo.',
+        },
+        q9: {
+          question: '¿Se puede personalizar el tamaño del tablero?',
+          answer:
+            'Sí. El modo personalizado te permite configurar el ancho, alto y número total de minas según tus preferencias.',
+        },
+        q10: {
+          question: '¿Se registran los mejores tiempos de resolución?',
+          answer:
+            'Sí. El cronómetro integrado mide con precisión tu velocidad en cada dificultad y almacena tus récords personales.',
         },
       },
       steps: {

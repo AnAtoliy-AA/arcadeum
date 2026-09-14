@@ -12,7 +12,7 @@ describe('AnimatedDice', () => {
   it('applies rolling animations when isRolling is true', () => {
     render(<AnimatedDice isRolling={true} values={[3, 3]} />);
     const die0 = screen.getByTestId('dice-die-0');
-    expect(die0.className).toContain('animate-spin');
+    expect(die0.className).toContain('animated-dice-shake');
   });
 
   it('applies doubles styling when isDoubles is true', () => {

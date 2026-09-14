@@ -222,8 +222,35 @@ jobs:
               exit 1
             fi
 
+            # Stockfish 19 — skip download if binary already present
+            SF_BIN="/usr/local/bin/stockfish"
+            if [ ! -x "$SF_BIN" ]; then
+              ARCH=$(uname -m)
+              case "$ARCH" in
+                aarch64) SF_ASSET="stockfish-linux-arm64-universal.tar.gz" ;;
+                x86_64)  SF_ASSET="stockfish-linux-x86-64-universal.tar.gz" ;;
+                *)       echo "ERROR: unsupported arch $ARCH for Stockfish"; exit 1 ;;
+              esac
+              echo "==> Downloading Stockfish 19 ($ARCH)..."
+              curl -L -o /tmp/sf19.tar.gz \
+                "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/$SF_ASSET"
+              mkdir -p /tmp/sf19-extract
+              tar -xzf /tmp/sf19.tar.gz -C /tmp/sf19-extract
+              find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} "$SF_BIN" \;
+              chmod +x "$SF_BIN"
+              rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
+              "$SF_BIN" <<< "uci" 2>/dev/null | head -1
+              echo "==> Stockfish 19 installed."
+            else
+              echo "==> Stockfish 19 binary already present, skipping download."
+            fi
+
+            mkdir -p "$DEPLOY_DIR/scripts"
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/be/.env\nset +a\ncd /opt/arcadeum\nexec node apps/be/dist/src/worker.js\n' > "$DEPLOY_DIR/scripts/start-be-reserve.sh"
+            chmod +x "$DEPLOY_DIR/scripts/start-be-reserve.sh"
+
             pm2 restart arcadeum-be-reserve || \
-              pm2 start /opt/arcadeum/scripts/start-be-reserve.sh --name arcadeum-be-reserve
+              pm2 start "$DEPLOY_DIR/scripts/start-be-reserve.sh" --name arcadeum-be-reserve
 
             pm2 save
 

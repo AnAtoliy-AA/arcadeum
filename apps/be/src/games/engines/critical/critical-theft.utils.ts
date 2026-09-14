@@ -12,5 +12,5 @@ export {
 export type {
   LogEntryOptions,
   EngineHelpers,
-} from '@arcadeum/games-core/games/critical/critical-theft.utils';
+} from '@arcadeum/games-core/games/critical/critical-shared.types';
 export { executeSnatch } from '@arcadeum/games-core/games/critical/critical-theft.utils';

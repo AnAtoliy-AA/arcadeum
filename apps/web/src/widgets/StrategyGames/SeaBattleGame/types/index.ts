@@ -118,6 +118,8 @@ export interface SeaBattlePlayerState {
   ships: Ship[];
   shipsRemaining: number;
   placementComplete: boolean;
+  salvoShotsRemaining?: number;
+  turnDeadline?: number;
 }
 
 export interface GameLogEntry {
@@ -156,6 +158,7 @@ export interface SeaBattleSnapshot {
   logs: GameLogEntry[];
   gridSize?: number;
   shipCount?: number;
+  mode?: string;
   lastAttack?: LastAttack;
   teams?: SeaBattleTeam[];
   teamOrder?: string[];
@@ -189,6 +192,8 @@ export interface SeaBattleSnapshot {
     halfWidth: number;
     cells: { row: number; col: number; state: CellState }[];
   };
+  shipAbilities?: boolean;
+  abilityCooldowns?: Record<string, Record<string, number>>;
 }
 
 export interface SeaBattleGameProps extends BaseGameWidgetProps {}

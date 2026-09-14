@@ -8,6 +8,7 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { getFeaturesData } from './features-parser';
 import FeaturesClient from './FeaturesClient';
 
+
 export async function generateMetadata({
   params,
 }: {

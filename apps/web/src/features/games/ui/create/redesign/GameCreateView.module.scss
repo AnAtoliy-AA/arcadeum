@@ -32,7 +32,7 @@
   --gc-accent-cyan: #7dd3fc;
 
   color: var(--gc-text);
-  min-height: 100vh;
+  min-height: 100dvh;
   padding: 0 0 96px;
 }
 
@@ -1173,7 +1173,7 @@
      in-rail Rules button was added) never pushes its Create Room CTA
      below the fold on 720-tall viewports. The rail is a flex column:
      art + CTA are anchored, the summary scrolls internally if needed. */
-  max-height: calc(100vh - 44px);
+  max-height: calc(100dvh - 44px);
   background: var(--gc-bg-card);
   border: 1px solid var(--gc-line);
   border-radius: 18px;

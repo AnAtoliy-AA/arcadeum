@@ -14,7 +14,7 @@ export default function AdminNotFound() {
           <PageTitle size="xl" gradient>
             404
           </PageTitle>
-          <Typography variant="body" uiSize="md" alpha="medium">
+          <Typography variant="body" uiSize="md" alpha="high">
             Page not found.
           </Typography>
         </GlassCard>

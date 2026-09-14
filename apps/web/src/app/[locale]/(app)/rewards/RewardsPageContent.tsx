@@ -11,7 +11,7 @@ import {
   Section,
   Button,
 } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { rewardsEn } from '@/shared/i18n/messages/pages/rewards/en';
@@ -19,6 +19,7 @@ import { SocialRewardsSection } from '@/features/social-rewards/ui/SocialRewards
 import type { SocialRewardsStatus } from '@/features/social-rewards/server/social-rewards.types';
 import type { DailyRewardStatus } from '@/features/daily-rewards/server/daily-rewards.types';
 import { ClaimButton } from '@/features/daily-rewards/ui/ClaimButton';
+import { StreakFreezeCard } from '@/features/daily-rewards/ui/StreakFreezeCard';
 import { dailyRewardsEn } from '@/shared/i18n/messages/pages/daily-rewards/en';
 
 type DeepPartial<T> = {
@@ -102,7 +103,7 @@ export default function RewardsPageContent({
                 <Typography variant="heading" uiSize="xl" weight="800">
                   {dailyStreak?.title ?? 'Daily Login Streak'}
                 </Typography>
-                <Typography variant="body" uiSize="md" alpha="medium">
+                <Typography variant="body" uiSize="md" alpha="high">
                   {dailyStreak?.subtitle ??
                     'Check in every day to claim bonus coins and mystery boxes.'}
                 </Typography>
@@ -210,6 +211,11 @@ export default function RewardsPageContent({
                   </Link>
                 </div>
               )}
+
+              <StreakFreezeCard
+                initialFreezeTokens={dailyRewardStatus?.freezeTokens ?? 0}
+                currentStreak={dailyRewardStatus?.currentStreak ?? 0}
+              />
             </div>
           </Section>
 
@@ -220,7 +226,7 @@ export default function RewardsPageContent({
                   <Typography variant="heading" uiSize="xl" weight="800">
                     {quests?.title ?? 'Active Quests & Bounties'}
                   </Typography>
-                  <Typography variant="body" uiSize="md" alpha="medium">
+                  <Typography variant="body" uiSize="md" alpha="high">
                     {quests?.subtitle ??
                       'Complete challenges to earn coins and badges.'}
                   </Typography>
@@ -265,7 +271,7 @@ export default function RewardsPageContent({
                         <Typography variant="label" uiSize="md" weight="700">
                           {quest?.title}
                         </Typography>
-                        <Typography variant="body" uiSize="sm" alpha="medium">
+                        <Typography variant="body" uiSize="sm" alpha="high">
                           {quest?.description}
                         </Typography>
                       </div>
@@ -283,7 +289,7 @@ export default function RewardsPageContent({
                           'font-bold',
                           quest?.completed
                             ? 'text-[var(--success)]'
-                            : 'text-[var(--primary)]',
+                            : 'text-[var(--color)]',
                         )}
                       >
                         {quest?.completed ? '✓ Completed' : 'In Progress'}
@@ -301,7 +307,7 @@ export default function RewardsPageContent({
                 <Typography variant="heading" uiSize="xl" weight="800">
                   {tiers?.title ?? 'Seasonal Reward Tiers'}
                 </Typography>
-                <Typography variant="body" uiSize="md" alpha="medium">
+                <Typography variant="body" uiSize="md" alpha="high">
                   {tiers?.subtitle ??
                     'Level up your account to unlock multipliers and cosmetic prestige.'}
                 </Typography>
@@ -362,7 +368,7 @@ export default function RewardsPageContent({
                 <Typography variant="heading" uiSize="lg" weight="800">
                   {referral.title}
                 </Typography>
-                <Typography variant="body" uiSize="md" alpha="medium">
+                <Typography variant="body" uiSize="md" alpha="high">
                   {referral.description}
                 </Typography>
               </div>
@@ -405,11 +411,7 @@ export default function RewardsPageContent({
                         </button>
                         {isOpen && (
                           <div className="border-t border-[var(--borderColor)] p-5 pt-3">
-                            <Typography
-                              variant="body"
-                              uiSize="sm"
-                              alpha="medium"
-                            >
+                            <Typography variant="body" uiSize="sm" alpha="high">
                               {item?.answer}
                             </Typography>
                           </div>
@@ -429,7 +431,7 @@ export default function RewardsPageContent({
             <Typography
               variant="body"
               uiSize="md"
-              alpha="medium"
+              alpha="high"
               className="max-w-md"
             >
               {cta?.description ??

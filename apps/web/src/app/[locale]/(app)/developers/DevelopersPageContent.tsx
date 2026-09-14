@@ -47,7 +47,7 @@ export default function DevelopersPageContent({
             <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[var(--success)] opacity-10 blur-3xl" />
 
             <div className="relative z-10 flex flex-col items-start gap-4 md:max-w-3xl">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--primary)]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--color)]">
                 ⚡ {t?.subtitle ?? 'APIs & WebSocket Gateways'}
               </span>
               <PageTitle size="xl" gradient>
@@ -62,7 +62,7 @@ export default function DevelopersPageContent({
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             <GlassCard className="flex flex-col gap-1 p-5 text-center">
-              <span className="text-2xl font-black text-[var(--primary)]">
+              <span className="text-2xl font-black text-[var(--color)]">
                 {stats?.latency ?? '< 50ms'}
               </span>
               <span className="text-xs font-semibold text-[var(--colorMuted)]">
@@ -115,7 +115,7 @@ export default function DevelopersPageContent({
                       <Typography variant="heading" uiSize="md" weight="700">
                         {feat?.title}
                       </Typography>
-                      <Typography variant="body" uiSize="sm" alpha="medium">
+                      <Typography variant="body" uiSize="sm" alpha="high">
                         {feat?.description}
                       </Typography>
                     </div>
@@ -130,7 +130,7 @@ export default function DevelopersPageContent({
               <Typography variant="heading" uiSize="lg" weight="800">
                 {cta?.title ?? 'Start Building on Arcadeum'}
               </Typography>
-              <Typography variant="body" uiSize="sm" alpha="medium">
+              <Typography variant="body" uiSize="sm" alpha="high">
                 {cta?.description ??
                   'Explore our open-source tools or join fellow developers in our Discord channel.'}
               </Typography>

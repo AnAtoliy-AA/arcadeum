@@ -1,107 +1,19 @@
-import type React from 'react';
+'use client';
+
+import React from 'react';
+import Image from 'next/image';
 import type { PlayerStats } from '@/features/history/api';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import {
-  SkeletonCircle,
-  SkeletonText,
-  ProgressBar,
-  Section,
-} from '@arcadeum/ui';
-
-export const gameBreakdownCSS = `
-  .stats-breakdown-header {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1.5fr;
-    padding: 0.75rem 1rem;
-    background: var(--glassBg);
-    border-bottom: 1px solid var(--borderColor);
-    font-weight: 600;
-    font-size: 0.75rem;
-    color: var(--textSecondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .stats-breakdown-row {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1.5fr;
-    padding: 0.75rem 1rem;
-    background: var(--glassBg);
-    border-bottom: 1px solid var(--borderColor);
-    align-items: center;
-    transition: all 0.2s ease;
-  }
-  .stats-breakdown-row:last-child {
-    border-bottom: none;
-  }
-  .stats-breakdown-row:hover {
-    background: var(--glassBgHover);
-  }
-  @media (max-width: 640px) {
-    .stats-breakdown-header {
-      grid-template-columns: 1fr auto;
-      padding: 0.625rem 0.75rem;
-    }
-    .stats-breakdown-header > *:nth-child(2),
-    .stats-breakdown-header > *:nth-child(3) {
-      display: none;
-    }
-    .stats-breakdown-row {
-      grid-template-columns: 1fr auto;
-      padding: 0.625rem 0.75rem;
-    }
-    .stats-breakdown-row > *:nth-child(2),
-    .stats-breakdown-row > *:nth-child(3) {
-      display: none;
-    }
-  }
-`;
+} from '@/shared/i18n/useTranslation';
+import { SkeletonCircle, SkeletonText, ProgressBar, Card } from '@arcadeum/ui';
+import { gameMetadata } from '@/features/games/registry';
+import type { GameSlug } from '@/features/games/registry.types';
 
 interface GameBreakdownProps {
   stats: PlayerStats | null;
   loading: boolean;
-}
-
-function Table({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-col items-stretch w-full rounded-xl overflow-hidden">
-      {children}
-    </div>
-  );
-}
-
-function GameInfo({ children }: { children?: React.ReactNode }) {
-  return <div className="flex flex-row items-center gap-3">{children}</div>;
-}
-
-function GameIcon({ children }: { children?: React.ReactNode }) {
-  return <span className="text-[20px] w-[40px] h-[40px]">{children}</span>;
-}
-
-function GameName({ children }: { children?: React.ReactNode }) {
-  return (
-    <span className="text-[16px] leading-[20px] font-semibold text-[var(--color)]">
-      {children}
-    </span>
-  );
-}
-
-function StatCell({ children }: { children?: React.ReactNode }) {
-  return (
-    <span className="text-[16px] leading-[20px] font-medium text-[var(--color)]">
-      {children}
-    </span>
-  );
-}
-
-function WinRateCell({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-row items-center gap-2 min-w-[80px] sm:min-w-[120px]">
-      {children}
-    </div>
-  );
 }
 
 export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
@@ -109,67 +21,127 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
 
   if (loading && !stats) {
     return (
-      <>
-        <style>{gameBreakdownCSS}</style>
-        <Section title={t('stats.gameBreakdownTitle')}>
-          <Table>
-            <div className="stats-breakdown-header">
-              <div>{t('stats.game')}</div>
-              <div>{t('stats.total')}</div>
-              <div>{t('stats.wins')}</div>
-              <div>{t('stats.winRate')}</div>
-            </div>
-            {[1, 2].map((i) => (
-              <div key={i} className="stats-breakdown-row">
-                <GameInfo>
-                  <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
-                  <SkeletonText width="100px" delay={i * 0.1 + 0.05} />
-                </GameInfo>
-                <SkeletonText width="30px" delay={i * 0.1 + 0.1} />
-                <SkeletonText width="30px" delay={i * 0.1 + 0.15} />
-                <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
+      <Card
+        variant="glass"
+        padding="md"
+        className="flex flex-col gap-4 border-[var(--borderColor)] shadow-lg"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[18px]">🎮</span>
+          <h3 className="text-[17px] font-bold tracking-tight text-[var(--color)]">
+            {t('stats.gameBreakdownTitle')}
+          </h3>
+        </div>
+        <div className="flex flex-col w-full rounded-xl overflow-hidden border border-[var(--borderColor)]/50">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between p-3.5 border-b border-[var(--borderColor)]/40 bg-[var(--surfaceSecondary)]/40"
+            >
+              <div className="flex items-center gap-3">
+                <SkeletonCircle width="40px" height="40px" delay={i * 0.1} />
+                <SkeletonText width="120px" delay={i * 0.1 + 0.05} />
               </div>
-            ))}
-          </Table>
-        </Section>
-      </>
+              <SkeletonText width="60px" delay={i * 0.1 + 0.1} />
+              <SkeletonText width="80px" delay={i * 0.1 + 0.2} />
+            </div>
+          ))}
+        </div>
+      </Card>
     );
   }
 
   if (!stats?.byGameType?.length) return null;
 
   return (
-    <>
-      <style>{gameBreakdownCSS}</style>
-      <Section title={t('stats.gameBreakdownTitle')}>
-        <Table>
-          <div className="stats-breakdown-header">
-            <div>{t('stats.game')}</div>
-            <div>{t('stats.total')}</div>
-            <div>{t('stats.wins')}</div>
-            <div>{t('stats.winRate')}</div>
+    <Card
+      variant="glass"
+      padding="md"
+      className="flex flex-col gap-4 border-[var(--borderColor)] shadow-lg"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[18px]">🎮</span>
+          <h3 className="text-[17px] font-bold tracking-tight text-[var(--color)]">
+            {t('stats.gameBreakdownTitle')}
+          </h3>
+        </div>
+        <span className="text-[12px] font-semibold text-[var(--textSecondary)]">
+          {stats.byGameType.length} {t('stats.games' as TranslationKey)}
+        </span>
+      </div>
+
+      <div className="flex flex-col w-full rounded-xl overflow-hidden border border-[var(--borderColor)]/50 bg-[var(--surfaceSecondary)]/30">
+        <div className="grid grid-cols-2 sm:grid-cols-[2.5fr_1fr_1fr_1.5fr] p-3 px-4 bg-[var(--surfaceTertiary)]/40 border-b border-[var(--borderColor)]/50 text-[11px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div>{t('stats.game')}</div>
+          <div className="hidden sm:block text-right">{t('stats.total')}</div>
+          <div className="hidden sm:block text-right">{t('stats.wins')}</div>
+          <div className="text-right sm:text-left sm:pl-4">
+            {t('stats.winRate')}
           </div>
-          {stats.byGameType.map((game) => (
-            <div key={game.gameId} className="stats-breakdown-row">
-              <GameInfo>
-                <GameIcon>🎯</GameIcon>
-                <GameName>
-                  {t(`games.${game.gameId}.name` as TranslationKey)}
-                </GameName>
-              </GameInfo>
-              <StatCell>{game.totalGames}</StatCell>
-              <StatCell>{game.wins}</StatCell>
-              <WinRateCell>
-                <ProgressBar
-                  className={'h-[8px]'}
-                  value={game.winRate}
-                  showLabel
-                />
-              </WinRateCell>
-            </div>
-          ))}
-        </Table>
-      </Section>
-    </>
+        </div>
+
+        <div className="divide-y divide-[var(--borderColor)]/30">
+          {stats.byGameType.map((game) => {
+            const meta = gameMetadata[game.gameId as GameSlug];
+            const gameTitle =
+              t(`games.${game.gameId}.name` as TranslationKey) ||
+              meta?.name ||
+              game.gameId;
+
+            return (
+              <div
+                key={game.gameId}
+                className="stats-breakdown-row grid grid-cols-2 sm:grid-cols-[2.5fr_1fr_1fr_1.5fr] items-center p-3 px-4 hover:bg-[var(--surfaceHover)]/60 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative flex items-center justify-center w-10 h-10 rounded-xl overflow-hidden bg-[var(--surfaceTertiary)] border border-[var(--borderColor)]/60 shadow-sm flex-shrink-0">
+                    {meta?.thumbnail ? (
+                      <Image
+                        src={meta.thumbnail}
+                        alt={gameTitle}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-[18px]">🎲</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[14px] font-bold text-[var(--color)] truncate">
+                      {gameTitle}
+                    </span>
+                    {meta?.category && (
+                      <span className="text-[11px] text-[var(--textSecondary)] truncate">
+                        {meta.category}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="hidden sm:block text-right text-[14px] font-semibold text-[var(--color)] font-mono">
+                  {game.totalGames}
+                </div>
+
+                <div className="hidden sm:block text-right text-[14px] font-bold text-[var(--success)] font-mono">
+                  {game.wins}
+                </div>
+
+                <div className="flex items-center justify-end sm:justify-start sm:pl-4 min-w-[100px]">
+                  <div className="w-full sm:max-w-[140px]">
+                    <ProgressBar
+                      className="h-2"
+                      value={game.winRate}
+                      showLabel
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </Card>
   );
 }

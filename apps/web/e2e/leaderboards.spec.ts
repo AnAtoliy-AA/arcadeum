@@ -110,7 +110,7 @@ test.describe('Leaderboards page', () => {
     await navigateTo(page, '/leaderboards');
 
     await page.getByTestId('mythic-challenge').click();
-    await page.waitForURL(/\/players\//);
+    await page.waitForURL(/\/players\//, { waitUntil: 'domcontentloaded' });
     await expect(
       page.getByTestId(
         new RegExp('^player-profile-' + page.url().split('/players/')[1] + '$'),

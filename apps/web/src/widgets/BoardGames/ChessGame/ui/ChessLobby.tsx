@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   type GameLobbyTheme,
   ReusableGameLobby,
@@ -18,7 +18,6 @@ import type { ChessTheme, TimeControl } from '../types';
 import { RulesModal } from './RulesModal';
 import { BotSelector, type BotPersonalityOption } from './BotSelector';
 import { PgnImportModal } from './PgnImportModal';
-import { MatchmakingButton } from './MatchmakingButton';
 import { QuickPlayPanel } from './QuickPlayPanel';
 import { BOT_PERSONALITIES } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 import { apiClient } from '@/shared/lib/api-client';
@@ -126,7 +125,11 @@ export function ChessLobby({
     return {
       theme: (raw.theme as string) || 'adventure',
       variant,
-      timeControl: (raw.timeControl ?? null) as TimeControl | null,
+      timeControl: (raw.timeControl ?? {
+        type: 'rapid',
+        initialSeconds: 600,
+        incrementSeconds: 0,
+      }) as TimeControl | null,
     };
   }, [room.gameOptions]);
 
@@ -221,12 +224,6 @@ export function ChessLobby({
       >
         {t('games.chess_v1.actions.importPgn')}
       </button>
-
-      <MatchmakingButton
-        userId={userId}
-        rating={1200}
-        timeControlType={options.timeControl?.type ?? 'blitz'}
-      />
     </div>
   );
 

@@ -1,0 +1,40 @@
+# Test & dev artifacts
+apps/web/e2e/
+apps/web/test-results/
+apps/web/.storybook/
+apps/web/chromium_log.txt
+apps/web/vitest.config.*
+apps/web/vitest.setup.*
+apps/web/playwright.config.*
+apps/web/tsconfig.tsbuildinfo
+
+# Build caches
+.turbo/
+**/.turbo/
+
+# Heavy static assets now served from CDN (NEXT_PUBLIC_CDN_URL)
+apps/web/public/shop/
+apps/web/public/music/
+apps/web/public/sounds/
+
+# Source artwork used only by build scripts (spritesheet generation)
+assets/
+
+# Apps not deployed on Vercel
+apps/be/
+apps/mobile/
+apps/tg-bot/
+
+# Non-web root files
+bots/
+docs/
+/scripts/
+monitoring/
+.github/
+.claude/
+.husky/
+.opencode/
+commitlint.config.js
+docker-compose*.yml
+nginx.conf
+.git/

@@ -88,6 +88,7 @@ export function AdminBulkRewardsView({ labels }: Props) {
           <span className="font-semibold">{labels.form.type.label}</span>
           <select
             value={rewardType}
+            aria-label={labels.form.type.label}
             onChange={(e) => setRewardType(e.target.value as RewardType)}
             className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           >

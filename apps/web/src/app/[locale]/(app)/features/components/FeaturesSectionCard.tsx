@@ -19,7 +19,7 @@ function highlightText(text: string, query: string): React.ReactNode[] {
     regex.test(part) ? (
       <mark
         key={i}
-        className="bg-[var(--primary)]/25 text-[var(--primary)] rounded px-1 font-semibold"
+        className="bg-[var(--primary)]/25 text-[var(--color)] rounded px-1 font-semibold"
       >
         {part}
       </mark>
@@ -100,7 +100,7 @@ export function FeaturesSectionCard({
                 <Typography
                   variant="caption"
                   uiSize="xs"
-                  alpha="medium"
+                  alpha="high"
                   className="text-[var(--foregroundSecondary)]"
                 >
                   {section.totalCount} feature items
@@ -109,7 +109,7 @@ export function FeaturesSectionCard({
             </div>
 
             <div className="flex items-center gap-2 self-start sm:self-auto">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[var(--bgCard)]/80 text-[var(--primary)] border border-[var(--glassBorder)]">
+              <span                 className="px-3 py-1 rounded-full text-xs font-bold bg-[var(--bgCard)]/80 text-[var(--color)] border border-[var(--glassBorder)]">
                 {section.badge}
               </span>
               <button

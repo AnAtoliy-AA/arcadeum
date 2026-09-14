@@ -7,7 +7,7 @@ import type { ButtonProps } from '@arcadeum/ui';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   AI_VS_AI_DEFAULT_DELAY_MS,
   AI_VS_AI_DELAYS,
@@ -78,7 +78,9 @@ export function AIvsAIViewer({
       const wName = getPersonalityName(opts?.botPersonalityWhite as string);
       const bName = getPersonalityName(opts?.botPersonalityBlack as string);
       if (wName || bName) {
-        console.log(`AI vs AI: ${wName ?? 'Random'} (white) vs ${bName ?? 'Random'} (black)`);
+        console.log(
+          `AI vs AI: ${wName ?? 'Random'} (white) vs ${bName ?? 'Random'} (black)`,
+        );
       }
       router.push(`${routes.gameRoom(room.id)}?mode=watch`);
     } catch (err) {
@@ -138,10 +140,14 @@ export function AIvsAIViewer({
           </div>
           <div className="flex gap-3">
             <div className="flex-1 flex flex-col gap-1">
-              <label className="text-[10px] text-[var(--textSecondary)]">
+              <label
+                htmlFor="ai-white-bot"
+                className="text-[10px] text-[var(--textSecondary)]"
+              >
                 White ♔
               </label>
               <select
+                id="ai-white-bot"
                 value={whiteBot}
                 onChange={(e) => setWhiteBot(e.target.value)}
                 className="px-2 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--glassBorder)] text-[var(--color)] text-xs"
@@ -155,10 +161,14 @@ export function AIvsAIViewer({
               </select>
             </div>
             <div className="flex-1 flex flex-col gap-1">
-              <label className="text-[10px] text-[var(--textSecondary)]">
+              <label
+                htmlFor="ai-black-bot"
+                className="text-[10px] text-[var(--textSecondary)]"
+              >
                 Black ♚
               </label>
               <select
+                id="ai-black-bot"
                 value={blackBot}
                 onChange={(e) => setBlackBot(e.target.value)}
                 className="px-2 py-1.5 rounded-lg bg-[var(--background)] border border-[var(--glassBorder)] text-[var(--color)] text-xs"

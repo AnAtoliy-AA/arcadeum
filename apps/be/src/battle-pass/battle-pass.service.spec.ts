@@ -22,7 +22,6 @@ describe('BattlePassService', () => {
       findById: jest.fn(() =>
         leanChain({ role: opts.role ?? 'free', xp: opts.xp ?? 0 }),
       ),
-      bulkWrite: jest.fn(() => Promise.resolve({})),
     };
     const progressModel = {
       findOne: jest.fn(() =>
@@ -133,37 +132,5 @@ describe('BattlePassService', () => {
     expect(wallet.credit).not.toHaveBeenCalled();
     expect(inventory.grant).not.toHaveBeenCalled();
     expect(progressModel.findOneAndUpdate).not.toHaveBeenCalled();
-  });
-
-  it('awards XP to players after a game', async () => {
-    const { service, userModel } = build({ xp: 100 });
-    await service.awardGameXp(['user-1', 'user-2'], ['user-1']);
-    expect(userModel.bulkWrite).toHaveBeenCalledWith([
-      {
-        updateOne: {
-          filter: { _id: 'user-1' },
-          update: { $inc: { xp: 50 } }, // 10 base + 40 win bonus
-        },
-      },
-      {
-        updateOne: {
-          filter: { _id: 'user-2' },
-          update: { $inc: { xp: 10 } }, // 10 base only (loss)
-        },
-      },
-    ]);
-  });
-
-  it('skips bot players when awarding XP', async () => {
-    const { service, userModel } = build({ xp: 0 });
-    await service.awardGameXp(['user-1', 'bot-abc'], ['user-1']);
-    expect(userModel.bulkWrite).toHaveBeenCalledWith([
-      {
-        updateOne: {
-          filter: { _id: 'user-1' },
-          update: { $inc: { xp: 50 } },
-        },
-      },
-    ]);
   });
 });

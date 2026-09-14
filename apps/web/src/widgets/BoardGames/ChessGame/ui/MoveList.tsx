@@ -6,10 +6,13 @@ import type { MoveQuality } from '@/features/analysis/lib/analyzeGame';
 import { generateMoveList, generatePGN } from '../lib/pgn';
 
 const QUALITY_BADGE: Record<MoveQuality, { symbol: string; color: string }> = {
-  brilliant: { symbol: '✦', color: 'text-cyan-400' },
-  great: { symbol: '!', color: 'text-purple-400' },
-  good: { symbol: '', color: '' },
-  inaccuracy: { symbol: '?!', color: 'text-amber-400' },
+  brilliant: { symbol: '!!', color: 'text-cyan-400' },
+  great: { symbol: '!', color: 'text-green-600' },
+  best: { symbol: '✓', color: 'text-emerald-400' },
+  excellent: { symbol: '✓', color: 'text-emerald-400' },
+  good: { symbol: '✓', color: 'text-emerald-400' },
+  book: { symbol: '', color: 'text-gray-400' },
+  inaccuracy: { symbol: '?!', color: 'text-yellow-400' },
   mistake: { symbol: '?', color: 'text-orange-400' },
   blunder: { symbol: '??', color: 'text-red-400' },
 };
@@ -17,7 +20,7 @@ const QUALITY_BADGE: Record<MoveQuality, { symbol: string; color: string }> = {
 interface MoveListProps {
   state: ChessClientState;
   t: (
-    key: import('@/shared/lib/useTranslation').TranslationKey,
+    key: import('@/shared/i18n/useTranslation').TranslationKey,
     params?: Record<string, string | number>,
   ) => string;
   onMoveHover?: (moveIndex: number | null) => void;
@@ -164,7 +167,7 @@ export function MoveList({
                 isActivePair ? 'bg-white/10' : 'hover:bg-white/5'
               }`}
             >
-              <span className="w-7 text-[11px] text-[var(--textSecondary)] opacity-60 text-right pr-2 select-none">
+              <span className="w-7 text-[11px] text-[var(--textSecondary)] opacity-85 text-right pr-2 select-none">
                 {pair.num}.
               </span>
               <button

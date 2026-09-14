@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Controller,
   Get,
@@ -48,5 +49,32 @@ export class DailyRewardsController {
       }
       throw err;
     }
+  }
+
+  /**
+   * POST /daily-rewards/buy-freeze — purchase streak freeze tokens with coins.
+   * Body: { quantity: number } (1-10).
+   */
+  @Post('buy-freeze')
+  @UseGuards(JwtAuthGuard)
+  async buyFreeze(@Req() req: Request) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+
+    const body = req.body as { quantity?: unknown };
+    const quantity =
+      typeof body?.quantity === 'number'
+        ? body.quantity
+        : typeof body?.quantity === 'string'
+          ? Number(body.quantity)
+          : NaN;
+
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10) {
+      throw new BadRequestException(
+        'Quantity must be an integer between 1 and 10',
+      );
+    }
+
+    return this.service.buyFreezeTokens(user.userId, quantity);
   }
 }

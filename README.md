@@ -4,6 +4,17 @@ A monorepo for the Arcadeum Games gaming platform, featuring a mobile app, web a
 
 **Live Demo:** [https://arcadeum.games](https://arcadeum.games/)
 
+## Quick Start (TL;DR)
+
+```bash
+git clone <repo-url> && cd arcadeum_claude_3
+pnpm install          # install all dependencies
+cp .env.example .env.local  # in each app directory
+pnpm dev              # starts web (:3000), backend (:4000), mobile (:8081)
+```
+
+That's it. See [Prerequisites](#prerequisites) below for required tools (Node 24+, pnpm, MongoDB, Redis).
+
 ## Documentation
 
 Refer to the individual app READMEs for detailed setup and configuration instructions:
@@ -31,7 +42,7 @@ This Turborepo workspace is managed with `pnpm` and contains:
 - **`apps/mobile`**: Expo React Native app (iOS/Android)
 - **`apps/web`**: Next.js 16 web application
 - **`apps/be`**: NestJS 11 API server
-- **`apps/tg-bot`**: Telegram bot (PumpFun monitoring)
+- **`apps/tg-bot`**: Telegram bot for Solana PumpFun transaction monitoring and alerts. Watches on-chain activity and posts notifications to configured Telegram channels.
 - **`packages/ui`**: Shared `@arcadeum/ui` component library (63+ Tailwind components)
 - **`packages/games-core`**: Framework-agnostic game engines and bot cores
 - **`docs`**: Comprehensive project documentation

@@ -1,9 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from '@testing-library/react';
 import { TutorialOverlay } from './TutorialOverlay';
 import { useTutorialStore } from '../store/tutorialStore';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
@@ -158,5 +164,21 @@ describe('TutorialOverlay', () => {
     expect(document.activeElement).toBe(trigger);
 
     trigger.remove();
+  });
+
+  it('displays interactive step badge and advances on game action', () => {
+    renderOverlay();
+    fireEvent.click(screen.getByTestId('tutorial-next-button'));
+    expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent(
+      'games.chess_v1.tutorial.s2.title',
+    );
+    expect(screen.getByTestId('interactive-step-badge')).toBeInTheDocument();
+
+    act(() => {
+      useTutorialStore.getState().recordGameAction('move');
+    });
+    expect(screen.getByTestId('tutorial-step-title')).toHaveTextContent(
+      'games.chess_v1.tutorial.s3.title',
+    );
   });
 });

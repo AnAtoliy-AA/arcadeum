@@ -45,7 +45,8 @@ export const esMessages = {
     landing: {
       tagline: 'Un jugador · Sin registro',
       meta: {
-        title: 'Sudoku — Juego de rompecabezas numérico gratis online | Arcadeum',
+        title:
+          'Sudoku — Juego de rompecabezas numérico gratis online | Arcadeum',
         description:
           'Juega al Sudoku gratis online en Arcadeum. Niveles fácil, medio y difícil con solución única, notas a lápiz, juego con teclado y progreso guardado. Sin descargas ni registro.',
         keywords:
@@ -86,6 +87,41 @@ export const esMessages = {
           question: '¿Puedo jugar desde el móvil?',
           answer:
             'Por supuesto. El teclado numérico es táctil y el modo Notas permite anotar candidatos como en papel.',
+        },
+        q4: {
+          question: '¿Cuáles son las reglas básicas del Sudoku?',
+          answer:
+            'Rellena la cuadrícula de 9×9 de modo que cada fila, columna y caja de 3×3 contenga los números del 1 al 9 sin repetir ninguno.',
+        },
+        q5: {
+          question: '¿Cómo ayuda el modo Notas a resolver cuadrículas?',
+          answer:
+            'Activar Notas te permite apuntar números candidatos a lápiz en casillas vacías para visualizar opciones y patrones lógicos.',
+        },
+        q6: {
+          question: '¿Qué son los números únicos desnudos y ocultos?',
+          answer:
+            'Un único desnudo es una casilla con una sola cifra posible, mientras que un único oculto es un dígito que solo cabe en una celda de la fila o caja.',
+        },
+        q7: {
+          question: '¿Hace falta adivinar en algún momento?',
+          answer:
+            'Nunca. Cada cuadrícula en Arcadeum tiene demostrada una única solución alcanzable enteramente mediante deducción lógica.',
+        },
+        q8: {
+          question: '¿Qué niveles de dificultad hay disponibles?',
+          answer:
+            'Puedes elegir entre Fácil (introductorio), Medio (razonamiento equilibrado) y Difícil (técnicas avanzadas de eliminación).',
+        },
+        q9: {
+          question: '¿El juego avisa de errores y números duplicados?',
+          answer:
+            'Sí. El resaltado de conflictos te muestra de inmediato números repetidos en filas, columnas o cajas para facilitar el aprendizaje.',
+        },
+        q10: {
+          question: '¿Se guardan mis tiempos de resolución?',
+          answer:
+            'Sí. Cada partida completada se mide con cronómetro y se registra en tus estadísticas personales de Arcadeum.',
         },
       },
       steps: {

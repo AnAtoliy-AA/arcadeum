@@ -106,6 +106,36 @@ export const enMessages = {
           answer:
             'Hearts cannot lead a trick until they have been "broken" — meaning a Heart has been discarded on a previous trick. Once broken, any Heart may lead.',
         },
+        queenStrategy: {
+          question: 'How should I handle the Queen of Spades?',
+          answer:
+            'Keep lower spades to protect yourself when spades are led, and slough the Queen on an opponent’s high trick as soon as you are void in another suit.',
+        },
+        firstTrick: {
+          question: 'Who leads the first trick and what are the restrictions?',
+          answer:
+            'The player holding the 2 of Clubs must lead it. No penalty cards (Hearts or Queen of Spades) can be played on the very first trick.',
+        },
+        stoppingTheMoon: {
+          question: 'How do you defend against someone Shooting the Moon?',
+          answer:
+            'If an opponent is aggressively winning every trick, purposefully take a single heart or the Queen to block them from getting all 26 points.',
+        },
+        friends: {
+          question: 'How do I play Hearts with friends online?',
+          answer:
+            'Click Create Room, customize round targets, and share the room link. Friends join instantly in their browsers without creating an account.',
+        },
+        bots: {
+          question: 'Can I play Hearts against computer bots?',
+          answer:
+            'Yes. You can play solo against three smart AI opponents or fill empty seats in a room with bots.',
+        },
+        free: {
+          question: 'Is Hearts free to play on Arcadeum?',
+          answer:
+            'Yes. Hearts on Arcadeum is 100% free with smooth animations, custom deck themes, and no downloads required.',
+        },
       },
     },
     lobby: {

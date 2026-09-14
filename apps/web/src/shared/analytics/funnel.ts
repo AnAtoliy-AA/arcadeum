@@ -23,6 +23,7 @@ export const FUNNEL_EVENTS = {
   postGameChallenge: 'post_game.challenge',
   postGameShare: 'post_game.share',
   postGamePlayAnother: 'post_game.play_another',
+  shareConversionTracked: 'share.conversion.tracked',
 } as const;
 
 function trackFunnel(
@@ -122,4 +123,11 @@ export function trackPostGameShare(gameId: string): void {
 /** Post-game: player clicked "Play Another Game" button. */
 export function trackPostGamePlayAnother(gameId: string): void {
   trackFunnel('solo', FUNNEL_EVENTS.postGamePlayAnother, { gameId });
+}
+
+/** Signup completed via a referral code — conversion event. */
+export function trackShareConversionTracked(referralCode: string): void {
+  trackFunnel('social', FUNNEL_EVENTS.shareConversionTracked, {
+    referralCode,
+  });
 }

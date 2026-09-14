@@ -67,18 +67,51 @@ export class NotificationsService {
 
   async updatePreferences(
     userId: string,
-    partial: Partial<NotificationCategoryMap<boolean>>,
+    partial: Partial<NotificationCategoryMap<boolean>> & { timezone?: string },
   ): Promise<NotificationCategoryMap<boolean>> {
     const current = await this.getPreferences(userId);
-    const next: NotificationCategoryMap<boolean> = { ...current, ...partial };
+    const next: NotificationCategoryMap<boolean> = { ...current };
+    for (const key of Object.keys(partial) as Array<keyof typeof partial>) {
+      if (key === 'timezone') continue;
+      if (key in next) {
+        next[key] = partial[key] as boolean;
+      }
+    }
+    const update: Record<string, unknown> = { categories: next };
+    if ('timezone' in partial) {
+      update.timezone = partial.timezone ?? null;
+    }
     await this.preferenceModel
       .updateOne(
         { userId: new Types.ObjectId(userId) },
-        { $set: { categories: next } },
+        { $set: update },
         { upsert: true },
       )
       .exec();
     return next;
+  }
+
+  async getTimezone(userId: string): Promise<string | null> {
+    const doc = await this.preferenceModel
+      .findOne({ userId: new Types.ObjectId(userId) })
+      .lean<{ timezone?: string | null }>()
+      .exec();
+    return doc?.timezone ?? null;
+  }
+
+  async getTimezones(
+    userIds: Types.ObjectId[],
+  ): Promise<Map<string, string | null>> {
+    if (userIds.length === 0) return new Map();
+    const docs = await this.preferenceModel
+      .find({ userId: { $in: userIds } }, { userId: 1, timezone: 1 })
+      .lean()
+      .exec();
+    const map = new Map<string, string | null>();
+    for (const doc of docs) {
+      map.set(doc.userId.toHexString(), doc.timezone ?? null);
+    }
+    return map;
   }
 
   async isCategoryEnabled(

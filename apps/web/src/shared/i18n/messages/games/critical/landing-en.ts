@@ -94,6 +94,31 @@ export const landing = {
         answer:
           'On your turn, play as many Action cards as you like (Skip, Attack, Steal, See the Future, …), then draw one card from the deck to end your turn. If you draw a Critical card, you must play a Defuse or you are eliminated. The last player still standing wins the round.',
       },
+      defuse: {
+        question: 'How do Defuse cards work?',
+        answer:
+          'A Defuse card saves you from elimination when you draw a Critical bomb. After defusing, you secretly place the Critical card back anywhere in the draw pile.',
+      },
+      combos: {
+        question: 'How do card combos work in Critical?',
+        answer:
+          'Playing a pair of matching node cards allows you to steal a random card from an opponent. Playing three matching cards allows you to name and steal a specific card.',
+      },
+      nope: {
+        question: 'Can Cancel cards stop a Critical explosion or a Defuse?',
+        answer:
+          'No. Cancel cards can stop any standard Action card or Combo, but they cannot cancel an explosive Critical draw or a Defuse card.',
+      },
+      themes: {
+        question: 'Are there themed card expansion packs in Critical?',
+        answer:
+          'Yes. You can customize your rooms with expansion packs including Theft, Chaos, Deity, and Future packs featuring special mechanics and unique card art.',
+      },
+      noSignup: {
+        question: 'Do my friends need an account or download to play Critical?',
+        answer:
+          'No. Anyone with your room invite link can join and play instantly in any web browser on desktop or mobile without downloading anything or creating an account.',
+      },
     },
   },
   breadcrumb: {

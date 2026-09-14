@@ -33,7 +33,7 @@ export default async function AdminShopPage() {
         <PageTitle size="lg" gradient>
           {labels.title}
         </PageTitle>
-        <Typography variant="body" uiSize="md" alpha="medium">
+        <Typography variant="body" uiSize="md" alpha="high">
           {labels.subtitle}
         </Typography>
       </div>

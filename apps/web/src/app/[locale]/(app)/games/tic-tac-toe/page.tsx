@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import TicTacToeLanding from './TicTacToeLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const TIC_TAC_TOE_SLUG = 'tic_tac_toe_v1';
 const TIC_TAC_TOE_MIN_PLAYERS = 2;
@@ -66,23 +70,54 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.tic_tac_toe_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: TIC_TAC_TOE_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: TIC_TAC_TOE_MIN_PLAYERS,
-      maxPlayers: TIC_TAC_TOE_MAX_PLAYERS,
-      genre: TIC_TAC_TOE_GENRE,
-      alternateName: ['Noughts and Crosses', 'Xs and Os', 'Gomoku Tic-Tac-Toe'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: TIC_TAC_TOE_SLUG,
+    slug: 'tic-tac-toe',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: TIC_TAC_TOE_MIN_PLAYERS,
+    maxPlayers: TIC_TAC_TOE_MAX_PLAYERS,
+    genre: TIC_TAC_TOE_GENRE,
+    alternateName: ['Noughts and Crosses', 'Xs and Os', 'Gomoku Tic-Tac-Toe'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Tic Tac Toe on ${appConfig.appName}`,
+          description:
+            'Play Tic-Tac-Toe online — free multiplayer for 2 to 5 players.',
+          steps: [
+            {
+              name: landing.steps?.create?.title ?? 'Create a room',
+              text:
+                landing.steps?.create?.body ??
+                'Choose grid size and theme, then create a room.',
+            },
+            {
+              name: landing.steps?.join?.title ?? 'Invite',
+              text:
+                landing.steps?.join?.body ?? 'Share the link with an opponent.',
+            },
+            {
+              name: landing.steps?.play?.title ?? 'Play',
+              text:
+                landing.steps?.play?.body ??
+                'Align your marks in a row to win.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(TIC_TAC_TOE_SLUG);
 

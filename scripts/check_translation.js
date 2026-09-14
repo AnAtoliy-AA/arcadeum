@@ -329,10 +329,19 @@ try {
   if (hasMissingKeys) {
     console.log('❌ Translation validation completed with missing keys!');
     process.exit(1);
-  } else {
-    console.log('✅ All translation keys are present!');
-    process.exit(0);
   }
+
+  const { execFileSync } = require('child_process');
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, 'sync-i18n.js')], {
+      stdio: 'inherit',
+    });
+  } catch {
+    process.exit(1);
+  }
+
+  console.log('✅ All translation keys are present!');
+  process.exit(0);
 } catch (error) {
   console.error('❌ General error:', error.message);
   process.exit(1);

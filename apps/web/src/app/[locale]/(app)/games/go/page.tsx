@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import GoLanding from './GoLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const GO_SLUG = 'go_v1';
 const GO_MIN_PLAYERS = 2;
@@ -63,23 +67,55 @@ export default async function GoLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.go_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: GO_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: GO_MIN_PLAYERS,
-      maxPlayers: GO_MAX_PLAYERS,
-      genre: GO_GENRE,
-      alternateName: ['Baduk', 'Weiqi', 'Igo', 'Go Online'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: GO_SLUG,
+    slug: 'go',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: GO_MIN_PLAYERS,
+    maxPlayers: GO_MAX_PLAYERS,
+    genre: GO_GENRE,
+    alternateName: ['Baduk', 'Weiqi', 'Igo', 'Go Online'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Go on ${appConfig.appName}`,
+          description:
+            'Play Go (Baduk/Weiqi) in your browser — no download, no signup.',
+          steps: [
+            {
+              name: landing.steps.create.title ?? 'Create a room',
+              text:
+                landing.steps.create.body ??
+                'Select board size (9×9, 13×13, or 19×19) and create a room.',
+            },
+            {
+              name: landing.steps.join.title ?? 'Invite a friend',
+              text:
+                landing.steps.join.body ??
+                'Share the room link with your opponent.',
+            },
+            {
+              name: landing.steps.play.title ?? 'Play',
+              text:
+                landing.steps.play.body ??
+                'Place stones to surround territory and capture opponent stones.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(GO_SLUG);
 

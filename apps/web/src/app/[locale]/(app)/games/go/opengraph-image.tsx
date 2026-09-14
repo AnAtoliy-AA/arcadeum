@@ -1,110 +1,134 @@
-import { ImageResponse } from 'next/og';
+import {
+  OG_CONTENT_TYPE,
+  OG_SIZE,
+  renderGameOgCard,
+} from '@/shared/seo/ogImageTemplate';
+import { getTranslations } from '@/shared/i18n/server';
+import {
+  DEFAULT_LOCALE,
+  SUPPORTED_LOCALES,
+  isLocale,
+  type Locale,
+} from '@/shared/i18n';
 
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
-export const alt = 'Go — free multiplayer board game';
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+export const alt =
+  'Go (Weiqi / Baduk) — free online board game on Arcadeum Games';
 
-export default function OpengraphImage() {
-  return new ImageResponse(
+export const dynamic = 'force-static';
+export function generateStaticParams() {
+  return SUPPORTED_LOCALES.map((locale) => ({ locale }));
+}
+
+type Props = { params: Promise<{ locale: string }> };
+
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
+}
+
+function GoVisual() {
+  const stones = [
+    { r: 2, c: 2, color: 'black' },
+    { r: 2, c: 6, color: 'white' },
+    { r: 6, c: 2, color: 'white' },
+    { r: 6, c: 6, color: 'black' },
+    { r: 4, c: 4, color: 'black' },
+    { r: 3, c: 4, color: 'white' },
+    { r: 4, c: 3, color: 'black' },
+    { r: 5, c: 4, color: 'black' },
+    { r: 4, c: 5, color: 'white' },
+  ];
+
+  return (
     <div
       style={{
-        width: 1200,
-        height: 630,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 80px',
-        background:
-          'linear-gradient(135deg, #0f172a 0%, #3b0764 50%, #581c87 100%)',
-        color: 'white',
-        fontFamily: 'system-ui, sans-serif',
-        position: 'relative',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        padding: 20,
       }}
     >
       <div
         style={{
+          width: 340,
+          height: 340,
+          background: '#d97706',
+          borderRadius: 14,
+          border: '2px solid rgba(245, 158, 11, 0.6)',
+          boxShadow: '0 16px 40px rgba(0,0,0,0.7)',
           display: 'flex',
-          flexDirection: 'column',
-          gap: 24,
-          maxWidth: 600,
-          zIndex: 1,
-        }}
-      >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
-          ARCADEUM
-        </div>
-        <div
-          style={{
-            fontSize: 96,
-            fontWeight: 900,
-            lineHeight: 1,
-            background: 'linear-gradient(135deg, #ffffff 0%, #d8b4fe 100%)',
-            backgroundClip: 'text',
-            color: 'transparent',
-          }}
-        >
-          Go
-        </div>
-        <div style={{ fontSize: 24, opacity: 0.85, lineHeight: 1.4 }}>
-          The ancient game of territory. Captures, ko rule, and AI opponents on
-          9×9 to 19×19 boards.
-        </div>
-        <div style={{ display: 'flex', gap: 16, marginTop: 12 }}>
-          <div
-            style={{
-              padding: '10px 24px',
-              borderRadius: 12,
-              background: '#9333ea',
-              fontWeight: 'bold',
-              fontSize: 18,
-            }}
-          >
-            Play Free Online
-          </div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          width: 360,
-          height: 360,
-          borderRadius: 24,
-          border: '2px solid rgba(216, 180, 254, 0.3)',
-          background: 'rgba(30, 27, 75, 0.6)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 20,
+          flexWrap: 'wrap',
           position: 'relative',
+          padding: 16,
         }}
       >
-        <div style={{ display: 'flex', gap: 12 }}>
+        {Array.from({ length: 64 }).map((_, i) => (
           <div
+            key={i}
             style={{
-              width: 72,
-              height: 72,
-              borderRadius: 999,
-              background: '#111318',
-              border: '2px solid rgba(255,255,255,0.25)',
+              display: 'flex',
+              width: 38.5,
+              height: 38.5,
+              borderRight: '1px solid rgba(0,0,0,0.3)',
+              borderBottom: '1px solid rgba(0,0,0,0.3)',
             }}
           />
+        ))}
+
+        {stones.map((s, idx) => (
           <div
+            key={idx}
             style={{
-              width: 72,
-              height: 72,
-              borderRadius: 999,
-              background: '#f4f5f7',
-              border: '2px solid rgba(0,0,0,0.4)',
-              marginTop: 36,
+              display: 'flex',
+              position: 'absolute',
+              left: 16 + s.c * 38.5 - 16,
+              top: 16 + s.r * 38.5 - 16,
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              background:
+                s.color === 'black'
+                  ? 'radial-gradient(circle at 35% 35%, #52525b 0%, #18181b 100%)'
+                  : 'radial-gradient(circle at 35% 35%, #ffffff 0%, #e4e4e7 100%)',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.5)',
             }}
           />
-        </div>
-        <div style={{ fontSize: 24, fontWeight: 700, color: '#f3e8ff' }}>
-          ⚫⚪ 2 Players · Classic
-        </div>
+        ))}
       </div>
-    </div>,
-    { ...size },
+    </div>
   );
+}
+
+export default async function GoOpengraphImage({ params }: Props) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
+  const landing = messages.games?.go_v1?.landing;
+  const gameName = messages.games?.go_v1?.name ?? 'Go';
+
+  return renderGameOgCard({
+    kicker: 'Ancient Strategy · 2 Players',
+    title: gameName,
+    subtitle:
+      landing?.hero?.subtitle ??
+      'Play Go (Weiqi / Baduk) online with 9×9, 13×13, and 19×19 boards, territory scoring, and AI.',
+    accent: '#f59e0b',
+    gradient: ['#241405', '#0f0802'],
+    badges: [
+      '9×9, 13×13, 19×19',
+      'Territory Scoring',
+      'Komi & Handicaps',
+      'AI Bots',
+      '100% Free',
+    ],
+    stats: [
+      { label: 'Boards', value: '19×19 / 13×13' },
+      { label: 'Tradition', value: '4000+ Years' },
+      { label: 'Opponents', value: 'PvP & Bot' },
+    ],
+    visual: <GoVisual />,
+  });
 }

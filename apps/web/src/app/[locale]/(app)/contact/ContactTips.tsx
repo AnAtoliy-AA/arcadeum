@@ -41,7 +41,7 @@ export function ContactTips({ tips }: ContactTipsProps) {
               aria-hidden="true"
               className="h-[7px] w-[7px] mt-2 shrink-0 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent)]"
             />
-            <Typography variant="body" alpha="medium">
+            <Typography variant="body" alpha="high">
               {item}
             </Typography>
           </div>
@@ -51,7 +51,7 @@ export function ContactTips({ tips }: ContactTipsProps) {
         className="border-0 h-px bg-[var(--glassBorder)] mt-4 mb-3"
         aria-hidden="true"
       />
-      <Typography variant="caption" alpha="medium">
+      <Typography variant="caption" alpha="high">
         {footer}
       </Typography>
     </GlassCard>

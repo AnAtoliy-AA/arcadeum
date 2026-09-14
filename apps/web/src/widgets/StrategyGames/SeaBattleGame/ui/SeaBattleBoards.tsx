@@ -4,10 +4,13 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { Card, Typography } from '@arcadeum/ui';
 import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';
+import { TurnTimer } from './TurnTimer';
+import { ShipAbilitiesPanel } from './ShipAbilitiesPanel';
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import type {
   SeaBattlePlayerState,
   SeaBattleSnapshot,
@@ -43,6 +46,12 @@ interface SeaBattleBoardsProps {
   attack: (targetPlayerId: string, row: number, col: number) => void;
   onSonar?: (targetPlayerId: string, row?: number, col?: number) => void;
   onRadar?: (targetPlayerId: string, row?: number, col?: number) => void;
+  onShipAbility?: (
+    abilityId: string,
+    targetPlayerId?: string,
+    row?: number,
+    col?: number,
+  ) => void;
   resolveDisplayNameBound: (
     id?: string | null,
     fallback?: string | null,
@@ -71,6 +80,7 @@ export function SeaBattleBoards({
   attack,
   onSonar,
   onRadar,
+  onShipAbility,
   resolveDisplayNameBound,
   teammateIds,
   teams,
@@ -184,17 +194,26 @@ export function SeaBattleBoards({
 
   const isWeaponMode = weaponMode !== null;
 
-  const buttonBase: React.CSSProperties = {
-    padding: '8px 16px',
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: 'pointer',
-    transition: 'all 0.15s ease',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-  };
+  const sonarActive = weaponMode?.weapon === 'sonar';
+  const radarActive = weaponMode?.weapon === 'radar';
+
+  const handleKeyboardFire = useCallback(
+    (row: number, col: number) => {
+      if (!isMyTurn || isGameOver) return;
+      // Fire on first opponent
+      const targetId = opponents?.[0]?.playerId;
+      if (targetId) {
+        attack(targetId, row, col);
+      }
+    },
+    [isMyTurn, isGameOver, opponents, attack],
+  );
+
+  const { cursor } = useKeyboardNavigation({
+    gridSize: snapshot?.gridSize ?? 10,
+    enabled: isMyTurn && !isGameOver && !isWeaponMode,
+    onFire: handleKeyboardFire,
+  });
 
   return (
     <>
@@ -238,18 +257,21 @@ export function SeaBattleBoards({
 
       {(isBattlePhase || isGameOver) && snapshot && (
         <>
+          {isMyTurn && snapshot.mode === 'salvo' && currentPlayer && (
+            <div className="flex items-center justify-center gap-2 py-1">
+              <span className="text-[13px] font-semibold text-amber-400">
+                ⚔️ Salvo:{' '}
+                {currentPlayer.salvoShotsRemaining ??
+                  currentPlayer.shipsRemaining}{' '}
+                shots remaining
+              </span>
+            </div>
+          )}
+          {isMyTurn && snapshot.mode === 'speed' && currentPlayer && (
+            <TurnTimer deadline={currentPlayer.turnDeadline} />
+          )}
           {!isGameOver && (hasSonar || hasRadar) && (
-            <div
-              style={{
-                display: 'flex',
-                gap: 8,
-                padding: '2px 8px',
-                marginBottom: '-4px',
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-                alignItems: 'center',
-              }}
-            >
+            <div className="flex gap-2 px-2 -mb-1 justify-center flex-wrap items-center">
               {hasSonar && (
                 <button
                   type="button"
@@ -268,28 +290,22 @@ export function SeaBattleBoards({
                     }
                   }}
                   disabled={isSonarDisabled}
-                  style={{
-                    ...buttonBase,
-                    opacity: isSonarDisabled ? 0.35 : 1,
-                    cursor: isSonarDisabled ? 'not-allowed' : 'pointer',
-                    color:
-                      weaponMode?.weapon === 'sonar' ? '#06b6d4' : '#e0e0e0',
-                    borderTop: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
-                    borderBottom: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
-                    borderLeft: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
-                    borderRight: `1px solid ${weaponMode?.weapon === 'sonar' ? '#06b6d4' : 'rgba(6,182,212,0.3)'}`,
-                    background:
-                      weaponMode?.weapon === 'sonar'
-                        ? 'rgba(6,182,212,0.15)'
-                        : 'rgba(6,182,212,0.05)',
-                  }}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 ${
+                    isSonarDisabled
+                      ? 'opacity-35 cursor-not-allowed'
+                      : 'cursor-pointer'
+                  } ${
+                    sonarActive
+                      ? 'text-cyan-400 border border-cyan-400 bg-cyan-400/15'
+                      : 'text-neutral-200 border border-cyan-400/30 bg-cyan-400/5'
+                  }`}
                 >
                   🔊 {t('games.create.seaBattleSonar') || 'Sonar'}
                   {sonarUsed && ' ✓'}
                 </button>
               )}
               {hasRadar && (
-                <div style={{ display: 'flex', gap: 4 }}>
+                <div className="flex gap-1">
                   <button
                     type="button"
                     onClick={() => {
@@ -309,22 +325,15 @@ export function SeaBattleBoards({
                       }
                     }}
                     disabled={isRadarDisabled}
-                    style={{
-                      ...buttonBase,
-                      opacity: isRadarDisabled ? 0.35 : 1,
-                      cursor: isRadarDisabled ? 'not-allowed' : 'pointer',
-                      color:
-                        weaponMode?.weapon === 'radar' ? '#a855f7' : '#e0e0e0',
-                      borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      borderRight: 'none',
-                      background:
-                        weaponMode?.weapon === 'radar'
-                          ? 'rgba(168,85,247,0.15)'
-                          : 'rgba(168,85,247,0.05)',
-                      borderRadius: '8px 0 0 8px',
-                    }}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-l-lg text-[13px] font-semibold transition-all duration-150 ${
+                      isRadarDisabled
+                        ? 'opacity-35 cursor-not-allowed'
+                        : 'cursor-pointer'
+                    } ${
+                      radarActive
+                        ? 'text-purple-400 border border-purple-400 bg-purple-400/15 border-r-0'
+                        : 'text-neutral-200 border border-purple-400/30 bg-purple-400/5 border-r-0'
+                    }`}
                   >
                     📡 {t('games.create.seaBattleRadar') || 'Radar'}
                     {radarUsed && ' ✓'}
@@ -343,25 +352,16 @@ export function SeaBattleBoards({
                       });
                     }}
                     disabled={isRadarDisabled}
-                    style={{
-                      ...buttonBase,
-                      padding: '8px 10px',
-                      opacity: isRadarDisabled ? 0.35 : 1,
-                      cursor: isRadarDisabled ? 'not-allowed' : 'pointer',
-                      color:
-                        weaponMode?.weapon === 'radar' ? '#c084fc' : '#a0a0a0',
-                      borderTop: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      borderBottom: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      borderLeft: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      borderRight: `1px solid ${weaponMode?.weapon === 'radar' ? '#a855f7' : 'rgba(168,85,247,0.3)'}`,
-                      background:
-                        weaponMode?.weapon === 'radar'
-                          ? 'rgba(168,85,247,0.15)'
-                          : 'rgba(168,85,247,0.05)',
-                      borderRadius: '0 8px 8px 0',
-                      fontSize: 11,
-                    }}
                     title="Toggle row / column"
+                    className={`flex items-center px-2.5 py-2 rounded-r-lg text-[11px] font-semibold transition-all duration-150 ${
+                      isRadarDisabled
+                        ? 'opacity-35 cursor-not-allowed'
+                        : 'cursor-pointer'
+                    } ${
+                      radarActive
+                        ? 'text-purple-300 border border-purple-400 bg-purple-400/15'
+                        : 'text-neutral-400 border border-purple-400/30 bg-purple-400/5'
+                    }`}
                   >
                     {weaponMode?.radarAxis === 'col' ? '↕' : '↔'}
                   </button>
@@ -371,27 +371,18 @@ export function SeaBattleBoards({
                 <button
                   type="button"
                   onClick={cancelWeaponMode}
-                  style={{
-                    ...buttonBase,
-                    color: '#f87171',
-                    borderTop: '1px solid rgba(239,68,68,0.4)',
-                    borderBottom: '1px solid rgba(239,68,68,0.4)',
-                    borderLeft: '1px solid rgba(239,68,68,0.4)',
-                    borderRight: '1px solid rgba(239,68,68,0.4)',
-                    background: 'rgba(239,68,68,0.1)',
-                  }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 cursor-pointer text-red-400 border border-red-400/40 bg-red-400/10"
                 >
                   ✕ Cancel
                 </button>
               )}
               {isWeaponMode && (
                 <span
-                  style={{
-                    fontSize: 12,
-                    color:
-                      weaponMode.weapon === 'sonar' ? '#06b6d4' : '#a855f7',
-                    fontWeight: 600,
-                  }}
+                  className={`text-xs font-semibold ${
+                    weaponMode.weapon === 'sonar'
+                      ? 'text-cyan-400'
+                      : 'text-purple-400'
+                  }`}
                 >
                   {weaponMode.weapon === 'sonar'
                     ? 'Tap a cell on the target board'
@@ -399,6 +390,13 @@ export function SeaBattleBoards({
                 </span>
               )}
             </div>
+          )}
+          {isMyTurn && snapshot.shipAbilities && currentPlayer && (
+            <ShipAbilitiesPanel
+              player={currentPlayer}
+              cooldowns={snapshot.abilityCooldowns?.[currentUserId ?? '']}
+              onUseAbility={onShipAbility}
+            />
           )}
           <AttackBoard
             key="attack-board"
@@ -424,6 +422,7 @@ export function SeaBattleBoards({
             onCellHover={isWeaponMode ? handleCellHover : undefined}
             onCellHoverEnd={isWeaponMode ? handleCellHoverEnd : undefined}
             weaponMode={isWeaponMode}
+            keyboardCursor={cursor}
           />
         </>
       )}

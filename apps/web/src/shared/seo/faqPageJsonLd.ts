@@ -23,9 +23,23 @@ export function buildFaqPageJsonLd({
 }: BuildFaqPageJsonLdInput): Record<string, unknown>[] {
   if (faqs.length === 0) return [];
 
-  // FAQPage schema is restricted to government/healthcare sites (Aug 2023).
-  // Only emit the BreadcrumbList for game landing pages.
+  const fullPageUrl = pageUrl.startsWith('http')
+    ? pageUrl
+    : `${appConfig.siteUrl}${pageUrl}`;
+
   return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    },
     {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -46,7 +60,7 @@ export function buildFaqPageJsonLd({
           '@type': 'ListItem',
           position: 3,
           name: pageName,
-          item: pageUrl,
+          item: fullPageUrl,
         },
       ],
     },

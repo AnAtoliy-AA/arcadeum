@@ -57,7 +57,7 @@ export function FeaturesHero({
         <Typography
           variant="body"
           uiSize="md"
-          alpha="medium"
+          alpha="high"
           className="max-w-3xl leading-relaxed text-[var(--foregroundSecondary)]"
         >
           {subtitle}
@@ -70,17 +70,19 @@ export function FeaturesHero({
             🔍
           </span>
           <input
-            type="text"
+            type="search"
             data-testid="features-search-input"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full pl-11 pr-10 py-3 rounded-2xl bg-[var(--bgCard)]/90 border border-[var(--glassBorder)] text-sm text-[var(--foreground)] placeholder:text-[var(--foregroundSecondary)] focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition-all shadow-inner"
+            aria-label={searchPlaceholder}
+            className="w-full pl-11 pr-10 py-3 rounded-2xl bg-[var(--bgCard)]/90 border border-[var(--glassBorder)] text-sm text-white placeholder:text-[var(--foregroundSecondary)] focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/30 transition-all shadow-inner"
           />
           {searchQuery && (
             <button
               type="button"
               data-testid="features-search-clear"
+              aria-label="Clear search"
               onClick={() => onSearchChange('')}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[var(--foregroundSecondary)] hover:text-[var(--foreground)] w-6 h-6 rounded-full bg-[var(--glassBg)] border border-[var(--glassBorder)] flex items-center justify-center transition-colors"
             >

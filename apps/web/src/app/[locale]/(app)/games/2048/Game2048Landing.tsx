@@ -14,7 +14,6 @@ interface Props {
 
 const FEATURE_ICONS = ['🧩', '💾', '📊'] as const;
 const FEATURE_KEYS = ['solo', 'progress', 'stats'] as const;
-const FAQ_KEYS = ['q1', 'q2', 'q3'] as const;
 const STEP_KEYS = ['create', 'join', 'play'] as const;
 
 export default function Game2048Landing({
@@ -45,7 +44,10 @@ export default function Game2048Landing({
             ['scoring', rules.scoring],
           ] as const
         ).map(([label, body]) => ({ label, body })),
-        faq: FAQ_KEYS.map((key) => landing.faq[key]),
+        faq: Object.values(landing.faq) as Array<{
+          question: string;
+          answer: string;
+        }>,
       }}
       accentGlowClass="from-amber-500/15 via-orange-500/10"
       accentTextClass="text-amber-500 bg-amber-500/15"

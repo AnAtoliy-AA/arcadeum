@@ -113,12 +113,43 @@ export const esMessages = {
           answer:
             'Las partidas de 9×9 duran unos 10 minutos y son perfectas para aprender. 13×13 es un término medio, mientras que 19×19 es la experiencia clásica completa usada en juego profesional.',
         },
+        liberties: {
+          question: '¿Qué son las libertades y cómo se capturan piedras en Go?',
+          answer:
+            'Una libertad es una intersección vacía adyacente a una piedra o grupo. Cuando el rival ocupa todas las libertades de un grupo, esas piedras quedan capturadas y se retiran del tablero.',
+        },
+        twoEyes: {
+          question: '¿Qué es la regla de los dos ojos para la vida y muerte?',
+          answer:
+            'Un grupo con dos ojos independientes nunca puede ser capturado, ya que el oponente no puede jugar en ninguno de ellos sin cometer suicidio ilegal.',
+        },
+        suicide: {
+          question: '¿Está permitido el suicidio en Go?',
+          answer:
+            'No. No puedes colocar una piedra en un punto sin libertades a menos que esa jugada capture inmediatamente una o más piedras rivales.',
+        },
+        friends: {
+          question: '¿Cómo puedo jugar al Go online con amigos?',
+          answer:
+            'Pulsa en Crear sala, elige el tamaño (9×9, 13×13 o 19×19) y comparte el enlace. Tus amigos pueden jugar en móvil o escritorio sin registrarse.',
+        },
+        bots: {
+          question: '¿Puedo practicar Go contra bots de IA?',
+          answer:
+            'Sí. Arcadeum ofrece bots de IA integrados con varios niveles de dificultad para entrenar capturas tácticas y visión territorial.',
+        },
+        free: {
+          question: '¿Es gratis jugar al Go en Arcadeum?',
+          answer:
+            'Sí. Go en Arcadeum es 100% gratuito con puntuación de área, salas instantáneas, registro de jugadas (kifu) y sin coste alguno.',
+        },
       },
     },
     lobby: {
       boardSize: 'Tamaño del tablero',
       boardSizeHint: '9×9 ≈ 10 min · 13×13 ≈ 20 min · 19×19 ≈ 40+ min',
       startWithBots: 'Empezar con bots',
+      aiDifficulty: 'Dificultad IA',
     },
     status: {
       yourTurn: 'Tu turno',
@@ -128,6 +159,25 @@ export const esMessages = {
     },
     game: {
       pass: 'Pasar',
+      territory: 'Territorio',
+      resign: 'Rendirse',
+    },
+    kifu: {
+      title: 'Historial de jugadas',
+      moves: 'jugadas',
+      ariaLabel: 'Historial de jugadas',
+      empty: 'Sin jugadas aún',
+      first: 'Primera jugada',
+      prev: 'Jugada anterior',
+      next: 'Siguiente jugada',
+      last: 'Última jugada',
+    },
+    resign: {
+      title: 'Rendirse',
+      message:
+        '¿Estás seguro de que quieres rendirte? Esto contará como una derrota.',
+      confirm: 'Rendirse',
+      cancel: 'Seguir jugando',
     },
     board: {
       ariaLabel: 'Tablero de Go ({{size}}×{{size}})',
@@ -175,6 +225,9 @@ export const esMessages = {
       scoringTitle: 'Puntuación',
       scoring:
         'Puntuación por área china: piedras + territorio rodeado; las blancas empiezan con 7.5 de komi.',
+      territoryWarningTitle: 'Advertencia de Territorio',
+      territoryWarning:
+        '¡Rellenar tu propio territorio es peligroso! Un grupo sin libertades es capturado. Si te rodeas sin puntos vacíos, tu oponente podrá capturar todas tus piedras con un solo movimiento.',
     },
   },
 };

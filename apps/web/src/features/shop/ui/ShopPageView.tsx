@@ -6,7 +6,7 @@ import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useShopPreviewStore } from '../store/shopPreviewStore';
 import { ShopTopBar, type ShopTopBarLabels } from './ShopTopBar';
 import { ShopHero, type ShopHeroLabels } from './ShopHero';

@@ -106,6 +106,36 @@ export const esMessages = {
           answer:
             'Cada baza extra por encima de la apuesta del equipo cuenta como bolsa. Cada vez que un equipo acumula 10 bolsas, se le descuentan 100 puntos — por eso apuntar bien importa.',
         },
+        blindNil: {
+          question: '¿Qué es una apuesta Ciega a Cero (Blind Nil)?',
+          answer:
+            'Un Blind Nil se declara antes de ver tus cartas. Si tiene éxito otorga 200 puntos, pero si falla resta 200.',
+        },
+        partnerStrategy: {
+          question: '¿Cómo deben cooperar los compañeros en Picas?',
+          answer:
+            'Evita superar bazas que tu compañero ya tiene ganadas y juega cartas bajas para proteger su apuesta a cero.',
+        },
+        reneg: {
+          question: '¿Qué pasa si un jugador no sigue el palo?',
+          answer:
+            'Los jugadores están obligados a seguir el palo jugado si tienen cartas de él. No hacerlo constituye un renuncio ilegal.',
+        },
+        friends: {
+          question: '¿Cómo juego a Picas con amigos?',
+          answer:
+            'Crea una sala, elige modo por parejas o individual y comparte el enlace. Tus amigos juegan al instante en el navegador.',
+        },
+        bots: {
+          question: '¿Puedo jugar a Picas contra la IA?',
+          answer:
+            'Sí. Los bots inteligentes evalúan probabilidades de bazas y protegen a sus compañeros de equipo.',
+        },
+        free: {
+          question: '¿Es gratis jugar a Picas en Arcadeum?',
+          answer:
+            'Sí. Picas en Arcadeum es 100% gratis con juego fluido, mesas temáticas y sin descargas.',
+        },
       },
     },
     lobby: {

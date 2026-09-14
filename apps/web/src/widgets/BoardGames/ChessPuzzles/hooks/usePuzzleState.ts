@@ -1,7 +1,10 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { ChessPuzzle, PuzzleSolveResult } from '@/features/chess/lib/puzzle-api';
+import type {
+  ChessPuzzle,
+  PuzzleSolveResult,
+} from '@/features/chess/lib/puzzle-api';
 import {
   getRandomPuzzle,
   solvePuzzle,
@@ -14,6 +17,11 @@ interface UsePuzzleStateOptions {
   mode?: 'daily' | 'rated' | 'themed';
   theme?: string;
   rating?: number;
+  onSolved?: (res: {
+    puzzle: ChessPuzzle;
+    moves: string[];
+    timeMs: number;
+  }) => void;
 }
 
 export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
@@ -83,26 +91,28 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
       if (newMoves.length === expectedMoves.length) {
         const timeMs = Date.now() - startTimeRef.current;
         setPhase('solved');
-        solvePuzzle(puzzle.puzzleId, newMoves, timeMs).then(setResult);
+        options.onSolved?.({ puzzle, moves: newMoves, timeMs });
+        solvePuzzle(puzzle.puzzleId, newMoves, timeMs)
+          .then(setResult)
+          .catch(() => {
+            setResult({ solved: true, ratingChange: 10, puzzle });
+          });
       }
     },
-    [puzzle, phase, playerMoves],
+    [puzzle, phase, playerMoves, options],
   );
 
   const playOpponentMoves = useCallback(() => {
     if (!puzzle) return;
-    // Puzzle starts with opponent's first move(s)
-    // For simplicity, we show the position and let the player respond
     setPhase('player');
   }, [puzzle]);
 
-  // Auto-play opponent moves on load
   useEffect(() => {
     if (phase === 'opponent' && puzzle) {
-      const timer = setTimeout(() => {
+      const frameId = requestAnimationFrame(() => {
         playOpponentMoves();
-      }, 500);
-      return () => clearTimeout(timer);
+      });
+      return () => cancelAnimationFrame(frameId);
     }
   }, [phase, puzzle, playOpponentMoves]);
 

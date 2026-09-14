@@ -137,7 +137,7 @@ export function GamePickerCard({
               🤖 AI Bot
             </span>
           )}
-          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30 font-semibold">
+          <span className="box-border inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--primary)]/15 text-[var(--color)] border border-[var(--primary)]/30 font-semibold">
             ⚡ Quick Play
           </span>
         </div>

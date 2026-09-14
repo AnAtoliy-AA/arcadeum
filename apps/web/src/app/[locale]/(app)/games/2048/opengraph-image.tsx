@@ -1,169 +1,117 @@
-import { ImageResponse } from 'next/og';
+import {
+  OG_CONTENT_TYPE,
+  OG_SIZE,
+  renderGameOgCard,
+} from '@/shared/seo/ogImageTemplate';
+import { getTranslations } from '@/shared/i18n/server';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
-export const alt = '2048 — free online tile-merging puzzle on Arcadeum';
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+export const alt = '2048 — free online sliding tile puzzle on Arcadeum Games';
 
-interface Tile {
-  value: number;
-  background: string;
-  color: string;
+type Props = { params: Promise<{ locale: string }> };
+
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
 }
 
-/** Classic 2048 tile palette. */
-const TILES: Tile[] = [
-  { value: 2, background: '#eee4da', color: '#776e65' },
-  { value: 4, background: '#ede0c8', color: '#776e65' },
-  { value: 8, background: '#f2b179', color: '#f9f6f2' },
-  { value: 16, background: '#f59563', color: '#f9f6f2' },
-];
+function Grid2048Visual() {
+  const tiles = [
+    { v: 1024, bg: '#edc53f', c: '#ffffff' },
+    { v: 512, bg: '#edc850', c: '#ffffff' },
+    { v: 256, bg: '#edcc61', c: '#ffffff' },
+    { v: 128, bg: '#edcf72', c: '#ffffff' },
+    { v: 64, bg: '#f65e3b', c: '#ffffff' },
+    { v: 2048, bg: '#ecc400', c: '#ffffff', glow: true },
+    { v: 32, bg: '#f67c5f', c: '#ffffff' },
+    { v: 16, bg: '#f59563', c: '#ffffff' },
+    { v: 8, bg: '#f2b179', c: '#ffffff' },
+    { v: 4, bg: '#ede0c8', c: '#776e65' },
+    { v: 2, bg: '#eee4da', c: '#776e65' },
+    { v: '', bg: 'rgba(238, 228, 218, 0.2)', c: '' },
+    { v: '', bg: 'rgba(238, 228, 218, 0.2)', c: '' },
+    { v: 4, bg: '#ede0c8', c: '#776e65' },
+    { v: 2, bg: '#eee4da', c: '#776e65' },
+    { v: 2, bg: '#eee4da', c: '#776e65' },
+  ];
 
-const ACCENT = '#fbbf24';
-
-export default function OpengraphImage() {
-  return new ImageResponse(
+  return (
     <div
       style={{
-        width: 1200,
-        height: 630,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 80px',
-        background:
-          'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        color: 'white',
-        fontFamily: 'system-ui, sans-serif',
-        position: 'relative',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        padding: 20,
       }}
     >
-      {/* Background glow */}
       <div
         style={{
-          position: 'absolute',
-          right: -60,
-          top: -60,
-          width: 380,
-          height: 380,
-          borderRadius: 190,
-          background:
-            'radial-gradient(circle, rgba(251, 191, 36, 0.16) 0%, transparent 60%)',
-        }}
-      />
-
-      <div
-        style={{
+          width: 320,
+          height: 320,
+          borderRadius: 16,
+          background: '#bbada0',
+          padding: 11,
           display: 'flex',
-          flexDirection: 'column',
-          gap: 32,
-          maxWidth: 560,
-          position: 'relative',
-          zIndex: 1,
+          flexWrap: 'wrap',
+          gap: 8,
+          boxShadow: '0 16px 40px rgba(0,0,0,0.6)',
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
-          ARCADEUM
-        </div>
-        <div
-          style={{
-            fontSize: 96,
-            fontWeight: 900,
-            lineHeight: 1,
-            display: 'flex',
-            color: ACCENT,
-          }}
-        >
-          2048
-        </div>
-        <div
-          style={{
-            fontSize: 30,
-            opacity: 0.9,
-            lineHeight: 1.3,
-            display: 'flex',
-          }}
-        >
-          Slide &amp; merge equal tiles — how far can you go?
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            fontSize: 18,
-            flexWrap: 'wrap',
-            opacity: 0.95,
-          }}
-        >
-          <span
+        {tiles.map((t, idx) => (
+          <div
+            key={idx}
             style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
+              width: 68.5,
+              height: 68.5,
+              borderRadius: 8,
+              background: t.bg,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: t.v === 2048 ? 22 : 20,
+              fontWeight: 900,
+              color: t.c,
+              boxShadow: t.glow ? '0 0 20px rgba(236, 196, 0, 0.8)' : 'none',
             }}
           >
-            Single-player
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            No signup
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Free forever
-          </span>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 14,
-          padding: 24,
-          background: 'rgba(255, 255, 255, 0.06)',
-          borderRadius: 24,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        {[TILES.slice(0, 2), TILES.slice(2, 4)].map((row, ri) => (
-          <div key={ri} style={{ display: 'flex', gap: 14 }}>
-            {row.map((tile) => (
-              <div
-                key={tile.value}
-                style={{
-                  width: 150,
-                  height: 150,
-                  borderRadius: 20,
-                  background: tile.background,
-                  color: tile.color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: tile.value > 9 ? 64 : 76,
-                  fontWeight: 900,
-                  boxShadow: '0 10px 26px rgba(0,0,0,0.35)',
-                }}
-              >
-                {tile.value}
-              </div>
-            ))}
+            {t.v}
           </div>
         ))}
       </div>
-    </div>,
-    { ...size },
+    </div>
   );
+}
+
+export default async function Game2048OpengraphImage({ params }: Props) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
+  const game = messages.games?.game_2048_v1;
+  const gameName = game?.name ?? '2048';
+
+  return renderGameOgCard({
+    kicker: 'Sliding Tile Puzzle · 1 Player',
+    title: gameName,
+    subtitle:
+      game?.description ??
+      'Slide number tiles, combine matching pairs, and aim for the elusive 2048 tile and beyond.',
+    accent: '#f59e0b',
+    gradient: ['#2e1f05', '#120c02'],
+    badges: [
+      'Classic 4×4',
+      'Undo Support',
+      'Endless Mode',
+      'High Score Save',
+      '100% Free',
+    ],
+    stats: [
+      { label: 'Category', value: 'Number Puzzle' },
+      { label: 'Goal', value: '2048 Tile' },
+      { label: 'Grid', value: '4×4 Matrix' },
+    ],
+    visual: <Grid2048Visual />,
+  });
 }

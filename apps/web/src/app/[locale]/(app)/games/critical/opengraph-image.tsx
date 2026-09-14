@@ -8,7 +8,8 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
-export const alt = 'Critical — free exploding card game online on Arcadeum';
+export const alt =
+  'Critical — free exploding card game online on Arcadeum Games';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -27,6 +28,7 @@ function CriticalVisual() {
   return (
     <div
       style={{
+        display: 'flex',
         position: 'relative',
         width: 380,
         height: 380,

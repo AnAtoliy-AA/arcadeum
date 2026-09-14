@@ -89,6 +89,10 @@ export const en = {
     title: `Minesweeper · Free Online Classic Puzzle Game · ${APP}`,
     description: `Play Minesweeper online on ${APP} — beginner to expert grids with flags, chording, timer, and saved progress. Free, instant, no download.`,
   },
+  minesweeperPlay: {
+    title: `Play Minesweeper · ${APP}`,
+    description: `Play Minesweeper on ${APP} — reveal safe tiles, flag mines, and clear the board. Beginner to expert difficulty, free instant play.`,
+  },
   sudokuLanding: {
     title: `Sudoku · Free Online Number Puzzle Game · ${APP}`,
     description: `Play Sudoku online on ${APP} — easy, medium and hard puzzles with unique solutions, pencil marks, and saved progress. Free, instant, no download.`,
@@ -177,6 +181,14 @@ export const en = {
     title: `Sign in · ${APP}`,
     description: `Sign in to ${APP} or create an account to join games, track progress, and chat with friends.`,
   },
+  authForgot: {
+    title: `Forgot Password · ${APP}`,
+    description: `Reset your ${APP} password. Enter your email to receive a secure reset link.`,
+  },
+  authReset: {
+    title: `Reset Password · ${APP}`,
+    description: `Set a new password for your ${APP} account.`,
+  },
   support: {
     title: `Support · ${APP}`,
     description: `Need help with ${APP}? Find FAQs, contact our team, or chip in to keep the lights on.`,
@@ -224,6 +236,10 @@ export const en = {
   playerProfile: {
     title: `Player profile · ${APP}`,
     description: `View this player's ${APP} rank, stats, and recent matches.`,
+  },
+  dailyChessPuzzle: {
+    title: `Daily Chess Puzzle · Free Online Daily Challenge · ${APP}`,
+    description: `Solve today's free daily chess puzzle on ${APP}. A new tactical puzzle every 24 hours with daily streak tracking, rating progress, and instant browser play.`,
   },
   notFound: {
     title: `Page not found · ${APP}`,

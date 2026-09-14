@@ -5,7 +5,8 @@ import {
   AttackPackCard,
 } from './critical.state';
 import { GameActionResult, GameLogEntry } from '../../base/game-engine.interface';
-import { CriticalLogic, LogEntryOptions } from './critical-logic.utils';
+import { CriticalLogic } from './critical-logic.utils';
+import { LogEntryOptions } from './critical-shared.types';
 
 /**
  * Attack Pack Cards Utility

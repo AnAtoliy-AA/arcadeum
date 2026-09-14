@@ -10,7 +10,9 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { JwtOptionalAuthGuard } from '../auth/jwt/jwt-optional.guard';
@@ -68,6 +70,13 @@ export class GamesHistoryController {
     }
 
     return this.gamesService.getHistoryEntry(user.userId, roomId);
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get('rooms/:roomId/result')
+  async getRoomResult(@Param('roomId') roomId: string) {
+    return this.gamesService.getRoomResult(roomId);
   }
 
   @UseGuards(JwtOptionalAuthGuard)

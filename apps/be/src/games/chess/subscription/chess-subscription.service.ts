@@ -23,8 +23,8 @@ export interface SubscriptionLimits {
 
 const TIER_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
   free: {
-    dailyGameReviews: 1,
-    dailyPuzzles: 5,
+    dailyGameReviews: -1,
+    dailyPuzzles: -1,
     allBots: false,
     allThemes: false,
     videoLessons: false,

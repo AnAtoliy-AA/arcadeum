@@ -1,6 +1,6 @@
 {
   "name": "be",
-  "version": "1.28.54",
+  "version": "1.29.48",
   "description": "",
   "author": "",
   "private": true,
@@ -42,7 +42,6 @@
     "@types/cookie-parser": "^1.4.10",
     "axios": "^1.20.0",
     "bcrypt": "^5.1.1",
-    "bcryptjs": "^3.0.3",
     "bullmq": "^6.3.4",
     "cache-manager": "^7.2.9",
     "cache-manager-ioredis-yet": "^2.1.2",
@@ -76,7 +75,6 @@
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.16.1",
     "@types/bcrypt": "^5.0.2",
-    "@types/bcryptjs": "^3.0.0",
     "@types/express": "^5.0.6",
     "@types/helmet": "^4.0.0",
     "@types/ioredis": "^5.0.0",

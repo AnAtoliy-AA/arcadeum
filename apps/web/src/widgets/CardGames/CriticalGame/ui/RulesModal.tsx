@@ -16,7 +16,7 @@ import { CardImage } from './styles/card-image';
 import { CARD_GROUPS } from '../lib/constants';
 import { CriticalCard } from '../types';
 import type { GameVariant } from '@arcadeum/ui';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 import { CloseIcon } from '@arcadeum/ui/components/Icons/index';
 
 interface RulesModalProps {
@@ -96,7 +96,7 @@ export function RulesModal({
   };
 
   const snakeToCamel = (str: string) =>
-    str.replace(/([-_][a-z])/g, (_group) =>
+    str.replace(/([-_][a-z0-9])/g, (_group) =>
       _group.toUpperCase().replace('-', '').replace('_', ''),
     );
 

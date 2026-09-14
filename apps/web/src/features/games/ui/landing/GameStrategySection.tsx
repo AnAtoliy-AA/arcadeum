@@ -12,7 +12,7 @@ export function GameStrategySection({
     <section className="box-border flex flex-col gap-6 py-8">
       <div className="box-border flex flex-col gap-1">
         {kicker ? (
-          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
             {kicker}
           </span>
         ) : null}
@@ -20,7 +20,7 @@ export function GameStrategySection({
           {title}
         </h2>
         {intro ? (
-          <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-80 max-w-2xl">
+          <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 max-w-2xl">
             {intro}
           </p>
         ) : null}
@@ -33,14 +33,14 @@ export function GameStrategySection({
             className="box-border flex flex-col gap-2.5 p-5 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md transition-all duration-200 hover:border-[var(--primary)]/50 hover:shadow-sm"
           >
             <div className="box-border flex items-center justify-between">
-              <span className="box-border text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--primary)]/10 text-[var(--primary)]">
+              <span className="box-border text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[var(--primary)]/10 text-[var(--color)]">
                 Tip #{index + 1}
               </span>
             </div>
             <h3 className="box-border m-0 text-base sm:text-lg font-bold text-[var(--foreground)]">
               {tip.title}
             </h3>
-            <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-80 leading-relaxed">
+            <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-90 leading-relaxed">
               {tip.body}
             </p>
           </article>

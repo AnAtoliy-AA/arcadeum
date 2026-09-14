@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { RoadmapData } from '../roadmap-parser';
 
 export function RoadmapHero({ stats }: { stats: RoadmapData['stats'] }) {
@@ -48,14 +48,14 @@ export function RoadmapHero({ stats }: { stats: RoadmapData['stats'] }) {
         <Typography
           variant="body"
           uiSize="md"
-          alpha="medium"
+          alpha="high"
           className="max-w-2xl leading-relaxed"
         >
           {t('pages.roadmap.subtitle')}
         </Typography>
 
         <div className="self-start px-3 py-1 rounded-full bg-[var(--bgCard)]/80 border border-[var(--glassBorder)]">
-          <Typography variant="caption" uiSize="xs" alpha="medium">
+          <Typography variant="caption" uiSize="xs" alpha="high">
             {t('pages.roadmap.canonicalNotice')}
           </Typography>
         </div>
@@ -73,7 +73,7 @@ export function RoadmapHero({ stats }: { stats: RoadmapData['stats'] }) {
           <Typography
             variant="label"
             uiSize="sm"
-            className="font-extrabold text-[var(--primary)]"
+            className="font-extrabold text-[var(--color)]"
           >
             {completionPercent}%
           </Typography>
@@ -97,7 +97,7 @@ export function RoadmapHero({ stats }: { stats: RoadmapData['stats'] }) {
             : isInProgress
               ? 'text-[var(--warning)]'
               : isFeatures
-                ? 'text-[var(--primary)]'
+                ? 'text-[var(--color)]'
                 : 'text-[var(--foregroundSecondary)]';
 
           const bgStyle = isImplemented
@@ -129,7 +129,7 @@ export function RoadmapHero({ stats }: { stats: RoadmapData['stats'] }) {
                 <Typography
                   variant="caption"
                   uiSize="xs"
-                  alpha="medium"
+                  alpha="high"
                   className="truncate"
                 >
                   {stat.label}

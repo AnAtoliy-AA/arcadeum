@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export function RoadmapLegalBanner() {
   const { t } = useTranslation();
@@ -22,7 +22,7 @@ export function RoadmapLegalBanner() {
         <Typography
           variant="body"
           uiSize="sm"
-          alpha="medium"
+          alpha="high"
           className="leading-relaxed"
         >
           {t('pages.roadmap.legal.description')}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Button, IconButton } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useScrollReveal } from '@/shared/lib/useScrollReveal';
 import { featuredGames } from '../data/games';
 import { HomeGameCard } from './HomeGameCard';

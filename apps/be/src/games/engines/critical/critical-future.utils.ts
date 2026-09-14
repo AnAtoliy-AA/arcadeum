@@ -12,4 +12,4 @@ export {
 export type {
   LogEntryOptions,
   EngineHelpers,
-} from '@arcadeum/games-core/games/critical/critical-future.utils';
+} from '@arcadeum/games-core/games/critical/critical-shared.types';

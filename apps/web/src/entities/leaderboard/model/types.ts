@@ -115,6 +115,10 @@ export type PlayerProfile = {
   squad?: Squad;
   /** Total XP earned across all seasons. */
   xp: number;
+  /** Level derived from total XP. */
+  level: number;
+  /** Number of times the player has prestiged. */
+  prestige: number;
   /** Equipped cosmetic ids from the shop; resolved via the catalog map. */
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;

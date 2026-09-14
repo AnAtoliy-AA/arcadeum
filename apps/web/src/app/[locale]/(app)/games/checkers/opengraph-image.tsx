@@ -1,29 +1,38 @@
-import { ImageResponse } from 'next/og';
+import {
+  OG_CONTENT_TYPE,
+  OG_SIZE,
+  renderGameOgCard,
+} from '@/shared/seo/ogImageTemplate';
+import { getTranslations } from '@/shared/i18n/server';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
-export const alt = 'Checkers — free multiplayer board game';
+export const size = OG_SIZE;
+export const contentType = OG_CONTENT_TYPE;
+export const alt = 'Checkers — free multiplayer board game on Arcadeum Games';
 
-const CELL = 52;
-const GAP = 3;
+type Props = { params: Promise<{ locale: string }> };
 
-function drawBoard() {
+function resolveLocale(raw: string): Locale {
+  return isLocale(raw) ? raw : DEFAULT_LOCALE;
+}
+
+const CELL = 42;
+
+function CheckersVisual() {
   const cells: React.ReactElement[] = [];
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       const isLight = (r + c) % 2 === 0;
       const hasPiece = (r < 3 && !isLight) || (r >= 5 && !isLight);
       const isLightPiece = r >= 5 && !isLight;
+      const isCrowned = (r === 2 && c === 1) || (r === 5 && c === 4);
       cells.push(
         <div
           key={`${r}-${c}`}
           style={{
             width: CELL,
             height: CELL,
-            borderRadius: 6,
-            background: isLight
-              ? 'rgba(245, 245, 244, 0.12)'
-              : 'rgba(87, 83, 78, 0.25)',
+            background: isLight ? '#f5f5f4' : '#3f3f46',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -32,143 +41,87 @@ function drawBoard() {
           {hasPiece ? (
             <div
               style={{
-                width: CELL * 0.65,
-                height: CELL * 0.65,
+                width: CELL * 0.72,
+                height: CELL * 0.72,
                 borderRadius: '50%',
                 background: isLightPiece
-                  ? 'rgba(250, 250, 249, 0.9)'
-                  : 'rgba(41, 37, 36, 0.9)',
-                border: `2px solid ${isLightPiece ? 'rgba(168,162,158,0.4)' : 'rgba(28,25,23,0.4)'}`,
-                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                  ? 'radial-gradient(circle, #ffffff 40%, #e4e4e7 100%)'
+                  : 'radial-gradient(circle, #ef4444 40%, #b91c1c 100%)',
+                border: `2px solid ${isLightPiece ? '#a1a1aa' : '#7f1d1d'}`,
+                boxShadow: '0 4px 8px rgba(0,0,0,0.5)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 18,
+                color: isLightPiece ? '#b91c1c' : '#ffffff',
+                fontWeight: 900,
               }}
-            />
+            >
+              {isCrowned ? '♔' : ''}
+            </div>
           ) : null}
         </div>,
       );
     }
   }
-  return cells;
-}
 
-export default function OpengraphImage() {
-  return new ImageResponse(
+  return (
     <div
       style={{
-        width: 1200,
-        height: 630,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 80px',
-        background:
-          'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)',
-        color: 'white',
-        fontFamily: 'system-ui, sans-serif',
-        position: 'relative',
+        justifyContent: 'center',
+        width: '100%',
+        height: '100%',
+        padding: 16,
       }}
     >
       <div
         style={{
-          position: 'absolute',
-          right: -60,
-          top: -60,
-          width: 360,
-          height: 360,
-          borderRadius: 180,
-          background:
-            'radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, transparent 60%)',
-        }}
-      />
-
-      <div
-        style={{
           display: 'flex',
-          flexDirection: 'column',
-          gap: 32,
-          maxWidth: 560,
-          position: 'relative',
-          zIndex: 1,
+          flexWrap: 'wrap',
+          width: CELL * 8,
+          height: CELL * 8,
+          border: '3px solid rgba(239, 68, 68, 0.4)',
+          borderRadius: 14,
+          overflow: 'hidden',
+          boxShadow: '0 16px 40px rgba(0,0,0,0.7)',
         }}
       >
-        <div style={{ fontSize: 22, opacity: 0.7, letterSpacing: '2px' }}>
-          ARCADEUM
-        </div>
-        <div
-          style={{
-            fontSize: 84,
-            fontWeight: 900,
-            lineHeight: 1,
-            display: 'flex',
-          }}
-        >
-          Checkers
-        </div>
-        <div
-          style={{
-            fontSize: 30,
-            opacity: 0.9,
-            lineHeight: 1.3,
-            display: 'flex',
-          }}
-        >
-          Classic 8×8 · forced captures · king promotion
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            fontSize: 18,
-            flexWrap: 'wrap',
-            opacity: 0.95,
-          }}
-        >
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            2 players
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Bots day one
-          </span>
-          <span
-            style={{
-              padding: '8px 16px',
-              borderRadius: 999,
-              background: 'rgba(255,255,255,0.12)',
-            }}
-          >
-            Five themes
-          </span>
-        </div>
+        {cells}
       </div>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(8, ${CELL}px)`,
-          gap: GAP,
-          padding: 20,
-          background: 'rgba(255, 255, 255, 0.06)',
-          borderRadius: 24,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        {drawBoard()}
-      </div>
-    </div>,
-    { ...size },
+    </div>
   );
+}
+
+export default async function CheckersOpengraphImage({ params }: Props) {
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
+  const landing = messages.games?.checkers_v1?.landing;
+  const gameName = messages.games?.checkers_v1?.name ?? 'Checkers';
+
+  return renderGameOgCard({
+    kicker: 'Classic Draughts · 2 Players',
+    title: gameName,
+    subtitle:
+      landing?.hero?.subtitle ??
+      'Classic 8x8 draughts with forced captures, king promotion, and AI bot opponents.',
+    accent: '#ef4444',
+    gradient: ['#210909', '#0f0404'],
+    badges: [
+      'Forced Captures',
+      'King Promotion',
+      'AI Bots',
+      'Multiple Themes',
+      '100% Free',
+    ],
+    stats: [
+      { label: 'Grid', value: '8×8 Board' },
+      { label: 'Rules', value: 'American Draughts' },
+      { label: 'Opponents', value: 'PvP & AI Bots' },
+    ],
+    visual: <CheckersVisual />,
+  });
 }

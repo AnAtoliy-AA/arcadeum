@@ -5,7 +5,7 @@ import { CloseIcon, Button } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import {
   Modal,
   ModalContent,
@@ -97,7 +97,7 @@ export const GameRulesModal = memo(function GameRulesModal({
               key={rule.title}
               className="group relative flex gap-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3.5 transition-all hover:border-[var(--glassBorderStrong)] hover:bg-[var(--glassBgHover)]"
             >
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--primary)]/30 bg-[var(--primary)]/15 text-xs font-bold text-[var(--primary)]">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[var(--primary)]/30 bg-[var(--primary)]/15 text-xs font-bold text-[var(--color)]">
                 {rule.badge || idx + 1}
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-1">

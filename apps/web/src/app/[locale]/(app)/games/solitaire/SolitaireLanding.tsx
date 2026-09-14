@@ -16,7 +16,6 @@ interface Props {
 
 const FEATURE_ICONS = ['🃏', '💾', '📊'] as const;
 const FEATURE_KEYS = ['solo', 'progress', 'stats'] as const;
-const FAQ_KEYS = ['q1', 'q2', 'q3'] as const;
 const STEP_KEYS = ['create', 'join', 'play'] as const;
 
 export default function SolitaireLanding({
@@ -47,7 +46,10 @@ export default function SolitaireLanding({
             ['scoring', rules.scoring],
           ] as const
         ).map(([label, body]) => ({ label, body })),
-        faq: FAQ_KEYS.map((key) => landing.faq[key]),
+        faq: Object.values(landing.faq) as Array<{
+          question: string;
+          answer: string;
+        }>,
       }}
       gamesHref={gamesHref}
       homeHref={homeHref}

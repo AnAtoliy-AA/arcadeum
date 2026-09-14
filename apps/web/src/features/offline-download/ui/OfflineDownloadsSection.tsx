@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Section } from '@arcadeum/ui/components/Section/Section';
 import { Spinner } from '@arcadeum/ui/components/Spinner/Spinner';
 import { Button } from '@arcadeum/ui/components/Button/Button';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatMessage } from '@/shared/i18n';
 import { appConfig } from '@/shared/config/app-config';
 import { useOfflineDownloads } from '../hooks/useOfflineDownloads';

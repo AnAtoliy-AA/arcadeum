@@ -1,5 +1,5 @@
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
 import { CardSlot } from '../styles';
@@ -80,7 +80,7 @@ export function DrawPile({
       <Typography
         uiSize="xs"
         weight="600"
-        alpha="medium"
+        alpha="high"
         className="uppercase tracking-[0.4px]"
         data-testid="arena-draw-pile-hint"
       >

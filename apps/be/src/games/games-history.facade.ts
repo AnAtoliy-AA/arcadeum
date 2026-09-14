@@ -40,6 +40,10 @@ export class GamesHistoryFacade {
     return this.historyService.getHistoryEntry(roomId, userId);
   }
 
+  async getRoomResult(roomId: string) {
+    return this.historyService.getRoomResult(roomId);
+  }
+
   async hideHistoryEntry(userId: string, roomId: string) {
     return this.historyService.hideHistoryEntry(userId, roomId);
   }

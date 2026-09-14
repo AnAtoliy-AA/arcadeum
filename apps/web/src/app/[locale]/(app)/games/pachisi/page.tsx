@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import PachisiLanding from './PachisiLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const PACHISI_SLUG = 'pachisi_v1';
 const PACHISI_MIN_PLAYERS = 2;
@@ -63,23 +67,55 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.pachisi_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: PACHISI_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: PACHISI_MIN_PLAYERS,
-      maxPlayers: PACHISI_MAX_PLAYERS,
-      genre: PACHISI_GENRE,
-      alternateName: ['Ludo', 'Parcheesi', 'Pachisi Online'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: PACHISI_SLUG,
+    slug: 'pachisi',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: PACHISI_MIN_PLAYERS,
+    maxPlayers: PACHISI_MAX_PLAYERS,
+    genre: PACHISI_GENRE,
+    alternateName: ['Ludo', 'Parcheesi', 'Pachisi Online'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Pachisi on ${appConfig.appName}`,
+          description:
+            'Play Pachisi online with 2 to 4 players — free, no download.',
+          steps: [
+            {
+              name: landing.steps?.create?.title ?? 'Create a room',
+              text:
+                landing.steps?.create?.body ??
+                'Create a room and choose a board theme.',
+            },
+            {
+              name: landing.steps?.join?.title ?? 'Invite',
+              text:
+                landing.steps?.join?.body ??
+                'Invite friends with the room link.',
+            },
+            {
+              name: landing.steps?.play?.title ?? 'Play',
+              text:
+                landing.steps?.play?.body ??
+                'Race your pieces home while capturing opponents.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(PACHISI_SLUG);
 

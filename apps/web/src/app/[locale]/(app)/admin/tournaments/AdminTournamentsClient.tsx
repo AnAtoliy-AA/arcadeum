@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Container, PageLayout, PageTitle, Button } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import {
   useAdminTournaments,
   useCreateTournament,
@@ -379,6 +379,7 @@ export default function AdminTournamentsClient() {
                     onChange={(e) => setResultText(e.target.value)}
                     rows={3}
                     maxLength={1000}
+                    aria-label={t.transitionPrompt.resultLabel}
                     className="py-1.5 px-2.5 rounded-md border border-[var(--borderColor,#555)] bg-transparent text-inherit w-full font-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
                   />
                 </div>

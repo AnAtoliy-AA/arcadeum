@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { gamesApi } from '@/features/games/api';
 import {
   loadStoredSettings,
   saveStoredSettings,
 } from '@/shared/lib/settings-storage';
+import { gameSocket } from '@/shared/lib/socket';
 import {
   LobbyContent,
   CenterSection,
@@ -42,6 +43,7 @@ import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
 import { HouseRulesSection } from './HouseRulesSection';
+import { useMatchmaking } from './MatchmakingQueue';
 
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import { useRankingStore } from '@/features/ranking/store/rankingStore';
@@ -111,6 +113,7 @@ export function ReusableGameLobby({
   } = labels;
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const { isQueued, joinQueue, leaveQueue } = useMatchmaking();
   const myRating = useRankingStore((s) => s.ratings[room.gameId]);
   const loadMyRankings = useRankingStore((s) => s.loadMyRankings);
 
@@ -150,14 +153,12 @@ export function ReusableGameLobby({
     return settings.aiDifficulty ?? 'medium';
   });
   const cooldownRef = React.useRef(0);
-
   useEffect(() => {
     saveStoredSettings({ aiDifficulty: difficulty });
     if (enableBots && isHost && room.status === 'lobby') {
       setOption({ aiDifficulty: difficulty });
     }
   }, [difficulty, enableBots, isHost, room.status, setOption]);
-
   const handleStart = React.useCallback(() => {
     const now = Date.now();
     if (now - cooldownRef.current < 1000) return;
@@ -168,6 +169,23 @@ export function ReusableGameLobby({
       onStartGame();
     }
   }, [enableBots, room.playerCount, botCount, difficulty, onStartGame]);
+
+  const handleAddBot = React.useCallback(() => {
+    gameSocket.emit('games.room.add_bot', {
+      roomId: room.id,
+      userId,
+    });
+  }, [room.id, userId]);
+  const handleRemoveBot = React.useCallback(
+    (botId: string) => {
+      gameSocket.emit('games.room.remove_bot', {
+        roomId: room.id,
+        userId,
+        botId,
+      });
+    },
+    [room.id, userId],
+  );
 
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
 
@@ -294,6 +312,39 @@ export function ReusableGameLobby({
                 <ProgressFill width={`${progress}%`} />
               </ProgressBar>
             </ProgressWrapper>
+
+            {room.status === 'lobby' && room.playerCount < maxPlayers && (
+              <div className="flex flex-col items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (isQueued) {
+                      leaveQueue();
+                    } else {
+                      const variant =
+                        (room.gameOptions?.variant as string) || undefined;
+                      joinQueue(room.gameId, variant);
+                    }
+                  }}
+                  className={`w-full max-w-[300px] rounded-xl px-5 py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
+                    isQueued
+                      ? 'border border-[var(--borderColor)] bg-transparent text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'
+                      : 'bg-[var(--primary)] text-[var(--primaryText)] hover:opacity-90'
+                  }`}
+                >
+                  {isQueued
+                    ? t('games.matchmaking.cancel')
+                    : t('games.matchmaking.findOpponent')}
+                </button>
+                <span className="text-[11px] text-[var(--textSecondary)]">
+                  {isQueued
+                    ? t('games.matchmaking.searchingSubtitle', {
+                        game: gameName,
+                      })
+                    : t('games.matchmaking.findOpponentHint')}
+                </span>
+              </div>
+            )}
           </CenterSection>
 
           {/* Settings: host controls, theme picker, house rules — single instance */}
@@ -406,6 +457,13 @@ export function ReusableGameLobby({
           extraPlayersCardSlot={extraPlayersCardSlot}
           onRefresh={onRefresh}
           labels={labels}
+          enableBots={enableBots}
+          onAddBot={
+            isHost && room.status === 'lobby' ? handleAddBot : undefined
+          }
+          onRemoveBot={
+            isHost && room.status === 'lobby' ? handleRemoveBot : undefined
+          }
         />
       </LobbyContent>
 

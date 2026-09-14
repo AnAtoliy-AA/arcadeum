@@ -228,7 +228,7 @@ function ChessPlayerHudImpl({
             {clockString}
           </span>
           {incrementSeconds > 0 && (
-            <span className="text-[8px] text-[var(--textSecondary)] opacity-60 font-medium leading-none mt-0.5">
+            <span className="text-[8px] text-[var(--textSecondary)] opacity-85 font-medium leading-none mt-0.5">
               +{incrementSeconds}s
             </span>
           )}

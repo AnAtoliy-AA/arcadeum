@@ -11,12 +11,15 @@ interface MoveTimelineProps {
 }
 
 const QUALITY_CLASSES: Record<MoveQuality, string> = {
+  brilliant: 'text-[#06b6d4]',
+  great: 'text-[#16a34a]',
+  best: 'text-[#22c55e]',
+  excellent: 'text-[#22c55e]',
   good: 'text-[#22c55e]',
-  inaccuracy: 'text-[#f59e0b]',
+  book: 'text-[#9ca3af]',
+  inaccuracy: 'text-[#eab308]',
   mistake: 'text-[#f97316]',
   blunder: 'text-[#ef4444]',
-  brilliant: 'text-[#22c55e]',
-  great: 'text-[#10b981]',
 };
 
 interface MovePair {

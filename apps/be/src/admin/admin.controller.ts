@@ -13,6 +13,7 @@ import {
   AdminStatisticsService,
   type AdminStatisticsResponse,
 } from './admin-statistics.service';
+import { GamesRealtimeService } from '../games/games.realtime.service';
 
 interface DbStats {
   db: string;
@@ -92,11 +93,36 @@ export class AdminController {
   constructor(
     @InjectConnection() private readonly connection: Connection,
     private readonly statisticsService: AdminStatisticsService,
+    private readonly realtimeService: GamesRealtimeService,
   ) {}
 
   @Get('ping')
   ping(): { ok: true } {
     return { ok: true };
+  }
+
+  @Get('capacity-stats')
+  async getCapacityStats() {
+    const db = this.connection.db;
+    const onlineUsers = await this.realtimeService.getConnectedUsersCount();
+    const peaks = await this.realtimeService.getPeaks();
+
+    let activeRooms = 0;
+    if (db) {
+      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+      activeRooms = await this.connection.db
+        .collection('gamerooms')
+        .countDocuments({
+          status: { $in: ['lobby', 'in_progress'] },
+          updatedAt: { $gte: twoHoursAgo },
+        });
+    }
+
+    return {
+      currentOnlineUsers: onlineUsers,
+      currentActiveRooms: activeRooms,
+      peaks,
+    };
   }
 
   @Get('statistics')

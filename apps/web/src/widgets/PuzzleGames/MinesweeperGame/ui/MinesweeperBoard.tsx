@@ -2,8 +2,8 @@
 
 import { useCallback, useRef, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
 import { useMinesweeperTheme } from '../lib/MinesweeperThemeContext';
 import type { MinesweeperTheme } from '../lib/theme';
@@ -122,19 +122,28 @@ export function MinesweeperBoard({
         aria-label={t('games.minesweeper_v1.board.label')}
       >
         <div className={cx('grid w-max gap-1 p-0.5', gridColsClass)}>
-          {game.cells.map((cell, index) => (
-            <MineCell
-              key={`${game.difficulty}-${index}`}
-              cell={cell}
-              isBeginner={game.width <= 9}
-              isCompact={game.width > 16}
-              isFullscreen={isFullscreen}
-              lost={game.status === 'lost'}
-              onReveal={() => handleCellClick(index)}
-              onFlag={() => handleContextMenu(index)}
-              onPressStart={() => startPress(index)}
-              onPressEnd={endPress}
-            />
+          {Array.from({ length: game.height }, (_, rowIdx) => (
+            <div key={rowIdx} role="row" className="contents">
+              {game.cells
+                .slice(rowIdx * game.width, rowIdx * game.width + game.width)
+                .map((cell, colIdx) => {
+                  const index = rowIdx * game.width + colIdx;
+                  return (
+                    <MineCell
+                      key={`${game.difficulty}-${index}`}
+                      cell={cell}
+                      isBeginner={game.width <= 9}
+                      isCompact={game.width > 16}
+                      isFullscreen={isFullscreen}
+                      lost={game.status === 'lost'}
+                      onReveal={() => handleCellClick(index)}
+                      onFlag={() => handleContextMenu(index)}
+                      onPressStart={() => startPress(index)}
+                      onPressEnd={endPress}
+                    />
+                  );
+                })}
+            </div>
           ))}
         </div>
       </div>

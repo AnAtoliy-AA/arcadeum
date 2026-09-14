@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import CheckersLanding from './CheckersLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const CHECKERS_SLUG = 'checkers_v1';
 const CHECKERS_MIN_PLAYERS = 2;
@@ -64,23 +68,55 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.checkers_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: CHECKERS_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: CHECKERS_MIN_PLAYERS,
-      maxPlayers: CHECKERS_MAX_PLAYERS,
-      genre: CHECKERS_GENRE,
-      alternateName: ['Draughts', 'Checkers Online', 'American Checkers'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: CHECKERS_SLUG,
+    slug: 'checkers',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: CHECKERS_MIN_PLAYERS,
+    maxPlayers: CHECKERS_MAX_PLAYERS,
+    genre: CHECKERS_GENRE,
+    alternateName: ['Draughts', 'Checkers Online', 'American Checkers'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Checkers on ${appConfig.appName}`,
+          description:
+            'Start a checkers match in seconds — no download or signup required.',
+          steps: [
+            {
+              name: landing.steps.create.title ?? 'Create a room',
+              text:
+                landing.steps.create.body ??
+                'Choose your theme and set up a private or public room.',
+            },
+            {
+              name: landing.steps.join.title ?? 'Invite a friend',
+              text:
+                landing.steps.join.body ??
+                'Share the room link or use Quick Play to get matched.',
+            },
+            {
+              name: landing.steps.play.title ?? 'Play',
+              text:
+                landing.steps.play.body ??
+                'Capture all opponent pieces to win.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(CHECKERS_SLUG);
 

@@ -1,13 +1,11 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 test.describe('Solo Games Themes and Leaderboards', () => {
   test('2048 displays theme toggle and toggles theme drawer', async ({
     page,
   }) => {
-    await page.goto('/en/games/2048/play', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/games/2048/play');
 
     const themeBtn = page.getByTestId('solo-theme-toggle-button');
     await expect(themeBtn).toBeVisible();
@@ -26,9 +24,7 @@ test.describe('Solo Games Themes and Leaderboards', () => {
   test('Solo game displays rules modal and toggles fullscreen mode', async ({
     page,
   }) => {
-    await page.goto('/en/games/2048/play', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/games/2048/play');
 
     const rulesBtn = page.getByTestId('solo-rules-button');
     await expect(rulesBtn).toBeVisible();
@@ -51,9 +47,7 @@ test.describe('Solo Games Themes and Leaderboards', () => {
   test('Minesweeper displays solo leaderboard panel and switches tabs', async ({
     page,
   }) => {
-    await page.goto('/en/games/minesweeper/play', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/games/minesweeper/play');
 
     const toggleBtn = page.getByTestId('solo-leaderboard-toggle');
     await expect(toggleBtn).toBeVisible();
@@ -77,9 +71,7 @@ test.describe('Solo Games Themes and Leaderboards', () => {
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/en/games/2048/play', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/games/2048/play');
 
     const board = page.getByTestId('game-2048-board');
     await expect(board).toBeVisible();
@@ -103,9 +95,7 @@ test.describe('Solo Games Themes and Leaderboards', () => {
   test('Standalone solo leaderboards page displays game tabs and changes game and difficulty', async ({
     page,
   }) => {
-    await page.goto('/en/leaderboards/solo', {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, '/en/leaderboards/solo');
 
     const minesweeperTab = page.getByTestId('solo-game-tab-minesweeper_v1');
     await expect(minesweeperTab).toBeVisible();

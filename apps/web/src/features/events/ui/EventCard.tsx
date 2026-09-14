@@ -44,7 +44,7 @@ export const EventCard = ({
         );
       case 'upcoming':
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[var(--primary)]/15 text-[var(--color)] border border-[var(--primary)]/30">
             {translations.upcomingBadge ?? 'UPCOMING'}
           </span>
         );

@@ -1,4 +1,5 @@
-import { memo } from 'react';
+'use client';
+import { memo, useEffect, useRef, useState } from 'react';
 import { cx } from '../../utils/cx';
 
 export type DiceSize = 'sm' | 'md' | 'lg';
@@ -45,6 +46,9 @@ const DOT_PATTERNS: Record<number, Array<[number, number]>> = {
   ],
 };
 
+const FACE_COUNT = 6;
+const CYCLE_INTERVAL_MS = 70;
+
 const sizeClasses: Record<DiceSize, { container: string; dotRadius: number }> = {
   sm: { container: 'w-7 h-7 rounded-md', dotRadius: 8.5 },
   md: { container: 'w-9 h-9 rounded-lg', dotRadius: 9 },
@@ -59,10 +63,39 @@ export const AnimatedDice = memo(function AnimatedDice({
   isDoubles = false,
 }: AnimatedDiceProps) {
   const sizeConfig = sizeClasses[size];
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [displayValues, setDisplayValues] = useState(values);
+
+  useEffect(() => {
+    if (isRolling) {
+      intervalRef.current = setInterval(() => {
+        setDisplayValues(
+          values.map(() => Math.floor(Math.random() * FACE_COUNT) + 1),
+        );
+      }, CYCLE_INTERVAL_MS);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isRolling, values]);
+
+  const faceValues = isRolling ? displayValues : values;
 
   return (
-    <div className={cx('flex flex-row items-center justify-center gap-2.5', className)}>
-      {values.map((val, idx) => {
+    <div
+      className={cx(
+        'flex flex-row items-center justify-center gap-2.5',
+        className,
+      )}
+    >
+      {faceValues.map((val, idx) => {
         const clampedVal = Math.min(Math.max(val, 1), 6);
         const dots = DOT_PATTERNS[clampedVal] ?? DOT_PATTERNS[1];
 
@@ -75,8 +108,7 @@ export const AnimatedDice = memo(function AnimatedDice({
               isDoubles
                 ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.5)] ring-1 ring-amber-300'
                 : 'border-white/20 shadow-black/60',
-              isRolling && idx % 2 === 0 && 'animate-spin',
-              isRolling && idx % 2 !== 0 && 'animate-bounce',
+              isRolling && 'animate-[animated-dice-shake_0.12s_ease-in-out_infinite]',
               !isRolling && 'hover:scale-105 active:scale-95',
             )}
             data-testid={`dice-die-${idx}`}

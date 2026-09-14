@@ -1,3 +1,6 @@
+export const revalidate = 300;
+export const dynamic = 'force-static';
+
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { PageBreadcrumb } from '@/shared/seo/PageBreadcrumb';
 import { isLocale } from '@/shared/i18n';

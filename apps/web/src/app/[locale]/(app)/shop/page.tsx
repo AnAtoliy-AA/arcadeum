@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+
+export const revalidate = 60;
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { getTranslations } from '@/shared/i18n/server';
 import { getWalletBalance } from '@/features/wallet/server/wallet.server';
@@ -30,7 +32,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'shop' }) : {};
+  return isLocale(locale) ? buildPageMetadata({ locale, page: 'shop', noIndex: true }) : {};
 }
 
 const EMPTY_BALANCE: WalletBalanceView = { coins: 0, gems: 0, arcadeum: 0 };

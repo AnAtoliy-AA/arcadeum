@@ -79,6 +79,36 @@ export const enMessages = {
           answer:
             'The bot uses a minimax algorithm with positional evaluation. It plays at a strong intermediate level.',
         },
+        backwardCaptures: {
+          question: 'Can regular checkers capture backwards?',
+          answer:
+            'In American checkers, men capture only forward. In International (10×10) and Russian draughts, men can jump both forward and backward.',
+        },
+        flyingKings: {
+          question: 'What are flying kings in draughts?',
+          answer:
+            'Flying kings can move and capture across any number of empty squares along an open diagonal, featured in International and Russian draughts.',
+        },
+        variants: {
+          question: 'What checkers rulesets can I play?',
+          answer:
+            'Arcadeum supports American Checkers (8×8), International Draughts (10×10), and Russian Draughts (8×8 with flying kings).',
+        },
+        friends: {
+          question: 'How do I invite friends to a Checkers match?',
+          answer:
+            'Click Create Room, select your preferred ruleset, and share your room link. Friends can join on any device without an account.',
+        },
+        free: {
+          question: 'Is Checkers free to play on Arcadeum?',
+          answer:
+            'Yes, Checkers on Arcadeum is 100% free with smooth real-time multiplayer, smart bot opponents, and no software download.',
+        },
+        mobile: {
+          question: 'Can I play Checkers on mobile?',
+          answer:
+            'Yes. The board is optimized for all mobile browsers with responsive touch gestures and tap-to-move piece controls.',
+        },
       },
     },
     lobby: {

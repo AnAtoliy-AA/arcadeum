@@ -10,7 +10,7 @@ import {
   ShipName,
 } from '../styles';
 import type { SeaBattleTheme } from '../../lib/theme';
-import { TranslationKey } from '@/shared/lib/useTranslation';
+import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface ShipPaletteSectionProps {
   theme: SeaBattleTheme;

@@ -9,7 +9,7 @@ export const SECONDARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #6b21a8 0%, #1e1b4b 100%)',
     bgImage: '/images/variants/galaxy_bg.webp',
     colors: {
-      primary: '#6b21a8',
+      primary: '#c084fc',
       accent: '#1e1b4b',
       background: '#0b0918',
       surface: '#151233',
@@ -49,7 +49,7 @@ export const SECONDARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #065f46 0%, #d4af37 100%)',
     bgImage: '/images/variants/fantasy_bg.webp',
     colors: {
-      primary: '#065f46',
+      primary: '#34d399',
       accent: '#d4af37',
       background: '#07120d',
       surface: '#0f2418',
@@ -89,7 +89,7 @@ export const SECONDARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #9a3412 0%, #fde68a 100%)',
     bgImage: '/images/variants/western_bg.webp',
     colors: {
-      primary: '#9a3412',
+      primary: '#fb923c',
       accent: '#fde68a',
       background: '#160d07',
       surface: '#241710',
@@ -129,7 +129,7 @@ export const SECONDARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #b45309 0%, #1e3a8a 100%)',
     bgImage: '/images/variants/egypt_bg.webp',
     colors: {
-      primary: '#b45309',
+      primary: '#fbbf24',
       accent: '#1e3a8a',
       background: '#120c06',
       surface: '#20160b',
@@ -169,7 +169,7 @@ export const SECONDARY_THEMES: readonly GameTheme[] = [
     gradient: 'linear-gradient(135deg, #78350f 0%, #fef3c7 100%)',
     bgImage: '/images/variants/steampunk_bg.webp',
     colors: {
-      primary: '#78350f',
+      primary: '#d97706',
       accent: '#fef3c7',
       background: '#0f0b06',
       surface: '#1c150c',

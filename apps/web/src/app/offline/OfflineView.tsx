@@ -57,7 +57,7 @@ export function OfflineView({
         {manageHref && manageLabel && (
           <a
             href={manageHref}
-            className="text-sm text-[var(--primary)] underline-offset-4 hover:underline"
+            className="text-sm text-[var(--color)] underline-offset-4 hover:underline"
           >
             {manageLabel}
           </a>

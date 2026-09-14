@@ -114,6 +114,41 @@ export const frMessages = {
           answer:
             'Les bots préfèrent les coups assortis en couleur, gardent le Joker +4 pour les tours bloqués, et choisissent la couleur dont ils ont le plus en main lors d’un joker. Décontractés mais crédibles.',
         },
+        lastCard: {
+          question: 'Qu’est-ce que l’annonce Dernière Carte (Cascade) ?',
+          answer:
+            'Quand il ne vous reste qu’une carte, vous devez appuyer sur Cascade. Si un adversaire le remarque avant vous, vous piochez des pénalités.',
+        },
+        actionCards: {
+          question: 'Quelles cartes d’action trouve-t-on dans Cascade ?',
+          answer:
+            'Cascade propose Passer le tour, Inversion, Pioche 2 (+2), Joker et Joker Pioche 4 (+4).',
+        },
+        winCondition: {
+          question: 'Comment gagner une manche dans Cascade ?',
+          answer:
+            'Le premier joueur à poser toutes ses cartes remporte la manche. Les cartes restantes des adversaires rapportent des points.',
+        },
+        jumpIn: {
+          question: 'La règle de l’Interception (Jump-In) est-elle autorisée ?',
+          answer:
+            'Dans les salons avec Jump-In, si vous avez la carte strictement identique, vous pouvez la jouer hors tour.',
+        },
+        friends: {
+          question: 'Combien de joueurs peuvent jouer à Cascade ?',
+          answer:
+            'Cascade accueille de 2 à 8 joueurs par salon avec des liens directs et des bots pour compléter.',
+        },
+        mobile: {
+          question: 'Cascade est-il optimisé pour mobile ?',
+          answer:
+            'Oui. Les cartes s’affichent en éventail fluide avec glisser-déposer sur écran tactile.',
+        },
+        free: {
+          question: 'Cascade est-il gratuit en ligne ?',
+          answer:
+            'Oui. Cascade est 100% gratuit dans votre navigateur sans achat intégré ni inscription obligatoire.',
+        },
       },
     },
     lobby: {

@@ -16,7 +16,7 @@ export const frMessages = {
         howToPlayTitle: 'Comment jouer à {{gameName}}',
       },
       hero: {
-        title: 'Échecs — le jeu de stratégie intemporel',
+        title: 'Échecs — Le jeu de stratégie ultime',
         subtitle:
           'Propulsé par Stockfish 19. Bullet, blitz, rapide, quotidien et Chess960. Jouez contre des amis, 20 personnalités IA ou toute la communauté.',
         createRoom: 'Créer une salle',
@@ -72,7 +72,7 @@ export const frMessages = {
         stockfish: {
           question: "Qu'est-ce que Stockfish 19 ?",
           answer:
-            "Stockfish 19 est la dernière version du plus fort moteur d'échecs open source au monde. Il utilise l'architecture de réseau neural SFNNv16 et alimente toute l'analyse en temps réel, la revue de parties et la difficulté des bots IA sur Arcadeum.",
+            "Stockfish 19 est la dernière version du plus fort moteur d'échecs open source au monde. Il utilise l'architecture de réseau neural SFNNv16 et alimente toute l'analyse en temps réel, la revue de parties et la difficulté des bots IA sur Arcadeum Games.",
         },
         takeback: {
           question: 'Puis-je annuler un coup ?',
@@ -84,9 +84,31 @@ export const frMessages = {
           answer:
             'Puzzle Rush est un mode de puzzles chronométré. En Survie, vous avez 3 vies et essayez de résoudre un maximum de puzzles. En Mode Temps, vous avez 3 minutes.',
         },
+        tablebases: {
+          question: 'Que sont les tables de finales Syzygy ?',
+          answer:
+            "Les tables de finales Syzygy offrent un jeu mathématiquement parfait pour toute position avec 7 pièces ou moins sur l'échiquier, indiquant instantanément gain, nulle ou perte théorique.",
+        },
+        mobile: {
+          question:
+            "Puis-je jouer aux échecs sur mobile sans installer d'application ?",
+          answer:
+            "Oui. Arcadeum Games fonctionne entièrement dans n'importe quel navigateur mobile avec des commandes tactiles complètes, un échiquier réactif et un déplacement fluide des pièces.",
+        },
+        pgn: {
+          question: 'Puis-je importer et exporter des positions PGN ou FEN ?',
+          answer:
+            "Oui. L'échiquier d'analyse prend en charge le copier/coller PGN en un clic, la configuration de positions FEN et un éditeur d'échiquier personnalisé pour analyser vos parties.",
+        },
+        free: {
+          question:
+            'L’analyse et la revue de partie sont-elles vraiment 100% gratuites ?',
+          answer:
+            "Oui. L'analyse Stockfish 19 en profondeur maximale, les graphiques d'évaluation, les scores de précision et la classification des erreurs sont entièrement gratuits, sans limites ni paiement.",
+        },
       },
       advantages: {
-        kicker: 'Pourquoi les joueurs choisissent Arcadeum',
+        kicker: 'Pourquoi les joueurs choisissent Arcadeum Games',
         title:
           'Tout ce dont vous avez besoin pour jouer, apprendre et progresser',
         items: [
@@ -177,6 +199,8 @@ export const frMessages = {
       blitz: 'Blitz',
       rapid: 'Rapide',
       classical: 'Classique',
+      daily: 'Quotidiennes',
+      daysPerMove: '{{days}} jour(s) par coup',
       easy: 'Facile',
       medium: 'Moyen',
       hard: 'Difficile',
@@ -203,6 +227,24 @@ export const frMessages = {
     spectator: {
       viewers: 'spectateurs',
       joinGame: 'Rejoindre',
+    },
+    matchmaking: {
+      quickPlay: 'Partie rapide',
+      searching: 'Recherche... {{time}}',
+      position: '#{{position}} dans la file',
+      rating: 'Classement : {{rating}}',
+      cancelled: 'Recherche annulée',
+    },
+    history: {
+      title: 'Historique des parties',
+      rating: 'Classement',
+      peak: 'Pic',
+      winRate: 'Taux de victoire',
+      ratingTrend: 'Tendance du classement',
+      results: 'Résultats',
+      topOpenings: 'Ouvertures principales',
+      recentGames: 'Parties récentes',
+      noGames: 'Aucune partie jouée pour le moment',
     },
     tutorial: {
       s1: {
@@ -273,6 +315,14 @@ export const frMessages = {
         blunder: 'Faute grave',
       },
     },
+    review: {
+      title: 'Analyse de la partie',
+      accuracy: 'Précision',
+      grade: 'Note',
+      moveBreakdown: 'Détail des coups',
+      evaluation: 'Évaluation',
+      keyMoments: 'Moments clés',
+    },
     coach: {
       title: 'Conseils d\u2019entraîneur',
       hint: 'Indice',
@@ -292,8 +342,13 @@ export const frMessages = {
       drawOffered: 'Nulle proposée',
       acceptDraw: 'Accepter la nulle',
       declineDraw: 'Refuser',
+      takeback: 'Annuler le coup',
+      takebackOffered: 'Annulation de coup proposée',
+      acceptTakeback: 'Accepter l’annulation',
+      declineTakeback: 'Refuser',
       moveList: 'Liste des coups',
       copyPGN: 'Copier PGN',
+      importPgn: 'Importer PGN',
     },
     chat: {
       move: '{{name}} a joué {{notation}}',
@@ -349,6 +404,20 @@ export const frMessages = {
       daily: 'Problème du jour',
       rated: 'Problèmes classés',
       themed: 'Problèmes par thème',
+    },
+    puzzleRush: {
+      title: 'Rush de problèmes',
+      subtitle: 'Résolvez autant de problèmes que possible',
+      survival: 'Mode Survie',
+      survivalDesc: '3 vies — une erreur vous coûte une vie',
+      timed: 'Mode Chronométré',
+      timedDesc: '3 minutes — résolvez-en un maximum',
+      gameOver: 'Temps écoulé !',
+      playAgain: 'Rejouer',
+      endRun: 'Terminer la session',
+      score: 'Score',
+      bestStreak: 'Meilleure série',
+      time: 'Temps',
     },
     tournament: {
       title: "Tournois d'échecs",

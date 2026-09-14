@@ -1,10 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type Redis from 'ioredis';
 import { GameRoomsService } from './game-rooms.service';
 import { GameRoomsQuickplayService } from './game-rooms.quickplay.service';
 import { GamesRealtimeService } from '../games.realtime.service';
 import { RedisMatchmakingQueue } from './redis-matchmaking-queue';
+import { FriendsService } from '../../friends/friends.service';
 
 export interface QueueEntry {
   userId: string;
@@ -12,6 +13,7 @@ export interface QueueEntry {
   gameId: string;
   variant?: string;
   ranked?: boolean;
+  rating?: number;
   ip?: string;
   timestamp: number;
   timeoutId?: NodeJS.Timeout;
@@ -27,6 +29,7 @@ export interface MatchmakingStatus {
   estimatedWaitSeconds: number;
   activeQueues?: Record<string, number>;
   openRoomsCount?: number;
+  friendsInQueue?: Array<{ userId: string; gameId: string; rating?: number }>;
 }
 
 const DEFAULT_TIMEOUT_MS = 30_000;
@@ -52,6 +55,7 @@ export class GameRoomsMatchmakingService {
     private readonly realtimeService: GamesRealtimeService,
     private readonly config: ConfigService,
     @Inject('REDIS_CLIENT') private readonly redis: Redis | null,
+    @Optional() private readonly friendsService?: FriendsService,
   ) {}
 
   private get timeoutMs(): number {
@@ -89,14 +93,22 @@ export class GameRoomsMatchmakingService {
     ranked?: boolean,
     onSuccess?: (roomId: string) => void,
     ip?: string,
+    rating?: number,
   ): Promise<void> {
     this.logger.log(
-      `User ${userId} (socket ${socketId}) joining ${ranked ? 'ranked' : 'casual'} matchmaking queue for game ${gameId}${variant ? ` (${variant})` : ''}`,
+      `User ${userId} (socket ${socketId}) joining ${ranked ? 'ranked' : 'casual'} matchmaking queue for game ${gameId}${variant ? ` (${variant})` : ''}${rating !== undefined ? ` [rating ${rating}]` : ''}`,
     );
 
     await this.leaveQueue(userId);
 
-    const match = await this.findMatch(gameId, variant, ranked, userId, ip);
+    const match = await this.findMatch(
+      gameId,
+      variant,
+      ranked,
+      userId,
+      ip,
+      rating,
+    );
     if (match) {
       this.logger.log(
         `Match found between ${userId} and ${match.userId} for game ${gameId}`,
@@ -120,6 +132,7 @@ export class GameRoomsMatchmakingService {
       gameId,
       variant,
       ranked,
+      rating,
       ip,
       timestamp,
     };
@@ -158,7 +171,9 @@ export class GameRoomsMatchmakingService {
       bucket.set(userId, entry);
     }
 
-    await this.emitStatusesFor(gameId, variant, ranked);
+    // Only emit status to the newly joined user — other queued users
+    // don't need expensive friends/cross-game recomputation on every join
+    await this.emitStatus(userId, gameId, variant, ranked);
   }
 
   async leaveQueue(userId: string): Promise<void> {
@@ -183,6 +198,7 @@ export class GameRoomsMatchmakingService {
     ranked: boolean | undefined,
     excludeUserId: string,
     ip?: string,
+    rating?: number,
   ): Promise<QueueEntry | null> {
     if (this.redis) {
       const isProd = this.config.get<string>('NODE_ENV') === 'production';
@@ -194,6 +210,7 @@ export class GameRoomsMatchmakingService {
         excludeUserId,
         ip,
         isProd,
+        rating,
       );
     }
     return this.findMatchMemory(gameId, variant, ranked, excludeUserId, ip);
@@ -338,6 +355,30 @@ export class GameRoomsMatchmakingService {
         )
       : this.getPositionMemory(userId, gameId, variant, ranked);
     const playersAhead = Math.max(0, position - 1);
+
+    // Get friends currently in any matchmaking queue
+    let friendsInQueue: Array<{
+      userId: string;
+      gameId: string;
+      rating?: number;
+    }> = [];
+    if (this.friendsService) {
+      try {
+        const friendIds = await this.friendsService.getFriendIds(userId);
+        if (friendIds.length > 0 && this.redis) {
+          friendsInQueue = await this.redisQueue.getQueuedFriends(
+            this.redis,
+            friendIds,
+            gameId,
+            variant,
+            ranked,
+          );
+        }
+      } catch {
+        // Friends service may not be available; skip silently
+      }
+    }
+
     this.realtimeService.emitToUser(userId, 'games.matchmaking.status', {
       gameId,
       variant,
@@ -348,32 +389,8 @@ export class GameRoomsMatchmakingService {
       estimatedWaitSeconds: this.estimateWaitSeconds(queueSize, position),
       activeQueues: await this.getQueueOverviewAsync(),
       openRoomsCount: 0,
+      friendsInQueue,
     } satisfies MatchmakingStatus);
-  }
-
-  private async emitStatusesFor(
-    gameId: string,
-    variant?: string,
-    ranked?: boolean,
-  ): Promise<void> {
-    if (this.redis) {
-      const userIds = await this.redisQueue.getUserIdsInQueue(
-        this.redis,
-        gameId,
-        variant,
-        ranked,
-      );
-      for (const userId of userIds) {
-        void this.emitStatus(userId, gameId, variant, ranked);
-      }
-    } else {
-      const key = this.queueKey(gameId, variant, ranked);
-      const bucket = this.memoryQueue.get(key);
-      if (!bucket) return;
-      for (const entry of bucket.values()) {
-        void this.emitStatus(entry.userId, gameId, variant, entry.ranked);
-      }
-    }
   }
 
   private getQueueSizeMemory(

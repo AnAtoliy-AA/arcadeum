@@ -4,14 +4,14 @@ import { revalidatePath } from 'next/cache';
 import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   EquippedView,
+  GiftResult,
   PurchaseResult,
   SellResult,
   ShopCategory,
 } from './shop.types';
 
 export type ShopActionResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: ShopActionError };
+  { ok: true; data: T } | { ok: false; error: ShopActionError };
 
 export type ShopActionError =
   | 'insufficient_funds'
@@ -23,10 +23,14 @@ export type ShopActionError =
   | 'not_owned'
   | 'category_mismatch'
   | 'unauthorized'
+  | 'not_friends'
+  | 'cannot_gift_self'
+  | 'starter_not_gift'
   | 'generic';
 
 function classifyError(status: number, body: string): ShopActionError {
   if (status === 401) return 'unauthorized';
+  if (status === 403) return 'not_friends';
   if (status === 422) return 'insufficient_funds';
   const lower = body.toLowerCase();
   if (lower.includes('shop.unavailable')) return 'unavailable';
@@ -36,6 +40,9 @@ function classifyError(status: number, body: string): ShopActionError {
   if (lower.includes('shop.unequipfirst')) return 'unequip_first';
   if (lower.includes('shop.notowned')) return 'not_owned';
   if (lower.includes('shop.categorymismatch')) return 'category_mismatch';
+  if (lower.includes('shop.notfriends')) return 'not_friends';
+  if (lower.includes('shop.cannotgiftself')) return 'cannot_gift_self';
+  if (lower.includes('shop.staternotgift')) return 'starter_not_gift';
   return 'generic';
 }
 
@@ -110,6 +117,23 @@ export async function unequipItemAction(
     return { ok: false, error: classifyError(res.status, await res.text()) };
   }
   const data = (await res.json()) as EquippedView;
+  revalidateShopSurfaces();
+  return { ok: true, data };
+}
+
+export async function sendGiftAction(input: {
+  recipientId: string;
+  itemId: string;
+  message: string;
+}): Promise<ShopActionResult<GiftResult>> {
+  const res = await serverAuthFetch('/shop/gift', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    return { ok: false, error: classifyError(res.status, await res.text()) };
+  }
+  const data = (await res.json()) as GiftResult;
   revalidateShopSurfaces();
   return { ok: true, data };
 }

@@ -1,8 +1,7 @@
 'use client';
 
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { PachisiClientState } from '../types';
-import { Die } from './Die';
 
 interface PachisiStatusStripProps {
   snapshot: PachisiClientState;
@@ -15,8 +14,32 @@ interface PachisiStatusStripProps {
   actionBusy?: boolean;
   lastDie: number | null;
   finishedCounts: Map<string, number>;
-  onRoll: () => void;
   onPassTurn?: () => void;
+}
+
+function HomeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2 8.5L8 3l6 5.5V13a1 1 0 01-1 1H3a1 1 0 01-1-1V8.5z" />
+      <path d="M6 14V9h4v5" />
+    </svg>
+  );
+}
+
+function SparkleIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" />
+    </svg>
+  );
 }
 
 export function PachisiStatusStrip({
@@ -30,7 +53,6 @@ export function PachisiStatusStrip({
   actionBusy = false,
   lastDie,
   finishedCounts,
-  onRoll,
   onPassTurn,
 }: PachisiStatusStripProps) {
   const { t } = useTranslation();
@@ -57,7 +79,8 @@ export function PachisiStatusStrip({
                 <span
                   className={`pachisi-token pachisi-token-seat-${seat} h-2.5 w-2.5 rounded-full border`}
                 />
-                🏠 {finished}/{total}
+                <HomeIcon className="h-3 w-3 opacity-70" />
+                {finished}/{total}
               </span>
             );
           })}
@@ -66,64 +89,21 @@ export function PachisiStatusStrip({
         <div className="flex items-center gap-2">
           {isExtraRoll && (
             <span
-              className="rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 ring-1 ring-amber-400/40"
+              className="flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 ring-1 ring-amber-400/40"
               data-testid="pachisi-extra-roll-badge"
             >
-              ✨ {t('games.pachisi_v1.game.extraRoll')}
+              <SparkleIcon className="h-3 w-3" />
+              {t('games.pachisi_v1.game.extraRoll')}
             </span>
           )}
 
-          {canRoll ? (
-            <button
-              aria-label={t('games.pachisi_v1.game.rollDice')}
-              className="rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 px-3 py-1 text-[12px] font-black uppercase tracking-wide text-white shadow-lg transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
-              data-testid="pachisi-roll-button"
-              disabled={actionBusy}
-              onClick={onRoll}
-              type="button"
-            >
-              🎲 {t('games.pachisi_v1.game.rollDice')}
-            </button>
-          ) : snapshot.die != null ? (
-            <div
-              className="flex items-center gap-1.5"
-              data-testid="pachisi-die-container"
-            >
-              <Die
-                value={snapshot.die}
-                isRolling={actionBusy && snapshot.phase === 'roll'}
-              />
-              <span
-                className="flex h-9 min-w-[32px] items-center justify-center rounded-lg border border-white/20 bg-white/15 px-2 text-base font-black text-white shadow-md backdrop-blur-sm"
-                data-testid="pachisi-die-number"
-              >
-                {snapshot.die}
-              </span>
-            </div>
-          ) : lastDie != null && !isGameOver ? (
-            <div className="flex items-center gap-1 opacity-70">
-              <span className="text-[10px] font-semibold text-white/60">
-                {t('games.pachisi_v1.game.lastRoll', { value: lastDie })}
-              </span>
-              <div className="flex items-center gap-1">
-                <Die value={lastDie} className="h-7 w-7 opacity-80" />
-                <span className="flex h-7 min-w-[24px] items-center justify-center rounded-md border border-white/15 bg-white/10 px-1 text-xs font-bold text-white">
-                  {lastDie}
-                </span>
-              </div>
-            </div>
-          ) : null}
+          {lastDie != null && !isGameOver && !canRoll && (
+            <span className="text-[10px] font-semibold text-white/50">
+              {t('games.pachisi_v1.game.lastRoll', { value: lastDie })}
+            </span>
+          )}
         </div>
       </div>
-
-      {canRoll && (
-        <div
-          className="text-center text-[12px] font-bold text-emerald-300"
-          data-testid="pachisi-roll-hint"
-        >
-          {t('games.pachisi_v1.game.yourTurnToRoll')}
-        </div>
-      )}
 
       {canMove && movableCount > 0 && (
         <div

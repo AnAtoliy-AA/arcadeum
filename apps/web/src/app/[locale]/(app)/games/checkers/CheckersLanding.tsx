@@ -149,6 +149,8 @@ export default function CheckersLanding({
         subtitle: landing.hero.subtitle,
         intro:
           'Fast-paced board tactics of diagonal moves, forced jump combos, and king piece promotions.',
+        directAnswer:
+          'Arcadeum Checkers is a free online draughts platform featuring classic 8×8 board play with forced captures, king promotion, and AI bots—playable directly in your browser with zero downloads or signup.',
         category: 'Board Game',
         playersBadge: '2 Players',
         durationBadge: '10–20 min',
@@ -161,6 +163,30 @@ export default function CheckersLanding({
         roomsHref,
         createRoomHref,
         heroVisual: <CheckersLandingPreview />,
+      }}
+      specifications={{
+        title: 'Checkers Technical Specifications',
+        kicker: 'Key Facts',
+        items: [
+          {
+            label: 'Grid',
+            value: '8×8 Board (64 Squares)',
+            hint: '32 playable dark squares',
+          },
+          { label: 'Ruleset', value: 'American Draughts', badge: 'Standard' },
+          {
+            label: 'Pieces',
+            value: '12 per player',
+            hint: 'Kings move & capture forwards and backwards',
+          },
+          { label: 'Opponents', value: 'PvP & AI Bots', badge: 'Smart AI' },
+          {
+            label: 'Platform',
+            value: 'Web & Mobile',
+            hint: 'Zero installation required',
+          },
+          { label: 'Cost', value: '100% Free', badge: 'No Ads' },
+        ],
       }}
       highlights={{
         title: 'Classic Board Mechanics, Modern Feel',

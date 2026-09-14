@@ -145,16 +145,45 @@ export async function getPuzzleHint(
   };
 }
 
+/**
+ * Convert centipawns to winning chances using a sigmoid formula.
+ * Returns a value in [-1, 1] where 1 = certain win, -1 = certain loss.
+ */
+function winningChances(cp: number): number {
+  return 2 / (1 + Math.exp(-0.004 * cp)) - 1;
+}
+
+/**
+ * Classify a move based on winning-chance delta.
+ *
+ * Thresholds (delta in winning-chance space):
+ *   brilliant  — best move, sacrifices that maintain/build advantage
+ *   great      — near-best, keeps a strong advantage in a tough spot
+ *   best       — the engine's top choice
+ *   excellent  — near-best, highly accurate
+ *   good       — small or no loss
+ *   inaccuracy — ~0.1 winning-chance drop  (≈50 cp from equal)
+ *   mistake    — ~0.2 winning-chance drop  (≈100 cp from equal)
+ *   blunder    — ≥0.3 winning-chance drop  (≈150 cp from equal)
+ */
 export function classifyMove(
   loss: number,
-  _evalBefore: number,
+  evalBefore: number,
   evalAfter: number,
+  playedMove?: string,
+  bestMove?: string,
 ): EngineLine['quality'] {
+  const lossDelta = winningChances(evalBefore) - winningChances(evalAfter);
+  const isEngineBest = !!playedMove && !!bestMove && playedMove === bestMove;
+
   if (loss === 0 && Math.abs(evalAfter) > 200) return 'brilliant';
-  if (loss <= 2 && Math.abs(evalAfter) > 100) return 'great';
-  if (loss <= 10) return 'good';
-  if (loss <= 30) return 'inaccuracy';
-  if (loss <= 100) return 'mistake';
+  if (loss <= 5 && lossDelta < 0.05 && Math.abs(evalAfter) > 100)
+    return 'great';
+  if (isEngineBest && lossDelta < 0.05) return 'best';
+  if (loss <= 3 && lossDelta < 0.05) return 'excellent';
+  if (lossDelta < 0.1) return 'good';
+  if (lossDelta < 0.2) return 'inaccuracy';
+  if (lossDelta < 0.3) return 'mistake';
   return 'blunder';
 }
 
@@ -164,15 +193,28 @@ export function calculateAccuracy(moves: EngineLine[]): number {
   for (const move of moves) {
     switch (move.quality) {
       case 'brilliant':
-      case 'great':
-      case 'good':
         totalScore += 100;
         break;
+      case 'great':
+        totalScore += 98;
+        break;
+      case 'best':
+        totalScore += 95;
+        break;
+      case 'excellent':
+        totalScore += 92;
+        break;
+      case 'good':
+        totalScore += 85;
+        break;
+      case 'book':
+        totalScore += 90;
+        break;
       case 'inaccuracy':
-        totalScore += 70;
+        totalScore += 55;
         break;
       case 'mistake':
-        totalScore += 40;
+        totalScore += 20;
         break;
       case 'blunder':
         totalScore += 0;
@@ -265,7 +307,7 @@ export async function analyzeGame(
     }
 
     moves.push({
-      quality: classifyMove(loss, prevEval, currentEval),
+      quality: classifyMove(loss, prevEval, currentEval, playedMove, bestMove),
       move: moveNotation,
       evalAfter: currentEval,
       mateAfter: multiPVResult.mate,
@@ -310,7 +352,10 @@ export async function analyzeGame(
     summary: {
       brilliant: moves.filter((m) => m.quality === 'brilliant').length,
       great: moves.filter((m) => m.quality === 'great').length,
+      best: moves.filter((m) => m.quality === 'best').length,
+      excellent: moves.filter((m) => m.quality === 'excellent').length,
       good: moves.filter((m) => m.quality === 'good').length,
+      book: moves.filter((m) => m.quality === 'book').length,
       inaccuracy: moves.filter((m) => m.quality === 'inaccuracy').length,
       mistake: moves.filter((m) => m.quality === 'mistake').length,
       blunder: moves.filter((m) => m.quality === 'blunder').length,

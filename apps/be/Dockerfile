@@ -20,7 +20,7 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init=1.2.5-r3 curl
+RUN apk add --no-cache dumb-init curl
 
 # Stockfish 19 (latest stable, released 2026-09-05)
 # Download Linux x86-64 universal binary during build

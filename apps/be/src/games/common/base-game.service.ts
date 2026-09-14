@@ -116,9 +116,12 @@ export abstract class BaseGameService<
     const playerIds = [...participants];
 
     if (withBots || playerIds.length === 1) {
+      const existingBots = playerIds.filter((p) => p.startsWith('bot-')).length;
       const needed = Math.max(0, this.minPlayers - playerIds.length);
       const desiredCount =
-        botCount !== undefined ? Math.max(botCount, needed) : needed;
+        botCount !== undefined
+          ? Math.max(botCount - existingBots, needed)
+          : needed;
       const cap = Math.min(
         maxPlayersForSession - playerIds.length,
         desiredCount,

@@ -3,8 +3,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Select } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import {
@@ -298,7 +298,7 @@ function SudokuKeypad({
       className={cx(
         'flex w-full flex-col items-center gap-2',
         isFullscreen
-          ? 'max-w-[min(94vw,min(calc(100vh-14rem),40rem))]'
+          ? 'max-w-[min(94vw,min(calc(100dvh-14rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))]',
       )}
     >
@@ -324,7 +324,7 @@ function SudokuKeypad({
                 isCompleted
                   ? 'border-dashed border-[var(--borderColor)] bg-[var(--backgroundHover)] opacity-30 cursor-not-allowed'
                   : notesMode
-                    ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--primary)] hover:bg-[var(--primary)]/25 active:scale-95'
+                    ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--color)] hover:bg-[var(--primary)]/25 active:scale-95'
                     : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)]/50 hover:bg-[var(--glassBgHover)] active:scale-95',
                 'disabled:opacity-40 disabled:cursor-not-allowed',
               )}
@@ -354,7 +354,7 @@ function SudokuKeypad({
           className={cx(
             'flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-bold transition-all',
             notesMode
-              ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--primary)] shadow-md shadow-[var(--primary)]/20 ring-1 ring-[var(--primary)]'
+              ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--color)] shadow-md shadow-[var(--primary)]/20 ring-1 ring-[var(--primary)]'
               : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)]',
           )}
         >

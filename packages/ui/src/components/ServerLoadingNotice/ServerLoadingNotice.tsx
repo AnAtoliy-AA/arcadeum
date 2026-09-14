@@ -58,7 +58,7 @@ export const ServerLoadingNotice = memo(function ServerLoadingNotice({
         <div className="flex flex-col gap-2">
           <ProgressBar value={progress} height={10} color="var(--primary)" />
           <div className="flex flex-row items-center justify-between">
-            <span className="text-[16px] font-bold leading-[24px] text-[var(--primary)]">
+            <span className="text-[16px] font-bold leading-[24px] text-[var(--color)]">
               {Math.round(progress)}%
             </span>
             <span className="text-[14px] font-medium leading-[18px] opacity-60">

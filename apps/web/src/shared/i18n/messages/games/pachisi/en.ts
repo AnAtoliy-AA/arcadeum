@@ -128,6 +128,36 @@ export const enMessages = {
           answer:
             'The AI weighs exits, captures, safe landings, and danger zones to give you a genuine challenge at every difficulty tier.',
         },
+        safeSquares: {
+          question: 'What are safe squares in Pachisi?',
+          answer:
+            'Castle (star) squares and colored starting points are safe sanctuaries where tokens cannot be captured or blockaded.',
+        },
+        blockades: {
+          question: 'Can two tokens form a blockade?',
+          answer:
+            'Yes. When two tokens of the same color occupy a square, they create a blockade that cannot be passed or landed on by any opponent.',
+        },
+        exactRoll: {
+          question: 'Do I need an exact roll to reach home?',
+          answer:
+            'Yes. A token must enter the home triangle on the exact number required. If the dice roll exceeds the distance, the move cannot be made.',
+        },
+        friends: {
+          question: 'How many players can play Pachisi online?',
+          answer:
+            'Pachisi supports 2 to 4 players. You can create a private room for friends or play alongside smart bots.',
+        },
+        history: {
+          question: 'What is the origin of Pachisi?',
+          answer:
+            'Pachisi is an ancient cross-and-circle board game from India, often hailed as the national game and the ancestor of modern Ludo and Parcheesi.',
+        },
+        free: {
+          question: 'Is Pachisi free to play on Arcadeum?',
+          answer:
+            'Yes. Pachisi on Arcadeum is completely free with vibrant boards, responsive controls, and zero software installs.',
+        },
       },
     },
     lobby: {

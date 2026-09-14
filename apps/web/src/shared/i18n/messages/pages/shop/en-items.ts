@@ -91,16 +91,59 @@ export const shopItemsEn = {
   },
   badge: {
     newcomer: { name: 'Newcomer', desc: 'Welcome to Arcadeum.' },
+    scout: { name: 'Scout', desc: 'An ambitious explorer of the realm.' },
     veteran: { name: 'Veteran', desc: 'A seasoned player.' },
+    gladiator: {
+      name: 'Gladiator',
+      desc: 'A fierce arena warrior proven in combat.',
+    },
+    guardian: { name: 'Guardian', desc: 'A steadfast defender of honor.' },
     champion: { name: 'Champion', desc: 'A proven champion.' },
-    legend: { name: 'Legend', desc: 'A legendary player.' },
-    elite: { name: 'Elite Shield', desc: 'A prestigious cybernetic shield.' },
-    mythic: { name: 'Mythic Star', desc: 'A celestial golden star emblem.' },
+    conqueror: {
+      name: 'Conqueror',
+      desc: 'A ruthless champion who dominates realms.',
+    },
+    paladin: {
+      name: 'Paladin',
+      desc: 'A holy winged shield emblem with a glowing sapphire core.',
+    },
+    warlord: { name: 'Warlord', desc: 'A master tactician forged in fire.' },
+    juggernaut: {
+      name: 'Juggernaut',
+      desc: 'A heavy cybernetic battle plate forged in magma.',
+    },
     vanguard: {
       name: 'Vanguard Shield',
       desc: 'An armored defensive crest.',
     },
+    paragon: {
+      name: 'Paragon',
+      desc: 'An ethereal crystalline crest radiating celestial aura.',
+    },
+    grandmaster: {
+      name: 'Grandmaster',
+      desc: 'A pinnacle of strategic brilliance.',
+    },
+    titan: {
+      name: 'Titan',
+      desc: 'A colossal thunder-forged warcrest crackling with lightning.',
+    },
+    ascendant: {
+      name: 'Ascendant',
+      desc: 'A radiant transcendent entity of pure triumph.',
+    },
+    elite: { name: 'Elite Shield', desc: 'A prestigious cybernetic shield.' },
+    archon: {
+      name: 'Archon',
+      desc: 'A supreme celestial halo crest swirling with cosmic nebula.',
+    },
+    sovereign: {
+      name: 'Sovereign',
+      desc: 'An imperial ruler of supreme majesty.',
+    },
+    legend: { name: 'Legend', desc: 'A legendary player.' },
     nexus: { name: 'Nexus Star', desc: 'A powerful futuristic cosmic star.' },
+    mythic: { name: 'Mythic Star', desc: 'A celestial golden star emblem.' },
   },
   name_color: {
     default: { name: 'Default', desc: 'The starter name color.' },

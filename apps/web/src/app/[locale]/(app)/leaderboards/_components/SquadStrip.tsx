@@ -1,7 +1,7 @@
 'use client';
 import type { Squad } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { formatNumber } from '@/shared/i18n/formatters';
 
 export function SquadStrip({
@@ -17,7 +17,7 @@ export function SquadStrip({
   const membersTpl = tt.members ?? '{count} members';
   return (
     <div className="flex flex-col items-stretch gap-3 p-4 rounded-2xl border border-t-[2px] border-t-[var(--info)] border-[var(--borderColor)] bg-[rgba(255,255,255,0.02)] flex-1 min-w-[280px]">
-      <span className="text-[14px] tracking-[2px] opacity-[0.7] uppercase">
+      <span className="text-[14px] tracking-[2px] opacity-[0.9] uppercase">
         {tt.title ?? 'Top squads'}
       </span>
       <div className="flex flex-col items-stretch gap-2">
@@ -51,13 +51,13 @@ export function SquadStrip({
                 {s.name}
               </span>
             </div>
-            <span className="text-[14px] opacity-[0.7]">
+            <span className="text-[14px] opacity-[0.9]">
               {membersTpl.replace('{count}', String(s.memberCount))}
             </span>
             <span className="text-[14px] tracking-[1px] font-bold">
               #{s.rank}
             </span>
-            <span className="text-[14px] tracking-[1px] opacity-[0.85]">
+            <span className="text-[14px] tracking-[1px] opacity-[0.9]">
               {formatNumber(s.rating, locale)}
             </span>
           </div>

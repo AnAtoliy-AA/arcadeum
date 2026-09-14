@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string>) => {
       // Return the full key with params substituted so tests can assert on content
@@ -106,7 +106,7 @@ describe('ReferralRewardsCard', () => {
 });
 
 // Import after mock so the mock is in place
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 describe('+N coins per friend copy', () => {
   it('REFERRAL_COIN_REWARDS.perFriend is 50 (the copy shown in the explainer)', () => {

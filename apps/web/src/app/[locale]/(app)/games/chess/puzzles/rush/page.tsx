@@ -2,6 +2,7 @@
 
 import { PuzzleRush } from '@/widgets/BoardGames/ChessPuzzles/ui/PuzzleRush';
 
+
 export default function ChessPuzzleRushPage() {
   return (
     <main className="flex flex-col items-center min-h-screen py-6">

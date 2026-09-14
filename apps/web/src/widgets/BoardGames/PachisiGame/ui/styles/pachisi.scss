@@ -5,6 +5,7 @@
   background: var(--pachisi-board-bg);
   border-color: var(--pachisi-yard-border);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @for $i from 1 through 15 {
@@ -41,9 +42,14 @@
   grid-column: 7 / span 3;
 }
 
+.pachisi-center-overlay {
+  pointer-events: none;
+}
+
 .pachisi-yard {
   background: var(--pachisi-yard-bg);
   border-color: var(--pachisi-yard-border);
+  transition: box-shadow 0.3s ease;
 }
 
 .pachisi-yard-seat-0 {
@@ -65,6 +71,7 @@
 .pachisi-cell {
   background: var(--pachisi-cell-bg);
   border-color: var(--pachisi-cell-border);
+  transition: box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .pachisi-cell-seat-0 {
@@ -114,22 +121,28 @@
 
 .pachisi-token {
   border-color: var(--pachisi-token-border);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
 }
 
 .pachisi-token-seat-0 {
-  background: var(--pachisi-seat-0);
+  background-color: var(--pachisi-seat-0);
 }
 
 .pachisi-token-seat-1 {
-  background: var(--pachisi-seat-1);
+  background-color: var(--pachisi-seat-1);
 }
 
 .pachisi-token-seat-2 {
-  background: var(--pachisi-seat-2);
+  background-color: var(--pachisi-seat-2);
 }
 
 .pachisi-token-seat-3 {
-  background: var(--pachisi-seat-3);
+  background-color: var(--pachisi-seat-3);
 }
 
 .pachisi-score-pill-seat-0 {
@@ -148,12 +161,119 @@
   background: color-mix(in srgb, var(--pachisi-seat-3) 20%, transparent);
 }
 
-.pachisi-die {
-  background: var(--pachisi-dice-face, #1e293b);
-  border-color: var(--pachisi-dice-border, rgba(255, 255, 255, 0.25));
-  color: var(--pachisi-dice-dot, #ffffff);
+/* ── Keyframe Animations ── */
+
+@keyframes pachisi-capture-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8);
+    background-color: rgba(239, 68, 68, 0.4);
+  }
+  40% {
+    box-shadow: 0 0 14px 5px rgba(239, 68, 68, 0.5);
+    background-color: rgba(239, 68, 68, 0.25);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    background-color: transparent;
+  }
 }
 
-.pachisi-die-dot {
-  fill: var(--pachisi-dice-dot, currentColor);
+.pachisi-capture-flash {
+  animation: pachisi-capture-flash 0.6s ease-out;
+}
+
+@keyframes pachisi-cell-glow {
+  0% {
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    box-shadow: inset 0 0 0 0px rgba(255, 255, 255, 0), 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.pachisi-cell-highlight {
+  animation: pachisi-cell-glow 1.8s ease-out forwards;
+  z-index: 5;
+}
+
+@keyframes pachisi-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--pachisi-glow-color, rgba(255, 255, 255, 0.2));
+  }
+  50% {
+    box-shadow: 0 0 10px 4px var(--pachisi-glow-color, rgba(255, 255, 255, 0.2));
+  }
+}
+
+.pachisi-yard-active {
+  animation: pachisi-pulse-glow 2s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes pachisi-token-land {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.3;
+  }
+  60% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pachisi-token-land {
+  animation: pachisi-token-land 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pachisi-token-sent-home {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.3);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+}
+
+.pachisi-token-sent-home {
+  animation: pachisi-token-sent-home 0.4s ease-in forwards;
+}
+
+@keyframes pachisi-six-celebrate {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.pachisi-six-celebrate {
+  animation: pachisi-six-celebrate 0.4s ease-in-out;
+}
+
+/* ── Reduced Motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .pachisi-board,
+  .pachisi-token,
+  .pachisi-cell,
+  .pachisi-yard {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .pachisi-capture-flash,
+  .pachisi-cell-highlight,
+  .pachisi-yard-active,
+  .pachisi-token-land,
+  .pachisi-token-sent-home,
+  .pachisi-six-celebrate {
+    animation: none !important;
+  }
 }

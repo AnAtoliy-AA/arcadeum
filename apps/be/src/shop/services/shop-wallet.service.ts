@@ -20,7 +20,7 @@ interface InventoryRowSnapshot {
   userId: Types.ObjectId;
   itemId: string;
   purchaseId: string;
-  acquiredVia: 'coins' | 'gems' | 'arcadeum' | 'grant' | 'starter';
+  acquiredVia: 'coins' | 'gems' | 'arcadeum' | 'grant' | 'starter' | 'gift';
   paidAmount?: number | null;
   paidCurrency?: 'coins' | 'gems' | 'arcadeum' | null;
   soldAt?: Date | null;

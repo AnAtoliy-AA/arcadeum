@@ -101,6 +101,36 @@ export const enMessages = {
           answer:
             'The AI calculates tactical positions, safe anchors, pip race counts, and blot avoidance to provide an authentic challenge.',
         },
+        doublingCube: {
+          question: 'How does the doubling cube work?',
+          answer:
+            'A player can propose doubling the stakes before rolling. The opponent can accept the double or immediately concede the match.',
+        },
+        gammon: {
+          question: 'What is the difference between a Gammon and a Backgammon?',
+          answer:
+            'A Gammon occurs when the loser bears off zero checkers (worth 2x points). A Backgammon occurs when the loser has borne off no checkers and still has a checker on the bar or in the winner’s home board (worth 3x points).',
+        },
+        pipCount: {
+          question: 'What is the pip count in Backgammon?',
+          answer:
+            'The pip count is the total distance in points all remaining checkers must travel to exit the board. A lower pip count signifies a race advantage.',
+        },
+        modes: {
+          question: 'What Backgammon variants can I play?',
+          answer:
+            'Arcadeum features Standard Backgammon, Long Nardy, Hypergammon (3 checkers blitz), Tavla, Nackgammon, and Gulbara.',
+        },
+        free: {
+          question: 'Is Backgammon free to play online?',
+          answer:
+            'Yes. Backgammon on Arcadeum is 100% free with real-time multiplayer, AI difficulty levels, and no mandatory account sign-up.',
+        },
+        mobile: {
+          question: 'Can I play Backgammon on phone and tablet?',
+          answer:
+            'Yes. The board dynamically scales to any screen with fluid drag-and-drop or tap-to-move touch controls in any mobile browser.',
+        },
       },
     },
     lobby: {

@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import type { Server, Socket } from 'socket.io';
+import Redis from 'ioredis';
 import type { GameRoomSummary, GameSessionSummary } from './games.types';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import {
@@ -9,11 +10,14 @@ import {
   emitGameStarted as emitGameStartedFn,
   emitActionExecuted as emitActionExecutedFn,
 } from './games.session-emitters';
+import { PeakTracker, type PeakData } from './games.realtime.peaks';
 
 const REMATCH_INVITATION_TIMEOUT_SECONDS = 30;
+const ONLINE_USERS_KEY = 'arcadeum:online:users';
+const ONLINE_TTL_MS = 90_000;
 
 @Injectable()
-export class GamesRealtimeService {
+export class GamesRealtimeService implements OnModuleDestroy {
   private readonly logger = new Logger(GamesRealtimeService.name);
 
   private server: Server | null = null;
@@ -24,12 +28,59 @@ export class GamesRealtimeService {
 
   private readonly userIdToSockets = new Map<string, Set<string>>();
 
+  private redis: Redis | null = null;
+  private readonly peakTracker: PeakTracker;
+
+  constructor() {
+    const redisUrl = process.env.REDIS_URL;
+    if (redisUrl) {
+      this.redis = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        retryStrategy(times: number) {
+          return Math.min(times * 200, 5000);
+        },
+        lazyConnect: true,
+        enableOfflineQueue: false,
+      });
+      this.redis.on('error', (err: Error) => {
+        this.logger.warn(
+          `Redis connection error for online tracking: ${err.message}`,
+        );
+      });
+      this.redis.connect().catch(() => {
+        this.logger.warn(
+          'Failed to connect Redis for online tracking, falling back to in-memory',
+        );
+        this.redis = null;
+      });
+    }
+    this.peakTracker = new PeakTracker(this.redis);
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    if (this.redis) {
+      await this.redis.quit().catch(() => {});
+    }
+  }
+
   registerServer(server: Server): void {
     this.server = server;
     this.logger.debug('Socket server registered for games gateway.');
   }
 
-  trackSocket(userId: string, socketId: string): void {
+  async trackSocket(userId: string, socketId: string): Promise<void> {
+    if (this.redis) {
+      try {
+        const now = Date.now();
+        await this.redis.zadd(ONLINE_USERS_KEY, now, userId);
+        return;
+      } catch (err) {
+        this.logger.warn(
+          `Redis trackSocket failed, falling back to memory: ${err}`,
+        );
+      }
+    }
+
     let sockets = this.userIdToSockets.get(userId);
     if (!sockets) {
       sockets = new Set();
@@ -38,7 +89,27 @@ export class GamesRealtimeService {
     sockets.add(socketId);
   }
 
-  untrackSocket(userId: string, socketId: string): void {
+  async refreshSocket(_socketId: string, userId: string): Promise<void> {
+    if (!this.redis || !userId) return;
+    try {
+      await this.redis.zadd(ONLINE_USERS_KEY, Date.now(), userId);
+    } catch {
+      // best-effort
+    }
+  }
+
+  async untrackSocket(userId: string, socketId: string): Promise<void> {
+    if (this.redis) {
+      try {
+        await this.redis.zrem(ONLINE_USERS_KEY, userId);
+        return;
+      } catch (err) {
+        this.logger.warn(
+          `Redis untrackSocket failed, falling back to memory: ${err}`,
+        );
+      }
+    }
+
     const sockets = this.userIdToSockets.get(userId);
     if (sockets) {
       sockets.delete(socketId);
@@ -48,13 +119,37 @@ export class GamesRealtimeService {
     }
   }
 
-  getConnectedUsersCount(): number {
-    return this.userIdToSockets.size;
+  async getConnectedUsersCount(): Promise<number> {
+    let count: number;
+    if (this.redis) {
+      try {
+        const staleThreshold = Date.now() - ONLINE_TTL_MS;
+        const stale = await this.redis.zrangebyscore(
+          ONLINE_USERS_KEY,
+          '-inf',
+          String(staleThreshold),
+        );
+        if (stale.length > 0) {
+          await this.redis.zrem(ONLINE_USERS_KEY, ...stale);
+        }
+        count = await this.redis.zcard(ONLINE_USERS_KEY);
+        void this.peakTracker.trackPeakOnline(count);
+        return count;
+      } catch {
+        // fall through to in-memory
+      }
+    }
+    count = this.userIdToSockets.size;
+    void this.peakTracker.trackPeakOnline(count);
+    return count;
   }
 
-  getConnectedSocketsCount(): number {
-    if (!this.server) return 0;
-    return this.server.sockets?.sockets?.size ?? 0;
+  async trackPeakRooms(currentCount: number): Promise<void> {
+    return this.peakTracker.trackPeakRooms(currentCount);
+  }
+
+  async getPeaks(): Promise<PeakData> {
+    return this.peakTracker.getPeaks();
   }
 
   roomChannel(roomId: string): string {

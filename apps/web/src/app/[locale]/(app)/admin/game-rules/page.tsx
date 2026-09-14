@@ -12,7 +12,7 @@ export default async function AdminGameRulesPage() {
         <PageTitle size="lg" gradient>
           Game Rules Visibility
         </PageTitle>
-        <Typography variant="body" uiSize="md" alpha="medium">
+        <Typography variant="body" uiSize="md" alpha="high">
           Include or exclude house rules per game. Excluded rules show
           &quot;Coming Soon&quot; in the lobby.
         </Typography>

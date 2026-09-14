@@ -36,6 +36,7 @@ export interface SeaBattlePlayer {
   shipsRemaining: number;
   placementComplete: boolean;
   turnDeadline?: number;
+  salvoShotsRemaining?: number;
   [key: string]: unknown;
 }
 
@@ -65,6 +66,8 @@ export interface SeaBattleState {
   roundNumber?: number;
   aiDifficulty?: AiDifficulty;
   specialWeaponUsage?: Record<string, SpecialWeaponUsage>;
+  shipAbilities?: boolean;
+  abilityCooldowns?: Record<string, Record<string, number>>;
   lastSonar?: {
     attackerId: string;
     targetId: string;
@@ -107,6 +110,7 @@ export interface SeaBattleConfig {
   specialWeapons?: { sonar?: boolean; radar?: boolean; revealAll?: boolean };
   revealAllDuration?: number;
   aiDifficulty?: AiDifficulty;
+  shipAbilities?: boolean;
 }
 
 export interface PlaceShipPayload {

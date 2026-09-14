@@ -1,21 +1,14 @@
 'use client';
 
 import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
-import { useTranslation } from '@/shared/lib/useTranslation';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { formatDuration } from '../SoloGameStats';
 
 interface SoloPersonalBestsProps {
   gameId: string;
   difficulty: string;
-}
-
-function formatDuration(ms: number): string {
-  if (ms === 0) return '--';
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 export function SoloPersonalBests({

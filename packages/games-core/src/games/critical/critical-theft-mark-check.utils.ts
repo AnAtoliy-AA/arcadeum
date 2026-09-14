@@ -19,35 +19,34 @@ export function checkAndHandleMarkedCard(
 
   // Find if this card index was marked
   const markInfo = player.markedCards.find((m) => m.cardIndex === cardIndex);
-  if (!markInfo) {
-    return;
-  }
-
-  // Remove the mark
-  player.markedCards = player.markedCards.filter(
-    (m) => m.cardIndex !== cardIndex,
-  );
-
-  // Give the card to the marker
-  const marker = helpers.findPlayer(state, markInfo.markedBy);
-  if (marker && marker.alive) {
-    marker.hand.push(card);
-
-    helpers.addLog(
-      state,
-      helpers.createLogEntry(
-        'action',
-        `Marked card triggered! Card stolen! 🏷️`,
-        {
-          scope: 'all',
-          senderId: markInfo.markedBy,
-          targetId: playerId,
-        },
-      ),
+  if (markInfo) {
+    // Remove the mark
+    player.markedCards = player.markedCards.filter(
+      (m) => m.cardIndex !== cardIndex,
     );
+
+    // Give the card to the marker
+    const marker = helpers.findPlayer(state, markInfo.markedBy);
+    if (marker && marker.alive) {
+      marker.hand.push(card);
+
+      helpers.addLog(
+        state,
+        helpers.createLogEntry(
+          'action',
+          `Marked card triggered! Card stolen! 🏷️`,
+          {
+            scope: 'all',
+            senderId: markInfo.markedBy,
+            targetId: playerId,
+          },
+        ),
+      );
+    }
   }
 
-  // Update remaining mark indices (cards after the removed one shift down)
+  // Always adjust marked indices: cards before the removed index shift
+  // remaining marks down; cards after shift marks down by 1.
   player.markedCards = player.markedCards.map((m) => ({
     ...m,
     cardIndex: m.cardIndex > cardIndex ? m.cardIndex - 1 : m.cardIndex,

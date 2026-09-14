@@ -8,8 +8,10 @@ interface PuzzleControlsProps {
   rating: number;
   ratingChange?: number;
   streak?: number;
+  mode?: 'daily' | 'rated' | 'themed';
   onNext: () => void;
   onHint?: () => void;
+  onShare?: () => void;
 }
 
 function PuzzleControlsImpl({
@@ -17,8 +19,10 @@ function PuzzleControlsImpl({
   rating,
   ratingChange,
   streak,
+  mode,
   onNext,
   onHint,
+  onShare,
 }: PuzzleControlsProps) {
   return (
     <div className="flex flex-col gap-3 p-4 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
@@ -74,14 +78,23 @@ function PuzzleControlsImpl({
       {phase === 'solved' && (
         <div className="flex flex-col gap-2">
           <div className="text-xs text-emerald-400 font-semibold text-center">
-            Correct!
+            {mode === 'daily' ? "Today's Puzzle Solved! 🎉" : 'Correct!'}
           </div>
+          {mode === 'daily' && onShare && (
+            <button
+              type="button"
+              onClick={onShare}
+              className="w-full py-2 px-3 rounded-lg bg-[var(--primary)] text-white text-xs font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+            >
+              Share Solution 📋
+            </button>
+          )}
           <button
             type="button"
             onClick={onNext}
             className="w-full py-2 px-3 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-500 text-xs font-semibold cursor-pointer hover:bg-emerald-500/25 transition-colors"
           >
-            Next Puzzle
+            {mode === 'daily' ? 'Practice More Puzzles' : 'Next Puzzle'}
           </button>
         </div>
       )}

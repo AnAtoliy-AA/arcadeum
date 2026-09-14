@@ -108,7 +108,7 @@ export function StatsEconomyOverview({
           </div>
 
           <div className="p-4 rounded-xl bg-[rgba(87,195,255,0.06)] border border-[var(--borderColor)] flex flex-col gap-2">
-            <Typography variant="caption" uiSize="xs" alpha="medium">
+            <Typography variant="caption" uiSize="xs" alpha="high">
               Gross Gem Sales (USD)
             </Typography>
             <div className="text-3xl font-extrabold text-emerald-400">
@@ -118,7 +118,7 @@ export function StatsEconomyOverview({
                 maximumFractionDigits: 2,
               })}
             </div>
-            <Typography variant="body" uiSize="xs" alpha="medium">
+            <Typography variant="body" uiSize="xs" alpha="high">
               Across {totalPurchasesCount.toLocaleString()} completed purchases
             </Typography>
           </div>

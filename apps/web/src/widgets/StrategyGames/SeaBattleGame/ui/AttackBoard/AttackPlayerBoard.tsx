@@ -14,7 +14,7 @@ import {
   RowLabels,
 } from '../styles';
 import { IdleBadge } from '@arcadeum/ui';
-import { type TranslationKey } from '@/shared/lib/useTranslation';
+import { type TranslationKey } from '@/shared/i18n/useTranslation';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type { SeaBattleTheme } from '../../lib/theme';
 import { AttackBoardCell } from './AttackBoardCell';
@@ -47,6 +47,7 @@ interface AttackPlayerBoardProps {
   onCellHover?: (playerId: string, row: number, col: number) => void;
   onCellHoverEnd?: () => void;
   weaponMode?: boolean;
+  keyboardCursor?: { row: number; col: number } | null;
   t: (key: TranslationKey) => string;
 }
 
@@ -74,6 +75,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   onCellHover,
   onCellHoverEnd,
   weaponMode = false,
+  keyboardCursor,
   t,
 }: AttackPlayerBoardProps) {
   const isAttackDisabled = disabled || isTeammate;
@@ -237,6 +239,10 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
                   ? scanWaveCellStates.get(cellKey)
                   : undefined;
           const isWeaponPreview = !isMe && weaponPreviewCells?.has(cellKey);
+          const isKeyboardCursor =
+            !isMe &&
+            keyboardCursor?.row === rIndex &&
+            keyboardCursor?.col === cIndex;
 
           return (
             <AttackBoardCell
@@ -251,6 +257,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               isWeaponPreview={!!isWeaponPreview}
               weaponPreviewType={!isMe ? weaponPreviewType : null}
               isWeaponClickable={isWeaponClickable}
+              isKeyboardCursor={isKeyboardCursor}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}

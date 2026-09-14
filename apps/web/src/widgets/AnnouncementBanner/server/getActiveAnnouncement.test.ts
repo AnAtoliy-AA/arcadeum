@@ -5,7 +5,7 @@ vi.mock('next/headers', () => ({
   cookies: vi.fn().mockResolvedValue({ get: vi.fn().mockReturnValue(null) }),
 }));
 
-const serverAuthFetchMock = vi.fn();
+const serverAuthFetchMock = vi.hoisted(() => vi.fn());
 vi.mock('@/shared/lib/server-auth-fetch', () => ({
   serverAuthFetch: (path: string, init?: RequestInit) =>
     serverAuthFetchMock(path, init),

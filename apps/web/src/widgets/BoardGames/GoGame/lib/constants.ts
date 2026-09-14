@@ -1,4 +1,4 @@
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { GameVariantOption } from '@/features/games/ui/GameVariantSelector';
 import type { GoBoardSize, GoOptions } from '../types';
 
@@ -40,12 +40,23 @@ const ALLOWED_BOARD_SIZES: ReadonlyArray<number> = GO_BOARD_SIZES.map(
   ({ size }) => size,
 );
 
+const AI_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
+type AiDifficulty = (typeof AI_DIFFICULTIES)[number];
+
+function isAiDifficulty(value: unknown): value is AiDifficulty {
+  return (
+    typeof value === 'string' &&
+    (AI_DIFFICULTIES as readonly string[]).includes(value)
+  );
+}
+
 /** Sanitize raw room game options into a safe GoOptions shape. */
 export function resolveGoOptions(raw: unknown): GoOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
     boardSize: number;
+    aiDifficulty: string;
   }>;
   const boardSize = ALLOWED_BOARD_SIZES.includes(Number(r.boardSize))
     ? (Number(r.boardSize) as GoBoardSize)
@@ -55,5 +66,6 @@ export function resolveGoOptions(raw: unknown): GoOptions {
     variant: theme,
     theme,
     boardSize,
+    aiDifficulty: isAiDifficulty(r.aiDifficulty) ? r.aiDifficulty : 'medium',
   };
 }

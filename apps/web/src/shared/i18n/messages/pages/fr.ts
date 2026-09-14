@@ -17,6 +17,7 @@ import { adminGamesFr } from './admin-games/fr';
 import { adminBlockedIpsFr } from './admin-blocked-ips/fr';
 import { adminUsersFr } from './admin-users/fr';
 import { adminBulkRewardsFr } from './admin-bulk-rewards/fr';
+import { adminXpBackfillFr } from './admin-xp-backfill/fr';
 import { friendsFr } from './friends/fr';
 import { clansFr } from './clans/fr';
 import { eventsFr } from './events/fr';
@@ -39,6 +40,7 @@ export const fr = {
     nav: {
       dashboard: 'Tableau de bord',
       statistics: 'Statistiques',
+      monitoring: 'Surveillance',
       users: 'Utilisateurs',
       payments: 'Paiements',
       announcements: 'Annonces',
@@ -49,6 +51,7 @@ export const fr = {
       games: 'Jeux',
       gameRules: 'Règles du Jeu',
       bulkRewards: 'Récompenses en Masse',
+      xpBackfill: 'XP Backfill',
       blockedIps: 'IPs Bloqués',
       geoBlock: 'Géo-Blocage',
       comingSoon: 'Bientôt',
@@ -165,6 +168,19 @@ export const fr = {
         total: 'Total',
       },
     },
+    monitoring: {
+      title: 'Surveillance',
+      loading: 'Chargement des métriques...',
+      enableHint:
+        'Activez METRICS_ENABLED=true dans .env pour voir les métriques',
+      status: 'Statut',
+      uptime: 'Temps de fonctionnement',
+      connections: 'Connexions',
+      memory: 'Mémoire (RSS)',
+      details: 'Détails du serveur',
+      heap: 'Total du tas',
+      lastCheck: 'Dernière vérification',
+    },
     error: {
       title: "Une erreur s'est produite",
       body: 'Une erreur est survenue lors du chargement de cette page.',
@@ -207,6 +223,7 @@ export const fr = {
     wallet: adminWalletFr,
     blockedIps: adminBlockedIpsFr,
     bulkRewards: adminBulkRewardsFr,
+    adminXpBackfill: adminXpBackfillFr,
   },
   tournaments: tournamentsFr,
   blog: blogFr,

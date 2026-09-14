@@ -13,7 +13,7 @@ export function GameHowToPlay({
       {kicker || title ? (
         <div className="box-border flex flex-col gap-1">
           {kicker ? (
-            <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+            <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
               {kicker}
             </span>
           ) : null}
@@ -23,7 +23,7 @@ export function GameHowToPlay({
             </h2>
           ) : null}
           {intro ? (
-            <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-80 max-w-2xl">
+            <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 max-w-2xl">
               {intro}
             </p>
           ) : null}
@@ -41,7 +41,7 @@ export function GameHowToPlay({
                 {step.stepNumber}
               </span>
               {step.icon ? (
-                <span className="box-border text-lg opacity-70">
+                <span className="box-border text-lg opacity-85">
                   {step.icon}
                 </span>
               ) : null}
@@ -51,13 +51,13 @@ export function GameHowToPlay({
               {step.title}
             </h3>
 
-            <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-80 leading-relaxed flex-grow">
+            <p className="box-border m-0 text-sm text-[var(--foreground)] opacity-90 leading-relaxed flex-grow">
               {step.body}
             </p>
 
             {step.tip ? (
-              <div className="box-border mt-2 p-2.5 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 text-xs text-[var(--foreground)] opacity-90">
-                <span className="font-semibold text-[var(--primary)]">
+              <div className="box-border mt-2 p-2.5 rounded-xl bg-[var(--primary)]/5 border border-[var(--primary)]/20 text-xs text-[var(--foreground)] opacity-95">
+                <span className="font-semibold text-[var(--color)]">
                   Pro Tip:{' '}
                 </span>
                 {step.tip}

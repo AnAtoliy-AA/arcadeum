@@ -6,16 +6,23 @@ import { parsePgn } from '../lib/pgn-import';
 interface PgnImportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onImport: (moves: Array<{
-    fromFile: string;
-    fromRank: number;
-    toFile: string;
-    toRank: number;
-    promotion?: string;
-  }>, variant: 'standard' | 'chess960') => void;
+  onImport: (
+    moves: Array<{
+      fromFile: string;
+      fromRank: number;
+      toFile: string;
+      toRank: number;
+      promotion?: string;
+    }>,
+    variant: 'standard' | 'chess960',
+  ) => void;
 }
 
-export function PgnImportModal({ isOpen, onClose, onImport }: PgnImportModalProps) {
+export function PgnImportModal({
+  isOpen,
+  onClose,
+  onImport,
+}: PgnImportModalProps) {
   const [pgnText, setPgnText] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -55,13 +62,15 @@ export function PgnImportModal({ isOpen, onClose, onImport }: PgnImportModalProp
           <button
             type="button"
             onClick={handleClose}
+            aria-label="Close"
             className="text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors text-xl leading-none"
           >
             ×
           </button>
         </div>
         <p className="text-xs text-[var(--textSecondary)] mb-3">
-          Paste a PGN game to analyze or replay. Headers and move text are supported.
+          Paste a PGN game to analyze or replay. Headers and move text are
+          supported.
         </p>
         <textarea
           value={pgnText}
@@ -70,6 +79,7 @@ export function PgnImportModal({ isOpen, onClose, onImport }: PgnImportModalProp
             setError(null);
           }}
           placeholder={`[Event "Casual Game"]\n[White "Player1"]\n[Black "Player2"]\n[Result "*"]\n\n1. e4 e5 2. Nf3 Nc6 *`}
+          aria-label="Paste PGN text"
           className="w-full h-48 p-3 rounded-xl bg-[var(--background)] border border-[var(--glassBorder)] text-[var(--color)] text-xs font-mono resize-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] placeholder:text-[var(--textSecondary)]/50"
           spellCheck={false}
         />
@@ -87,7 +97,7 @@ export function PgnImportModal({ isOpen, onClose, onImport }: PgnImportModalProp
           <button
             type="button"
             onClick={handleImport}
-            className="flex-1 py-2 px-4 rounded-lg bg-[var(--primary)]/15 border border-[var(--primary)]/30 text-[var(--primary)] text-xs font-semibold cursor-pointer hover:bg-[var(--primary)]/25 transition-colors"
+            className="flex-1 py-2 px-4 rounded-lg bg-[var(--primary)]/15 border border-[var(--primary)]/30 text-[var(--color)] text-xs font-semibold cursor-pointer hover:bg-[var(--primary)]/25 transition-colors"
           >
             Import
           </button>

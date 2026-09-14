@@ -38,22 +38,31 @@ export function isYesterday(prev: string, today: string): boolean {
  *  - prev === today → throw (caller must guard with "can claim" check first)
  *  - prev was yesterday → (prevStreak % 7) + 1   (so Day 7 → Day 1 wrap)
  *  - prev was older than yesterday → Day 1       (missed-day reset)
+ *
+ * When the streak would reset (missed day) but `freezeTokens > 0`, the
+ * streak is preserved instead and the caller is responsible for decrementing
+ * the token count. The function returns `{ streak, freezeUsed }`.
  */
 export function nextStreak(
   prevStreak: number,
   prevDay: string | null,
   today: string,
-): number {
-  if (prevDay === null) return 1;
+  freezeTokens = 0,
+): { streak: number; freezeUsed: boolean } {
+  if (prevDay === null) return { streak: 1, freezeUsed: false };
   if (prevDay === today) {
     throw new Error(
       'nextStreak: previous claim was today; guard with canClaim before calling',
     );
   }
   if (isYesterday(prevDay, today)) {
-    return (prevStreak % 7) + 1;
+    return { streak: (prevStreak % 7) + 1, freezeUsed: false };
   }
-  return 1;
+  // Missed day(s) — use freeze token if available
+  if (freezeTokens > 0 && prevStreak > 0) {
+    return { streak: prevStreak, freezeUsed: true };
+  }
+  return { streak: 1, freezeUsed: false };
 }
 
 /**

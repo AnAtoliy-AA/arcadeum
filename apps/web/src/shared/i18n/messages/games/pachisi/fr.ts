@@ -132,6 +132,36 @@ export const frMessages = {
           answer:
             'L’IA évalue sorties, captures, atterrissages sûrs et zones de danger pour vous challenger à chaque niveau.',
         },
+        safeSquares: {
+          question: 'Que sont les cases de sécurité au Pachisi ?',
+          answer:
+            'Les cases étoilées et les cases de départ sont des sanctuaires protégés où les pions ne peuvent pas être capturés.',
+        },
+        blockades: {
+          question: 'Deux pions peuvent-ils former un barrage ?',
+          answer:
+            'Oui. Deux pions de même couleur sur une même case forment un barrage infranchissable pour les adversaires.',
+        },
+        exactRoll: {
+          question: 'Faut-il un compte exact pour entrer au centre ?',
+          answer:
+            'Oui. Un pion doit atteindre la maison centrale avec le nombre exact de cases restantes.',
+        },
+        friends: {
+          question: 'Combien de joueurs peuvent participer au Pachisi ?',
+          answer:
+            'Le Pachisi se joue de 2 à 4 joueurs en salon privé entre amis ou avec des bots.',
+        },
+        history: {
+          question: 'Quelle est l’origine du Pachisi ?',
+          answer:
+            'Le Pachisi est un jeu ancestral originaire d’Inde, considéré comme l’ancêtre du jeu des Petits Chevaux et du Ludo.',
+        },
+        free: {
+          question: 'Le Pachisi est-il gratuit sur Arcadeum ?',
+          answer:
+            'Oui. Pachisi sur Arcadeum est 100% gratuit avec des plateaux colorés et sans installation.',
+        },
       },
     },
     lobby: {

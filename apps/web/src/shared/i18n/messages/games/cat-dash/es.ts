@@ -89,6 +89,41 @@ export const esMessages = {
           question: '¿Cómo juegan los bots?',
           answer: 'Los bots lanzan dados automáticamente cada turno.',
         },
+        finishLine: {
+          question: '¿Cómo se gana la carrera?',
+          answer:
+            'Sé el primer gato en cruzar la línea de meta alcanzando o superando la última casilla de la pista.',
+        },
+        trackHazards: {
+          question: '¿Qué ocurre en las casillas especiales de la pista?',
+          answer:
+            'Las casillas rojas de obstáculo te hacen perder el siguiente turno, mientras que las amarillas otorgan una tirada adicional inmediata.',
+        },
+        shortcuts: {
+          question: '¿Vale la pena tomar atajos en la pista?',
+          answer:
+            'Los atajos acortan la distancia hacia la meta, pero a menudo presentan una mayor concentración de trampas y obstáculos.',
+        },
+        friends: {
+          question: '¿Puedo correr con amigos en salas privadas?',
+          answer:
+            'Sí. Crea una sala personalizada, selecciona el tema y la longitud de la pista, y comparte el enlace con tus amigos.',
+        },
+        playerCount: {
+          question: '¿Cuántos jugadores pueden participar en una carrera?',
+          answer:
+            'Cat Dash admite de 2 a 6 corredores por partida, combinando jugadores reales y bots automáticos.',
+        },
+        mobile: {
+          question: '¿Se puede jugar a Cat Dash en móviles?',
+          answer:
+            'Sí. Cat Dash está optimizado para pantallas táctiles con controles intuitivos y animaciones fluidas.',
+        },
+        free: {
+          question: '¿Es Cat Dash gratuito?',
+          answer:
+            'Sí. Cat Dash es totalmente gratuito y se juega directamente en el navegador sin descargas ni suscripciones.',
+        },
       },
     },
     lobby: {

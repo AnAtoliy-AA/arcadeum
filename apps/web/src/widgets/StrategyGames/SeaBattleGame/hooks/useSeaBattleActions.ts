@@ -18,7 +18,7 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     (options?: {
       withBots?: boolean;
       botCount?: number;
-      difficulty?: 'easy' | 'medium' | 'hard';
+      difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
       gridSize?: number;
       shipCount?: number;
       variant?: string;
@@ -144,6 +144,27 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     [roomId, userId, onActionStart],
   );
 
+  const useShipAbility = useCallback(
+    (
+      abilityId: string,
+      targetPlayerId?: string,
+      row?: number,
+      col?: number,
+    ) => {
+      if (!userId) return;
+      onActionStart?.('useShipAbility');
+      gameSocket.emit('seaBattle.session.use_ship_ability', {
+        roomId,
+        userId,
+        abilityId,
+        targetPlayerId,
+        row,
+        col,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
+
   return {
     startSession,
     placeShip,
@@ -155,5 +176,6 @@ export function useSeaBattleActions(options: UseSeaBattleActionsOptions) {
     autoPlace,
     useSonar,
     useRadar,
+    useShipAbility,
   };
 }

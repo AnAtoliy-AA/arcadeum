@@ -43,6 +43,11 @@ export default {
           '0%': { backgroundPosition: '200% 0' },
           '100%': { backgroundPosition: '-200% 0' },
         },
+        'animated-dice-shake': {
+          '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
+          '25%': { transform: 'rotate(-8deg) scale(1.06)' },
+          '75%': { transform: 'rotate(8deg) scale(1.06)' },
+        },
       },
       animation: {
         shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',

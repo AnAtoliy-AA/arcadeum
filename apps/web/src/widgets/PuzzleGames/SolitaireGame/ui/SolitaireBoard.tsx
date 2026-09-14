@@ -2,7 +2,7 @@
 
 import { useMemo, type CSSProperties } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getSourceCards, isValidMove } from '../lib/engine';
 import { useSolitaireTheme } from '../lib/SolitaireThemeContext';
 import type { SolitaireTheme } from '../lib/theme';
@@ -278,7 +278,7 @@ export function SolitaireBoard({
 
       {selectedCards.length > 0 && (
         <p
-          className="mt-2.5 text-center text-xs text-[var(--primary)] font-semibold"
+          className="mt-2.5 text-center text-xs text-[var(--color)] font-semibold"
           role="status"
         >
           {t('games.solitaire_v1.board.selectedHint')}

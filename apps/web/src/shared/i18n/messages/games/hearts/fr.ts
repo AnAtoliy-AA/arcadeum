@@ -107,6 +107,37 @@ export const frMessages = {
           answer:
             "Les Coeurs ne peuvent pas mener jusqu'à ce qu'ils soient \"brisés\" — c'est-à-dire qu'un Coeur a été défaussé lors d'un tour précédent.",
         },
+        queenStrategy: {
+          question: 'Comment gérer la Dame de Pique ?',
+          answer:
+            'Conservez de petits piques pour vous protéger et défaussez la Dame sur un pli fort adverse dès que vous n’avez plus la couleur demandée.',
+        },
+        firstTrick: {
+          question:
+            'Qui ouvre le premier pli et quelles sont les restrictions ?',
+          answer:
+            'Le joueur possédant le 2 de Trèfle doit obligatoirement ouvrir. Aucune carte de pénalité (Cœurs ou Dame de Pique) ne peut être jouée au premier pli.',
+        },
+        stoppingTheMoon: {
+          question: 'Comment contrer un joueur qui tente de viser la Lune ?',
+          answer:
+            'Si un joueur ramasse tous les plis, prenez délibérément un cœur pour l’empêcher d’obtenir les 26 points de pénalité.',
+        },
+        friends: {
+          question: 'Comment jouer à la Dame de Pique en ligne avec des amis ?',
+          answer:
+            'Cliquez sur Créer une salle, définissez le score cible et partagez le lien pour jouer immédiatement sans compte.',
+        },
+        bots: {
+          question: 'Peut-on jouer à la Dame de Pique contre des ordinateurs ?',
+          answer:
+            'Oui. Vous pouvez jouer en solo contre trois bots intelligents ou compléter une table avec l’IA.',
+        },
+        free: {
+          question: 'Le jeu de la Dame de Pique est-il gratuit sur Arcadeum ?',
+          answer:
+            'Oui. Hearts sur Arcadeum est 100% gratuit avec des animations soignées, des thèmes personnalisés et sans téléchargement.',
+        },
       },
     },
     lobby: {

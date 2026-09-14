@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { GameSessionSummary } from '@/shared/types/games';
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import {
   computeGameResult,
   type BackendGameResult,

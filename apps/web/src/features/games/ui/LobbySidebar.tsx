@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   DndContext,
   closestCenter,
@@ -82,6 +82,9 @@ interface LobbySidebarProps {
   deleteRoomLabel: string;
   extraPlayersCardSlot?: React.ReactNode;
   onRefresh?: () => void;
+  enableBots?: boolean;
+  onAddBot?: () => void;
+  onRemoveBot?: (botId: string) => void;
 }
 
 export function LobbySidebar({
@@ -102,6 +105,9 @@ export function LobbySidebar({
   extraPlayersCardSlot,
   onRefresh,
   labels,
+  enableBots,
+  onAddBot,
+  onRemoveBot,
 }: LobbySidebarProps) {
   const {
     playersLabel = 'Players',
@@ -119,6 +125,10 @@ export function LobbySidebar({
   } = labels;
   const { t } = useTranslation();
   const maxPlayers = room.maxPlayers ?? 5;
+  const hasBotsInRoom = members.some((m) => m.id.startsWith('bot-'));
+  const canAddBots =
+    enableBots && isHost && room.status === 'lobby' && !hasBotsInRoom;
+  const canRemoveBots = enableBots && isHost && room.status === 'lobby';
 
   // Get invited/declined for rematch
   const invitedUsers =
@@ -138,19 +148,14 @@ export function LobbySidebar({
   const joinedIds = new Set(members.map((m) => m.id));
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
   const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
-
-  const getInitials = (name: string) => name.slice(0, 2).toUpperCase();
-
   const [kickTarget, setKickTarget] = React.useState<{
     id: string;
     name: string;
   } | null>(null);
   const [showLeaveConfirm, setShowLeaveConfirm] = React.useState(false);
-
   const handleKickClose = React.useCallback(() => {
     setKickTarget(null);
   }, [setKickTarget]);
-
   const handleKickConfirm = React.useCallback(() => {
     if (kickTarget) {
       onKickPlayer?.(kickTarget.id);
@@ -158,22 +163,16 @@ export function LobbySidebar({
     }
   }, [kickTarget, onKickPlayer, setKickTarget]);
 
-  const handleLeaveClose = React.useCallback(() => {
-    setShowLeaveConfirm(false);
-  }, [setShowLeaveConfirm]);
-
   const handleLeaveConfirm = React.useCallback(() => {
     onLeaveRoom?.();
     setShowLeaveConfirm(false);
   }, [onLeaveRoom, setShowLeaveConfirm]);
-
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
@@ -195,15 +194,28 @@ export function LobbySidebar({
           <CardTitle data-testid="player-count-heading">
             {playersLabel} ({room.playerCount}/{maxPlayers})
           </CardTitle>
-          {onRefresh && (
-            <RefreshButton
-              onClick={onRefresh}
-              title="Refresh Room"
-              data-testid="refresh-room-button"
-            >
-              <RefreshIcon size={16} />
-            </RefreshButton>
-          )}
+          <div className="flex items-center gap-1.5">
+            {canAddBots && onAddBot && (
+              <Button
+                className="py-1 px-2 min-w-[auto] text-[11px] font-semibold"
+                variant="ghost"
+                size="sm"
+                onClick={onAddBot}
+                data-testid="add-bot-button"
+              >
+                + 🤖
+              </Button>
+            )}
+            {onRefresh && (
+              <RefreshButton
+                onClick={onRefresh}
+                title="Refresh Room"
+                data-testid="refresh-room-button"
+              >
+                <RefreshIcon size={16} />
+              </RefreshButton>
+            )}
+          </div>
         </CardHeader>
         <PlayerList>
           {showReorderControls && isHost ? (
@@ -216,42 +228,53 @@ export function LobbySidebar({
                 items={members.map((m) => m.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {members.map((member, index) => (
-                  <SortablePlayerItem
-                    key={member.id}
-                    member={member}
-                    isHost={isHost}
-                    isRoomHost={member.id === room.hostId}
-                    index={index}
-                    totalCount={members.length}
-                    onMoveUp={() => {
-                      const newOrder = arrayMove(members, index, index - 1).map(
-                        (m) => m.id,
-                      );
-                      onReorderPlayers?.(newOrder);
-                    }}
-                    onMoveDown={() => {
-                      const newOrder = arrayMove(members, index, index + 1).map(
-                        (m) => m.id,
-                      );
-                      onReorderPlayers?.(newOrder);
-                    }}
-                    onKick={
-                      onKickPlayer && member.id !== room.hostId
-                        ? () =>
-                            setKickTarget({
-                              id: member.id,
-                              name: member.displayName,
-                            })
-                        : undefined
-                    }
-                  />
-                ))}
+                {members.map((member, index) => {
+                  const isBot = member.id.startsWith('bot-');
+                  return (
+                    <SortablePlayerItem
+                      key={member.id}
+                      member={member}
+                      isHost={isHost}
+                      isRoomHost={member.id === room.hostId}
+                      index={index}
+                      totalCount={members.length}
+                      onMoveUp={() => {
+                        const newOrder = arrayMove(
+                          members,
+                          index,
+                          index - 1,
+                        ).map((m) => m.id);
+                        onReorderPlayers?.(newOrder);
+                      }}
+                      onMoveDown={() => {
+                        const newOrder = arrayMove(
+                          members,
+                          index,
+                          index + 1,
+                        ).map((m) => m.id);
+                        onReorderPlayers?.(newOrder);
+                      }}
+                      onKick={
+                        isBot && canRemoveBots && onRemoveBot
+                          ? () => onRemoveBot(member.id)
+                          : onKickPlayer && member.id !== room.hostId
+                            ? () =>
+                                setKickTarget({
+                                  id: member.id,
+                                  name: member.displayName,
+                                })
+                            : undefined
+                      }
+                      isBot={isBot}
+                    />
+                  );
+                })}
               </SortableContext>
             </DndContext>
           ) : (
             members.map((member) => {
               const isRoomHost = member.id === room.hostId;
+              const isBot = member.id.startsWith('bot-');
               return (
                 <PlayerItem key={member.id} isHost={isRoomHost}>
                   <InGameAvatar
@@ -272,9 +295,25 @@ export function LobbySidebar({
                           HOST
                         </Badge>
                       )}
+                      {isBot && (
+                        <span className="text-[11px]" title="AI Bot">
+                          🤖
+                        </span>
+                      )}
                     </div>
                   </PlayerInfo>
-                  {onKickPlayer && !isRoomHost && (
+                  {isBot && canRemoveBots && onRemoveBot ? (
+                    <Button
+                      className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
+                      variant="danger"
+                      ghost
+                      size="sm"
+                      onClick={() => onRemoveBot(member.id)}
+                      data-testid={`remove-bot-${member.id}`}
+                    >
+                      ✕
+                    </Button>
+                  ) : onKickPlayer && !isRoomHost ? (
                     <Button
                       className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
                       variant="danger"
@@ -289,7 +328,7 @@ export function LobbySidebar({
                     >
                       ✕
                     </Button>
-                  )}
+                  ) : null}
                 </PlayerItem>
               );
             })
@@ -323,7 +362,7 @@ export function LobbySidebar({
                     }
                   >
                     <LobbyPlayerAvatarText>
-                      {getInitials(u.displayName)}
+                      {u.displayName.slice(0, 2).toUpperCase()}
                     </LobbyPlayerAvatarText>
                   </LobbyPlayerAvatar>
                   <PlayerInfo>
@@ -340,7 +379,7 @@ export function LobbySidebar({
                       className="grayscale"
                     >
                       <LobbyPlayerAvatarText>
-                        {getInitials(u.displayName)}
+                        {u.displayName.slice(0, 2).toUpperCase()}
                       </LobbyPlayerAvatarText>
                     </LobbyPlayerAvatar>
                     <PlayerInfo>
@@ -448,7 +487,7 @@ export function LobbySidebar({
 
       <ConfirmationModal
         open={showLeaveConfirm}
-        onClose={handleLeaveClose}
+        onClose={() => setShowLeaveConfirm(false)}
         onConfirm={handleLeaveConfirm}
         title={t('games.common.leaveRoom.confirmTitle')}
         message={t('games.common.leaveRoom.confirmMessage')}

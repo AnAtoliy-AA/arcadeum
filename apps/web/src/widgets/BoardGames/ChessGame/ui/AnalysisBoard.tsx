@@ -16,7 +16,7 @@ import {
 import { parseFen } from '@arcadeum/games-core/games/chess/chess.board';
 import { getLegalMoves } from '@arcadeum/games-core/games/chess/chess.move-generator';
 import { analyzePositionWithStockfish } from '@/features/analysis/lib/stockfish-api';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { AnalysisBoardGrid } from './AnalysisBoardGrid';
 import { AnalysisSidebar } from './AnalysisSidebar';
 import { OpeningExplorer } from '@/features/analysis/ui/OpeningExplorer';
@@ -376,7 +376,7 @@ export function AnalysisBoard() {
           />
           {analyzing ? 'Analyzing...' : `Depth ${eval_?.depth ?? 0}`}
           {eval_?.pv?.[0] && (
-            <span className="ml-2 font-mono opacity-70">
+            <span className="ml-2 font-mono opacity-85">
               Best: {eval_.pv[0]}
             </span>
           )}

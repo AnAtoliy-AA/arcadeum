@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
@@ -17,6 +17,33 @@ const GO_LOBBY_THEME = {
     'linear-gradient(90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%)',
   buttonGradient: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
 };
+
+const AI_DIFFICULTY_OPTIONS = [
+  {
+    id: 'easy',
+    label: 'Easy',
+    emoji: '🌱',
+    description: 'Random moves with capture priority',
+  },
+  {
+    id: 'medium',
+    label: 'Medium',
+    emoji: '🌿',
+    description: 'Greedy heuristic strategy',
+  },
+  {
+    id: 'hard',
+    label: 'Hard',
+    emoji: '🌳',
+    description: 'MCTS search (220 simulations)',
+  },
+  {
+    id: 'expert',
+    label: 'Expert',
+    emoji: '🏔️',
+    description: 'Advanced MCTS (550 simulations)',
+  },
+] as const;
 
 interface GoLobbyProps {
   room: GameRoomSummary;
@@ -70,6 +97,8 @@ export function GoLobby({
     return found ? t(found.name) : undefined;
   }, [variant, t]);
 
+  const currentDifficulty = options.aiDifficulty ?? 'medium';
+
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
       <LobbyOptionSection title={t('games.create.sectionVariant')}>
@@ -106,6 +135,33 @@ export function GoLobby({
         <span className="text-[14px] opacity-[0.7]">
           {t('games.go_v1.lobby.boardSizeHint')}
         </span>
+      </LobbyOptionSection>
+      <LobbyOptionSection title={t('games.go_v1.lobby.aiDifficulty')}>
+        <div className="grid grid-cols-2 gap-2">
+          {AI_DIFFICULTY_OPTIONS.map((diff) => (
+            <button
+              key={diff.id}
+              type="button"
+              data-testid={`go-ai-difficulty-${diff.id}`}
+              disabled={!isHost}
+              aria-pressed={currentDifficulty === diff.id}
+              onClick={() => setOption({ aiDifficulty: diff.id })}
+              className={cx(
+                'flex flex-col items-center gap-1 rounded-lg border px-3 py-2.5 text-sm transition-colors',
+                currentDifficulty === diff.id
+                  ? 'border-[#3fd38666] bg-[#2563eb] text-white'
+                  : 'border-[var(--borderColor)] bg-[var(--backgroundHover)]',
+                !isHost && 'cursor-not-allowed opacity-50',
+              )}
+            >
+              <span className="text-lg">{diff.emoji}</span>
+              <span className="font-semibold">{diff.label}</span>
+              <span className="text-[10px] opacity-70 leading-tight">
+                {diff.description}
+              </span>
+            </button>
+          ))}
+        </div>
       </LobbyOptionSection>
     </div>
   );

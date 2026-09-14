@@ -108,7 +108,7 @@ test.describe('Pachisi Gameplay Styles, Fullscreen and Dice', () => {
     const rollBtn = page.getByTestId('pachisi-roll-button');
     await expect(rollBtn).toBeVisible();
 
-    const emptyDie = page.getByTestId('pachisi-die');
+    const emptyDie = page.getByTestId('pachisi-die-result');
     await expect(emptyDie).toHaveCount(0);
 
     const fullscreenBtn = page.getByTestId('widget-fullscreen-button');
@@ -205,12 +205,9 @@ test.describe('Pachisi Gameplay Styles, Fullscreen and Dice', () => {
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
-    const die = page.getByTestId('pachisi-die');
-    await expect(die).toBeVisible();
-
-    const dieNumber = page.getByTestId('pachisi-die-number');
-    await expect(dieNumber).toBeVisible();
-    await expect(dieNumber).toHaveText('6');
+    const dieResult = page.getByTestId('pachisi-die-result');
+    await expect(dieResult).toBeVisible();
+    await expect(dieResult).toHaveText('6');
 
     const yardToken = page.getByTestId('yard-token-0-0');
     await expect(yardToken).toBeVisible();

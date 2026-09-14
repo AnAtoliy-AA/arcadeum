@@ -198,6 +198,7 @@ export function AdminAnnouncementForm({
         <span className="">{labels.severity}</span>
         <select
           data-testid="form-severity"
+          aria-label={labels.severity}
           value={state.severity}
           onChange={(e) =>
             setState((s) => ({
@@ -217,6 +218,7 @@ export function AdminAnnouncementForm({
         <span className="">{labels.audience}</span>
         <select
           data-testid="form-audience"
+          aria-label={labels.audience}
           value={state.audience}
           onChange={(e) =>
             setState((s) => ({
@@ -240,6 +242,7 @@ export function AdminAnnouncementForm({
           <input
             type="datetime-local"
             data-testid="form-startsAt"
+            aria-label={labels.startsAt}
             value={state.startsAt}
             onChange={(e) =>
               setState((s) => ({ ...s, startsAt: e.target.value }))
@@ -252,6 +255,7 @@ export function AdminAnnouncementForm({
           <input
             type="datetime-local"
             data-testid="form-endsAt"
+            aria-label={labels.endsAt}
             value={state.endsAt}
             onChange={(e) =>
               setState((s) => ({ ...s, endsAt: e.target.value }))
@@ -297,6 +301,7 @@ export function AdminAnnouncementForm({
         </span>
         <input
           data-testid={`form-title-${state.activeLocale}`}
+          aria-label={labels.title}
           value={active.title}
           onChange={(e) =>
             updateLocale(state.activeLocale, 'title', e.target.value)
@@ -307,6 +312,7 @@ export function AdminAnnouncementForm({
         <span className="text-[12px] opacity-[0.7]">{labels.body}</span>
         <textarea
           data-testid={`form-body-${state.activeLocale}`}
+          aria-label={labels.body}
           value={active.body ?? ''}
           onChange={(e) =>
             updateLocale(state.activeLocale, 'body', e.target.value)
@@ -320,6 +326,7 @@ export function AdminAnnouncementForm({
             <span className="text-[12px] opacity-[0.7]">{labels.ctaLabel}</span>
             <input
               data-testid={`form-ctaLabel-${state.activeLocale}`}
+              aria-label={labels.ctaLabel}
               value={active.ctaLabel ?? ''}
               onChange={(e) =>
                 updateLocale(state.activeLocale, 'ctaLabel', e.target.value)
@@ -332,6 +339,7 @@ export function AdminAnnouncementForm({
             <span className="text-[12px] opacity-[0.7]">{labels.ctaHref}</span>
             <input
               data-testid={`form-ctaHref-${state.activeLocale}`}
+              aria-label={labels.ctaHref}
               value={active.ctaHref ?? ''}
               onChange={(e) =>
                 updateLocale(state.activeLocale, 'ctaHref', e.target.value)

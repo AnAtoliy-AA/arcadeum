@@ -28,6 +28,7 @@ import { BattlePassModule } from './battle-pass/battle-pass.module';
 import { SupportModule } from './support/support.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { BulkRewardsModule } from './bulk-rewards/bulk-rewards.module';
+import { ActivityFeedModule } from './games/activity-feed/activity-feed.module';
 import { FriendsModule } from './friends/friends.module';
 import { ClansModule } from './clans/clans.module';
 import { EventsModule } from './events/events.module';
@@ -35,6 +36,8 @@ import { SeasonsModule } from './seasons/seasons.module';
 import { EngagementModule } from './engagement/engagement.module';
 import { SocialRewardsModule } from './social-rewards/social-rewards.module';
 import { AsyncMatchModule } from './games/async-match/async-match.module';
+import { XpModule } from './xp/xp.module';
+import { LeaguesModule } from './leagues/leagues.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -77,6 +80,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     ShopModule,
     BattlePassModule,
     NotificationsModule,
+    ActivityFeedModule,
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60_000, limit: 100 },
@@ -94,6 +98,8 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     EngagementModule,
     SocialRewardsModule,
     AsyncMatchModule,
+    LeaguesModule,
+    XpModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,

@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { GlassCard, Typography } from '@arcadeum/ui';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 
 interface Standing {
   userId: string;
@@ -85,14 +85,14 @@ export function TournamentStandings({
       )}
 
       {!isLoading && standings.length === 0 && (
-        <Typography variant="body" alpha="medium" className="text-center p-2">
+        <Typography variant="body" alpha="high" className="text-center p-2">
           No standings yet.
         </Typography>
       )}
 
       {!isLoading && standings.length > 0 && (
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-[11px] font-bold opacity-50 px-2">
+          <div className="flex items-center gap-2 text-[11px] font-bold opacity-85 px-2">
             <span className="w-6">#</span>
             <span className="flex-1">{sLabels?.player ?? 'Player'}</span>
             <span className="w-12 text-right">
@@ -118,10 +118,17 @@ export function TournamentStandings({
               }`}
             >
               <span className="w-6 font-bold">
-                {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`}
+                {index === 0
+                  ? '🥇'
+                  : index === 1
+                    ? '🥈'
+                    : index === 2
+                      ? '🥉'
+                      : `${index + 1}`}
               </span>
               <span className="flex-1 truncate">
-                {standing.displayName ?? `Player ${standing.userId.slice(0, 6)}`}
+                {standing.displayName ??
+                  `Player ${standing.userId.slice(0, 6)}`}
               </span>
               <span className="w-12 text-right font-bold">
                 {standing.points}

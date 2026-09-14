@@ -52,4 +52,16 @@ describe('canSeeAtTier (new tiers)', () => {
     expect(canSeeAtTier('vip', 'none')).toBe(false);
     expect(canSeeAtTier('free', 'none')).toBe(false);
   });
+
+  it('safely handles unknown or guest roles', () => {
+    expect(
+      canSeeAtTier('guest' as unknown as import('./roles').UserRole, 'all'),
+    ).toBe(true);
+    expect(
+      canSeeAtTier(
+        'guest' as unknown as import('./roles').UserRole,
+        'premium_plus',
+      ),
+    ).toBe(false);
+  });
 });

@@ -80,11 +80,21 @@ describe('SHOP_CATALOG', () => {
     expect(categories.has('badge')).toBe(true);
   });
 
-  it('non-starter items always have non-zero price', () => {
+  it('non-starter purchasable items always have non-zero price', () => {
     for (const item of Object.values(SHOP_CATALOG)) {
-      if (!item.starter) {
+      if (!item.starter && item.purchasable !== false) {
         expect(item.defaultPriceAmount).toBeGreaterThan(0);
       }
+    }
+  });
+
+  it('all badges are non-purchasable level rewards', () => {
+    const badges = Object.values(SHOP_CATALOG).filter(
+      (i) => i.category === 'badge',
+    );
+    expect(badges.length).toBe(21);
+    for (const badge of badges) {
+      expect(badge.purchasable).toBe(false);
     }
   });
 

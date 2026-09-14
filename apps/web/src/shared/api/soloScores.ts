@@ -9,6 +9,7 @@ export interface SoloScoreRecord {
   result: 'won' | 'lost';
   sessionId: string;
   timestamp: number;
+  usedUndo?: boolean;
 }
 
 export interface SoloLeaderboardEntry {
@@ -60,6 +61,7 @@ export const soloScoresApi = {
     limit = 20,
     offset = 0,
     options?: ApiClientOptions,
+    usedUndo?: boolean,
   ): Promise<SoloLeaderboardResponse> => {
     const params = new URLSearchParams({
       gameId,
@@ -69,6 +71,9 @@ export const soloScoresApi = {
       limit: String(limit),
       offset: String(offset),
     });
+    if (usedUndo !== undefined) {
+      params.append('usedUndo', String(usedUndo));
+    }
     return apiClient.get<SoloLeaderboardResponse>(
       `/games/solo-scores/leaderboard?${params.toString()}`,
       options,

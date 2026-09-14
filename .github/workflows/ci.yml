@@ -4,13 +4,13 @@ permissions: read-all
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [ main ]
   pull_request:
     branches: [ main, develop, staging ]
     types: [opened, synchronize, reopened]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -159,7 +159,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: ${{ fromJSON(github.event_name == 'pull_request' && !(github.base_ref == 'staging' || github.base_ref == 'main') && '["chromium"]' || '["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]') }}
+        project: ${{ fromJSON(github.event_name == 'pull_request' && github.base_ref == 'develop' && '[]' || '["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]') }}
         shard: [1, 2, 3]
     services:
       mongodb:
@@ -239,3 +239,327 @@ jobs:
           path: |
             apps/web/playwright-report/
           retention-days: 30
+
+  web-e2e-develop:
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/6)
+    needs: build
+    if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' && !startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version') }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ['chromium']
+        shard: [1, 2, 3, 4, 5, 6]
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    env:
+      E2E_PROD: true
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-outputs
+
+      - name: Extract Build Artifacts
+        run: tar -xvf build-artifacts.tar
+
+      - name: Verify Builds
+        run: |
+          ls -F apps/web/.next | head -n 5
+          ls -F apps/be/dist | head -n 5
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-chromium-
+
+      - name: Disable Broken Microsoft Repos
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft-*.list
+          sudo rm -f /etc/apt/sources.list.d/microsoft-*.sources
+          sudo apt-get update || true
+
+      - name: Install Playwright System Dependencies
+        run: pnpm --filter web exec playwright install-deps chromium
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter web exec playwright install chromium
+
+      - name: Run Web E2E Tests
+        run: pnpm --filter web test:e2e --project=chromium --shard=${{ matrix.shard }}/6
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: web-e2e-report-chromium-${{ matrix.shard }}
+          path: |
+            apps/web/playwright-report/
+          retention-days: 30
+
+  lhci-urls:
+    name: Generate Lighthouse URLs
+    needs: build
+    if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' }}"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-outputs
+
+      - name: Extract Build Artifacts
+        run: tar -xvf build-artifacts.tar
+
+      - name: Generate Lighthouse URLs from routes
+        run: node apps/web/scripts/generate-lhci-urls.mjs
+
+      - name: Upload Lighthouse URLs
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-urls
+          path: apps/web/lighthouse-urls.json
+          retention-days: 1
+
+  lhci-audit:
+    name: Lighthouse (Shard ${{ matrix.shard }}/8)
+    needs: [build, lhci-urls]
+    if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' }}"
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    env:
+      MONGODB_OCI_URI: mongodb://localhost:27017/arcadeum_test
+      AUTH_JWT_SECRET: lighthouse_test_secret
+      OAUTH_WEB_CLIENT_ID: lighthouse_dummy_client_id
+      OAUTH_WEB_CLIENT_SECRET: lighthouse_dummy_client_secret
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-outputs
+
+      - name: Extract Build Artifacts
+        run: tar -xvf build-artifacts.tar
+
+      - name: Start Backend server
+        run: |
+          pnpm --filter be start:prod &
+          for i in $(seq 1 60); do
+            if curl -s http://localhost:4000/health > /dev/null 2>&1; then
+              echo "Backend ready"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "Backend failed to start"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Start Next.js server
+        run: |
+          pnpm --filter web start &
+          for i in $(seq 1 60); do
+            if curl -s http://localhost:3000/en > /dev/null 2>&1; then
+              echo "Server ready"
+              break
+            fi
+            if [ "$i" -eq 60 ]; then
+              echo "Server failed to start"
+              exit 1
+            fi
+            sleep 1
+          done
+
+      - name: Download Lighthouse URLs
+        uses: actions/download-artifact@v8
+        with:
+          name: lighthouse-urls
+          path: apps/web/
+
+      - name: Shard URLs
+        run: |
+          node -e "
+            const urls = require('./apps/web/lighthouse-urls.json');
+            const shard = ${{ matrix.shard }};
+            const total = 8;
+            const shardUrls = urls.filter((_, i) => i % total === shard - 1);
+            require('fs').writeFileSync('./apps/web/lighthouse-urls.json', JSON.stringify(shardUrls, null, 2));
+            console.log('Shard ' + shard + ': ' + shardUrls.length + ' URLs');
+          "
+
+      - name: Run Lighthouse CI
+        run: pnpm --filter web lhci
+
+      - name: Upload Lighthouse Reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-reports-${{ matrix.shard }}
+          path: .lighthouseci/
+          retention-days: 1
+
+      - name: Clean up Lighthouse reports
+        if: always()
+        run: rm -rf .lighthouseci/
+
+  lhci-comment:
+    name: Lighthouse Report
+    needs: lhci-audit
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Download All Reports
+        uses: actions/download-artifact@v8
+        with:
+          pattern: lighthouse-reports-*
+          merge-multiple: true
+          path: .lighthouseci/
+
+      - name: Post PR comment
+        run: node scripts/lhci-comment.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+  axe-a11y:
+    name: axe-a11y (Shard ${{ matrix.shard }}/2)
+    needs: [build, lhci-urls]
+    if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: build-outputs
+
+      - name: Extract Build Artifacts
+        run: tar -xvf build-artifacts.tar
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-chromium-
+
+      - name: Disable Broken Microsoft Repos
+        run: |
+          sudo rm -f /etc/apt/sources.list.d/microsoft-*.list
+          sudo rm -f /etc/apt/sources.list.d/microsoft-*.sources
+          sudo apt-get update || true
+
+      - name: Install Playwright System Dependencies
+        run: pnpm --filter web exec playwright install-deps chromium
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter web exec playwright install chromium
+
+      - name: Download Lighthouse URLs
+        uses: actions/download-artifact@v8
+        with:
+          name: lighthouse-urls
+          path: apps/web/
+
+      - name: Run axe-a11y Tests
+        run: pnpm --filter web test:e2e --project=chromium e2e/audit/axe-a11y.spec.ts
+        env:
+          SHARD_INDEX: ${{ matrix.shard }}
+          SHARD_TOTAL: '2'
+          E2E_PROD: 'true'
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: axe-a11y-report-shard-${{ matrix.shard }}
+          path: apps/web/playwright-report/
+          retention-days: 7

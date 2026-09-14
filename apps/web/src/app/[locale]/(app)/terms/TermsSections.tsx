@@ -82,7 +82,7 @@ export function TermsSectionGroup1({
           <div>
             <Typography
               variant="caption"
-              alpha="medium"
+              alpha="high"
               className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.companyName ?? 'Platform'}
@@ -98,7 +98,7 @@ export function TermsSectionGroup1({
           <div>
             <Typography
               variant="caption"
-              alpha="medium"
+              alpha="high"
               className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.legalName ?? 'Legal Entity'}
@@ -114,7 +114,7 @@ export function TermsSectionGroup1({
           <div>
             <Typography
               variant="caption"
-              alpha="medium"
+              alpha="high"
               className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.idCode ?? 'ID Code'}
@@ -130,7 +130,7 @@ export function TermsSectionGroup1({
           <div>
             <Typography
               variant="caption"
-              alpha="medium"
+              alpha="high"
               className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.contactEmail ?? 'Support Email'}
@@ -146,7 +146,7 @@ export function TermsSectionGroup1({
           <div className="sm:col-span-2">
             <Typography
               variant="caption"
-              alpha="medium"
+              alpha="high"
               className="text-xs uppercase text-[var(--textSecondary)]"
             >
               {s?.companyInfo?.workingHours ?? 'Working Hours'}

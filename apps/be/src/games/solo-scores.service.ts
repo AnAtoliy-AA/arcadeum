@@ -4,6 +4,8 @@ import { Model, type PipelineStage } from 'mongoose';
 import { SoloScore } from './schemas/solo-score.schema';
 import { User } from '../auth/schemas/user.schema';
 import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
+import { SoloRatingService } from './solo-rating.service';
+import { XpSettingsService } from '../xp/xp-settings.service';
 
 interface SyncSoloScoreRecord {
   gameId: string;
@@ -14,6 +16,7 @@ interface SyncSoloScoreRecord {
   result: 'won' | 'lost';
   sessionId: string;
   timestamp: number;
+  usedUndo?: boolean;
 }
 
 @Injectable()
@@ -25,6 +28,8 @@ export class SoloScoresService {
     private readonly soloScoreModel: Model<SoloScore>,
     @InjectModel(User.name, OCI_CONNECTION)
     private readonly userModel: Model<User>,
+    private readonly soloRatingService: SoloRatingService,
+    private readonly xpSettings: XpSettingsService,
   ) {}
 
   async getLeaderboard(
@@ -34,6 +39,7 @@ export class SoloScoresService {
     order: 'asc' | 'desc' = 'desc',
     limit = 20,
     offset = 0,
+    usedUndo?: boolean,
   ): Promise<{
     entries: Array<{
       rank: number;
@@ -52,13 +58,18 @@ export class SoloScoresService {
   }> {
     const sortDirection = order === 'asc' ? 1 : -1;
 
+    const matchStage: Record<string, unknown> = {
+      gameId,
+      difficulty,
+      result: 'won',
+    };
+    if (usedUndo !== undefined) {
+      matchStage.usedUndo = usedUndo;
+    }
+
     const pipeline: PipelineStage[] = [
       {
-        $match: {
-          gameId,
-          difficulty,
-          result: 'won',
-        },
+        $match: matchStage,
       },
       {
         $sort: {
@@ -273,6 +284,7 @@ export class SoloScoresService {
             durationMs: r.durationMs,
             result: r.result,
             timestamp: r.timestamp,
+            usedUndo: r.usedUndo ?? false,
           },
         },
         upsert: true,
@@ -281,6 +293,45 @@ export class SoloScoresService {
 
     try {
       await this.soloScoreModel.bulkWrite(ops, { ordered: false });
+
+      // Update solo rating for each completed game
+      for (const r of newRecords) {
+        if (r.result === 'won' || r.result === 'lost') {
+          try {
+            await this.soloRatingService.recordResult({
+              userId,
+              difficulty: r.difficulty,
+              won: r.result === 'won',
+              usedUndo: r.usedUndo ?? false,
+            });
+          } catch (err) {
+            this.logger.warn(
+              `Failed to update solo rating for ${userId}: ${(err as Error).message}`,
+            );
+          }
+        }
+      }
+
+      // Award XP for solo games (0.1 coefficient by default, 0 if undo was used)
+      for (const r of newRecords) {
+        if (r.usedUndo) continue;
+        try {
+          const amount = await this.xpSettings.getXpReward(
+            r.gameId,
+            r.result === 'won' ? 'won' : 'lost',
+            true,
+            false,
+          );
+          if (amount > 0) {
+            await this.xpSettings.awardXp(userId, this.userModel, amount);
+          }
+        } catch (err) {
+          this.logger.warn(
+            `Failed to award solo XP for ${userId}: ${(err as Error).message}`,
+          );
+        }
+      }
+
       return { synced: newRecords.length, duplicates };
     } catch (err) {
       if ((err as { code?: number }).code === 11000) {

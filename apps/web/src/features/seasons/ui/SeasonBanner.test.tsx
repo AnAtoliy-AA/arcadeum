@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { SeasonBanner } from './SeasonBanner';
 import type { SeasonDetailView } from '../model/types';
 
-vi.mock('@/shared/lib/useTranslation', () => ({
+vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: Record<string, string | number>) =>
       params && 'days' in params ? `${key}(${params.days})` : key,

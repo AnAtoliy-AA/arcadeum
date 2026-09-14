@@ -1,31 +1,13 @@
 'use client';
 
 import type React from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { PageTitle, Button } from '@arcadeum/ui';
-
-export const statsHeaderCSS = `
-  @keyframes stats-header-spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  .stats-refresh-icon--spinning {
-    animation: stats-header-spin 1s linear infinite;
-  }
-`;
 
 interface StatsHeaderProps {
   loading: boolean;
   refreshing: boolean;
   onRefresh: () => void;
-}
-
-function Header({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex flex-row items-center justify-between mb-4 sm:mb-5 lg:mb-7">
-      {children}
-    </div>
-  );
 }
 
 export function StatsHeader({
@@ -36,20 +18,21 @@ export function StatsHeader({
   const { t } = useTranslation();
 
   return (
-    <Header>
-      <style>{statsHeaderCSS}</style>
-      <PageTitle size="xl" gradient>
-        {t('stats.pageTitle')}
-      </PageTitle>
+    <div className="flex flex-row items-center justify-between mb-4 sm:mb-6">
+      <div className="flex flex-col gap-1">
+        <PageTitle size="xl" gradient>
+          {t('stats.pageTitle')}
+        </PageTitle>
+      </div>
       <Button
         variant="icon"
         size="sm"
         onClick={onRefresh}
         disabled={loading || refreshing}
+        className="transition-transform active:scale-95"
       >
         <svg
-          className={refreshing ? 'stats-refresh-icon--spinning' : ''}
-          style={{ width: 20, height: 20 }}
+          className={`w-5 h-5 transition-transform ${refreshing ? 'animate-spin' : ''}`}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -58,6 +41,6 @@ export function StatsHeader({
           <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
         </svg>
       </Button>
-    </Header>
+    </div>
   );
 }

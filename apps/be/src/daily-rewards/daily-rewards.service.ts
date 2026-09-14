@@ -4,7 +4,12 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { UserDailyReward } from './schemas/user-daily-reward.schema';
 import { DailyRewardAlreadyClaimedError } from './daily-rewards.errors';
-import { nextStreak, rewardKeyForStreak, todayUtc } from './streak';
+import {
+  isYesterday,
+  nextStreak,
+  rewardKeyForStreak,
+  todayUtc,
+} from './streak';
 import { WalletService } from '../wallet/wallet.service';
 import { EconomySettingsService } from '../economy/economy-settings.service';
 
@@ -24,6 +29,10 @@ export interface DailyRewardStatus {
   nextRewardGems: number;
   /** ISO timestamp of the next UTC midnight — when canClaim flips back. */
   nextResetAt: string;
+  /** Number of streak freeze tokens the user holds. */
+  freezeTokens: number;
+  /** True iff the streak would reset today but a freeze token can save it. */
+  canUseFreeze: boolean;
 }
 
 /**
@@ -44,6 +53,7 @@ interface UserDailyRewardLean {
   userId: Types.ObjectId;
   lastClaimedDay: string;
   currentStreak: number;
+  freezeTokens: number;
 }
 
 @Injectable()
@@ -66,13 +76,14 @@ export class DailyRewardsService {
 
     const lastDay = doc?.lastClaimedDay ?? null;
     const streak = doc?.currentStreak ?? 0;
+    const freezeTokens = doc?.freezeTokens ?? 0;
     const canClaim = lastDay !== today;
 
     // When canClaim is false, nextDay represents what *would* be awarded if
     // the user could claim today — exposed mainly so the UI can render the
     // already-claimed stamp consistently.
     const nextDay = canClaim
-      ? nextStreak(streak, lastDay, today)
+      ? nextStreak(streak, lastDay, today, freezeTokens).streak
       : Math.max(1, streak);
 
     const nextRewardCoins = await this.economy.getNumber(
@@ -83,6 +94,11 @@ export class DailyRewardsService {
         ? await this.economy.getNumber('daily_reward_day_7_bonus_gems')
         : 0;
 
+    // canUseFreeze: streak would reset but user has freeze tokens
+    const wouldReset =
+      canClaim && lastDay !== null && !isYesterday(lastDay, today);
+    const canUseFreeze = canClaim && wouldReset && freezeTokens > 0;
+
     return {
       canClaim,
       nextDay,
@@ -90,6 +106,8 @@ export class DailyRewardsService {
       nextRewardCoins,
       nextRewardGems,
       nextResetAt: nextUtcMidnight(today),
+      freezeTokens,
+      canUseFreeze,
     };
   }
 
@@ -113,7 +131,13 @@ export class DailyRewardsService {
 
       const prevStreak = doc?.currentStreak ?? 0;
       const prevDay = doc?.lastClaimedDay ?? null;
-      const newStreak = nextStreak(prevStreak, prevDay, today);
+      const freezeTokens = doc?.freezeTokens ?? 0;
+      const { streak: newStreak, freezeUsed } = nextStreak(
+        prevStreak,
+        prevDay,
+        today,
+        freezeTokens,
+      );
       const coinAmount = await this.economy.getNumber(
         rewardKeyForStreak(newStreak),
       );
@@ -150,6 +174,8 @@ export class DailyRewardsService {
         gemsBalanceAfter = gemsTx.balanceAfter;
       }
 
+      const newFreezeTokens = freezeUsed ? freezeTokens - 1 : freezeTokens;
+
       await this.model.findOneAndUpdate(
         { userId: new Types.ObjectId(userId) },
         {
@@ -157,6 +183,7 @@ export class DailyRewardsService {
             userId: new Types.ObjectId(userId),
             lastClaimedDay: today,
             currentStreak: newStreak,
+            freezeTokens: newFreezeTokens,
           },
         },
         { upsert: true, new: true, session },
@@ -168,6 +195,52 @@ export class DailyRewardsService {
         currentStreak: newStreak,
         coinsBalanceAfter: coinsTx.balanceAfter,
         gemsBalanceAfter,
+      };
+    });
+  }
+
+  async buyFreezeTokens(
+    userId: string,
+    quantity: number,
+  ): Promise<{ freezeTokens: number; coinsSpent: number }> {
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10) {
+      throw new Error('buyFreezeTokens: quantity must be an integer in [1,10]');
+    }
+
+    const pricePerToken = await this.economy.getNumber(
+      'streak_freeze_price_coins',
+    );
+    const totalCost = pricePerToken * quantity;
+
+    return runInTransaction(this.connection, async (session) => {
+      await this.wallet.debit(
+        userId,
+        'coins',
+        totalCost,
+        'streak_freeze_purchase',
+        `freeze-buy-${userId}-${Date.now()}`,
+        { quantity },
+        session,
+      );
+
+      const doc = await this.model
+        .findOneAndUpdate(
+          { userId: new Types.ObjectId(userId) },
+          {
+            $inc: { freezeTokens: quantity },
+            $setOnInsert: {
+              userId: new Types.ObjectId(userId),
+              lastClaimedDay: 'never',
+              currentStreak: 0,
+            },
+          },
+          { upsert: true, new: true, session },
+        )
+        .lean<UserDailyRewardLean>();
+
+      return {
+        freezeTokens: doc.freezeTokens,
+        coinsSpent: totalCost,
       };
     });
   }

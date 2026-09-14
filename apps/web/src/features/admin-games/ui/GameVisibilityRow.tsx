@@ -147,6 +147,7 @@ function TierControl({
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <select
         value={draft}
+        aria-label="Visibility tier"
         onChange={(e) => {
           setDraft(e.target.value as VisibilityTier);
           setStatus('idle');

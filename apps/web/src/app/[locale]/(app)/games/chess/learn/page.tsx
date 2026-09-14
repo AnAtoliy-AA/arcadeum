@@ -1,18 +1,14 @@
-'use client';
+import type { Metadata } from 'next';
+import { CoordinateTrainer } from '@/widgets/BoardGames/ChessGame/ui/CoordinateTrainer';
 
-import dynamic from 'next/dynamic';
+export const dynamic = 'force-static';
+export const revalidate = 2592000;
 
-const CoordinateTrainer = dynamic(
-  () => import('@/widgets/BoardGames/ChessGame/ui/CoordinateTrainer').then((m) => m.CoordinateTrainer),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-[var(--textSecondary)]">Loading coordinate trainer...</div>
-      </div>
-    ),
-  },
-);
+export const metadata: Metadata = {
+  title: 'Chess Coordinate Trainer · Arcadeum Games',
+  description:
+    'Master chess coordinates to improve your speed and communication',
+};
 
 export default function ChessLearnPage() {
   return (

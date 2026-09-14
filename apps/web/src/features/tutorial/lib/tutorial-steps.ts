@@ -1,4 +1,4 @@
-import type { TranslationKey } from '@/shared/lib/useTranslation';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { TutorialDefinition } from './tutorial-types';
 
 /**
@@ -23,6 +23,10 @@ export const TUTORIAL_DEFS = {
         titleKey: 'games.chess_v1.tutorial.s2.title',
         bodyKey: 'games.chess_v1.tutorial.s2.body',
         target: 'board',
+        interactiveAction: {
+          type: 'move',
+          hint: 'Make any move on the board to advance',
+        },
       },
       {
         icon: '⏱️',
@@ -52,6 +56,10 @@ export const TUTORIAL_DEFS = {
         titleKey: 'games.checkers_v1.tutorial.s2.title',
         bodyKey: 'games.checkers_v1.tutorial.s2.body',
         target: 'board',
+        interactiveAction: {
+          type: 'move',
+          hint: 'Move a piece forward diagonally to advance',
+        },
       },
       {
         icon: '🏆',
@@ -75,6 +83,10 @@ export const TUTORIAL_DEFS = {
         titleKey: 'games.tic_tac_toe_v1.tutorial.s1.title',
         bodyKey: 'games.tic_tac_toe_v1.tutorial.s1.body',
         target: 'board',
+        interactiveAction: {
+          type: 'move',
+          hint: 'Place your mark on any empty square to advance',
+        },
       },
       {
         icon: '📐',

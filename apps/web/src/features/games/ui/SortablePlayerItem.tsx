@@ -26,6 +26,7 @@ export interface SortablePlayerItemProps {
   onMoveUp: () => void;
   onMoveDown: () => void;
   onKick?: () => void;
+  isBot?: boolean;
 }
 
 export function SortablePlayerItem({
@@ -37,6 +38,7 @@ export function SortablePlayerItem({
   onMoveUp,
   onMoveDown,
   onKick,
+  isBot,
 }: SortablePlayerItemProps) {
   const {
     attributes,
@@ -75,6 +77,11 @@ export function SortablePlayerItem({
               <Badge variant="info" className="shrink-0">
                 HOST
               </Badge>
+            )}
+            {isBot && (
+              <span className="text-[11px]" title="AI Bot">
+                🤖
+              </span>
             )}
           </div>
         </PlayerInfo>

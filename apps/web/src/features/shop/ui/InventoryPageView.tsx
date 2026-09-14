@@ -26,7 +26,7 @@ import type {
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 
 export interface InventoryPageViewProps {
   catalog: EffectiveShopItem[];
@@ -130,7 +130,7 @@ export function InventoryPageView({
                 .map((cat) => (
                   <ShopRow
                     key={`inv-${cat}`}
-                    id={`row-${cat}`}
+                    id={`row-${CATEGORY_TO_ROW_LABEL_KEY[cat]}`}
                     sectionKey={cat}
                     mode="inventory"
                     items={ownedRows[cat]}

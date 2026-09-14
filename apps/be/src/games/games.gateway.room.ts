@@ -63,7 +63,7 @@ export async function handleJoinRoom(
     if (!(client.data as Record<string, unknown>).userId) {
       (client.data as Record<string, unknown>).userId = userId;
     }
-    realtime.trackSocket(userId, client.id);
+    void realtime.trackSocket(userId, client.id);
 
     let diffSession = session;
     if (session) {

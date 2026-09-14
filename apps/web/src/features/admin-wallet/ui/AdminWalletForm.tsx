@@ -94,6 +94,7 @@ export function AdminWalletForm({
         </span>
         <select
           data-testid="wallet-form-currency"
+          aria-label={labels.currencyLabel}
           value={currency}
           onChange={(e) => setCurrency(e.target.value as WalletCurrencyInput)}
           style={{ ...INPUT_STYLE, width: 'auto' }}
@@ -108,6 +109,7 @@ export function AdminWalletForm({
         <input
           type="number"
           data-testid="wallet-form-amount"
+          aria-label={labels.amountLabel}
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           min={1}
@@ -121,6 +123,7 @@ export function AdminWalletForm({
         <span className="text-[12px] opacity-[0.7]">{labels.noteLabel}</span>
         <textarea
           data-testid="wallet-form-note"
+          aria-label={labels.noteLabel}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={2}

@@ -1,6 +1,6 @@
 export { LivePulseBadge } from './ui/LivePulseBadge';
 export { LiveActivityPopover } from './ui/LiveActivityPopover';
-export { useLiveStatsStore } from './store/liveStatsStore';
+export { useLiveStatsStore, useLiveStatsWs } from './store/liveStatsStore';
 export type {
   LiveStatsData,
   LivePopularGame,

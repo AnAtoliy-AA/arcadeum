@@ -44,7 +44,7 @@ export function StatsGamesBreakdown({
               {t?.title ?? 'Per-Game Activity & Performance Breakdown'}
             </Typography>
           </div>
-          <Typography variant="body" uiSize="xs" alpha="medium">
+          <Typography variant="body" uiSize="xs" alpha="high">
             {t?.subtitle ??
               'Match distribution, unique players, and game share (Registered vs Anonymous)'}
           </Typography>

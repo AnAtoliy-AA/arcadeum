@@ -107,7 +107,7 @@ export const NavHeaderLink = ({
     onClick={onClick}
     className={cx(
       'overflow-visible rounded-[16px] hover:bg-[var(--backgroundHover)] hover:-translate-y-[1px] active:translate-y-[1px]',
-      isActive && '!bg-[rgba(87,195,255,0.12)] text-[var(--primary)] font-bold',
+      isActive && '!bg-[rgba(87,195,255,0.12)] text-[var(--color)] font-bold',
       accent && 'font-bold',
       className,
     )}
@@ -255,7 +255,7 @@ export const NavMobileLink = ({
     onClick={onClick}
     className={cx(
       'justify-start px-4 py-3 hover:bg-[var(--backgroundHover)] text-[var(--color)]',
-      isActive && '!bg-[var(--glassBgHover)] !text-[var(--primary)]',
+      isActive && '!bg-[var(--glassBgHover)] !text-[var(--color)]',
       className,
     )}
     data-testid={testId}

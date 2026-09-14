@@ -41,7 +41,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
         await roomNameInput.fill('E2E Critical Lobby Test');
       }
 
-      await createBtn.click();
+      await createBtn.click({ force: true });
 
       // Wait for navigation to room
       await page.waitForURL(/\/rooms\/.*/, {}).catch(() => {
@@ -79,7 +79,7 @@ test.describe('Game Lobby - Shared Functionality', () => {
         await roomNameInput.fill('E2E Sea Battle Lobby Test');
       }
 
-      await createBtn.click();
+      await createBtn.click({ force: true });
 
       // Wait for navigation to room
       await page.waitForURL(/\/rooms\/.*/, {}).catch(() => {

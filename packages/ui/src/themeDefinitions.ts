@@ -26,7 +26,7 @@ export const themeBase = {
   // WCAG AA 4.5:1 contrast — was 4.09:1, fails. Phase 2 audit ARC-570.
   primary: '#0369a1',
   primaryText: '#ffffff',
-  secondary: '#4338ca',
+  secondary: '#818cf8',
   danger: '#b91c1c',
   // Form-validation components (Input, FormGroup, TextArea, Select, admin
   // error banners) read the danger palette via var(--error*) — aliased here
@@ -36,9 +36,9 @@ export const themeBase = {
   errorBg: 'rgba(220, 38, 38, 0.15)',
   errorBgSoft: 'rgba(185, 28, 28, 0.1)',
   errorBorder: 'rgba(185, 28, 28, 0.4)',
-  success: '#047857',
+  success: '#10b981',
   warning: '#92400e',
-  info: '#2563eb',
+  info: '#3b82f6',
   accent: '#38bdf8',
   mythicAccent: '#ec4899',
   diamondAccent: '#22d3ee',

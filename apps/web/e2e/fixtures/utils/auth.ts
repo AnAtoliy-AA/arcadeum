@@ -13,6 +13,9 @@ export interface MockSessionOptions {
     | 'vip'
     | 'supporter'
     | null;
+  xp?: number;
+  level?: number;
+  equippedBadgeId?: string | null;
 }
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
@@ -37,6 +40,16 @@ export async function mockSession(
     username: 'testuser',
     displayName: 'Test User',
     role: options.role ?? null,
+    xp: options.xp ?? 0,
+    level: options.level ?? 1,
+    prestige: 0,
+    equippedAvatarId: null,
+    equippedBadgeId: options.equippedBadgeId ?? null,
+    equippedNameColorId: null,
+    equippedFrameId: null,
+    equippedAuraId: null,
+    equippedBannerId: null,
+    equippedGameSkinId: null,
   };
 
   const setSession = (s: typeof snapshot) => {
@@ -44,16 +57,23 @@ export async function mockSession(
       'web_session_tokens_v1',
       JSON.stringify({ state: { snapshot: s }, version: 0 }),
     );
-    // Also set cookie for server-side detection during hydration/SSR
+    document.cookie = `access_token=${s.accessToken}; path=/; max-age=3600; SameSite=Lax`;
     document.cookie = `web_access_token=${s.accessToken}; path=/; max-age=3600; SameSite=Lax`;
-    document.cookie = `web_refresh_token=${s.refreshToken}; path=/; max-age=3600; SameSite=Lax`;
+    document.cookie = `refresh_token=${s.refreshToken}; path=/; max-age=86400; SameSite=Lax`;
+    document.cookie = `web_refresh_token=${s.refreshToken}; path=/; max-age=86400; SameSite=Lax`;
   };
 
-  // Set cookies on the browser context so they are present in HTTP
-  // request headers when the proxy gate checks them server-side.
-  // addInitScript only sets document.cookie client-side (too late for proxy).
   const cookieDomain = new URL(page.url()).hostname || '127.0.0.1';
   await page.context().addCookies([
+    {
+      name: 'access_token',
+      value: snapshot.accessToken,
+      path: '/',
+      httpOnly: false,
+      sameSite: 'Lax',
+      expires: Math.floor(Date.now() / 1000) + 3600,
+      domain: cookieDomain,
+    },
     {
       name: 'web_access_token',
       value: snapshot.accessToken,
@@ -61,6 +81,15 @@ export async function mockSession(
       httpOnly: false,
       sameSite: 'Lax',
       expires: Math.floor(Date.now() / 1000) + 3600,
+      domain: cookieDomain,
+    },
+    {
+      name: 'refresh_token',
+      value: snapshot.refreshToken,
+      path: '/',
+      httpOnly: false,
+      sameSite: 'Lax',
+      expires: Math.floor(Date.now() / 1000) + 86400,
       domain: cookieDomain,
     },
     {
@@ -98,6 +127,10 @@ export async function mockSession(
         username: 'testuser',
         displayName: 'Test User',
         role: options.role ?? 'free',
+        xp: options.xp ?? 0,
+        level: options.level ?? 1,
+        prestige: 0,
+        equippedBadgeId: options.equippedBadgeId ?? null,
       },
     });
   });

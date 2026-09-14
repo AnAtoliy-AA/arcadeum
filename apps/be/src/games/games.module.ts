@@ -34,6 +34,7 @@ import { GameEnginesModule } from './engines/engines.module';
 import { AiVsAiService } from './ai-vs-ai/ai-vs-ai.service';
 import { GameRoomsService } from './rooms/game-rooms.service';
 import { GameRoomsMapper } from './rooms/game-rooms.mapper';
+import { GameRoomsBotService } from './rooms/game-rooms.bot.service';
 import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameRoomsChatService } from './rooms/game-rooms.chat.service';
 import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service';
@@ -54,8 +55,11 @@ import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
 import { GamePostMatchService } from './game-post-match.service';
 import { PlayerStatsService } from './player-stats.service';
 import { SoloScore, SoloScoreSchema } from './schemas/solo-score.schema';
+import { SoloRating, SoloRatingSchema } from './schemas/solo-rating.schema';
 import { SoloScoresService } from './solo-scores.service';
 import { SoloScoresController } from './solo-scores.controller';
+import { SoloRatingService } from './solo-rating.service';
+import { SoloRatingController } from './solo-rating.controller';
 import { DailyChallengesModule } from '../daily-challenges/daily-challenges.module';
 import { AchievementsModule } from '../achievements/achievements.module';
 import { NotificationsModule } from '../notifications/notifications.module';
@@ -136,7 +140,9 @@ import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.module';
 import { GameRuleVisibilityModule } from '../admin/game-visibility/game-rule-visibility.module';
-import { BattlePassModule } from '../battle-pass/battle-pass.module';
+import { XpModule } from '../xp/xp.module';
+import { FriendsModule } from '../friends/friends.module';
+import { ActivityFeedModule } from './activity-feed/activity-feed.module';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
 // (LeaderboardsService.markInMatch is called from GamesService when matches
@@ -162,6 +168,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
         { name: PlayerStats.name, schema: PlayerStatsSchema },
         { name: PlayerStatRecord.name, schema: PlayerStatRecordSchema },
         { name: SoloScore.name, schema: SoloScoreSchema },
+        { name: SoloRating.name, schema: SoloRatingSchema },
       ],
       OCI_CONNECTION,
     ),
@@ -199,7 +206,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     DailyChallengesModule,
     AchievementsModule,
     NotificationsModule,
-    BattlePassModule,
+    XpModule,
+    FriendsModule,
+    ActivityFeedModule,
     ChessStockfishModule,
     ChessPuzzlesModule,
     ChessOpeningsModule,
@@ -219,6 +228,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameReplayController,
     LiveStatsController,
     SoloScoresController,
+    SoloRatingController,
     ChessStockfishController,
   ],
   providers: [
@@ -226,6 +236,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     // Core services
     GameRoomsService,
     GameRoomsMapper,
+    GameRoomsBotService,
     GameRoomsRematchService,
     GameRoomsChatService,
     GameRoomsQuickplayService,
@@ -296,6 +307,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     GameReplayService,
     PlayerStatsService,
     SoloScoresService,
+    SoloRatingService,
     // Gateways
     GamesGateway,
     CriticalGateway,
@@ -354,6 +366,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
   exports: [
     GameHistoryStatsService,
     GameRoomsMatchmakingService,
+    GamesRealtimeService,
     AntiCollusionService,
     SocketDeltaService,
   ],

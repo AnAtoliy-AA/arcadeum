@@ -30,7 +30,7 @@ export function QuickplayButton({
   variant,
   theme,
   errorLabel,
-  buttonVariant = 'primary',
+  buttonVariant,
   disabled = false,
 }: Props) {
   const router = useRouter();
@@ -39,6 +39,10 @@ export function QuickplayButton({
   const [loading, setLoading] = useState(false);
   const [errored, setErrored] = useState(false);
   const { joinQueue } = useMatchmaking();
+
+  const resolvedVariant: ButtonProps['variant'] = errored
+    ? 'danger'
+    : (buttonVariant ?? (mode === 'human' ? 'primary' : 'secondary'));
 
   const handleClick = async () => {
     if (disabled) return;
@@ -64,13 +68,10 @@ export function QuickplayButton({
   };
 
   const displayLabel = errored && errorLabel ? errorLabel : label;
-  const displayVariant: ButtonProps['variant'] = errored
-    ? 'danger'
-    : buttonVariant;
 
   return (
     <Button
-      variant={displayVariant}
+      variant={resolvedVariant}
       size="lg"
       onClick={handleClick}
       loading={loading}

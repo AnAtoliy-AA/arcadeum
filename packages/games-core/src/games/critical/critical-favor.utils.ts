@@ -4,7 +4,7 @@ import {
   CriticalPlayerState,
 } from './critical.state';
 import { GameActionResult, GameLogEntry } from '../../base/game-engine.interface';
-import { LogEntryOptions } from './critical-logic.utils';
+import { LogEntryOptions } from './critical-shared.types';
 
 /**
  * Helper to find a player in the state

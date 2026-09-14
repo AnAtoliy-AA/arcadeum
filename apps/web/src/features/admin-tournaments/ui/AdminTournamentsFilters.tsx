@@ -56,12 +56,14 @@ export function AdminTournamentsFilters({
     <div className="flex flex-row gap-3 items-center flex-wrap">
       <input
         placeholder={labels.searchPlaceholder}
+        aria-label={labels.searchPlaceholder}
         value={localQ}
         onChange={(e) => setLocalQ(e.target.value)}
         className="px-3 py-1.5 rounded-lg border border-[var(--borderColor)] bg-[var(--backgroundFocus)] text-[var(--colorText)] min-w-[220px] text-sm focus:outline-none focus:border-[var(--primary)]"
       />
       <select
         data-testid="status-filter"
+        aria-label="Status filter"
         value={status}
         onChange={(e) =>
           onChange({
@@ -80,6 +82,7 @@ export function AdminTournamentsFilters({
       </select>
       <select
         data-testid="gametype-filter"
+        aria-label="Game type filter"
         value={gameType ?? ''}
         onChange={(e) =>
           onChange({

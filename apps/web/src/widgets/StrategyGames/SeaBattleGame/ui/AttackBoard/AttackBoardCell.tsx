@@ -21,6 +21,7 @@ interface AttackBoardCellProps {
   isWeaponPreview?: boolean;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   isWeaponClickable?: boolean;
+  isKeyboardCursor?: boolean;
   /** Roving-tabindex/focus attributes from the board's keyboard navigation. */
   cellFocusProps?: Record<string, unknown>;
 }
@@ -40,6 +41,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   isWeaponPreview = false,
   weaponPreviewType,
   isWeaponClickable = false,
+  isKeyboardCursor = false,
   cellFocusProps,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
@@ -131,6 +133,12 @@ export const AttackBoardCell = memo(function AttackBoardCell({
         ...highlightStyle,
         ...previewStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
+        ...(isKeyboardCursor
+          ? {
+              boxShadow: '0 0 0 2px #3b82f6, 0 0 8px 2px rgba(59,130,246,0.5)',
+              borderColor: '#3b82f6',
+            }
+          : {}),
       }}
       role="gridcell"
       aria-label={cellLabel}

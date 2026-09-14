@@ -119,7 +119,7 @@ function QuickPlayPanelImpl({
           <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
             Time Control
           </span>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/30">
+          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--primary)]/15 text-[var(--color)] border border-[var(--primary)]/30">
             Presets
           </span>
         </div>

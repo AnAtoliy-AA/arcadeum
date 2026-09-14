@@ -1,17 +1,17 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/lib/useTranslation';
-import { useRoutes } from '@/shared/config/useRoutes';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useRoutes, useLocale } from '@/shared/config/useRoutes';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { shareLink, buildChallengeShareText } from '@/shared/lib/share';
-import { trackInviteShared } from '@/shared/analytics/funnel';
+import {
+  trackInviteShared,
+  trackPostGameShare,
+} from '@/shared/analytics/funnel';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { sendFriendRequestByUserId } from '@/shared/api/friends';
 
@@ -43,11 +43,23 @@ export function PostGameSuggestions({
 }: PostGameSuggestionsProps) {
   const { t } = useTranslation();
   const routes = useRoutes();
+  const locale = useLocale();
   const { sm } = useMediaQuery();
   const { snapshot } = useSessionTokens();
   const [challengeCopied, setChallengeCopied] = useState(false);
   const [friendRequestSent, setFriendRequestSent] = useState(false);
   const [friendRequestLoading, setFriendRequestLoading] = useState(false);
+  const challengeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  useEffect(() => {
+    return () => {
+      if (challengeTimeoutRef.current) {
+        clearTimeout(challengeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleChallengeFriend = useCallback(async () => {
     if (!roomId) return;
@@ -59,7 +71,7 @@ export function PostGameSuggestions({
       utm_campaign: 'post_game',
       ...(inviteCode ? { inviteCode } : {}),
     });
-    const inviteUrl = `${origin}/en/rooms/${roomId}?${params.toString()}`;
+    const inviteUrl = `${origin}/${locale}/rooms/${roomId}?${params.toString()}`;
 
     const shareText = buildChallengeShareText(gameName, inviteUrl);
     const success = await shareLink({
@@ -70,21 +82,19 @@ export function PostGameSuggestions({
     if (success) {
       trackInviteShared('challenge', roomId);
       setChallengeCopied(true);
-      setTimeout(() => setChallengeCopied(false), 3000);
+      challengeTimeoutRef.current = setTimeout(
+        () => setChallengeCopied(false),
+        3000,
+      );
       onChallengeShared?.();
     }
-  }, [gameName, roomId, inviteCode, onChallengeShared]);
+  }, [gameName, locale, roomId, inviteCode, onChallengeShared]);
 
   const handleShareResult = useCallback(async () => {
     if (!roomId) return;
 
     const { origin } = window.location;
-    const params = new URLSearchParams({
-      utm_source: 'result_share',
-      utm_medium: 'social',
-      utm_campaign: 'post_game',
-    });
-    const shareUrl = `${origin}/en/games/${gameSlug}?${params.toString()}`;
+    const shareUrl = `${origin}/${locale}/results/${roomId}`;
 
     await shareLink({
       title: `Play ${gameName} on Arcadeum`,
@@ -92,7 +102,8 @@ export function PostGameSuggestions({
       url: shareUrl,
       event: 'result.shared',
     });
-  }, [gameName, gameSlug, roomId]);
+    trackPostGameShare(gameSlug);
+  }, [gameName, gameSlug, locale, roomId]);
 
   const handleAddFriend = useCallback(async () => {
     if (!snapshot.accessToken || !opponentUserId) return;
@@ -143,10 +154,8 @@ export function PostGameSuggestions({
               data-testid="add-friend-post-game-button"
             >
               {friendRequestSent
-                ? t('games.common.postGame.friendAdded' as TranslationKey) ||
-                  'Friend Request Sent'
-                : t('games.common.postGame.addFriend' as TranslationKey) ||
-                  'Add Friend'}
+                ? t('games.common.postGame.friendAdded')
+                : t('games.common.postGame.addFriend')}
             </Button>
           )}
 
@@ -159,6 +168,16 @@ export function PostGameSuggestions({
         >
           {t('games.common.postGame.shareResult')}
         </Button>
+
+        {roomId && (
+          <Link
+            href={`/${locale}/replay/by-room/${roomId}`}
+            className="flex items-center justify-center rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] px-3.5 py-2.5 text-xs font-semibold text-[rgba(255,255,255,0.7)] no-underline transition-all duration-200 hover:bg-[rgba(255,255,255,0.06)]"
+            data-testid="watch-replay-button"
+          >
+            🎬 {t('games.replay.card.watch')}
+          </Link>
+        )}
 
         {onPlayAnother && (
           <Button

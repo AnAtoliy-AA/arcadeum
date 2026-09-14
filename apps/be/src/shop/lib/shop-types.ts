@@ -22,6 +22,7 @@ export const SHOP_ACQUIRED_VIA = [
   'arcadeum',
   'grant',
   'starter',
+  'gift',
 ] as const;
 export type ShopAcquiredVia = (typeof SHOP_ACQUIRED_VIA)[number];
 
@@ -41,6 +42,7 @@ export interface ShopItemDef {
   defaultPriceAmount: number;
   defaultPriceCurrency: ShopPriceCurrency;
   starter?: boolean;
+  purchasable?: boolean;
 }
 
 export interface EffectiveShopItem extends ShopItemDef {

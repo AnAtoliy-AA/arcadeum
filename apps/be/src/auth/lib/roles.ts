@@ -171,5 +171,9 @@ const TIER_MIN_PRIORITY: Record<VisibilityTier, number> = {
 };
 
 export function canSeeAtTier(role: UserRole, tier: VisibilityTier): boolean {
-  return ROLE_INFO[role].priority >= TIER_MIN_PRIORITY[tier];
+  const info = ROLE_INFO[role];
+  if (!info) {
+    return tier === 'all';
+  }
+  return info.priority >= TIER_MIN_PRIORITY[tier];
 }

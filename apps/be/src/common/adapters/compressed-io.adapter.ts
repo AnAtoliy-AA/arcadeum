@@ -15,7 +15,10 @@ export class CompressedIoAdapter extends IoAdapter {
     if (redisUrl) {
       const pubClient = new Redis(redisUrl);
       const subClient = pubClient.duplicate();
-      this.adapterConstructor = createAdapter(pubClient, subClient);
+      const key =
+        process.env.SOCKET_IO_REDIS_KEY ||
+        `socket.io:${process.env.NODE_ENV === 'production' && (!process.env.BE_PORT || process.env.BE_PORT === '4000') ? 'prod' : process.env.BE_PORT || 'default'}`;
+      this.adapterConstructor = createAdapter(pubClient, subClient, { key });
     }
   }
 

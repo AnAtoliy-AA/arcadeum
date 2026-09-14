@@ -14,7 +14,7 @@ export default async function AdminGemPackagesPage() {
         <PageTitle size="lg" gradient>
           Gem Packages
         </PageTitle>
-        <Typography variant="body" uiSize="md" alpha="medium">
+        <Typography variant="body" uiSize="md" alpha="high">
           Manage purchasable gem packages shown to players.
         </Typography>
       </div>

@@ -11,6 +11,7 @@ import {
   type LoginResponse,
 } from '@/entities/session/api/authApi';
 import { parseApiError } from '@/entities/session/lib/parseApiError';
+import { trackShareConversionTracked } from '@/shared/analytics/funnel';
 import { type SessionTokensValue } from '@/entities/session/model/useSessionTokens';
 import { useRouter } from 'next/navigation';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
@@ -19,7 +20,6 @@ import type {
   LocalAuthState,
   SessionTokensSnapshot,
 } from './types';
-
 
 export type UseLocalAuthResult = LocalAuthState & {
   register: (params: {
@@ -135,6 +135,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           loading: false,
           error: null,
         }));
+        if (referralCode) {
+          trackShareConversionTracked(referralCode);
+        }
         setMode('login');
       } catch (error) {
         const rawMessage =

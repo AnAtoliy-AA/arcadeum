@@ -130,4 +130,17 @@ describe('ShopService.purchase', () => {
     ).rejects.toThrow();
     expect(h.wallet.emitAfterCommit).not.toHaveBeenCalled();
   });
+
+  it('rejects badge purchase as badges cannot be bought', async () => {
+    h.catalog.getEffective.mockResolvedValue(
+      effectiveItem({
+        id: 'badge-veteran',
+        category: 'badge',
+        available: true,
+      }),
+    );
+    await expect(
+      h.service.purchase(h.userId, 'badge-veteran', 'p1'),
+    ).rejects.toThrow('shop.badgeNotPurchasable');
+  });
 });

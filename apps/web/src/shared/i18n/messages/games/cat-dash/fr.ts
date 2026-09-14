@@ -92,6 +92,41 @@ export const frMessages = {
           question: 'Comment jouent les bots?',
           answer: 'Les bots lancent les dés automatiquement à chaque tour.',
         },
+        finishLine: {
+          question: 'Comment gagne-t-on la course ?',
+          answer:
+            'Soyez le premier chat à franchir la ligne d’arrivée en atteignant ou dépassant la dernière case du parcours.',
+        },
+        trackHazards: {
+          question: 'Que se passe-t-il sur les cases spéciales du circuit ?',
+          answer:
+            'Les cases rouges d’obstacle vous font passer votre prochain tour, tandis que les cases jaunes vous accordent un lancer supplémentaire immédiat.',
+        },
+        shortcuts: {
+          question: 'Vaut-il toujours la peine de prendre les raccourcis ?',
+          answer:
+            'Les raccourcis réduisent la distance jusqu’à l’arrivée mais comportent souvent une concentration accrue de pièges et d’obstacles.',
+        },
+        friends: {
+          question: 'Puis-je faire la course avec des amis en salle privée ?',
+          answer:
+            'Oui. Créez une salle personnalisée, choisissez le thème et la longueur de piste, puis partagez le lien avec vos amis.',
+        },
+        playerCount: {
+          question: 'Combien de joueurs peuvent participer à une course ?',
+          answer:
+            'Cat Dash accueille de 2 à 6 coureurs par partie, combinant sans encombre joueurs réels et robots.',
+        },
+        mobile: {
+          question: 'Peut-on jouer à Cat Dash sur mobile ?',
+          answer:
+            'Oui. Cat Dash est optimisé pour les écrans tactiles mobiles avec une interface réactive et des animations fluides.',
+        },
+        free: {
+          question: 'Cat Dash est-il gratuit ?',
+          answer:
+            'Oui. Cat Dash est entièrement gratuit et jouable directement dans votre navigateur sans aucun téléchargement.',
+        },
       },
     },
     lobby: {

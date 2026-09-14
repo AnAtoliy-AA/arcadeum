@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Types } from 'mongoose';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { GameRoom } from '../schemas/game-room.schema';
 
 export function validateRoomId(roomId: string | undefined): void {

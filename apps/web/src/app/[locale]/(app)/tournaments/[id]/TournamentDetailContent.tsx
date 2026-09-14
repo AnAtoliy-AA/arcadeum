@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { Container, PageLayout, PageTitle, Typography } from '@arcadeum/ui';
 import { Spinner } from '@/shared/ui/CSSSpinner';
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -80,7 +80,7 @@ export default function TournamentDetailContent({
         <div className="flex flex-col items-stretch gap-4">
           <Link
             href={routes.tournaments}
-            className="self-start text-[13px] font-bold text-[var(--primary)] underline-offset-2 hover:underline"
+            className="self-start text-[13px] font-bold text-[var(--color)] underline-offset-2 hover:underline"
             data-testid="back-to-tournaments"
           >
             ← {bracketT?.backToList}
@@ -131,7 +131,7 @@ export default function TournamentDetailContent({
               className="flex flex-col items-start gap-2 p-5"
               data-testid="bracket-error"
             >
-              <Typography variant="body" alpha="medium">
+              <Typography variant="body" alpha="high">
                 {error.message}
               </Typography>
             </div>
@@ -142,7 +142,7 @@ export default function TournamentDetailContent({
               className="flex flex-col items-center p-5"
               data-testid="bracket-empty"
             >
-              <Typography variant="body" alpha="medium">
+              <Typography variant="body" alpha="high">
                 {bracketT?.empty ?? t?.comingSoon}
               </Typography>
             </div>

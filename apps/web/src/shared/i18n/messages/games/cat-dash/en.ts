@@ -88,6 +88,41 @@ export const enMessages = {
           answer:
             'Bots roll the dice automatically each turn. They provide a fun challenge when friends are not available.',
         },
+        finishLine: {
+          question: 'How do I win the race?',
+          answer:
+            'Be the first cat to cross the finish line by reaching or exceeding the final space on the board.',
+        },
+        trackHazards: {
+          question: 'What happens on special track spaces?',
+          answer:
+            'Red obstacle spaces cause you to skip your next turn, while yellow bonus spaces grant an instant extra roll.',
+        },
+        shortcuts: {
+          question: 'Are track shortcuts always worth taking?',
+          answer:
+            'Shortcuts reduce the total distance to the finish line, but they frequently feature higher concentrations of hazard tiles.',
+        },
+        friends: {
+          question: 'Can I race with friends in private rooms?',
+          answer:
+            'Yes. Create a custom room, choose your track theme and length, and share the room link with friends.',
+        },
+        playerCount: {
+          question: 'How many players can join a race?',
+          answer:
+            'Cat Dash supports 2 to 6 racers per match, mixing human competitors and automated bot runners seamlessly.',
+        },
+        mobile: {
+          question: 'Can I play Cat Dash on mobile?',
+          answer:
+            'Yes. Cat Dash is optimized for mobile touchscreens with responsive controls and fluid animations.',
+        },
+        free: {
+          question: 'Is Cat Dash free to play?',
+          answer:
+            'Yes. Cat Dash is completely free to play directly in your browser with zero downloads or subscriptions.',
+        },
       },
     },
     lobby: {

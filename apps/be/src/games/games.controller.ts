@@ -139,7 +139,6 @@ export class GamesController {
     const room = await this.aiVsAiService.createAIvsAIRoom(user.userId, dto);
     return { room };
   }
-
   @UseGuards(JwtOptionalAuthGuard)
   @Get('rooms')
   async listRooms(
@@ -389,7 +388,6 @@ export class GamesController {
         dto.engine,
       );
     }
-
     // Default to Critical (legacy behavior)
     return this.criticalService.startSession(
       user.userId,
@@ -439,7 +437,6 @@ export class GamesController {
     if (!user) {
       throw new UnauthorizedException();
     }
-
     const room = await this.gamesService.updateRoomOptions(
       roomId,
       user.userId,
@@ -467,6 +464,35 @@ export class GamesController {
       roomId,
       user.userId,
       dto.userIds,
+    );
+    return { room };
+  }
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('rooms/:roomId/add-bot')
+  async addBotToRoom(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+  ): Promise<{ room: Awaited<ReturnType<GamesService['addBotToRoom']>> }> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    const room = await this.gamesService.addBotToRoom(roomId, user.userId);
+    return { room };
+  }
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('rooms/:roomId/remove-bot')
+  async removeBotFromRoom(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+    @Body() body: { botId: string },
+  ): Promise<{ room: Awaited<ReturnType<GamesService['removeBotFromRoom']>> }> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    const room = await this.gamesService.removeBotFromRoom(
+      roomId,
+      user.userId,
+      body.botId,
     );
     return { room };
   }

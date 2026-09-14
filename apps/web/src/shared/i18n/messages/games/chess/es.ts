@@ -16,7 +16,7 @@ export const esMessages = {
         howToPlayTitle: 'Cómo jugar a {{gameName}}',
       },
       hero: {
-        title: 'Ajedrez — el juego de estrategia atemporal',
+        title: 'Ajedrez — El juego de estrategia definitivo',
         subtitle:
           'Impulsado por Stockfish 19. Bullet, blitz, rápido, diario y Chess960. Juega contra amigos, 20 personalidades IA o toda la comunidad.',
         createRoom: 'Crear sala',
@@ -72,7 +72,7 @@ export const esMessages = {
         stockfish: {
           question: '¿Qué es Stockfish 19?',
           answer:
-            'Stockfish 19 es la última versión del motor de ajedrez de código abierto más fuerte del mundo. Utiliza la arquitectura de red neuronal SFNNv16 y alimenta todo el análisis en tiempo real, la revisión de partidas y la dificultad de los bots IA en Arcadeum.',
+            'Stockfish 19 es la última versión del motor de ajedrez de código abierto más fuerte del mundo. Utiliza la arquitectura de red neuronal SFNNv16 y alimenta todo el análisis en tiempo real, la revisión de partidas y la dificultad de los bots IA en Arcadeum Games.',
         },
         takeback: {
           question: '¿Puedo deshacer un movimiento?',
@@ -84,9 +84,31 @@ export const esMessages = {
           answer:
             'Puzzle Rush es un modo de puzzles cronometrado. En Supervivencia tienes 3 vidas e intentas resolver la mayor cantidad de puzzles posible. En Modo Tiempo tienes 3 minutos.',
         },
+        tablebases: {
+          question: '¿Qué son las tablas de finales Syzygy?',
+          answer:
+            'Las tablas de finales Syzygy proporcionan un juego matemáticamente perfecto para cualquier posición con 7 o menos piezas en el tablero, mostrando al instante victoria, tablas o derrota teórica.',
+        },
+        mobile: {
+          question:
+            '¿Puedo jugar al ajedrez en el móvil sin instalar una aplicación?',
+          answer:
+            'Sí. Arcadeum Games funciona completamente en cualquier navegador móvil moderno con controles táctiles, tablero adaptable y arrastre fluido de piezas.',
+        },
+        pgn: {
+          question: '¿Puedo importar y exportar posiciones PGN o FEN?',
+          answer:
+            'Sí. El tablero de análisis admite copiar/pegar PGN, configuración de posiciones FEN y editor de tablero personalizado para estudiar partidas.',
+        },
+        free: {
+          question:
+            '¿El análisis y la revisión de partidas son realmente 100% gratuitos?',
+          answer:
+            'Sí. El análisis de Stockfish 19 en profundidad máxima, los gráficos de evaluación, la precisión y la clasificación de errores son totalmente gratuitos sin límites ni muros de pago.',
+        },
       },
       advantages: {
-        kicker: 'Por qué los jugadores eligen Arcadeum',
+        kicker: 'Por qué los jugadores eligen Arcadeum Games',
         title: 'Todo lo que necesitas para jugar, aprender y mejorar',
         items: [
           {
@@ -176,6 +198,8 @@ export const esMessages = {
       blitz: 'Blitz',
       rapid: 'Rápido',
       classical: 'Clásico',
+      daily: 'Diarias',
+      daysPerMove: '{{days}} día(s) por jugada',
       easy: 'Fácil',
       medium: 'Medio',
       hard: 'Difícil',
@@ -202,6 +226,24 @@ export const esMessages = {
     spectator: {
       viewers: 'espectadores',
       joinGame: 'Unirse',
+    },
+    matchmaking: {
+      quickPlay: 'Partida rápida',
+      searching: 'Buscando... {{time}}',
+      position: '#{{position}} en cola',
+      rating: 'Puntuación: {{rating}}',
+      cancelled: 'Búsqueda cancelada',
+    },
+    history: {
+      title: 'Historial de partidas',
+      rating: 'Puntuación',
+      peak: 'Pico',
+      winRate: 'Tasa de victorias',
+      ratingTrend: 'Tendencia de puntuación',
+      results: 'Resultados',
+      topOpenings: 'Aperturas principales',
+      recentGames: 'Partidas recientes',
+      noGames: 'Aún no hay partidas jugadas',
     },
     tutorial: {
       s1: {
@@ -272,6 +314,14 @@ export const esMessages = {
         blunder: 'Error grave',
       },
     },
+    review: {
+      title: 'Revisión de la partida',
+      accuracy: 'Precisión',
+      grade: 'Calificación',
+      moveBreakdown: 'Desglose de jugadas',
+      evaluation: 'Evaluación',
+      keyMoments: 'Momentos clave',
+    },
     coach: {
       title: 'Pistas de entrenador',
       hint: 'Pista',
@@ -292,8 +342,13 @@ export const esMessages = {
       drawOffered: 'Empate ofrecido',
       acceptDraw: 'Aceptar empate',
       declineDraw: 'Rechazar',
+      takeback: 'Deshacer jugada',
+      takebackOffered: 'Solicitud para deshacer jugada',
+      acceptTakeback: 'Aceptar deshacer',
+      declineTakeback: 'Rechazar',
       moveList: 'Lista de movimientos',
       copyPGN: 'Copiar PGN',
+      importPgn: 'Importar PGN',
     },
     chat: {
       move: '{{name}} movió {{notation}}',
@@ -348,6 +403,20 @@ export const esMessages = {
       daily: 'Problema del día',
       rated: 'Problemas con puntuación',
       themed: 'Problemas por tema',
+    },
+    puzzleRush: {
+      title: 'Fiebre de problemas',
+      subtitle: 'Resuelve tantos problemas como puedas',
+      survival: 'Modo Supervivencia',
+      survivalDesc: '3 vidas — un error te cuesta una vida',
+      timed: 'Modo Contrarreloj',
+      timedDesc: '3 minutos — resuelve tantos como puedas',
+      gameOver: '¡Tiempo agotado!',
+      playAgain: 'Jugar de nuevo',
+      endRun: 'Finalizar intento',
+      score: 'Puntuación',
+      bestStreak: 'Mejor racha',
+      time: 'Tiempo',
     },
     tournament: {
       title: 'Torneos de ajedrez',

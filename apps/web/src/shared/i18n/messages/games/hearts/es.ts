@@ -106,6 +106,36 @@ export const esMessages = {
           answer:
             'Los Corazones no pueden liderar hasta que se han "roto" — es decir, se ha descartado un Corazón en un truco anterior.',
         },
+        queenStrategy: {
+          question: '¿Cómo debo gestionar la Reina de Picas?',
+          answer:
+            'Guarda picas bajas para protegerte y descarta la Reina en una baza alta rival en cuanto no tengas cartas del palo jugado.',
+        },
+        firstTrick: {
+          question: '¿Quién sale en la primera baza y qué restricciones hay?',
+          answer:
+            'El jugador con el 2 de Tréboles debe abrir la mano. No se pueden jugar cartas de penalización (Corazones o Reina de Picas) en la primera baza.',
+        },
+        stoppingTheMoon: {
+          question: '¿Cómo evitar que un rival dispare a la luna?',
+          answer:
+            'Si un oponente gana todas las bazas de forma agresiva, toma deliberadamente un corazón para evitar que consiga los 26 puntos.',
+        },
+        friends: {
+          question: '¿Cómo juego a Corazones online con amigos?',
+          answer:
+            'Pulsa en Crear sala, define el objetivo de puntos y comparte el enlace. Tus amigos se unen al instante en su navegador sin cuenta.',
+        },
+        bots: {
+          question: '¿Puedo jugar a Corazones contra bots?',
+          answer:
+            'Sí. Puedes jugar en solitario contra tres bots inteligentes o rellenar huecos vacíos en cualquier sala.',
+        },
+        free: {
+          question: '¿Es gratis jugar a Corazones en Arcadeum?',
+          answer:
+            'Sí. Corazones en Arcadeum es 100% gratis con animaciones fluidas, barajas temáticas y sin descargas.',
+        },
       },
     },
     lobby: {

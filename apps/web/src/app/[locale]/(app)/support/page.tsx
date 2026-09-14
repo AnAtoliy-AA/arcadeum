@@ -12,6 +12,9 @@ import type {
   SupportTeamMember,
 } from '@/entities/support/model/types';
 
+export const dynamic = 'force-static';
+export const revalidate = 2592000; // 30 days – ISR: render on first request, cache until user changes language
+
 export async function generateMetadata({
   params,
 }: {

@@ -128,7 +128,7 @@ export function StatsDemographicsOverview({
               {t?.tournamentsTitle ?? 'Tournaments & Competition'}
             </Typography>
           </div>
-          <Typography variant="body" uiSize="xs" alpha="medium">
+          <Typography variant="body" uiSize="xs" alpha="high">
             {t?.tournamentsSubtitle ?? 'Competitive events and participation'}
           </Typography>
 

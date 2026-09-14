@@ -10,7 +10,6 @@ import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
 import { AnalyticsProvider } from '@/shared/analytics/AnalyticsProvider';
 import { VercelAnalytics } from './VercelAnalytics';
 
-import BrowserRegistry from './BrowserRegistry';
 import {
   DEFAULT_THEME_NAME,
   ThemeName,
@@ -189,10 +188,8 @@ export default async function RootLayout({
           <VercelAnalytics />
         )}
         <AppThemeProvider initialTheme={theme}>
-          <BrowserRegistry>
-            <LazySessionRoleSync />
-            {children}
-          </BrowserRegistry>
+          <LazySessionRoleSync />
+          {children}
         </AppThemeProvider>
       </body>
     </html>

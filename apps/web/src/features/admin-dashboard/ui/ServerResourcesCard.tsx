@@ -62,7 +62,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
         >
           {t?.serverResources?.title ?? 'Server Resources'}
         </Typography>
-        <Typography variant="body" uiSize="sm" alpha="medium">
+        <Typography variant="body" uiSize="sm" alpha="high">
           {t?.serverResources?.subtitle ??
             'Real-time CPU, memory, and system metrics'}
         </Typography>
@@ -76,7 +76,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
           />
           {metrics.cpu.perCore.length > 1 && (
             <div className="flex flex-col gap-2 pl-3 border-l-2 border-[var(--borderColor)]">
-              <Typography variant="body" uiSize="xs" alpha="medium">
+              <Typography variant="body" uiSize="xs" alpha="high">
                 {t?.serverResources?.perCore ?? 'Per Core'}
               </Typography>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
@@ -116,7 +116,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 border-t border-[var(--borderColor)]">
         <div className="flex flex-col gap-0.5">
-          <Typography variant="body" uiSize="xs" alpha="medium">
+          <Typography variant="body" uiSize="xs" alpha="high">
             {t?.serverResources?.processMemory ?? 'Process Memory'}
           </Typography>
           <div className="flex flex-col gap-1 text-xs">
@@ -156,7 +156,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
         </div>
 
         <div className="flex flex-col gap-0.5">
-          <Typography variant="body" uiSize="xs" alpha="medium">
+          <Typography variant="body" uiSize="xs" alpha="high">
             {t?.serverResources?.systemInfo ?? 'System Info'}
           </Typography>
           <div className="flex flex-col gap-1 text-xs">
@@ -188,7 +188,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
         </div>
 
         <div className="flex flex-col gap-0.5 md:col-span-2">
-          <Typography variant="body" uiSize="xs" alpha="medium">
+          <Typography variant="body" uiSize="xs" alpha="high">
             {t?.serverResources?.loadAvg ?? 'Load Average (1m / 5m / 15m)'}
           </Typography>
           <div className="flex flex-row gap-4 text-xs">

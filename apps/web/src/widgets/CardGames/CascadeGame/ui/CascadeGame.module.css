@@ -778,7 +778,10 @@
   box-shadow:
     0 12px 26px rgba(0, 0, 0, 0.5),
     0 0 18px rgba(255, 255, 255, 0.25);
-  outline: none;
+}
+.swatch:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
 }
 
 @keyframes cascade-fade {

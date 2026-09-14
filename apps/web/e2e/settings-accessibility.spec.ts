@@ -37,6 +37,7 @@ test.describe('Settings Accessibility and UX', () => {
     const hcBtn = page.getByTestId('vision-highContrast');
     const noneBtn = page.getByTestId('vision-none');
 
+    await deutBtn.scrollIntoViewIfNeeded();
     await deutBtn.click({ force: true });
     await expect(page.locator('html')).toHaveAttribute(
       'data-vision-mode',

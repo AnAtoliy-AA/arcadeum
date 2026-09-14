@@ -420,6 +420,16 @@ export const enMessages = {
             answer:
               'Each player secretly places a fleet on a 10×10 grid, then players take turns firing at one cell on each opponent’s grid. Hits are marked red, misses white. When every cell of a ship is hit, the ship sinks. The last player with at least one ship afloat wins.',
           },
+          parity: {
+            question: 'What is the parity search method in Battleship?',
+            answer:
+              'Since multi-cell ships occupy at least two adjacent squares, firing on a checkerboard pattern of alternating squares is guaranteed to detect every enemy vessel while cutting search turns in half.',
+          },
+          mobile: {
+            question: 'Can I play Sea Battle on mobile devices?',
+            answer:
+              'Yes. Sea Battle works directly in your mobile browser with responsive touch controls, instant room sharing, and no download needed.',
+          },
         },
       },
       breadcrumb: {

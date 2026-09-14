@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { File, Rank } from '@arcadeum/games-core/games/chess/chess.types';
-import { FILES, PIECE_SYMBOLS } from '@arcadeum/games-core/games/chess/chess.constants';
+import {
+  FILES,
+  PIECE_SYMBOLS,
+} from '@arcadeum/games-core/games/chess/chess.constants';
 
 type Mode = 'findSquare' | 'nameSquare';
 type Phase = 'menu' | 'playing' | 'gameover';
@@ -16,14 +19,30 @@ function randomSquare(): { file: File; rank: Rank } {
   };
 }
 
-function randomPiece() {
-  const types = ['pawn', 'knight', 'bishop', 'rook', 'queen', 'king'] as const;
-  const colors = ['white', 'black'] as const;
-  return {
-    type: types[Math.floor(Math.random() * types.length)],
-    color: colors[Math.floor(Math.random() * colors.length)],
-  };
-}
+const DEFAULT_DEMO_PIECES: ReadonlyArray<
+  [string, { type: string; color: 'white' | 'black' }]
+> = [
+  ['a1', { type: 'rook', color: 'white' }],
+  ['c1', { type: 'bishop', color: 'white' }],
+  ['e1', { type: 'king', color: 'white' }],
+  ['f1', { type: 'bishop', color: 'white' }],
+  ['h1', { type: 'rook', color: 'white' }],
+  ['a2', { type: 'pawn', color: 'white' }],
+  ['b2', { type: 'pawn', color: 'white' }],
+  ['c2', { type: 'pawn', color: 'white' }],
+  ['d4', { type: 'pawn', color: 'white' }],
+  ['e4', { type: 'pawn', color: 'white' }],
+  ['f3', { type: 'knight', color: 'white' }],
+  ['c3', { type: 'knight', color: 'white' }],
+  ['a7', { type: 'pawn', color: 'black' }],
+  ['b7', { type: 'pawn', color: 'black' }],
+  ['c7', { type: 'pawn', color: 'black' }],
+  ['e5', { type: 'pawn', color: 'black' }],
+  ['c6', { type: 'knight', color: 'black' }],
+  ['f6', { type: 'knight', color: 'black' }],
+  ['c5', { type: 'bishop', color: 'black' }],
+  ['e8', { type: 'king', color: 'black' }],
+];
 
 export function CoordinateTrainer() {
   const [phase, setPhase] = useState<Phase>('menu');
@@ -33,30 +52,34 @@ export function CoordinateTrainer() {
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [timeLeft, setTimeLeft] = useState(DURATION);
-  const [targetSquare, setTargetSquare] = useState<{ file: File; rank: Rank } | null>(null);
-  const [highlightSquare, setHighlightSquare] = useState<{ file: File; rank: Rank } | null>(null);
+  const [targetSquare, setTargetSquare] = useState<{
+    file: File;
+    rank: Rank;
+  } | null>(null);
+  const [highlightSquare, setHighlightSquare] = useState<{
+    file: File;
+    rank: Rank;
+  } | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [nameInput, setNameInput] = useState('');
-  const [boardPieces] = useState(() => {
-    const pieces: Map<string, { type: string; color: string }> = new Map();
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 8; c++) {
-        if (Math.random() < 0.35) {
-          const p = randomPiece();
-          pieces.set(`${FILES[c]}${8 - r}`, p);
-        }
-      }
-    }
-    return pieces;
-  });
+  const [boardPieces] = useState<Map<string, { type: string; color: string }>>(
+    () => new Map(DEFAULT_DEMO_PIECES),
+  );
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
-  const ranks: Rank[] = flipBoard ? [1, 2, 3, 4, 5, 6, 7, 8] : [8, 7, 6, 5, 4, 3, 2, 1];
-  const files: File[] = flipBoard ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'] : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  const ranks: Rank[] = flipBoard
+    ? [1, 2, 3, 4, 5, 6, 7, 8]
+    : [8, 7, 6, 5, 4, 3, 2, 1];
+  const files: File[] = flipBoard
+    ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
+    : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
   const stopTimer = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
   }, []);
 
   const nextTarget = useCallback(() => {
@@ -83,41 +106,59 @@ export function CoordinateTrainer() {
     if (phase !== 'playing') return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
-        if (prev <= 1) { stopTimer(); setPhase('gameover'); return 0; }
+        if (prev <= 1) {
+          stopTimer();
+          setPhase('gameover');
+          return 0;
+        }
         return prev - 1;
       });
     }, 1000);
     return stopTimer;
   }, [phase, stopTimer]);
 
-  const handleSquareClick = useCallback((file: File, rank: Rank) => {
-    if (phase !== 'playing' || mode !== 'findSquare' || !targetSquare) return;
-    const correct = file === targetSquare.file && rank === targetSquare.rank;
-    setIsCorrect(correct);
-    setHighlightSquare({ file, rank });
-    if (correct) {
-      setScore((s) => s + 1);
-      setStreak((s) => { const n = s + 1; if (n > bestStreak) setBestStreak(n); return n; });
-    } else {
-      setStreak(0);
-    }
-    setTimeout(nextTarget, correct ? 300 : 600);
-  }, [phase, mode, targetSquare, nextTarget, bestStreak]);
+  const handleSquareClick = useCallback(
+    (file: File, rank: Rank) => {
+      if (phase !== 'playing' || mode !== 'findSquare' || !targetSquare) return;
+      const correct = file === targetSquare.file && rank === targetSquare.rank;
+      setIsCorrect(correct);
+      setHighlightSquare({ file, rank });
+      if (correct) {
+        setScore((s) => s + 1);
+        setStreak((s) => {
+          const n = s + 1;
+          if (n > bestStreak) setBestStreak(n);
+          return n;
+        });
+      } else {
+        setStreak(0);
+      }
+      setTimeout(nextTarget, correct ? 300 : 600);
+    },
+    [phase, mode, targetSquare, nextTarget, bestStreak],
+  );
 
-  const handleNameSubmit = useCallback((name: string) => {
-    if (phase !== 'playing' || mode !== 'nameSquare' || !targetSquare) return;
-    const clean = name.trim().toLowerCase();
-    const correct = clean === `${targetSquare.file}${targetSquare.rank}`;
-    setIsCorrect(correct);
-    setHighlightSquare(targetSquare);
-    if (correct) {
-      setScore((s) => s + 1);
-      setStreak((s) => { const n = s + 1; if (n > bestStreak) setBestStreak(n); return n; });
-    } else {
-      setStreak(0);
-    }
-    setTimeout(nextTarget, correct ? 300 : 600);
-  }, [phase, mode, targetSquare, nextTarget, bestStreak]);
+  const handleNameSubmit = useCallback(
+    (name: string) => {
+      if (phase !== 'playing' || mode !== 'nameSquare' || !targetSquare) return;
+      const clean = name.trim().toLowerCase();
+      const correct = clean === `${targetSquare.file}${targetSquare.rank}`;
+      setIsCorrect(correct);
+      setHighlightSquare(targetSquare);
+      if (correct) {
+        setScore((s) => s + 1);
+        setStreak((s) => {
+          const n = s + 1;
+          if (n > bestStreak) setBestStreak(n);
+          return n;
+        });
+      } else {
+        setStreak(0);
+      }
+      setTimeout(nextTarget, correct ? 300 : 600);
+    },
+    [phase, mode, targetSquare, nextTarget, bestStreak],
+  );
 
   useEffect(() => {
     if (phase === 'playing' && mode === 'nameSquare' && targetSquare) {
@@ -125,20 +166,26 @@ export function CoordinateTrainer() {
     }
   }, [phase, mode, targetSquare]);
 
-  const handleNameKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleNameSubmit(nameInput);
-    }
-  }, [nameInput, handleNameSubmit]);
+  const handleNameKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleNameSubmit(nameInput);
+      }
+    },
+    [nameInput, handleNameSubmit],
+  );
 
   if (phase === 'menu') {
     return (
       <div className="flex flex-col items-center gap-6 py-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-[var(--text)] mb-2">Coordinate Trainer</h2>
+          <h2 className="text-2xl font-bold text-[var(--text)] mb-2">
+            Coordinate Trainer
+          </h2>
           <p className="text-sm text-[var(--textSecondary)] max-w-md">
-            Learn chess board coordinates by heart. Know instantly where every square is — essential for speed chess and communication.
+            Learn chess board coordinates by heart. Know instantly where every
+            square is — essential for speed chess and communication.
           </p>
         </div>
 
@@ -177,12 +224,15 @@ export function CoordinateTrainer() {
                 return (
                   <div
                     key={`${file}-${rank}`}
-                    className="flex items-center justify-center"
-                    style={{ backgroundColor: isLight ? '#e8d5b5' : '#a97d50', aspectRatio: '1 / 1' }}
+                    className={`flex items-center justify-center aspect-square ${isLight ? 'bg-[#e8d5b5]' : 'bg-[#a97d50]'}`}
                   >
                     {piece && (
                       <span className="text-[min(5vmin,2.5rem)] leading-none select-none opacity-60">
-                        {PIECE_SYMBOLS[piece.type as keyof typeof PIECE_SYMBOLS][piece.color as 'white' | 'black']}
+                        {
+                          PIECE_SYMBOLS[
+                            piece.type as keyof typeof PIECE_SYMBOLS
+                          ][piece.color as 'white' | 'black']
+                        }
                       </span>
                     )}
                   </div>
@@ -199,7 +249,9 @@ export function CoordinateTrainer() {
     return (
       <div className="flex flex-col items-center gap-6 py-12">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-[var(--text)] mb-2">Time&apos;s Up!</h2>
+          <h2 className="text-3xl font-bold text-[var(--text)] mb-2">
+            Time&apos;s Up!
+          </h2>
           <p className="text-sm text-[var(--textSecondary)]">
             {mode === 'findSquare' ? 'Find the Square' : 'Name the Square'}
           </p>
@@ -207,12 +259,18 @@ export function CoordinateTrainer() {
 
         <div className="flex gap-8">
           <div className="text-center">
-            <div className="text-4xl font-bold text-[var(--primary)]">{score}</div>
+            <div className="text-4xl font-bold text-[var(--primary)]">
+              {score}
+            </div>
             <div className="text-xs text-[var(--textSecondary)]">Score</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-[var(--color)]">{bestStreak}</div>
-            <div className="text-xs text-[var(--textSecondary)]">Best Streak</div>
+            <div className="text-4xl font-bold text-[var(--color)]">
+              {bestStreak}
+            </div>
+            <div className="text-xs text-[var(--textSecondary)]">
+              Best Streak
+            </div>
           </div>
         </div>
 
@@ -234,29 +292,39 @@ export function CoordinateTrainer() {
     );
   }
 
-  const promptText = mode === 'findSquare'
-    ? `Find: ${targetSquare?.file}${targetSquare?.rank}`
-    : 'What square is highlighted?';
+  const promptText =
+    mode === 'findSquare'
+      ? `Find: ${targetSquare?.file}${targetSquare?.rank}`
+      : 'What square is highlighted?';
 
   return (
     <div className="flex flex-col items-center gap-4 py-6">
       <div className="flex items-center justify-between w-full max-w-[400px]">
         <button
-          onClick={() => { stopTimer(); setPhase('menu'); }}
+          onClick={() => {
+            stopTimer();
+            setPhase('menu');
+          }}
           className="px-3 py-1.5 text-xs rounded-lg bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:text-[var(--color)] transition-colors"
         >
           Quit
         </button>
         <div className="flex items-center gap-4">
-          <div className="text-sm font-semibold text-[var(--text)]">{score}</div>
-          <div className={`text-sm font-bold ${timeLeft <= 5 ? 'text-red-400' : 'text-[var(--textSecondary)]'}`}>
+          <div className="text-sm font-semibold text-[var(--text)]">
+            {score}
+          </div>
+          <div
+            className={`text-sm font-bold ${timeLeft <= 5 ? 'text-red-400' : 'text-[var(--textSecondary)]'}`}
+          >
             {timeLeft}s
           </div>
           <div className="text-xs text-[var(--textSecondary)]">🔥 {streak}</div>
         </div>
       </div>
 
-      <div className={`text-lg font-bold ${isCorrect === true ? 'text-green-400' : isCorrect === false ? 'text-red-400' : 'text-[var(--text)]'}`}>
+      <div
+        className={`text-lg font-bold ${isCorrect === true ? 'text-green-400' : isCorrect === false ? 'text-red-400' : 'text-[var(--text)]'}`}
+      >
         {promptText}
       </div>
 
@@ -281,25 +349,34 @@ export function CoordinateTrainer() {
               const rowIdx = 8 - rank;
               const colIdx = FILES.indexOf(file);
               const isLight = (rowIdx + colIdx) % 2 === 0;
-              const isTarget = targetSquare?.file === file && targetSquare?.rank === rank;
-              const isHighlighted = highlightSquare?.file === file && highlightSquare?.rank === rank;
+              const isTarget =
+                targetSquare?.file === file && targetSquare?.rank === rank;
+              const isHighlighted =
+                highlightSquare?.file === file &&
+                highlightSquare?.rank === rank;
               const piece = boardPieces.get(`${file}${rank}`);
 
-              let bgColor = isLight ? '#e8d5b5' : '#a97d50';
-              if (mode === 'findSquare' && isTarget) bgColor = 'rgba(34, 197, 94, 0.5)';
-              if (isHighlighted && isCorrect === false) bgColor = 'rgba(239, 68, 68, 0.5)';
-              if (isHighlighted && isCorrect === true) bgColor = 'rgba(34, 197, 94, 0.5)';
+              let bgClass = isLight ? 'bg-[#e8d5b5]' : 'bg-[#a97d50]';
+              if (mode === 'findSquare' && isTarget)
+                bgClass = 'bg-emerald-500/50';
+              if (isHighlighted && isCorrect === false)
+                bgClass = 'bg-red-500/50';
+              if (isHighlighted && isCorrect === true)
+                bgClass = 'bg-emerald-500/50';
 
               return (
                 <div
                   key={`${file}-${rank}`}
-                  className="flex items-center justify-center"
-                  style={{ backgroundColor: bgColor, aspectRatio: '1 / 1' }}
+                  className={`flex items-center justify-center aspect-square ${bgClass}`}
                   onClick={() => handleSquareClick(file, rank)}
                 >
                   {piece && (
                     <span className="text-[min(5vmin,2.5rem)] leading-none select-none opacity-60">
-                      {PIECE_SYMBOLS[piece.type as keyof typeof PIECE_SYMBOLS][piece.color as 'white' | 'black']}
+                      {
+                        PIECE_SYMBOLS[piece.type as keyof typeof PIECE_SYMBOLS][
+                          piece.color as 'white' | 'black'
+                        ]
+                      }
                     </span>
                   )}
                 </div>
@@ -309,8 +386,12 @@ export function CoordinateTrainer() {
         </div>
       </div>
 
-      <div className="flex gap-1 text-[10px] text-[var(--textSecondary)] opacity-60">
-        {files.map((f) => <span key={f} className="w-8 text-center">{f}</span>)}
+      <div className="flex gap-1 text-[10px] text-[var(--textSecondary)] opacity-85">
+        {files.map((f) => (
+          <span key={f} className="w-8 text-center">
+            {f}
+          </span>
+        ))}
       </div>
     </div>
   );

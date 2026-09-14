@@ -2,6 +2,7 @@
 
 import { memo, useMemo } from 'react';
 import type { ReactElement } from 'react';
+import { CosmeticSprite } from '../CosmeticSprite';
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 
@@ -81,19 +82,11 @@ export const Avatar = memo(function Avatar({
       }}
     >
       {src ? (
-        <img
+        <CosmeticSprite
           src={src}
           alt={alt ?? name}
-          loading={priority ? 'eager' : 'lazy'}
-          fetchPriority={priority ? 'high' : 'auto'}
-          style={{
-            width: sizeValue,
-            height: sizeValue,
-            objectFit: 'contain',
-          }}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
-          }}
+          size={sizeValue}
+          priority={priority}
         />
       ) : (
         <span

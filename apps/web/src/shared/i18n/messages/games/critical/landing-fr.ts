@@ -95,6 +95,34 @@ export const landing = {
         answer:
           "À votre tour, jouez autant de cartes d'Action que vous le souhaitez (Saut, Attaque, Vol, Voir l'avenir…), puis piochez une carte pour terminer votre tour. Si vous piochez une carte Critical, vous devez jouer un Désamorçage ou vous êtes éliminé. Le dernier joueur en jeu remporte la manche.",
       },
+      defuse: {
+        question: 'Comment fonctionnent les cartes de Désamorçage ?',
+        answer:
+          "Une carte de Désamorçage vous sauve de l'élimination lorsque vous piochez une bombe Critical. Vous replacez ensuite secrètement la carte Critical où vous le souhaitez dans la pioche.",
+      },
+      combos: {
+        question: 'Comment fonctionnent les combos dans Critical ?',
+        answer:
+          'Jouer une paire de cartes identiques permet de voler une carte au hasard à un adversaire. Jouer un brelan permet de nommer et voler une carte précise.',
+      },
+      nope: {
+        question:
+          'Les cartes Annuler peuvent-elles bloquer une bombe Critical ou un Désamorçage ?',
+        answer:
+          "Non. Les cartes Annuler bloquent toute carte d'Action standard ou Combo, mais ne peuvent jamais annuler l'explosion d'une bombe Critical ni un Désamorçage.",
+      },
+      themes: {
+        question:
+          "Existe-t-il des packs d'extension thématiques dans Critical ?",
+        answer:
+          'Oui. Vous pouvez personnaliser vos parties avec des extensions telles que Vol, Chaos, Divinité et Futur, chacune dotée de mécaniques uniques et de designs exclusifs.',
+      },
+      noSignup: {
+        question:
+          'Mes amis doivent-ils créer un compte ou télécharger une application pour jouer à Critical ?',
+        answer:
+          "Non. Toute personne disposant du lien d'invitation peut rejoindre et jouer instantanément dans son navigateur web, sans téléchargement ni inscription.",
+      },
     },
   },
   breadcrumb: {

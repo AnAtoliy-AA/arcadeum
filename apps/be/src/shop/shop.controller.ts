@@ -12,11 +12,13 @@ import { CatalogService } from './services/catalog.service';
 import { InventoryService } from './services/inventory.service';
 import { ShopService } from './services/shop.service';
 import { ShopWalletService } from './services/shop-wallet.service';
+import { GiftService } from './services/gift.service';
 import { PurchaseItemDto } from './dto/purchase-item.dto';
 import { PurchaseItemWithWalletDto } from './dto/purchase-item-wallet.dto';
 import { SellItemDto } from './dto/sell-item.dto';
 import { EquipItemDto } from './dto/equip-item.dto';
 import { UnequipItemDto } from './dto/unequip-item.dto';
+import { GiftItemDto } from './dto/gift-item.dto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import {
   isShopCategory,
@@ -37,6 +39,7 @@ export class ShopController {
     private readonly inventory: InventoryService,
     private readonly shop: ShopService,
     private readonly shopWallet: ShopWalletService,
+    private readonly giftService: GiftService,
   ) {}
 
   // Public — bot-crawlable for SEO of featured cosmetics.
@@ -100,5 +103,16 @@ export class ShopController {
     @Body() dto: UnequipItemDto,
   ) {
     return this.inventory.unequip(req.user.userId, dto.category);
+  }
+
+  @Post('gift')
+  @UseGuards(JwtAuthGuard)
+  gift(@Req() req: { user: AuthenticatedUser }, @Body() dto: GiftItemDto) {
+    return this.giftService.gift(
+      req.user.userId,
+      dto.recipientId,
+      dto.itemId,
+      dto.message,
+    );
   }
 }

@@ -194,6 +194,7 @@ export function AdminTournamentForm({
         <span className="">{labels.gameType}</span>
         <select
           data-testid="form-gameType"
+          aria-label={labels.gameType}
           value={state.gameType}
           onChange={(e) =>
             setState((s) => ({
@@ -214,6 +215,7 @@ export function AdminTournamentForm({
         <input
           type="number"
           data-testid="form-maxPlayers"
+          aria-label={labels.maxPlayers}
           min={2}
           max={256}
           value={state.maxPlayers}
@@ -227,6 +229,7 @@ export function AdminTournamentForm({
         <input
           type="number"
           data-testid="form-entryFeeCoins"
+          aria-label={labels.entryFeeLabel}
           min={0}
           max={1_000_000}
           value={state.entryFeeCoins}
@@ -240,6 +243,7 @@ export function AdminTournamentForm({
         <input
           type="number"
           data-testid="form-prizePoolCoins"
+          aria-label={labels.prizePoolLabel}
           min={0}
           max={1_000_000}
           value={state.prizePoolCoins}
@@ -258,6 +262,7 @@ export function AdminTournamentForm({
           <input
             type="datetime-local"
             data-testid="form-scheduledAt"
+            aria-label={labels.scheduledAt}
             value={state.scheduledAt}
             onChange={(e) =>
               setState((s) => ({ ...s, scheduledAt: e.target.value }))
@@ -272,6 +277,7 @@ export function AdminTournamentForm({
           <input
             type="datetime-local"
             data-testid="form-registrationOpensAt"
+            aria-label={labels.registrationOpensAt}
             value={state.registrationOpensAt}
             onChange={(e) =>
               setState((s) => ({
@@ -289,6 +295,7 @@ export function AdminTournamentForm({
           <input
             type="datetime-local"
             data-testid="form-registrationClosesAt"
+            aria-label={labels.registrationClosesAt}
             value={state.registrationClosesAt}
             onChange={(e) =>
               setState((s) => ({
@@ -307,6 +314,7 @@ export function AdminTournamentForm({
         </span>
         <textarea
           data-testid="form-prizeDescription"
+          aria-label={labels.prizeDescription}
           value={state.prizeDescription}
           onChange={(e) =>
             setState((s) => ({ ...s, prizeDescription: e.target.value }))
@@ -353,6 +361,7 @@ export function AdminTournamentForm({
         </span>
         <input
           data-testid={`form-name-${state.activeLocale}`}
+          aria-label={labels.name}
           value={active.name}
           onChange={(e) =>
             updateLocale(state.activeLocale, 'name', e.target.value)
@@ -363,6 +372,7 @@ export function AdminTournamentForm({
         <span className="text-[12px] opacity-[0.7]">{labels.description}</span>
         <textarea
           data-testid={`form-description-${state.activeLocale}`}
+          aria-label={labels.description}
           value={active.description ?? ''}
           onChange={(e) =>
             updateLocale(state.activeLocale, 'description', e.target.value)

@@ -7,6 +7,9 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import DevelopersPageContent from './DevelopersPageContent';
 
+export const dynamic = 'force-static';
+export const revalidate = 2592000; // 30 days – ISR: render on first request, cache until user changes language
+
 export async function generateMetadata({
   params,
 }: {

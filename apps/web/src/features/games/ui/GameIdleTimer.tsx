@@ -6,7 +6,7 @@ import { Button } from '@arcadeum/ui';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { useGameIdleTimer } from '@/features/games/hooks/useGameIdleTimer';
 
 export interface GameIdleTimerProps {

@@ -78,7 +78,7 @@ export async function navigateTo(
         console.warn(
           `Detected issue (Hydration: ${hydrationError}) on ${path}, reloading... (Attempt ${attempt + 1})`,
         );
-        await page.reload({ waitUntil: 'load' });
+        await page.reload({ waitUntil: 'commit' });
       }
 
       // Robust hydration check: wait for either data-hydrated or data-app-ready
@@ -115,6 +115,7 @@ export async function navigateTo(
 }
 
 export async function clearState(page: Page): Promise<void> {
+  await page.context().clearCookies();
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();

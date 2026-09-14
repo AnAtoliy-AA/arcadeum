@@ -181,12 +181,16 @@ export function DropdownLink({
   onClick,
   children,
   icon,
+  target,
+  rel,
   'data-testid': dataTestId,
 }: {
   href: string;
   onClick?: () => void;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  target?: string;
+  rel?: string;
   'data-testid'?: string;
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
@@ -194,6 +198,8 @@ export function DropdownLink({
   return (
     <Link
       href={href}
+      target={target}
+      rel={rel}
       prefetch={false}
       style={{ textDecoration: 'none' }}
       onClick={onClick}

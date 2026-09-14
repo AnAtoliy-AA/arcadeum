@@ -90,7 +90,7 @@ export const ActiveAsyncMatchesDrawer: React.FC<
                     <span
                       className={`font-semibold ${
                         myTurn
-                          ? 'text-[var(--primary)]'
+                          ? 'text-[var(--color)]'
                           : 'text-[var(--mutedForeground)]'
                       }`}
                     >

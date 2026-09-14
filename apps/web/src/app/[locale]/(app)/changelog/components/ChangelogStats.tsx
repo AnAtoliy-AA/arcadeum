@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 type ChangelogStatsProps = {
   totalVersions: number;
@@ -25,7 +25,7 @@ export function ChangelogStats({
       label: t('pages.changelog.stats.latestVersion'),
       value: `v${latestVersion}`,
       icon: '🚀',
-      accent: 'text-[var(--primary)]',
+      accent: 'text-[var(--color)]',
       bg: 'bg-[var(--primary)]/10 border-[var(--primary)]/20',
     },
     {
@@ -81,7 +81,7 @@ export function ChangelogStats({
             <Typography
               variant="caption"
               uiSize="xs"
-              alpha="medium"
+              alpha="high"
               className="truncate"
             >
               {stat.label}

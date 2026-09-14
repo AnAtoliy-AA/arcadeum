@@ -1,90 +1,58 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { apiClient } from '@/shared/lib/api-client';
-
-// UI-component audit (packages/ui/src/components):
-//   - No `Pill`, `CoinIcon`, or `GemIcon` exported from @arcadeum/ui.
-//   - Closest primitives: DeltaChip, LiveChip (pill-shaped).
-//   - CONCERN: A generic currency Pill would be a useful addition to
-//     @arcadeum/ui, but introducing it now would exceed this task's scope.
-//     Using native <span> elements styled via CSS classes instead.
-//
-// NOTE: <WalletLiveBridge /> is intentionally NOT rendered here.
-//   The bridge is mounted once in the root layout (see Task 23) so it is
-//   active for the whole session without being re-mounted on every render
-//   of this chip.
+import { useRoutes } from '@/shared/config/useRoutes';
 
 interface WalletBalance {
   coins: number;
   gems: number;
 }
 
-const pillStyle = (bg: string, border: string, color: string) => ({
-  style: {
-    display: 'inline-flex' as const,
-    alignItems: 'center' as const,
-    gap: '4px',
-    padding: '2px 10px',
-    borderRadius: '999px',
-    fontSize: '13px',
-    fontWeight: 600,
-    background: bg,
-    border: `1px solid ${border}`,
-    color,
-    whiteSpace: 'nowrap' as const,
-  },
-});
-
 const fmt = (n: number) => new Intl.NumberFormat().format(n);
 
 export function BalanceChip() {
   const [balance, setBalance] = useState<WalletBalance | null>(null);
+  const routes = useRoutes();
 
   useEffect(() => {
     apiClient
       .get<WalletBalance>('/wallet/balance')
       .then(setBalance)
-      .catch(() => {
-        // Auth expired, BE unreachable, or any transient failure — render nothing.
-      });
+      .catch(() => {});
   }, []);
 
   if (!balance) return null;
 
-  // Destructure to avoid the no-restricted-syntax MemberExpression rule
   const { coins, gems } = balance;
 
   return (
-    <div
-      className="wallet-balance-chip"
+    <Link
+      href={routes.wallet}
+      className="wallet-balance-chip flex items-center gap-2 px-2.5 py-1 rounded-full border border-[var(--glassBorder)] bg-[var(--glassBg)] hover:bg-[var(--backgroundHover)] transition-all duration-200 no-underline text-xs"
       role="status"
       aria-live="polite"
       aria-label="Wallet balance"
-      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+      data-testid="header-wallet-balance"
     >
       <span
-        className="wallet-balance-pill"
+        className="wallet-balance-pill flex items-center gap-1 font-semibold text-amber-400"
         title="Coins"
-        {...pillStyle(
-          'rgba(251,191,36,0.12)',
-          'rgba(251,191,36,0.3)',
-          '#fbbf24',
-        )}
       >
-        {'🪙'} {fmt(coins)}
+        <span>🪙</span>
+        <span>{fmt(coins)}</span>
+      </span>
+      <span className="text-[var(--glassBorder)] font-light leading-none">
+        |
       </span>
       <span
-        className="wallet-balance-pill"
+        className="wallet-balance-pill flex items-center gap-1 font-semibold text-purple-400"
         title="Gems"
-        {...pillStyle(
-          'rgba(167,139,250,0.12)',
-          'rgba(167,139,250,0.3)',
-          '#a78bfa',
-        )}
       >
-        {'💎'} {fmt(gems)}
+        <span>💎</span>
+        <span>{fmt(gems)}</span>
       </span>
-    </div>
+    </Link>
   );
 }

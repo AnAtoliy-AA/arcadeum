@@ -101,6 +101,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             step={1}
             value={priceAmount}
             onChange={(e) => setPriceAmount(e.target.value)}
+            aria-label={labels.editDialog.priceAmount}
             data-testid="admin-shop-edit-price-amount"
             className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           />
@@ -115,6 +116,7 @@ export function AdminShopEditDialog({ item, open, onClose, labels }: Props) {
             onChange={(e) =>
               setPriceCurrency(e.target.value as 'coins' | 'gems' | 'arcadeum')
             }
+            aria-label={labels.editDialog.priceCurrency}
             data-testid="admin-shop-edit-price-currency"
             className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           >

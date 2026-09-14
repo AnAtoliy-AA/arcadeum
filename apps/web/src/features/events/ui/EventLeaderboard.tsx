@@ -108,7 +108,7 @@ export const EventLeaderboard = ({
                   <td className="py-3 text-center font-medium text-[var(--success)]">
                     {p.wins}
                   </td>
-                  <td className="py-3 text-right pr-2 font-extrabold text-[var(--primary)]">
+                  <td className="py-3 text-right pr-2 font-extrabold text-[var(--color)]">
                     {p.points} {translations.points ?? 'pts'}
                   </td>
                 </tr>

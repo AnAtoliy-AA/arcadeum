@@ -38,9 +38,11 @@ import {
   validateAttack,
   validateUseSonar,
   validateUseRadar,
+  validateUseShipAbility,
 } from './sea-battle.validators';
 import { executeSonar, executeRadar } from './sea-battle.special-weapons';
 import { executeAttack } from './sea-battle-attack.utils';
+import { executeShipAbility, type ShipAbilityPayload } from './sea-battle.ship-abilities';
 import { validateSeaBattleConfig } from './sea-battle.config';
 import {
   advanceTeamRotationOnMiss,
@@ -91,6 +93,7 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       ships: [],
       shipsRemaining: activeShipCount,
       placementComplete: false,
+      salvoShotsRemaining: mode === GAME_MODE_VARIANTS.SALVO ? activeShipCount : undefined,
     }));
     const baseState: SeaBattleState = {
       phase: GAME_PHASE.PLACEMENT,
@@ -109,6 +112,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       shipCount,
       specialWeapons: config?.specialWeapons,
       aiDifficulty: config?.aiDifficulty,
+      shipAbilities: config?.shipAbilities,
+      abilityCooldowns: config?.shipAbilities ? {} : undefined,
     };
     if (config?.teams && config.teams.length > 0) {
       const orderedTeams = shouldRandomize
@@ -170,6 +175,12 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
         return validateUseSonar(state, player, payload as SonarPayload);
       case 'useRadar':
         return validateUseRadar(state, player, payload as RadarPayload);
+      case 'useShipAbility':
+        return validateUseShipAbility(
+          state,
+          player,
+          payload as ShipAbilityPayload,
+        );
       case 'resetPlacement':
         return validateResetPlacement(state, player);
       default:
@@ -219,6 +230,8 @@ export class SeaBattleEngine extends BaseGameEngine<SeaBattleState> {
       case 'useRadar':
         delete newState.lastScanWave;
         return executeRadar(newState, player, payload as RadarPayload);
+      case 'useShipAbility':
+        return executeShipAbility(newState, player, payload as ShipAbilityPayload);
       case 'chat':
         return this.executeChat(newState, player, payload as ChatPayload);
       default:

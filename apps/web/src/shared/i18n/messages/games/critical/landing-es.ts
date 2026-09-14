@@ -95,6 +95,33 @@ export const landing = {
         answer:
           'En tu turno juega tantas cartas de Acción como quieras (Saltar, Atacar, Robar, Ver el futuro…) y termina robando una carta del mazo. Si robas una carta Critical, debes jugar un Defuse o quedas eliminado. El último jugador en pie gana la ronda.',
       },
+      defuse: {
+        question: '¿Cómo funcionan las cartas de Defuse?',
+        answer:
+          'Una carta de Defuse te salva de la eliminación al robar una bomba Critical. Tras neutralizarla, colocas en secreto la carta Critical en cualquier posición del mazo.',
+      },
+      combos: {
+        question: '¿Cómo funcionan los combos en Critical?',
+        answer:
+          'Jugar una pareja de cartas iguales te permite robar una carta al azar de un rival. Jugar un trío te permite nombrar y robar una carta específica.',
+      },
+      nope: {
+        question:
+          '¿Las cartas Cancelar pueden frenar una bomba Critical o un Defuse?',
+        answer:
+          'No. Las cartas Cancelar frenan cualquier carta de Acción o Combo, pero no pueden anular el robo de una bomba Critical ni una carta Defuse.',
+      },
+      themes: {
+        question: '¿Hay paquetes de expansión temáticos en Critical?',
+        answer:
+          'Sí. Puedes personalizar tus salas con paquetes de expansión como Robo, Caos, Deidad y Futuro, con mecánicas especiales y arte exclusivo.',
+      },
+      noSignup: {
+        question:
+          '¿Mis amigos necesitan una cuenta o descargar una app para jugar a Critical?',
+        answer:
+          'No. Cualquier persona con el enlace de invitación puede unirse y jugar al instante en cualquier navegador web, sin descargas ni registros.',
+      },
     },
   },
   breadcrumb: {

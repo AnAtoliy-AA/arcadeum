@@ -40,5 +40,9 @@ export function resolveDisplayName(
   if (member?.displayName && member.displayName !== 'Unknown')
     return member.displayName;
 
+  if (id.startsWith('anon_')) {
+    return `Guest #${id.slice(5, 9)}`;
+  }
+
   return opts.fallback ?? id;
 }

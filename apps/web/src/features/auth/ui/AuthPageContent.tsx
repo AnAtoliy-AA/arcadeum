@@ -1,12 +1,22 @@
 'use client';
 
-import { InstallAppCta } from '@/widgets/install-app';
+import dynamic from 'next/dynamic';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { useAuthLabels } from '../hooks/useAuthLabels';
-import { AuthBrandPanel } from './AuthBrandPanel';
 import { AuthFormPanel } from './AuthFormPanel';
 import { AuthPageBackground } from './AuthPageBackground';
 import './auth.scss';
+
+const AuthBrandPanel = dynamic(
+  () => import('./AuthBrandPanel').then((m) => m.AuthBrandPanel),
+  { ssr: false },
+);
+
+const InstallAppCta = dynamic(
+  () =>
+    import('@/widgets/install-app').then((m) => m.InstallAppCta),
+  { ssr: false },
+);
 
 export default function AuthPageContent() {
   const auth = useAuthForm();
@@ -15,7 +25,7 @@ export default function AuthPageContent() {
   return (
     <div
       className="flex flex-row items-stretch w-full relative overflow-hidden"
-      style={{ minHeight: '100vh' }}
+      style={{ minHeight: '100dvh' }}
       data-testid="auth-page-root"
     >
       <AuthPageBackground />

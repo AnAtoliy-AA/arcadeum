@@ -311,6 +311,64 @@ export class GameHistoryService {
   }
 
   /**
+   * Get a public result for a completed room (no auth required).
+   */
+  async getRoomResult(roomId: string) {
+    if (!this.atlasReady)
+      throw new NotFoundException('History service unavailable');
+    const room = await this.gameRoomModel!.findById(roomId).lean().exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
+
+    const sessions = await this.gameSessionModel!.find({ roomId })
+      .select('roomId gameId status state createdAt updatedAt')
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .lean()
+      .exec();
+
+    const latestSession = sessions[0];
+    if (!latestSession || latestSession.status !== 'completed') {
+      throw new NotFoundException('Game not completed');
+    }
+
+    const state = latestSession.state as unknown as BaseGameState;
+    const gameResult = state?.gameResult;
+
+    let gameName: string;
+    try {
+      const engine = this.builder['engineRegistry'].getEngine(room.gameId);
+      const metadata = engine.getMetadata();
+      gameName = metadata.name || room.gameId;
+    } catch {
+      gameName = room.gameId;
+    }
+
+    const participants = await this.builder.getParticipantSummaries(
+      room as unknown as GameRoom,
+    );
+
+    const winnerIds: string[] = gameResult?.winnerIds ?? [];
+    const isDraw: boolean = gameResult?.isDraw ?? false;
+    const ratingDeltas = (gameResult as Record<string, unknown> | undefined)
+      ?.ratingDeltas as Record<string, number> | undefined;
+
+    return {
+      sessionId: latestSession._id.toString(),
+      roomId: room._id.toString(),
+      gameId: room.gameId,
+      gameName,
+      completedAt: latestSession.updatedAt.toISOString(),
+      isDraw,
+      participants: participants.map((p) => ({
+        userId: p.id,
+        displayName: p.username,
+        isWinner: winnerIds.includes(p.id),
+      })),
+      ratingDeltas,
+    };
+  }
+
+  /**
    * Hide a history entry for a user
    */
   async hideHistoryEntry(userId: string, roomId: string): Promise<void> {

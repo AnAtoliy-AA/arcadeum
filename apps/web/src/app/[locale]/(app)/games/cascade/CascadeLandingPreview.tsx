@@ -33,7 +33,7 @@ export function CascadeLandingPreview() {
                 }}
               >
                 <span className="text-sm font-black">{card.value}</span>
-                <span className="text-center text-xs font-bold opacity-90">
+                <span className="text-center text-xs font-bold opacity-95">
                   CASCADE
                 </span>
                 <span className="text-sm font-black self-end">

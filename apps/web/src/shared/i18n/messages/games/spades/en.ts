@@ -105,6 +105,36 @@ export const enMessages = {
           answer:
             'Each overtrick beyond your team bid counts as a bag. Every time a team accumulates 10 bags, 100 points are deducted from its score — so bidding accurately matters.',
         },
+        blindNil: {
+          question: 'What is a Blind Nil bid?',
+          answer:
+            'A Blind Nil is declared before looking at your cards. If successful, it earns 200 points, but failing deducts 200 points.',
+        },
+        partnerStrategy: {
+          question: 'How should partners cooperate in Spades?',
+          answer:
+            'Avoid taking tricks your partner has already won, lead low to help their Nil bid succeed, and cover high cards when they are void.',
+        },
+        reneg: {
+          question: 'What happens if a player fails to follow suit?',
+          answer:
+            'Players must follow the led suit if they hold one. Discarding another suit when holding the led suit is an illegal renege.',
+        },
+        friends: {
+          question: 'How do I play Spades with friends?',
+          answer:
+            'Create a room, select partnership or solo mode, and share the invite URL. Your friends join directly in the browser.',
+        },
+        bots: {
+          question: 'Can I play Spades against AI?',
+          answer:
+            'Yes. Smart bots calculate trick probabilities, partner protection, and bag mitigation for realistic practice.',
+        },
+        free: {
+          question: 'Is Spades free to play on Arcadeum?',
+          answer:
+            'Yes. Spades on Arcadeum is 100% free with fluid gameplay, table themes, and no app store downloads.',
+        },
       },
     },
     lobby: {

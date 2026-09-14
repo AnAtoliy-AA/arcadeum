@@ -110,6 +110,41 @@ export const enMessages = {
           answer:
             'Bots prefer color-matching plays, save Wild +4 for stuck turns, and pick the color they hold the most of when naming after a wild. Casual but credible.',
         },
+        lastCard: {
+          question: 'What is the Last Card (Cascade) call?',
+          answer:
+            'When you have one card left, you must call Cascade. If another player catches you before you call it, you must draw penalty cards.',
+        },
+        actionCards: {
+          question: 'What action cards exist in Cascade?',
+          answer:
+            'Cascade includes Skip, Reverse, Draw-Two (+2), Wild, and Wild Draw-Four (+4) to disrupt opponents and control the flow.',
+        },
+        winCondition: {
+          question: 'How do you win a match in Cascade?',
+          answer:
+            'The first player to discard all cards from their hand wins the round. Points from opponents’ remaining cards are tallied for tournament score.',
+        },
+        jumpIn: {
+          question: 'Is Jump-In allowed in Cascade?',
+          answer:
+            'In Jump-In enabled rooms, any player holding the exact identical card (same color and value) can play it immediately out of turn.',
+        },
+        friends: {
+          question: 'How many players can play Cascade together?',
+          answer:
+            'Cascade supports 2 to 8 players in a room with instant lobby matchmaking, private invite links, and bot backfilling.',
+        },
+        mobile: {
+          question: 'Is Cascade optimized for mobile screens?',
+          answer:
+            'Yes. Cards fan out smoothly on touchscreens with intuitive drag-to-play gestures and tap feedback.',
+        },
+        free: {
+          question: 'Is Cascade free to play online?',
+          answer:
+            'Yes. Cascade is 100% free in your browser with zero microtransactions, custom card palettes, and no account wall.',
+        },
       },
     },
     lobby: {

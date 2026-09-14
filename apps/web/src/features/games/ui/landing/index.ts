@@ -15,3 +15,4 @@ export * from './UnifiedGameLanding';
 export * from './SoloGameLanding';
 export * from './GameLandingLiveStats';
 export * from './getRelatedGames';
+export * from './GameAcademySection';

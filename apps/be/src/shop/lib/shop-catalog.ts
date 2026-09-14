@@ -1,5 +1,6 @@
 import type { ShopItemDef } from './shop-types';
 import { SHOP_BACKGROUND_ITEMS } from './shop-catalog.backgrounds';
+import { SHOP_BADGE_ITEMS } from './shop-catalog.badges';
 import { SHOP_COSMETIC_ITEMS } from './shop-catalog.cosmetics';
 
 /**
@@ -297,87 +298,7 @@ export const SHOP_CATALOG: Record<string, ShopItemDef> = {
     defaultPriceAmount: 50,
     defaultPriceCurrency: 'gems',
   },
-  'badge-newcomer': {
-    id: 'badge-newcomer',
-    category: 'badge',
-    rarity: 'common',
-    nameKey: 'items.badge.newcomer.name',
-    descKey: 'items.badge.newcomer.desc',
-    assetUrl: '/shop/badges/newcomer.png',
-    defaultPriceAmount: 0,
-    defaultPriceCurrency: 'coins',
-    starter: true,
-  },
-  'badge-veteran': {
-    id: 'badge-veteran',
-    category: 'badge',
-    rarity: 'common',
-    nameKey: 'items.badge.veteran.name',
-    descKey: 'items.badge.veteran.desc',
-    assetUrl: '/shop/badges/veteran.png',
-    defaultPriceAmount: 500,
-    defaultPriceCurrency: 'coins',
-  },
-  'badge-champion': {
-    id: 'badge-champion',
-    category: 'badge',
-    rarity: 'rare',
-    nameKey: 'items.badge.champion.name',
-    descKey: 'items.badge.champion.desc',
-    assetUrl: '/shop/badges/champion.png',
-    defaultPriceAmount: 5,
-    defaultPriceCurrency: 'gems',
-  },
-  'badge-legend': {
-    id: 'badge-legend',
-    category: 'badge',
-    rarity: 'legendary',
-    nameKey: 'items.badge.legend.name',
-    descKey: 'items.badge.legend.desc',
-    assetUrl: '/shop/badges/legend.png',
-    defaultPriceAmount: 50,
-    defaultPriceCurrency: 'gems',
-  },
-  'badge-elite': {
-    id: 'badge-elite',
-    category: 'badge',
-    rarity: 'epic',
-    nameKey: 'items.badge.elite.name',
-    descKey: 'items.badge.elite.desc',
-    assetUrl: '/shop/badges/elite.png',
-    defaultPriceAmount: 20,
-    defaultPriceCurrency: 'gems',
-  },
-  'badge-mythic': {
-    id: 'badge-mythic',
-    category: 'badge',
-    rarity: 'legendary',
-    nameKey: 'items.badge.mythic.name',
-    descKey: 'items.badge.mythic.desc',
-    assetUrl: '/shop/badges/mythic.png',
-    defaultPriceAmount: 50,
-    defaultPriceCurrency: 'gems',
-  },
-  'badge-vanguard': {
-    id: 'badge-vanguard',
-    category: 'badge',
-    rarity: 'epic',
-    nameKey: 'items.badge.vanguard.name',
-    descKey: 'items.badge.vanguard.desc',
-    assetUrl: '/shop/badges/vanguard.png',
-    defaultPriceAmount: 25,
-    defaultPriceCurrency: 'gems',
-  },
-  'badge-nexus': {
-    id: 'badge-nexus',
-    category: 'badge',
-    rarity: 'legendary',
-    nameKey: 'items.badge.nexus.name',
-    descKey: 'items.badge.nexus.desc',
-    assetUrl: '/shop/badges/nexus.png',
-    defaultPriceAmount: 60,
-    defaultPriceCurrency: 'gems',
-  },
+  ...SHOP_BADGE_ITEMS,
 
   // Game skins — the in-match visual theme. No equip slot today (game_skin
   // is schema-only) but the catalog row + a free starter still ship so the

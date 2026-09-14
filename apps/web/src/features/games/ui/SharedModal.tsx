@@ -103,7 +103,7 @@ export const ModalFrame = ({
     aria-label={ariaLabel}
     data-testid={dataTestId}
     className={cx(
-      'relative w-full max-w-[600px] h-full max-h-[calc(100vh-40px)] overflow-hidden',
+      'relative w-full max-w-[600px] h-full max-h-[calc(100dvh-40px)] overflow-hidden',
       variant === 'cyberpunk' ? 'rounded-[4px]' : 'rounded-[24px]',
       FRAME_VARIANT_CLASSES[variant],
       className,

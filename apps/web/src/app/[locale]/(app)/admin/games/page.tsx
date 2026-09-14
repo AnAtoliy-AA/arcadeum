@@ -26,7 +26,7 @@ export default async function AdminGamesPage() {
         <PageTitle size="lg" gradient>
           {title}
         </PageTitle>
-        <Typography variant="body" uiSize="md" alpha="medium">
+        <Typography variant="body" uiSize="md" alpha="high">
           {subtitle}
         </Typography>
       </div>

@@ -22,7 +22,7 @@ export function FeaturesQuickNav({
         >
           📑 Directory Index
         </Typography>
-        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--bgCard)] text-[var(--primary)] border border-[var(--glassBorder)]">
+        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--bgCard)] text-[var(--color)] border border-[var(--glassBorder)]">
           {sections.length} Sections
         </span>
       </div>

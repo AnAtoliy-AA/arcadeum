@@ -8,6 +8,7 @@ import {
   localeToHreflang,
 } from '@/shared/i18n';
 import { POST_SLUGS, getPost } from '@/features/blog/registry';
+import { FEATURED_PLAYER_IDS } from '@/shared/api/leaderboard';
 
 type RouteKey =
   | 'home'
@@ -47,6 +48,12 @@ type RouteKey =
   | 'minesweeperLanding'
   | 'sudokuLanding'
   | 'game2048Landing'
+  | 'backgammonLanding'
+  | 'battleshipLanding'
+  | 'heartsLanding'
+  | 'spadesLanding'
+  | 'goLanding'
+  | 'pachisiLanding'
   | 'shop';
 
 // Last-meaningful-content-change per page. Update by hand when the
@@ -79,18 +86,24 @@ const PAGE_LAST_MODIFIED: Record<RouteKey, string> = {
   rewards: '2026-09-06',
   tournaments: '2026-09-06',
   wallet: '2026-09-06',
-  seaBattleLanding: '2026-09-06',
-  criticalLanding: '2026-09-06',
-  glimwormLanding: '2026-09-06',
-  ticTacToeLanding: '2026-09-06',
-  cascadeLanding: '2026-09-06',
-  chessLanding: '2026-09-06',
-  checkersLanding: '2026-09-06',
-  catDashLanding: '2026-09-06',
-  solitaireLanding: '2026-09-06',
-  minesweeperLanding: '2026-09-06',
-  sudokuLanding: '2026-09-06',
-  game2048Landing: '2026-09-06',
+  seaBattleLanding: '2026-09-11',
+  criticalLanding: '2026-09-11',
+  glimwormLanding: '2026-09-11',
+  ticTacToeLanding: '2026-09-11',
+  cascadeLanding: '2026-09-11',
+  chessLanding: '2026-09-11',
+  checkersLanding: '2026-09-11',
+  catDashLanding: '2026-09-11',
+  solitaireLanding: '2026-09-11',
+  minesweeperLanding: '2026-09-11',
+  sudokuLanding: '2026-09-11',
+  game2048Landing: '2026-09-11',
+  backgammonLanding: '2026-09-11',
+  battleshipLanding: '2026-09-11',
+  heartsLanding: '2026-09-11',
+  spadesLanding: '2026-09-11',
+  goLanding: '2026-09-11',
+  pachisiLanding: '2026-09-11',
   shop: '2026-09-06',
 };
 
@@ -115,6 +128,9 @@ const NOINDEX_KEYS: ReadonlySet<RouteKey> = new Set<RouteKey>([
   'wallet',
   'gameCreate',
   'shop',
+  'notes',
+  'rewards',
+  'tournaments',
 ]);
 
 const GAME_LANDING_KEYS: RouteKey[] = [
@@ -130,6 +146,12 @@ const GAME_LANDING_KEYS: RouteKey[] = [
   'minesweeperLanding',
   'sudokuLanding',
   'game2048Landing',
+  'backgammonLanding',
+  'battleshipLanding',
+  'heartsLanding',
+  'spadesLanding',
+  'goLanding',
+  'pachisiLanding',
 ];
 
 const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
@@ -154,10 +176,19 @@ const PAGE_CHANGE_FREQ: Partial<
   glimwormLanding: 'weekly',
   ticTacToeLanding: 'weekly',
   cascadeLanding: 'weekly',
+  checkersLanding: 'weekly',
+  catDashLanding: 'weekly',
+  chessLanding: 'weekly',
   solitaireLanding: 'weekly',
   minesweeperLanding: 'weekly',
   sudokuLanding: 'weekly',
   game2048Landing: 'weekly',
+  backgammonLanding: 'weekly',
+  battleshipLanding: 'weekly',
+  heartsLanding: 'weekly',
+  spadesLanding: 'weekly',
+  goLanding: 'weekly',
+  pachisiLanding: 'weekly',
   terms: 'yearly',
   privacy: 'yearly',
   cookies: 'yearly',
@@ -200,6 +231,12 @@ const PAGE_PRIORITY: Record<RouteKey, number> = {
   minesweeperLanding: 0.9,
   sudokuLanding: 0.9,
   game2048Landing: 0.9,
+  backgammonLanding: 0.9,
+  battleshipLanding: 0.9,
+  heartsLanding: 0.9,
+  spadesLanding: 0.9,
+  goLanding: 0.9,
+  pachisiLanding: 0.9,
   leaderboards: 0.7,
   tournaments: 0.7,
   rewards: 0.7,
@@ -298,6 +335,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
         changeFrequency: 'monthly',
         priority: 0.6,
         alternates: { languages: postLanguages },
+      });
+    }
+
+    for (const playerId of FEATURED_PLAYER_IDS) {
+      const playerLanguages: Record<string, string> = {
+        'x-default': `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE).playerProfile(playerId)}`,
+      };
+      for (const l of SUPPORTED_LOCALES) {
+        playerLanguages[localeToHreflang(l)] =
+          `${appConfig.siteUrl}${buildRoutes(l).playerProfile(playerId)}`;
+      }
+
+      entries.push({
+        url: `${appConfig.siteUrl}${r.playerProfile(playerId)}`,
+        lastModified: new Date('2026-09-11'),
+        changeFrequency: 'daily',
+        priority: 0.7,
+        alternates: { languages: playerLanguages },
       });
     }
   }

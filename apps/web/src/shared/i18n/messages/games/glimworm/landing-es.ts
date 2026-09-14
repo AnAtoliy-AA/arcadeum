@@ -96,6 +96,31 @@ export const landing = {
         answer:
           'Mueve tu gusano luminoso por la arena, come luces para crecer y evita chocar con el rastro de otro gusano. Gana el último gusano vivo (o el de mayor puntuación al final del temporizador, según el modo).',
       },
+      controls: {
+        question: '¿Qué controles se pueden usar en Glimworm?',
+        answer:
+          'Puedes dirigir a tu gusano con las flechas del teclado, teclas WASD en ordenador o controles gestuales táctiles intuitivos en móviles y tabletas.',
+      },
+      tactics: {
+        question: '¿Cuál es la mejor táctica de supervivencia en Glimworm?',
+        answer:
+          'Enróllate sobre ti mismo para proteger orbes de energía recién aparecidos y corta los giros de los rivales anticipando sus movimientos sin chocar con los bordes.',
+      },
+      boost: {
+        question: '¿Existe alguna mecánica de aceleración o turbo en Glimworm?',
+        answer:
+          'Sí, mantener pulsada la barra espaciadora o el botón de turbo otorga un impulso de velocidad para adelantar rivales, consumiendo una fracción de tu longitud.',
+      },
+      friends: {
+        question: '¿Cómo juego a Glimworm con amigos?',
+        answer:
+          'Haz clic en Crear sala, ajusta las opciones de la arena y comparte el enlace directo. Tus amigos podrán unirse al instante sin necesidad de crear cuenta.',
+      },
+      noDownload: {
+        question: '¿Es necesario descargar o instalar algo para jugar?',
+        answer:
+          'No. Glimworm funciona a 60 FPS directamente en tu navegador gracias a la tecnología WebGL de alto rendimiento en ordenadores y teléfonos.',
+      },
     },
   },
   breadcrumb: {

@@ -91,6 +91,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Buscaminas · Juego de Rompecabezas Clásico Gratis Online · ${APP}`,
     description: `Juega al Buscaminas online en ${APP} — tableros de principiante a experto con banderas, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
   },
+  minesweeperPlay: {
+    title: `Jugar Buscaminas · ${APP}`,
+    description: `Juega al Buscaminas en ${APP} — revela casillas seguras, marca minas y limpia el tablero. De principiante a experto, gratis.`,
+  },
   sudokuLanding: {
     title: `Sudoku · Juego de Rompecabezas Numérico Gratis Online · ${APP}`,
     description: `Juega al Sudoku online en ${APP} — niveles fácil, medio y difícil con solución única, notas a lápiz y progreso guardado. Gratis, instantáneo, sin descarga.`,
@@ -175,6 +179,14 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Chat · ${APP}`,
     description: `Mensajería directa en ${APP}: habla con amigos, coordina partidas y comparte notas rápidas.`,
   },
+  authForgot: {
+    title: `Forgot Password · ${APP}`,
+    description: `Reset your ${APP} password.`,
+  },
+  authReset: {
+    title: `Reset Password · ${APP}`,
+    description: `Set a new password for your ${APP} account.`,
+  },
   auth: {
     title: `Iniciar sesión · ${APP}`,
     description: `Inicia sesión en ${APP} o crea una cuenta para unirte a partidas, seguir tu progreso y chatear con amigos.`,
@@ -226,6 +238,10 @@ export const es: DeepPartial<SeoMessages> = {
   playerProfile: {
     title: `Perfil del jugador · ${APP}`,
     description: `Consulta el rango, las estadísticas y las partidas recientes de este jugador en ${APP}.`,
+  },
+  dailyChessPuzzle: {
+    title: `Problema Diario de Ajedrez · Desafío Diario Gratis · ${APP}`,
+    description: `Resuelve el problema diario de ajedrez gratis en ${APP}. Un nuevo problema táctico cada 24 horas con seguimiento de racha diaria y progreso de puntuación.`,
   },
   notFound: {
     title: `Página no encontrada · ${APP}`,

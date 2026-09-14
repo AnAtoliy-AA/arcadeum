@@ -2,9 +2,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { useLocalStatsStore } from '@/features/stats/store/statsStore';
-import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
-import { useSessionStore } from '@/entities/session/store/sessionStore';
+import { finishIfOver } from '@/features/games/lib/solo-game-store';
 import { move, newGame } from '../lib/engine';
 import type { Direction } from '../types';
 
@@ -26,54 +24,13 @@ interface Game2048StoreState {
   moves: number;
   startedAt: number;
   finishedAt: number | null;
-  /** Set once per completed game; consumed by the UI to show the result dialog. */
   finished: FinishedGameInfo | null;
+  history: Array<{ grid: number[]; score: number; moves: number }>;
+  usedUndo: boolean;
   move: (direction: Direction) => void;
+  undo: () => void;
   continuePlaying: () => void;
   newGame: () => void;
-}
-
-function finishIfOver(
-  status: 'playing' | 'won' | 'lost',
-  score: number,
-  moves: number,
-  startedAt: number,
-  hasEverWon: boolean = false,
-): Pick<Game2048StoreState, 'finishedAt' | 'finished'> | null {
-  if (status === 'playing') return null;
-
-  const won = status === 'won' || hasEverWon;
-  const finishedAt = Date.now();
-  const durationMs = finishedAt - startedAt;
-  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
-  const sessionId = `g2048_${userId}_${finishedAt}`;
-
-  void useLocalStatsStore.getState().recordGameResult({
-    gameId: GAME_2048_ID,
-    result: won ? 'won' : 'lost',
-    timestamp: finishedAt,
-  });
-
-  useSoloScoreStore.getState().addScore({
-    gameId: GAME_2048_ID,
-    difficulty: 'default',
-    score,
-    moves,
-    durationMs,
-    result: won ? 'won' : 'lost',
-    sessionId,
-    timestamp: finishedAt,
-  });
-
-  return {
-    finishedAt,
-    finished: {
-      won,
-      score,
-      moves,
-      durationMs,
-    },
-  };
 }
 
 export const useGame2048Store = create<Game2048StoreState>()(
@@ -88,6 +45,8 @@ export const useGame2048Store = create<Game2048StoreState>()(
       startedAt: Date.now(),
       finishedAt: null,
       finished: null,
+      history: [],
+      usedUndo: false,
 
       move: (direction) => {
         const state = get();
@@ -114,26 +73,74 @@ export const useGame2048Store = create<Game2048StoreState>()(
           (state.status === 'won' && next.status === 'lost');
 
         const best = Math.max(state.best, next.score);
-        set((current) => ({
-          grid: next.grid,
-          score: next.score,
-          status: next.status,
-          keepPlayingFlag: next.keepPlaying || effectiveKeepPlaying,
-          moves: next.moves,
-          best,
-          ...(isNewlyFinished
-            ? finishIfOver(
-                next.status,
-                next.score,
-                next.moves,
-                current.startedAt,
-                state.status === 'won' || state.keepPlayingFlag,
-              )
-            : state.status === 'won' && next.status !== 'lost'
-              ? { finished: null, finishedAt: null }
-              : null),
-        }));
+        set((current) => {
+          const patch: Partial<Game2048StoreState> = {
+            grid: next.grid,
+            score: next.score,
+            status: next.status,
+            keepPlayingFlag: next.keepPlaying || effectiveKeepPlaying,
+            moves: next.moves,
+            best,
+            history: [
+              ...current.history,
+              {
+                grid: current.grid,
+                score: current.score,
+                moves: current.moves,
+              },
+            ],
+          };
+
+          if (isNewlyFinished) {
+            const result = finishIfOver<FinishedGameInfo>(
+              {
+                gameId: GAME_2048_ID,
+                sessionPrefix: 'g2048',
+                difficulty: 'default',
+                isOver: true,
+                won:
+                  next.status === 'won' ||
+                  state.status === 'won' ||
+                  state.keepPlayingFlag,
+                score: next.score,
+                moves: next.moves,
+                startedAt: current.startedAt,
+                usedUndo: current.usedUndo,
+              },
+              (info) => ({
+                won: info.won,
+                score: info.score,
+                moves: info.moves,
+                durationMs: info.durationMs,
+              }),
+            );
+            if (result) {
+              patch.finishedAt = result.finishedAt;
+              patch.finished = result.finished;
+            }
+          } else if (state.status === 'won' && next.status !== 'lost') {
+            patch.finished = null;
+            patch.finishedAt = null;
+          }
+
+          return patch;
+        });
       },
+
+      undo: () =>
+        set((state) => {
+          if (state.history.length === 0 || state.finishedAt !== null)
+            return state;
+          const previousState = state.history[state.history.length - 1];
+          return {
+            history: state.history.slice(0, -1),
+            grid: previousState.grid,
+            score: previousState.score,
+            moves: previousState.moves,
+            status: 'playing',
+            usedUndo: true,
+          };
+        }),
 
       continuePlaying: () =>
         set((state) => {
@@ -151,6 +158,8 @@ export const useGame2048Store = create<Game2048StoreState>()(
           startedAt: Date.now(),
           finishedAt: null,
           finished: null,
+          history: [],
+          usedUndo: false,
         }),
     }),
     {
@@ -166,6 +175,8 @@ export const useGame2048Store = create<Game2048StoreState>()(
         startedAt: state.startedAt,
         finishedAt: state.finishedAt,
         finished: state.finished,
+        history: state.history,
+        usedUndo: state.usedUndo,
       }),
     },
   ),

@@ -1,7 +1,7 @@
 'use client';
 
 import { Typography, FilterChip, Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 type CategoryCount = {
   type: string;
@@ -45,15 +45,17 @@ export function ChangelogFilters({
             🔍
           </div>
           <input
-            type="text"
+            type="search"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('pages.changelog.filters.searchPlaceholder')}
+            aria-label={t('pages.changelog.filters.searchPlaceholder')}
             className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-[var(--bgCard)] border border-[var(--glassBorder)] text-sm text-[var(--foreground)] placeholder:text-[var(--foregroundSecondary)] focus:outline-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)] transition-colors"
           />
           {searchQuery && (
             <button
               type="button"
+              aria-label="Clear search"
               onClick={() => onSearchChange('')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--foregroundSecondary)] hover:text-[var(--foreground)] w-5 h-5 rounded-full bg-[var(--glassBg)] flex items-center justify-center"
             >
@@ -104,7 +106,7 @@ export function ChangelogFilters({
 
       {isFiltered && (
         <div className="flex items-center justify-between pt-2 border-t border-[var(--glassBorder)]">
-          <Typography variant="caption" uiSize="xs" alpha="medium">
+          <Typography variant="caption" uiSize="xs" alpha="high">
             {t('pages.changelog.filters.showingResults', {
               shown: filteredCount,
               total: totalCount,
@@ -114,7 +116,7 @@ export function ChangelogFilters({
             variant="link"
             size="sm"
             onClick={onClearFilters}
-            className="text-xs text-[var(--primary)] p-0 h-auto"
+            className="text-xs text-[var(--color)] p-0 h-auto"
           >
             {t('pages.changelog.filters.clearFilters')}
           </Button>

@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
 
 interface RulesModalProps {
@@ -26,7 +26,9 @@ export const RulesModal = memo(function RulesModal({
   const rules = SECTIONS.map((section) => ({
     badge: section.badge,
     title: t(
-      `games.sea_battle_v1.rules.${section.titleKey}` as Parameters<typeof t>[0],
+      `games.sea_battle_v1.rules.${section.titleKey}` as Parameters<
+        typeof t
+      >[0],
     ),
     body: t(
       `games.sea_battle_v1.rules.${section.bodyKey}` as Parameters<typeof t>[0],

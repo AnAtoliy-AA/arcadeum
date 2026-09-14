@@ -162,22 +162,71 @@ export function executeAttack(
     ),
   );
 
-  if (result === ATTACK_RESULT.MISS) {
-    if (state.teams) {
-      advanceTeamRotationOnMiss(state);
-      const shooter = getActiveShooterId(state);
-      if (shooter) {
-        state.currentTurnIndex = state.playerOrder.indexOf(shooter);
-      }
-    } else {
-      advanceToNextPlayer(state);
-    }
+  const isSalvoMode = state.mode === GAME_MODE_VARIANTS.SALVO;
 
-    state.roundNumber = (state.roundNumber ?? 1) + 1;
+  if (isSalvoMode) {
+    // Salvo mode: decrement shots remaining, only advance turn when exhausted
+    player.salvoShotsRemaining = Math.max(
+      0,
+      (player.salvoShotsRemaining ?? player.shipsRemaining) - 1,
+    );
+
+    if (player.salvoShotsRemaining <= 0) {
+      // All salvo shots used — advance to next player
+      if (state.teams) {
+        advanceTeamRotationOnMiss(state);
+        const shooter = getActiveShooterId(state);
+        if (shooter) {
+          state.currentTurnIndex = state.playerOrder.indexOf(shooter);
+          // Initialize salvo shots for next player
+          const nextPlayer = state.players.find((p) => p.playerId === shooter);
+          if (nextPlayer) {
+            nextPlayer.salvoShotsRemaining = nextPlayer.shipsRemaining;
+          }
+        }
+      } else {
+        advanceToNextPlayer(state);
+        // Initialize salvo shots for next player
+        const nextId = state.playerOrder[state.currentTurnIndex];
+        const nextPlayer = state.players.find((p) => p.playerId === nextId);
+        if (nextPlayer) {
+          nextPlayer.salvoShotsRemaining = nextPlayer.shipsRemaining;
+        }
+      }
+      state.roundNumber = (state.roundNumber ?? 1) + 1;
+    }
+  } else {
+    // Classic mode: miss ends turn
+    if (result === ATTACK_RESULT.MISS) {
+      if (state.teams) {
+        advanceTeamRotationOnMiss(state);
+        const shooter = getActiveShooterId(state);
+        if (shooter) {
+          state.currentTurnIndex = state.playerOrder.indexOf(shooter);
+        }
+      } else {
+        advanceToNextPlayer(state);
+      }
+
+      state.roundNumber = (state.roundNumber ?? 1) + 1;
+    }
   }
 
   if (state.mode === GAME_MODE_VARIANTS.SPEED) {
     setTurnDeadline(state);
+  }
+
+  // Reduce ship ability cooldowns for the next player
+  if (state.shipAbilities && state.abilityCooldowns) {
+    const nextId = state.teams
+      ? getActiveShooterId(state)
+      : state.playerOrder[state.currentTurnIndex];
+    if (nextId && state.abilityCooldowns[nextId]) {
+      const cd = state.abilityCooldowns[nextId];
+      for (const key of Object.keys(cd)) {
+        if (cd[key] > 0) cd[key]--;
+      }
+    }
   }
 
   return { success: true, state };

@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Button } from '@arcadeum/ui';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
@@ -14,7 +14,7 @@ import {
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { GoGameProps } from '../types';
 import { useGoState } from '../hooks/useGoState';
@@ -24,6 +24,8 @@ import { GoLobby } from './GoLobby';
 import { GoBoard } from './GoBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
+import { ResignDialog } from './ResignDialog';
+import MoveHistory from './MoveHistory';
 import { GO_KOMI, GO_THEMES, resolveGoOptions } from '../lib/constants';
 
 function GoGameImpl({
@@ -48,12 +50,15 @@ function GoGameImpl({
       initialSession,
     });
 
-  const { startSession, placeStone, passTurn } = useGoActions({
+  const { startSession, placeStone, passTurn, forfeit } = useGoActions({
     roomId,
     userId: currentUserId,
   });
 
   const { play } = useGameSound('go_v1');
+
+  const [showResignDialog, setShowResignDialog] = useState(false);
+  const [showTerritory, setShowTerritory] = useState(false);
 
   const handlePlaceStone = useCallback(
     (...args: Parameters<typeof placeStone>) => {
@@ -142,6 +147,68 @@ function GoGameImpl({
     passTurn();
   }, [passTurn, play]);
 
+  const handleResignConfirm = useCallback(() => {
+    setShowResignDialog(false);
+    play('click');
+    forfeit();
+  }, [forfeit, play]);
+
+  const kifuMoves = useMemo(() => {
+    if (!snapshot?.logs) return [];
+    const moves: Array<{
+      moveNumber: number;
+      color: 'black' | 'white';
+      row: number;
+      col: number;
+      captureCount?: number;
+      isPass: boolean;
+    }> = [];
+    let moveNum = 0;
+
+    for (const log of snapshot.logs) {
+      if (log.type !== 'action') continue;
+      const isBlack = log.message?.startsWith('Black');
+      const isWhite = log.message?.startsWith('White');
+      if (!isBlack && !isWhite) continue;
+
+      const color = isBlack ? ('black' as const) : ('white' as const);
+      const isPass = log.message?.includes('passed') ?? false;
+
+      if (isPass) {
+        moveNum++;
+        moves.push({
+          moveNumber: moveNum,
+          color,
+          row: -1,
+          col: -1,
+          isPass: true,
+        });
+      } else {
+        const coordMatch = log.message?.match(/([A-HJ-Z])(\d+)/);
+        if (coordMatch) {
+          const letters = 'ABCDEFGHJKLMNOPQRSTUVWXYZ';
+          const col = letters.indexOf(coordMatch[1]);
+          const row = snapshot.boardSize - parseInt(coordMatch[2], 10);
+          const captureMatch = log.message?.match(/captured (\d+)/);
+          moveNum++;
+          moves.push({
+            moveNumber: moveNum,
+            color,
+            row,
+            col,
+            captureCount: captureMatch
+              ? parseInt(captureMatch[1], 10)
+              : undefined,
+            isPass: false,
+          });
+        }
+      }
+    }
+    return moves;
+  }, [snapshot]);
+
+  const [kifuIndex, setKifuIndex] = useState(-1);
+
   if (!room) return null;
 
   const visualTheme = options.theme ?? options.variant ?? 'adventure';
@@ -190,21 +257,48 @@ function GoGameImpl({
               lastMove={snapshot.lastMove}
               koPoint={snapshot.koPoint}
               myColor={myColor}
+              showTerritory={showTerritory || isGameOver}
               ariaLabel={t('games.go_v1.board.ariaLabel', {
                 size: snapshot.boardSize ?? snapshot.options.boardSize ?? 9,
               })}
               onCellClick={handlePlaceStone}
             />
-            {!isGameOver && myTurn ? (
-              <Button
-                variant="secondary"
-                size="md"
-                data-testid="go-pass-button"
-                onClick={handlePass}
-              >
-                {t('games.go_v1.game.pass')}
-              </Button>
-            ) : null}
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              {!isGameOver && myTurn ? (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  data-testid="go-pass-button"
+                  onClick={handlePass}
+                >
+                  {t('games.go_v1.game.pass')}
+                </Button>
+              ) : null}
+              {!isGameOver && myTurn ? (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  data-testid="go-territory-toggle"
+                  onClick={() => setShowTerritory((v) => !v)}
+                  className={
+                    showTerritory ? 'ring-2 ring-[var(--primary)]' : ''
+                  }
+                >
+                  {t('games.go_v1.game.territory')}
+                </Button>
+              ) : null}
+              {!isGameOver && myTurn ? (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  data-testid="go-resign-button"
+                  onClick={() => setShowResignDialog(true)}
+                  className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                >
+                  {t('games.go_v1.game.resign')}
+                </Button>
+              ) : null}
+            </div>
             {snapshot.scores ? (
               <div
                 data-testid="go-final-scores"
@@ -215,6 +309,17 @@ function GoGameImpl({
               </div>
             ) : null}
           </div>
+          <MoveHistory
+            moves={kifuMoves}
+            currentMoveIndex={kifuIndex}
+            onMoveSelect={setKifuIndex}
+            onFirst={() => setKifuIndex(0)}
+            onPrev={() => setKifuIndex((i) => Math.max(0, i - 1))}
+            onNext={() =>
+              setKifuIndex((i) => Math.min(kifuMoves.length - 1, i + 1))
+            }
+            onLast={() => setKifuIndex(kifuMoves.length - 1)}
+          />
         </>
       ) : null}
     </div>
@@ -250,6 +355,11 @@ function GoGameImpl({
         }}
       />
       <RulesModal open={showRulesOpen} onClose={onShowRulesClose} />
+      <ResignDialog
+        open={showResignDialog}
+        onConfirm={handleResignConfirm}
+        onCancel={() => setShowResignDialog(false)}
+      />
     </>
   );
 

@@ -12,6 +12,10 @@ import { Container, PageLayout } from '@arcadeum/ui';
 import { GamesCatalogClient, type CatalogGameItem } from './GamesCatalogClient';
 import { OFFLINE_GAME_SLUGS } from '@/features/offline/lib/offline-capable';
 
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
+
 export async function generateMetadata({
   params,
 }: {
@@ -131,29 +135,29 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
           <div className="box-border relative flex flex-col gap-8 py-8 sm:py-12">
             {/* Header / Intro */}
             <div className="box-border flex flex-col items-center text-center gap-4 max-w-3xl mx-auto">
-              <span className="box-border px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[var(--primary)]/10 text-[var(--primary)] border border-[var(--primary)]/20 shadow-sm">
+              <span className="box-border px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[var(--primary)]/10 text-[var(--color)] border border-[var(--primary)]/20 shadow-sm">
                 🎮 Multiplayer Games Directory
               </span>
               <h1 className="box-border m-0 text-3xl sm:text-4xl md:text-5xl font-black text-[var(--foreground)] tracking-tight">
                 Play Free Online Games
               </h1>
-              <p className="box-border m-0 text-sm sm:text-base md:text-lg text-[var(--foreground)] opacity-80 leading-relaxed">
+              <p className="box-border m-0 text-sm sm:text-base md:text-lg text-[var(--foreground)] opacity-95 leading-relaxed">
                 Enjoy real-time board and card games directly in your browser
                 with no download or signup. Challenge friends in private rooms
                 or practice against intelligent AI bots.
               </p>
 
               <div className="box-border flex flex-wrap items-center justify-center gap-2 pt-2">
-                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-90 border border-[var(--borderColor)]">
+                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-95 border border-[var(--borderColor)]">
                   ⚡ 8 Instant Games
                 </span>
-                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-90 border border-[var(--borderColor)]">
+                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-95 border border-[var(--borderColor)]">
                   🤖 Smart AI Bots
                 </span>
-                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-90 border border-[var(--borderColor)]">
+                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-95 border border-[var(--borderColor)]">
                   🎨 10+ Themes
                 </span>
-                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-90 border border-[var(--borderColor)]">
+                <span className="box-border px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--glassBg)] text-[var(--foreground)] opacity-95 border border-[var(--borderColor)]">
                   📱 Mobile & Desktop
                 </span>
               </div>

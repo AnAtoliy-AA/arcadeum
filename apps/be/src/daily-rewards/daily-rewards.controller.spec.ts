@@ -21,6 +21,7 @@ describe('DailyRewardsController (integration)', () => {
   let service: {
     getStatus: jest.Mock;
     claim: jest.Mock;
+    buyFreezeTokens: jest.Mock;
   };
   let currentUserId: string;
   // Toggle from a test to simulate the "no token" / unauthorized branch.
@@ -30,6 +31,7 @@ describe('DailyRewardsController (integration)', () => {
     service = {
       getStatus: jest.fn(),
       claim: jest.fn(),
+      buyFreezeTokens: jest.fn(),
     };
 
     const moduleRef = await Test.createTestingModule({
@@ -64,6 +66,7 @@ describe('DailyRewardsController (integration)', () => {
     authPasses = true;
     service.getStatus.mockReset();
     service.claim.mockReset();
+    service.buyFreezeTokens.mockReset();
   });
 
   describe('GET /daily-rewards/me', () => {
@@ -121,6 +124,46 @@ describe('DailyRewardsController (integration)', () => {
       authPasses = false;
       await request(server()).post('/daily-rewards/claim').expect(403);
       expect(service.claim).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('POST /daily-rewards/buy-freeze', () => {
+    it('returns 201 with freeze tokens and coins spent', async () => {
+      const payload = { freezeTokens: 3, coinsSpent: 300 };
+      service.buyFreezeTokens.mockResolvedValue(payload);
+
+      const res = await request(server())
+        .post('/daily-rewards/buy-freeze')
+        .send({ quantity: 3 })
+        .expect(201);
+
+      expect(service.buyFreezeTokens).toHaveBeenCalledWith(currentUserId, 3);
+      expect(res.body).toEqual(payload);
+    });
+
+    it('returns 400 when quantity is invalid', async () => {
+      await request(server())
+        .post('/daily-rewards/buy-freeze')
+        .send({ quantity: 0 })
+        .expect(400);
+      expect(service.buyFreezeTokens).not.toHaveBeenCalled();
+    });
+
+    it('returns 400 when quantity is missing', async () => {
+      await request(server())
+        .post('/daily-rewards/buy-freeze')
+        .send({})
+        .expect(400);
+      expect(service.buyFreezeTokens).not.toHaveBeenCalled();
+    });
+
+    it('returns 403 (guard blocks) when JwtAuthGuard rejects', async () => {
+      authPasses = false;
+      await request(server())
+        .post('/daily-rewards/buy-freeze')
+        .send({ quantity: 1 })
+        .expect(403);
+      expect(service.buyFreezeTokens).not.toHaveBeenCalled();
     });
   });
 });

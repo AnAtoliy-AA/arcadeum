@@ -121,6 +121,7 @@ export function MarkCompleteDialog({
           ) : (
             <select
               data-testid="winner-select"
+              aria-label="Select winner"
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
               style={SELECT_STYLE}

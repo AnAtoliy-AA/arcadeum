@@ -70,3 +70,49 @@ export async function getGameRoomSession(
 
   return response.json();
 }
+
+export async function addBotToRoom(
+  roomId: string,
+  accessToken: string,
+): Promise<{ room: GameRoomSummary }> {
+  const url = resolveApiUrl(`/games/rooms/${roomId}/add-bot`);
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.message || 'Failed to add bot');
+  }
+
+  return response.json();
+}
+
+export async function removeBotFromRoom(
+  roomId: string,
+  botId: string,
+  accessToken: string,
+): Promise<{ room: GameRoomSummary }> {
+  const url = resolveApiUrl(`/games/rooms/${roomId}/remove-bot`);
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ botId }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.message || 'Failed to remove bot');
+  }
+
+  return response.json();
+}

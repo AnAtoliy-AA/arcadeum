@@ -5,11 +5,15 @@ import { getTranslations } from '@/shared/i18n/server';
 import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
-import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
+import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { getPostsByTag } from '@/features/blog/registry';
 import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import BackgammonLanding from './BackgammonLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
+
+export const dynamic = 'force-static';
+
+export const revalidate = 300;
 
 const BACKGAMMON_SLUG = 'backgammon_v1';
 const BACKGAMMON_MIN_PLAYERS = 2;
@@ -66,23 +70,55 @@ export default async function BackgammonLandingRoute({ params }: PageProps) {
   const description =
     messages.games?.backgammon_v1?.description ?? landing?.meta?.description;
 
-  const jsonLd: Record<string, unknown>[] = [
-    ...buildVideoGameJsonLd({
-      gameId: BACKGAMMON_SLUG,
-      gameName,
-      description: description ?? '',
-      locale,
-      minPlayers: BACKGAMMON_MIN_PLAYERS,
-      maxPlayers: BACKGAMMON_MAX_PLAYERS,
-      genre: BACKGAMMON_GENRE,
-      alternateName: ['Tavla', 'Nardi', 'Backgammon Online'],
-      breadcrumb: {
-        home: messages.navigation?.homeTab ?? 'Home',
-        games: messages.navigation?.gamesTab ?? 'Games',
-        game: gameName,
-      },
-    }),
-  ];
+  const jsonLd: Record<string, unknown>[] = buildGameLandingJsonLd({
+    gameId: BACKGAMMON_SLUG,
+    slug: 'backgammon',
+    gameName,
+    description: description ?? '',
+    locale,
+    minPlayers: BACKGAMMON_MIN_PLAYERS,
+    maxPlayers: BACKGAMMON_MAX_PLAYERS,
+    genre: BACKGAMMON_GENRE,
+    alternateName: ['Tavla', 'Nardi', 'Backgammon Online'],
+    breadcrumb: {
+      home: messages.navigation?.homeTab ?? 'Home',
+      games: messages.navigation?.gamesTab ?? 'Games',
+    },
+    howTo: landing
+      ? {
+          name: `How to Play Backgammon on ${appConfig.appName}`,
+          description:
+            'Play Backgammon online in your browser — free, no download needed.',
+          steps: [
+            {
+              name: landing.steps?.create?.title ?? 'Create a room',
+              text:
+                landing.steps?.create?.body ??
+                'Choose a board theme and create a public or private room.',
+            },
+            {
+              name: landing.steps?.join?.title ?? 'Invite a friend',
+              text:
+                landing.steps?.join?.body ??
+                'Share the room link with a friend or use Quick Play.',
+            },
+            {
+              name: landing.steps?.play?.title ?? 'Play',
+              text:
+                landing.steps?.play?.body ??
+                'Roll dice, move your pieces, and bear off before your opponent.',
+            },
+          ],
+          totalTime: 'PT2M',
+        }
+      : undefined,
+    faqs: landing?.faq
+      ? Object.values(landing.faq).map((f) => ({
+          question: (f as { question: string; answer: string }).question,
+          answer: (f as { question: string; answer: string }).answer,
+        }))
+      : undefined,
+  });
 
   const comingSoon = await isGameComingSoon(BACKGAMMON_SLUG);
 

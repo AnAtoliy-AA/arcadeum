@@ -24,7 +24,7 @@ import { GamesHeader } from './components/GamesHeader';
 import { GamesList } from './components/GamesList';
 import { GamesLoading } from './components/GamesLoading';
 import { PageLayout, Container, GlassCard } from '@arcadeum/ui';
-import styles from './GamesPage.module.scss';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type {
   GamesParticipationFilter,
   GamesStatusFilter,
@@ -344,9 +344,12 @@ export default function GamesPage({
           />
 
           <div
-            className={`mt-6 ${styles.roomsContainer}${
-              viewMode === 'list' ? ` ${styles.listView}` : ''
-            }`}
+            className={cx(
+              'mt-6 gap-5 max-[800px]:grid-cols-1',
+              viewMode === 'list'
+                ? 'flex flex-col gap-2'
+                : 'grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))]',
+            )}
           >
             {renderContent()}
           </div>

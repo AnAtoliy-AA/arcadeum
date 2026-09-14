@@ -56,3 +56,41 @@ describe('BaseGameService.findSessionByRoom', () => {
     await expect(service.findSessionByRoom('r-1')).resolves.toBeNull();
   });
 });
+
+describe('BaseGameService.startSession', () => {
+  it('does not duplicate bots if room already has bots seeded', async () => {
+    const roomsService = {
+      getRoom: jest.fn().mockResolvedValue({
+        hostId: 'user-1',
+        gameOptions: {},
+      }),
+      getRoomParticipants: jest
+        .fn()
+        .mockResolvedValue(['user-1', 'bot-existing']),
+      updateRoomStatus: jest.fn().mockResolvedValue(undefined),
+    };
+    const sessionsService = {
+      createSession: jest.fn().mockResolvedValue({ id: 's-1' }),
+      sanitizeSummaryForPlayer: jest.fn(),
+    };
+    const realtimeService = {
+      emitGameStarted: jest.fn().mockResolvedValue(undefined),
+    };
+    const botService = { checkAndPlay: jest.fn().mockResolvedValue(undefined) };
+    const service = new TestGameService(
+      roomsService as unknown as GameRoomsService,
+      sessionsService as unknown as GameSessionsService,
+      realtimeService as unknown as GamesRealtimeService,
+      botService,
+      { readyState: 1 } as unknown as Connection,
+    );
+
+    await service.startSession('user-1', 'r-1', true, 1);
+
+    expect(sessionsService.createSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        playerIds: ['user-1', 'bot-existing'],
+      }),
+    );
+  });
+});

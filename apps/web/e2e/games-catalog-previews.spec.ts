@@ -51,7 +51,7 @@ test.describe('Games Catalog Real Previews', () => {
       .first();
     await expect(firstCard).toBeVisible();
 
-    const cardTitle = firstCard.locator('h3');
+    const cardTitle = firstCard.locator('h2');
     await expect(cardTitle).toBeVisible();
 
     const botChip = page.locator('text=AI Bots').first();

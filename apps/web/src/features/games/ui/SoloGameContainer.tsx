@@ -15,7 +15,7 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import {
   useTranslation,
   type TranslationKey,
-} from '@/shared/lib/useTranslation';
+} from '@/shared/i18n/useTranslation';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
@@ -252,7 +252,7 @@ export function SoloGameContainer({
             className={cx(
               'flex items-center gap-1 rounded-lg border px-1.5 sm:px-2 py-0.5 text-xs font-semibold transition-colors',
               isFullscreen
-                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] shadow-sm hover:bg-[var(--primary)]/25'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--color)] shadow-sm hover:bg-[var(--primary)]/25'
                 : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
             )}
           >
@@ -270,7 +270,7 @@ export function SoloGameContainer({
             className={cx(
               'flex items-center gap-1 sm:gap-1.5 rounded-lg border px-1.5 sm:px-2 py-0.5 text-xs font-semibold transition-colors whitespace-nowrap',
               showThemePicker
-                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--primary)] shadow-sm'
+                ? 'border-[var(--primary)] bg-[var(--primary)]/15 text-[var(--color)] shadow-sm'
                 : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--glassBorderStrong)]',
             )}
           >

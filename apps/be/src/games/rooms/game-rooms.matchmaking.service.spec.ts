@@ -4,6 +4,7 @@ import { GameRoomsMatchmakingService } from './game-rooms.matchmaking.service';
 import { GameRoomsService } from './game-rooms.service';
 import { GameRoomsQuickplayService } from './game-rooms.quickplay.service';
 import { GamesRealtimeService } from '../games.realtime.service';
+import { FriendsService } from '../../friends/friends.service';
 import { GameRoomSummary } from './game-rooms.types';
 
 const flushMicrotasks = async (): Promise<void> => {
@@ -61,6 +62,10 @@ describe('GameRoomsMatchmakingService', () => {
         { provide: GameRoomsQuickplayService, useValue: quickplayService },
         { provide: GamesRealtimeService, useValue: realtimeService },
         { provide: ConfigService, useValue: config },
+        {
+          provide: FriendsService,
+          useValue: { getFriendIds: jest.fn().mockResolvedValue([]) },
+        },
         { provide: 'REDIS_CLIENT', useValue: null },
       ],
     }).compile();
@@ -191,6 +196,10 @@ describe('GameRoomsMatchmakingService', () => {
           { provide: GameRoomsQuickplayService, useValue: quickplayService },
           { provide: GamesRealtimeService, useValue: realtimeService },
           { provide: ConfigService, useValue: config },
+          {
+            provide: FriendsService,
+            useValue: { getFriendIds: jest.fn().mockResolvedValue([]) },
+          },
           { provide: 'REDIS_CLIENT', useValue: null },
         ],
       }).compile();
@@ -266,6 +275,10 @@ describe('GameRoomsMatchmakingService', () => {
           { provide: GameRoomsQuickplayService, useValue: quickplayService },
           { provide: GamesRealtimeService, useValue: realtimeService },
           { provide: ConfigService, useValue: prodConfig },
+          {
+            provide: FriendsService,
+            useValue: { getFriendIds: jest.fn().mockResolvedValue([]) },
+          },
           { provide: 'REDIS_CLIENT', useValue: null },
         ],
       }).compile();

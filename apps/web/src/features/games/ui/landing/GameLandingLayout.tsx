@@ -36,7 +36,7 @@ export function GameLandingLayout({
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <nav
                 aria-label="Breadcrumb"
-                className="box-border flex flex-wrap items-center gap-2 text-xs sm:text-sm text-[var(--foreground)] opacity-70"
+                className="box-border flex flex-wrap items-center gap-2 text-xs sm:text-sm text-[var(--foreground)] opacity-85"
               >
                 <ol className="box-border m-0 p-0 list-none flex flex-wrap items-center gap-2">
                   {breadcrumbs.map((crumb, idx) => {

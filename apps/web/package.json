@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "1.28.54",
+  "version": "1.29.48",
   "private": true,
   "browserslist": [
     "chrome >= 93",
@@ -22,11 +22,14 @@
     "test:e2e:local": "rm -rf .next && NEXT_PUBLIC_E2E=true E2E_PROD=true pnpm run build && E2E_PROD=true NEXT_PUBLIC_E2E=true playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
+    "lhci": "lhci autorun",
+    "test:audit": "playwright test e2e/audit/",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "i18n:audit": "vitest run src/shared/i18n/messages/completeness.test.ts",
-    "i18n:audit:update": "vitest run src/shared/i18n/messages/completeness.test.ts -u"
+    "i18n:audit:update": "vitest run src/shared/i18n/messages/completeness.test.ts -u",
+    "seo:hreflang:audit": "vitest run src/shared/seo/__tests__/hreflang.test.ts"
   },
   "dependencies": {
     "@arcadeum/games-core": "workspace:*",
@@ -49,7 +52,9 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@chromatic-com/storybook": "^5.3.1",
+    "@lhci/cli": "^0.15.1",
     "@next/bundle-analyzer": "^16.3.3",
     "@playwright/test": "^1.62.1",
     "@storybook/addon-a11y": "^10.6.0",
@@ -64,6 +69,7 @@
     "@vitejs/plugin-react": "^5.2.0",
     "@vitest/coverage-v8": "^4.1.11",
     "autoprefixer": "^10.5.4",
+    "axe-core": "^4.13.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.4",

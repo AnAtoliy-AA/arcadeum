@@ -47,7 +47,7 @@ export function StatsActivityCharts({
                 {t?.dailyTrendTitle ?? 'Daily Active Users & Games (14 Days)'}
               </Typography>
             </div>
-            <Typography variant="body" uiSize="xs" alpha="medium">
+            <Typography variant="body" uiSize="xs" alpha="high">
               {t?.dailyTrendSubtitle ??
                 'Recent daily player logins and completed matches'}
             </Typography>
@@ -56,13 +56,13 @@ export function StatsActivityCharts({
           <div className="flex flex-row items-center gap-3">
             <div className="flex flex-row items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-sm bg-[var(--primary)]" />
-              <Typography variant="caption" uiSize="xs" alpha="medium">
+              <Typography variant="caption" uiSize="xs" alpha="high">
                 {t?.dauLabel ?? 'DAU'}
               </Typography>
             </div>
             <div className="flex flex-row items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-sm bg-emerald-400" />
-              <Typography variant="caption" uiSize="xs" alpha="medium">
+              <Typography variant="caption" uiSize="xs" alpha="high">
                 {t?.gamesLabel ?? 'Games'}
               </Typography>
             </div>
@@ -135,7 +135,7 @@ export function StatsActivityCharts({
             <Typography variant="subheading" uiSize="sm" weight="700">
               {t?.hourlyTitle ?? '24-Hour Peak Activity Distribution'}
             </Typography>
-            <Typography variant="body" uiSize="xs" alpha="medium">
+            <Typography variant="body" uiSize="xs" alpha="high">
               {t?.hourlySubtitle ??
                 'Match activity grouped by time of day (UTC)'}
             </Typography>

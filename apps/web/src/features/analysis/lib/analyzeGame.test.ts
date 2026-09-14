@@ -63,10 +63,10 @@ describe('analyzeGame', () => {
     expect(analysis.blunders).toHaveLength(2);
   });
 
-  it('grades a small swing as good', () => {
+  it('grades a small swing as excellent', () => {
     const analysis = analyzeGame([START, AFTER_E4]);
-    expect(analysis.moves[0].quality).toBe('good');
-    expect(analysis.moves[0].loss).toBeLessThanOrEqual(50);
+    expect(analysis.moves[0].quality).toBe('excellent');
+    expect(analysis.moves[0].loss).toBeLessThanOrEqual(5);
   });
 
   it('attaches provided notations to moves', () => {

@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import type { Clan } from '../model/types';
-import { Button } from '@arcadeum/ui';
+import { Button, CosmeticSprite } from '@arcadeum/ui';
 
 interface ClanCardProps {
   clan: Clan;
@@ -22,14 +21,13 @@ export function ClanCard({
       className="flex items-center gap-4 rounded-xl border border-[var(--borderColor)] bg-[var(--glassBg)] p-4 transition-colors hover:border-[var(--primary)]/30"
       onClick={() => onClick?.(clan.id)}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)]/10 text-lg font-bold text-[var(--primary)]">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)]/10 text-lg font-bold text-[var(--color)]">
         {clan.avatarUrl ? (
-          <Image
+          <CosmeticSprite
             src={clan.avatarUrl}
             alt={clan.name}
-            width={48}
-            height={48}
-            className="h-12 w-12 rounded-full object-cover"
+            size={48}
+            className="rounded-full object-cover"
           />
         ) : (
           clan.tag.slice(0, 2).toUpperCase()
@@ -39,7 +37,7 @@ export function ClanCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <h3 className="truncate font-semibold">{clan.name}</h3>
-          <span className="rounded bg-[var(--primary)]/10 px-1.5 py-0.5 text-xs font-medium text-[var(--primary)]">
+          <span className="rounded bg-[var(--primary)]/10 px-1.5 py-0.5 text-xs font-medium text-[var(--color)]">
             [{clan.tag}]
           </span>
           {clan.visibility === 'private' && (

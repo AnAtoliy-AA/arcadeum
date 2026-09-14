@@ -1,3 +1,5 @@
+export const revalidate = 300;
+
 import type { Metadata } from 'next';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';

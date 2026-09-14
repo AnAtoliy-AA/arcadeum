@@ -161,6 +161,9 @@ export const shopEs = {
     equip: 'Equipar',
     unequip: 'Desequipar',
     sell: 'Vender · 50%',
+    progressionReward: 'Recompensa de nivel',
+    unlockedAtLevel: 'Nivel {level}',
+    viewInStats: 'Ver en estadísticas',
   },
   inventory: {
     title: 'Inventario',

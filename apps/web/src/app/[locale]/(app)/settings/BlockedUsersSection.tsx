@@ -5,7 +5,7 @@ import { useQuery } from '@/shared/hooks/useQuery';
 import { useMutation } from '@/shared/hooks/useMutation';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 
-import { useLanguage } from '@/shared/i18n/context';
+import { useLanguage } from '@/shared/i18n';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getMessages, DEFAULT_LOCALE } from '@/shared/i18n';
 import { authApi } from '@/features/auth/api';

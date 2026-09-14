@@ -2,9 +2,10 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { useLocalStatsStore } from '@/features/stats/store/statsStore';
-import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
-import { useSessionStore } from '@/entities/session/store/sessionStore';
+import {
+  finishIfOver,
+  undoReducer,
+} from '@/features/games/lib/solo-game-store';
 import { newGame, setCellValue, toggleNote } from '../lib/engine';
 import type { Difficulty, SudokuState } from '../types';
 
@@ -19,49 +20,14 @@ interface SudokuStoreState {
   game: SudokuState;
   startedAt: number;
   finishedAt: number | null;
-  /** Set once per completed game; consumed by the UI to show the result dialog. */
   finished: FinishedGameInfo | null;
+  history: SudokuState[];
+  usedUndo: boolean;
   setCell: (index: number, value: number) => void;
   note: (index: number, digit: number) => void;
+  undo: () => void;
   changeDifficulty: (difficulty: Difficulty) => void;
   newGame: () => void;
-}
-
-function finishIfOver(
-  game: SudokuState,
-  startedAt: number,
-): Pick<SudokuStoreState, 'finishedAt' | 'finished'> | null {
-  if (game.status !== 'won') return null;
-
-  const finishedAt = Date.now();
-  const durationMs = finishedAt - startedAt;
-  const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
-  const sessionId = `sudoku_${userId}_${finishedAt}`;
-
-  void useLocalStatsStore.getState().recordGameResult({
-    gameId: SUDOKU_GAME_ID,
-    result: 'won',
-    timestamp: finishedAt,
-  });
-
-  useSoloScoreStore.getState().addScore({
-    gameId: SUDOKU_GAME_ID,
-    difficulty: game.difficulty,
-    score: durationMs,
-    moves: 0,
-    durationMs,
-    result: 'won',
-    sessionId,
-    timestamp: finishedAt,
-  });
-
-  return {
-    finishedAt,
-    finished: {
-      mistakes: game.mistakes,
-      durationMs,
-    },
-  };
 }
 
 export const useSudokuStore = create<SudokuStoreState>()(
@@ -71,13 +37,36 @@ export const useSudokuStore = create<SudokuStoreState>()(
       startedAt: Date.now(),
       finishedAt: null,
       finished: null,
+      history: [],
+      usedUndo: false,
 
       setCell: (index, value) =>
         set((state) => {
           if (state.finishedAt !== null) return state;
           const game = setCellValue(state.game, index, value);
           if (game === state.game) return state;
-          return { game, ...finishIfOver(game, state.startedAt) };
+          const result = finishIfOver<FinishedGameInfo>(
+            {
+              gameId: SUDOKU_GAME_ID,
+              sessionPrefix: 'sudoku',
+              difficulty: game.difficulty,
+              isOver: game.status === 'won',
+              won: true,
+              score: 0,
+              moves: 0,
+              startedAt: state.startedAt,
+              usedUndo: state.usedUndo,
+            },
+            (info) => ({
+              mistakes: game.mistakes,
+              durationMs: info.durationMs,
+            }),
+          );
+          return {
+            history: [...state.history, state.game],
+            game,
+            ...(result ?? {}),
+          };
         }),
 
       note: (index, digit) =>
@@ -85,7 +74,16 @@ export const useSudokuStore = create<SudokuStoreState>()(
           if (state.finishedAt !== null) return state;
           const game = toggleNote(state.game, index, digit);
           if (game === state.game) return state;
-          return { game };
+          return {
+            history: [...state.history, state.game],
+            game,
+          };
+        }),
+
+      undo: () =>
+        set((state) => {
+          const update = undoReducer(state.history, state.finishedAt);
+          return update ?? state;
         }),
 
       changeDifficulty: (difficulty) =>
@@ -94,6 +92,8 @@ export const useSudokuStore = create<SudokuStoreState>()(
           startedAt: Date.now(),
           finishedAt: null,
           finished: null,
+          history: [],
+          usedUndo: false,
         }),
 
       newGame: () =>
@@ -102,6 +102,8 @@ export const useSudokuStore = create<SudokuStoreState>()(
           startedAt: Date.now(),
           finishedAt: null,
           finished: null,
+          history: [],
+          usedUndo: false,
         })),
     }),
     {
@@ -112,6 +114,8 @@ export const useSudokuStore = create<SudokuStoreState>()(
         startedAt: state.startedAt,
         finishedAt: state.finishedAt,
         finished: state.finished,
+        history: state.history,
+        usedUndo: state.usedUndo,
       }),
     },
   ),

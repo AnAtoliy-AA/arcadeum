@@ -1,72 +1,21 @@
+'use client';
+
 import React, { useRef, useCallback, useEffect } from 'react';
 import type { LeaderboardEntry } from '@/features/history/api';
-import { useTranslation } from '@/shared/lib/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import {
   Badge,
-  Section,
   EmptyState,
   SkeletonCircle,
   SkeletonText,
   ProgressBar,
   Spinner,
+  Card,
 } from '@arcadeum/ui';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-
-export const leaderboardCSS = `
-  .stats-leaderboard-header {
-    display: grid;
-    grid-template-columns: 50px 1fr 70px 70px 70px 90px;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--borderColor);
-    font-weight: 600;
-    font-size: 0.75rem;
-    color: var(--textSecondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: var(--glassBg);
-  }
-  @media (max-width: 768px) {
-    .stats-leaderboard-header { display: none; }
-  }
-
-  .stats-leaderboard-row {
-    display: grid;
-    grid-template-columns: 50px 1fr 70px 70px 70px 90px;
-    padding: 0.75rem 1rem;
-    background: var(--glassBg);
-    border-bottom: 1px solid var(--borderColor);
-    align-items: center;
-    transition: all 0.2s ease;
-  }
-  .stats-leaderboard-row:last-child {
-    border-bottom: none;
-  }
-  .stats-leaderboard-row:hover {
-    background: var(--glassBgHover);
-  }
-  .stats-leaderboard-row--current-user {
-    background: var(--primaryTint);
-    border-left: 3px solid var(--primary);
-  }
-  .stats-leaderboard-row--current-user:hover {
-    background: var(--primaryTintHover);
-  }
-  @media (max-width: 768px) {
-    .stats-leaderboard-row {
-      grid-template-columns: 40px 1fr auto;
-      gap: 0.5rem;
-      padding: 0.625rem 0.75rem;
-    }
-    .stats-leaderboard-row > *:nth-child(4),
-    .stats-leaderboard-row > *:nth-child(5),
-    .stats-leaderboard-row > *:nth-child(6) {
-      display: none;
-    }
-    .stats-leaderboard-row > *:nth-child(3) {
-      justify-self: end;
-    }
-  }
-`;
 
 interface LeaderboardProps {
   leaderboard: LeaderboardEntry[];
@@ -114,248 +63,194 @@ export function Leaderboard({
 
   if (loading && leaderboard.length === 0) {
     return (
-      <>
-        <style>{leaderboardCSS}</style>
-        <Section title={t('stats.leaderboardTab')}>
-          <Table>
-            <div className="stats-leaderboard-header">
-              <div>{t('stats.rank')}</div>
-              <div>{t('stats.player')}</div>
-              <div>{t('stats.games')}</div>
-              <div>{t('stats.wins')}</div>
-              <div>{t('stats.losses')}</div>
-              <div>{t('stats.winRate')}</div>
-            </div>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="stats-leaderboard-row">
-                <SkeletonCircle width="32px" height="32px" delay={i * 0.1} />
-                <PlayerInfo>
-                  <SkeletonCircle
-                    width="40px"
-                    height="40px"
-                    delay={i * 0.1 + 0.05}
-                  />
-                  <SkeletonText
-                    width="120px"
-                    height="16px"
-                    delay={i * 0.1 + 0.1}
-                  />
-                </PlayerInfo>
-                <SkeletonText
-                  width="30px"
-                  height="16px"
-                  delay={i * 0.1 + 0.15}
+      <Card
+        variant="glass"
+        padding="md"
+        className="flex flex-col gap-4 border-[var(--borderColor)] shadow-lg"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[18px]">🏆</span>
+          <h3 className="text-[17px] font-bold tracking-tight text-[var(--color)]">
+            {t('stats.leaderboardTab')}
+          </h3>
+        </div>
+        <div className="flex flex-col w-full rounded-xl overflow-hidden border border-[var(--borderColor)]/50">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between p-3.5 border-b border-[var(--borderColor)]/40 bg-[var(--surfaceSecondary)]/40"
+            >
+              <div className="flex items-center gap-3">
+                <SkeletonCircle width="36px" height="36px" delay={i * 0.1} />
+                <SkeletonCircle
+                  width="40px"
+                  height="40px"
+                  delay={i * 0.1 + 0.05}
                 />
-                <SkeletonText
-                  width="30px"
-                  height="16px"
-                  delay={i * 0.1 + 0.2}
-                />
-                <SkeletonText
-                  width="30px"
-                  height="16px"
-                  delay={i * 0.1 + 0.25}
-                />
-                <SkeletonText
-                  width="50px"
-                  height="16px"
-                  delay={i * 0.1 + 0.3}
-                />
+                <SkeletonText width="120px" delay={i * 0.1 + 0.1} />
               </div>
-            ))}
-          </Table>
-        </Section>
-      </>
+              <SkeletonText width="50px" delay={i * 0.1 + 0.15} />
+              <SkeletonText width="50px" delay={i * 0.1 + 0.2} />
+              <SkeletonText width="80px" delay={i * 0.1 + 0.25} />
+            </div>
+          ))}
+        </div>
+      </Card>
     );
   }
 
   if (leaderboard.length === 0) {
     return (
-      <>
-        <style>{leaderboardCSS}</style>
-        <Section title={t('stats.leaderboardTab')}>
-          <EmptyState icon="🏆" message={t('stats.noPlayersFound')} />
-        </Section>
-      </>
+      <Card
+        variant="glass"
+        padding="lg"
+        className="flex flex-col items-center justify-center p-8 border-[var(--borderColor)] shadow-lg"
+      >
+        <EmptyState icon="🏆" message={t('stats.noPlayersFound')} />
+      </Card>
     );
   }
 
   return (
-    <>
-      <style>{leaderboardCSS}</style>
-      <Section title={t('stats.leaderboardTab')}>
-        <Table>
-          <div className="stats-leaderboard-header">
-            <div>{t('stats.rank')}</div>
-            <div>{t('stats.player')}</div>
-            <div>{t('stats.games')}</div>
-            <div>{t('stats.wins')}</div>
-            <div>{t('stats.losses')}</div>
-            <div>{t('stats.winRate')}</div>
-          </div>
-          {leaderboard.map((entry) => (
-            <div
-              key={entry.playerId}
-              className={
-                'stats-leaderboard-row' +
-                (entry.playerId === currentUserId
-                  ? ' stats-leaderboard-row--current-user'
-                  : '')
-              }
-            >
-              <RankDisplay rank={entry.rank} />
-              <PlayerInfo>
-                <EquippedPlayerAvatar
-                  name={entry.username}
-                  size="md"
-                  equippedAvatarId={entry.equippedAvatarId ?? null}
-                  equippedBadgeId={entry.equippedBadgeId ?? null}
-                  equippedNameColorId={entry.equippedNameColorId}
-                  equippedFrameId={entry.equippedFrameId}
-                  equippedAuraId={entry.equippedAuraId}
-                  equippedBannerId={entry.equippedBannerId}
-                />
-                <PlayerName>
-                  <span className="">{entry.username}</span>
-                  {entry.playerId === currentUserId && (
-                    <Badge variant="info" size="sm">
-                      {t('stats.you')}
-                    </Badge>
-                  )}
-                </PlayerName>
-              </PlayerInfo>
-              <StatCell>{entry.totalGames}</StatCell>
-              <StatCell color="var(--success)">{entry.wins}</StatCell>
-              <StatCell color="var(--danger)">{entry.losses}</StatCell>
-              <ProgressBar
-                className={'h-[6px]'}
-                value={entry.winRate}
-                showLabel
-              />
-            </div>
-          ))}
-        </Table>
-
-        <div
-          ref={loadMoreRef}
-          style={{
-            minHeight: 60,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {loadingMore && (
-            <LoadingMoreRow>
-              <Spinner size="sm" />
-              <span className="text-[var(--textSecondary)] text-[16px]">
-                {t('stats.loadingMore')}
-              </span>
-            </LoadingMoreRow>
-          )}
-          {!hasMore && leaderboard.length > 0 && (
-            <EndOfList>{t('stats.endOfLeaderboard')}</EndOfList>
-          )}
+    <Card
+      variant="glass"
+      padding="md"
+      className="flex flex-col gap-4 border-[var(--borderColor)] shadow-lg"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[18px]">🏆</span>
+          <h3 className="text-[17px] font-bold tracking-tight text-[var(--color)]">
+            {t('stats.leaderboardTab')}
+          </h3>
         </div>
-      </Section>
-    </>
+        <span className="text-[12px] font-semibold text-[var(--textSecondary)]">
+          {leaderboard.length} {t('stats.player' as TranslationKey)}s
+        </span>
+      </div>
+
+      <div className="flex flex-col w-full rounded-xl overflow-hidden border border-[var(--borderColor)]/50 bg-[var(--surfaceSecondary)]/30">
+        <div className="hidden md:grid md:grid-cols-[56px_2.5fr_1fr_1fr_1fr_1.5fr] p-3 px-4 bg-[var(--surfaceTertiary)]/40 border-b border-[var(--borderColor)]/50 text-[11px] font-bold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div className="text-center">{t('stats.rank')}</div>
+          <div>{t('stats.player')}</div>
+          <div className="text-right">{t('stats.games')}</div>
+          <div className="text-right">{t('stats.wins')}</div>
+          <div className="text-right">{t('stats.losses')}</div>
+          <div className="text-right pl-4">{t('stats.winRate')}</div>
+        </div>
+
+        <div className="divide-y divide-[var(--borderColor)]/30">
+          {leaderboard.map((entry) => {
+            const isCurrentUser = entry.playerId === currentUserId;
+
+            return (
+              <div
+                key={entry.playerId}
+                className={`stats-leaderboard-row grid grid-cols-[44px_1fr_auto] md:grid-cols-[56px_2.5fr_1fr_1fr_1fr_1.5fr] items-center p-3 px-4 transition-colors ${
+                  isCurrentUser
+                    ? 'stats-leaderboard-row--current-user bg-violet-500/15 border-l-4 border-l-violet-500 font-semibold'
+                    : 'hover:bg-[var(--surfaceHover)]/60'
+                }`}
+              >
+                <div className="flex items-center justify-center">
+                  <RankIndicator rank={entry.rank} />
+                </div>
+
+                <div className="flex items-center gap-3 min-w-0 pl-1">
+                  <EquippedPlayerAvatar
+                    name={entry.username}
+                    size="md"
+                    equippedAvatarId={entry.equippedAvatarId ?? null}
+                    equippedBadgeId={entry.equippedBadgeId ?? null}
+                    equippedNameColorId={entry.equippedNameColorId}
+                    equippedFrameId={entry.equippedFrameId}
+                    equippedAuraId={entry.equippedAuraId}
+                    equippedBannerId={entry.equippedBannerId}
+                  />
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[14px] font-bold text-[var(--color)] truncate">
+                      {entry.username}
+                    </span>
+                    {isCurrentUser && (
+                      <Badge variant="info" size="sm">
+                        {t('stats.you')}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+
+                <div className="hidden md:block text-right text-[14px] font-medium text-[var(--color)] font-mono">
+                  {entry.totalGames}
+                </div>
+
+                <div className="hidden md:block text-right text-[14px] font-bold text-[var(--success)] font-mono">
+                  {entry.wins}
+                </div>
+
+                <div className="hidden md:block text-right text-[14px] font-semibold text-[var(--danger)] font-mono">
+                  {entry.losses}
+                </div>
+
+                <div className="flex items-center justify-end md:pl-4 min-w-[90px]">
+                  <div className="w-full max-w-[130px]">
+                    <ProgressBar
+                      className="h-2"
+                      value={entry.winRate}
+                      showLabel
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div
+        ref={loadMoreRef}
+        className="min-h-[60px] flex items-center justify-center p-3"
+      >
+        {loadingMore && (
+          <div className="flex items-center gap-2 text-[var(--textSecondary)] text-[14px]">
+            <Spinner size="sm" />
+            <span>{t('stats.loadingMore')}</span>
+          </div>
+        )}
+        {!hasMore && leaderboard.length > 0 && (
+          <span className="text-[13px] text-[var(--textSecondary)] opacity-60">
+            {t('stats.endOfLeaderboard')}
+          </span>
+        )}
+      </div>
+    </Card>
   );
 }
 
-function RankDisplay({ rank }: { rank: number }) {
+function RankIndicator({ rank }: { rank: number }) {
   if (rank === 1) {
     return (
-      <TrophyIcon
-        style={{ filter: 'drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5))' }}
-      >
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 text-[18px] shadow-sm">
         🥇
-      </TrophyIcon>
+      </div>
     );
   }
   if (rank === 2) {
     return (
-      <TrophyIcon
-        style={{ filter: 'drop-shadow(0 2px 4px rgba(156, 163, 175, 0.5))' }}
-      >
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-slate-400/20 border border-slate-400/40 text-[18px] shadow-sm">
         🥈
-      </TrophyIcon>
+      </div>
     );
   }
   if (rank === 3) {
     return (
-      <TrophyIcon
-        style={{ filter: 'drop-shadow(0 2px 4px rgba(217, 119, 6, 0.5))' }}
-      >
+      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-700/20 border border-amber-700/40 text-[18px] shadow-sm">
         🥉
-      </TrophyIcon>
+      </div>
     );
   }
-  return <RankBadge>{rank}</RankBadge>;
-}
-
-function Table({ children }: { children?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-stretch w-full rounded-xl overflow-hidden">
-      {children}
+    <div className="flex items-center justify-center w-7 h-7 rounded-full border border-[var(--borderColor)]/60 bg-[var(--surfaceTertiary)]/50 text-[12px] font-bold text-[var(--textSecondary)] font-mono">
+      {rank}
     </div>
-  );
-}
-
-function PlayerInfo({ children }: { children?: React.ReactNode }) {
-  return <div className="flex flex-row items-center gap-3">{children}</div>;
-}
-
-function PlayerName({ children }: { children?: React.ReactNode }) {
-  return <div className="flex flex-row items-center gap-2">{children}</div>;
-}
-
-function StatCell({
-  color,
-  children,
-}: {
-  color?: string;
-  children?: React.ReactNode;
-}) {
-  return (
-    <span
-      className="font-medium text-[var(--color)]"
-      style={color ? { color } : undefined}
-    >
-      {children}
-    </span>
-  );
-}
-
-function RankBadge({ children }: { children?: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-center w-[36px] h-[36px] rounded-full border border-[var(--borderColor)] bg-[var(--background)]">
-      {children}
-    </div>
-  );
-}
-
-function TrophyIcon({
-  style,
-  children,
-}: {
-  style?: React.CSSProperties;
-  children?: React.ReactNode;
-}) {
-  return (
-    <span className="text-[24px] leading-[30px]" style={style}>
-      {children}
-    </span>
-  );
-}
-
-function LoadingMoreRow({ children }: { children?: React.ReactNode }) {
-  return <div className="flex flex-row items-center gap-3 p-4">{children}</div>;
-}
-
-function EndOfList({ children }: { children?: React.ReactNode }) {
-  return (
-    <span className="text-[14px] leading-[18px] p-4 opacity-[0.7] text-[var(--textSecondary)]">
-      {children}
-    </span>
   );
 }

@@ -106,6 +106,37 @@ export const frMessages = {
           answer:
             'Chaque pli supplémentaire au-delà de l\u2019annonce d\u2019équipe compte comme un sac. Chaque fois qu\u2019une équipe accumule 10 sacs, 100 points sont déduits de son score — annoncer juste est donc essentiel.',
         },
+        blindNil: {
+          question: 'Qu’est-ce qu’une annonce Zéro à l’aveugle (Blind Nil) ?',
+          answer:
+            'Un Blind Nil est annoncé avant de regarder ses cartes. Réussi, il rapporte 200 points ; échoué, il en retire 200.',
+        },
+        partnerStrategy: {
+          question: 'Comment coopérer en équipe à la Pique ?',
+          answer:
+            'Évitez de surcouper votre partenaire lorsqu’il est maître et protégez ses annonces Zéro en prenant les plis dangereux.',
+        },
+        reneg: {
+          question:
+            'Que se passe-t-il si un joueur ne fournit pas la couleur demandée ?',
+          answer:
+            'Les joueurs doivent obligatoirement fournir la couleur demandée s’ils en possèdent sous peine de renonce illégale.',
+        },
+        friends: {
+          question: 'Comment jouer à la Pique entre amis ?',
+          answer:
+            'Créez une table, choisissez le mode en équipes ou solo et partagez le lien pour commencer immédiatement.',
+        },
+        bots: {
+          question: 'Peut-on jouer à la Pique contre l’ordinateur ?',
+          answer:
+            'Oui. Les bots intelligents évaluent les probabilités de plis et défendent leur partenaire.',
+        },
+        free: {
+          question: 'Le jeu de Pique est-il gratuit sur Arcadeum ?',
+          answer:
+            'Oui. Spades sur Arcadeum est 100% gratuit avec un gameplay fluide, des thèmes variés et sans téléchargement.',
+        },
       },
     },
     lobby: {

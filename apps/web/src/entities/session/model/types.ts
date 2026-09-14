@@ -28,6 +28,8 @@ export type SessionTokensSnapshot = {
   displayName: string | null;
   role: UserRole | null;
   xp: number;
+  level: number;
+  prestige: number;
   equippedAvatarId: string | null;
   equippedBadgeId: string | null;
   equippedNameColorId: string | null;
@@ -50,6 +52,8 @@ export type SetSessionTokensInput = {
   displayName?: string | null;
   role?: UserRole | null;
   xp?: number;
+  level?: number;
+  prestige?: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;

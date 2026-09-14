@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { GlassCard } from '@arcadeum/ui';
 import { Sparkline } from './MonitoringCharts';
 import { ReadinessCard, DbHealthCard } from './MonitoringCards';
+import { CapacityCard, type CapacityData } from './MonitoringCapacity';
 
 interface HealthData {
   status: string;
@@ -127,6 +128,7 @@ export function MonitoringView({ t }: MonitoringClientProps) {
   const [dbHealth, setDbHealth] = useState<DbHealthData | null>(null);
   const [server, setServer] = useState<ServerMetricsData | null>(null);
   const [prom, setProm] = useState<PrometheusMetrics | null>(null);
+  const [capacity, setCapacity] = useState<CapacityData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState<MetricsHistory[]>([]);
@@ -156,12 +158,13 @@ export function MonitoringView({ t }: MonitoringClientProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [h, r, d, s, m] = await Promise.allSettled([
+        const [h, r, d, s, m, c] = await Promise.allSettled([
           fetch('/api/admin/monitoring/health'),
           fetch('/api/admin/monitoring/ready'),
           fetch('/api/admin/monitoring/db-health'),
           fetch('/api/admin/monitoring/server-metrics'),
           fetch('/api/admin/monitoring/metrics'),
+          fetch('/api/admin/monitoring/capacity'),
         ]);
 
         if (h.status === 'fulfilled' && h.value.ok)
@@ -181,6 +184,9 @@ export function MonitoringView({ t }: MonitoringClientProps) {
           promRef.current = p;
           setProm(p);
           if (serverRef.current) pushHistory(serverRef.current, p);
+        }
+        if (c.status === 'fulfilled' && c.value.ok) {
+          setCapacity(await c.value.json());
         }
         setError(null);
       } catch (err) {
@@ -279,6 +285,9 @@ export function MonitoringView({ t }: MonitoringClientProps) {
           <ReadinessCard ready={ready} />
           <DbHealthCard db={dbHealth} />
         </div>
+
+        {/* Capacity */}
+        <CapacityCard capacity={capacity} />
 
         {/* Charts */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

@@ -22,6 +22,7 @@ describe('GamesGateway anonymous socket connection', () => {
       trackSocket: jest.fn().mockResolvedValue(undefined),
       lobbyChannel: jest.fn().mockReturnValue('games:lobby'),
       registerServer: jest.fn(),
+      getConnectedUsersCount: jest.fn().mockResolvedValue(0),
     };
     mockJwt = {
       verifyAsync: jest.fn().mockRejectedValue(new Error('no token')),

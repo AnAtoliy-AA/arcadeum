@@ -5,6 +5,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AdminController } from './admin.controller';
 import { AdminStatisticsService } from './admin-statistics.service';
+import { GamesRealtimeService } from '../games/games.realtime.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
@@ -46,6 +47,18 @@ describe('AdminController (integration)', () => {
         {
           provide: AdminStatisticsService,
           useValue: mockStatisticsService,
+        },
+        {
+          provide: GamesRealtimeService,
+          useValue: {
+            getConnectedUsersCount: jest.fn().mockResolvedValue(0),
+            getPeaks: jest.fn().mockResolvedValue({
+              peakOnlineUsers: 0,
+              peakOnlineUsersAt: 0,
+              peakActiveRooms: 0,
+              peakActiveRoomsAt: 0,
+            }),
+          },
         },
       ],
     })

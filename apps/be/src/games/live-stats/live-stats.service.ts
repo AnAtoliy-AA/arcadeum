@@ -291,6 +291,9 @@ export class LiveStatsService {
 
     const onlineUsers = await this.realtimeService.getConnectedUsersCount();
 
+    const totalActiveRooms = activeGames + waitingRooms;
+    void this.realtimeService.trackPeakRooms(totalActiveRooms);
+
     const platformSubscribers: Record<string, number> = {};
     for (const item of socialClaimAgg) {
       if (item._id) {
@@ -315,6 +318,8 @@ export class LiveStatsService {
       }
     }
 
+    const peaks = await this.realtimeService.getPeaks();
+
     return {
       onlineUsers,
       totalUsers: totalUsers ?? 0,
@@ -330,6 +335,7 @@ export class LiveStatsService {
       popularGames,
       openRooms,
       recentActivity,
+      peaks,
     };
   }
 
@@ -347,7 +353,7 @@ export class LiveStatsService {
   scheduleBroadcast(): void {
     const now = Date.now();
     const elapsed = now - this.lastBroadcastAt;
-    const THROTTLE_MS = 10_000;
+    const THROTTLE_MS = 3_000;
 
     if (elapsed >= THROTTLE_MS) {
       this.lastBroadcastAt = now;

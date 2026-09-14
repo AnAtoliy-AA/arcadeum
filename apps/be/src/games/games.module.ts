@@ -366,6 +366,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
   exports: [
     GameHistoryStatsService,
     GameRoomsMatchmakingService,
+    GamesRealtimeService,
     AntiCollusionService,
     SocketDeltaService,
   ],

@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, render, fireEvent } from '@testing-library/react';
 
+const mockPush = vi.fn();
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({ refresh: vi.fn() }),
+  useRouter: () => ({ refresh: vi.fn(), push: mockPush }),
 }));
 vi.mock('../server/shop.actions', () => ({
   equipItemAction: vi.fn(),
@@ -178,5 +179,37 @@ describe('ShopCard', () => {
     );
     fireEvent.click(getByTestId(`shop-card-action-${item.id}`));
     expect(fallback).toHaveBeenCalledWith(item);
+  });
+
+  it('renders progression reward and View in Stats for unpurchasable badge', () => {
+    const item = makeItem({
+      id: 'badge-scout',
+      category: 'badge',
+      purchasable: false,
+      priceAmount: 0,
+    });
+    const { getByTestId } = render(
+      <Wrapper>
+        <ShopCard
+          item={item}
+          owned={false}
+          equipped={false}
+          balance={BALANCE}
+          labels={{
+            ...labels,
+            unlockedAtLevel: 'Lv. {level} Reward',
+            viewInStats: 'View in Stats',
+          }}
+          onPurchaseFallback={() => {}}
+        />
+      </Wrapper>,
+    );
+    expect(getByTestId(`shop-card-${item.id}`).textContent).toContain(
+      'Lv. 5 Reward',
+    );
+    const actionBtn = getByTestId(`shop-card-action-${item.id}`);
+    expect(actionBtn.textContent).toContain('View in Stats');
+    fireEvent.click(actionBtn);
+    expect(mockPush).toHaveBeenCalledWith('/en/stats');
   });
 });

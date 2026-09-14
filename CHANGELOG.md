@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.48] - 2026-09-14
+
+### Added
+- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
+
+
+## [1.29.47] - 2026-09-14
+
+### Added
+- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
+
+
 ## [1.29.46] - 2026-09-13
 
 ### Added

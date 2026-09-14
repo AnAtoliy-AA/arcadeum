@@ -3,6 +3,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LevelUpModal } from './LevelUpModal';
 import { useLevelUpModalStore } from '../store/levelUpModalStore';
 
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockPush }),
+}));
+
 const mockClaimAction = vi.fn();
 
 vi.mock('../api/level-rewards.api', () => ({
@@ -119,6 +124,25 @@ describe('LevelUpModal', () => {
     const closeBtn = screen.getByTestId('level-up-close-btn');
     fireEvent.click(closeBtn);
 
+    expect(useLevelUpModalStore.getState().isOpen).toBe(false);
+  });
+
+  it('shows view in inventory button when claimed with badge reward', () => {
+    useLevelUpModalStore.setState({
+      isOpen: true,
+      level: 5,
+      coinAmount: 250,
+      badgeId: 'badge-scout',
+      isClaimed: true,
+    });
+
+    render(<LevelUpModal />);
+
+    const inventoryBtn = screen.getByTestId('level-up-view-inventory-btn');
+    expect(inventoryBtn).toBeInTheDocument();
+
+    fireEvent.click(inventoryBtn);
+    expect(mockPush).toHaveBeenCalledWith('/en/shop/inventory#row-badges');
     expect(useLevelUpModalStore.getState().isOpen).toBe(false);
   });
 });

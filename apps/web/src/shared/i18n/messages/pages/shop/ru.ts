@@ -161,6 +161,9 @@ export const shopRu = {
     equip: 'Надеть',
     unequip: 'Снять',
     sell: 'Продать · 50%',
+    progressionReward: 'Награда за уровень',
+    unlockedAtLevel: 'Ур. {level}',
+    viewInStats: 'В статистику',
   },
   inventory: {
     title: 'Склад',

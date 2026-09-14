@@ -130,7 +130,7 @@ export function InventoryPageView({
                 .map((cat) => (
                   <ShopRow
                     key={`inv-${cat}`}
-                    id={`row-${cat}`}
+                    id={`row-${CATEGORY_TO_ROW_LABEL_KEY[cat]}`}
                     sectionKey={cat}
                     mode="inventory"
                     items={ownedRows[cat]}

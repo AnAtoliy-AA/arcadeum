@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.1] - 2026-09-15
+
+### Refactored
+- migrate from Docker to PM2 bare-metal deployment
+
+
 ## [1.30.0] - 2026-09-14
 
 ### Changed

@@ -38,7 +38,7 @@ jobs:
           filters: |
             be-or-tg:
               - 'apps/be/**'
-              - 'bots/tg-bot/**'
+      - 'apps/tg-bot/**'
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
@@ -103,7 +103,7 @@ jobs:
             pm2 list arcadeum-web
 
   deploy-tg-bot:
-    name: Deploy TG Bot + Backend (Docker)
+    name: Deploy TG Bot + Backend (pm2)
     needs: changes
     if: needs.changes.outputs.be-or-tg == 'true'
     runs-on: ubuntu-latest
@@ -138,45 +138,31 @@ jobs:
             done
             git reset --hard "origin/$BRANCH"
 
-            echo "==> Stopping old pm2 processes (ports 4000/4001 conflict with Docker)..."
-            pm2 delete arcadeum-be 2>/dev/null || true
-            pm2 delete arcadeum-be-dev 2>/dev/null || true
-            pm2 delete arcadeum-tg-bot 2>/dev/null || true
-            pm2 delete arcadeum-tg-bot-dev 2>/dev/null || true
-            pm2 save 2>/dev/null || true
+            pnpm install --frozen-lockfile
 
-            echo "==> Installing Docker Compose plugin + buildx (if missing)..."
-            if ! docker compose version &>/dev/null; then
-              sudo apt-get update -qq && sudo apt-get install -y -qq docker-compose-plugin
-              echo "==> Docker Compose plugin installed"
-            fi
-            if ! docker buildx version &>/dev/null; then
-              mkdir -p ~/.docker/cli-plugins
-              BUILDX_URL="https://github.com/docker/buildx/releases/latest/download/docker-buildx-$(uname -s)-$(uname -m)"
-              curl -sSL -o ~/.docker/cli-plugins/docker-buildx "$BUILDX_URL" && chmod +x ~/.docker/cli-plugins/docker-buildx
-              echo "==> Docker buildx installed"
+            echo "==> Building games-core + BE..."
+            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
+
+            if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
+              echo "ERROR: BE build did not produce dist/src/main.js"
+              exit 1
             fi
 
-            echo "==> Building and deploying with Docker Compose..."
-            docker compose build be be-2 worker tg-bot
-            docker compose up -d --remove-orphans
+            echo "==> Restarting BE (cluster)..."
+            pm2 restart arcadeum-be --update-env
 
-            echo "==> Waiting for health checks..."
-            sleep 10
+            echo "==> Building TG Bot..."
+            cd apps/tg-bot && pnpm build 2>/dev/null || npx tsc 2>/dev/null || true
+            cd "$DEPLOY_DIR"
 
-            echo "==> Starting monitoring stack..."
-            if [ -f monitoring/.env.monitoring ]; then
-              docker compose -f docker-compose.monitoring.yml up -d --remove-orphans
-              echo "==> Monitoring stack started"
-            else
-              echo "==> Skipping monitoring (monitoring/.env.monitoring not found)"
-            fi
+            echo "==> Restarting TG Bot..."
+            pm2 restart arcadeum-tg-bot --update-env 2>/dev/null || \
+              (cd apps/tg-bot && pm2 start dist/main.js --name arcadeum-tg-bot)
 
-            echo "==> Container status:"
-            docker compose ps
-            docker compose -f docker-compose.monitoring.yml ps 2>/dev/null || true
+            pm2 save
 
             echo "==> Prod deploy done (branch: $BRANCH)!"
+            pm2 list
 
   deploy-be-reserve:
     name: Deploy Reserve Backend (Worker)
@@ -239,7 +225,7 @@ jobs:
               find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} "$SF_BIN" \;
               chmod +x "$SF_BIN"
               rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
-              "$SF_BIN" <<< "uci" 2>/dev/null | head -1
+              echo "uci" | "$SF_BIN" 2>/dev/null | head -1
               echo "==> Stockfish 19 installed."
             else
               echo "==> Stockfish 19 binary already present, skipping download."

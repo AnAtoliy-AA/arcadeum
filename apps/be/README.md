@@ -35,19 +35,19 @@ Arcadeum Games' backend follows a **modular, scalable game engine architecture**
 
 ### Tech Stack
 
-| Layer          | Technology                                    |
-| -------------- | --------------------------------------------- |
-| Framework      | NestJS 11.2                                   |
-| Language       | TypeScript 5.9                                |
-| Database       | MongoDB 7 + Mongoose 8.24                     |
-| Cache          | Redis via `cache-manager-ioredis-yet`         |
+| Layer          | Technology                                   |
+| -------------- | -------------------------------------------- |
+| Framework      | NestJS 11.2                                  |
+| Language       | TypeScript 5.9                               |
+| Database       | MongoDB 7 + Mongoose 8.24                    |
+| Cache          | Redis via `cache-manager-ioredis-yet`        |
 | Queue          | BullMQ 6.3 + `@nestjs/bullmq`                |
-| Validation     | class-validator + class-transformer           |
-| Authentication | Passport + JWT + Google OAuth                 |
-| Real-time      | Socket.IO 4.8 + compressed WebSocket adapter  |
+| Validation     | class-validator + class-transformer          |
+| Authentication | Passport + JWT + Google OAuth                |
+| Real-time      | Socket.IO 4.8 + compressed WebSocket adapter |
 | Rate Limiting  | `@nestjs/throttler` (3 tiers)                |
-| Observability  | OpenTelemetry + Prometheus + Grafana          |
-| Node.js        | v24+ (see `../../.nvmrc`)                     |
+| Observability  | OpenTelemetry + Prometheus + Grafana         |
+| Node.js        | v24+ (see `../../.nvmrc`)                    |
 
 ### Core Components
 
@@ -248,47 +248,108 @@ $ pnpm --filter be test:cov
 $ pnpm --filter be test:watch
 ```
 
-## Deployment
+## Deployment Architecture
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 3 Parallel BE Instances
 
-### Recommended Deployment Options
+Production runs **3 parallel processes** across 2 OCI servers:
 
-1. **Docker Containerization**:
+```
+Internet
+   │
+   ▼
+┌──────────────────────────────────────────────┐
+│  OCI Server 1 (primary)                      │
+│                                              │
+│  ┌─────────────────────────────────────────┐ │
+│  │  PM2 Cluster (arcadeum-be)              │ │
+│  │                                         │ │
+│  │  Worker 1 ─┐                            │ │
+│  │  Worker 2 ─┼─ Node.js cluster (≤4)      │ │
+│  │  Worker 3 ─┘  sharing port 4000         │ │
+│  └─────────────────────────────────────────┘ │
+│                                              │
+│  ┌──────────────────┐  ┌──────────────────┐  │
+│  │  arcadeum-web    │  │  arcadeum-tg-bot │  │
+│  │  (Next.js :3000) │  │  (Telegram :4001)│  │
+│  └──────────────────┘  └──────────────────┘  │
+│                                              │
+│  ┌──────────────────┐  ┌──────────────────┐  │
+│  │  MongoDB         │  │  Redis           │  │
+│  │  (:27017)        │  │  (:6379)         │  │
+│  └──────────────────┘  └──────────────────┘  │
+└──────────────────────────────────────────────┘
 
-   ```dockerfile
-   FROM node:18-alpine
-   WORKDIR /app
-   COPY package*.json ./
-   RUN pnpm install --frozen-lockfile
-   COPY . .
-   RUN pnpm --filter be build
-   EXPOSE 4000
-   CMD ["pnpm", "--filter", "be", "start:prod"]
-   ```
+┌──────────────────────────────────────────────┐
+│  OCI Server 2 (reserve)                      │
+│                                              │
+│  ┌─────────────────────────────────────────┐ │
+│  │  arcadeum-be-reserve (PM2)              │ │
+│  │  BullMQ worker (dist/src/worker.js)     │ │
+│  │  Background jobs: chess bots, async     │ │
+│  │  match processing, scheduled tasks      │ │
+│  └─────────────────────────────────────────┘ │
+└──────────────────────────────────────────────┘
+```
 
-2. **Cloud Platforms**:
+### What Each Instance Does
 
-   - **AWS**: Deploy as ECS service or Lambda
-   - **Google Cloud**: Deploy as Cloud Run service
-   - **Azure**: Deploy as App Service
-   - **Vercel**: For serverless functions (limited)
+| Process                     | Server   | Purpose                                                                                                                                                              | Port |
+| --------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| `arcadeum-be` (PM2 cluster) | Server 1 | API + WebSocket server. Handles HTTP requests, Socket.IO connections, game sessions, matchmaking. Runs N cluster workers (one per CPU core, max 4).                  | 4000 |
+| `arcadeum-be-reserve`       | Server 2 | Standalone BullMQ worker. Processes background jobs: Stockfish chess bots, async match processing, scheduled tasks. Isolated so CPU-heavy jobs don't starve the API. | none |
+| `arcadeum-web`              | Server 1 | Next.js SSR frontend.                                                                                                                                                | 3000 |
+| `arcadeum-tg-bot`           | Server 1 | Telegram bot interface.                                                                                                                                              | 4001 |
 
-3. **Process Management**:
-   - Use PM2 for process management in production
-   - Configure logging with Winston
-   - Set up monitoring with Prometheus and Grafana
+### How It Works
+
+**PM2 Cluster Mode** (`ecosystem.config.js`):
+
+- Runs N Node.js workers (1 per core, max 4) sharing port 4000
+- Memory: reserves ~6 GB for OS, divides remainder across workers (capped at 2 GB each)
+- Auto-restarts crashed workers, graceful shutdown with `listen_timeout: 10s`
+
+**Redis is the linchpin** for horizontal scaling. With `REDIS_URL` set, 6 subsystems become shared across all instances:
+
+1. **Socket.IO Redis adapter** — cross-instance WebSocket broadcast (messages reach clients on any instance)
+2. **Matchmaking queue** — Redis sorted sets for game matchmaking
+3. **Room action locks** — distributed mutex preventing concurrent game state mutations
+4. **Bot turn locks** — distributed single-flight for AI turns
+5. **Rate limiting** — shared login lockout + IP block state
+6. **Application cache** — shared read-only data (announcements, achievements)
+
+**Dual MongoDB**:
+
+- Primary (`MONGODB_OCI_URI`): Local MongoDB for live games (pool: 50 connections)
+- Archive (`MONGODB_ATLAS_URI`): MongoDB Atlas for completed games/history (pool: 30 connections)
+
+**CI/CD** (`.github/workflows/deploy-oci.yml`):
+
+- Push to `main` triggers parallel deploys
+- Server 1: `pm2 restart arcadeum-be --update-env` + `pm2 restart arcadeum-web`
+- Server 2: `pm2 restart arcadeum-be-reserve` (wraps worker.js with env sourcing)
+
+### Adding More Instances
+
+To scale horizontally:
+
+1. Set `REDIS_URL` (enables shared state)
+2. Add servers to nginx `upstream` block with `ip_hash` for sticky sessions
+3. Each server runs its own PM2 cluster
+4. All connect to the same Redis + MongoDB
 
 ### Environment Configuration for Production
 
 ```bash
-# Production-specific variables
 NODE_ENV=production
-PORT=4000
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/arcadeum
+BE_PORT=4000
+MONGODB_OCI_URI=mongodb://...
+MONGODB_ATLAS_URI=mongodb+srv://...
+REDIS_URL=redis://...
 AUTH_JWT_SECRET=your-production-secret-key
-REDIS_URL=redis://your-redis-host:6379
-TBC_API_BASE_URL=https://api.tbcbank.ge
+RATE_STATE_BACKEND=redis
+STOCKFISH_POOL_SIZE=1
+SOCKET_ENCRYPTION_ENABLED=true
 ```
 
 ## Monitoring and Logging

@@ -18,7 +18,7 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init curl
+RUN apk add --no-cache dumb-init curl gcompat
 
 # Stockfish 19 — detect arch at build time
 RUN ARCH=$(uname -m) && \

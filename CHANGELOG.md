@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.3] - 2026-09-16
+
+### Added
+- rework chess landing UI UX and remove em-dashes across app (ARC-960) (ARC-960)
+
+### Improved
+- lazy-load blog registry, parallelize game pages, add watchdog/capture backoff
+
+
 ## [1.30.2] - 2026-09-16
 
 ### Changed

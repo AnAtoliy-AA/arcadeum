@@ -21,18 +21,18 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Cat Dash — juego de carrera de gatos con dados multijugador',
+        title: 'Cat Dash - juego de carrera de gatos con dados multijugador',
         description:
           'Juega Cat Dash online gratis. 2–6 jugadores, gatos únicos, dados + habilidades, cuatro pistas temáticas.',
         keywords:
           'juego de gatos, juego de dados, carrera, multijugador, juego familiar',
       },
       hero: {
-        title: 'Cat Dash — corre con tu gato hacia la victoria',
+        title: 'Cat Dash - corre con tu gato hacia la victoria',
         subtitle:
           'Lanza los dados, esquiva obstáculos y usa las habilidades de los gatos para llegar primero a la meta.',
         ctaQuickplay: 'Jugar vs IA',
-        ctaQuickplayError: 'No se pudo iniciar — intenta de nuevo',
+        ctaQuickplayError: 'No se pudo iniciar - intenta de nuevo',
         createRoom: 'Crear sala',
         browseRooms: 'Ver salas',
       },
@@ -67,18 +67,18 @@ export const esMessages = {
       },
       rules: {
         title: 'Reglas',
-        objective: 'Sé el primer gato en llegar al espacio 20 — la meta.',
+        objective: 'Sé el primer gato en llegar al espacio 20 - la meta.',
         howToPlay: 'En tu turno, haz clic en "Lanzar Dados".',
         abilities:
           'Cada gato tiene 2 habilidades únicas. Gasta tokens de poder (3 por partida).',
         trackSpaces:
-          '🟢 Normal — sin efecto. 🔴 Obstáculo — pierde tu próximo turno. 🟡 Bonusa — lanza de nuevo.',
+          '🟢 Normal - sin efecto. 🔴 Obstáculo - pierde tu próximo turno. 🟡 Bonusa - lanza de nuevo.',
       },
       faq: {
         abilities: {
           question: '¿Qué hacen las habilidades?',
           answer:
-            'Cada gato tiene dos habilidades únicas — una ofensiva y una defensiva.',
+            'Cada gato tiene dos habilidades únicas - una ofensiva y una defensiva.',
         },
         tokens: {
           question: '¿Cómo funcionan los tokens?',
@@ -149,7 +149,7 @@ export const esMessages = {
       },
       s3: {
         title: 'Gasta fichas con cabeza',
-        body: 'Cada gato tiene dos habilidades únicas — gasta tus tres fichas de poder en el momento justo.',
+        body: 'Cada gato tiene dos habilidades únicas - gasta tus tres fichas de poder en el momento justo.',
       },
       s4: {
         title: 'Final de foto',
@@ -165,7 +165,7 @@ export const esMessages = {
         'En tu turno, haz clic en "Lanzar Dados". Dado estándar de 6 caras.',
       trackSpacesTitle: 'Casillas de la Pista',
       trackSpaces:
-        '🟢 Normal. 🔴 Obstáculo — pierde turno. 🟡 Bonusa — lanza de nuevo. 🔵 Bifurcación — elige camino.',
+        '🟢 Normal. 🔴 Obstáculo - pierde turno. 🟡 Bonusa - lanza de nuevo. 🔵 Bifurcación - elige camino.',
       abilitiesTitle: 'Habilidades',
       abilities:
         'Cada gato tiene 2 habilidades. Usa tokens de poder (3 por partida).',
@@ -173,7 +173,7 @@ export const esMessages = {
       cats: '🐱 Gato Neón: Dash Digital + Escudo Neón. 🐱bigotes: Vida Extra + Poder de Ronroneo. 🐱 Polvo Estelar: Salto Warp + Escudo Estelar. 🐱 Felix: Camino de la Naturaleza + Carga Salvaje.',
       trackTypesTitle: 'Tipos de Pista',
       trackTypes:
-        'Lineal — carrera directa. Circular — atajos y obstáculos. Múltiples caminos — bifurcaciones.',
+        'Lineal - carrera directa. Circular - atajos y obstáculos. Múltiples caminos - bifurcaciones.',
     },
     gameOver: {
       won: '¡Ganaste!',

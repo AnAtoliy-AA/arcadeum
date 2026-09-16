@@ -60,7 +60,7 @@ export default async function Game2048LandingRoute({ params }: PageProps) {
     },
     howTo: {
       name: `How to Play 2048 on ${appConfig.appName}`,
-      description: 'Play 2048 online free — no signup, no download.',
+      description: 'Play 2048 online free - no signup, no download.',
       steps: [
         {
           name: 'Swipe or use arrow keys',

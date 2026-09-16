@@ -1,9 +1,9 @@
 export const landing = {
   meta: {
-    title: 'Critical — Free Exploding Card Game Online | Play in Browser',
+    title: 'Critical - Free Exploding Card Game Online | Play in Browser',
     description:
-      'Play Critical online for free — a fast-paced strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks, no download.',
-    ogTitle: 'Critical Online — Free Exploding Card Game',
+      'Play Critical online for free - a fast-paced strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks, no download.',
+    ogTitle: 'Critical Online - Free Exploding Card Game',
     ogDescription:
       'Draw, defuse, survive. The last player standing wins. Play Critical free in your browser with friends or AI.',
     keywords:
@@ -13,11 +13,11 @@ export const landing = {
     title: 'Critical',
     tagline: 'A free online card game of bluff, theft, and explosive luck',
     intro:
-      'Critical is a fast strategic card game in the spirit of Exploding Kittens. Draw cards on your turn, dodge the unstable card lurking in the deck, and use Attacks, Skips, Steals, and Combos to push the explosion onto someone else. On Arcadeum you can play Critical right in your browser — free, with friends or AI bots, no download required.',
+      'Critical is a fast strategic card game in the spirit of Exploding Kittens. Draw cards on your turn, dodge the unstable card lurking in the deck, and use Attacks, Skips, Steals, and Combos to push the explosion onto someone else. On Arcadeum you can play Critical right in your browser - free, with friends or AI bots, no download required.',
     ctaPlay: 'Create a Critical room',
     ctaRooms: 'Browse open rooms',
     ctaQuickplay: 'Play vs AI now',
-    ctaQuickplayError: 'Couldn’t start a game — try again',
+    ctaQuickplayError: 'Couldn’t start a game - try again',
     ctaPlayHuman: 'Find a human opponent',
     ctaGroupLabel: 'Critical quick start',
     eyebrow: 'Free · 2–5 players · No signup',
@@ -42,11 +42,11 @@ export const landing = {
       },
       draw: {
         title: '2. Take your starting hand',
-        body: 'Each player begins with a Defuse card and a hand of seven random Action cards. The deck contains one or more Critical cards — the explosion you are trying to avoid.',
+        body: 'Each player begins with a Defuse card and a hand of seven random Action cards. The deck contains one or more Critical cards - the explosion you are trying to avoid.',
       },
       play: {
         title: '3. Play action cards or draw',
-        body: 'On your turn, play as many Action cards as you like — Attack, Skip, See the Future, Steal, combo two or three of a kind. End your turn by drawing one card from the deck.',
+        body: 'On your turn, play as many Action cards as you like - Attack, Skip, See the Future, Steal, combo two or three of a kind. End your turn by drawing one card from the deck.',
       },
       survive: {
         title: '4. Defuse the Critical or explode',
@@ -57,14 +57,14 @@ export const landing = {
   about: {
     title: 'About Critical',
     paragraphs: [
-      'Critical is a modern take on the exploding-deck genre popularised by Exploding Kittens. Players take turns drawing cards from a shared deck that contains one or more unstable “Critical” cards. Draw one and you’re out — unless you can play a Defuse to neutralise it.',
+      'Critical is a modern take on the exploding-deck genre popularised by Exploding Kittens. Players take turns drawing cards from a shared deck that contains one or more unstable “Critical” cards. Draw one and you’re out - unless you can play a Defuse to neutralise it.',
       'Between draws, players play Action cards to skip turns, force opponents to draw, peek at the deck, or steal cards using two-of-a-kind and three-of-a-kind combos. Every decision is a small bet: spend a Defuse early to control the deck, or hoard it for the round that ends in flames.',
-      'On Arcadeum, Critical runs entirely in your browser — no download, no signup wall. You can spin up a private room and share a link, join an open public game, or fill the empty seats with AI bots and play solo. Matches typically last 10–15 minutes per round, which makes it a great fit for a coffee break or a between-meetings session with friends.',
+      'On Arcadeum, Critical runs entirely in your browser - no download, no signup wall. You can spin up a private room and share a link, join an open public game, or fill the empty seats with AI bots and play solo. Matches typically last 10–15 minutes per round, which makes it a great fit for a coffee break or a between-meetings session with friends.',
     ],
   },
   finalCta: {
     title: 'Ready to play?',
-    subtitle: 'Spin up a room and share the link — the deck is waiting.',
+    subtitle: 'Spin up a room and share the link - the deck is waiting.',
   },
   faq: {
     title: 'Frequently asked questions',

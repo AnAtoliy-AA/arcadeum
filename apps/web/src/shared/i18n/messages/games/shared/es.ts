@@ -9,7 +9,7 @@ export const esMessages = {
   lounge: {
     activeTitle: 'Salas de Juego',
     emptyTitle:
-      'No hay salas abiertas en este momento — comienza una contra la IA.',
+      'No hay salas abiertas en este momento - comienza una contra la IA.',
     emptyFeaturedLink: 'O entra a Batalla Naval contra la IA →',
     loadingRooms: 'Cargando salas...',
     searchPlaceholder: 'Buscar juegos...',
@@ -43,7 +43,7 @@ export const esMessages = {
   },
   aiVsAi: {
     watchCta: 'Ver IA contra IA',
-    error: 'No se pudo iniciar — inténtalo de nuevo',
+    error: 'No se pudo iniciar - inténtalo de nuevo',
     delayLabel: 'Retraso entre jugadas',
   },
   tutorial: {

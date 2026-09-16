@@ -4,7 +4,7 @@ import { getVisibleGameCategories } from '@/features/games/registry';
 export interface GamesClientProps {
   initialData: GetRoomsResponse | null;
   // When set, the lounge is scoped to a single game (e.g. /games/sea_battle_v1)
-  // — it hides nothing visually but every API call carries this filter and
+  // - it hides nothing visually but every API call carries this filter and
   // the page title swaps to the game-specific label.
   gameId?: string;
   pageTitle?: string;

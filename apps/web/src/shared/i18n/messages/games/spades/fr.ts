@@ -2,13 +2,13 @@ export const frMessages = {
   spades_v1: {
     name: 'Pique',
     description:
-      "Jeu de cartes classique en partenariat pour 4 joueurs — annoncez vos plis et laissez l'atout pique parler",
+      "Jeu de cartes classique en partenariat pour 4 joueurs - annoncez vos plis et laissez l'atout pique parler",
     summary:
       'Annoncez le nombre de plis que vous prendrez, faites équipe avec votre partenaire et laissez les piques gagner !',
     variants: {},
     landing: {
       meta: {
-        title: 'Pique — Jeu de Cartes Multijoueur Gratuit | Arcadeum',
+        title: 'Pique - Jeu de Cartes Multijoueur Gratuit | Arcadeum',
         description:
           'Jouez au Pique gratuitement sur Arcadeum. Jeu de cartes classique en partenariat pour 4 joueurs avec annonces, Nil, sacs et adversaires IA.',
         keywords:
@@ -30,7 +30,7 @@ export const frMessages = {
         },
         bidding: {
           title: 'Annonces & Nil',
-          body: 'Annoncez vos plis — ou tentez tout avec une annonce Nil',
+          body: 'Annoncez vos plis - ou tentez tout avec une annonce Nil',
         },
         sandbagging: {
           title: 'Pénalité de Sacs',
@@ -89,7 +89,7 @@ export const frMessages = {
         rules: {
           question: 'Comment gagner au Pique ?',
           answer:
-            'Les équipes marquent des points en réalisant leur annonce combinée (10 points par pli annoncé plus un par pli supplémentaire). La première équipe à atteindre le score cible — généralement 500 — gagne la partie.',
+            'Les équipes marquent des points en réalisant leur annonce combinée (10 points par pli annoncé plus un par pli supplémentaire). La première équipe à atteindre le score cible - généralement 500 - gagne la partie.',
         },
         nil: {
           question: 'Qu\u2019est-ce qu\u2019une annonce Nil ?',
@@ -99,12 +99,12 @@ export const frMessages = {
         breaking: {
           question: 'Quand peut-on commencer avec un pique ?',
           answer:
-            'Les piques ne peuvent pas entamer un pli tant qu\u2019ils n\u2019ont pas été « cassés » — c\u2019est-à-dire tant qu\u2019un joueur sans la couleur demandée n\u2019a pas défaussé un pique. Une fois cassés, n\u2019importe quel pique peut entamer.',
+            'Les piques ne peuvent pas entamer un pli tant qu\u2019ils n\u2019ont pas été « cassés » - c\u2019est-à-dire tant qu\u2019un joueur sans la couleur demandée n\u2019a pas défaussé un pique. Une fois cassés, n\u2019importe quel pique peut entamer.',
         },
         bags: {
           question: 'Que sont les sacs ?',
           answer:
-            'Chaque pli supplémentaire au-delà de l\u2019annonce d\u2019équipe compte comme un sac. Chaque fois qu\u2019une équipe accumule 10 sacs, 100 points sont déduits de son score — annoncer juste est donc essentiel.',
+            'Chaque pli supplémentaire au-delà de l\u2019annonce d\u2019équipe compte comme un sac. Chaque fois qu\u2019une équipe accumule 10 sacs, 100 points sont déduits de son score - annoncer juste est donc essentiel.',
         },
         blindNil: {
           question: 'Qu’est-ce qu’une annonce Zéro à l’aveugle (Blind Nil) ?',
@@ -152,7 +152,7 @@ export const frMessages = {
       lost: 'Vous avez perdu.',
       draw: 'Match nul.',
       messages: {
-        won: 'Votre partenariat a pris exactement ce qu\u2019il avait promis — bien joué !',
+        won: 'Votre partenariat a pris exactement ce qu\u2019il avait promis - bien joué !',
         lost: 'L\u2019autre duo a mieux annoncé cette fois. Une revanche ?',
         draw: 'Les deux équipes ont terminé à égalité. On recommence ?',
       },
@@ -207,11 +207,11 @@ export const frMessages = {
       },
       s2: {
         title: 'Les piques sont atouts',
-        body: 'Suivez la couleur si possible ; sinon, toute carte passe. Les piques ne peuvent sortir avant d’être « cassées » — mais ensuite elles battent tout.',
+        body: 'Suivez la couleur si possible ; sinon, toute carte passe. Les piques ne peuvent sortir avant d’être « cassées » - mais ensuite elles battent tout.',
       },
       s3: {
         title: 'Nil est un pari',
-        body: 'Annoncez Nil pour viser zéro pli à ±100 points — défaussez vos piques tôt et esquivez tous les plis.',
+        body: 'Annoncez Nil pour viser zéro pli à ±100 points - défaussez vos piques tôt et esquivez tous les plis.',
       },
       s4: {
         title: 'Les sacs mordent',

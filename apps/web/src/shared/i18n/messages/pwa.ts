@@ -32,7 +32,7 @@ export const en = {
   offlineGame: {
     chip: 'Offline play',
     title: 'Offline Practice',
-    description: 'Play vs bot right on your device — no internet needed.',
+    description: 'Play vs bot right on your device - no internet needed.',
     difficulty: 'Bot difficulty',
     backToGames: 'Back to games',
     unsupported: "This game can't be played offline yet.",
@@ -51,7 +51,7 @@ export const en = {
     download: 'Download',
     remove: 'Remove',
     retry: 'Retry',
-    error: 'Download failed — check your connection and retry',
+    error: 'Download failed - check your connection and retry',
     updating: 'Updating…',
     lastDownloaded: 'Downloaded {{time}}',
     chooseIndividually: 'Choose individually',
@@ -59,7 +59,7 @@ export const en = {
     installRequired:
       'Install {{appName}} as an app to download games for offline play.',
     swLoading:
-      'Waiting for the app to fully load — downloads will be available shortly…',
+      'Waiting for the app to fully load - downloads will be available shortly…',
     sizesAvailableAfterDownload: 'Sizes shown after download',
     hideList: 'Hide list',
     showList: 'Show list',
@@ -117,7 +117,7 @@ export const es = {
     download: 'Descargar',
     remove: 'Eliminar',
     retry: 'Reintentar',
-    error: 'Error de descarga — comprueba tu conexión y reintenta',
+    error: 'Error de descarga - comprueba tu conexión y reintenta',
     updating: 'Actualizando…',
     lastDownloaded: 'Descargado hace {{time}}',
     chooseIndividually: 'Elegir individualmente',
@@ -125,7 +125,7 @@ export const es = {
     installRequired:
       'Instala {{appName}} como aplicación para descargar juegos sin conexión.',
     swLoading:
-      'Esperando a que la aplicación cargue completamente — las descargas estarán disponibles pronto…',
+      'Esperando a que la aplicación cargue completamente - las descargas estarán disponibles pronto…',
     sizesAvailableAfterDownload: 'Tamaños mostrados tras la descarga',
     hideList: 'Ocultar lista',
     showList: 'Mostrar lista',
@@ -184,7 +184,7 @@ export const fr = {
     download: 'Télécharger',
     remove: 'Supprimer',
     retry: 'Réessayer',
-    error: 'Échec du téléchargement — vérifiez votre connexion et réessayez',
+    error: 'Échec du téléchargement - vérifiez votre connexion et réessayez',
     updating: 'Mise à jour…',
     lastDownloaded: 'Téléchargé {{time}}',
     chooseIndividually: 'Choisir individuellement',
@@ -192,7 +192,7 @@ export const fr = {
     installRequired:
       'Installez {{appName}} comme application pour télécharger les jeux hors ligne.',
     swLoading:
-      "En attente du chargement complet de l'application — les téléchargements seront bientôt disponibles…",
+      "En attente du chargement complet de l'application - les téléchargements seront bientôt disponibles…",
     sizesAvailableAfterDownload: 'Tailles affichées après téléchargement',
     hideList: 'Masquer la liste',
     showList: 'Afficher la liste',
@@ -231,7 +231,7 @@ export const ru = {
   offlineGame: {
     chip: 'Офлайн-игра',
     title: 'Офлайн-тренировка',
-    description: 'Играйте против бота прямо на устройстве — без интернета.',
+    description: 'Играйте против бота прямо на устройстве - без интернета.',
     difficulty: 'Сложность бота',
     backToGames: 'К списку игр',
     unsupported: 'Эта игра пока недоступна офлайн.',
@@ -241,7 +241,7 @@ export const ru = {
   offlineDownloads: {
     title: 'Офлайн-игры',
     description:
-      'Выберите игры для скачивания — после этого они будут доступны без интернета.',
+      'Выберите игры для скачивания - после этого они будут доступны без интернета.',
     selectAll: 'Выбрать все',
     downloading: 'Загрузка…',
     removing: 'Удаление…',
@@ -250,7 +250,7 @@ export const ru = {
     download: 'Загрузить',
     remove: 'Удалить',
     retry: 'Повторить',
-    error: 'Ошибка загрузки — проверьте подключение и попробуйте снова',
+    error: 'Ошибка загрузки - проверьте подключение и попробуйте снова',
     updating: 'Обновление…',
     lastDownloaded: 'Загружено {{time}}',
     chooseIndividually: 'Выбрать вручную',
@@ -258,7 +258,7 @@ export const ru = {
     installRequired:
       'Установите {{appName}} как приложение, чтобы скачивать игры для офлайн-игры.',
     swLoading:
-      'Ожидание полной загрузки приложения — скачивание будет доступно вскоре…',
+      'Ожидание полной загрузки приложения - скачивание будет доступно вскоре…',
     sizesAvailableAfterDownload: 'Размеры отображаются после загрузки',
     hideList: 'Скрыть список',
     showList: 'Показать список',
@@ -297,7 +297,7 @@ export const by = {
   offlineGame: {
     chip: 'Афлайн-гульня',
     title: 'Афлайн-трэніроўка',
-    description: 'Гуляйце супраць бота проста на прыладзе — без інтэрнэту.',
+    description: 'Гуляйце супраць бота проста на прыладзе - без інтэрнэту.',
     difficulty: 'Складанасць бота',
     backToGames: 'Да спісу гульняў',
     unsupported: 'Гэтая гульня пакуль недаступная афлайн.',
@@ -307,7 +307,7 @@ export const by = {
   offlineDownloads: {
     title: 'Афлайн-гульні',
     description:
-      'Выберыце гульні для спампоўкі — пасля яны будуць даступныя без інтэрнэту.',
+      'Выберыце гульні для спампоўкі - пасля яны будуць даступныя без інтэрнэту.',
     selectAll: 'Выбраць усе',
     downloading: 'Спампоўка…',
     removing: 'Выдаленне…',
@@ -316,7 +316,7 @@ export const by = {
     download: 'Спампаваць',
     remove: 'Выдаліць',
     retry: 'Паўтарыць',
-    error: 'Памылка спампоўкі — праверце злучэнне і паспрабуйце зноў',
+    error: 'Памылка спампоўкі - праверце злучэнне і паспрабуйце зноў',
     updating: 'Абнаўленне…',
     lastDownloaded: 'Спампавана {{time}}',
     chooseIndividually: 'Выбраць асобна',
@@ -324,7 +324,7 @@ export const by = {
     installRequired:
       'Усталюйце {{appName}} як прыкладанне, каб спампоўваць гульні для афлайн-гульні.',
     swLoading:
-      'Чаканне поўнай загрузкі прыкладання — спампоўка будзе даступна неўзабаве…',
+      'Чаканне поўнай загрузкі прыкладання - спампоўка будзе даступна неўзабаве…',
     sizesAvailableAfterDownload: 'Памеры паказваюцца пасля спампоўкі',
     hideList: 'Схаваць спіс',
     showList: 'Паказаць спіс',

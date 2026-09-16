@@ -1,8 +1,6 @@
-import type { clansEn } from './en';
-
 export type { clansEn } from './en';
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadClansMessages(locale: string) {
   switch (locale) {
     case 'en':

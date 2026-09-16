@@ -56,7 +56,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/critical/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Critical — multiplayer card game on Arcadeum',
+          alt: 'Critical - multiplayer card game on Arcadeum',
         },
       ],
     },
@@ -108,7 +108,7 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
             `How to Play Critical on ${appConfig.appName}`,
           description:
             landing.meta?.description ??
-            'Play Critical online — a fast-paced card game for 3 to 5 players. No download or signup required.',
+            'Play Critical online - a fast-paced card game for 3 to 5 players. No download or signup required.',
           steps: Object.values(landing.howToPlay.steps).map((s) => ({
             name: s.title,
             text: s.body,

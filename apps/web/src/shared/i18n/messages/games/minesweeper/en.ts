@@ -2,7 +2,7 @@ export const enMessages = {
   minesweeper_v1: {
     name: 'Minesweeper',
     description:
-      'Classic Minesweeper — clear the grid without detonating a single mine',
+      'Classic Minesweeper - clear the grid without detonating a single mine',
     summary:
       'The iconic logic puzzle: reveal every safe square, flag the mines, and beat the clock.',
     board: {
@@ -18,7 +18,7 @@ export const enMessages = {
       time: 'Time',
       newGame: 'New game',
       flagMode: 'Flag mode',
-      flagModeHint: 'Toggle to plant flags with taps — ideal on touch screens',
+      flagModeHint: 'Toggle to plant flags with taps - ideal on touch screens',
       difficulty: 'Difficulty',
     },
     difficulty: {
@@ -28,7 +28,7 @@ export const enMessages = {
     },
     result: {
       wonTitle: 'Field cleared!',
-      wonBody: 'Every safe square revealed — flawless sweeping.',
+      wonBody: 'Every safe square revealed - flawless sweeping.',
       lostTitle: 'Boom!',
       lostBody: 'That one was a mine. Study the numbers and try again.',
       playAgain: 'Play again',
@@ -39,14 +39,14 @@ export const enMessages = {
       gameplay:
         'Numbers show how many of the eight surrounding cells hold mines. Flag suspected mines with a right click or long press; tap a satisfied number to chord-open its neighbors.',
       scoring:
-        'Your first click is always safe and starts the timer. Clear the field as fast as you can — time is your only score.',
+        'Your first click is always safe and starts the timer. Clear the field as fast as you can - time is your only score.',
     },
     landing: {
       tagline: 'Single-player · No signup',
       meta: {
-        title: 'Minesweeper — Free Online Classic Puzzle Game | Arcadeum',
+        title: 'Minesweeper - Free Online Classic Puzzle Game | Arcadeum',
         description:
-          'Play Minesweeper free online at Arcadeum. Beginner to expert grids, flags, chording, timer, and saved progress. No download, no signup — instant logic puzzles.',
+          'Play Minesweeper free online at Arcadeum. Beginner to expert grids, flags, chording, timer, and saved progress. No download, no signup - instant logic puzzles.',
         keywords:
           'minesweeper, mine sweeper, puzzle game, logic game, single player, free, online, browser game, no download',
       },
@@ -59,7 +59,7 @@ export const enMessages = {
       features: {
         solo: {
           title: 'Truly single-player',
-          body: 'No accounts, no waiting rooms — a fresh minefield is one click away.',
+          body: 'No accounts, no waiting rooms - a fresh minefield is one click away.',
         },
         progress: {
           title: 'Progress is saved',
@@ -74,7 +74,7 @@ export const enMessages = {
         q1: {
           question: 'Is Minesweeper free to play?',
           answer:
-            'Yes — Minesweeper on Arcadeum is completely free, requires no download, and needs no account to start playing.',
+            'Yes - Minesweeper on Arcadeum is completely free, requires no download, and needs no account to start playing.',
         },
         q2: {
           question: 'How do I place flags on mobile?',

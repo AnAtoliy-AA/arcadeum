@@ -14,7 +14,7 @@ import {
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 export const alt =
-  'Chess — free multiplayer with Stockfish 19 analysis on Arcadeum Games';
+  'Chess: Free multiplayer with Stockfish 19 analysis on Arcadeum Games';
 
 export const dynamic = 'force-static';
 export function generateStaticParams() {

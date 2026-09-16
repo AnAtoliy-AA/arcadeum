@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/tic-tac-toe/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Tic-Tac-Toe — free multiplayer on Arcadeum',
+          alt: 'Tic-Tac-Toe - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -91,7 +91,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Tic Tac Toe on ${appConfig.appName}`,
           description:
-            'Play Tic-Tac-Toe online — free multiplayer for 2 to 5 players.',
+            'Play Tic-Tac-Toe online - free multiplayer for 2 to 5 players.',
           steps: [
             {
               name: landing.steps?.create?.title ?? 'Create a room',

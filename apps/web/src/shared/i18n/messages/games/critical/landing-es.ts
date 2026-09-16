@@ -1,9 +1,9 @@
 export const landing = {
   meta: {
-    title: 'Critical — Juego de cartas explosivo gratis en línea | Navegador',
+    title: 'Critical - Juego de cartas explosivo gratis en línea | Navegador',
     description:
-      'Juega gratis a Critical en línea — un juego de cartas estratégico y rápido donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos, sin descarga.',
-    ogTitle: 'Critical en línea — Juego de cartas explosivo gratis',
+      'Juega gratis a Critical en línea - un juego de cartas estratégico y rápido donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos, sin descarga.',
+    ogTitle: 'Critical en línea - Juego de cartas explosivo gratis',
     ogDescription:
       'Roba, desactiva, sobrevive. El último en pie gana. Juega gratis a Critical en tu navegador con amigos o IA.',
     keywords:
@@ -14,11 +14,11 @@ export const landing = {
     tagline:
       'Un juego de cartas en línea gratis de farol, robo y suerte explosiva',
     intro:
-      'Critical es un juego de cartas estratégico y rápido inspirado en Exploding Kittens. Roba cartas en tu turno, esquiva la carta inestable que acecha en la baraja y usa Ataques, Saltos, Robos y Combos para empujar la explosión hacia otro jugador. En Arcadeum puedes jugar a Critical directamente en tu navegador — gratis, con amigos o contra la IA, sin descarga.',
+      'Critical es un juego de cartas estratégico y rápido inspirado en Exploding Kittens. Roba cartas en tu turno, esquiva la carta inestable que acecha en la baraja y usa Ataques, Saltos, Robos y Combos para empujar la explosión hacia otro jugador. En Arcadeum puedes jugar a Critical directamente en tu navegador - gratis, con amigos o contra la IA, sin descarga.',
     ctaPlay: 'Crear una sala de Critical',
     ctaRooms: 'Buscar salas abiertas',
     ctaQuickplay: 'Jugar contra la IA',
-    ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+    ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
     ctaPlayHuman: 'Buscar un rival humano',
     ctaGroupLabel: 'Inicio rápido de Critical',
     eyebrow: 'Gratis · 2–5 jugadores · Sin registro',
@@ -43,11 +43,11 @@ export const landing = {
       },
       draw: {
         title: '2. Recibe tu mano inicial',
-        body: 'Cada jugador empieza con una carta Defuse y siete cartas de Acción al azar. El mazo contiene una o más cartas Critical — la explosión que intentas evitar.',
+        body: 'Cada jugador empieza con una carta Defuse y siete cartas de Acción al azar. El mazo contiene una o más cartas Critical - la explosión que intentas evitar.',
       },
       play: {
         title: '3. Juega cartas de Acción o roba',
-        body: 'En tu turno juega tantas cartas de Acción como quieras — Atacar, Saltar, Ver el futuro, Robar, combos de dos o tres iguales. Termina robando una carta del mazo.',
+        body: 'En tu turno juega tantas cartas de Acción como quieras - Atacar, Saltar, Ver el futuro, Robar, combos de dos o tres iguales. Termina robando una carta del mazo.',
       },
       survive: {
         title: '4. Desactiva la Critical o explota',
@@ -58,14 +58,14 @@ export const landing = {
   about: {
     title: 'Sobre Critical',
     paragraphs: [
-      'Critical es una versión moderna del género de mazos explosivos popularizado por Exploding Kittens. Los jugadores roban cartas por turnos de una baraja compartida que contiene una o más cartas inestables «Critical». Si robas una, quedas eliminado — a menos que puedas jugar un Defuse para neutralizarla.',
+      'Critical es una versión moderna del género de mazos explosivos popularizado por Exploding Kittens. Los jugadores roban cartas por turnos de una baraja compartida que contiene una o más cartas inestables «Critical». Si robas una, quedas eliminado - a menos que puedas jugar un Defuse para neutralizarla.',
       'Entre robos, los jugadores juegan cartas de Acción para saltar turnos, obligar a robar a sus rivales, espiar el mazo o robar cartas con combos de dos y tres iguales. Cada decisión es una pequeña apuesta: gasta un Defuse pronto para controlar el mazo, o guárdalo para el momento en el que todo termine en llamas.',
-      'En Arcadeum, Critical funciona íntegramente en tu navegador — sin descarga, sin registro. Puedes crear una sala privada y compartir un enlace, unirte a una partida pública o llenar los asientos vacíos con bots de IA y jugar en solitario. Las partidas suelen durar entre 10 y 15 minutos por ronda, perfecto para una pausa o una sesión rápida con amigos.',
+      'En Arcadeum, Critical funciona íntegramente en tu navegador - sin descarga, sin registro. Puedes crear una sala privada y compartir un enlace, unirte a una partida pública o llenar los asientos vacíos con bots de IA y jugar en solitario. Las partidas suelen durar entre 10 y 15 minutos por ronda, perfecto para una pausa o una sesión rápida con amigos.',
     ],
   },
   finalCta: {
     title: '¿Listo para jugar?',
-    subtitle: 'Crea una sala y comparte el enlace — el mazo te espera.',
+    subtitle: 'Crea una sala y comparte el enlace - el mazo te espera.',
   },
   faq: {
     title: 'Preguntas frecuentes',

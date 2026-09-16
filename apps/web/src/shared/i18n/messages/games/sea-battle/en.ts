@@ -16,11 +16,11 @@ export const enMessages = {
     tutorial: {
       s1: {
         title: 'Hide your fleet',
-        body: 'Place all five ships on your grid before battle begins. Ships may not overlap or touch — click to place, rotate with the button.',
+        body: 'Place all five ships on your grid before battle begins. Ships may not overlap or touch - click to place, rotate with the button.',
       },
       s2: {
         title: 'Fire at will',
-        body: "On your turn click a cell on the opponent's waters. Hits are marked red, misses white — triangulate and hunt them down.",
+        body: "On your turn click a cell on the opponent's waters. Hits are marked red, misses white - triangulate and hunt them down.",
       },
       s3: {
         title: 'Sink to win',
@@ -205,7 +205,7 @@ export const enMessages = {
       teammateBadge: 'Teammate',
       cannotAttackTeammate: 'Cannot attack teammate',
       description:
-        'Play in teams. Set up team count and sizes — players can self-pick or be assigned by the host.',
+        'Play in teams. Set up team count and sizes - players can self-pick or be assigned by the host.',
       setup: {
         title: 'Team Setup',
         teamNamePlaceholder: 'Team name',
@@ -255,10 +255,10 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: `Sea Battle (Battleship) Online — Play Free with Friends or AI (2–4 Players) | ${APP}`,
+        title: `Sea Battle (Battleship) Online - Play Free with Friends or AI (2–4 Players) | ${APP}`,
         description: `Play Sea Battle (Battleship) online for free on ${APP}! 2–4 players multiplayer: challenge friends with an invite link or practice against smart AI bots on a 10×10 grid. Best fleet setups, tactics & 10+ themes.`,
         ogTitle:
-          'Sea Battle (Battleship) Online — Play Free with Friends or AI',
+          'Sea Battle (Battleship) Online - Play Free with Friends or AI',
         ogDescription:
           'Place your fleet on a 10×10 grid, fire at enemy coordinates and sink every ship. Play free in your browser with friends or AI bots.',
         keywords:
@@ -266,12 +266,12 @@ export const enMessages = {
       },
       hero: {
         title: 'Sea Battle',
-        tagline: 'Play the classic Battleship game online — free, multiplayer',
-        intro: `Sea Battle is the timeless naval-combat game where two or more admirals secretly place fleets on a 10×10 grid and trade salvos until only one fleet is left afloat. On ${APP} you can play Sea Battle right in your browser — no download, no signup wall — with friends, strangers, or AI bots.`,
+        tagline: 'Play the classic Battleship game online - free, multiplayer',
+        intro: `Sea Battle is the timeless naval-combat game where two or more admirals secretly place fleets on a 10×10 grid and trade salvos until only one fleet is left afloat. On ${APP} you can play Sea Battle right in your browser - no download, no signup wall - with friends, strangers, or AI bots.`,
         ctaPlay: 'Create a Sea Battle room',
         ctaRooms: 'Browse open rooms',
         ctaQuickplay: 'Play vs AI now',
-        ctaQuickplayError: 'Couldn’t start a game — try again',
+        ctaQuickplayError: 'Couldn’t start a game - try again',
         ctaPlayHuman: 'Find a human opponent',
         ctaGroupLabel: 'Sea Battle quick start',
         eyebrow: 'Free · 2–4 players · No signup',
@@ -284,7 +284,7 @@ export const enMessages = {
       },
       finalCta: {
         title: 'Ready to play?',
-        subtitle: 'Spin up a room and share the link — your fleet awaits.',
+        subtitle: 'Spin up a room and share the link - your fleet awaits.',
       },
       sections: {
         highlightsKicker: `Why ${APP}`,
@@ -292,7 +292,7 @@ export const enMessages = {
         themesKicker: 'Choose your fleet',
         themesTitle: '10+ themes, one game',
         themesLead:
-          'Ten board styles, your pick. Same game, different vibe — switch any time in the lobby.',
+          'Ten board styles, your pick. Same game, different vibe - switch any time in the lobby.',
         rulesKicker: 'Reference',
         strategyKicker: 'Sharpen your aim',
         aboutKicker: 'About the game',
@@ -305,7 +305,7 @@ export const enMessages = {
         tips: {
           hunt: {
             title: 'Hunt-and-target your hits',
-            body: 'After landing a hit, fire at adjacent cells in one of four directions until the ship sinks. The moment it goes down, return to your search pattern — confirmation of a sinking tells you which neighbouring cells are now safe to ignore.',
+            body: 'After landing a hit, fire at adjacent cells in one of four directions until the ship sinks. The moment it goes down, return to your search pattern - confirmation of a sinking tells you which neighbouring cells are now safe to ignore.',
           },
           parity: {
             title: 'Search in a checkerboard',
@@ -317,7 +317,7 @@ export const enMessages = {
           },
           spread: {
             title: 'Spread, do not cluster',
-            body: 'Put each ship in its own quadrant when you can. Clustered fleets cascade — a single lucky hit hands the opponent two or three quick sinkings in a row.',
+            body: 'Put each ship in its own quadrant when you can. Clustered fleets cascade - a single lucky hit hands the opponent two or three quick sinkings in a row.',
           },
           memory: {
             title: 'Track misses, not just hits',
@@ -328,8 +328,8 @@ export const enMessages = {
       about: {
         title: 'About Sea Battle',
         paragraphs: [
-          'Sea Battle, known internationally as Battleship, is one of the oldest grid-based strategy games still played today. Players first sketched the rules on lined notebooks long before any plastic board existed — two opponents, two secret 10×10 grids, and the simple thrill of calling out coordinates one at a time.',
-          'The game made the jump from paper to plastic in the mid-20th century, becoming a fixture of family game nights, and from there to screens — pocket electronic versions, computer game adaptations, and now browser-native multiplayer.',
+          'Sea Battle, known internationally as Battleship, is one of the oldest grid-based strategy games still played today. Players first sketched the rules on lined notebooks long before any plastic board existed - two opponents, two secret 10×10 grids, and the simple thrill of calling out coordinates one at a time.',
+          'The game made the jump from paper to plastic in the mid-20th century, becoming a fixture of family game nights, and from there to screens - pocket electronic versions, computer game adaptations, and now browser-native multiplayer.',
           `${APP} keeps the original 10×10 grid and the five-ship fleet intact, then adds what the paper version never had: instant matchmaking, AI opponents, team mode, ten visual themes, and shareable lobby links. Whether you are looking for a quick game vs the computer or a longer match against a human, the rules are the same ones admirals have been arguing over for a century.`,
         ],
       },

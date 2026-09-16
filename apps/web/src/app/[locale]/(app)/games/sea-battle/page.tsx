@@ -59,7 +59,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/sea-battle/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Sea Battle — free online Battleship on Arcadeum',
+          alt: 'Sea Battle - free online Battleship on Arcadeum',
         },
       ],
     },
@@ -112,7 +112,7 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Sea Battle on ${appConfig.appName}`,
           description:
-            'Play Sea Battle (Battleship) online — free multiplayer for 2 to 4 players. No download or signup required.',
+            'Play Sea Battle (Battleship) online - free multiplayer for 2 to 4 players. No download or signup required.',
           steps: [
             {
               name: 'Place your ships',

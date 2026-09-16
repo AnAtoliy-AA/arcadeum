@@ -7,7 +7,7 @@ export const frMessages = {
       'Encerclez du territoire, capturez des groupes et surpassez votre adversaire au jeu de société le plus élégant jamais inventé !',
     landing: {
       meta: {
-        title: 'Go — Jeu de Plateau Multijoueur en Ligne Gratuit | Arcadeum',
+        title: 'Go - Jeu de Plateau Multijoueur en Ligne Gratuit | Arcadeum',
         description:
           'Jouez au Go en ligne gratuitement sur Arcadeum. Règles classiques de Baduk/Weiqi sur plateaux de 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et adversaires IA.',
         keywords:
@@ -30,7 +30,7 @@ export const frMessages = {
         },
         captures: {
           title: 'Captures & Ko',
-          body: 'Encerclez des groupes pour les éliminer — la règle du ko garantit l’équité',
+          body: 'Encerclez des groupes pour les éliminer - la règle du ko garantit l’équité',
         },
         botAI: {
           title: 'Adversaires IA',
@@ -50,14 +50,14 @@ export const frMessages = {
         },
         play: {
           title: 'Encerclez & Capturez',
-          body: 'Posez des pierres, encerclez du territoire, capturez des groupes — deux passes terminent la partie et le comptage par aire désigne le vainqueur.',
+          body: 'Posez des pierres, encerclez du territoire, capturez des groupes - deux passes terminent la partie et le comptage par aire désigne le vainqueur.',
           tip: 'Le komi de 7,5 points compense les blancs qui jouent en second.',
         },
       },
       themes: {
         title: 'Jouez à Votre Façon',
         subtitle:
-          'Tous les thèmes partagés d’Arcadeum sont disponibles — le plateau s’adapte à votre style.',
+          'Tous les thèmes partagés d’Arcadeum sont disponibles - le plateau s’adapte à votre style.',
       },
       sections: {
         faqTitle: 'Questions Fréquentes',
@@ -98,12 +98,12 @@ export const frMessages = {
         scoring: {
           question: 'Comment le gagnant est-il déterminé ?',
           answer:
-            'Arcadeum utilise le comptage par aire chinois : votre score correspond à vos pierres sur le plateau plus les points vides entièrement entourés par vos pierres. Les blancs reçoivent 7,5 points de komi pour avoir joué en second — les égalités sont impossibles.',
+            'Arcadeum utilise le comptage par aire chinois : votre score correspond à vos pierres sur le plateau plus les points vides entièrement entourés par vos pierres. Les blancs reçoivent 7,5 points de komi pour avoir joué en second - les égalités sont impossibles.',
         },
         koRule: {
           question: 'Qu’est-ce que la règle du ko ?',
           answer:
-            'Il est interdit de recapturer immédiatement d’une manière qui recréerait la position précédente. Après une capture de ko, vous devez jouer ailleurs — le point interdit est marqué sur le plateau.',
+            'Il est interdit de recapturer immédiatement d’une manière qui recréerait la position précédente. Après une capture de ko, vous devez jouer ailleurs - le point interdit est marqué sur le plateau.',
         },
         boardSize: {
           question: 'Quelle taille de plateau choisir ?',
@@ -185,14 +185,14 @@ export const frMessages = {
       draw: 'Match nul',
       messages: {
         won: 'Victoire ! Vous avez encerclé plus de territoire. Prêt pour une revanche ?',
-        lost: 'Défaite — votre adversaire a contrôlé plus d’aire. Rejouer ?',
-        draw: 'Match nul — plateau parfaitement équilibré. Rejouer ?',
+        lost: 'Défaite - votre adversaire a contrôlé plus d’aire. Rejouer ?',
+        draw: 'Match nul - plateau parfaitement équilibré. Rejouer ?',
       },
     },
     tutorial: {
       s1: {
         title: 'Entourez du territoire',
-        body: 'Placez des pierres pour clôturer des intersections vides. Quand les deux joueurs passent, la plus grande aire gagne — Blanc démarre avec le komi.',
+        body: 'Placez des pierres pour clôturer des intersections vides. Quand les deux joueurs passent, la plus grande aire gagne - Blanc démarre avec le komi.',
       },
       s2: {
         title: 'Coupez les libertés',
@@ -200,7 +200,7 @@ export const frMessages = {
       },
       s3: {
         title: 'Attention au ko',
-        body: 'Il est interdit de reprendre immédiatement en recréant la position précédente — jouez ailleurs d’abord. Deux passes consécutives terminent la partie.',
+        body: 'Il est interdit de reprendre immédiatement en recréant la position précédente - jouez ailleurs d’abord. Deux passes consécutives terminent la partie.',
       },
       s4: {
         title: 'Les outils du métier',
@@ -216,7 +216,7 @@ export const frMessages = {
       capture:
         'Un groupe sans point vide adjacent (liberté) est capturé et retiré du plateau.',
       koTitle: 'Règle du Ko',
-      ko: 'Recapturer immédiatement en recréant la position précédente est interdit — jouez d’abord ailleurs.',
+      ko: 'Recapturer immédiatement en recréant la position précédente est interdit - jouez d’abord ailleurs.',
       passTitle: 'Passes',
       pass: 'Deux passes consécutives terminent la partie. Passez quand aucun coup utile ne reste.',
       scoringTitle: 'Comptage',

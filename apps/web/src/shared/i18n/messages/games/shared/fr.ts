@@ -9,7 +9,7 @@ export const frMessages = {
   lounge: {
     activeTitle: 'Salles de Jeu',
     emptyTitle:
-      "Pas de salon ouvert pour le moment — commencez une partie contre l'IA.",
+      "Pas de salon ouvert pour le moment - commencez une partie contre l'IA.",
     emptyFeaturedLink: 'Ou lancez une Bataille Navale contre l’IA →',
     loadingRooms: 'Chargement des salles...',
     searchPlaceholder: 'Rechercher des jeux...',
@@ -43,7 +43,7 @@ export const frMessages = {
   },
   aiVsAi: {
     watchCta: 'Regarder IA contre IA',
-    error: 'Impossible de démarrer — réessayez',
+    error: 'Impossible de démarrer - réessayez',
     delayLabel: 'Délai entre coups',
   },
   tutorial: {
@@ -56,7 +56,7 @@ export const frMessages = {
       stepOf: 'Étape {{current}} sur {{total}}',
       completeTitle: 'Tutoriel terminé !',
       completeBody:
-        'Bravo — vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
+        'Bravo - vous connaissez maintenant les bases de {{game}}. Bonne chance à la table !',
       close: 'Fermer',
     },
   },

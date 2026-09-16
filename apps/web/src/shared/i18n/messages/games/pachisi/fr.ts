@@ -2,7 +2,7 @@ export const frMessages = {
   pachisi_v1: {
     name: 'Pachisi',
     description:
-      'Jeu de course classique en croix — faites un six, capturez vos rivaux et ramenez tous vos pions à la maison',
+      'Jeu de course classique en croix - faites un six, capturez vos rivaux et ramenez tous vos pions à la maison',
     summary:
       'Lancez le dé, faites la course avec vos pions, capturez vos rivaux et soyez le premier à tout rentrer !',
     variants: {
@@ -18,7 +18,7 @@ export const frMessages = {
     landing: {
       meta: {
         title:
-          'Pachisi — Jeu de Plateau de Course Multijoueur Gratuit | Arcadeum',
+          'Pachisi - Jeu de Plateau de Course Multijoueur Gratuit | Arcadeum',
         description:
           'Jouez au Pachisi (Ludo) gratuitement en ligne sur Arcadeum. Faites un six pour lancer vos pions, capturez vos rivaux et rentrez chez vous en premier. 2–4 joueurs, bots IA, plateaux thématisés.',
         keywords:
@@ -87,7 +87,7 @@ export const frMessages = {
         backToGames: 'Tous les Jeux',
         heroEyebrow: 'La Classique Course Croix-et-Cercle',
         heroIntro:
-          'Le jeu de poursuite intemporel : dés, captures et dernières lignes droites — facile à apprendre, infiniment rejouable.',
+          'Le jeu de poursuite intemporel : dés, captures et dernières lignes droites - facile à apprendre, infiniment rejouable.',
         heroCategory: 'Jeu de Plateau',
         playersBadge: '2–4 Joueurs',
         durationBadge: '10–20 min',
@@ -107,7 +107,7 @@ export const frMessages = {
           lost: 'Défaite',
           draw: 'Match nul',
           messages: {
-            won: 'Tous vos pions sont rentrés — première place !',
+            won: 'Tous vos pions sont rentrés - première place !',
             lost: 'On vous a devancé. Plus de chance la prochaine fois !',
             draw: 'La partie s’est terminée par un match nul.',
           },
@@ -204,7 +204,7 @@ export const frMessages = {
     tutorial: {
       s1: {
         title: 'Un six et vous sortez',
-        body: 'Lancez le dé à votre tour et déplacez un pion. Il faut un 6 pour quitter la cour — et ce 6 offre un lancer supplémentaire.',
+        body: 'Lancez le dé à votre tour et déplacez un pion. Il faut un 6 pour quitter la cour - et ce 6 offre un lancer supplémentaire.',
       },
       s2: {
         title: 'Renvoyez-les chez eux',
@@ -216,7 +216,7 @@ export const frMessages = {
       },
       s4: {
         title: 'La gourmandise se paie',
-        body: 'Trois 6 d’affilée annulent tout votre tour — parfois le coup sûr est le meilleur.',
+        body: 'Trois 6 d’affilée annulent tout votre tour - parfois le coup sûr est le meilleur.',
       },
     },
     rules: {

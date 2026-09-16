@@ -2,13 +2,13 @@ export const frMessages = {
   hearts_v1: {
     name: 'Coeurs',
     description:
-      'Classique jeu de cartes à 4 joueurs — évitez les cartes de pénalité et tirez vers la lune',
+      'Classique jeu de cartes à 4 joueurs - évitez les cartes de pénalité et tirez vers la lune',
     summary:
       'Passez des cartes stratégiquement, suivez la couleur, débarrassez-vous des Coeurs et de la Reine de Pique, et essayez de tirer vers la lune !',
     variants: {},
     landing: {
       meta: {
-        title: 'Coeurs — Jeu de Cartes Multijoueur Gratuit | Arcadeum',
+        title: 'Coeurs - Jeu de Cartes Multijoueur Gratuit | Arcadeum',
         description:
           'Jouez aux Coeurs gratuitement sur Arcadeum. Classique jeu de cartes à 4 joueurs avec passage, Coeurs, Reine de Pique et adversaires IA.',
         keywords:
@@ -30,7 +30,7 @@ export const frMessages = {
         },
         passing: {
           title: 'Passage de Cartes',
-          body: 'Passez 3 cartes par main — Gauche, Droite, En face, Pas de passage',
+          body: 'Passez 3 cartes par main - Gauche, Droite, En face, Pas de passage',
         },
         shooting: {
           title: 'Tir vers la Lune',
@@ -105,7 +105,7 @@ export const frMessages = {
         breaking: {
           question: 'Quand peut-on mener avec les Coeurs ?',
           answer:
-            "Les Coeurs ne peuvent pas mener jusqu'à ce qu'ils soient \"brisés\" — c'est-à-dire qu'un Coeur a été défaussé lors d'un tour précédent.",
+            "Les Coeurs ne peuvent pas mener jusqu'à ce qu'ils soient \"brisés\" - c'est-à-dire qu'un Coeur a été défaussé lors d'un tour précédent.",
         },
         queenStrategy: {
           question: 'Comment gérer la Dame de Pique ?',
@@ -159,7 +159,7 @@ export const frMessages = {
       lost: 'Vous avez perdu.',
       draw: 'Match nul.',
       messages: {
-        won: 'Le score le plus bas de la table — bien joué !',
+        won: 'Le score le plus bas de la table - bien joué !',
         lost: "Quelqu'un d'autre a fait mieux. Revanche ?",
         draw: 'À égalité de points. Une autre partie ?',
       },
@@ -204,7 +204,7 @@ export const frMessages = {
     tutorial: {
       s1: {
         title: 'Esquivez les points',
-        body: 'Suivez la couleur demandée quand vous le pouvez ; la carte la plus haute de la couleur prend le pli — et chaque carte pénalité dedans.',
+        body: 'Suivez la couleur demandée quand vous le pouvez ; la carte la plus haute de la couleur prend le pli - et chaque carte pénalité dedans.',
       },
       s2: {
         title: 'Craignez la Reine',

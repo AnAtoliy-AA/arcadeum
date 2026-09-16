@@ -47,7 +47,7 @@ export const createFr = {
   cascadeModeSpeed: 'Rapide',
   cascadeModeClassicHint: 'Règles complètes avec empilement',
   cascadeModePureHint:
-    "Pas d'empilement — les cartes pioche se résolvent immédiatement",
+    "Pas d'empilement - les cartes pioche se résolvent immédiatement",
   cascadeModeSpeedHint: 'Empilement activé avec chronomètre par tour',
   cascadeLastCardCall: 'Appel Cascade Dernière Carte',
   cascadeLastCardCallHint: 'Course pour appeler avec 1 carte',
@@ -99,7 +99,7 @@ export const createFr = {
     },
     teams: {
       title: 'Mode équipes',
-      desc: 'Associez les joueurs en flottes — 2v2 ou 3v3.',
+      desc: 'Associez les joueurs en flottes - 2v2 ou 3v3.',
     },
     spectators: {
       title: 'Autoriser les spectateurs',

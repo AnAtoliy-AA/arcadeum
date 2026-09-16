@@ -2,7 +2,7 @@ export const esMessages = {
   minesweeper_v1: {
     name: 'Buscaminas',
     description:
-      'El clásico Buscaminas — despeja el tablero sin detonar ni una sola mina',
+      'El clásico Buscaminas - despeja el tablero sin detonar ni una sola mina',
     summary:
       'El rompecabezas lógico icónico: descubre cada casilla segura, marca las minas y vence al reloj.',
     board: {
@@ -19,7 +19,7 @@ export const esMessages = {
       newGame: 'Nueva partida',
       flagMode: 'Modo bandera',
       flagModeHint:
-        'Actívalo para poner banderas con un toque — ideal en pantallas táctiles',
+        'Actívalo para poner banderas con un toque - ideal en pantallas táctiles',
       difficulty: 'Dificultad',
     },
     difficulty: {
@@ -41,13 +41,13 @@ export const esMessages = {
       gameplay:
         'Los números indican cuántas de las ocho casillas vecinas contienen una mina. Marca las sospechosas con clic derecho o pulsación larga; toca un número completo para abrir sus vecinas.',
       scoring:
-        'Tu primer toque siempre es seguro y arranca el cronómetro. Despeja el campo lo más rápido posible — el tiempo es tu única puntuación.',
+        'Tu primer toque siempre es seguro y arranca el cronómetro. Despeja el campo lo más rápido posible - el tiempo es tu única puntuación.',
     },
     landing: {
       tagline: 'Un jugador · Sin registro',
       meta: {
         title:
-          'Buscaminas — Juego de rompecabezas clásico gratis online | Arcadeum',
+          'Buscaminas - Juego de rompecabezas clásico gratis online | Arcadeum',
         description:
           'Juega al Buscaminas gratis online en Arcadeum. Tableros de principiante a experto, banderas, cronómetro y progreso guardado. Sin descargas ni registro.',
         keywords:
@@ -62,7 +62,7 @@ export const esMessages = {
       features: {
         solo: {
           title: 'Totalmente individual',
-          body: 'Sin cuentas ni salas de espera — un campo minado nuevo a un clic.',
+          body: 'Sin cuentas ni salas de espera - un campo minado nuevo a un clic.',
         },
         progress: {
           title: 'Progreso guardado',
@@ -77,7 +77,7 @@ export const esMessages = {
         q1: {
           question: '¿Es gratis jugar al Buscaminas?',
           answer:
-            'Sí — el Buscaminas de Arcadeum es completamente gratis, sin descargas y sin necesidad de cuenta.',
+            'Sí - el Buscaminas de Arcadeum es completamente gratis, sin descargas y sin necesidad de cuenta.',
         },
         q2: {
           question: '¿Cómo pongo banderas en el móvil?',

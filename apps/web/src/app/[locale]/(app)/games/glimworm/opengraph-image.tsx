@@ -9,7 +9,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 export const alt =
-  'Glimworm — free online glow-worm snake arena on Arcadeum Games';
+  'Glimworm - free online glow-worm snake arena on Arcadeum Games';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -166,7 +166,7 @@ export default async function GlimwormOpengraphImage({ params }: Props) {
     title: 'Glimworm',
     subtitle:
       landing?.hero?.tagline ??
-      'Free online glow-worm arena — slither, survive, eat the lights',
+      'Free online glow-worm arena - slither, survive, eat the lights',
     accent: '#3ddc97',
     gradient: ['#0c1a18', '#020807'],
     children: <GlimwormVisual />,

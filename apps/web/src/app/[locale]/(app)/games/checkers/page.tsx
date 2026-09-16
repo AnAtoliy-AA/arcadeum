@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/checkers/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Checkers — free multiplayer on Arcadeum',
+          alt: 'Checkers - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -89,7 +89,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Checkers on ${appConfig.appName}`,
           description:
-            'Start a checkers match in seconds — no download or signup required.',
+            'Start a checkers match in seconds - no download or signup required.',
           steps: [
             {
               name: landing.steps.create.title ?? 'Create a room',

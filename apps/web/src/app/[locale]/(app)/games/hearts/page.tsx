@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/hearts/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Hearts — free multiplayer on Arcadeum',
+          alt: 'Hearts - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -88,7 +88,7 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Hearts on ${appConfig.appName}`,
           description:
-            'Play Hearts card game online with 4 players — no download or signup needed.',
+            'Play Hearts card game online with 4 players - no download or signup needed.',
           steps: [
             {
               name: landing.steps.create.title ?? 'Create a room',

@@ -56,7 +56,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/glimworm/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Glimworm — real-time multiplayer game on Arcadeum',
+          alt: 'Glimworm - real-time multiplayer game on Arcadeum',
         },
       ],
     },
@@ -108,7 +108,7 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
             `How to Play Glimworm on ${appConfig.appName}`,
           description:
             landing.meta?.description ??
-            'Play Glimworm — a neon multiplayer snake arena for 2 to 10 players. No download or signup required.',
+            'Play Glimworm - a neon multiplayer snake arena for 2 to 10 players. No download or signup required.',
           steps: Object.values(landing.howToPlay.steps).map((s) => ({
             name: s.title,
             text: s.body,

@@ -28,7 +28,7 @@ export const achievementsEn = {
     claimed: 'You claimed {n} XP!',
     unlocked: 'Achievement unlocked: {name}!',
   },
-  lockedTooltip: 'Locked — keep playing to unlock',
+  lockedTooltip: 'Locked - keep playing to unlock',
   rewards: {
     xp: 'XP',
     coins: 'Coins',

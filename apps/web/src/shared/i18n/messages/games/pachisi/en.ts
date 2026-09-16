@@ -2,7 +2,7 @@ export const enMessages = {
   pachisi_v1: {
     name: 'Pachisi',
     description:
-      'Classic cross-and-circle race game — roll a six, capture rivals, and bring all your tokens home',
+      'Classic cross-and-circle race game - roll a six, capture rivals, and bring all your tokens home',
     summary:
       'Roll the die, race your tokens around the board, capture rivals, and be first to bring them all home!',
     variants: {
@@ -17,7 +17,7 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Pachisi — Free Online Multiplayer Race Board Game | Arcadeum',
+        title: 'Pachisi - Free Online Multiplayer Race Board Game | Arcadeum',
         description:
           'Play Pachisi (Ludo) online for free on Arcadeum. Roll a six to launch your tokens, capture rivals, dodge danger, and race all four home. 2–4 players, AI bots, themed boards.',
         keywords:
@@ -36,7 +36,7 @@ export const enMessages = {
         players: { title: '2–4 Players', body: 'Race friends or AI bots' },
         dice: {
           title: 'Sixes & Extra Rolls',
-          body: 'Roll a six to leave the yard — and roll again instantly',
+          body: 'Roll a six to leave the yard - and roll again instantly',
         },
         capture: {
           title: 'Capture Rivals',
@@ -44,7 +44,7 @@ export const enMessages = {
         },
         safe: {
           title: 'Safe Star Cells',
-          body: 'Star cells shield you — plan routes through protected ground.',
+          body: 'Star cells shield you - plan routes through protected ground.',
         },
       },
       steps: {
@@ -83,7 +83,7 @@ export const enMessages = {
         backToGames: 'All Games',
         heroEyebrow: 'Classic Cross-and-Circle Race',
         heroIntro:
-          'The timeless chase game of dice rolls, captures, and home stretches — easy to learn, endlessly replayable.',
+          'The timeless chase game of dice rolls, captures, and home stretches - easy to learn, endlessly replayable.',
         heroCategory: 'Board Game',
         playersBadge: '2–4 Players',
         durationBadge: '10–20 min',
@@ -103,7 +103,7 @@ export const enMessages = {
           lost: 'Defeat',
           draw: 'Draw',
           messages: {
-            won: 'All your tokens are home — first place!',
+            won: 'All your tokens are home - first place!',
             lost: 'Someone raced you to it. Better luck next time!',
             draw: 'The game ended in a draw.',
           },
@@ -121,7 +121,7 @@ export const enMessages = {
         sixes: {
           question: 'What does rolling a six do?',
           answer:
-            'A six lets you move a token out of the yard onto the board — and grants an extra roll. Three sixes in a row void the turn.',
+            'A six lets you move a token out of the yard onto the board - and grants an extra roll. Three sixes in a row void the turn.',
         },
         botAI: {
           question: 'How does the AI work?',
@@ -175,7 +175,7 @@ export const enMessages = {
         quick: {
           name: 'Quick',
           description:
-            'Same rules with just two tokens per player — a fast, punchy match.',
+            'Same rules with just two tokens per player - a fast, punchy match.',
         },
       },
     },
@@ -200,7 +200,7 @@ export const enMessages = {
     tutorial: {
       s1: {
         title: 'Six gets you out',
-        body: 'Roll a die on your turn and move one token. You need a 6 to leave the yard — and rolling it grants another roll.',
+        body: 'Roll a die on your turn and move one token. You need a 6 to leave the yard - and rolling it grants another roll.',
       },
       s2: {
         title: 'Send them home',
@@ -212,7 +212,7 @@ export const enMessages = {
       },
       s4: {
         title: 'Greed has a price',
-        body: 'Rolling three 6s in a row forfeits your whole turn — sometimes the safe play is best.',
+        body: 'Rolling three 6s in a row forfeits your whole turn - sometimes the safe play is best.',
       },
     },
     rules: {
@@ -225,7 +225,7 @@ export const enMessages = {
         'On your turn, roll one die and move one token by that many cells. You must roll a 6 to move a token out of your yard onto your start cell.',
       captureTitle: 'Captures & Safe Cells',
       capture:
-        'Landing on a cell held by an opponent sends their token back to the yard. Star cells and your own start cell are safe — nobody can capture you there.',
+        'Landing on a cell held by an opponent sends their token back to the yard. Star cells and your own start cell are safe - nobody can capture you there.',
       sixesTitle: 'Sixes',
       sixes:
         'Rolling a 6 grants another roll. Rolling three 6s in a row forfeits the turn entirely.',

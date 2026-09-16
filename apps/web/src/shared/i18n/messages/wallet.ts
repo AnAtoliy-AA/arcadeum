@@ -131,7 +131,7 @@ export const ru: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{{name}} ({{ticker}}) — токен на блокчейне Solana. Зарабатывайте токены в игре или призовые в турнирах.',
+      '{{name}} ({{ticker}}) - токен на блокчейне Solana. Зарабатывайте токены в игре или призовые в турнирах.',
     mint: 'Минт',
     copy: 'Копировать',
     copied: 'Скопировано!',
@@ -309,7 +309,7 @@ export const by: DeepPartial<WalletMessages> = {
     name: 'ARCADEUM GAMES',
     ticker: 'ARC',
     description:
-      '{name} ({ticker}) — токен на блокчейне Solana. Зарабляйце токены ў гульні або прызавыя ў турнірах.',
+      '{name} ({ticker}) - токен на блокчейне Solana. Зарабляйце токены ў гульні або прызавыя ў турнірах.',
     mint: 'Мінт',
     copy: 'Капіяваць',
     copied: 'Скапіявана!',

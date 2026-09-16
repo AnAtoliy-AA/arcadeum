@@ -8,20 +8,20 @@ export const enMessages = {
     landing: {
       meta: {
         title:
-          'Play Chess Online Free — Stockfish 19, 20 AI Bots, 6 Variants | Arcadeum',
+          'Play Chess Online Free - Stockfish 19, 20 AI Bots, 6 Variants | Arcadeum',
         description:
-          'Play chess online free with Stockfish 19 engine, 20 AI bot personalities, 6 variants (Chess960, Crazyhouse, Atomic), Puzzle Rush, live analysis, game review with accuracy scores, endgame tablebases, tournaments, and auto-matchmaking — no signup, no download.',
+          'Play chess online free with Stockfish 19 engine, 20 AI bot personalities, 6 variants (Chess960, Crazyhouse, Atomic), Puzzle Rush, live analysis, game review with accuracy scores, endgame tablebases, tournaments, and auto-matchmaking - no signup, no download.',
         keywords:
           'play chess online free, chess game online, multiplayer chess, chess960, bullet chess, blitz chess, rapid chess, daily chess, stockfish 19, chess puzzles, puzzle rush, chess analysis, endgame tablebase, syzygy, play chess with friends, online chess engine, AI chess bot, chess variants, atomic chess, crazyhouse, king of the hill, three-check chess, chess tournaments, chess clubs, online chess game, real-time chess, chess without signup, free chess no download, chess game review, accuracy scores chess',
         howToPlayTitle: 'How to play {{gameName}}',
       },
       hero: {
-        title: 'Chess — The Ultimate Strategy Game',
+        title: 'Chess - The Ultimate Strategy Game',
         subtitle:
           'Powered by Stockfish 19. Bullet, blitz, rapid, daily, and Chess960. Play against friends, 20 AI personalities, or the entire community.',
         createRoom: 'Create a room',
         ctaQuickplay: 'Play vs AI now',
-        ctaQuickplayError: "Couldn't start a game — try again",
+        ctaQuickplayError: "Couldn't start a game - try again",
         browseRooms: 'Browse rooms',
         backToGames: '← Games',
       },
@@ -32,7 +32,7 @@ export const enMessages = {
         },
         variants: {
           title: '6 game variants',
-          body: 'Standard, Chess960, King of the Hill, Three-Check, Crazyhouse, and Atomic — each with unique win conditions.',
+          body: 'Standard, Chess960, King of the Hill, Three-Check, Crazyhouse, and Atomic - each with unique win conditions.',
         },
         clock: {
           title: 'Every time control',
@@ -77,7 +77,7 @@ export const enMessages = {
         takeback: {
           question: 'Can I undo a move?',
           answer:
-            'Yes — use the Takeback button to request an undo. Your opponent must accept before the move is reverted. Available in both casual and rated games.',
+            'Yes - use the Takeback button to request an undo. Your opponent must accept before the move is reverted. Available in both casual and rated games.',
         },
         puzzlerush: {
           question: 'What is Puzzle Rush?',
@@ -112,17 +112,17 @@ export const enMessages = {
           {
             key: 'engine',
             title: 'Stockfish 19 Engine',
-            body: 'Live analysis powered by Stockfish 19 with the SFNNv16 neural network — the strongest open-source chess engine available. Real-time eval during every game.',
+            body: 'Live analysis powered by Stockfish 19 with the SFNNv16 neural network - the strongest open-source chess engine available. Real-time eval during every game.',
           },
           {
             key: 'bots',
             title: '20 AI Bot Personalities',
-            body: 'Not just difficulty levels — 20 unique characters with distinct play styles, opening repertoires, time management, and personality-driven chat. Rated 400–2800.',
+            body: 'Not just difficulty levels - 20 unique characters with distinct play styles, opening repertoires, time management, and personality-driven chat. Rated 400–2800.',
           },
           {
             key: 'variants',
             title: '6 Game Variants',
-            body: 'Standard, Chess960 (Fischer Random), King of the Hill, Three-Check, Crazyhouse, and Atomic — each with unique win conditions and strategies.',
+            body: 'Standard, Chess960 (Fischer Random), King of the Hill, Three-Check, Crazyhouse, and Atomic - each with unique win conditions and strategies.',
           },
           {
             key: 'friction',
@@ -142,7 +142,7 @@ export const enMessages = {
           {
             key: 'tablebases',
             title: 'Endgame Tablebases',
-            body: 'Syzygy tablebase lookup for positions with 7 or fewer pieces — perfect endgame play powered by the same databases used by grandmasters.',
+            body: 'Syzygy tablebase lookup for positions with 7 or fewer pieces - perfect endgame play powered by the same databases used by grandmasters.',
           },
           {
             key: 'broadcast',
@@ -254,7 +254,7 @@ export const enMessages = {
       },
       s3: {
         title: 'Watch the clock',
-        body: 'Your clock counts down on your turn — running out of time loses the game. Sound, music and share options live in this panel.',
+        body: 'Your clock counts down on your turn - running out of time loses the game. Sound, music and share options live in this panel.',
       },
       s4: {
         title: 'Help when you need it',
@@ -387,10 +387,10 @@ export const enMessages = {
       subtitle: 'Solve tactical puzzles to improve your rating',
       loading: 'Loading puzzle...',
       noPuzzles: 'No puzzles available',
-      yourTurn: 'Your turn — find the best move',
+      yourTurn: 'Your turn - find the best move',
       opponentThinking: 'Opponent is thinking...',
       correct: 'Correct!',
-      incorrect: 'Incorrect — try again',
+      incorrect: 'Incorrect - try again',
       nextPuzzle: 'Next Puzzle',
       getHint: 'Get Hint',
       themes: 'Themes',
@@ -404,9 +404,9 @@ export const enMessages = {
       title: 'Puzzle Rush',
       subtitle: 'Solve as many puzzles as you can',
       survival: 'Survival Mode',
-      survivalDesc: '3 lives — one wrong and you lose a life',
+      survivalDesc: '3 lives - one wrong and you lose a life',
       timed: 'Timed Mode',
-      timedDesc: '3 minutes — solve as many as possible',
+      timedDesc: '3 minutes - solve as many as possible',
       gameOver: "Time's up!",
       playAgain: 'Play Again',
       endRun: 'End Run',

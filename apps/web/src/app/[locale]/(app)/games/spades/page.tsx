@@ -41,7 +41,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/spades/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Spades — free multiplayer on Arcadeum',
+          alt: 'Spades - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -86,7 +86,7 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Spades on ${appConfig.appName}`,
           description:
-            'Play Spades online with 4 players — no download or signup required.',
+            'Play Spades online with 4 players - no download or signup required.',
           steps: [
             {
               name: landing.steps.create.title ?? 'Create a room',

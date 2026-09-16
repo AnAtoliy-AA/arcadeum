@@ -2,7 +2,7 @@ export const frMessages = {
   sudoku_v1: {
     name: 'Sudoku',
     description:
-      'Sudoku classique — remplissez la grille 9×9 pour que chaque ligne, colonne et bloc contienne les chiffres 1–9 une seule fois',
+      'Sudoku classique - remplissez la grille 9×9 pour que chaque ligne, colonne et bloc contienne les chiffres 1–9 une seule fois',
     summary:
       'Le casse-tête chiffré préféré du monde : logique pure, trois difficultés et annotations au crayon incluses.',
     board: {
@@ -22,7 +22,7 @@ export const frMessages = {
     controls: {
       notes: 'Notes',
       notesHint:
-        'Activez les annotations — les chiffres s’inscrivent dans la case comme candidats, pas comme réponses',
+        'Activez les annotations - les chiffres s’inscrivent dans la case comme candidats, pas comme réponses',
       erase: 'Effacer',
       placeDigit: 'Placer le chiffre {{digit}}',
       noteDigit: 'Note {{digit}}',
@@ -31,7 +31,7 @@ export const frMessages = {
       wonTitle: 'Résolu !',
       wonBody:
         'Grille complétée avec {{mistakes}} erreur(s) en chemin. Bien joué.',
-      flawlessBody: 'Résolution impeccable — pas une seule erreur.',
+      flawlessBody: 'Résolution impeccable - pas une seule erreur.',
       playAgain: 'Rejouer',
     },
     rules: {
@@ -40,12 +40,12 @@ export const frMessages = {
       gameplay:
         'Touchez une case puis choisissez un chiffre sur le pavé ou au clavier. Passez en mode Notes pour annoter les candidats avant de trancher.',
       scoring:
-        'Les erreurs se comptent mais restent visibles à corriger — l’objectif est une résolution propre et rapide.',
+        'Les erreurs se comptent mais restent visibles à corriger - l’objectif est une résolution propre et rapide.',
     },
     landing: {
       tagline: 'Solo · Sans inscription',
       meta: {
-        title: 'Sudoku — Jeu de puzzle de chiffres gratuit en ligne | Arcadeum',
+        title: 'Sudoku - Jeu de puzzle de chiffres gratuit en ligne | Arcadeum',
         description:
           'Jouez gratuitement au Sudoku en ligne sur Arcadeum. Niveaux facile, moyen et difficile à solution unique, crayon, clavier et progression sauvegardée. Sans téléchargement ni inscription.',
         keywords:
@@ -60,7 +60,7 @@ export const frMessages = {
       features: {
         solo: {
           title: 'Vraiment solo',
-          body: 'Ni comptes ni salles d’attente — une nouvelle grille unique en un clic.',
+          body: 'Ni comptes ni salles d’attente - une nouvelle grille unique en un clic.',
         },
         progress: {
           title: 'Progression sauvegardée',
@@ -75,7 +75,7 @@ export const frMessages = {
         q1: {
           question: 'Le Sudoku est-il gratuit ?',
           answer:
-            'Oui — le Sudoku d’Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
+            'Oui - le Sudoku d’Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
         },
         q2: {
           question: 'Chaque grille a-t-elle une solution unique ?',
@@ -130,7 +130,7 @@ export const frMessages = {
         },
         join: {
           title: 'Scannez les lignes',
-          body: 'Trouvez par élimination où va un chiffre — touchez la case puis son numéro sur le pavé.',
+          body: 'Trouvez par élimination où va un chiffre - touchez la case puis son numéro sur le pavé.',
         },
         play: {
           title: 'Complétez la grille',

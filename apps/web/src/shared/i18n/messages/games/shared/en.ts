@@ -8,7 +8,7 @@ export const enMessages = {
   glimworm_v1: { name: 'Glimworm' },
   lounge: {
     activeTitle: 'Game Rooms',
-    emptyTitle: 'No open rooms right now — start one vs AI.',
+    emptyTitle: 'No open rooms right now - start one vs AI.',
     emptyFeaturedLink: 'Or jump into Sea Battle vs AI →',
     loadingRooms: 'Loading rooms...',
     searchPlaceholder: 'Search games...',
@@ -42,7 +42,7 @@ export const enMessages = {
   },
   aiVsAi: {
     watchCta: 'Watch AI vs AI',
-    error: "Couldn't start — try again",
+    error: "Couldn't start - try again",
     delayLabel: 'Move delay',
   },
   tutorial: {
@@ -55,7 +55,7 @@ export const enMessages = {
       stepOf: 'Step {{current}} of {{total}}',
       completeTitle: 'Tutorial complete!',
       completeBody:
-        'Nice — you know the basics of {{game}} now. Good luck at the table!',
+        'Nice - you know the basics of {{game}} now. Good luck at the table!',
       close: 'Close',
     },
   },

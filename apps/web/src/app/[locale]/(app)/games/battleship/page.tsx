@@ -59,7 +59,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/battleship/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Battleship — free online naval combat on Arcadeum',
+          alt: 'Battleship - free online naval combat on Arcadeum',
         },
       ],
     },
@@ -111,7 +111,7 @@ export default async function BattleshipLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Battleship on ${appConfig.appName}`,
           description:
-            'Play Battleship online — free multiplayer for 2 to 4 players. No download or signup required.',
+            'Play Battleship online - free multiplayer for 2 to 4 players. No download or signup required.',
           steps: [
             {
               name: 'Place your ships',

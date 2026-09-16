@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/go/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Go — free multiplayer board game on Arcadeum',
+          alt: 'Go - free multiplayer board game on Arcadeum',
         },
       ],
     },
@@ -88,7 +88,7 @@ export default async function GoLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Go on ${appConfig.appName}`,
           description:
-            'Play Go (Baduk/Weiqi) in your browser — no download, no signup.',
+            'Play Go (Baduk/Weiqi) in your browser - no download, no signup.',
           steps: [
             {
               name: landing.steps.create.title ?? 'Create a room',

@@ -28,7 +28,7 @@ export const achievementsFr = {
     claimed: 'Vous avez réclamé {n} XP !',
     unlocked: 'Succès débloqué : {name} !',
   },
-  lockedTooltip: 'Verrouillé — continuez à jouer pour le débloquer',
+  lockedTooltip: 'Verrouillé - continuez à jouer pour le débloquer',
   rewards: {
     xp: 'XP',
     coins: 'Pièces',

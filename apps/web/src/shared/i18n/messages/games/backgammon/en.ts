@@ -36,7 +36,7 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Backgammon — Free Multiplayer Board Game | Arcadeum',
+        title: 'Backgammon - Free Multiplayer Board Game | Arcadeum',
         description:
           'Play Backgammon online for free on Arcadeum. Classic 24-point board with dice rolls, bearing off, hitting blots to the bar, and AI opponents.',
         keywords:
@@ -197,7 +197,7 @@ export const enMessages = {
       },
       s2: {
         title: 'Hit blots',
-        body: 'A lone checker is a blot — land on it to send it to the bar. Checkers on the bar must re-enter before anything else may move.',
+        body: 'A lone checker is a blot - land on it to send it to the bar. Checkers on the bar must re-enter before anything else may move.',
       },
       s3: {
         title: 'Bear off to win',
@@ -240,10 +240,10 @@ export const enMessages = {
         long: {
           objectiveTitle: 'Objective',
           objective:
-            'Move all 15 checkers from the head to your home board and bear them off. All checkers start on a single point — the race is a marathon.',
+            'Move all 15 checkers from the head to your home board and bear them off. All checkers start on a single point - the race is a marathon.',
           movementTitle: 'Movement & Dice',
           movement:
-            'Roll two dice and move your checkers forward the rolled amounts. Doubles give four moves. Points occupied by your opponent are completely blocked — you cannot land on or pass them.',
+            'Roll two dice and move your checkers forward the rolled amounts. Doubles give four moves. Points occupied by your opponent are completely blocked - you cannot land on or pass them.',
           hittingTitle: 'No Hitting',
           hitting:
             "Hitting is not allowed in Long Nardy. Opponent points are always blocked. You must navigate around your opponent's stacks, making positioning critical.",
@@ -254,7 +254,7 @@ export const enMessages = {
         hyper: {
           objectiveTitle: 'Objective',
           objective:
-            'With only 3 checkers each, race to bear off all three before your opponent. Every move counts — there is no room for error.',
+            'With only 3 checkers each, race to bear off all three before your opponent. Every move counts - there is no room for error.',
           movementTitle: 'Movement & Dice',
           movement:
             'Roll two dice and move your checkers. Doubles give four moves. With only 3 checkers on the board, games are fast and tactical.',
@@ -296,7 +296,7 @@ export const enMessages = {
         gulbara: {
           objectiveTitle: 'Objective',
           objective:
-            'Move all 15 checkers from the head to your home board and bear them off. No hitting — pure racing strategy.',
+            'Move all 15 checkers from the head to your home board and bear them off. No hitting - pure racing strategy.',
           movementTitle: 'Movement & Dice',
           movement:
             'Roll two dice and move your checkers forward. Opponent points are completely blocked. When you roll doubles, all subsequent higher doubles are also played.',

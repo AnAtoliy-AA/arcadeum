@@ -4,7 +4,7 @@ export const frMessages = {
     description:
       'Dames classiques 8×8 avec captures forcées, sauts multiples et promotion de roi',
     summary:
-      "Jeu de plateau stratégique — capturez les pièces adverses et atteignez l'autre côté pour devenir roi !",
+      "Jeu de plateau stratégique - capturez les pièces adverses et atteignez l'autre côté pour devenir roi !",
     variants: {
       classic: {
         name: 'Classique',
@@ -17,7 +17,7 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title: 'Dames — Jeu de Plateau Multijoueur Gratuit | Arcadeum',
+        title: 'Dames - Jeu de Plateau Multijoueur Gratuit | Arcadeum',
         description:
           'Jouez aux dames en ligne gratuitement sur Arcadeum. Plateau classique 8×8 avec captures forcées, sauts multiples, promotion de roi et adversaires IA.',
         keywords:
@@ -178,7 +178,7 @@ export const frMessages = {
       backwardCaptures:
         "Dans certains ensembles de règles, les pièces normales (dames) peuvent capturer les pièces adverses derrière elles.\nLes dames se déplacent toujours vers l'avant, mais peuvent capturer dans toutes les directions diagonales quand les captures vers l'arrière sont activées.\nCette option est toujours active dans les règles internationales et peut être configurée dans d'autres variantes.",
       forcedCaptures:
-        'Si une capture est disponible, le joueur doit la prendre.\nSi plusieurs captures sont disponibles, le joueur doit en choisir une.\nUne chaîne de sauts multiples doit être entièrement complétée — vous ne pouvez pas vous arrêter si plus de captures sont disponibles.',
+        'Si une capture est disponible, le joueur doit la prendre.\nSi plusieurs captures sont disponibles, le joueur doit en choisir une.\nUne chaîne de sauts multiples doit être entièrement complétée - vous ne pouvez pas vous arrêter si plus de captures sont disponibles.',
       winConditions:
         "Vous gagniez quand :\n• Vous capturez toutes les pièces de l'adversaire\n• L'adversaire n'a aucun coup légal à son tour\n\nVous perdez quand :\n• Toutes vos pièces sont capturées\n• Vous n'avez aucun coup légal à votre tour\n\nLa partie est NULLE quand les deux joueurs n'ont que des rois avec un matériau égal et aucun ne peut forcer la victoire.",
     },

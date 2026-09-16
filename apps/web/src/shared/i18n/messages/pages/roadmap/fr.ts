@@ -1,7 +1,7 @@
 export const roadmapFr = {
   title: 'Feuille de Route Arcadeum Games',
   subtitle:
-    'D’un outil casual vers une plateforme universelle recommandée à tous — des passionnés de jeux de société aux amateurs de jeux d’ambiance.',
+    'D’un outil casual vers une plateforme universelle recommandée à tous - des passionnés de jeux de société aux amateurs de jeux d’ambiance.',
   canonicalNotice: 'L’anglais est la version canonique',
   stats: {
     features: 'Total des fonctionnalités',
@@ -61,9 +61,9 @@ export const roadmapFr = {
     planned: 'Prévu',
   },
   legal: {
-    title: '100% Légal — Tout Domaine Public',
+    title: '100% Légal - Tout Domaine Public',
     description:
-      'Échecs, Dames, Go, Backgammon, Dame de Pique, Piques, Pachisi — des jeux du domaine public sans licence requise. Les règles de jeu ne peuvent être protégées par le droit d’auteur (Baker v. Selden, 1879).',
+      'Échecs, Dames, Go, Backgammon, Dame de Pique, Piques, Pachisi - des jeux du domaine public sans licence requise. Les règles de jeu ne peuvent être protégées par le droit d’auteur (Baker v. Selden, 1879).',
   },
   empty: {
     title: 'Aucune fonctionnalité trouvée',

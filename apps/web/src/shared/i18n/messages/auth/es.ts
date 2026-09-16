@@ -116,7 +116,7 @@ export const es = {
     featureProgressTitle: 'Tu progreso está a salvo',
     featureProgressDetail: 'estadísticas, amigos y desbloqueos se conservan.',
     proof:
-      'Acompañado por {{count}} jugadores esta semana — mira quién está en línea en Juegos.',
+      'Acompañado por {{count}} jugadores esta semana - mira quién está en línea en Juegos.',
     proofCount: '',
     footHome: '← Volver al inicio',
     footGames: 'Explorar juegos',

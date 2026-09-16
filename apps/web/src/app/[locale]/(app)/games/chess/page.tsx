@@ -46,7 +46,8 @@ export async function generateMetadata({
           width: 1200,
           height: 630,
           alt:
-            landingMeta?.title ?? 'Chess — free multiplayer on Arcadeum Games',
+            landingMeta?.title ??
+            'Chess: Free Online Multiplayer on Arcadeum Games',
         },
       ],
     },
@@ -140,7 +141,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
     buildHowToJsonLd({
       name: `How to Play Chess on ${appConfig.appName}`,
       description:
-        'Start playing chess online in seconds — create a room, invite a friend or add a bot, and play with full Stockfish 19 analysis.',
+        'Start playing chess online in seconds: create a room, invite a friend or add a bot, and play with full Stockfish 19 analysis.',
       steps: [
         {
           name: 'Create a room',

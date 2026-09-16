@@ -3,7 +3,7 @@
  *
  * Walks the EN bundle, collects every leaf key path, and reports the keys
  * each non-EN locale is missing. The current set of known gaps is
- * snapshotted in `missing-keys.baseline.json` next to this file — a PR
+ * snapshotted in `missing-keys.baseline.json` next to this file - a PR
  * that adds an EN-only key will fail the test until either the key is
  * translated or the baseline is regenerated with intent.
  *
@@ -69,7 +69,7 @@ describe('i18n completeness', () => {
 
     // Snapshot-style assertion: the set of missing keys per locale must
     // match the baseline. Adding an English-only key fails this test
-    // until the baseline is regenerated (`-u`) — making the gap a
+    // until the baseline is regenerated (`-u`) - making the gap a
     // deliberate, reviewed decision rather than silent drift.
     expect(report).toMatchSnapshot();
   });

@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/backgammon/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Backgammon — free multiplayer on Arcadeum',
+          alt: 'Backgammon - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -91,7 +91,7 @@ export default async function BackgammonLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Backgammon on ${appConfig.appName}`,
           description:
-            'Play Backgammon online in your browser — free, no download needed.',
+            'Play Backgammon online in your browser - free, no download needed.',
           steps: [
             {
               name: landing.steps?.create?.title ?? 'Create a room',

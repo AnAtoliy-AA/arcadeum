@@ -4,7 +4,7 @@ export const helpFaq = {
     {
       question: 'Do I need to download anything to play?',
       answer:
-        'No. Arcadeum runs in any modern browser — desktop or mobile. Open a game room, share the link, and play. Native iOS and Android apps are available if you prefer.',
+        'No. Arcadeum runs in any modern browser - desktop or mobile. Open a game room, share the link, and play. Native iOS and Android apps are available if you prefer.',
     },
     {
       question: 'Is Arcadeum free to play?',
@@ -14,7 +14,7 @@ export const helpFaq = {
     {
       question: 'How do I invite friends to a game?',
       answer:
-        'Create a room from the Games page, then copy the invite link or share it directly. Friends can join without an account — sign in is optional for casual play.',
+        'Create a room from the Games page, then copy the invite link or share it directly. Friends can join without an account - sign in is optional for casual play.',
     },
     {
       question: 'Can I play against an AI opponent?',

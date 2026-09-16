@@ -241,9 +241,9 @@ export const fr = {
         title: 'Comment nous utilisons les cookies',
         intro: 'Nous utilisons des cookies aux fins suivantes :',
         items: [
-          'Cookies essentiels — nécessaires au bon fonctionnement de la plateforme.',
-          'Cookies de préférences — mémorisent votre langue, thème et paramètres.',
-          'Cookies analytiques — nous aident à améliorer la plateforme.',
+          'Cookies essentiels - nécessaires au bon fonctionnement de la plateforme.',
+          'Cookies de préférences - mémorisent votre langue, thème et paramètres.',
+          'Cookies analytiques - nous aident à améliorer la plateforme.',
         ],
       },
       thirdParty: {
@@ -397,7 +397,7 @@ export const fr = {
     },
     self: {
       pinned: 'Votre rang',
-      unranked: 'Non classé — jouez 5 parties classées pour apparaître',
+      unranked: 'Non classé - jouez 5 parties classées pour apparaître',
       share: 'Partager',
     },
     loadMore: 'Charger plus',

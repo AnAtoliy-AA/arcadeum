@@ -4,7 +4,7 @@ import {
   size as ogSize,
 } from '../sea-battle/_og/seaBattleOgImage';
 
-export const alt = 'Battleship — free online naval combat on Arcadeum';
+export const alt = 'Battleship - free online naval combat on Arcadeum';
 export const size = ogSize;
 export const contentType = ogContentType;
 

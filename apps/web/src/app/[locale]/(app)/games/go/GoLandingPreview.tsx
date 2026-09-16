@@ -3,7 +3,7 @@
 import { getGoTheme } from '@/widgets/BoardGames/GoGame/lib/theme';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 
-// Fixed mid-game 9×9 snapshot — a corner enclosure, a running fight and
+// Fixed mid-game 9×9 snapshot - a corner enclosure, a running fight and
 // star points make the position recognisably "Go".
 const STONES: Array<[number, number, 'black' | 'white']> = [
   [2, 2, 'black'],

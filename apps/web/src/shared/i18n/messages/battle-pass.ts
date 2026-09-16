@@ -2,7 +2,7 @@ import type { DeepPartial } from '../base-types';
 
 export const en = {
   title: 'Battle Pass',
-  subtitle: 'Level up by playing — claim a reward at every tier.',
+  subtitle: 'Level up by playing - claim a reward at every tier.',
   seasonEnds: 'Season ends {{date}}',
   tier: 'Tier {{tier}}',
   free: 'Free',
@@ -13,7 +13,7 @@ export const en = {
   premiumActive: 'Premium active',
   unlockHint: 'Premium rewards unlock with a VIP membership.',
   progress: '{{xp}} / {{next}} XP to next tier',
-  maxedOut: 'Every tier unlocked — legend.',
+  maxedOut: 'Every tier unlocked - legend.',
   signInRequired: 'Sign in to view your Battle Pass progress.',
   navLabel: 'Battle Pass',
 };
@@ -41,7 +41,7 @@ export const es: BattlePassMessages = {
 export const fr: BattlePassMessages = {
   title: 'Passe de Combat',
   subtitle:
-    'Montez en niveau en jouant — réclamez une récompense à chaque palier.',
+    'Montez en niveau en jouant - réclamez une récompense à chaque palier.',
   seasonEnds: 'La saison se termine le {{date}}',
   tier: 'Palier {{tier}}',
   free: 'Gratuit',
@@ -52,7 +52,7 @@ export const fr: BattlePassMessages = {
   premiumActive: 'Premium actif',
   unlockHint: 'Les récompenses premium se débloquent avec un abonnement VIP.',
   progress: '{{xp}} / {{next}} XP avant le palier suivant',
-  maxedOut: 'Tous les paliers débloqués — légende.',
+  maxedOut: 'Tous les paliers débloqués - légende.',
   signInRequired:
     'Connectez-vous pour voir votre progression du Passe de Combat.',
   navLabel: 'Passe de Combat',
@@ -60,7 +60,7 @@ export const fr: BattlePassMessages = {
 
 export const ru: BattlePassMessages = {
   title: 'Боевой пропуск',
-  subtitle: 'Повышайте уровень в игре — получайте награду на каждом уровне.',
+  subtitle: 'Повышайте уровень в игре - получайте награду на каждом уровне.',
   seasonEnds: 'Сезон заканчивается {{date}}',
   tier: 'Уровень {{tier}}',
   free: 'Бесплатно',
@@ -71,7 +71,7 @@ export const ru: BattlePassMessages = {
   premiumActive: 'Премиум активен',
   unlockHint: 'Премиум-награды открываются с VIP-подпиской.',
   progress: '{{xp}} / {{next}} XP до следующего уровня',
-  maxedOut: 'Все уровни открыты — легенда.',
+  maxedOut: 'Все уровни открыты - легенда.',
   signInRequired: 'Войдите, чтобы увидеть прогресс Боевого пропуска.',
   navLabel: 'Боевой пропуск',
 };
@@ -79,7 +79,7 @@ export const ru: BattlePassMessages = {
 export const by: BattlePassMessages = {
   title: 'Баявы пропуск',
   subtitle:
-    'Павышайце ўзровень у гульні — атрымлівайце ўзнагароду на кожным узроўні.',
+    'Павышайце ўзровень у гульні - атрымлівайце ўзнагароду на кожным узроўні.',
   seasonEnds: 'Сезон заканчваецца {{date}}',
   tier: 'Узровень {{tier}}',
   free: 'Бясплатна',
@@ -90,7 +90,7 @@ export const by: BattlePassMessages = {
   premiumActive: 'Прэміум актыўны',
   unlockHint: 'Прэміум-узнагароды адкрываюцца з VIP-падпіскай.',
   progress: '{{xp}} / {{next}} XP да наступнага ўзроўню',
-  maxedOut: 'Усе ўзроўні адкрыты — легенда.',
+  maxedOut: 'Усе ўзроўні адкрыты - легенда.',
   signInRequired: 'Увайдзіце, каб убачыць прагрэс Баявога пропуску.',
   navLabel: 'Баявы пропуск',
 };

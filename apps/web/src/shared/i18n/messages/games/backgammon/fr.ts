@@ -34,7 +34,7 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title: 'Backgammon — Jeu de Plateau Multijoueur Gratuit | Arcadeum',
+        title: 'Backgammon - Jeu de Plateau Multijoueur Gratuit | Arcadeum',
         description:
           'Jouez au Backgammon gratuitement en ligne sur Arcadeum. Plateau classique de 24 flèches avec dés, captures et bots IA.',
         keywords:
@@ -199,7 +199,7 @@ export const frMessages = {
       },
       s2: {
         title: 'Frappez les blots',
-        body: 'Un pion isolé est un blot — atterrissez dessus pour l’envoyer à la barre. Les pions sur la barre doivent rentrer avant tout autre mouvement.',
+        body: 'Un pion isolé est un blot - atterrissez dessus pour l’envoyer à la barre. Les pions sur la barre doivent rentrer avant tout autre mouvement.',
       },
       s3: {
         title: 'Sortez pour gagner',
@@ -242,13 +242,13 @@ export const frMessages = {
         long: {
           objectiveTitle: 'Objectif',
           objective:
-            "Conduisez vos 15 pions de la tête à votre jan intérieur et sortez-les. Tous commencent sur une seule flèche — la course est d'endurance.",
+            "Conduisez vos 15 pions de la tête à votre jan intérieur et sortez-les. Tous commencent sur une seule flèche - la course est d'endurance.",
           movementTitle: 'Déplacement et Dés',
           movement:
-            "Lancez deux dés et déplacez vos pions. Un double donne quatre mouvements. Les flèches occupées par l'adversaire sont complètement bloquées — vous ne pouvez ni y atterrir ni les franchir.",
+            "Lancez deux dés et déplacez vos pions. Un double donne quatre mouvements. Les flèches occupées par l'adversaire sont complètement bloquées - vous ne pouvez ni y atterrir ni les franchir.",
           hittingTitle: 'Pas de Capture',
           hitting:
-            'Les captures ne sont pas autorisées. Les flèches adverses sont toujours bloquées. Vous devez contourner les piles — la position est décisive.',
+            'Les captures ne sont pas autorisées. Les flèches adverses sont toujours bloquées. Vous devez contourner les piles - la position est décisive.',
           bearingOffTitle: 'Sortie des Pions',
           bearingOff:
             "Quand les 15 pions sont dans votre jan intérieur, sortez-les avec le numéro exact ou supérieur. L'interdiction des captures rend l'arrivée au jan le principal défi.",
@@ -298,7 +298,7 @@ export const frMessages = {
         gulbara: {
           objectiveTitle: 'Objectif',
           objective:
-            'Conduisez vos 15 pions de la tête à votre jan intérieur et sortez-les. Pas de capture — stratégie de course pure.',
+            'Conduisez vos 15 pions de la tête à votre jan intérieur et sortez-les. Pas de capture - stratégie de course pure.',
           movementTitle: 'Déplacement et Dés',
           movement:
             'Lancez deux dés et déplacez vos pions. Les flèches adverses sont bloquées. Avec un double, tous les doubles supérieurs suivants sont joués.',

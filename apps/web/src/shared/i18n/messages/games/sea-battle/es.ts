@@ -16,11 +16,11 @@ export const esMessages = {
     tutorial: {
       s1: {
         title: 'Esconde tu flota',
-        body: 'Coloca los cinco barcos en tu cuadrícula antes de la batalla. No pueden solaparse ni tocarse — haz clic para colocar y gira con el botón.',
+        body: 'Coloca los cinco barcos en tu cuadrícula antes de la batalla. No pueden solaparse ni tocarse - haz clic para colocar y gira con el botón.',
       },
       s2: {
         title: 'Fuego a discreción',
-        body: 'En tu turno haz clic en una casilla de las aguas del rival. Los impactos se marcan en rojo, los fallos en blanco — triangula y cázalos.',
+        body: 'En tu turno haz clic en una casilla de las aguas del rival. Los impactos se marcan en rojo, los fallos en blanco - triangula y cázalos.',
       },
       s3: {
         title: 'Hunde para ganar',
@@ -205,7 +205,7 @@ export const esMessages = {
       teammateBadge: 'Compañero',
       cannotAttackTeammate: 'No puedes atacar a un compañero',
       description:
-        'Juega en equipos. Configura el número de equipos y los tamaños — los jugadores pueden elegir o ser asignados por el anfitrión.',
+        'Juega en equipos. Configura el número de equipos y los tamaños - los jugadores pueden elegir o ser asignados por el anfitrión.',
       setup: {
         title: 'Configuración de equipos',
         teamNamePlaceholder: 'Nombre del equipo',
@@ -256,10 +256,10 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: `Batalla Naval Online Gratis (Hundir la Flota) — Jugar con Amigos o Bot | ${APP}`,
+        title: `Batalla Naval Online Gratis (Hundir la Flota) - Jugar con Amigos o Bot | ${APP}`,
         description: `Juega a Batalla Naval (Hundir la Flota) online gratis sin registro en ${APP}. Modos para 2–4 jugadores: reta a tus amigos por enlace o compite contra la IA. Mejores tácticas y más de 10 temas visuales.`,
         ogTitle:
-          'Batalla Naval Online Gratis (Hundir la Flota) — Multijugador con Amigos o IA',
+          'Batalla Naval Online Gratis (Hundir la Flota) - Multijugador con Amigos o IA',
         ogDescription:
           'Coloca tu flota en la cuadrícula 10×10, dispara a las coordenadas enemigas y hunde todos los barcos. Juega gratis en el navegador sin descargas.',
         keywords:
@@ -268,12 +268,12 @@ export const esMessages = {
       hero: {
         title: 'Batalla Naval',
         tagline:
-          'Juega al clásico Batalla Naval online — gratis y multijugador',
-        intro: `Batalla Naval es el atemporal juego de combate naval en el que dos o más almirantes colocan sus flotas en secreto sobre una cuadrícula 10×10 y se intercambian salvas hasta que sólo queda una flota a flote. En ${APP} puedes jugar a Batalla Naval directamente en el navegador — sin descargas ni registros — con amigos, desconocidos o contra bots de IA.`,
+          'Juega al clásico Batalla Naval online - gratis y multijugador',
+        intro: `Batalla Naval es el atemporal juego de combate naval en el que dos o más almirantes colocan sus flotas en secreto sobre una cuadrícula 10×10 y se intercambian salvas hasta que sólo queda una flota a flote. En ${APP} puedes jugar a Batalla Naval directamente en el navegador - sin descargas ni registros - con amigos, desconocidos o contra bots de IA.`,
         ctaPlay: 'Crear una sala de Batalla Naval',
         ctaRooms: 'Ver salas abiertas',
         ctaQuickplay: 'Jugar contra IA ahora',
-        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+        ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
         ctaPlayHuman: 'Buscar oponente humano',
         ctaGroupLabel: 'Inicio rápido de Batalla Naval',
         eyebrow: 'Gratis · 2–4 jugadores · Sin registro',
@@ -290,7 +290,7 @@ export const esMessages = {
         themesKicker: 'Elige tu flota',
         themesTitle: '10+ temas, un solo juego',
         themesLead:
-          'Diez estilos de tablero, tú eliges. Mismo juego, distinto ambiente — cámbialo cuando quieras en el lobby.',
+          'Diez estilos de tablero, tú eliges. Mismo juego, distinto ambiente - cámbialo cuando quieras en el lobby.',
         rulesKicker: 'Referencia',
         strategyKicker: 'Afina tu puntería',
         aboutKicker: 'Sobre el juego',
@@ -327,7 +327,7 @@ export const esMessages = {
         title: 'Sobre la Batalla Naval',
         paragraphs: [
           'La Batalla Naval, conocida internacionalmente como Battleship, es uno de los juegos de estrategia sobre cuadrícula más antiguos que aún se juegan. Mucho antes de los tableros de plástico, las reglas se dibujaban en hojas a cuadros: dos rivales, dos rejillas secretas de 10×10 y la emoción de cantar coordenadas una a una.',
-          'A mediados del siglo XX la partida saltó del papel al plástico y se convirtió en clásico de las noches en familia, antes de pasar a las pantallas — versiones electrónicas de bolsillo, adaptaciones de PC y, ahora, multijugador nativo en el navegador.',
+          'A mediados del siglo XX la partida saltó del papel al plástico y se convirtió en clásico de las noches en familia, antes de pasar a las pantallas - versiones electrónicas de bolsillo, adaptaciones de PC y, ahora, multijugador nativo en el navegador.',
           `${APP} conserva la rejilla original de 10×10 y la flota de cinco barcos, pero añade lo que la versión en papel nunca tuvo: emparejamiento instantáneo, oponentes con IA, modo en equipos, diez temas visuales y enlaces de lobby que puedes compartir. Tanto si buscas una partida rápida contra el ordenador como una más larga contra otra persona, las reglas son las mismas que llevan un siglo discutiendo los almirantes.`,
         ],
       },
@@ -434,7 +434,7 @@ export const esMessages = {
       },
       finalCta: {
         title: '¿Listo para jugar?',
-        subtitle: 'Abre una sala y comparte el enlace — tu flota te espera.',
+        subtitle: 'Abre una sala y comparte el enlace - tu flota te espera.',
       },
       breadcrumb: {
         home: 'Inicio',

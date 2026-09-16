@@ -20,6 +20,7 @@ interface Props {
   theme?: string;
   errorLabel?: string;
   buttonVariant?: ButtonProps['variant'];
+  size?: ButtonProps['size'];
   disabled?: boolean;
 }
 
@@ -31,6 +32,7 @@ export function QuickplayButton({
   theme,
   errorLabel,
   buttonVariant,
+  size = 'lg',
   disabled = false,
 }: Props) {
   const router = useRouter();
@@ -72,7 +74,7 @@ export function QuickplayButton({
   return (
     <Button
       variant={resolvedVariant}
-      size="lg"
+      size={size}
       onClick={handleClick}
       loading={loading}
       disabled={disabled}

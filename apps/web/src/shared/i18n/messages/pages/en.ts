@@ -246,9 +246,9 @@ export const en = {
         title: 'How We Use Cookies',
         intro: 'We use cookies for the following purposes:',
         items: [
-          'Essential cookies — required for the platform to function correctly (e.g., session management, authentication).',
-          'Preference cookies — remember your language, theme, and layout settings.',
-          'Analytics cookies — help us understand how players use the platform so we can improve it.',
+          'Essential cookies - required for the platform to function correctly (e.g., session management, authentication).',
+          'Preference cookies - remember your language, theme, and layout settings.',
+          'Analytics cookies - help us understand how players use the platform so we can improve it.',
         ],
       },
       thirdParty: {
@@ -398,7 +398,7 @@ export const en = {
     },
     self: {
       pinned: 'Your rank',
-      unranked: 'Unranked — play 5 ranked games to appear',
+      unranked: 'Unranked - play 5 ranked games to appear',
       share: 'Share',
     },
     loadMore: 'Load more',

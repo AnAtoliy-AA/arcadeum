@@ -59,7 +59,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/sea-battle/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Sea Battle — free online Battleship on Arcadeum',
+          alt: 'Sea Battle - free online Battleship on Arcadeum',
         },
       ],
     },
@@ -80,8 +80,10 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
-  const comingSoon = await isGameComingSoon(SEA_BATTLE_SLUG);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(SEA_BATTLE_SLUG),
+    getTranslations(locale),
+  ]);
   const landing = messages.games?.sea_battle_v1?.landing;
   const gameName = landing?.hero?.title ?? 'Sea Battle';
   const description = landing?.meta?.description ?? '';
@@ -110,7 +112,7 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Sea Battle on ${appConfig.appName}`,
           description:
-            'Play Sea Battle (Battleship) online — free multiplayer for 2 to 4 players. No download or signup required.',
+            'Play Sea Battle (Battleship) online - free multiplayer for 2 to 4 players. No download or signup required.',
           steps: [
             {
               name: 'Place your ships',
@@ -136,7 +138,7 @@ export default async function SeaBattleLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const relatedPosts = getPostsByTag(locale, [
+  const relatedPosts = await getPostsByTag(locale, [
     'Sea Battle',
     'Battleship',
     'Bataille navale',

@@ -2,7 +2,7 @@ export const frMessages = {
   minesweeper_v1: {
     name: 'Démineur',
     description:
-      'Le Démineur classique — déblayez la grille sans faire exploser une seule mine',
+      'Le Démineur classique - déblayez la grille sans faire exploser une seule mine',
     summary:
       'Le casse-tête logique iconique : révélez chaque case sûre, marquez les mines et battez le chrono.',
     board: {
@@ -19,7 +19,7 @@ export const frMessages = {
       newGame: 'Nouvelle partie',
       flagMode: 'Mode drapeau',
       flagModeHint:
-        'Activez-le pour planter des drapeaux d’un simple toucher — idéal sur écran tactile',
+        'Activez-le pour planter des drapeaux d’un simple toucher - idéal sur écran tactile',
       difficulty: 'Difficulté',
     },
     difficulty: {
@@ -40,13 +40,13 @@ export const frMessages = {
       gameplay:
         'Les chiffres indiquent combien de mines se trouvent parmi les huit cases voisines. Marquez les suspects d’un clic droit ou d’un appui long ; touchez un chiffre satisfait pour ouvrir ses voisines.',
       scoring:
-        'Votre premier clic est toujours sûr et lance le chrono. Déblayez le terrain au plus vite — le temps est votre seul score.',
+        'Votre premier clic est toujours sûr et lance le chrono. Déblayez le terrain au plus vite - le temps est votre seul score.',
     },
     landing: {
       tagline: 'Solo · Sans inscription',
       meta: {
         title:
-          'Démineur — Jeu de réflexion classique gratuit en ligne | Arcadeum',
+          'Démineur - Jeu de réflexion classique gratuit en ligne | Arcadeum',
         description:
           'Jouez gratuitement au Démineur en ligne sur Arcadeum. Grilles de débutant à expert, drapeaux, chrono et progression sauvegardée. Sans téléchargement ni inscription.',
         keywords:
@@ -61,7 +61,7 @@ export const frMessages = {
       features: {
         solo: {
           title: 'Vraiment solo',
-          body: 'Ni comptes ni salles d’attente — un champ de mines neuf à un clic.',
+          body: 'Ni comptes ni salles d’attente - un champ de mines neuf à un clic.',
         },
         progress: {
           title: 'Progression sauvegardée',
@@ -76,7 +76,7 @@ export const frMessages = {
         q1: {
           question: 'Le Démineur est-il gratuit ?',
           answer:
-            'Oui — le Démineur d’Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
+            'Oui - le Démineur d’Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
         },
         q2: {
           question: 'Comment poser des drapeaux sur mobile ?',

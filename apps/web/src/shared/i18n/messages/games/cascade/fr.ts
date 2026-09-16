@@ -4,7 +4,7 @@ export const frMessages = {
     description:
       'Assortis par couleur ou numéro, enchaînez les cartes Pioche-Deux et Joker +4 pour submerger le joueur suivant, et videz votre main en premier pour gagner.',
     summary:
-      'Un jeu de cartes de défausse de la famille des Huit Américain — huit thèmes au choix, 2–10 joueurs, pénalités enchaînables.',
+      'Un jeu de cartes de défausse de la famille des Huit Américain - huit thèmes au choix, 2–10 joueurs, pénalités enchaînables.',
     variants: {
       cosmic: {
         name: 'Cosmique',
@@ -13,7 +13,7 @@ export const frMessages = {
       },
       arcane: {
         name: 'Arcane',
-        description: 'Écoles de magie — pyromancie, druidique, et plus.',
+        description: 'Écoles de magie - pyromancie, druidique, et plus.',
       },
       cyberpunk: {
         name: 'Cyberpunk',
@@ -22,12 +22,12 @@ export const frMessages = {
       },
       elemental: {
         name: 'Élémentaire',
-        description: 'Feu, Pierre, Feuille et Marée — palette nature épurée.',
+        description: 'Feu, Pierre, Feuille et Marée - palette nature épurée.',
       },
       classic: {
         name: 'Classique',
         description:
-          'Couleurs traditionnelles de jeu de cartes — propre et intemporel.',
+          'Couleurs traditionnelles de jeu de cartes - propre et intemporel.',
       },
       neon: {
         name: 'Néon',
@@ -36,12 +36,12 @@ export const frMessages = {
       tropical: {
         name: 'Tropical',
         description:
-          'Hibiscus, Palmier, Océan — ambiance plage et couleurs chaudes.',
+          'Hibiscus, Palmier, Océan - ambiance plage et couleurs chaudes.',
       },
       steampunk: {
         name: 'Steampunk',
         description:
-          'Laiton, Chaudière, Vert-de-gris — esthétique mécanique victorienne.',
+          'Laiton, Chaudière, Vert-de-gris - esthétique mécanique victorienne.',
       },
       adventure: {
         name: 'Aventure',
@@ -50,19 +50,19 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title: 'Cascade — jeu de cartes multijoueur de défausse en ligne',
+        title: 'Cascade - jeu de cartes multijoueur de défausse en ligne',
         description:
-          'Jouez à Cascade en ligne — un jeu de cartes de défausse avec chaînes Pioche-Deux / Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans installation.',
+          'Jouez à Cascade en ligne - un jeu de cartes de défausse avec chaînes Pioche-Deux / Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans installation.',
         keywords:
           'cascade, huit américain, jeu de cartes multijoueur, jeu de cartes en ligne, jeu de défausse, jeu de cartes assorties',
       },
       hero: {
-        title: 'Cascade — le jeu de cartes à chaînes, réinventé',
+        title: 'Cascade - le jeu de cartes à chaînes, réinventé',
         subtitle:
           'Assortissez par couleur ou numéro. Enchaînez les pénalités. Choisissez parmi huit thèmes visuels. 2–10 joueurs.',
         createRoom: 'Créer un salon',
         ctaQuickplay: "Jouer contre l'IA",
-        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
+        ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
         browseRooms: 'Parcourir les salons',
       },
       highlights: {
@@ -72,7 +72,7 @@ export const frMessages = {
         },
         themes: {
           title: '8 thèmes visuels',
-          body: 'Cosmique, Arcane, Cyberpunk, Élémentaire, Classique, Néon, Tropical, Steampunk — règles identiques, look différent.',
+          body: 'Cosmique, Arcane, Cyberpunk, Élémentaire, Classique, Néon, Tropical, Steampunk - règles identiques, look différent.',
         },
         stacking: {
           title: 'Pénalités enchaînables',
@@ -255,7 +255,7 @@ export const frMessages = {
       chooseColor: 'Choisissez une couleur',
       cards: '{{count}} cartes',
       callCascade: 'Cascade !',
-      callCascadeSelf: 'Cascade ! — sauvez-vous',
+      callCascadeSelf: 'Cascade ! - sauvez-vous',
       backToGames: '← Jeux',
     },
     tutorial: {
@@ -269,7 +269,7 @@ export const frMessages = {
       },
       s3: {
         title: 'Empilez les pénalités',
-        body: 'Passez un Draw-Two avec un autre Draw-Two ou empilez un Wild +4 — refusez et payez le prix fort.',
+        body: 'Passez un Draw-Two avec un autre Draw-Two ou empilez un Wild +4 - refusez et payez le prix fort.',
       },
       s4: {
         title: 'Pas de coup ? Piochez',

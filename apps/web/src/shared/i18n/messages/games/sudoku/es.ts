@@ -2,7 +2,7 @@ export const esMessages = {
   sudoku_v1: {
     name: 'Sudoku',
     description:
-      'Sudoku clásico — rellena la cuadrícula 9×9 para que cada fila, columna y caja contenga el 1–9 una sola vez',
+      'Sudoku clásico - rellena la cuadrícula 9×9 para que cada fila, columna y caja contenga el 1–9 una sola vez',
     summary:
       'El rompecabezas numérico favorito del mundo: lógica pura, tres dificultades y notas a lápiz incluidas.',
     board: {
@@ -22,7 +22,7 @@ export const esMessages = {
     controls: {
       notes: 'Notas',
       notesHint:
-        'Activa los apuntes — los dígitos se escriben en la casilla como candidatos, no como respuestas',
+        'Activa los apuntes - los dígitos se escriben en la casilla como candidatos, no como respuestas',
       erase: 'Borrar',
       placeDigit: 'Poner el dígito {{digit}}',
       noteDigit: 'Nota {{digit}}',
@@ -31,7 +31,7 @@ export const esMessages = {
       wonTitle: '¡Resuelto!',
       wonBody:
         'Cuadrícula completada con {{mistakes}} error(es) por el camino. Bien hecho.',
-      flawlessBody: 'Resolución impecable — ni un solo error.',
+      flawlessBody: 'Resolución impecable - ni un solo error.',
       playAgain: 'Jugar de nuevo',
     },
     rules: {
@@ -46,7 +46,7 @@ export const esMessages = {
       tagline: 'Un jugador · Sin registro',
       meta: {
         title:
-          'Sudoku — Juego de rompecabezas numérico gratis online | Arcadeum',
+          'Sudoku - Juego de rompecabezas numérico gratis online | Arcadeum',
         description:
           'Juega al Sudoku gratis online en Arcadeum. Niveles fácil, medio y difícil con solución única, notas a lápiz, juego con teclado y progreso guardado. Sin descargas ni registro.',
         keywords:
@@ -61,7 +61,7 @@ export const esMessages = {
       features: {
         solo: {
           title: 'Totalmente individual',
-          body: 'Sin cuentas ni salas de espera — un puzzle único nuevo a un clic.',
+          body: 'Sin cuentas ni salas de espera - un puzzle único nuevo a un clic.',
         },
         progress: {
           title: 'Progreso guardado',
@@ -76,12 +76,12 @@ export const esMessages = {
         q1: {
           question: '¿Es gratis jugar al Sudoku?',
           answer:
-            'Sí — el Sudoku de Arcadeum es completamente gratis, sin descargas y sin necesidad de cuenta.',
+            'Sí - el Sudoku de Arcadeum es completamente gratis, sin descargas y sin necesidad de cuenta.',
         },
         q2: {
           question: '¿Cada puzzle tiene una única solución?',
           answer:
-            'Sí. Cada puzzle generado se verifica para admitir exactamente una solución — siempre podrás llegar a ella razonando.',
+            'Sí. Cada puzzle generado se verifica para admitir exactamente una solución - siempre podrás llegar a ella razonando.',
         },
         q3: {
           question: '¿Puedo jugar desde el móvil?',
@@ -131,7 +131,7 @@ export const esMessages = {
         },
         join: {
           title: 'Escanea las filas',
-          body: 'Encuentra dónde encaja un dígito por eliminación — toca la casilla y luego su número.',
+          body: 'Encuentra dónde encaja un dígito por eliminación - toca la casilla y luego su número.',
         },
         play: {
           title: 'Completa la cuadrícula',

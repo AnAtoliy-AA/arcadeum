@@ -62,7 +62,7 @@ export const enMessages = {
       },
       s2: {
         title: 'Avoid every trail',
-        body: "Never hit another worm's trail — or your own, unless a shield saves you.",
+        body: "Never hit another worm's trail - or your own, unless a shield saves you.",
       },
       s3: {
         title: 'Power up',
@@ -77,9 +77,9 @@ export const enMessages = {
       objective:
         'Outlast every other worm in the arena. Eat glowing food to grow longer and score points.',
       gameplay:
-        'Your worm follows your cursor — hold and steer. The arena is wide-open; the danger is everyone else’s trail. Bump into a wall or any worm’s body and you die.',
+        'Your worm follows your cursor - hold and steer. The arena is wide-open; the danger is everyone else’s trail. Bump into a wall or any worm’s body and you die.',
       survive:
-        'Cut other worms off so they hit your trail, then sweep up the food they drop. Stay close to the edge of the pack — never trapped in a corner.',
+        'Cut other worms off so they hit your trail, then sweep up the food they drop. Stay close to the edge of the pack - never trapped in a corner.',
       powerups:
         'Optional pickups give a 3-second speed burst, a one-hit shield, a 30% shrink to escape, or 2 seconds of ghosting through trails.',
     },

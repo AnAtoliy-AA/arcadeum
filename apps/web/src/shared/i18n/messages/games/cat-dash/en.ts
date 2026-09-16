@@ -15,18 +15,18 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Cat Dash — multiplayer cat racing dice game',
+        title: 'Cat Dash - multiplayer cat racing dice game',
         description:
           'Play Cat Dash online for free. 2–6 players, unique cat characters, dice + powers, four themed tracks. Roll, race, win!',
         keywords:
           'cat game, dice game, racing game, multiplayer cat race, family game',
       },
       hero: {
-        title: 'Cat Dash — race your cat to victory',
+        title: 'Cat Dash - race your cat to victory',
         subtitle:
           'Roll the dice, dodge obstacles, and use cat abilities to reach the finish line first.',
         ctaQuickplay: 'Play vs AI now',
-        ctaQuickplayError: "Couldn't start a game — try again",
+        ctaQuickplayError: "Couldn't start a game - try again",
         createRoom: 'Create a room',
         browseRooms: 'Browse rooms',
       },
@@ -64,19 +64,19 @@ export const enMessages = {
       },
       rules: {
         title: 'Rules',
-        objective: 'Be the first cat to reach space 20 — the finish line.',
+        objective: 'Be the first cat to reach space 20 - the finish line.',
         howToPlay:
           'On your turn, roll the dice and move forward that many spaces.',
         abilities:
           'Each cat has 2 unique abilities. Spend power tokens (3 per game) to activate them.',
         trackSpaces:
-          '🟢 Normal — no effect. 🔴 Obstacle — skip your next turn. 🟡 Bonus — roll again immediately.',
+          '🟢 Normal - no effect. 🔴 Obstacle - skip your next turn. 🟡 Bonus - roll again immediately.',
       },
       faq: {
         abilities: {
           question: 'What do cat abilities do?',
           answer:
-            'Each cat has two unique abilities — one offensive (skip opponents, steal movement) and one defensive (block abilities, skip obstacles).',
+            'Each cat has two unique abilities - one offensive (skip opponents, steal movement) and one defensive (block abilities, skip obstacles).',
         },
         tokens: {
           question: 'How do power tokens work?',
@@ -148,7 +148,7 @@ export const enMessages = {
       },
       s3: {
         title: 'Spend tokens wisely',
-        body: 'Each cat has two unique abilities — spend your three power tokens at the perfect moment.',
+        body: 'Each cat has two unique abilities - spend your three power tokens at the perfect moment.',
       },
       s4: {
         title: 'Photo finish',
@@ -164,7 +164,7 @@ export const enMessages = {
         'On your turn, click "Roll Dice" to move. You roll a standard 6-sided die.',
       trackSpacesTitle: 'Track Spaces',
       trackSpaces:
-        '🟢 Normal — no effect. 🔴 Obstacle — skip your next turn. 🟡 Bonus — roll again immediately. 🔵 Fork — choose a path.',
+        '🟢 Normal - no effect. 🔴 Obstacle - skip your next turn. 🟡 Bonus - roll again immediately. 🔵 Fork - choose a path.',
       abilitiesTitle: 'Abilities',
       abilities:
         'Each cat has 2 unique abilities. Use power tokens (3 per game) to activate them.',
@@ -172,7 +172,7 @@ export const enMessages = {
       cats: "🐱 Neon Cat (Cyber): Digital Dash + Neon Shield. 🐱 Whiskers (Village): Extra Life + Purr Power. 🐱 Stardust (Space): Warp Jump + Star Shield. 🐱 Felix (Nature): Nature's Path + Wild Charge.",
       trackTypesTitle: 'Track Types',
       trackTypes:
-        'Linear — straightforward race. Circular — shortcuts and obstacles. Multiple Paths — forks with risk/reward.',
+        'Linear - straightforward race. Circular - shortcuts and obstacles. Multiple Paths - forks with risk/reward.',
     },
     gameOver: {
       won: 'You won!',

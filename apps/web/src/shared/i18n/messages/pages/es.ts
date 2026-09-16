@@ -240,9 +240,9 @@ export const es = {
         title: 'Cómo Usamos las Cookies',
         intro: 'Utilizamos cookies para los siguientes fines:',
         items: [
-          'Cookies esenciales — necesarias para el correcto funcionamiento de la plataforma.',
-          'Cookies de preferencias — recuerdan tu idioma, tema y configuración.',
-          'Cookies analíticas — nos ayudan a mejorar la plataforma.',
+          'Cookies esenciales - necesarias para el correcto funcionamiento de la plataforma.',
+          'Cookies de preferencias - recuerdan tu idioma, tema y configuración.',
+          'Cookies analíticas - nos ayudan a mejorar la plataforma.',
         ],
       },
       thirdParty: {
@@ -397,7 +397,7 @@ export const es = {
     },
     self: {
       pinned: 'Tu rango',
-      unranked: 'Sin clasificar — juega 5 partidas clasificadas para aparecer',
+      unranked: 'Sin clasificar - juega 5 partidas clasificadas para aparecer',
       share: 'Compartir',
     },
     loadMore: 'Cargar más',

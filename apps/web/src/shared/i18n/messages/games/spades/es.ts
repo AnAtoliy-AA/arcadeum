@@ -2,13 +2,13 @@ export const esMessages = {
   spades_v1: {
     name: 'Espadas',
     description:
-      'Clásico juego de cartas de pareja para 4 jugadores — apuesta tus bazas y deja que las Espadas triunfen',
+      'Clásico juego de cartas de pareja para 4 jugadores - apuesta tus bazas y deja que las Espadas triunfen',
     summary:
       'Apuesta cuántas bazas tomarás, haz equipo con tu pareja y ¡deja que las Espadas triunfen!',
     variants: {},
     landing: {
       meta: {
-        title: 'Espadas — Juego de Cartas Multijugador Gratis | Arcadeum',
+        title: 'Espadas - Juego de Cartas Multijugador Gratis | Arcadeum',
         description:
           'Juega Espadas gratis en Arcadeum. Clásico juego de cartas de parejas de 4 jugadores con apuestas, Nil, bolsas y oponentes IA.',
         keywords:
@@ -30,7 +30,7 @@ export const esMessages = {
         },
         bidding: {
           title: 'Apuestas y Nil',
-          body: 'Apuesta tus bazas — o arríesgalo todo con una apuesta Nil',
+          body: 'Apuesta tus bazas - o arríesgalo todo con una apuesta Nil',
         },
         sandbagging: {
           title: 'Penalización de Bolsas',
@@ -99,12 +99,12 @@ export const esMessages = {
         breaking: {
           question: '¿Cuándo puedes liderar con Espadas?',
           answer:
-            'Las Espadas no pueden liderar una baza hasta que han sido "rotas" — es decir, hasta que un jugador sin palo descartó una espada. Una vez rotas, cualquier espada puede liderar.',
+            'Las Espadas no pueden liderar una baza hasta que han sido "rotas" - es decir, hasta que un jugador sin palo descartó una espada. Una vez rotas, cualquier espada puede liderar.',
         },
         bags: {
           question: '¿Qué son las bolsas?',
           answer:
-            'Cada baza extra por encima de la apuesta del equipo cuenta como bolsa. Cada vez que un equipo acumula 10 bolsas, se le descuentan 100 puntos — por eso apuntar bien importa.',
+            'Cada baza extra por encima de la apuesta del equipo cuenta como bolsa. Cada vez que un equipo acumula 10 bolsas, se le descuentan 100 puntos - por eso apuntar bien importa.',
         },
         blindNil: {
           question: '¿Qué es una apuesta Ciega a Cero (Blind Nil)?',
@@ -151,7 +151,7 @@ export const esMessages = {
       lost: 'Perdiste.',
       draw: 'Es un empate.',
       messages: {
-        won: '¡Vuestra pareja tomó exactamente lo que prometió — bien jugado!',
+        won: '¡Vuestra pareja tomó exactamente lo que prometió - bien jugado!',
         lost: 'La otra pareja os superó esta vez. ¿Revancha?',
         draw: 'Ambos equipos terminaron igualados. ¿Otra partida?',
       },
@@ -206,11 +206,11 @@ export const esMessages = {
       },
       s2: {
         title: 'Picas son triunfo',
-        body: 'Sirve palo si puedes; si estás vacío, vale cualquier carta. Las picas no pueden salir hasta romperse — pero cuando lo hacen, ganan a todo.',
+        body: 'Sirve palo si puedes; si estás vacío, vale cualquier carta. Las picas no pueden salir hasta romperse - pero cuando lo hacen, ganan a todo.',
       },
       s3: {
         title: 'Nil es una apuesta',
-        body: 'Puja Nil para perseguir cero bazas por ±100 puntos — suelta tus picas pronto y escapa de todas las bazas.',
+        body: 'Puja Nil para perseguir cero bazas por ±100 puntos - suelta tus picas pronto y escapa de todas las bazas.',
       },
       s4: {
         title: 'Las bolsas cobran',

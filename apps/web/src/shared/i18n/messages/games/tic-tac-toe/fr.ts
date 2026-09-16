@@ -27,19 +27,19 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title: 'Morpion — multijoueur sur plateaux 3×3, 5×5, 7×7, 9×9',
+        title: 'Morpion - multijoueur sur plateaux 3×3, 5×5, 7×7, 9×9',
         description:
           'Joue au morpion multijoueur en ligne. Six variantes thématiques, 2–5 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans installation.',
         keywords:
           'morpion, tic tac toe en ligne, morpion multijoueur, gomoku, cinq en ligne, jeux de plateau',
       },
       hero: {
-        title: 'Morpion — soigné et multijoueur',
+        title: 'Morpion - soigné et multijoueur',
         subtitle:
           'Plateaux thématiques, équipes et bots. Joue seul ou entre amis, du 3×3 au 9×9.',
         createRoom: 'Créer un salon',
         ctaQuickplay: "Jouer contre l'IA",
-        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
+        ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
         browseRooms: 'Parcourir les salons',
       },
       highlights: {
@@ -84,12 +84,12 @@ export const frMessages = {
         teams: {
           question: 'Peut-on jouer en équipes ?',
           answer:
-            'Oui — active le mode équipes dans le salon. Jusqu’à 4 joueurs répartis en deux équipes ; les coéquipiers partagent une marque et alternent les tours.',
+            'Oui - active le mode équipes dans le salon. Jusqu’à 4 joueurs répartis en deux équipes ; les coéquipiers partagent une marque et alternent les tours.',
         },
         bots: {
           question: 'Les bots sont-ils bons ?',
           answer:
-            'En 3×3 le bot joue un minimax parfait — il ne perd jamais. En 5×5 il bloque les menaces immédiates et privilégie le centre. En 7×7 et 9×9 il joue une heuristique rapide gagner/bloquer avec un espacement aléatoire.',
+            'En 3×3 le bot joue un minimax parfait - il ne perd jamais. En 5×5 il bloque les menaces immédiates et privilégie le centre. En 7×7 et 9×9 il joue une heuristique rapide gagner/bloquer avec un espacement aléatoire.',
         },
         firstPlayerAdvantage: {
           question: 'Le premier joueur a-t-il un avantage au Morpion ?',
@@ -149,11 +149,11 @@ export const frMessages = {
       },
       s2: {
         title: 'Gardez la longueur gagnante',
-        body: '3×3 exige 3 alignés, 5×5 en demande 4, et 7×7 ou 9×9 en exigent 5 — horizontalement, verticalement ou en diagonale.',
+        body: '3×3 exige 3 alignés, 5×5 en demande 4, et 7×7 ou 9×9 en exigent 5 - horizontalement, verticalement ou en diagonale.',
       },
       s3: {
         title: 'Mode infini',
-        body: 'Sur les plateaux Infinis, la grille s’étend dès que quelqu’un joue près du bord — jamais de match nul.',
+        body: 'Sur les plateaux Infinis, la grille s’étend dès que quelqu’un joue près du bord - jamais de match nul.',
       },
       s4: {
         title: 'Parlez stratégie',
@@ -163,7 +163,7 @@ export const frMessages = {
     rules: {
       title: 'Règles',
       objective:
-        'Sois le premier à placer ta marque sur {{winLength}} cases alignées — horizontalement, verticalement ou en diagonale.',
+        'Sois le premier à placer ta marque sur {{winLength}} cases alignées - horizontalement, verticalement ou en diagonale.',
       objectiveInfinity:
         "Sois le premier à placer ta marque sur {{winLength}} cases alignées. Le plateau commence en 9×9 et s'étend de {{margin}} cases lorsque tu joues près du bord.",
       steps:
@@ -171,7 +171,7 @@ export const frMessages = {
       winLengths:
         'Longueur gagnante par plateau : 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5, ∞ → configurable.',
       infinityDescription:
-        "En mode Infini, le plateau commence en 9×9 et s'étend automatiquement de {{margin}} cases dans toutes les directions lorsqu'une marque est placée près du bord. La partie ne se termine jamais par un match nul — le plateau continue de croître jusqu'à ce que quelqu'un gagne.",
+        "En mode Infini, le plateau commence en 9×9 et s'étend automatiquement de {{margin}} cases dans toutes les directions lorsqu'une marque est placée près du bord. La partie ne se termine jamais par un match nul - le plateau continue de croître jusqu'à ce que quelqu'un gagne.",
       headers: {
         objective: 'Objectif',
         howToPlay: 'Comment jouer',

@@ -2,7 +2,7 @@ export const frMessages = {
   game_2048_v1: {
     name: '2048',
     description:
-      'Le casse-tête de fusion de tuiles addictif — glissez, fusionnez et visez la tuile 2048',
+      'Le casse-tête de fusion de tuiles addictif - glissez, fusionnez et visez la tuile 2048',
     summary:
       'Faites glisser les tuiles numérotées, doublez-les encore et encore, et voyez jusqu’où vous irez après 2048.',
     board: {
@@ -23,7 +23,7 @@ export const frMessages = {
         'Vous avez créé la tuile légendaire. Continuer pour un score encore plus élevé ?',
       lostTitle: 'Grille bloquée',
       lostBody:
-        'Plus aucun mouvement — toutes les cases sont pleines. À vous de rejouer !',
+        'Plus aucun mouvement - toutes les cases sont pleines. À vous de rejouer !',
       playAgain: 'Rejouer',
       keepGoing: 'Continuer',
     },
@@ -39,7 +39,7 @@ export const frMessages = {
       tagline: 'Solo · Sans inscription',
       meta: {
         title:
-          '2048 — Jeu de puzzle à fusion de tuiles gratuit en ligne | Arcadeum',
+          '2048 - Jeu de puzzle à fusion de tuiles gratuit en ligne | Arcadeum',
         description:
           'Jouez gratuitement à 2048 en ligne sur Arcadeum. Glissez et fusionnez des tuiles sur une grille 4×4, battez votre record, progression sauvegardée. Sans téléchargement ni inscription.',
         keywords:
@@ -48,13 +48,13 @@ export const frMessages = {
       hero: {
         title: '2048',
         subtitle:
-          'Le célèbre casse-tête de fusion addictive. Règles simples, profondeur infinie — jusqu’où irez-vous après 2048 ?',
+          'Le célèbre casse-tête de fusion addictive. Règles simples, profondeur infinie - jusqu’où irez-vous après 2048 ?',
         ctaPlay: 'Jouer maintenant',
       },
       features: {
         solo: {
           title: 'Vraiment solo',
-          body: 'Ni comptes ni salles d’attente — une nouvelle grille à un clic.',
+          body: 'Ni comptes ni salles d’attente - une nouvelle grille à un clic.',
         },
         progress: {
           title: 'Progression sauvegardée',
@@ -69,17 +69,17 @@ export const frMessages = {
         q1: {
           question: '2048 est-il gratuit ?',
           answer:
-            'Oui — 2048 sur Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
+            'Oui - 2048 sur Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
         },
         q2: {
           question: 'Comment jouer sur mobile ?',
           answer:
-            'Balayez simplement la grille — haut, bas, gauche ou droite. Sur ordinateur, utilisez les flèches ou WASD.',
+            'Balayez simplement la grille - haut, bas, gauche ou droite. Sur ordinateur, utilisez les flèches ou WASD.',
         },
         q3: {
           question: 'Que se passe-t-il après 2048 ?',
           answer:
-            'Vous gagnez — et vous pouvez continuer sur la même grille pour un score encore plus élevé.',
+            'Vous gagnez - et vous pouvez continuer sur la même grille pour un score encore plus élevé.',
         },
         q4: {
           question: 'Quelle est la meilleure stratégie pour atteindre 2048 ?',
@@ -130,7 +130,7 @@ export const frMessages = {
         },
         play: {
           title: 'Visez 2048',
-          body: 'Pensez coins et chaînes — la grille se remplit vite et un blocage termine la partie.',
+          body: 'Pensez coins et chaînes - la grille se remplit vite et un blocage termine la partie.',
         },
       },
     },

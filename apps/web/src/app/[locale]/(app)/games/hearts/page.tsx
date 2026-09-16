@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/hearts/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Hearts — free multiplayer on Arcadeum',
+          alt: 'Hearts - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function HeartsLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(HEARTS_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.hearts_v1?.landing;
@@ -85,7 +88,7 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Hearts on ${appConfig.appName}`,
           description:
-            'Play Hearts card game online with 4 players — no download or signup needed.',
+            'Play Hearts card game online with 4 players - no download or signup needed.',
           steps: [
             {
               name: landing.steps.create.title ?? 'Create a room',
@@ -117,8 +120,6 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(HEARTS_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-hearts" data={jsonLd} />
@@ -145,7 +146,7 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Hearts', 'Card Game', 'Валетныя'])}
+        posts={await getPostsByTag(locale, ['Hearts', 'Card Game', 'Валетныя'])}
         gameName={landing?.hero?.title}
       />
     </>

@@ -2,7 +2,7 @@ import type { enMessages } from './en';
 
 export type { enMessages as en } from './en';
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadSharedMessages(locale: string) {
   switch (locale) {
     case 'en':

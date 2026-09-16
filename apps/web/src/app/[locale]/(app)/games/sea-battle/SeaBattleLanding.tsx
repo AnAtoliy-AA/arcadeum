@@ -48,13 +48,13 @@ export default function SeaBattleLanding({
       key: 'salvo',
       icon: '💣',
       title: 'Salvo Mode',
-      body: 'Fire multiple shots per turn — one for each surviving ship. The classic competitive variation that rewards precision targeting.',
+      body: 'Fire multiple shots per turn - one for each surviving ship. The classic competitive variation that rewards precision targeting.',
     },
     {
       key: 'speed',
       icon: '⏱️',
       title: 'Speed Mode',
-      body: '30-second turn timer keeps the pressure on. Think fast, shoot faster — no time for second-guessing.',
+      body: '30-second turn timer keeps the pressure on. Think fast, shoot faster - no time for second-guessing.',
     },
     {
       key: 'abilities',
@@ -78,7 +78,7 @@ export default function SeaBattleLanding({
       key: 'ai',
       icon: '🤖',
       title: '4-Level AI Opponents',
-      body: 'From beginner-friendly Easy to devastating Expert — AI uses probabilistic density maps and hunt-mode targeting.',
+      body: 'From beginner-friendly Easy to devastating Expert - AI uses probabilistic density maps and hunt-mode targeting.',
     },
     {
       key: 'grids',
@@ -168,14 +168,38 @@ export default function SeaBattleLanding({
     title: 'Game Specifications',
     kicker: 'Details',
     items: [
-      { label: 'Players', value: '2–8', icon: '👥', hint: 'FFA up to 6, teams up to 8' },
+      {
+        label: 'Players',
+        value: '2–8',
+        icon: '👥',
+        hint: 'FFA up to 6, teams up to 8',
+      },
       { label: 'Duration', value: '15–25 min', icon: '⏱️' },
-      { label: 'Game Modes', value: 'Classic, Salvo, Speed', icon: '🎮', badge: '3 modes' },
+      {
+        label: 'Game Modes',
+        value: 'Classic, Salvo, Speed',
+        icon: '🎮',
+        badge: '3 modes',
+      },
       { label: 'Grid Sizes', value: '10×10, 15×15, 20×20', icon: '📐' },
       { label: 'Ship Fleet', value: '7 classes, 26 ships', icon: '🚢' },
-      { label: 'AI Difficulty', value: 'Easy, Medium, Hard, Expert', icon: '🤖', badge: '4 levels' },
-      { label: 'Special Weapons', value: 'Sonar, Radar, Scan Wave', icon: '📡' },
-      { label: 'Ship Abilities', value: '6 unique powers with cooldowns', icon: '🔱', badge: 'NEW' },
+      {
+        label: 'AI Difficulty',
+        value: 'Easy, Medium, Hard, Expert',
+        icon: '🤖',
+        badge: '4 levels',
+      },
+      {
+        label: 'Special Weapons',
+        value: 'Sonar, Radar, Scan Wave',
+        icon: '📡',
+      },
+      {
+        label: 'Ship Abilities',
+        value: '6 unique powers with cooldowns',
+        icon: '🔱',
+        badge: 'NEW',
+      },
       { label: 'Team Mode', value: '2–4 teams, up to 8 players', icon: '⚔️' },
       { label: 'Themes', value: '13 visual themes', icon: '🎨' },
       { label: 'Cost', value: 'Free to Play', icon: '💰', badge: 'No ads' },
@@ -195,15 +219,87 @@ export default function SeaBattleLanding({
       { key: 'battleTabs', name: 'BattleTabs' },
     ],
     rows: [
-      { feature: 'Game Modes', values: { arcadeum: '3 (Classic, Salvo, Speed)', seaBattle2: '2', fleetBattle: '3', battleTabs: '3' } },
-      { feature: 'Max Players', values: { arcadeum: '8 (Team Mode)', seaBattle2: '2', fleetBattle: '2', battleTabs: '2' } },
-      { feature: 'Ship Abilities', values: { arcadeum: '6 unique powers', seaBattle2: '—', fleetBattle: '—', battleTabs: '40+' } },
-      { feature: 'Board Sizes', values: { arcadeum: '10/15/20', seaBattle2: '10', fleetBattle: '10', battleTabs: '10' } },
-      { feature: 'AI Difficulty', values: { arcadeum: '4 levels', seaBattle2: '1', fleetBattle: '3', battleTabs: '2' } },
-      { feature: 'Special Weapons', values: { arcadeum: 'Sonar + Radar', seaBattle2: '—', fleetBattle: '—', battleTabs: 'Abilities' } },
-      { feature: 'Keyboard Controls', values: { arcadeum: true, seaBattle2: false, fleetBattle: false, battleTabs: false } },
-      { feature: 'Sound Effects', values: { arcadeum: '8 sounds', seaBattle2: 'Basic', fleetBattle: 'Full', battleTabs: 'Full' } },
-      { feature: 'Cost', values: { arcadeum: 'Free', seaBattle2: 'Free + IAP', fleetBattle: 'Free + IAP', battleTabs: 'Free (cosmetic)' } },
+      {
+        feature: 'Game Modes',
+        values: {
+          arcadeum: '3 (Classic, Salvo, Speed)',
+          seaBattle2: '2',
+          fleetBattle: '3',
+          battleTabs: '3',
+        },
+      },
+      {
+        feature: 'Max Players',
+        values: {
+          arcadeum: '8 (Team Mode)',
+          seaBattle2: '2',
+          fleetBattle: '2',
+          battleTabs: '2',
+        },
+      },
+      {
+        feature: 'Ship Abilities',
+        values: {
+          arcadeum: '6 unique powers',
+          seaBattle2: '-',
+          fleetBattle: '-',
+          battleTabs: '40+',
+        },
+      },
+      {
+        feature: 'Board Sizes',
+        values: {
+          arcadeum: '10/15/20',
+          seaBattle2: '10',
+          fleetBattle: '10',
+          battleTabs: '10',
+        },
+      },
+      {
+        feature: 'AI Difficulty',
+        values: {
+          arcadeum: '4 levels',
+          seaBattle2: '1',
+          fleetBattle: '3',
+          battleTabs: '2',
+        },
+      },
+      {
+        feature: 'Special Weapons',
+        values: {
+          arcadeum: 'Sonar + Radar',
+          seaBattle2: '-',
+          fleetBattle: '-',
+          battleTabs: 'Abilities',
+        },
+      },
+      {
+        feature: 'Keyboard Controls',
+        values: {
+          arcadeum: true,
+          seaBattle2: false,
+          fleetBattle: false,
+          battleTabs: false,
+        },
+      },
+      {
+        feature: 'Sound Effects',
+        values: {
+          arcadeum: '8 sounds',
+          seaBattle2: 'Basic',
+          fleetBattle: 'Full',
+          battleTabs: 'Full',
+        },
+      },
+      {
+        feature: 'Cost',
+        values: {
+          arcadeum: 'Free',
+          seaBattle2: 'Free + IAP',
+          fleetBattle: 'Free + IAP',
+          battleTabs: 'Free (cosmetic)',
+        },
+      },
     ],
   };
 

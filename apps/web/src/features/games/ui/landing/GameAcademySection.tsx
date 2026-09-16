@@ -52,7 +52,7 @@ interface Props {
 
 export function GameAcademySection({
   gameKey,
-  title = 'Arcadeum Academy — Interactive Puzzles',
+  title = 'Arcadeum Academy: Interactive Puzzles',
   kicker = 'Learn by Doing',
 }: Props) {
   const challenges = DEFAULT_CHALLENGES[gameKey];

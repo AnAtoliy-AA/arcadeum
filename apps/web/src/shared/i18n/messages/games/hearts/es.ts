@@ -2,13 +2,13 @@ export const esMessages = {
   hearts_v1: {
     name: 'Corazones',
     description:
-      'Clásico juego de cartas de 4 jugadores — evita las cartas de penalti y dispara a la luna',
+      'Clásico juego de cartas de 4 jugadores - evita las cartas de penalti y dispara a la luna',
     summary:
       'Pasa cartas estratégicamente, sigue palo, deshazte de Corazones y la Reina de Espadas, ¡e intenta disparar a la luna!',
     variants: {},
     landing: {
       meta: {
-        title: 'Corazones — Juego de Cartas Multijugador Gratis | Arcadeum',
+        title: 'Corazones - Juego de Cartas Multijugador Gratis | Arcadeum',
         description:
           'Juega Corazones gratis en Arcadeum. Clásico juego de cartas de 4 jugadores con pass, Corazones, Reina de Espadas y oponentes IA.',
         keywords:
@@ -30,7 +30,7 @@ export const esMessages = {
         },
         passing: {
           title: 'Paso de Cartas',
-          body: 'Pasa 3 cartas cada mano — Izquierda, Derecha, Cruzada, Sin Paso',
+          body: 'Pasa 3 cartas cada mano - Izquierda, Derecha, Cruzada, Sin Paso',
         },
         shooting: {
           title: 'Disparar a la Luna',
@@ -104,7 +104,7 @@ export const esMessages = {
         breaking: {
           question: '¿Cuándo puedes liderar con Corazones?',
           answer:
-            'Los Corazones no pueden liderar hasta que se han "roto" — es decir, se ha descartado un Corazón en un truco anterior.',
+            'Los Corazones no pueden liderar hasta que se han "roto" - es decir, se ha descartado un Corazón en un truco anterior.',
         },
         queenStrategy: {
           question: '¿Cómo debo gestionar la Reina de Picas?',
@@ -157,7 +157,7 @@ export const esMessages = {
       lost: 'Perdiste.',
       draw: 'Es un empate.',
       messages: {
-        won: 'La puntuación más baja de la mesa — ¡bien jugado!',
+        won: 'La puntuación más baja de la mesa - ¡bien jugado!',
         lost: 'Alguien más tuvo una mano más limpia. ¿Revancha?',
         draw: 'Empate en puntos. ¿Otra partida?',
       },
@@ -202,7 +202,7 @@ export const esMessages = {
     tutorial: {
       s1: {
         title: 'Escapa de los puntos',
-        body: 'Sirve palo si puedes; la carta más alta del palo de salida se lleva la baza — y todas sus cartas de castigo.',
+        body: 'Sirve palo si puedes; la carta más alta del palo de salida se lleva la baza - y todas sus cartas de castigo.',
       },
       s2: {
         title: 'Teme a la Reina',

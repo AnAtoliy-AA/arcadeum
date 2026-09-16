@@ -8,20 +8,20 @@ export const esMessages = {
     landing: {
       meta: {
         title:
-          'Ajedrez Online — Bullet, Blitz, Rápido, Diario y Chess960 | Arcadeum',
+          'Ajedrez Online - Bullet, Blitz, Rápido, Diario y Chess960 | Arcadeum',
         description:
-          'Juega al ajedrez online con análisis del motor Stockfish 19, controles de tiempo bullet/blitz/rapido/diario, 6 variantes, 12 personalidades IA, Puzzle Rush, deshacer movimientos, importación PGN, tablas de finales, emparejamiento automático y revisión de partidas — todo gratis.',
+          'Juega al ajedrez online con análisis del motor Stockfish 19, controles de tiempo bullet/blitz/rapido/diario, 6 variantes, 12 personalidades IA, Puzzle Rush, deshacer movimientos, importación PGN, tablas de finales, emparejamiento automático y revisión de partidas - todo gratis.',
         keywords:
           'ajedrez online, juego de ajedrez, ajedrez multijugador, chess960, ajedrez bullet, blitz, rapido, ajedrez diario, stockfish 19, puzzles de ajedrez, puzzle rush, análisis de ajedrez, tablas de finales, syzygy, jugar ajedrez gratis, motor de ajedrez online, IA ajedrez, variantes de ajedrez, ajedrez atómico, crazyhouse, rey de la colina, tres jaques, torneos de ajedrez, clubes de ajedrez',
         howToPlayTitle: 'Cómo jugar a {{gameName}}',
       },
       hero: {
-        title: 'Ajedrez — El juego de estrategia definitivo',
+        title: 'Ajedrez - El juego de estrategia definitivo',
         subtitle:
           'Impulsado por Stockfish 19. Bullet, blitz, rápido, diario y Chess960. Juega contra amigos, 20 personalidades IA o toda la comunidad.',
         createRoom: 'Crear sala',
         ctaQuickplay: 'Jugar contra la IA',
-        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+        ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
         browseRooms: 'Explorar salas',
         backToGames: '← Juegos',
       },
@@ -32,7 +32,7 @@ export const esMessages = {
         },
         variants: {
           title: '6 variantes',
-          body: 'Estándar, Chess960, Rey de la Colina, Tres Jaques, Crazyhouse y Atómico — cada uno con condiciones de victoria únicas.',
+          body: 'Estándar, Chess960, Rey de la Colina, Tres Jaques, Crazyhouse y Atómico - cada uno con condiciones de victoria únicas.',
         },
         clock: {
           title: 'Todo control de tiempo',
@@ -77,7 +77,7 @@ export const esMessages = {
         takeback: {
           question: '¿Puedo deshacer un movimiento?',
           answer:
-            'Sí — usa el botón de Deshacer para solicitar una reversión. Tu oponente debe aceptar antes de que el movimiento se revierta. Disponible tanto en partidas casuales como clasificatorias.',
+            'Sí - usa el botón de Deshacer para solicitar una reversión. Tu oponente debe aceptar antes de que el movimiento se revierta. Disponible tanto en partidas casuales como clasificatorias.',
         },
         puzzlerush: {
           question: '¿Qué es Puzzle Rush?',
@@ -114,17 +114,17 @@ export const esMessages = {
           {
             key: 'engine',
             title: 'Motor Stockfish 19',
-            body: 'Análisis en tiempo real con Stockfish 19 y la red neuronal SFNNv16 — el motor de ajedrez de código abierto más fuerte del mundo.',
+            body: 'Análisis en tiempo real con Stockfish 19 y la red neuronal SFNNv16 - el motor de ajedrez de código abierto más fuerte del mundo.',
           },
           {
             key: 'bots',
             title: '20 personalidades IA',
-            body: 'No solo niveles de dificultad — 20 personajes únicos con estilos de juego, repertorios de aperturas y gestión de tiempo propias. Rating 400–2800.',
+            body: 'No solo niveles de dificultad - 20 personajes únicos con estilos de juego, repertorios de aperturas y gestión de tiempo propias. Rating 400–2800.',
           },
           {
             key: 'variants',
             title: '6 variantes',
-            body: 'Estándar, Chess960 (Fischer Random), Rey de la Colina, Tres Jaques, Crazyhouse y Atómico — cada uno con condiciones de victoria únicas.',
+            body: 'Estándar, Chess960 (Fischer Random), Rey de la Colina, Tres Jaques, Crazyhouse y Atómico - cada uno con condiciones de victoria únicas.',
           },
           {
             key: 'friction',
@@ -144,7 +144,7 @@ export const esMessages = {
           {
             key: 'tablebases',
             title: 'Tablas de finales',
-            body: 'Tablas Syzygy para posiciones con 7 o menos piezas — juego de finales perfecto al nivel de grandes maestros.',
+            body: 'Tablas Syzygy para posiciones con 7 o menos piezas - juego de finales perfecto al nivel de grandes maestros.',
           },
           {
             key: 'broadcast',
@@ -256,7 +256,7 @@ export const esMessages = {
       },
       s3: {
         title: 'Vigila el reloj',
-        body: 'Tu reloj cuenta atrás en tu turno — quedarte sin tiempo pierde la partida. El sonido, la música y compartir están en este panel.',
+        body: 'Tu reloj cuenta atrás en tu turno - quedarte sin tiempo pierde la partida. El sonido, la música y compartir están en este panel.',
       },
       s4: {
         title: 'Ayuda cuando la necesites',
@@ -391,10 +391,10 @@ export const esMessages = {
       subtitle: 'Resuelve problemas tácticos para mejorar tu puntuación',
       loading: 'Cargando problema...',
       noPuzzles: 'No hay problemas disponibles',
-      yourTurn: 'Tu turno — encuentra la mejor jugada',
+      yourTurn: 'Tu turno - encuentra la mejor jugada',
       opponentThinking: 'Oponente pensando...',
       correct: '¡Correcto!',
-      incorrect: 'Incorrecto — intenta de nuevo',
+      incorrect: 'Incorrecto - intenta de nuevo',
       nextPuzzle: 'Siguiente problema',
       getHint: 'Obtener pista',
       themes: 'Temas',
@@ -408,9 +408,9 @@ export const esMessages = {
       title: 'Fiebre de problemas',
       subtitle: 'Resuelve tantos problemas como puedas',
       survival: 'Modo Supervivencia',
-      survivalDesc: '3 vidas — un error te cuesta una vida',
+      survivalDesc: '3 vidas - un error te cuesta una vida',
       timed: 'Modo Contrarreloj',
-      timedDesc: '3 minutos — resuelve tantos como puedas',
+      timedDesc: '3 minutos - resuelve tantos como puedas',
       gameOver: '¡Tiempo agotado!',
       playAgain: 'Jugar de nuevo',
       endRun: 'Finalizar intento',

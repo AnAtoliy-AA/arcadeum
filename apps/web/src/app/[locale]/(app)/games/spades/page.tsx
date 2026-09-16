@@ -41,7 +41,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/spades/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Spades — free multiplayer on Arcadeum',
+          alt: 'Spades - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -56,7 +56,10 @@ export async function generateMetadata({
 export default async function SpadesLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(SPADES_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.spades_v1?.landing;
@@ -83,7 +86,7 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Spades on ${appConfig.appName}`,
           description:
-            'Play Spades online with 4 players — no download or signup required.',
+            'Play Spades online with 4 players - no download or signup required.',
           steps: [
             {
               name: landing.steps.create.title ?? 'Create a room',
@@ -114,8 +117,6 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
         }))
       : undefined,
   });
-
-  const comingSoon = await isGameComingSoon(SPADES_SLUG);
 
   return (
     <>

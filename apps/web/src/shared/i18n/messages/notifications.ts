@@ -3,7 +3,7 @@ import type { DeepPartial } from '../base-types';
 /**
  * SOURCE OF TRUTH for notification i18n strings (web + BE both render
  * from the same key/copy). Keep apps/be/src/notifications/i18n/notifications-messages.ts
- * in sync — the BE copy exists so push payloads can be rendered server-side.
+ * in sync - the BE copy exists so push payloads can be rendered server-side.
  *
  * Categories used by the dispatcher are tracked in
  * apps/be/src/notifications/notification-categories.ts.
@@ -19,7 +19,7 @@ export const en = {
   settings: {
     title: 'Notifications',
     description:
-      'Pick which notifications you want. Everything is off by default — turn on only what you want to be alerted about.',
+      'Pick which notifications you want. Everything is off by default - turn on only what you want to be alerted about.',
     permission: {
       granted: 'Notifications are enabled in your browser.',
       denied:
@@ -66,7 +66,7 @@ export const en = {
   },
   daily_reward_ready: {
     title: 'Daily reward ready',
-    body: 'Your streak is waiting — claim it now.',
+    body: 'Your streak is waiting - claim it now.',
   },
   tournament_starting_soon: {
     title: '{{name}} starts in {{minutes}} min',
@@ -110,7 +110,7 @@ export const ru: DeepPartial<NotificationsMessages> = {
   settings: {
     title: 'Уведомления',
     description:
-      'Выберите, какие уведомления получать. Всё выключено по умолчанию — включите только то, о чём хотите узнавать.',
+      'Выберите, какие уведомления получать. Всё выключено по умолчанию - включите только то, о чём хотите узнавать.',
     permission: {
       granted: 'Уведомления включены в вашем браузере.',
       denied:
@@ -157,7 +157,7 @@ export const ru: DeepPartial<NotificationsMessages> = {
   },
   daily_reward_ready: {
     title: 'Награда дня готова',
-    body: 'Не теряйте серию — заберите награду.',
+    body: 'Не теряйте серию - заберите награду.',
   },
   tournament_starting_soon: {
     title: '{{name}} начнётся через {{minutes}} мин',
@@ -199,7 +199,7 @@ export const es: DeepPartial<NotificationsMessages> = {
   settings: {
     title: 'Notificaciones',
     description:
-      'Elige qué notificaciones quieres. Todo está desactivado por defecto — activa solo lo que te interese.',
+      'Elige qué notificaciones quieres. Todo está desactivado por defecto - activa solo lo que te interese.',
     permission: {
       granted: 'Las notificaciones están activadas en tu navegador.',
       denied:
@@ -247,7 +247,7 @@ export const es: DeepPartial<NotificationsMessages> = {
   },
   daily_reward_ready: {
     title: 'Recompensa diaria lista',
-    body: 'Tu racha te espera — recógela ahora.',
+    body: 'Tu racha te espera - recógela ahora.',
   },
   tournament_starting_soon: {
     title: '{{name}} comienza en {{minutes}} min',
@@ -289,7 +289,7 @@ export const fr: DeepPartial<NotificationsMessages> = {
   settings: {
     title: 'Notifications',
     description:
-      'Choisis tes notifications. Tout est désactivé par défaut — active uniquement ce que tu veux savoir.',
+      'Choisis tes notifications. Tout est désactivé par défaut - active uniquement ce que tu veux savoir.',
     permission: {
       granted: 'Les notifications sont activées dans ton navigateur.',
       denied:
@@ -338,7 +338,7 @@ export const fr: DeepPartial<NotificationsMessages> = {
   },
   daily_reward_ready: {
     title: 'Récompense quotidienne prête',
-    body: 'Ta série t\u2019attend — récupère-la maintenant.',
+    body: 'Ta série t\u2019attend - récupère-la maintenant.',
   },
   tournament_starting_soon: {
     title: '{{name}} commence dans {{minutes}} min',
@@ -380,7 +380,7 @@ export const by: DeepPartial<NotificationsMessages> = {
   settings: {
     title: 'Апавяшчэнні',
     description:
-      'Выберыце, якія апавяшчэнні атрымліваць. Усё выключана па змаўчанні — уключыце толькі тое, пра што хочаце ведаць.',
+      'Выберыце, якія апавяшчэнні атрымліваць. Усё выключана па змаўчанні - уключыце толькі тое, пра што хочаце ведаць.',
     permission: {
       granted: 'Апавяшчэнні ўключаны ў вашым браўзеры.',
       denied: 'Браўзер заблакаваў апавяшчэнні. Уключыце іх у наладах сайта.',
@@ -427,7 +427,7 @@ export const by: DeepPartial<NotificationsMessages> = {
   },
   daily_reward_ready: {
     title: 'Узнагарода дня гатовая',
-    body: 'Не губіце серыю — забярыце ўзнагароду.',
+    body: 'Не губіце серыю - забярыце ўзнагароду.',
   },
   tournament_starting_soon: {
     title: '{{name}} пачнецца праз {{minutes}} хв',

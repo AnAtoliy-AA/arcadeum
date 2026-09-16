@@ -60,7 +60,7 @@ export default async function SudokuLandingRoute({ params }: PageProps) {
     },
     howTo: {
       name: `How to Play Sudoku on ${appConfig.appName}`,
-      description: 'Play Sudoku online free — no signup, no download.',
+      description: 'Play Sudoku online free - no signup, no download.',
       steps: [
         {
           name: 'Choose difficulty',
@@ -97,7 +97,7 @@ export default async function SudokuLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Sudoku', 'Puzzle'])}
+        posts={await getPostsByTag(locale, ['Sudoku', 'Puzzle'])}
       />
     </>
   );

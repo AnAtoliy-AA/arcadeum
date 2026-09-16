@@ -5,7 +5,7 @@ export type { en } from './en';
 
 export type AuthMessages = DeepPartial<typeof en>;
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadAuthMessages(locale: string) {
   switch (locale) {
     case 'en':

@@ -37,7 +37,7 @@ export const esMessages = {
     landing: {
       tagline: 'Un jugador · Sin registro',
       meta: {
-        title: 'Solitario — Juego de cartas Klondike gratis online | Arcadeum',
+        title: 'Solitario - Juego de cartas Klondike gratis online | Arcadeum',
         description:
           'Juega al solitario Klondike clásico gratis online en Arcadeum. Sin descargas ni registro: rompecabezas de cartas para un jugador con puntuación, cronómetro y progreso guardado.',
         keywords:

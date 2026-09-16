@@ -35,7 +35,7 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Backgammon — Juego de Mesa Multijugador Gratis | Arcadeum',
+        title: 'Backgammon - Juego de Mesa Multijugador Gratis | Arcadeum',
         description:
           'Juega al Backgammon gratis en línea en Arcadeum. Tablero clásico de 24 casillas con dados, descarte, capturas y oponentes IA.',
         keywords:
@@ -199,7 +199,7 @@ export const esMessages = {
       },
       s2: {
         title: 'Golpea los blots',
-        body: 'Una ficha sola es un blot — cae en ella y la mandas a la barra. Las fichas en la barra deben reingresar antes de mover cualquier otra cosa.',
+        body: 'Una ficha sola es un blot - cae en ella y la mandas a la barra. Las fichas en la barra deben reingresar antes de mover cualquier otra cosa.',
       },
       s3: {
         title: 'Saca fichas para ganar',
@@ -242,13 +242,13 @@ export const esMessages = {
         long: {
           objectiveTitle: 'Objetivo',
           objective:
-            'Conduce las 15 fichas desde la cabeza hasta tu tablero interno y sácalas. Todas empiezan en un solo punto — la carrera es de resistencia.',
+            'Conduce las 15 fichas desde la cabeza hasta tu tablero interno y sácalas. Todas empiezan en un solo punto - la carrera es de resistencia.',
           movementTitle: 'Movimiento y Dados',
           movement:
-            'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Los puntos ocupados por el oponente están completamente bloqueados — no puedes pasar ni quedarte.',
+            'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Los puntos ocupados por el oponente están completamente bloqueados - no puedes pasar ni quedarte.',
           hittingTitle: 'Sin Capturas',
           hitting:
-            'Las capturas no están permitidas. Los puntos del oponente siempre están bloqueados. Debes esquivar sus pilas — la posición lo decide todo.',
+            'Las capturas no están permitidas. Los puntos del oponente siempre están bloqueados. Debes esquivar sus pilas - la posición lo decide todo.',
           bearingOffTitle: 'Sacar Fichas',
           bearingOff:
             'Cuando las 15 fichas están en tu tablero interno, sácalas con el número exacto o mayor. La prohibición de capturas hace que llegar a casa sea el mayor desafío.',
@@ -256,7 +256,7 @@ export const esMessages = {
         hyper: {
           objectiveTitle: 'Objetivo',
           objective:
-            'Solo 3 fichas por jugador — saca las tres antes que tu oponente. Cada movimiento cuenta.',
+            'Solo 3 fichas por jugador - saca las tres antes que tu oponente. Cada movimiento cuenta.',
           movementTitle: 'Movimiento y Dados',
           movement:
             'Tira dos dados y mueve tus fichas. Con dobles son cuatro movimientos. Con tan pocas fichas, las partidas son rápidas y tácticas.',
@@ -298,7 +298,7 @@ export const esMessages = {
         gulbara: {
           objectiveTitle: 'Objetivo',
           objective:
-            'Conduce las 15 fichas desde la cabeza hasta tu tablero interno y sácalas. Sin capturas — estrategia pura de carrera.',
+            'Conduce las 15 fichas desde la cabeza hasta tu tablero interno y sácalas. Sin capturas - estrategia pura de carrera.',
           movementTitle: 'Movimiento y Dados',
           movement:
             'Tira dos dados y mueve tus fichas. Los puntos del oponente están bloqueados. Al sacar dobles, se juegan todos los dobles superiores posteriores.',

@@ -7,41 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.2] - 2026-09-16
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.30.1] - 2026-09-15
 
 ### Refactored
-- migrate from Docker to PM2 bare-metal deployment
 
+- migrate from Docker to PM2 bare-metal deployment
 
 ## [1.30.0] - 2026-09-14
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.29.48] - 2026-09-14
 
 ### Added
-- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
 
+- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
 
 ## [1.29.47] - 2026-09-14
 
 ### Added
-- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
 
+- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
 
 ## [1.29.46] - 2026-09-13
 
 ### Added
-- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
 
+- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
 
 ## [1.29.45] - 2026-09-13
 
 ### Added
-- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
 
+- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
 
 ## [1.29.44] - 2026-09-13
 

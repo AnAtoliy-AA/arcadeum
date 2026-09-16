@@ -75,8 +75,10 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
-  const comingSoon = await isGameComingSoon(GLIMWORM_SLUG);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(GLIMWORM_SLUG),
+    getTranslations(locale),
+  ]);
   const landing = messages.games?.glimworm_v1?.landing;
   const gameName = messages.games?.glimworm_v1?.name ?? 'Glimworm';
   const description = landing?.meta?.description ?? '';
@@ -122,7 +124,11 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const relatedPosts = getPostsByTag(locale, ['Glimworm', 'Snake', 'Arcade']);
+  const relatedPosts = await getPostsByTag(locale, [
+    'Glimworm',
+    'Snake',
+    'Arcade',
+  ]);
 
   return (
     <>

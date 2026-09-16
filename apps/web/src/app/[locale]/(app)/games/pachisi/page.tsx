@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function PachisiLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(PACHISI_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.pachisi_v1?.landing;
@@ -117,8 +120,6 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(PACHISI_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-pachisi" data={jsonLd} />
@@ -145,7 +146,7 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Pachisi',
           'Ludo',
           'Board Game',

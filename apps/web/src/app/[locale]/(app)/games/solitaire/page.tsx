@@ -99,7 +99,7 @@ export default async function SolitaireLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Solitaire',
           'Klondike',
           'Card Game',

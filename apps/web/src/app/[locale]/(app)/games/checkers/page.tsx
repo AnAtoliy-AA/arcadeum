@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function CheckersLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CHECKERS_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.checkers_v1?.landing;
@@ -118,8 +121,6 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(CHECKERS_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-checkers" data={jsonLd} />
@@ -147,7 +148,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Checkers',
           'Draughts',
           'Шашки',

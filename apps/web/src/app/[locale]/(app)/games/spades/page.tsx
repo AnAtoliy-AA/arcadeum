@@ -56,7 +56,10 @@ export async function generateMetadata({
 export default async function SpadesLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(SPADES_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.spades_v1?.landing;
@@ -114,8 +117,6 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
         }))
       : undefined,
   });
-
-  const comingSoon = await isGameComingSoon(SPADES_SLUG);
 
   return (
     <>

@@ -32,7 +32,7 @@ export default async function BlogPage({
   const messages = await getTranslations(locale);
   const t = messages.pages?.blog;
   const routes = buildRoutes(locale);
-  const rawPosts = getPosts(locale);
+  const rawPosts = await getPosts(locale);
 
   const posts = rawPosts.map((p) => ({
     slug: p.slug,

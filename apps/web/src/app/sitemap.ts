@@ -282,7 +282,7 @@ function alternatesFor(key: RouteKey): Record<string, string> {
   return languages;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of SUPPORTED_LOCALES) {
@@ -314,7 +314,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // locales avoids pointing Google at a fallback that would dilute
     // the language-clustering signal.
     for (const slug of POST_SLUGS) {
-      const post = getPost(slug, locale);
+      const post = await getPost(slug, locale);
       if (!post || post.locale !== locale) continue;
 
       const postLanguages: Record<string, string> = {
@@ -322,7 +322,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'x-default': `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE).blogPost(slug)}`,
       };
       for (const l of SUPPORTED_LOCALES) {
-        const localized = getPost(slug, l);
+        const localized = await getPost(slug, l);
         if (localized && localized.locale === l) {
           postLanguages[localeToHreflang(l)] =
             `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;

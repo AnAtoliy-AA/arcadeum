@@ -61,7 +61,10 @@ export async function generateMetadata({
 export default async function ChessLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CHESS_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.chess_v1?.landing;
@@ -167,8 +170,6 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         })
       : []),
   ];
-
-  const comingSoon = await isGameComingSoon(CHESS_SLUG);
 
   return (
     <>

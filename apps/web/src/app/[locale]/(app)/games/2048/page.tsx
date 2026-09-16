@@ -97,7 +97,7 @@ export default async function Game2048LandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['2048', 'Puzzle', 'Numbers'])}
+        posts={await getPostsByTag(locale, ['2048', 'Puzzle', 'Numbers'])}
       />
     </>
   );

@@ -75,8 +75,10 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
-  const comingSoon = await isGameComingSoon(CRITICAL_SLUG);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CRITICAL_SLUG),
+    getTranslations(locale),
+  ]);
   const landing = messages.games?.critical_v1?.landing;
   const gameName = messages.games?.critical_v1?.name ?? 'Critical';
   const description = landing?.meta?.description ?? '';
@@ -122,7 +124,7 @@ export default async function CriticalLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const relatedPosts = getPostsByTag(locale, ['Critical', 'Card Game']);
+  const relatedPosts = await getPostsByTag(locale, ['Critical', 'Card Game']);
 
   return (
     <>

@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function CascadeLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CASCADE_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.cascade_v1?.landing;
@@ -120,8 +123,6 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(CASCADE_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-cascade" data={jsonLd} />
@@ -150,7 +151,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Cascade', 'Card Game', 'Каскад'])}
+        posts={await getPostsByTag(locale, ['Cascade', 'Card Game', 'Каскад'])}
         gameName={landing?.hero?.title}
       />
     </>

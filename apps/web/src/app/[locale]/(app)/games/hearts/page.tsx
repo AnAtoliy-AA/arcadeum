@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function HeartsLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(HEARTS_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.hearts_v1?.landing;
@@ -117,8 +120,6 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(HEARTS_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-hearts" data={jsonLd} />
@@ -145,7 +146,7 @@ export default async function HeartsLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Hearts', 'Card Game', 'Валетныя'])}
+        posts={await getPostsByTag(locale, ['Hearts', 'Card Game', 'Валетныя'])}
         gameName={landing?.hero?.title}
       />
     </>

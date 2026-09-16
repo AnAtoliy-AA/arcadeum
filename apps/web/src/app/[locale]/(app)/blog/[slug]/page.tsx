@@ -39,7 +39,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale, slug } = await params;
   const locale = resolveLocale(rawLocale);
-  const post = getPost(slug, locale);
+  const post = await getPost(slug, locale);
   if (!post) return {};
 
   const routes = buildRoutes(locale);
@@ -51,7 +51,7 @@ export async function generateMetadata({
   // confuse the language-clustering signal.
   const languages: Record<string, string> = {};
   for (const l of SUPPORTED_LOCALES) {
-    if (getPost(slug, l)) {
+    if (await getPost(slug, l)) {
       languages[localeToHreflang(l)] =
         `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
     }
@@ -87,7 +87,7 @@ export async function generateMetadata({
 export default async function BlogPostRoute({ params }: PageProps) {
   const { locale: rawLocale, slug } = await params;
   const locale = resolveLocale(rawLocale);
-  const post = getPost(slug, locale);
+  const post = await getPost(slug, locale);
   if (!post) notFound();
 
   const routes = buildRoutes(locale);

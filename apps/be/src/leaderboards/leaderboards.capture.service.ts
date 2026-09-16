@@ -18,6 +18,7 @@ import { LeaderboardsCacheService } from './leaderboards.cache';
 import { GameHistoryStatsService } from '../games/history/game-history-stats.service';
 
 const DEFAULT_INTERVAL_MS = 60_000;
+const MAX_BACKOFF_MS = 300_000;
 
 export type CaptureResult = {
   mode: GameMode;
@@ -31,6 +32,7 @@ export class LeaderboardsCaptureService
 {
   private readonly logger = new Logger(LeaderboardsCaptureService.name);
   private timer: NodeJS.Timeout | null = null;
+  private consecutiveFailures = 0;
 
   constructor(
     @InjectModel(LeaderboardEntry.name)
@@ -53,21 +55,37 @@ export class LeaderboardsCaptureService
       this.logger.log('Capture loop disabled in e2e (E2E=true).');
       return;
     }
-    const interval = readIntervalMs();
-    this.logger.log(`Capture loop scheduled every ${interval}ms.`);
-    this.timer = setInterval(() => {
-      this.captureAll().catch((err: unknown) =>
-        this.logger.error(
-          `Capture failed: ${err instanceof Error ? err.message : String(err)}`,
-        ),
-      );
-    }, interval);
-    if (typeof this.timer.unref === 'function') this.timer.unref();
+    const baseInterval = readIntervalMs();
+    this.logger.log(`Capture loop scheduled every ${baseInterval}ms.`);
+    this.scheduleNext(baseInterval);
   }
 
   onModuleDestroy(): void {
-    if (this.timer) clearInterval(this.timer);
+    if (this.timer) clearTimeout(this.timer);
     this.timer = null;
+  }
+
+  private scheduleNext(baseInterval: number): void {
+    const backoffMs =
+      this.consecutiveFailures > 0
+        ? Math.min(baseInterval * 2 ** this.consecutiveFailures, MAX_BACKOFF_MS)
+        : baseInterval;
+    this.timer = setTimeout(() => {
+      this.captureAll()
+        .then(() => {
+          this.consecutiveFailures = 0;
+        })
+        .catch((err: unknown) => {
+          this.consecutiveFailures++;
+          this.logger.error(
+            `Capture failed (attempt ${this.consecutiveFailures}): ${err instanceof Error ? err.message : String(err)}`,
+          );
+        })
+        .finally(() => {
+          this.scheduleNext(baseInterval);
+        });
+    }, backoffMs);
+    if (typeof this.timer.unref === 'function') this.timer.unref();
   }
 
   /**

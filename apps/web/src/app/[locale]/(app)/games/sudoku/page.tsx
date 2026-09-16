@@ -97,7 +97,7 @@ export default async function SudokuLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Sudoku', 'Puzzle'])}
+        posts={await getPostsByTag(locale, ['Sudoku', 'Puzzle'])}
       />
     </>
   );

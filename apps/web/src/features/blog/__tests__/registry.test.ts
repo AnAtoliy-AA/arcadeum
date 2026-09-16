@@ -11,9 +11,9 @@ describe('blog registry', () => {
     expect(POST_SLUGS).toContain('how-to-play-chess');
   });
 
-  it('provides complete 5-locale coverage for Spades guide', () => {
+  it('provides complete 5-locale coverage for Spades guide', async () => {
     for (const locale of SUPPORTED_LOCALES) {
-      const post = getPost('how-to-play-spades', locale);
+      const post = await getPost('how-to-play-spades', locale);
       expect(post).toBeDefined();
       expect(post?.locale).toBe(locale);
       expect(post?.title.length).toBeGreaterThan(10);
@@ -23,9 +23,9 @@ describe('blog registry', () => {
     }
   });
 
-  it('provides complete 5-locale coverage for Go guide', () => {
+  it('provides complete 5-locale coverage for Go guide', async () => {
     for (const locale of SUPPORTED_LOCALES) {
-      const post = getPost('how-to-play-go', locale);
+      const post = await getPost('how-to-play-go', locale);
       expect(post).toBeDefined();
       expect(post?.locale).toBe(locale);
       expect(post?.title.length).toBeGreaterThan(10);
@@ -33,9 +33,9 @@ describe('blog registry', () => {
     }
   });
 
-  it('provides complete 5-locale coverage for Tic-Tac-Toe guide', () => {
+  it('provides complete 5-locale coverage for Tic-Tac-Toe guide', async () => {
     for (const locale of SUPPORTED_LOCALES) {
-      const post = getPost('how-to-win-tic-tac-toe', locale);
+      const post = await getPost('how-to-win-tic-tac-toe', locale);
       expect(post).toBeDefined();
       expect(post?.locale).toBe(locale);
       expect(post?.title.length).toBeGreaterThan(10);
@@ -43,8 +43,8 @@ describe('blog registry', () => {
     }
   });
 
-  it('sorts posts by publication date descending in getPosts', () => {
-    const posts = getPosts('en');
+  it('sorts posts by publication date descending in getPosts', async () => {
+    const posts = await getPosts('en');
     expect(posts.length).toBe(POST_SLUGS.length);
     for (let i = 0; i < posts.length - 1; i++) {
       const current = new Date(posts[i].publishedAt).getTime();
@@ -53,21 +53,21 @@ describe('blog registry', () => {
     }
   });
 
-  it('filters posts by tag accurately with getPostsByTag', () => {
-    const strategyPosts = getPostsByTag('en', ['Strategy'], 10);
+  it('filters posts by tag accurately with getPostsByTag', async () => {
+    const strategyPosts = await getPostsByTag('en', ['Strategy'], 10);
     expect(strategyPosts.length).toBeGreaterThan(0);
     for (const post of strategyPosts) {
       const lowerTags = post.tags.map((t) => t.toLowerCase());
       expect(lowerTags).toContain('strategy');
     }
 
-    const emptyResult = getPostsByTag('en', ['nonexistent-tag-xyz'], 5);
+    const emptyResult = await getPostsByTag('en', ['nonexistent-tag-xyz'], 5);
     expect(emptyResult).toEqual([]);
   });
 
-  it('ensures every registered post has valid structural metadata', () => {
+  it('ensures every registered post has valid structural metadata', async () => {
     for (const slug of POST_SLUGS) {
-      const post = getPost(slug, 'en');
+      const post = await getPost(slug, 'en');
       expect(post).toBeDefined();
       expect(post?.slug).toBe(slug);
       expect(post?.author).toBeTruthy();

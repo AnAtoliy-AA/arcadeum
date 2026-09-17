@@ -43,6 +43,13 @@ function classifyError(status: number, body: string): ShopActionError {
   if (lower.includes('shop.notfriends')) return 'not_friends';
   if (lower.includes('shop.cannotgiftself')) return 'cannot_gift_self';
   if (lower.includes('shop.staternotgift')) return 'starter_not_gift';
+  if (lower.includes('shop.badgenotpurchasable')) return 'unavailable';
+  if (lower.includes('shop.unknownpurchase')) return 'not_owned';
+  if (lower.includes('shop.norefunddue')) return 'not_owned';
+  if (lower.includes('shop.signaturealreadyused')) return 'unavailable';
+  if (lower.includes('shop.walletpaymentonlyforarc')) return 'unavailable';
+  if (lower.includes('shop.invalidtransaction')) return 'unavailable';
+  if (status >= 500) return 'unavailable';
   return 'generic';
 }
 

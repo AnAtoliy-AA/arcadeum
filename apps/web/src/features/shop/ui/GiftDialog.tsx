@@ -16,7 +16,6 @@ import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
 import type {
   InventoryItemView,
   EffectiveShopItem,
-  WalletBalanceView,
 } from '@/features/shop/server/shop.types';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 import { loadCatalog } from '@/features/shop/lib/catalogCache';
@@ -50,7 +49,6 @@ export function GiftDialog({
   const [message, setMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [balance, setBalance] = useState<WalletBalanceView | null>(null);
   const [confirmPurchase, setConfirmPurchase] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -111,10 +109,7 @@ export function GiftDialog({
     setError(null);
     startTransition(async () => {
       try {
-        const result = await apiClient.post<{
-          inventoryItem: unknown;
-          balance?: WalletBalanceView;
-        }>(
+        await apiClient.post(
           '/shop/gift',
           {
             recipientId,
@@ -123,9 +118,6 @@ export function GiftDialog({
           },
           { token: snapshot.accessToken ?? undefined },
         );
-        if (result.balance) {
-          setBalance(result.balance);
-        }
         setSuccess(true);
         setTimeout(() => onClose(), 1500);
       } catch (err: unknown) {

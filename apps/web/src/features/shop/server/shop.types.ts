@@ -77,6 +77,7 @@ export interface SellResult {
 
 export interface GiftResult {
   inventoryItem: InventoryItemView;
+  balance?: WalletBalanceView;
 }
 
 export interface CatalogFilter {

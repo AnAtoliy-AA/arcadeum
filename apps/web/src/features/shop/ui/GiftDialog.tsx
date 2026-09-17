@@ -9,10 +9,14 @@ import {
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
 import { apiClient } from '@/shared/lib/api-client';
+import { formatNumber } from '@/shared/i18n/formatters';
+import { useLanguage } from '@/shared/i18n';
+import { CURRENCY_COLOR, CURRENCY_GLYPH } from '../lib/currency';
 
 import type {
   InventoryItemView,
   EffectiveShopItem,
+  WalletBalanceView,
 } from '@/features/shop/server/shop.types';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 import { loadCatalog } from '@/features/shop/lib/catalogCache';
@@ -26,6 +30,10 @@ interface GiftDialogProps {
   recipientAvatarId: string | null;
 }
 
+interface CatalogGiftItem extends EffectiveShopItem {
+  owned: boolean;
+}
+
 export function GiftDialog({
   open,
   onClose,
@@ -35,15 +43,15 @@ export function GiftDialog({
 }: GiftDialogProps) {
   const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const [inventory, setInventory] = useState<InventoryItemView[]>([]);
-  const [catalogMap, setCatalogMap] = useState<Map<string, EffectiveShopItem>>(
-    new Map(),
-  );
+  const { locale } = useLanguage();
+  const [items, setItems] = useState<CatalogGiftItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [balance, setBalance] = useState<WalletBalanceView | null>(null);
+  const [confirmPurchase, setConfirmPurchase] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -58,16 +66,27 @@ export function GiftDialog({
     ])
       .then(([invData, catData]) => {
         if (!cancelled) {
-          const map = new Map<string, EffectiveShopItem>();
-          for (const item of catData) {
-            map.set(item.id, item);
-          }
-          setCatalogMap(map);
-          setInventory(
-            (invData.items ?? []).filter(
-              (item) => item.acquiredVia !== 'starter' && item.soldAt === null,
-            ),
+          const ownedSet = new Set(
+            (invData.items ?? [])
+              .filter(
+                (item) => item.acquiredVia !== 'starter' && item.soldAt === null,
+              )
+              .map((item) => item.itemId),
           );
+
+          const catalogItems: CatalogGiftItem[] = catData
+            .filter(
+              (item) =>
+                item.starter !== true &&
+                item.purchasable !== false &&
+                item.available,
+            )
+            .map((item) => ({
+              ...item,
+              owned: ownedSet.has(item.id),
+            }));
+
+          setItems(catalogItems);
           setLoading(false);
         }
       })
@@ -80,12 +99,22 @@ export function GiftDialog({
     };
   }, [open, snapshot.accessToken]);
 
+  const selectedItemDef = items.find((i) => i.id === selectedItem);
+  const isPurchasable = selectedItemDef && !selectedItemDef.owned;
+
   const handleSend = useCallback(() => {
     if (!selectedItem || !message.trim()) return;
+    if (isPurchasable && !confirmPurchase) {
+      setConfirmPurchase(true);
+      return;
+    }
     setError(null);
     startTransition(async () => {
       try {
-        await apiClient.post(
+        const result = await apiClient.post<{
+          inventoryItem: unknown;
+          balance?: WalletBalanceView;
+        }>(
           '/shop/gift',
           {
             recipientId,
@@ -94,14 +123,34 @@ export function GiftDialog({
           },
           { token: snapshot.accessToken ?? undefined },
         );
+        if (result.balance) {
+          setBalance(result.balance);
+        }
         setSuccess(true);
         setTimeout(() => onClose(), 1500);
       } catch (err: unknown) {
         const errorKey = err instanceof Error ? err.message : 'generic';
         setError(errorKey);
+        setConfirmPurchase(false);
       }
     });
-  }, [selectedItem, message, recipientId, onClose, snapshot.accessToken]);
+  }, [
+    selectedItem,
+    message,
+    recipientId,
+    onClose,
+    snapshot.accessToken,
+    isPurchasable,
+    confirmPurchase,
+  ]);
+
+  const handleCancel = useCallback(() => {
+    if (confirmPurchase) {
+      setConfirmPurchase(false);
+    } else {
+      onClose();
+    }
+  }, [confirmPurchase, onClose]);
 
   const errorMessages: Record<string, string> = {
     not_friends: t('pages.friends.gift.error.notFriends'),
@@ -109,6 +158,8 @@ export function GiftDialog({
     starter_not_gift: t('pages.friends.gift.error.starterNotGift'),
     not_owned: t('pages.friends.gift.error.notOwned'),
     unknown_item: t('pages.friends.gift.error.unknownItem'),
+    insufficient_funds: t('pages.friends.gift.error.insufficientFunds'),
+    unavailable: t('pages.friends.gift.error.unavailable'),
   };
 
   if (!open) return null;
@@ -140,7 +191,7 @@ export function GiftDialog({
           <div className="flex justify-center p-4">
             <Spinner size="sm" />
           </div>
-        ) : inventory.length === 0 ? (
+        ) : items.length === 0 ? (
           <span className="text-[14px] text-[var(--textSecondary)] p-2 text-center">
             {t('pages.friends.gift.empty')}
           </span>
@@ -150,46 +201,56 @@ export function GiftDialog({
               {t('pages.friends.gift.selectItem')}
             </span>
             <div className="flex flex-col gap-1 max-h-[220px] overflow-auto">
-              {inventory.map((item) => {
-                const def = catalogMap.get(item.itemId);
-                const translatedName = def?.nameKey
-                  ? t(`pages.shop.${def.nameKey}` as TranslationKey)
+              {items.map((item) => {
+                const translatedName = item.nameKey
+                  ? t(`pages.shop.${item.nameKey}` as TranslationKey)
                   : undefined;
                 const itemName =
                   translatedName && !translatedName.startsWith('pages.shop.')
                     ? translatedName
-                    : item.itemId;
+                    : item.id;
 
                 return (
                   <button
-                    key={item.rowId}
+                    key={item.id}
                     type="button"
                     className={`flex items-center gap-2 p-2 rounded-lg transition-colors text-left ${
-                      selectedItem === item.itemId
+                      selectedItem === item.id
                         ? 'bg-[var(--primary)] bg-opacity-20 border border-[var(--primary)]'
                         : 'hover:bg-[var(--glassBg)] border border-transparent'
                     }`}
-                    onClick={() => setSelectedItem(item.itemId)}
-                    data-testid={`gift-item-${item.itemId}`}
+                    onClick={() => {
+                      setSelectedItem(item.id);
+                      setConfirmPurchase(false);
+                    }}
+                    data-testid={`gift-item-${item.id}`}
                   >
                     <AdminShopItemPreview
-                      item={def}
+                      item={item}
                       size={32}
-                      colorValue={def?.colorValue}
-                      assetUrl={def?.assetUrl}
-                      itemId={item.itemId}
+                      colorValue={item.colorValue}
+                      assetUrl={item.assetUrl}
+                      itemId={item.id}
                     />
                     <div className="flex flex-col flex-1 min-w-0">
                       <span className="text-sm font-semibold truncate text-[var(--colorText)]">
                         {itemName}
                       </span>
                       <span className="text-[11px] text-[var(--textSecondary)] flex items-center gap-1.5">
-                        <code className="font-mono">{item.itemId}</code>
-                        {def && (
-                          <>
-                            <span>•</span>
-                            <span className="capitalize">{def.category}</span>
-                          </>
+                        <code className="font-mono">{item.id}</code>
+                        <span>•</span>
+                        <span className="capitalize">{item.category}</span>
+                        {item.owned ? (
+                          <span className="text-[var(--success)]">• Owned</span>
+                        ) : (
+                          <span className="flex items-center gap-0.5">
+                            <span>{CURRENCY_GLYPH[item.priceCurrency]}</span>
+                            <span
+                              className={CURRENCY_COLOR[item.priceCurrency]}
+                            >
+                              {formatNumber(item.priceAmount, locale)}
+                            </span>
+                          </span>
                         )}
                       </span>
                     </div>
@@ -213,15 +274,39 @@ export function GiftDialog({
               />
             </div>
 
+            {isPurchasable && confirmPurchase && selectedItemDef && (
+              <div className="flex flex-col gap-2 p-3 rounded-lg bg-[var(--backgroundHover)] border border-[var(--warning)]">
+                <span className="text-[14px] font-semibold text-[var(--color)]">
+                  Buy & Gift
+                </span>
+                <span className="text-[13px] text-[var(--textSecondary)]">
+                  This will deduct{' '}
+                  <span className="font-semibold">
+                    {CURRENCY_GLYPH[selectedItemDef.priceCurrency]}{' '}
+                    {formatNumber(selectedItemDef.priceAmount, locale)}{' '}
+                    {selectedItemDef.priceCurrency}
+                  </span>{' '}
+                  from your balance and send the item to {recipientName}.
+                </span>
+              </div>
+            )}
+
             {error && (
               <span className="text-[var(--danger)] text-[13px]">
-                {errorMessages[error] || t('pages.friends.gift.error.generic')}
+                {errorMessages[error] ||
+                  t('pages.friends.gift.error.generic')}
               </span>
             )}
 
             <div className="flex flex-row gap-2 justify-end -mt-1">
-              <Button variant="outline" onClick={onClose} disabled={isPending}>
-                {t('pages.friends.gift.cancel')}
+              <Button
+                variant="outline"
+                onClick={handleCancel}
+                disabled={isPending}
+              >
+                {confirmPurchase
+                  ? t('pages.friends.gift.cancel')
+                  : t('pages.friends.gift.cancel')}
               </Button>
               <Button
                 onClick={handleSend}
@@ -230,6 +315,8 @@ export function GiftDialog({
               >
                 {isPending ? (
                   <Spinner size="sm" />
+                ) : confirmPurchase ? (
+                  t('pages.friends.gift.confirmBuyAndGift')
                 ) : (
                   t('pages.friends.gift.sendButton')
                 )}

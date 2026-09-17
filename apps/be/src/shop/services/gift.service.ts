@@ -18,11 +18,14 @@ import {
   type ShopAdminAuditDocument,
 } from '../schemas/shop-admin-audit.schema';
 import { InventoryService } from './inventory.service';
+import { CatalogService } from './catalog.service';
 import { FriendsService } from '../../friends/friends.service';
 import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
+import { WalletService } from '../../wallet/wallet.service';
 import { equipKeyFor } from '../lib/shop-types';
 import { getCatalogItem } from '../lib/shop-catalog';
 import type { GiftResult } from '../interfaces/shop-views';
+import type { WalletBalance } from '../../wallet/interfaces/wallet-balance.interface';
 
 interface InventoryRowSnapshot {
   _id: import('mongoose').Types.ObjectId;
@@ -56,8 +59,10 @@ export class GiftService {
     @InjectModel(ShopAdminAudit.name)
     private readonly auditModel: Model<ShopAdminAuditDocument>,
     private readonly inventory: InventoryService,
+    private readonly catalog: CatalogService,
     private readonly friends: FriendsService,
     private readonly dispatcher: NotificationDispatcher,
+    private readonly wallet: WalletService,
   ) {}
 
   async gift(
@@ -85,12 +90,18 @@ export class GiftService {
       throw new BadRequestException('shop.starterNotGift');
     }
 
+    // Get effective item with current price/availability from catalog overrides
+    const effective = await this.catalog.getEffective(safeItemId);
+    if (!effective) throw new NotFoundException('shop.unknownItem');
+
     const senderObjId = new Types.ObjectId(safeSenderId);
     const purchaseId = `gift-${safeSenderId}-${safeRecipientId}-${safeItemId}-${Date.now()}`;
 
     let recipientRow!: InventoryRowSnapshot;
+    let balance: WalletBalance | undefined;
 
     await runInTransaction(this.connection, async (session) => {
+      // Check if sender owns this item
       const row = await this.inventoryModel
         .findOne(
           {
@@ -103,28 +114,68 @@ export class GiftService {
         )
         .lean<InventoryRowSnapshot | null>();
 
-      if (!row) throw new BadRequestException('shop.notOwned');
+      if (row) {
+        // OWNED PATH: Transfer the item to the recipient
+        await this.inventoryModel.updateOne(
+          { _id: row._id },
+          { $set: { soldAt: new Date() } },
+          { session },
+        );
 
-      await this.inventoryModel.updateOne(
-        { _id: row._id },
-        { $set: { soldAt: new Date() } },
-        { session },
-      );
+        const created = await this.inventoryModel.create(
+          [
+            {
+              userId: new Types.ObjectId(safeRecipientId),
+              itemId: def.id,
+              purchaseId,
+              acquiredVia: 'gift',
+              paidAmount: null,
+              paidCurrency: null,
+            },
+          ],
+          { session },
+        );
+        recipientRow = created[0];
+      } else {
+        // NOT OWNED PATH: Buy the item for the sender and gift to recipient
+        if (effective.purchasable === false) {
+          throw new BadRequestException('shop.notOwned');
+        }
+        if (!effective.available) {
+          throw new BadRequestException('shop.unavailable');
+        }
 
-      const created = await this.inventoryModel.create(
-        [
-          {
-            userId: new Types.ObjectId(safeRecipientId),
-            itemId: def.id,
-            purchaseId,
-            acquiredVia: 'gift',
-            paidAmount: null,
-            paidCurrency: null,
-          },
-        ],
-        { session },
-      );
-      recipientRow = created[0];
+        const reason =
+          effective.priceCurrency === 'arcadeum'
+            ? 'shop_purchase_arc'
+            : 'shop_purchase';
+        await this.wallet.debit(
+          safeSenderId,
+          effective.priceCurrency,
+          effective.priceAmount,
+          reason,
+          `gift-buy-${purchaseId}`,
+          { itemId: effective.id },
+          session,
+        );
+
+        const created = await this.inventoryModel.create(
+          [
+            {
+              userId: new Types.ObjectId(safeRecipientId),
+              itemId: effective.id,
+              purchaseId,
+              acquiredVia: effective.priceCurrency,
+              paidAmount: effective.priceAmount,
+              paidCurrency: effective.priceCurrency,
+            },
+          ],
+          { session },
+        );
+        recipientRow = created[0];
+
+        balance = await this.wallet.getBalance(safeSenderId);
+      }
 
       await this.auditModel.create(
         [
@@ -139,6 +190,10 @@ export class GiftService {
         { session },
       );
     });
+
+    if (balance) {
+      this.wallet.emitAfterCommit(safeSenderId, balance);
+    }
 
     if (def) {
       const equipKey = equipKeyFor(def.category);
@@ -191,13 +246,19 @@ export class GiftService {
         itemId: recipientRow.itemId,
         purchaseId: recipientRow.purchaseId,
         acquiredVia: recipientRow.acquiredVia as
-          'coins' | 'gems' | 'arcadeum' | 'grant' | 'starter' | 'gift',
+          | 'coins'
+          | 'gems'
+          | 'arcadeum'
+          | 'grant'
+          | 'starter'
+          | 'gift',
         paidAmount: recipientRow.paidAmount ?? null,
         paidCurrency:
           (recipientRow.paidCurrency as 'coins' | 'gems' | null) ?? null,
         soldAt: recipientRow.soldAt ? recipientRow.soldAt.toISOString() : null,
         createdAt: (recipientRow.createdAt ?? new Date()).toISOString(),
       },
+      balance,
     };
   }
 }

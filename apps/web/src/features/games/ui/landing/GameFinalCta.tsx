@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Button } from '@arcadeum/ui';
@@ -7,6 +8,7 @@ import type { GameFinalCtaProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
 import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
+import { gamesApi } from '@/features/games/api';
 
 export function GameFinalCta({
   gameId,
@@ -23,6 +25,24 @@ export function GameFinalCta({
   comingSoon = false,
 }: GameFinalCtaProps) {
   const { theme } = useGameLandingTheme();
+  const [effectiveComingSoon, setEffectiveComingSoon] = useState(comingSoon);
+
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((res) => {
+        if (cancelled) return;
+        const entry = res.games.find((g) => g.gameId === gameId);
+        if (entry) {
+          setEffectiveComingSoon(entry.comingSoon);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [gameId]);
 
   return (
     <section className="box-border relative my-10 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 border border-[var(--borderColor)] backdrop-blur-xl shadow-2xl overflow-hidden flex flex-col items-center text-center gap-6">
@@ -43,10 +63,10 @@ export function GameFinalCta({
           ctaQuickplayError={ctaQuickplayErrorLabel}
           ctaPlayHuman={ctaPlayHumanLabel}
           ctaPlayHumanError={ctaPlayHumanErrorLabel}
-          disabled={comingSoon}
+          disabled={effectiveComingSoon}
         />
 
-        {!comingSoon && isAiVsAiSupported(gameId) ? (
+        {!effectiveComingSoon && isAiVsAiSupported(gameId) ? (
           <AIvsAIViewer gameId={gameId} theme={theme} />
         ) : null}
 

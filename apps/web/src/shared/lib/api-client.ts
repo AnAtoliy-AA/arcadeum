@@ -171,17 +171,21 @@ export const apiClient = {
     } = options;
     const url = resolveApiUrl(path);
 
-    // Only deduplicate GET requests
+    let activeToken = token;
+    if (activeToken === undefined && typeof window !== 'undefined') {
+      try {
+        const { useSessionStore } =
+          await import('@/entities/session/store/sessionStore');
+        activeToken =
+          useSessionStore.getState().snapshot.accessToken || undefined;
+      } catch {}
+    }
+
     const isGet = method.toUpperCase() === 'GET';
-    // Include the anonymous id so SSR-cached/deduped responses are never
-    // shared between different anon identities.
     const cacheKey = isGet
-      ? `${method}:${url}:${token || ''}:${anonymousId || ''}`
+      ? `${method}:${url}:${activeToken || ''}:${anonymousId || ''}`
       : null;
 
-    // Server-side responses are memoized briefly so static prerendering
-    // (every page × locale during `next build`) doesn't hammer the API
-    // and trip its rate limiter (429 ThrottlerException).
     const ssrKey =
       typeof window === 'undefined' && cacheKey && options.cache !== 'no-store'
         ? `ssr:${cacheKey}`
@@ -202,7 +206,7 @@ export const apiClient = {
           url,
           {
             method,
-            token,
+            token: activeToken,
             data,
             headers: customHeaders,
             timeout,

@@ -28,8 +28,9 @@ import { RealisticCat } from './RealisticCat';
 import { CatDashTurnBadge } from './TurnBadge';
 import { CatDashDashboard } from './CatDashDashboard';
 import { CatDashRulesModal } from './RulesModal';
+import { RacerBioModal } from './RacerBioModal';
 import { CAT_DASH_THEMES } from '../lib/constants';
-import type { CatDashOptions, CatDashTheme } from '../types';
+import type { CatDashOptions, CatDashTheme, CatId } from '../types';
 
 function resolveOptions(raw: unknown): CatDashOptions {
   const r = (raw ?? {}) as Partial<{
@@ -71,6 +72,7 @@ function CatDashGameImpl({
   });
 
   const [rollingTurn, setRollingTurn] = useState<number | null>(null);
+  const [inspectedCatId, setInspectedCatId] = useState<CatId | null>(null);
   const isRolling =
     rollingTurn !== null &&
     rollingTurn === snapshot?.turnNumber &&
@@ -190,7 +192,8 @@ function CatDashGameImpl({
                   snapshot.players.find((p) => p.playerId === snapshot.winner)
                     ?.catId ?? 'neon'
                 }
-                size={52}
+                size={72}
+                variant="card"
                 showGlow={true}
               />
               <span className="text-lg font-extrabold text-emerald-400">
@@ -206,6 +209,7 @@ function CatDashGameImpl({
             isRolling={isRolling}
             onRollDice={handleRollDice}
             resolveName={resolveDisplayNameBound}
+            onInspectCat={setInspectedCatId}
           />
         </>
       ) : null}
@@ -248,6 +252,13 @@ function CatDashGameImpl({
         open={!!showRulesOpen}
         onClose={onShowRulesClose ?? (() => {})}
       />
+      {inspectedCatId && (
+        <RacerBioModal
+          open={Boolean(inspectedCatId)}
+          onClose={() => setInspectedCatId(null)}
+          initialCatId={inspectedCatId}
+        />
+      )}
     </>
   );
 

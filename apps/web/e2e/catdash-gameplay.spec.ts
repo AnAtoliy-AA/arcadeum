@@ -113,6 +113,17 @@ test.describe('Cat Dash Flagship Gameplay', () => {
     const userCard = page.getByTestId(`player-card-${userId}`);
     await expect(userCard).toBeVisible();
 
+    const inspectBtn = page.getByTestId('inspect-racers-btn');
+    await expect(inspectBtn).toBeVisible();
+    await inspectBtn.click();
+
+    const dossierTitle = page.getByText('Racer Dossier');
+    await expect(dossierTitle).toBeVisible();
+
+    const modalClose = page.getByTestId('modal-close-button');
+    await modalClose.click();
+    await expect(dossierTitle).not.toBeVisible();
+
     const rollBtn = page.getByTestId('dice-overlay-roll-button');
     await expect(rollBtn).toBeVisible();
 

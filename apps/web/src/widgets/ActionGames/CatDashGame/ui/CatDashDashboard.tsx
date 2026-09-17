@@ -1,11 +1,12 @@
 'use client';
 
-import { memo, useMemo, useEffect, useCallback } from 'react';
+import { memo, useMemo, useEffect, useCallback, useState } from 'react';
 import { DiceRollOverlay } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import type { CatDashClientState, CatDashPlayer } from '../types';
+import type { CatDashClientState, CatDashPlayer, CatId } from '../types';
 import { RealisticCat } from './RealisticCat';
 import { CAT_PROFILES } from './catData';
+import { RacerBioModal } from './RacerBioModal';
 
 interface CatDashDashboardProps {
   snapshot: CatDashClientState;
@@ -15,6 +16,7 @@ interface CatDashDashboardProps {
   isRolling: boolean;
   onRollDice: () => void;
   resolveName: (id?: string | null) => string;
+  onInspectCat?: (catId: CatId) => void;
 }
 
 export const CatDashDashboard = memo(function CatDashDashboard({
@@ -25,8 +27,21 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   isRolling,
   onRollDice,
   resolveName,
+  onInspectCat,
 }: CatDashDashboardProps) {
   const { t } = useTranslation();
+  const [inspectedCatId, setInspectedCatId] = useState<CatId | null>(null);
+
+  const handleInspect = useCallback(
+    (catId: CatId) => {
+      if (onInspectCat) {
+        onInspectCat(catId);
+      } else {
+        setInspectedCatId(catId);
+      }
+    },
+    [onInspectCat],
+  );
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -139,16 +154,21 @@ export const CatDashDashboard = memo(function CatDashDashboard({
           />
 
           {snapshot.players.map((player) => {
-            const pct = Math.min(1, Math.max(0, player.position / maxPosition));
-            const x = 40 + pct * 920;
+            const fraction = Math.min(
+              Math.max(player.position / maxPosition, 0),
+              1,
+            );
+            const x = 40 + fraction * (960 - 40);
             const isMe = player.playerId === currentUserId;
-            const isLeader = leader?.playerId === player.playerId;
+            const isLeader = player.playerId === leader?.playerId;
 
             return (
               <g
                 key={player.playerId}
                 transform={`translate(${x}, 35)`}
                 data-testid={`progress-cat-${player.catId}`}
+                className="cursor-pointer"
+                onClick={() => handleInspect(player.catId)}
               >
                 <circle
                   cx="0"
@@ -227,10 +247,21 @@ export const CatDashDashboard = memo(function CatDashDashboard({
                 {t('games.cat_dash_v1.dashboard.leaderboard')}
               </span>
             </div>
-            <span className="text-xs font-semibold text-slate-400">
-              {snapshot.players.length}{' '}
-              {t('games.cat_dash_v1.landing.highlights.players.title')}
-            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleInspect(leader?.catId ?? 'neon')}
+                className="px-2.5 py-1 rounded-xl bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/40 text-purple-300 hover:text-purple-100 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                data-testid="inspect-racers-btn"
+              >
+                <span>🔍</span>
+                <span>Racers Dossier</span>
+              </button>
+              <span className="text-xs font-semibold text-slate-400">
+                {snapshot.players.length}{' '}
+                {t('games.cat_dash_v1.landing.highlights.players.title')}
+              </span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -240,19 +271,22 @@ export const CatDashDashboard = memo(function CatDashDashboard({
               const profile = CAT_PROFILES[player.catId];
 
               return (
-                <div
+                <button
                   key={player.playerId}
-                  className={`flex flex-row items-center gap-3 p-3 rounded-2xl border transition-all duration-200 ${
+                  type="button"
+                  onClick={() => handleInspect(player.catId)}
+                  className={`flex flex-row items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
                     isCurrentTurn
                       ? 'bg-purple-900/30 border-purple-500/60 ring-2 ring-purple-400/40 shadow-lg shadow-purple-500/20'
-                      : 'bg-slate-950/40 border-white/10 hover:border-white/20'
+                      : 'bg-slate-950/40 border-white/10 hover:border-purple-400/40 hover:bg-slate-900/60'
                   }`}
                   data-testid={`player-card-${player.playerId}`}
                 >
                   <div className="relative flex-shrink-0">
                     <RealisticCat
                       catId={player.catId}
-                      size={44}
+                      size={54}
+                      variant="card"
                       showGlow={isCurrentTurn}
                     />
                     <span
@@ -299,7 +333,7 @@ export const CatDashDashboard = memo(function CatDashDashboard({
                       Turn
                     </div>
                   )}
-                </div>
+                </button>
               );
             })}
           </div>
@@ -324,6 +358,14 @@ export const CatDashDashboard = memo(function CatDashDashboard({
             ))}
           </div>
         </div>
+      )}
+
+      {!onInspectCat && inspectedCatId && (
+        <RacerBioModal
+          open={Boolean(inspectedCatId)}
+          onClose={() => setInspectedCatId(null)}
+          initialCatId={inspectedCatId}
+        />
       )}
     </div>
   );

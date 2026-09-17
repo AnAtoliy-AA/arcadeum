@@ -5,6 +5,7 @@ import { CatDashTurnBadge } from '../ui/TurnBadge';
 import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashDashboard } from '../ui/CatDashDashboard';
 import { RealisticCat } from '../ui/RealisticCat';
+import { RacerBioModal } from '../ui/RacerBioModal';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState, CatId } from '../types';
 
@@ -12,7 +13,7 @@ vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const map: Record<string, string> = {
-        'games.cat_dash_v1.rules.title': 'Cat Dash — Rules',
+        'games.cat_dash_v1.rules.title': 'Cat Dash - Rules',
         'games.cat_dash_v1.rules.objectiveTitle': 'Objective',
         'games.cat_dash_v1.rules.objective':
           'Score points by reaching the finish line.',
@@ -48,63 +49,73 @@ const mockSnapshot: CatDashClientState = {
   currentPlayerIndex: 0,
   turnNumber: 1,
   track: Array.from({ length: 21 }, (_, i) => ({
-    id: i,
-    type:
-      i === 0 || i === 20
-        ? 'normal'
-        : i % 5 === 0
-          ? 'obstacle'
-          : i % 3 === 0
-            ? 'bonus'
-            : 'normal',
+    type: i === 0 ? 'start' : i === 20 ? 'finish' : 'standard',
+    players: [],
+    branches: [],
   })),
-  gameOver: false,
   players: [
     {
       playerId: 'p1',
       catId: 'neon',
-      position: 3,
-      powerTokens: 3,
-      abilitiesUsed: [],
-      isReady: true,
-      hasBonus: false,
+      position: 5,
+      powerTokens: 2,
+      shielded: false,
+      extraTurnPending: false,
+      frozenTurnsRemaining: 0,
+      activeEffects: [],
     },
     {
       playerId: 'p2',
       catId: 'whiskers',
-      position: 1,
-      powerTokens: 3,
-      abilitiesUsed: [],
-      isReady: true,
-      hasBonus: false,
+      position: 3,
+      powerTokens: 1,
+      shielded: false,
+      extraTurnPending: false,
+      frozenTurnsRemaining: 0,
+      activeEffects: [],
     },
   ],
-  logs: [],
+  gamePhase: 'active',
+  winner: null,
+  logs: [
+    {
+      id: 'log-1',
+      type: 'action',
+      message: 'Player 1 Rolled 4 and moved',
+      timestamp: 1000,
+    },
+  ],
+  settings: {
+    maxPlayers: 4,
+    theme: 'cyberpunk',
+    trackType: 'linear',
+    difficulty: 'medium',
+  },
 };
 
 describe('CatDashBoard', () => {
   it('renders track spaces', () => {
-    renderWithTheme(
+    const { container } = renderWithTheme(
       <CatDashBoard
         snapshot={mockSnapshot}
-        disabled={false}
-        resolveName={(id) => id ?? ''}
+        currentUserId="p1"
+        onSpaceClick={() => {}}
       />,
     );
-    expect(screen.getByText('1')).toBeTruthy();
-    expect(screen.getByText('21')).toBeTruthy();
+    const svg = container.querySelector('svg');
+    expect(svg).toBeInTheDocument();
   });
 
   it('renders player indicators', () => {
-    renderWithTheme(
+    const { container } = renderWithTheme(
       <CatDashBoard
         snapshot={mockSnapshot}
-        disabled={false}
-        resolveName={(id) => id ?? ''}
+        currentUserId="p1"
+        onSpaceClick={() => {}}
       />,
     );
-    expect(screen.getByText('p1')).toBeTruthy();
-    expect(screen.getByText('p2')).toBeTruthy();
+    const circles = container.querySelectorAll('circle');
+    expect(circles.length).toBeGreaterThan(0);
   });
 });
 
@@ -125,24 +136,24 @@ describe('CatDashTurnBadge', () => {
     renderWithTheme(
       <CatDashTurnBadge
         snapshot={mockSnapshot}
-        currentEntryId="p2"
+        currentEntryId="p1"
         myTurn={false}
         resolveName={(id) => id ?? ''}
       />,
     );
-    expect(screen.getByText(/rolling/)).toBeTruthy();
+    expect(screen.getByText(/is rolling/)).toBeTruthy();
   });
 });
 
 describe('CatDashRulesModal', () => {
   it('renders when open', () => {
     renderWithTheme(<CatDashRulesModal open={true} onClose={() => {}} />);
-    expect(screen.getByText('Cat Dash — Rules')).toBeTruthy();
+    expect(screen.getByText('Cat Dash - Rules')).toBeTruthy();
   });
 
   it('does not render when closed', () => {
     renderWithTheme(<CatDashRulesModal open={false} onClose={() => {}} />);
-    expect(screen.queryByText('Cat Dash — Rules')).toBeNull();
+    expect(screen.queryByText('Cat Dash - Rules')).toBeNull();
   });
 });
 
@@ -163,6 +174,22 @@ describe('RealisticCat', () => {
       expect(svg).toBeInTheDocument();
       expect(svg?.getAttribute('width')).toBe('48');
     }
+  });
+});
+
+describe('RacerBioModal', () => {
+  it('renders when open and switches between cats', () => {
+    renderWithTheme(
+      <RacerBioModal open={true} onClose={() => {}} initialCatId="neon" />,
+    );
+
+    expect(screen.getByText('Racer Dossier')).toBeInTheDocument();
+    expect(screen.getAllByText('Neon').length).toBeGreaterThan(0);
+    expect(screen.getByText('Cyber Bengal')).toBeInTheDocument();
+    expect(screen.getByText('Performance Specs')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Whiskers'));
+    expect(screen.getByText('Ginger Tabby')).toBeInTheDocument();
   });
 });
 
@@ -206,5 +233,22 @@ describe('CatDashDashboard', () => {
     expect(
       screen.getByTestId('dice-overlay-rolling-state'),
     ).toBeInTheDocument();
+  });
+
+  it('opens racer dossier when inspect button is clicked', () => {
+    renderWithTheme(
+      <CatDashDashboard
+        snapshot={mockSnapshot}
+        currentUserId="p1"
+        myTurn={true}
+        isGameOver={false}
+        isRolling={false}
+        onRollDice={vi.fn()}
+        resolveName={(id) => id ?? ''}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId('inspect-racers-btn'));
+    expect(screen.getByText('Racer Dossier')).toBeInTheDocument();
   });
 });

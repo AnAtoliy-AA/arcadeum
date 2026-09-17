@@ -13,14 +13,14 @@ import {
 
 interface BoardProps {
   snapshot: CatDashClientState;
-  disabled: boolean;
-  resolveName: (id?: string | null) => string;
+  disabled?: boolean;
+  resolveName?: (id?: string | null) => string;
 }
 
 export const CatDashBoard = memo(function CatDashBoard({
   snapshot,
   disabled: _disabled,
-  resolveName,
+  resolveName = (id) => id ?? '',
 }: BoardProps) {
   const { tokens, variant } = useCatDashTheme();
 
@@ -128,7 +128,7 @@ export const CatDashBoard = memo(function CatDashBoard({
           else if (space.type === 'fork') fill = tokens.forkSpace;
 
           return (
-            <g key={space.id}>
+            <g key={space.id ?? i}>
               <circle
                 cx={pos.x}
                 cy={pos.y}

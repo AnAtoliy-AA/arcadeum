@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import type { ReactNode } from 'react';
 import { CloseIcon } from '../Icons';
 import { Button } from '../Button/Button';
@@ -68,7 +69,7 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
 
   if (!open) return null;
 
-  return (
+  const content = (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       onClick={(e) => {
@@ -86,6 +87,10 @@ export const Modal = memo(function Modal({ open, onClose, children }: ModalProps
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(content, document.body)
+    : content;
 });
 
 export const ModalContent = memo(function ModalContent({ maxWidth = 600, children, 'data-testid': dataTestId }: ModalContentProps) {

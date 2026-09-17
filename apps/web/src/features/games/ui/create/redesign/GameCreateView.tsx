@@ -283,7 +283,7 @@ export function GameCreateView() {
   useEffect(() => {
     let cancelled = false;
     gamesApi
-      .getCatalog()
+      .getCatalog({ token: snapshot.accessToken || undefined })
       .then((d) => {
         if (!cancelled) setCatalog(d);
       })
@@ -291,7 +291,7 @@ export function GameCreateView() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [snapshot.accessToken]);
   const { gameComingSoon, variantComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],

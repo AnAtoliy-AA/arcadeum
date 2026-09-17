@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Badge, Button } from '@arcadeum/ui';
@@ -10,6 +10,7 @@ import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
 import { GameInviteModal } from './GameInviteModal';
+import { gamesApi } from '@/features/games/api';
 
 export function GameLandingHero({
   gameId,
@@ -38,6 +39,24 @@ export function GameLandingHero({
   const { theme } = useGameLandingTheme();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isAiBattleOpen, setIsAiBattleOpen] = useState(false);
+  const [effectiveComingSoon, setEffectiveComingSoon] = useState(comingSoon);
+
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((res) => {
+        if (cancelled) return;
+        const entry = res.games.find((g) => g.gameId === gameId);
+        if (entry) {
+          setEffectiveComingSoon(entry.comingSoon);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [gameId]);
 
   const createHref = createRoomHref
     ? createRoomHref.includes('?')
@@ -123,11 +142,11 @@ export function GameLandingHero({
                 ctaPlayHuman={ctaPlayHumanLabel}
                 ctaPlayHumanError={ctaPlayHumanErrorLabel}
                 size="md"
-                disabled={comingSoon}
+                disabled={effectiveComingSoon}
               />
 
               {createHref ? (
-                comingSoon ? (
+                effectiveComingSoon ? (
                   <span className="box-border inline-flex">
                     <Button variant="outline" size="md" disabled>
                       {createRoomLabel}
@@ -158,7 +177,7 @@ export function GameLandingHero({
                 Invite / Share 🔗
               </Button>
 
-              {!comingSoon && isAiVsAiSupported(gameId) ? (
+              {!effectiveComingSoon && isAiVsAiSupported(gameId) ? (
                 <Button
                   variant={isAiBattleOpen ? 'primary' : 'outline'}
                   size="sm"
@@ -169,7 +188,9 @@ export function GameLandingHero({
               ) : null}
             </div>
 
-            {isAiBattleOpen && !comingSoon && isAiVsAiSupported(gameId) ? (
+            {isAiBattleOpen &&
+            !effectiveComingSoon &&
+            isAiVsAiSupported(gameId) ? (
               <div className="box-border p-4 rounded-2xl bg-[var(--surfaceBg)] border border-[var(--borderColor)] backdrop-blur-md max-w-md">
                 <AIvsAIViewer
                   gameId={gameId}

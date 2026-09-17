@@ -55,8 +55,6 @@ export class GamesController {
     private readonly aiVsAiService: AiVsAiService,
   ) {}
 
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000)
   @UseGuards(JwtOptionalAuthGuard)
   @Get('catalog')
   async getCatalog(@Req() req: Request): Promise<CatalogResponse> {

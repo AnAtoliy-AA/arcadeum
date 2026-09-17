@@ -53,3 +53,22 @@ export const Small: Story = {
     size: 'sm',
   },
 };
+
+export const ExtraLarge: Story = {
+  args: {
+    values: [6],
+    isRolling: false,
+    size: 'xl',
+    variant: 'classic',
+  },
+};
+
+export const GiantGold: Story = {
+  args: {
+    values: [6, 6],
+    isRolling: false,
+    isDoubles: true,
+    size: '2xl',
+    variant: 'gold',
+  },
+};

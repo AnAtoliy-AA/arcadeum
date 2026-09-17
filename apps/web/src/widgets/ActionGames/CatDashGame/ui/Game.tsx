@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
@@ -26,6 +26,7 @@ import { CatDashLobby } from './Lobby';
 import { CatDashBoard } from './Board';
 import { RealisticCat } from './RealisticCat';
 import { CatDashTurnBadge } from './TurnBadge';
+import { CatDashDashboard } from './CatDashDashboard';
 import { CatDashRulesModal } from './RulesModal';
 import { CAT_DASH_THEMES } from '../lib/constants';
 import type { CatDashOptions, CatDashTheme } from '../types';
@@ -69,12 +70,20 @@ function CatDashGameImpl({
     userId: currentUserId,
   });
 
+  const [rollingTurn, setRollingTurn] = useState<number | null>(null);
+  const isRolling =
+    rollingTurn !== null &&
+    rollingTurn === snapshot?.turnNumber &&
+    Boolean(myTurn) &&
+    !isGameOver;
+
   const { play } = useGameSound('cat_dash_v1');
 
   const handleRollDice = useCallback(() => {
+    setRollingTurn(snapshot?.turnNumber ?? 0);
     play('roll');
     rollDice();
-  }, [rollDice, play]);
+  }, [rollDice, play, snapshot?.turnNumber]);
 
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
@@ -160,7 +169,7 @@ function CatDashGameImpl({
   }
 
   const board = (
-    <div className="flex flex-col gap-3 items-stretch p-3 w-full">
+    <div className="flex flex-col gap-4 items-stretch p-3 w-full max-w-5xl mx-auto">
       {snapshot ? (
         <>
           <CatDashTurnBadge
@@ -174,40 +183,30 @@ function CatDashGameImpl({
             disabled={!myTurn || isGameOver}
             resolveName={resolveDisplayNameBound}
           />
-          <div className="flex flex-col gap-2 items-center -mt-2">
-            {myTurn && !isGameOver && (
-              <button
-                type="button"
-                disabled={isGameOver}
-                onClick={handleRollDice}
-                className="flex flex-row items-center justify-center gap-2 h-12 px-5 rounded-2xl bg-[#7c3aed] transition-colors duration-150 ease-out hover:bg-[#6d28d9] active:bg-[#5b21b6] disabled:opacity-50 disabled:pointer-events-none"
-              >
-                <span className="text-[#f5f7ff] font-bold text-[16px]">
-                  🎲 Roll Dice
-                </span>
-              </button>
-            )}
-            {isGameOver && snapshot?.winner && (
-              <div
-                className="flex flex-col items-center gap-2 p-4 bg-[rgba(34,197,94,0.15)] rounded-3xl border-[1.5px] border-[rgba(34,197,94,0.4)]"
-                style={{
-                  boxShadow: '0 8px 32px rgba(34, 197, 94, 0.15)',
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <RealisticCat
-                  catId={
-                    snapshot.players.find((p) => p.playerId === snapshot.winner)
-                      ?.catId ?? 'neon'
-                  }
-                  size={48}
-                />
-                <span className="text-[16px] font-bold text-[#22c55e] -mt-1">
-                  {resolveDisplayNameBound(snapshot.winner)} wins!
-                </span>
-              </div>
-            )}
-          </div>
+          {isGameOver && snapshot?.winner && (
+            <div className="flex flex-col items-center gap-2 p-4 bg-emerald-500/15 rounded-3xl border border-emerald-500/40 shadow-2xl shadow-emerald-500/20 backdrop-blur-md max-w-md mx-auto">
+              <RealisticCat
+                catId={
+                  snapshot.players.find((p) => p.playerId === snapshot.winner)
+                    ?.catId ?? 'neon'
+                }
+                size={52}
+                showGlow={true}
+              />
+              <span className="text-lg font-extrabold text-emerald-400">
+                {resolveDisplayNameBound(snapshot.winner)} wins!
+              </span>
+            </div>
+          )}
+          <CatDashDashboard
+            snapshot={snapshot}
+            currentUserId={currentUserId}
+            myTurn={myTurn}
+            isGameOver={isGameOver}
+            isRolling={isRolling}
+            onRollDice={handleRollDice}
+            resolveName={resolveDisplayNameBound}
+          />
         </>
       ) : null}
     </div>

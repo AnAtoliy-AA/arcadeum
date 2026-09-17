@@ -1,248 +1,275 @@
+import { memo } from 'react';
 import type { CatId } from '../types';
+import { CAT_PROFILES } from './catData';
 
-export function RealisticCat({
-  catId,
-  size = 20,
-  className,
-}: {
+export interface RealisticCatProps {
   catId: CatId;
   size?: number;
   className?: string;
-}) {
-  const colors: Record<
-    CatId,
-    { main: string; ear: string; eye: string; accent: string }
-  > = {
-    neon: {
-      main: '#a855f7',
-      ear: '#d8b4fe',
-      eye: '#22d3ee',
-      accent: '#c084fc',
-    },
-    whiskers: {
-      main: '#f59e0b',
-      ear: '#fde68a',
-      eye: '#10b981',
-      accent: '#fbbf24',
-    },
-    stardust: {
-      main: '#3b82f6',
-      ear: '#bfdbfe',
-      eye: '#ec4899',
-      accent: '#60a5fa',
-    },
-    felix: {
-      main: '#22c55e',
-      ear: '#bbf7d0',
-      eye: '#f59e0b',
-      accent: '#4ade80',
-    },
-    shadow: {
-      main: '#374151',
-      ear: '#9ca3af',
-      eye: '#f43f5e',
-      accent: '#4b5563',
-    },
-    luna: {
-      main: '#ec4899',
-      ear: '#fbcfe8',
-      eye: '#3b82f6',
-      accent: '#f472b6',
-    },
-  };
+  showGlow?: boolean;
+}
 
-  const c = colors[catId] ?? colors.neon;
+export const RealisticCat = memo(function RealisticCat({
+  catId,
+  size = 40,
+  className,
+  showGlow = false,
+}: RealisticCatProps) {
+  const profile = CAT_PROFILES[catId] ?? CAT_PROFILES.neon;
+  const gradientId = `cat-grad-${catId}-${size}`;
+  const eyeGradId = `cat-eye-grad-${catId}-${size}`;
 
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" className={className}>
-      {/* Glow Effect / Shadow */}
-      <circle
-        cx="50"
-        cy="50"
-        r="45"
-        fill="none"
-        stroke={c.accent}
-        strokeWidth="1.5"
-        opacity="0.4"
-      />
+      <defs>
+        <radialGradient id={gradientId} cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stopColor={profile.coatHighlight} />
+          <stop offset="60%" stopColor={profile.coatBase} />
+          <stop offset="100%" stopColor={profile.coatShade} />
+        </radialGradient>
+        <linearGradient id={eyeGradId} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor={profile.eyeSecondary} />
+          <stop offset="100%" stopColor={profile.eyePrimary} />
+        </linearGradient>
+      </defs>
 
-      {/* Cat Ears */}
-      <polygon
-        points="22,48 10,12 40,32"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="2"
-      />
-      <polygon points="26,45 16,19 38,33" fill={c.ear} />
-      <polygon
-        points="78,48 90,12 60,32"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="2"
-      />
-      <polygon points="74,45 84,19 62,33" fill={c.ear} />
-
-      {/* Cat Tail (curled) */}
-      <path
-        d="M 28 82 Q 10 92 14 74 Q 16 66 24 68 Q 30 70 24 78"
-        fill="none"
-        stroke={c.main}
-        strokeWidth="7"
-        strokeLinecap="round"
-      />
-
-      {/* Cat Body/Face Base */}
-      <circle
-        cx="50"
-        cy="55"
-        r="32"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="2"
-      />
-
-      {/* Fluffy Cheek Fur */}
-      <polygon
-        points="18,55 10,60 20,65"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="1.5"
-      />
-      <polygon
-        points="82,55 90,60 80,65"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="1.5"
-      />
-
-      {/* Cute Little Paws */}
-      <circle
-        cx="38"
-        cy="84"
-        r="7"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="1.5"
-      />
-      <circle cx="38" cy="84" r="4" fill={c.ear} />
-      <circle
-        cx="62"
-        cy="84"
-        r="7"
-        fill={c.main}
-        stroke={c.accent}
-        strokeWidth="1.5"
-      />
-      <circle cx="62" cy="84" r="4" fill={c.ear} />
-
-      {/* Inner Face Mask / Cheeks */}
-      <ellipse cx="50" cy="62" rx="20" ry="14" fill="#ffffff" opacity="0.95" />
-
-      {/* Cute Shiny Eyes */}
-      <ellipse cx="38" cy="48" rx="5.5" ry="8" fill="#111827" />
-      <ellipse cx="62" cy="48" rx="5.5" ry="8" fill="#111827" />
-      {/* Pupil accents */}
-      <circle cx="36" cy="45" r="2" fill={c.eye} />
-      <circle cx="60" cy="45" r="2" fill={c.eye} />
-      <circle cx="39" cy="50" r="1" fill="#ffffff" />
-      <circle cx="63" cy="50" r="1" fill="#ffffff" />
-
-      {/* Nose & Mouth */}
-      <polygon points="50,56 46,52 54,52" fill="#f43f5e" />
-      <path
-        d="M 50,56 Q 47,61 44,59 M 50,56 Q 53,61 56,59"
-        fill="none"
-        stroke="#111827"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-
-      {/* Whiskers */}
-      <line
-        x1="22"
-        y1="56"
-        x2="6"
-        y2="53"
-        stroke="#111827"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="20"
-        y1="62"
-        x2="4"
-        y2="62"
-        stroke="#111827"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="22"
-        y1="68"
-        x2="6"
-        y2="71"
-        stroke="#111827"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-
-      <line
-        x1="78"
-        y1="56"
-        x2="94"
-        y2="53"
-        stroke="#111827"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="80"
-        y1="62"
-        x2="96"
-        y2="62"
-        stroke="#111827"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-      <line
-        x1="78"
-        y1="68"
-        x2="94"
-        y2="71"
-        stroke="#111827"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-
-      {/* Forehead Stripe / Pattern */}
-      {catId === 'neon' && (
-        <path
-          d="M 50 25 L 50 35 M 46 27 L 46 33 M 54 27 L 54 33"
-          stroke={c.eye}
-          strokeWidth="2.5"
-          strokeLinecap="round"
+      {showGlow && (
+        <circle
+          cx="50"
+          cy="50"
+          r="47"
+          fill="none"
+          stroke={profile.accentGlow}
+          strokeWidth="3"
+          opacity="0.6"
         />
       )}
+
+      <path
+        d="M 22 46 L 8 10 C 14 14 26 24 38 30 Z"
+        fill={profile.earOuter}
+        stroke={profile.coatShade}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M 22 40 L 12 16 C 18 20 28 27 34 32 Z" fill={profile.earInner} />
+      <path
+        d="M 18 34 Q 24 30 20 22 M 22 36 Q 28 32 25 25"
+        fill="none"
+        stroke={profile.earTuft}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M 78 46 L 92 10 C 86 14 74 24 62 30 Z"
+        fill={profile.earOuter}
+        stroke={profile.coatShade}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      <path d="M 78 40 L 88 16 C 82 20 72 27 66 32 Z" fill={profile.earInner} />
+      <path
+        d="M 82 34 Q 76 30 80 22 M 78 36 Q 72 32 75 25"
+        fill="none"
+        stroke={profile.earTuft}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+
+      <ellipse
+        cx="50"
+        cy="56"
+        rx="36"
+        ry="33"
+        fill={`url(#${gradientId})`}
+        stroke={profile.coatShade}
+        strokeWidth="1.5"
+      />
+
+      <path
+        d="M 14 54 L 8 58 L 15 62"
+        fill={profile.coatHighlight}
+        stroke={profile.coatShade}
+        strokeWidth="1"
+      />
+      <path
+        d="M 86 54 L 92 58 L 85 62"
+        fill={profile.coatHighlight}
+        stroke={profile.coatShade}
+        strokeWidth="1"
+      />
+
       {catId === 'whiskers' && (
-        <path
-          d="M 50 25 L 50 35 M 45 28 L 47 34 M 55 28 L 53 34"
-          stroke="#d97706"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
+        <g stroke="#78350f" strokeWidth="2" strokeLinecap="round" opacity="0.8">
+          <path d="M 44 26 L 47 34 L 50 28 L 53 34 L 56 26" fill="none" />
+          <path d="M 50 34 L 50 40" />
+          <path d="M 28 42 L 36 44" />
+          <path d="M 26 48 L 34 49" />
+          <path d="M 72 42 L 64 44" />
+          <path d="M 74 48 L 66 49" />
+        </g>
       )}
+
+      {catId === 'neon' && (
+        <g stroke={profile.accentGlow} strokeWidth="1.75" strokeLinecap="round">
+          <path d="M 50 24 L 50 36 M 44 28 L 44 34 M 56 28 L 56 34" />
+          <circle cx="50" cy="22" r="1.5" fill={profile.accentGlow} />
+          <path d="M 26 44 L 34 46 M 74 44 L 66 46" opacity="0.8" />
+        </g>
+      )}
+
       {catId === 'stardust' && (
+        <g fill="#fef08a" opacity="0.85">
+          <polygon points="50,23 52,28 57,28 53,32 55,37 50,34 45,37 47,32 43,28 48,28" />
+          <circle cx="40" cy="30" r="1.2" />
+          <circle cx="60" cy="30" r="1.2" />
+          <circle cx="50" cy="40" r="1.2" />
+        </g>
+      )}
+
+      {catId === 'felix' && (
         <path
-          d="M 50 24 L 52 30 L 58 31 L 53 35 L 55 41 L 50 37 L 45 41 L 47 35 L 42 31 L 48 30 Z"
-          fill="#fef08a"
+          d="M 50 32 L 44 46 C 42 54 40 60 38 66 C 44 68 56 68 62 66 C 60 60 58 54 56 46 Z"
+          fill="#ffffff"
         />
       )}
+
       {catId === 'luna' && (
-        <path d="M 44 24 A 6 6 0 1 0 56 36 A 4 4 0 1 1 44 24" fill="#fef08a" />
+        <ellipse cx="50" cy="60" rx="22" ry="18" fill="#475569" opacity="0.9" />
       )}
+
       {catId === 'shadow' && (
-        <path d="M 48 24 L 52 24 L 50 34 Z" fill="#e5e7eb" opacity="0.3" />
+        <g stroke="#27272a" strokeWidth="2" strokeLinecap="round" opacity="0.6">
+          <path d="M 46 30 L 50 36 L 54 30" fill="none" />
+          <path d="M 50 36 L 50 42" />
+        </g>
       )}
+
+      <g>
+        <ellipse
+          cx="35"
+          cy="50"
+          rx="8"
+          ry="9.5"
+          fill="#0f172a"
+          transform="rotate(6 35 50)"
+        />
+        <ellipse
+          cx="35"
+          cy="50"
+          rx="6.5"
+          ry="8"
+          fill={`url(#${eyeGradId})`}
+          transform="rotate(6 35 50)"
+        />
+        <ellipse
+          cx="35"
+          cy="50"
+          rx="2.2"
+          ry="7"
+          fill={profile.eyePupil}
+          transform="rotate(4 35 50)"
+        />
+        <circle cx="33.5" cy="47" r="1.8" fill="#ffffff" />
+        <circle cx="37" cy="52" r="1" fill="#ffffff" opacity="0.75" />
+      </g>
+
+      <g>
+        <ellipse
+          cx="65"
+          cy="50"
+          rx="8"
+          ry="9.5"
+          fill="#0f172a"
+          transform="rotate(-6 65 50)"
+        />
+        <ellipse
+          cx="65"
+          cy="50"
+          rx="6.5"
+          ry="8"
+          fill={`url(#${eyeGradId})`}
+          transform="rotate(-6 65 50)"
+        />
+        <ellipse
+          cx="65"
+          cy="50"
+          rx="2.2"
+          ry="7"
+          fill={profile.eyePupil}
+          transform="rotate(-4 65 50)"
+        />
+        <circle cx="63.5" cy="47" r="1.8" fill="#ffffff" />
+        <circle cx="67" cy="52" r="1" fill="#ffffff" opacity="0.75" />
+      </g>
+
+      <ellipse
+        cx="43"
+        cy="69"
+        rx="10"
+        ry="7.5"
+        fill={profile.muzzleColor}
+        stroke={profile.coatShade}
+        strokeWidth="0.75"
+      />
+      <ellipse
+        cx="57"
+        cy="69"
+        rx="10"
+        ry="7.5"
+        fill={profile.muzzleColor}
+        stroke={profile.coatShade}
+        strokeWidth="0.75"
+      />
+
+      <ellipse cx="50" cy="75" rx="6" ry="4" fill={profile.chinColor} />
+
+      <polygon points="50,65 44,60 56,60" fill={profile.noseColor} />
+      <path
+        d="M 45 60 Q 50 59 55 60"
+        stroke={profile.noseColor}
+        strokeWidth="1"
+        fill="none"
+      />
+      <line
+        x1="50"
+        y1="64.5"
+        x2="50"
+        y2="69"
+        stroke="#1e293b"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M 50 69 Q 45 73 40 70 M 50 69 Q 55 73 60 70"
+        fill="none"
+        stroke="#1e293b"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+
+      <circle cx="40" cy="67" r="0.9" fill={profile.whiskerDotColor} />
+      <circle cx="43" cy="69" r="0.9" fill={profile.whiskerDotColor} />
+      <circle cx="39" cy="71" r="0.9" fill={profile.whiskerDotColor} />
+
+      <circle cx="60" cy="67" r="0.9" fill={profile.whiskerDotColor} />
+      <circle cx="57" cy="69" r="0.9" fill={profile.whiskerDotColor} />
+      <circle cx="61" cy="71" r="0.9" fill={profile.whiskerDotColor} />
+
+      <g
+        stroke={profile.whiskerColor}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.9"
+      >
+        <path d="M 38 67 Q 24 64 8 68" fill="none" />
+        <path d="M 38 70 Q 22 72 6 78" fill="none" />
+        <path d="M 38 72 Q 24 78 10 86" fill="none" />
+
+        <path d="M 62 67 Q 76 64 92 68" fill="none" />
+        <path d="M 62 70 Q 78 72 94 78" fill="none" />
+        <path d="M 62 72 Q 76 78 90 86" fill="none" />
+      </g>
     </svg>
   );
-}
+});

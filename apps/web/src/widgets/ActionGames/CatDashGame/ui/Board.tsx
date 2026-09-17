@@ -3,11 +3,9 @@
 import { memo, useMemo } from 'react';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
-
 import { RealisticCat } from './RealisticCat';
 import { BoardBackground } from './BoardBackground';
 import {
-  CAT_COLORS,
   getSerpentineTrackPoint,
   getCircularTrackPoint,
   getFigure8TrackPoint,
@@ -49,7 +47,6 @@ export const CatDashBoard = memo(function CatDashBoard({
     });
   }, [snapshot.track, snapshot.trackType, cols, total, svgH, cx, cy, rx, ry]);
 
-  // Generate SVG path string for the track line
   const trackPathD = useMemo(() => {
     if (positions.length === 0) return '';
     if (snapshot.trackType !== 'linear') {
@@ -60,7 +57,6 @@ export const CatDashBoard = memo(function CatDashBoard({
         .join(' ')} Z`;
     }
 
-    // Smooth winding serpentine curves for linear track layout
     let d = `M ${positions[0].x},${positions[0].y}`;
     for (let i = 0; i < positions.length - 1; i++) {
       const current = positions[i];
@@ -69,7 +65,6 @@ export const CatDashBoard = memo(function CatDashBoard({
       const nextRow = Math.floor((i + 1) / cols);
 
       if (currRow !== nextRow) {
-        // Smooth out-of-row loop transition curve at the end of rows
         const isRightTurn = currRow % 2 === 0;
         const dx = isRightTurn ? 32 : -32;
         d += ` C ${current.x + dx},${current.y} ${next.x + dx},${next.y} ${next.x},${next.y}`;
@@ -83,17 +78,11 @@ export const CatDashBoard = memo(function CatDashBoard({
   const spaceRadius = 22;
 
   return (
-    <div className="flex flex-col gap-3 items-center w-full p-3">
+    <div className="flex flex-col gap-3 items-center w-full p-2">
       <svg
         viewBox={`0 0 ${svgW} ${svgH}`}
         width="100%"
-        style={{
-          maxWidth: svgW,
-          borderRadius: 20,
-          overflow: 'hidden',
-          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.25)',
-          border: `1px solid ${tokens.trackBorder}33`,
-        }}
+        className="max-w-[560px] rounded-3xl overflow-hidden shadow-2xl border border-white/10"
       >
         <BoardBackground
           variant={variant}
@@ -102,7 +91,6 @@ export const CatDashBoard = memo(function CatDashBoard({
           svgH={svgH}
         />
 
-        {/* Track path line with neon glow style */}
         <path
           d={trackPathD}
           fill="none"
@@ -123,7 +111,6 @@ export const CatDashBoard = memo(function CatDashBoard({
           strokeLinecap="round"
         />
 
-        {/* Track spaces */}
         {snapshot.track.map((space, i) => {
           const pos = positions[i];
           const isStart = i === 0;
@@ -142,7 +129,6 @@ export const CatDashBoard = memo(function CatDashBoard({
 
           return (
             <g key={space.id}>
-              {/* Space circle shadow/glow */}
               <circle
                 cx={pos.x}
                 cy={pos.y}
@@ -154,7 +140,6 @@ export const CatDashBoard = memo(function CatDashBoard({
                 filter="url(#glow)"
               />
 
-              {/* Space circle */}
               <circle
                 cx={pos.x}
                 cy={pos.y}
@@ -164,10 +149,9 @@ export const CatDashBoard = memo(function CatDashBoard({
                   isOccupied ? tokens.playerBorder : 'rgba(255,255,255,0.15)'
                 }
                 strokeWidth={isOccupied ? 2.5 : 1}
-                style={{ transition: 'all 0.3s ease' }}
+                className="transition-all duration-300"
               />
 
-              {/* Space number (always rendered for better cell identification) */}
               {!isOccupied && (
                 <text
                   x={pos.x}
@@ -177,32 +161,30 @@ export const CatDashBoard = memo(function CatDashBoard({
                   fontSize={10}
                   fontWeight="800"
                   fill="#ffffff"
-                  style={{
-                    pointerEvents: 'none',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-                  }}
+                  className="pointer-events-none select-none"
                 >
                   {i + 1}
                 </text>
               )}
 
-              {/* Player cat SVG */}
               {isOccupied &&
                 playersHere.map((p, idx) => {
                   const size = 38;
-                  // Shift slightly if multiple players are on the same spot
                   const offsetX = (idx - (playersHere.length - 1) / 2) * 12;
                   return (
                     <g
                       key={p.playerId}
                       transform={`translate(${pos.x - size / 2 + offsetX}, ${pos.y - size / 2})`}
                     >
-                      <RealisticCat catId={p.catId} size={size} />
+                      <RealisticCat
+                        catId={p.catId}
+                        size={size}
+                        showGlow={true}
+                      />
                     </g>
                   );
                 })}
 
-              {/* Start / Finish labels (Only for circular/multiple layouts as linear uses dots/flags under the cells) */}
               {snapshot.trackType !== 'linear' && isStart && (
                 <text
                   x={pos.x}
@@ -230,7 +212,6 @@ export const CatDashBoard = memo(function CatDashBoard({
                 </text>
               )}
 
-              {/* Layout indicators always rendered under cells */}
               {snapshot.trackType === 'linear' ? (
                 isStart ? (
                   <circle
@@ -247,7 +228,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+                    className="select-none"
                   >
                     🏁
                   </text>
@@ -258,7 +239,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+                    className="select-none"
                   >
                     ⚡
                   </text>
@@ -269,7 +250,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+                    className="select-none"
                   >
                     ⭐
                   </text>
@@ -285,7 +266,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={11}
-                    style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
+                    className="select-none"
                   >
                     {space.type === 'obstacle'
                       ? '⚡'
@@ -300,40 +281,33 @@ export const CatDashBoard = memo(function CatDashBoard({
         })}
       </svg>
 
-      {/* Player legend */}
-      <div className="flex flex-row items-stretch gap-3 flex-wrap justify-center">
+      <div className="flex flex-row items-stretch gap-2.5 flex-wrap justify-center">
         {snapshot.players.map((player) => {
           const isCurrent =
             snapshot.players[snapshot.currentPlayerIndex]?.playerId ===
             player.playerId;
           return (
             <div
-              className="flex flex-row gap-3 items-center px-4 py-3 rounded-2xl border-[1.5px]"
-              style={{
-                opacity: player.isReady ? 1 : 0.4,
-                backgroundColor: isCurrent
-                  ? 'rgba(124,58,237,0.15)'
-                  : 'rgba(255,255,255,0.03)',
-                borderColor: isCurrent
-                  ? tokens.playerBorder
-                  : 'rgba(255,255,255,0.08)',
-              }}
               key={player.playerId}
+              className={`flex flex-row gap-2.5 items-center px-3.5 py-2 rounded-2xl border transition-all duration-200 ${
+                player.isReady ? 'opacity-100' : 'opacity-40'
+              } ${
+                isCurrent
+                  ? 'bg-purple-900/30 border-purple-500/50 ring-1 ring-purple-400/40'
+                  : 'bg-slate-900/40 border-white/10'
+              }`}
             >
               <RealisticCat catId={player.catId} size={28} />
               <span
-                className="text-[14px]"
-                style={{
-                  fontWeight: isCurrent ? 'bold' : 'normal',
-                  color: CAT_COLORS[player.catId] ?? tokens.text,
-                }}
+                className={`text-sm ${
+                  isCurrent
+                    ? 'font-extrabold text-white'
+                    : 'font-semibold text-slate-300'
+                }`}
               >
                 {resolveName(player.playerId)}
               </span>
-              <span
-                className="text-[12px]"
-                style={{ color: tokens.textSecondary }}
-              >
+              <span className="text-xs text-slate-400 font-bold">
                 🎲 {player.powerTokens}
               </span>
             </div>
@@ -341,43 +315,22 @@ export const CatDashBoard = memo(function CatDashBoard({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex flex-row items-stretch gap-4 justify-center flex-wrap pt-1">
+      <div className="flex flex-row items-stretch gap-4 justify-center flex-wrap pt-1 text-slate-400">
         <div className="flex flex-row gap-1.5 items-center">
-          <div className="w-[10px] h-[10px] bg-[#22c55e] rounded-full shadow-[0_0_6px_#22c55e]" />
-          <span
-            className="text-xs font-semibold"
-            style={{ color: tokens.textSecondary }}
-          >
-            Start
-          </span>
+          <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_6px_#22c55e]" />
+          <span className="text-xs font-semibold">Start</span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
-          <div className="w-[10px] h-[10px] bg-[#f59e0b] rounded-full shadow-[0_0_6px_#f59e0b]" />
-          <span
-            className="text-xs font-semibold"
-            style={{ color: tokens.textSecondary }}
-          >
-            Finish
-          </span>
+          <div className="w-2.5 h-2.5 bg-amber-500 rounded-full shadow-[0_0_6px_#f59e0b]" />
+          <span className="text-xs font-semibold">Finish</span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
           <span className="text-sm">⚡</span>
-          <span
-            className="text-xs font-semibold"
-            style={{ color: tokens.textSecondary }}
-          >
-            Obstacle
-          </span>
+          <span className="text-xs font-semibold">Obstacle</span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
           <span className="text-sm">⭐</span>
-          <span
-            className="text-xs font-semibold"
-            style={{ color: tokens.textSecondary }}
-          >
-            Bonus
-          </span>
+          <span className="text-xs font-semibold">Bonus</span>
         </div>
       </div>
     </div>

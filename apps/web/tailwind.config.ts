@@ -142,9 +142,11 @@ export default {
           '100%': { transform: 'translate(-50%, -50%) scale(0)', opacity: '0' },
         },
         'animated-dice-shake': {
-          '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
-          '25%': { transform: 'rotate(-8deg) scale(1.06)' },
-          '75%': { transform: 'rotate(8deg) scale(1.06)' },
+          '0%, 100%': { transform: 'rotate(0deg) scale(1) translateY(0)' },
+          '20%': { transform: 'rotate(-16deg) scale(1.15) translateY(-6px)' },
+          '40%': { transform: 'rotate(14deg) scale(0.92) translateY(3px)' },
+          '60%': { transform: 'rotate(-10deg) scale(1.1) translateY(-4px)' },
+          '80%': { transform: 'rotate(8deg) scale(1.02) translateY(1px)' },
         },
       },
       animation: {

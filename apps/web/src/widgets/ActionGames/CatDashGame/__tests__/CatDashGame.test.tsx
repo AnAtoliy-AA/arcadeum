@@ -1,10 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { CatDashBoard } from '../ui/Board';
 import { CatDashTurnBadge } from '../ui/TurnBadge';
 import { CatDashRulesModal } from '../ui/RulesModal';
+import { CatDashDashboard } from '../ui/CatDashDashboard';
+import { RealisticCat } from '../ui/RealisticCat';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
-import type { CatDashClientState } from '../types';
+import type { CatDashClientState, CatId } from '../types';
 
 vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
@@ -141,5 +143,68 @@ describe('CatDashRulesModal', () => {
   it('does not render when closed', () => {
     renderWithTheme(<CatDashRulesModal open={false} onClose={() => {}} />);
     expect(screen.queryByText('Cat Dash — Rules')).toBeNull();
+  });
+});
+
+describe('RealisticCat', () => {
+  it('renders correctly for all cat breeds', () => {
+    const catIds: CatId[] = [
+      'neon',
+      'whiskers',
+      'stardust',
+      'felix',
+      'shadow',
+      'luna',
+    ];
+
+    for (const catId of catIds) {
+      const { container } = render(<RealisticCat catId={catId} size={48} />);
+      const svg = container.querySelector('svg');
+      expect(svg).toBeInTheDocument();
+      expect(svg?.getAttribute('width')).toBe('48');
+    }
+  });
+});
+
+describe('CatDashDashboard', () => {
+  it('renders race progress, player cards, and roll dice button', () => {
+    const handleRoll = vi.fn();
+    renderWithTheme(
+      <CatDashDashboard
+        snapshot={mockSnapshot}
+        currentUserId="p1"
+        myTurn={true}
+        isGameOver={false}
+        isRolling={false}
+        onRollDice={handleRoll}
+        resolveName={(id) => id ?? ''}
+      />,
+    );
+
+    expect(screen.getByTestId('catdash-dashboard')).toBeInTheDocument();
+    expect(screen.getByTestId('dice-overlay-roll-button')).toBeInTheDocument();
+    expect(screen.getByTestId('player-card-p1')).toBeInTheDocument();
+    expect(screen.getByTestId('player-card-p2')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('dice-overlay-roll-button'));
+    expect(handleRoll).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders rolling animation when isRolling is true', () => {
+    renderWithTheme(
+      <CatDashDashboard
+        snapshot={mockSnapshot}
+        currentUserId="p1"
+        myTurn={true}
+        isGameOver={false}
+        isRolling={true}
+        onRollDice={vi.fn()}
+        resolveName={(id) => id ?? ''}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('dice-overlay-rolling-state'),
+    ).toBeInTheDocument();
   });
 });

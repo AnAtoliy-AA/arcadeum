@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.5] - 2026-09-17
+
+### Fixed
+- fix shop purchase E11000 duplicate key on walletSignature index
+
+
 ## [1.30.4] - 2026-09-17
 
 ### Fixed

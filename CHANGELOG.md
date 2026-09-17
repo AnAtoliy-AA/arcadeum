@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.6] - 2026-09-17
+
+### Added
+- add buy-and-gift flow for non-owned shop items
+
+### Fixed
+- remove unused balance state from GiftDialog
+
+
 ## [1.30.5] - 2026-09-17
 
 ### Fixed

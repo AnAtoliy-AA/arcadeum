@@ -14,7 +14,7 @@ const SECTIONS = [
   { badge: '🎲', titleKey: 'howToPlayTitle', bodyKey: 'howToPlay' },
   { badge: '🗺️', titleKey: 'trackSpacesTitle', bodyKey: 'trackSpaces' },
   { badge: '⚡', titleKey: 'abilitiesTitle', bodyKey: 'abilities' },
-  { badge: '🐱', titleKey: 'catsTitle', bodyKey: 'cats' },
+  { badge: '🏎️', titleKey: 'catsTitle', bodyKey: 'cats' },
   { badge: '🛤️', titleKey: 'trackTypesTitle', bodyKey: 'trackTypes' },
 ] as const;
 
@@ -39,7 +39,7 @@ export const CatDashRulesModal = memo(function CatDashRulesModal({
       open={open}
       onClose={onClose}
       title={t('games.cat_dash_v1.rules.title')}
-      icon="🐱"
+      icon="🏎️"
       rules={rules}
     />
   );

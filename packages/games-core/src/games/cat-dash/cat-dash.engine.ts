@@ -16,10 +16,6 @@ import {
 import type { TrackType, Theme } from './cat-dash.constants';
 import {
   generateTrack,
-  calculateMovement,
-  checkWinCondition,
-  applySpaceEffect,
-  rollDice,
   sanitizeCatDashState,
   getAvailableActions,
 } from './cat-dash.utils';
@@ -29,6 +25,9 @@ import {
   validateChoosePath,
   validateForfeit,
 } from './cat-dash.validators';
+import { executeRollDiceHelper } from './cat-dash.roll-handler';
+import { executeUseAbilityHelper } from './cat-dash.ability-handler';
+
 export class CatDashEngine extends BaseGameEngine<CatDashState> {
   private readonly logger = createLogger('CatDashEngine');
 
@@ -67,6 +66,9 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
       abilitiesUsed: [],
       isReady: true,
       hasBonus: false,
+      shielded: false,
+      speedBoostPending: 0,
+      extraRollPending: false,
     }));
 
     return {
@@ -78,6 +80,7 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
       currentPlayerIndex: 0,
       turnNumber: 1,
       track: generateTrack(trackType, trackLength),
+      traps: [],
       gameOver: false,
       logs: [
         this.createLogEntry(
@@ -152,63 +155,17 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     state: CatDashState,
     player: CatDashPlayer,
   ): GameActionResult<CatDashState> {
-    const roll = rollDice();
-    const movement = calculateMovement(roll, player.hasBonus, 0);
-
-    const logs = [
-      this.createLogEntry(
-        'action',
-        `Rolled ${roll}, moving ${movement} spaces`,
-        { senderId: player.playerId },
-      ),
-    ];
-
-    player.position = Math.min(
-      player.position + movement,
-      state.track.length - 1,
+    const { state: updatedState, logs } = executeRollDiceHelper(
+      state,
+      player,
+      (type, msg, opts) => this.createLogEntry(type, msg, opts),
     );
-    player.hasBonus = false;
-
-    const space = state.track[player.position];
-    if (space.effect) {
-      const effects = applySpaceEffect(space.effect);
-      if (effects.skipTurn) {
-        logs.push(
-          this.createLogEntry('system', 'Hit an obstacle, skipping next turn', {
-            senderId: player.playerId,
-          }),
-        );
-      }
-      if (effects.extraRoll) {
-        logs.push(
-          this.createLogEntry('system', 'Found a bonus, rolling again', {
-            senderId: player.playerId,
-          }),
-        );
-      }
-    }
-
-    if (checkWinCondition(player.position, state.trackLength)) {
-      state.winner = player.playerId;
-      state.gameOver = true;
-      logs.push(
-        this.createLogEntry('system', 'Crossed the finish line! Game over!', {
-          senderId: player.playerId,
-        }),
-      );
-      state.gameResult = { winnerIds: [player.playerId], isDraw: false };
-    }
 
     for (const log of logs) {
-      this.addLog(state, log);
+      this.addLog(updatedState, log);
     }
 
-    if (!state.gameOver) {
-      state.currentPlayerIndex =
-        (state.currentPlayerIndex + 1) % state.players.length;
-    }
-
-    return this.successResult(state, logs);
+    return this.successResult(updatedState, logs);
   }
 
   private executeUseAbility(
@@ -216,15 +173,18 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
     player: CatDashPlayer,
     abilityId: string,
   ): GameActionResult<CatDashState> {
-    player.abilitiesUsed.push(abilityId);
-    player.powerTokens -= 1;
+    const { state: updatedState, logs } = executeUseAbilityHelper(
+      state,
+      player,
+      abilityId,
+      (type, msg, opts) => this.createLogEntry(type, msg, opts),
+    );
 
-    const log = this.createLogEntry('action', `Used ability ${abilityId}`, {
-      senderId: player.playerId,
-    });
-    this.addLog(state, log);
+    for (const log of logs) {
+      this.addLog(updatedState, log);
+    }
 
-    return this.successResult(state, [log]);
+    return this.successResult(updatedState, logs);
   }
 
   private executeChoosePath(
@@ -304,47 +264,5 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
 
   getAvailableActions(state: CatDashState, playerId: string): string[] {
     return getAvailableActions(state, playerId);
-  }
-
-  removePlayer(
-    state: CatDashState,
-    playerId: string,
-  ): GameActionResult<CatDashState> {
-    const newState = this.cloneState(state);
-    const player = newState.players.find((p) => p.playerId === playerId);
-    if (!player) {
-      return this.successResult(newState);
-    }
-
-    player.isReady = false;
-    player.position = -1;
-
-    const log = this.createLogEntry('system', 'left the race', {
-      senderId: playerId,
-    });
-    this.addLog(newState, log);
-
-    if (newState.players[newState.currentPlayerIndex]?.playerId === playerId) {
-      newState.currentPlayerIndex =
-        (newState.currentPlayerIndex + 1) % newState.players.length;
-    }
-
-    const alivePlayers = newState.players.filter(
-      (p) => p.isReady && p.position >= 0,
-    );
-    if (alivePlayers.length <= 1) {
-      newState.gameOver = true;
-      if (alivePlayers.length === 1) {
-        newState.winner = alivePlayers[0].playerId;
-        newState.gameResult = {
-          winnerIds: [alivePlayers[0].playerId],
-          isDraw: false,
-        };
-      } else {
-        newState.gameResult = { winnerIds: [], isDraw: true };
-      }
-    }
-
-    return this.successResult(newState);
   }
 }

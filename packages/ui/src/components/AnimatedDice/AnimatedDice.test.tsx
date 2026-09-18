@@ -20,4 +20,15 @@ describe('AnimatedDice', () => {
     const die0 = screen.getByTestId('dice-die-0');
     expect(die0.className).toContain('border-amber-400');
   });
+
+  it('renders classic and gold variants with appropriate classes', () => {
+    const { rerender } = render(
+      <AnimatedDice variant="classic" size="xl" values={[6]} />,
+    );
+    expect(screen.getByTestId('dice-die-0').className).toContain('w-16');
+
+    rerender(<AnimatedDice variant="gold" size="2xl" values={[6]} />);
+    expect(screen.getByTestId('dice-die-0').className).toContain('w-20');
+    expect(screen.getByTestId('dice-die-0').className).toContain('from-amber-200');
+  });
 });

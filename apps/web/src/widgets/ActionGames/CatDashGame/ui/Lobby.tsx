@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
@@ -13,6 +13,7 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { CAT_DASH_THEMES } from '../lib/constants';
 import { CatDashRulesModal } from './RulesModal';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { RacerBioModal } from './RacerBioModal';
 
 interface CatDashLobbyProps {
   room: GameRoomSummary;
@@ -51,6 +52,7 @@ export const CatDashLobby = memo(function CatDashLobby({
 }: CatDashLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const [showRacerBio, setShowRacerBio] = useState(false);
 
   const options = useMemo(
     () =>
@@ -129,6 +131,18 @@ export const CatDashLobby = memo(function CatDashLobby({
           testIdPrefix="catdash-track"
         />
       </LobbyOptionSection>
+
+      <div className="pt-2 border-t border-white/10">
+        <button
+          type="button"
+          onClick={() => setShowRacerBio(true)}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/40 text-purple-200 hover:text-white font-bold text-xs transition-all shadow-md cursor-pointer"
+          data-testid="lobby-racers-btn"
+        >
+          <span>🏎️</span>
+          <span>Meet the 6 Racers (Dossier & Stats)</span>
+        </button>
+      </div>
     </div>
   );
 
@@ -140,7 +154,7 @@ export const CatDashLobby = memo(function CatDashLobby({
         isHost={isHost}
         startBusy={startBusy}
         gameName="Cat Dash"
-        gameIcon="🐱"
+        gameIcon="🏎️"
         variantName={options.theme}
         minPlayers={2}
         maxPlayers={6}
@@ -159,6 +173,12 @@ export const CatDashLobby = memo(function CatDashLobby({
         open={!!showRulesOpen}
         onClose={onShowRulesClose ?? (() => {})}
       />
+      {showRacerBio && (
+        <RacerBioModal
+          open={showRacerBio}
+          onClose={() => setShowRacerBio(false)}
+        />
+      )}
     </>
   );
 });

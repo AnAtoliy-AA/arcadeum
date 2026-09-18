@@ -32,7 +32,7 @@ export function useCatDashActions(options: UseCatDashActionsOptions) {
     gameSocket.emit('catDash.session.rollDice', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  const useAbility = useCallback(
+  const activateAbility = useCallback(
     (abilityId: string) => {
       if (!userId) return;
       onActionStart?.('useAbility');
@@ -64,5 +64,12 @@ export function useCatDashActions(options: UseCatDashActionsOptions) {
     gameSocket.emit('catDash.session.forfeit', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, rollDice, useAbility, choosePath, forfeit };
+  return {
+    startSession,
+    rollDice,
+    activateAbility,
+    useAbility: activateAbility,
+    choosePath,
+    forfeit,
+  };
 }

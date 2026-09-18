@@ -124,6 +124,13 @@ test.describe('Cat Dash Flagship Gameplay', () => {
     await modalClose.click();
     await expect(dossierTitle).not.toBeVisible();
 
+    const abilityBar = page.getByTestId('tactical-ability-bar');
+    await expect(abilityBar).toBeVisible();
+
+    const boostAbilityBtn = page.getByTestId('ability-btn-neon_boost');
+    await expect(boostAbilityBtn).toBeVisible();
+    await boostAbilityBtn.click();
+
     const rollBtn = page.getByTestId('dice-overlay-roll-button');
     await expect(rollBtn).toBeVisible();
 

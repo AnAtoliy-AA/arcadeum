@@ -7,6 +7,7 @@ import type { CatDashClientState, CatDashPlayer, CatId } from '../types';
 import { RealisticCat } from './RealisticCat';
 import { CAT_PROFILES } from './catData';
 import { RacerBioModal } from './RacerBioModal';
+import { TacticalAbilityBar } from './TacticalAbilityBar';
 
 interface CatDashDashboardProps {
   snapshot: CatDashClientState;
@@ -17,6 +18,7 @@ interface CatDashDashboardProps {
   onRollDice: () => void;
   resolveName: (id?: string | null) => string;
   onInspectCat?: (catId: CatId) => void;
+  onUseAbility?: (abilityId: string) => void;
 }
 
 export const CatDashDashboard = memo(function CatDashDashboard({
@@ -28,6 +30,7 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   onRollDice,
   resolveName,
   onInspectCat,
+  onUseAbility,
 }: CatDashDashboardProps) {
   const { t } = useTranslation();
   const [inspectedCatId, setInspectedCatId] = useState<CatId | null>(null);
@@ -65,6 +68,11 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   const sortedPlayers = useMemo(() => {
     return [...snapshot.players].sort((a, b) => b.position - a.position);
   }, [snapshot.players]);
+
+  const myPlayer = useMemo(
+    () => snapshot.players.find((p) => p.playerId === currentUserId),
+    [snapshot.players, currentUserId],
+  );
 
   const leader = sortedPlayers[0];
   const secondPlayer = sortedPlayers[1];
@@ -206,6 +214,20 @@ export const CatDashDashboard = memo(function CatDashDashboard({
           })}
         </svg>
       </div>
+
+      {myPlayer && onUseAbility && (
+        <TacticalAbilityBar
+          catId={myPlayer.catId}
+          powerTokens={myPlayer.powerTokens}
+          abilitiesUsed={myPlayer.abilitiesUsed}
+          speedBoostPending={myPlayer.speedBoostPending}
+          shielded={myPlayer.shielded}
+          myTurn={myTurn}
+          isGameOver={isGameOver}
+          isRolling={isRolling}
+          onUseAbility={onUseAbility}
+        />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
         <div className="md:col-span-1 flex flex-col items-center justify-center">

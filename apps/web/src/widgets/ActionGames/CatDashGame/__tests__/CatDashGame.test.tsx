@@ -6,6 +6,7 @@ import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashDashboard } from '../ui/CatDashDashboard';
 import { RealisticCat } from '../ui/RealisticCat';
 import { RacerBioModal } from '../ui/RacerBioModal';
+import { TacticalAbilityBar } from '../ui/TacticalAbilityBar';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState, CatId } from '../types';
 
@@ -251,4 +252,68 @@ describe('CatDashDashboard', () => {
     fireEvent.click(screen.getByTestId('inspect-racers-btn'));
     expect(screen.getByText('Racer Dossier')).toBeInTheDocument();
   });
+
+  it('triggers onUseAbility when ability button is clicked', () => {
+    const handleUseAbility = vi.fn();
+    renderWithTheme(
+      <CatDashDashboard
+        snapshot={mockSnapshot}
+        currentUserId="p1"
+        myTurn={true}
+        isGameOver={false}
+        isRolling={false}
+        onRollDice={vi.fn()}
+        resolveName={(id) => id ?? ''}
+        onUseAbility={handleUseAbility}
+      />,
+    );
+
+    const boostBtn = screen.getByTestId('ability-btn-neon_boost');
+    expect(boostBtn).toBeInTheDocument();
+    fireEvent.click(boostBtn);
+    expect(handleUseAbility).toHaveBeenCalledWith('neon_boost');
+  });
 });
+
+describe('TacticalAbilityBar', () => {
+  it('renders abilities and handles activation', () => {
+    const onUseAbility = vi.fn();
+    renderWithTheme(
+      <TacticalAbilityBar
+        catId="neon"
+        powerTokens={3}
+        myTurn={true}
+        isRolling={false}
+        isGameOver={false}
+        onUseAbility={onUseAbility}
+      />,
+    );
+
+    expect(screen.getByTestId('tactical-ability-bar')).toBeInTheDocument();
+    expect(screen.getByText('Digital Dash')).toBeInTheDocument();
+    expect(screen.getByText('Neon Shield')).toBeInTheDocument();
+
+    const shieldBtn = screen.getByTestId('ability-btn-neon_shield');
+    fireEvent.click(shieldBtn);
+    expect(onUseAbility).toHaveBeenCalledWith('neon_shield');
+  });
+
+  it('shows active buff indicators', () => {
+    renderWithTheme(
+      <TacticalAbilityBar
+        catId="neon"
+        powerTokens={1}
+        shielded={true}
+        speedBoostPending={3}
+        myTurn={true}
+        isRolling={false}
+        isGameOver={false}
+        onUseAbility={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId('buff-shield')).toBeInTheDocument();
+    expect(screen.getByTestId('buff-speed-boost')).toBeInTheDocument();
+  });
+});
+

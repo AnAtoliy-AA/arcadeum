@@ -166,4 +166,100 @@ describe('CatDashEngine', () => {
       expect(result.isDraw).toBe(false);
     });
   });
+
+  describe('tactical mechanics: abilities, collision bumping, drafting', () => {
+    it('applies speed boost and burns power token', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      expect(state.players[0].powerTokens).toBe(3);
+
+      const abilityRes = engine.executeAction(
+        state,
+        'useAbility',
+        ctx('p1'),
+        { abilityId: 'neon_boost' },
+      );
+      expect(abilityRes.success).toBe(true);
+      const s1 = abilityRes.state as CatDashState;
+      expect(s1.players[0].powerTokens).toBe(2);
+      expect(s1.players[0].speedBoostPending).toBe(3);
+
+      const rollRes = engine.executeAction(s1, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s2 = rollRes.state as CatDashState;
+      expect(s2.players[0].position).toBeGreaterThanOrEqual(4);
+    });
+
+    it('activates shield and absorbs obstacle', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      const abilityRes = engine.executeAction(
+        state,
+        'useAbility',
+        ctx('p1'),
+        { abilityId: 'neon_shield' },
+      );
+      expect(abilityRes.success).toBe(true);
+      const s1 = abilityRes.state as CatDashState;
+      expect(s1.players[0].shielded).toBe(true);
+    });
+
+    it('slingshots player ahead of nearest rival', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].catId = 'whiskers';
+      state.players[0].position = 2;
+      state.players[1].position = 6;
+
+      const abilityRes = engine.executeAction(
+        state,
+        'useAbility',
+        ctx('p1'),
+        { abilityId: 'whiskers_slingshot' },
+      );
+      expect(abilityRes.success).toBe(true);
+      const s1 = abilityRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(8);
+    });
+
+    it('bumps non-shielded rival back 1 space on collision', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 0;
+      state.players[0].speedBoostPending = 999; // exact roll 4
+      state.players[1].position = 4; // rival waiting at 4
+      state.players[1].shielded = false;
+
+      const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s1 = rollRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(4);
+      expect(s1.players[1].position).toBe(3); // rival bumped back
+    });
+
+    it('absorbs bump if rival is shielded', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 0;
+      state.players[0].speedBoostPending = 999; // exact roll 4
+      state.players[1].position = 4;
+      state.players[1].shielded = true;
+
+      const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s1 = rollRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(4);
+      expect(s1.players[1].position).toBe(4); // not bumped
+      expect(s1.players[1].shielded).toBe(false); // shield consumed
+    });
+
+    it('grants drafting slipstream +1 boost when stopping directly behind rival', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 0;
+      state.players[0].speedBoostPending = 999; // rolls 4
+      state.players[1].position = 5; // rival at 5, so landing on 4 is directly behind
+
+      const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s1 = rollRes.state as CatDashState;
+      // Landing at 4 behind 5 gives drafting boost to 5, which then bumps rival at 5 to 4!
+      expect(s1.players[0].position).toBe(5);
+      expect(s1.players[1].position).toBe(4);
+    });
+  });
 });

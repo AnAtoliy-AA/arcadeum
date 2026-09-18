@@ -31,6 +31,113 @@ export interface CatBreedProfile {
   imageSrc: string;
 }
 
+export interface TacticalAbility {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  cost: number;
+}
+
+export const RACER_TACTICAL_ABILITIES: Record<CatId, TacticalAbility[]> = {
+  neon: [
+    {
+      id: 'neon_boost',
+      name: 'Digital Dash',
+      icon: '⚡',
+      description: '+3 speed on your next dice roll',
+      cost: 1,
+    },
+    {
+      id: 'neon_shield',
+      name: 'Neon Shield',
+      icon: '🛡️',
+      description: 'Block the next obstacle hazard or bump',
+      cost: 1,
+    },
+  ],
+  whiskers: [
+    {
+      id: 'whiskers_slingshot',
+      name: 'Aero Slingshot',
+      icon: '🚀',
+      description: 'Leap 2 spaces ahead of closest rival',
+      cost: 1,
+    },
+    {
+      id: 'whiskers_reroll',
+      name: 'Lucky Paws',
+      icon: '🎲',
+      description: 'Earn an immediate extra roll this turn',
+      cost: 1,
+    },
+  ],
+  stardust: [
+    {
+      id: 'stardust_warp',
+      name: 'Warp Jump',
+      icon: '🌌',
+      description: 'Teleport directly to nearest forward bonus tile',
+      cost: 1,
+    },
+    {
+      id: 'stardust_shield',
+      name: 'Star Shield',
+      icon: '🛡️',
+      description: 'Block the next obstacle hazard or bump',
+      cost: 1,
+    },
+  ],
+  felix: [
+    {
+      id: 'felix_precision',
+      name: 'Apex Precision',
+      icon: '🎯',
+      description: 'Locks dice roll to exact 4 without RNG',
+      cost: 1,
+    },
+    {
+      id: 'felix_boost',
+      name: 'Wild Charge',
+      icon: '⚡',
+      description: '+3 speed on your next dice roll',
+      cost: 1,
+    },
+  ],
+  shadow: [
+    {
+      id: 'shadow_snare',
+      name: 'Shadow Snare',
+      icon: '🕸️',
+      description: 'Drop a snare on current space (-2 spaces for rivals)',
+      cost: 1,
+    },
+    {
+      id: 'shadow_leap',
+      name: 'Phantom Pounce',
+      icon: '🐾',
+      description: 'Leap forward 2 spaces silently',
+      cost: 1,
+    },
+  ],
+  luna: [
+    {
+      id: 'luna_boost',
+      name: 'Lunar Surge',
+      icon: '🌙',
+      description: '+3 speed on your next dice roll',
+      cost: 1,
+    },
+    {
+      id: 'luna_ward',
+      name: 'Moon Aegis',
+      icon: '🛡️',
+      description: 'Block the next obstacle hazard or bump',
+      cost: 1,
+    },
+  ],
+};
+
 export const CAT_PROFILES: Record<CatId, CatBreedProfile> = {
   neon: {
     id: 'neon',

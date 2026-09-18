@@ -1,4 +1,5 @@
 import type { CatDashState, CatDashPlayer } from './cat-dash.types';
+import { CAT_ABILITIES } from './cat-dash.constants';
 
 export function validateRollDice(
   state: CatDashState,
@@ -19,8 +20,30 @@ export function validateUseAbility(
   if (state.players[state.currentPlayerIndex]?.playerId !== player.playerId)
     return false;
   if (!abilityId) return false;
-  if (player.abilitiesUsed.includes(abilityId)) return false;
-  if (player.powerTokens <= 0) return false;
+
+  const catAbilities = CAT_ABILITIES[player.catId] ?? [];
+  let resolvedId = abilityId;
+  if (abilityId === 'ability_1' && catAbilities[0]) {
+    resolvedId = catAbilities[0].id;
+  } else if (abilityId === 'ability_2' && catAbilities[1]) {
+    resolvedId = catAbilities[1].id;
+  }
+
+  const ability = catAbilities.find(
+    (a) => a.id === resolvedId || a.id === abilityId,
+  );
+  if (!ability) return false;
+
+  if (
+    player.abilitiesUsed.includes(resolvedId) ||
+    player.abilitiesUsed.includes(abilityId)
+  ) {
+    return false;
+  }
+
+  const cost = ability.cost ?? 1;
+  if (player.powerTokens < cost) return false;
+
   return true;
 }
 

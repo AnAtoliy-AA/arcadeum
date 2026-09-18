@@ -176,6 +176,18 @@ export const CatDashBoard = memo(function CatDashBoard({
                       key={p.playerId}
                       transform={`translate(${pos.x - size / 2 + offsetX}, ${pos.y - size / 2})`}
                     >
+                      {p.shielded && (
+                        <circle
+                          cx={size / 2}
+                          cy={size / 2}
+                          r={size / 2 + 4}
+                          fill="none"
+                          stroke="#22d3ee"
+                          strokeWidth={2.5}
+                          strokeDasharray="4 3"
+                          opacity={0.85}
+                        />
+                      )}
                       <RealisticCat
                         catId={p.catId}
                         size={size}

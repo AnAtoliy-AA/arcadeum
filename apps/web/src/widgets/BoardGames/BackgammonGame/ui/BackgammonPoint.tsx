@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import type { BackgammonPoint as PointType } from '../types';
@@ -14,6 +15,7 @@ interface BackgammonPointProps {
   point: PointType;
   isTop: boolean;
   isSelected: boolean;
+  isMovable?: boolean;
   targetInfo?: TargetInfo | null;
   currentUserId: string | null;
   playerOrder: string[];
@@ -21,11 +23,12 @@ interface BackgammonPointProps {
   cellFocusProps?: Record<string, unknown>;
 }
 
-export function BackgammonPoint({
+export const BackgammonPoint = memo(function BackgammonPoint({
   pointIndex,
   point,
   isTop,
   isSelected,
+  isMovable = false,
   targetInfo,
   currentUserId: _currentUserId,
   playerOrder,
@@ -53,10 +56,11 @@ export function BackgammonPoint({
       className={cx(
         'relative flex flex-col items-center flex-1 h-full cursor-pointer select-none transition-all duration-200 rounded-sm',
         BOARD_CELL_FOCUS_CLASS,
-        isHitTarget && 'bg-rose-500/25 ring-2 ring-rose-400 shadow-md',
+        isHitTarget &&
+          'bg-rose-500/25 ring-2 ring-rose-400 shadow-[0_0_12px_rgba(244,63,94,0.4)]',
         !isHitTarget &&
           isValidTarget &&
-          'bg-emerald-500/20 ring-1 ring-emerald-400 shadow-sm',
+          'bg-emerald-500/20 ring-1 ring-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.3)]',
         !isHitTarget && !isValidTarget && 'hover:brightness-110',
       )}
       data-testid={`point-${pointIndex}`}
@@ -89,14 +93,18 @@ export function BackgammonPoint({
         {checkers.map((_, i) => {
           const isTopMost = isTop ? i === displayCount - 1 : i === 0;
           const isHighlighted = isSelected && isTopMost;
+          const showMovableGlow = isMovable && isTopMost && !isSelected;
 
           return (
             <div
               className={cx(
-                'relative w-5 h-5 sm:w-7 sm:h-7 rounded-full border flex items-center justify-center transition-transform duration-150 -my-0.5 sm:-my-1',
+                'relative w-5 h-5 sm:w-7 sm:h-7 rounded-full border flex items-center justify-center transition-all duration-150 -my-0.5 sm:-my-1',
                 isP0Checker ? 'backgammon-checker-p0' : 'backgammon-checker-p1',
-                isHighlighted && 'scale-110 ring-2 ring-purple-400 z-20',
-                !isHighlighted && 'z-10',
+                isHighlighted &&
+                  'scale-110 ring-2 ring-purple-400 shadow-lg z-20',
+                showMovableGlow &&
+                  'ring-1 ring-amber-300/80 shadow-[0_0_8px_rgba(251,191,36,0.5)] animate-pulse z-15',
+                !isHighlighted && !showMovableGlow && 'z-10',
               )}
               key={i}
             >
@@ -110,7 +118,7 @@ export function BackgammonPoint({
               />
 
               {isTopMost && point.count > maxVisible && (
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-white bg-black/80 rounded-full">
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-white bg-black/85 rounded-full">
                   +{point.count - maxVisible + 1}
                 </span>
               )}
@@ -125,7 +133,7 @@ export function BackgammonPoint({
                 ⚔️ HIT
               </span>
             ) : (
-              <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white font-black text-[9px] sm:text-[10px] flex items-center justify-center shadow-sm ring-2 ring-emerald-300">
+              <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-500 text-white font-black text-[9px] sm:text-[10px] flex items-center justify-center shadow-md ring-2 ring-emerald-300">
                 +{targetInfo.die}
               </div>
             )}
@@ -135,7 +143,7 @@ export function BackgammonPoint({
 
       <span
         className={cx(
-          'absolute text-[8px] sm:text-[9px] font-bold text-white/40 pointer-events-none',
+          'absolute text-[8px] sm:text-[9px] font-extrabold text-white/40 pointer-events-none',
           isTop ? 'top-0.5' : 'bottom-0.5',
         )}
       >
@@ -143,4 +151,4 @@ export function BackgammonPoint({
       </span>
     </div>
   );
-}
+});

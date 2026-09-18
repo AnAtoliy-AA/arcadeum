@@ -85,16 +85,28 @@ function BackgammonGameImpl({
   const { play } = useGameSound('backgammon_v1');
 
   const handleRoll = useCallback(() => {
+    play('shake');
     play('roll');
     rollDice();
   }, [rollDice, play]);
 
   const handleMove = useCallback(
     (...args: Parameters<typeof moveChecker>) => {
-      play('move');
+      const payload = args[0];
+      if (
+        payload &&
+        typeof payload.to === 'number' &&
+        snapshot?.points[payload.to]?.count === 1 &&
+        snapshot?.points[payload.to]?.playerId &&
+        snapshot?.points[payload.to]?.playerId !== currentUserId
+      ) {
+        play('capture');
+      } else {
+        play('move');
+      }
       return moveChecker(...args);
     },
-    [moveChecker, play],
+    [moveChecker, play, snapshot, currentUserId],
   );
 
   const resolveDisplayNameBound = useCallback(

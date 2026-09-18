@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.7] - 2026-09-18
+
+### Added
+- implement tactical abilities, drafting, and bumping in cat dash (ARC-962) (ARC-962)
+- add realistic 3D racing cat character art and dossier inspection (ARC-962) (ARC-962)
+- upgrade cat dash with realistic cats, reusable dice animation, and flagship dashboard (ARC-962) (ARC-962)
+
+### Fixed
+- resolve hook naming in game widget and bonus space roll advancement (ARC-962) (ARC-962)
+
+
 ## [1.30.6] - 2026-09-17
 
 ### Added

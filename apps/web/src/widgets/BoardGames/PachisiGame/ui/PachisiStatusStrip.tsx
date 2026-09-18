@@ -13,6 +13,7 @@ interface PachisiStatusStripProps {
   isGameOver: boolean;
   actionBusy?: boolean;
   lastDie: number | null;
+  myLastDie?: number | null;
   finishedCounts: Map<string, number>;
   onPassTurn?: () => void;
 }
@@ -52,6 +53,7 @@ export function PachisiStatusStrip({
   isGameOver,
   actionBusy = false,
   lastDie,
+  myLastDie,
   finishedCounts,
   onPassTurn,
 }: PachisiStatusStripProps) {
@@ -59,6 +61,7 @@ export function PachisiStatusStrip({
 
   const seatOf = (pid: string): number => snapshot.seats[pid] ?? 0;
   const isExtraRoll = myTurn && canRoll && snapshot.consecutiveSixes > 0;
+  const displayLastDie = myLastDie ?? lastDie;
 
   return (
     <div className="flex w-full flex-col gap-2">
@@ -97,9 +100,18 @@ export function PachisiStatusStrip({
             </span>
           )}
 
-          {lastDie != null && !isGameOver && !canRoll && (
-            <span className="text-[10px] font-semibold text-white/50">
-              {t('games.pachisi_v1.game.lastRoll', { value: lastDie })}
+          {displayLastDie != null && !isGameOver && (
+            <span
+              className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-bold text-white/90 shadow-sm"
+              data-testid="pachisi-status-last-roll"
+            >
+              <span className="text-[10px] text-emerald-400">🎲</span>
+              <span className="font-black text-emerald-300">
+                {displayLastDie}
+              </span>
+              <span className="text-white/80">
+                {t('games.pachisi_v1.game.lastRoll', { value: displayLastDie })}
+              </span>
             </span>
           )}
         </div>

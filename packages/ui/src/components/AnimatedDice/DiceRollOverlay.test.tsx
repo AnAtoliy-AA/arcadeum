@@ -51,4 +51,39 @@ describe('DiceRollOverlay', () => {
       'Moved 5 spaces',
     );
   });
+
+  it('renders previous roll hint when canRoll is true and lastValues are provided', () => {
+    render(
+      <DiceRollOverlay
+        canRoll={true}
+        isRolling={false}
+        onRoll={vi.fn()}
+        lastValues={[4]}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('dice-overlay-previous-roll-hint'),
+    ).toBeInTheDocument();
+  });
+
+  it('triggers onRoll when flicked upward via pointer events', () => {
+    const handleRoll = vi.fn();
+    render(
+      <DiceRollOverlay
+        canRoll={true}
+        isRolling={false}
+        onRoll={handleRoll}
+      />,
+    );
+
+    const inner = screen.getByTestId('dice-overlay-container').firstElementChild;
+    expect(inner).toBeInTheDocument();
+
+    if (inner) {
+      fireEvent.pointerDown(inner, { clientY: 200 });
+      fireEvent.pointerUp(inner, { clientY: 150 });
+      expect(handleRoll).toHaveBeenCalledTimes(1);
+    }
+  });
 });

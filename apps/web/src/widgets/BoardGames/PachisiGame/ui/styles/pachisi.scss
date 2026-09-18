@@ -43,6 +43,12 @@
 }
 
 .pachisi-center-overlay {
+  grid-row: 7 / span 3;
+  grid-column: 7 / span 3;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
 }
 

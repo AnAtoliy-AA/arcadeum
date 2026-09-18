@@ -214,4 +214,93 @@ test.describe('Pachisi Gameplay Styles, Fullscreen and Dice', () => {
     await expect(yardToken).toHaveClass(/animate-bounce/);
     await yardToken.click({ force: true });
   });
+
+  test('renders 3D die rolling animation and retains last roll after move', async ({
+    page,
+  }) => {
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
+    const oppId = '507f191e810c19729de860eb';
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Pachisi Die Animation Room',
+        gameId: 'pachisi_v1',
+        gameOptions: {
+          variant: 'cyberpunk',
+          theme: 'cyberpunk',
+          mode: 'standard',
+        },
+        status: 'active',
+        playerCount: 2,
+      },
+    });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'pachisi_v1',
+      roomJoinedPayload: {
+        status: 'active',
+        gameOptions: {
+          variant: 'cyberpunk',
+          theme: 'cyberpunk',
+          mode: 'standard',
+        },
+        session: {
+          id: 'sess-pachisi-3',
+          status: 'active',
+          state: {
+            phase: 'move',
+            options: {
+              theme: 'cyberpunk',
+              variant: 'cyberpunk',
+              mode: 'standard',
+            },
+            seats: { [userId]: 0, [oppId]: 2 },
+            tokens: {
+              [userId]: [
+                { id: 0, progress: 0 },
+                { id: 1, progress: -1 },
+                { id: 2, progress: -1 },
+                { id: 3, progress: -1 },
+              ],
+              [oppId]: [
+                { id: 0, progress: -1 },
+                { id: 1, progress: -1 },
+                { id: 2, progress: -1 },
+                { id: 3, progress: -1 },
+              ],
+            },
+            die: 4,
+            consecutiveSixes: 0,
+            currentTurnIndex: 0,
+            playerOrder: [userId, oppId],
+            players: [
+              { playerId: userId, seat: 0, color: 'red', alive: true },
+              { playerId: oppId, seat: 2, color: 'yellow', alive: true },
+            ],
+            winnerId: null,
+            winnerIds: [],
+            isDraw: false,
+            logs: [],
+          },
+        },
+      },
+    });
+
+    await navigateTo(page, routes.gameRoom(roomId));
+    await waitForRoomReady(page);
+
+    const dieResult = page.getByTestId('pachisi-die-result');
+    await expect(dieResult).toBeVisible();
+    await expect(dieResult).toContainText('4');
+
+    const statusLastRoll = page.getByTestId('pachisi-status-last-roll');
+    await expect(statusLastRoll).toBeVisible();
+    await expect(statusLastRoll).toContainText('4');
+
+    const dieElement = page.getByTestId('dice-die-0');
+    await expect(dieElement).toBeVisible();
+    await expect(dieElement).toHaveClass(/animate-dice-.*land/);
+  });
 });

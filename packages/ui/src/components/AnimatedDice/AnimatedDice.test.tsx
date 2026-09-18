@@ -30,5 +30,11 @@ describe('AnimatedDice', () => {
     rerender(<AnimatedDice variant="gold" size="2xl" values={[6]} />);
     expect(screen.getByTestId('dice-die-0').className).toContain('w-20');
     expect(screen.getByTestId('dice-die-0').className).toContain('from-amber-200');
+
+    rerender(<AnimatedDice variant="neon" size="lg" values={[4]} />);
+    expect(screen.getByTestId('dice-die-0').className).toContain('from-slate-950');
+
+    rerender(<AnimatedDice variant="wood" size="md" values={[5]} />);
+    expect(screen.getByTestId('dice-die-0').className).toContain('from-amber-900');
   });
 });

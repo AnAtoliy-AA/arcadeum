@@ -70,9 +70,9 @@ export function executeRollDiceHelper(
       }
     }
     if (effects.extraRoll) {
-      player.extraRollPending = true;
+      player.hasBonus = true;
       logs.push(
-        createLog('system', 'Found a bonus turbo boost', {
+        createLog('system', 'Found a bonus turbo boost (+1 on next roll)', {
           senderId: player.playerId,
         }),
       );

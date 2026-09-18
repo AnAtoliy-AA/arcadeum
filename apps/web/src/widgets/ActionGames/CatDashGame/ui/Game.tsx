@@ -66,7 +66,7 @@ function CatDashGameImpl({
       initialSession,
     });
 
-  const { startSession, rollDice, useAbility } = useCatDashActions({
+  const { startSession, rollDice, activateAbility } = useCatDashActions({
     roomId,
     userId: currentUserId,
   });
@@ -90,9 +90,9 @@ function CatDashGameImpl({
   const handleUseAbility = useCallback(
     (abilityId: string) => {
       play('confirm');
-      useAbility(abilityId);
+      activateAbility(abilityId);
     },
-    [useAbility, play],
+    [activateAbility, play],
   );
 
   const resolveDisplayNameBound = useCallback(

@@ -51,4 +51,19 @@ describe('DiceRollOverlay', () => {
       'Moved 5 spaces',
     );
   });
+
+  it('renders previous roll hint when canRoll is true and lastValues are provided', () => {
+    render(
+      <DiceRollOverlay
+        canRoll={true}
+        isRolling={false}
+        onRoll={vi.fn()}
+        lastValues={[4]}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('dice-overlay-previous-roll-hint'),
+    ).toBeInTheDocument();
+  });
 });

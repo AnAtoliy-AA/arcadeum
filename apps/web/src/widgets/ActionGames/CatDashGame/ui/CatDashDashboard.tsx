@@ -245,7 +245,7 @@ export const CatDashDashboard = memo(function CatDashDashboard({
                     })
                   : undefined
             }
-            values={lastRollValue ? [lastRollValue] : undefined}
+            values={!myTurn && lastRollValue ? [lastRollValue] : undefined}
             lastValues={lastRollValue ? [lastRollValue] : undefined}
             resultLabel={
               lastRollValue

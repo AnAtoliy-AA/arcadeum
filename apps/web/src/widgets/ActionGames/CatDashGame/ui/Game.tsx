@@ -22,6 +22,7 @@ import type { CatDashGameProps } from '../types';
 import { useCatDashState } from '../hooks/useCatDashState';
 import { useCatDashActions } from '../hooks/useCatDashActions';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
+import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { CatDashLobby } from './Lobby';
 import { CatDashBoard } from './Board';
 import { RealisticCat } from './RealisticCat';
@@ -71,21 +72,17 @@ function CatDashGameImpl({
     userId: currentUserId,
   });
 
-  const [rollingTurn, setRollingTurn] = useState<number | null>(null);
+  const [timedRolling, triggerRolling] = useTimedTrue(900);
   const [inspectedCatId, setInspectedCatId] = useState<CatId | null>(null);
-  const isRolling =
-    rollingTurn !== null &&
-    rollingTurn === snapshot?.turnNumber &&
-    Boolean(myTurn) &&
-    !isGameOver;
+  const isRolling = timedRolling && !isGameOver;
 
   const { play } = useGameSound('cat_dash_v1');
 
   const handleRollDice = useCallback(() => {
-    setRollingTurn(snapshot?.turnNumber ?? 0);
+    triggerRolling();
     play('roll');
     rollDice();
-  }, [rollDice, play, snapshot?.turnNumber]);
+  }, [rollDice, play, triggerRolling]);
 
   const handleUseAbility = useCallback(
     (abilityId: string) => {

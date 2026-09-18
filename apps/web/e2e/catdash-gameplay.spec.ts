@@ -138,5 +138,7 @@ test.describe('Cat Dash Flagship Gameplay', () => {
 
     const rollingState = page.getByTestId('dice-overlay-rolling-state');
     await expect(rollingState).toBeVisible();
+    await expect(rollingState).not.toBeVisible();
+    await expect(rollBtn).toBeVisible();
   });
 });

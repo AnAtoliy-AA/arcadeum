@@ -77,6 +77,13 @@ export function PachisiBoard({
     setLastDie(snapshot.die);
   }
 
+  const [myLastDie, setMyLastDie] = useState<number | null>(
+    myTurn && snapshot.die != null ? snapshot.die : null,
+  );
+  if (myTurn && snapshot.die != null && snapshot.die !== myLastDie) {
+    setMyLastDie(snapshot.die);
+  }
+
   const canRoll = myTurn && snapshot.phase === 'roll';
   const canMove = myTurn && snapshot.phase === 'move';
   const isGameOver = snapshot.phase === 'game_over';
@@ -122,12 +129,6 @@ export function PachisiBoard({
     }
     prevPositions.current = curr;
   }, [snapshot, snapshot.playerOrder, snapshot.seats, snapshot.tokens]);
-
-  useEffect(() => {
-    if (!lastMove) return;
-    const id = setTimeout(() => setLastMove(null), 2000);
-    return () => clearTimeout(id);
-  }, [lastMove]);
 
   const movable = useMemo(
     () =>
@@ -248,6 +249,7 @@ export function PachisiBoard({
         finishedCounts={finishedCounts}
         isGameOver={isGameOver}
         lastDie={lastDie}
+        myLastDie={myLastDie}
         movableCount={movable.size}
         myTurn={myTurn}
         onPassTurn={onPassTurn}
@@ -409,6 +411,7 @@ export function PachisiBoard({
           actionBusy={actionBusy}
           die={snapshot.die}
           lastDie={lastDie}
+          myLastDie={myLastDie}
           boardRotation={boardRotation}
           onRoll={onRoll}
         />

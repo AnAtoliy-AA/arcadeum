@@ -129,6 +129,7 @@ export function executeRollDiceHelper(
     state.currentPlayerIndex =
       (state.currentPlayerIndex + 1) % state.players.length;
   }
+  state.turnNumber = (state.turnNumber || 0) + 1;
 
   return { state, logs };
 }

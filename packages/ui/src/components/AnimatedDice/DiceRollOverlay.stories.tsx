@@ -41,3 +41,25 @@ export const Result: Story = {
     resultLabel: 'Moved 5 spaces',
   },
 };
+
+export const TwoDiceBackgammon: Story = {
+  args: {
+    canRoll: true,
+    isRolling: false,
+    onRoll: () => {},
+    diceCount: 2,
+    rollLabel: 'Roll 2 Dice',
+  },
+};
+
+export const DoublesResult: Story = {
+  args: {
+    canRoll: false,
+    isRolling: false,
+    onRoll: () => {},
+    values: [6, 6],
+    isDoubles: true,
+    showTotal: true,
+    resultLabel: 'Double 6s!',
+  },
+};

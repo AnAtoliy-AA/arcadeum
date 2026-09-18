@@ -267,4 +267,89 @@ describe('PachisiBoard', () => {
     fireEvent.click(yardToken);
     expect(handleMove).toHaveBeenCalledWith(0);
   });
+
+  it('keeps last rolled number visible after move when turn ends', () => {
+    const dieRolledState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 4,
+    };
+    const { rerender } = render(
+      <PachisiBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={dieRolledState}
+      />,
+    );
+    expect(screen.getByTestId('pachisi-die-result')).toHaveTextContent('4');
+
+    const nextTurnState: PachisiClientState = {
+      ...mockState,
+      phase: 'roll',
+      activePlayer: 'p2',
+      die: null,
+    };
+    rerender(
+      <PachisiBoard
+        currentUserId="p1"
+        myTurn={false}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={nextTurnState}
+      />,
+    );
+
+    const dieResult = screen.getByTestId('pachisi-die-result');
+    expect(dieResult).toBeInTheDocument();
+    expect(dieResult).toHaveTextContent('4');
+    expect(screen.getByTestId('pachisi-status-last-roll')).toHaveTextContent(
+      '4',
+    );
+  });
+
+  it('shows previous roll hint after rolling a six and moving', () => {
+    const rolledSixState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 6,
+    };
+    const { rerender } = render(
+      <PachisiBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={rolledSixState}
+      />,
+    );
+
+    const bonusRollState: PachisiClientState = {
+      ...mockState,
+      phase: 'roll',
+      activePlayer: 'p1',
+      die: null,
+      consecutiveSixes: 1,
+    };
+    rerender(
+      <PachisiBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={bonusRollState}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('pachisi-previous-roll-hint'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('pachisi-previous-roll-hint')).toHaveTextContent(
+      '6',
+    );
+    expect(screen.getByTestId('pachisi-status-last-roll')).toHaveTextContent(
+      '6',
+    );
+  });
 });

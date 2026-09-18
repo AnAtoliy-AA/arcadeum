@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatedDice } from '@arcadeum/ui';
+import { DiceRollOverlay } from '@arcadeum/ui';
 
 interface BackgammonDiceProps {
   rolledDice: [number, number] | null;
@@ -33,27 +33,21 @@ export function BackgammonDice({
         </div>
       )}
 
-      <div className="flex flex-row items-center justify-center gap-3">
-        {canRoll && (
-          <button
-            className="px-6 py-2 rounded-xl font-black text-xs sm:text-sm tracking-wide shadow-md transition-transform duration-150 active:scale-95 hover:brightness-110 text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 ring-2 ring-purple-400/50 hover:ring-purple-300 flex items-center gap-1.5 cursor-pointer"
-            data-testid="roll-dice-btn"
-            onClick={onRoll}
-            type="button"
-          >
-            <span className="text-sm sm:text-base">🎲</span>
-            <span>{rollLabel}</span>
-          </button>
-        )}
-
-        {remainingDice.length > 0 && (
-          <AnimatedDice
-            isDoubles={isDoubles}
-            size="md"
-            values={remainingDice}
-          />
-        )}
-      </div>
+      <DiceRollOverlay
+        canRoll={canRoll}
+        diceCount={2}
+        isDoubles={isDoubles}
+        isRolling={false}
+        lastValues={rolledDice ?? undefined}
+        layout="bare"
+        onRoll={onRoll}
+        rollButtonTestId="roll-dice-btn"
+        rollLabel={rollLabel}
+        size="md"
+        testIdPrefix="backgammon"
+        values={remainingDice.length > 0 ? remainingDice : undefined}
+        variant="classic"
+      />
     </div>
   );
 }

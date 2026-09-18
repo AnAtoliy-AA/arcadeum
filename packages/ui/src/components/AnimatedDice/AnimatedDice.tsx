@@ -3,7 +3,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { cx } from '../../utils/cx';
 
 export type DiceSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-export type DiceVariant = 'classic' | 'dark' | 'gold';
+export type DiceVariant = 'classic' | 'dark' | 'gold' | 'neon' | 'wood';
 
 export interface AnimatedDiceProps {
   values: number[];
@@ -48,39 +48,23 @@ const DOT_PATTERNS: Record<number, Array<[number, number]>> = {
   ],
 };
 
-function getCubeFaces(frontVal: number) {
-  const f = Math.min(Math.max(frontVal, 1), 6);
-  const back = 7 - f;
-  const topMap: Record<number, number> = {
-    1: 2,
-    2: 6,
-    3: 2,
-    4: 2,
-    5: 1,
-    6: 5,
-  };
-  const rightMap: Record<number, number> = {
-    1: 3,
-    2: 3,
-    3: 6,
-    4: 1,
-    5: 3,
-    6: 3,
-  };
-  const top = topMap[f] ?? 2;
-  const bottom = 7 - top;
-  const right = rightMap[f] ?? 3;
-  const left = 7 - right;
+const STANDARD_CUBE_FACES = [
+  { value: 1, faceClass: 'dice-face-front' },
+  { value: 2, faceClass: 'dice-face-top brightness-105' },
+  { value: 3, faceClass: 'dice-face-right brightness-95' },
+  { value: 4, faceClass: 'dice-face-left brightness-90' },
+  { value: 5, faceClass: 'dice-face-bottom brightness-80' },
+  { value: 6, faceClass: 'dice-face-back brightness-75' },
+] as const;
 
-  return [
-    { value: f, faceClass: 'dice-face-front' },
-    { value: top, faceClass: 'dice-face-top brightness-105' },
-    { value: right, faceClass: 'dice-face-right brightness-95' },
-    { value: left, faceClass: 'dice-face-left brightness-90' },
-    { value: bottom, faceClass: 'dice-face-bottom brightness-80' },
-    { value: back, faceClass: 'dice-face-back brightness-75' },
-  ] as const;
-}
+const ORIENT_CLASSES: Record<number, string> = {
+  1: 'dice-orient-1 animate-dice-3d-land-1',
+  2: 'dice-orient-2 animate-dice-3d-land-2',
+  3: 'dice-orient-3 animate-dice-3d-land-3',
+  4: 'dice-orient-4 animate-dice-3d-land-4',
+  5: 'dice-orient-5 animate-dice-3d-land-5',
+  6: 'dice-orient-6 animate-dice-3d-land-6',
+};
 
 const FACE_COUNT = 6;
 const CYCLE_INTERVAL_MS = 95;
@@ -139,6 +123,10 @@ const variantClasses: Record<DiceVariant, string> = {
     'bg-gradient-to-br from-slate-800/95 via-slate-900/95 to-slate-950/95 border-white/20 shadow-[inset_0_2px_4px_rgba(255,255,255,0.15)]',
   gold:
     'bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 border-amber-300 shadow-[inset_0_2px_4px_rgba(255,255,255,0.7)]',
+  neon:
+    'bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 border-cyan-400/70 shadow-[0_0_15px_rgba(6,182,212,0.35),inset_0_2px_4px_rgba(34,211,238,0.4)]',
+  wood:
+    'bg-gradient-to-br from-amber-900 via-amber-950 to-amber-900 border-amber-700/80 shadow-[inset_0_2px_4px_rgba(251,191,36,0.25),inset_0_-2px_4px_rgba(0,0,0,0.6)]',
 };
 
 export const AnimatedDice = memo(function AnimatedDice({
@@ -185,7 +173,8 @@ export const AnimatedDice = memo(function AnimatedDice({
       {faceValues.map((val, idx) => {
         const clampedVal = Math.min(Math.max(val, 1), 6);
         const isOdd = idx % 2 === 1;
-        const cubeFaces = getCubeFaces(clampedVal);
+        const orientClass = ORIENT_CLASSES[clampedVal] ?? ORIENT_CLASSES[1];
+        const microTilt = !isRolling ? (isOdd ? '-rotate-2' : 'rotate-1') : '';
 
         const rollingAnimClass = isOdd
           ? 'animate-dice-3d-tumble-alt animated-dice-shake'
@@ -193,7 +182,10 @@ export const AnimatedDice = memo(function AnimatedDice({
 
         return (
           <div
-            className="dice-perspective relative flex flex-col items-center justify-center"
+            className={cx(
+              'dice-perspective relative flex flex-col items-center justify-center transition-transform duration-300',
+              microTilt,
+            )}
             key={`die-container-${idx}`}
           >
             <div
@@ -211,18 +203,20 @@ export const AnimatedDice = memo(function AnimatedDice({
                 'preserve-3d relative flex items-center justify-center select-none transform-gpu transition-transform',
                 variantClasses[variant],
                 isDoubles
-                  ? 'border-amber-400 ring-1 ring-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.6)]'
-                  : variant === 'classic'
-                    ? 'border-slate-300 shadow-xl'
-                    : 'border-white/20 shadow-black/60',
+                  ? 'border-amber-400 ring-2 ring-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.6)] animate-dice-spark'
+                  : variant === 'neon'
+                    ? 'border-cyan-400/80 shadow-[0_0_12px_rgba(6,182,212,0.4)]'
+                    : variant === 'classic'
+                      ? 'border-slate-300 shadow-xl'
+                      : 'border-white/20 shadow-black/60',
                 isRolling && rollingAnimClass,
                 !isRolling &&
-                  'animate-dice-land hover:scale-110 active:scale-95 duration-200 cursor-default',
+                  `${orientClass} hover:scale-110 active:scale-95 duration-200 cursor-default`,
               )}
               data-testid={`dice-die-${idx}`}
               key={`die-${idx}-${clampedVal}-${isRolling ? 'rolling' : 'settled'}`}
             >
-              {cubeFaces.map((face) => {
+              {STANDARD_CUBE_FACES.map((face) => {
                 const dots = DOT_PATTERNS[face.value] ?? DOT_PATTERNS[1];
 
                 let dotFill = '#f8fafc';
@@ -232,6 +226,10 @@ export const AnimatedDice = memo(function AnimatedDice({
                   dotFill = face.value === 1 ? '#dc2626' : '#0f172a';
                 } else if (variant === 'gold') {
                   dotFill = '#78350f';
+                } else if (variant === 'neon') {
+                  dotFill = '#22d3ee';
+                } else if (variant === 'wood') {
+                  dotFill = '#fef3c7';
                 }
 
                 return (
@@ -243,9 +241,11 @@ export const AnimatedDice = memo(function AnimatedDice({
                       variantClasses[variant],
                       isDoubles
                         ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]'
-                        : variant === 'classic'
-                          ? 'border-slate-300 shadow-[0_6px_16px_rgba(0,0,0,0.22),inset_0_2px_4px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,0,0,0.14)]'
-                          : 'border-white/20 shadow-[0_6px_16px_rgba(0,0,0,0.4)]',
+                        : variant === 'neon'
+                          ? 'border-cyan-400/60 shadow-[0_0_10px_rgba(6,182,212,0.4)]'
+                          : variant === 'classic'
+                            ? 'border-slate-300 shadow-[0_6px_16px_rgba(0,0,0,0.22),inset_0_2px_4px_rgba(255,255,255,0.95),inset_0_-2px_4px_rgba(0,0,0,0.14)]'
+                            : 'border-white/20 shadow-[0_6px_16px_rgba(0,0,0,0.4)]',
                     )}
                     key={`face-${face.faceClass}-${face.value}`}
                   >

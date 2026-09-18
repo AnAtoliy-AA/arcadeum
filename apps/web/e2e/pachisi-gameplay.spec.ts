@@ -301,6 +301,6 @@ test.describe('Pachisi Gameplay Styles, Fullscreen and Dice', () => {
 
     const dieElement = page.getByTestId('dice-die-0');
     await expect(dieElement).toBeVisible();
-    await expect(dieElement).toHaveClass(/animate-dice-land/);
+    await expect(dieElement).toHaveClass(/animate-dice-.*land/);
   });
 });

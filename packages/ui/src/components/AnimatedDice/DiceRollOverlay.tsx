@@ -1,6 +1,6 @@
 'use client';
 
-import { memo } from 'react';
+import { memo, useCallback, useRef } from 'react';
 import { cx } from '../../utils/cx';
 import { AnimatedDice, type DiceSize, type DiceVariant } from './AnimatedDice';
 
@@ -64,6 +64,28 @@ export const DiceRollOverlay = memo(function DiceRollOverlay({
 
   const rotationClass = ROTATION_CLASSES[rotation] ?? '';
 
+  const pointerStartRef = useRef<number | null>(null);
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!canRoll || isRolling || disabled) return;
+      pointerStartRef.current = e.clientY;
+    },
+    [canRoll, isRolling, disabled],
+  );
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (pointerStartRef.current == null || !canRoll || isRolling || disabled) return;
+      const deltaY = e.clientY - pointerStartRef.current;
+      pointerStartRef.current = null;
+      if (deltaY < -24) {
+        onRoll();
+      }
+    },
+    [canRoll, isRolling, disabled, onRoll],
+  );
+
   return (
     <div
       className={cx(
@@ -76,9 +98,11 @@ export const DiceRollOverlay = memo(function DiceRollOverlay({
     >
       <div
         className={cx(
-          'flex flex-col items-center justify-center gap-2 pointer-events-auto',
+          'flex flex-col items-center justify-center gap-2 pointer-events-auto select-none touch-none',
           rotationClass,
         )}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
       >
         {canRoll && !isRolling && (
           <button

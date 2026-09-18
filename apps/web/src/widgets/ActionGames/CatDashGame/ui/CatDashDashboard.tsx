@@ -256,7 +256,7 @@ export const CatDashDashboard = memo(function CatDashDashboard({
                 : undefined
             }
             size="xl"
-            variant="classic"
+            variant="neon"
             className="w-full h-full min-h-[200px]"
           />
         </div>

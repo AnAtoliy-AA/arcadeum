@@ -46,7 +46,7 @@ export function BackgammonDice({
         size="md"
         testIdPrefix="backgammon"
         values={remainingDice.length > 0 ? remainingDice : undefined}
-        variant="classic"
+        variant="wood"
       />
     </div>
   );

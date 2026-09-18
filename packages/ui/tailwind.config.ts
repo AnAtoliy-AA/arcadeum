@@ -122,6 +122,10 @@ export default {
           '78%': { transform: 'rotateX(0deg) rotateY(180deg) rotateZ(0deg) translateY(-3px) scale(1.04)' },
           '100%': { transform: 'rotateX(0deg) rotateY(180deg) rotateZ(0deg) translateY(0) scale(1)' },
         },
+        'dice-doubles-spark': {
+          '0%, 100%': { transform: 'scale(1)', filter: 'drop-shadow(0 0 10px rgba(251, 191, 36, 0.45))' },
+          '50%': { transform: 'scale(1.05)', filter: 'drop-shadow(0 0 22px rgba(251, 191, 36, 0.85))' },
+        },
       },
       animation: {
         shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',
@@ -129,6 +133,7 @@ export default {
         'dice-tumble-alt': 'animated-dice-shake-alt 0.6s ease-in-out infinite',
         'dice-land': 'animated-dice-land 0.68s cubic-bezier(0.2, 0.85, 0.3, 1) forwards',
         'dice-shadow': 'animated-dice-shadow 0.92s ease-in-out infinite',
+        'dice-spark': 'dice-doubles-spark 1.4s ease-in-out infinite',
         'dice-3d-tumble': 'animated-dice-3d-tumble 0.92s cubic-bezier(0.35, 0.15, 0.35, 1) infinite',
         'dice-3d-tumble-alt': 'animated-dice-3d-tumble-alt 0.96s cubic-bezier(0.35, 0.15, 0.35, 1) infinite',
         'dice-3d-land-1': 'animated-dice-3d-land-1 0.68s cubic-bezier(0.2, 0.85, 0.3, 1) forwards',

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.8] - 2026-09-18
+
+### Added
+- add 3d euler settling, flick gesture, and thematic skins (ARC-963) (ARC-963)
+- modernize 3d dice roll animation and unify overlay across games (ARC-963) (ARC-963)
+
+
 ## [1.30.7] - 2026-09-18
 
 ### Added

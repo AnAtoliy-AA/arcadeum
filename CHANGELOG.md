@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.15] - 2026-09-19
+
+### Added
+- support castling as a premove
+
+
 ## [1.30.14] - 2026-09-19
 
 ### Fixed

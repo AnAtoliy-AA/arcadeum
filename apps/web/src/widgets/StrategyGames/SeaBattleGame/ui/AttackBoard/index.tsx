@@ -26,7 +26,7 @@ export interface AttackBoardProps {
   shipCount?: number;
   snapshot?: SeaBattleSnapshot | null;
   weaponPreviewCells?: Set<string> | null;
-  weaponPreviewType?: 'sonar' | 'radar' | null;
+  weaponPreviewType?: 'sonar' | 'radar' | 'ability' | null;
   onCellHover?: (playerId: string, row: number, col: number) => void;
   onCellHoverEnd?: () => void;
   weaponMode?: boolean;

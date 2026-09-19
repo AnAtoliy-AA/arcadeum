@@ -72,4 +72,23 @@ describe('ShipAbilitiesPanel', () => {
     fireEvent.click(scoutBtn);
     expect(onUseAbility).not.toHaveBeenCalled();
   });
+
+  it('indicates active primed ability with cancel hint in title', () => {
+    render(
+      <ShipAbilitiesPanel
+        player={mockPlayer}
+        onUseAbility={vi.fn()}
+        disabled={false}
+        activeAbilityId="scout"
+      />,
+    );
+
+    const toggle = screen.getByRole('button', { name: /Ship Abilities/i });
+    fireEvent.click(toggle);
+
+    const scoutBtn = screen.getByRole('button', { name: /Scout/i });
+    expect(scoutBtn.getAttribute('title')).toContain(
+      'Active - click to cancel',
+    );
+  });
 });

@@ -10,6 +10,7 @@ import { ShipPlacementBoard } from './ShipPlacementBoard';
 import { AttackBoard } from './AttackBoard';
 import { TurnTimer } from './TurnTimer';
 import { ShipAbilitiesPanel } from './ShipAbilitiesPanel';
+import { SeaBattleWeaponsBar, type WeaponMode } from './SeaBattleWeaponsBar';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import type {
   SeaBattlePlayerState,
@@ -18,11 +19,27 @@ import type {
   ShipCell,
 } from '../types';
 
-type WeaponMode = null | {
-  weapon: 'sonar' | 'radar';
-  targetPlayerId: string;
-  radarAxis?: 'row' | 'col';
-};
+function getBoxCells(
+  targetPlayerId: string,
+  row: number,
+  col: number,
+  radius: number,
+  gridSize: number,
+): Set<string> {
+  const cells = new Set<string>();
+  const rStart = row - radius;
+  const rEnd = row + radius;
+  const cStart = col - radius;
+  const cEnd = col + radius;
+  for (let r = rStart; r <= rEnd; r++) {
+    for (let c = cStart; c <= cEnd; c++) {
+      if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
+        cells.add(`${targetPlayerId}-${r}-${c}`);
+      }
+    }
+  }
+  return cells;
+}
 
 interface SeaBattleBoardsProps {
   isPlacementPhase: boolean;
@@ -124,11 +141,54 @@ export function SeaBattleBoards({
           axis === 'row' ? row : undefined,
           axis === 'col' ? col : undefined,
         );
+      } else if (
+        weaponMode.weapon === 'ability' &&
+        onShipAbility &&
+        weaponMode.abilityId
+      ) {
+        onShipAbility(weaponMode.abilityId, targetPlayerId, row, col);
       }
       setWeaponMode(null);
       setHoveredCell(null);
     },
-    [weaponMode, onSonar, onRadar],
+    [weaponMode, onSonar, onRadar, onShipAbility],
+  );
+
+  const handleShipAbilityClick = useCallback(
+    (abilityId: string) => {
+      if (!isMyTurn || isGameOver) return;
+      if (
+        weaponMode?.weapon === 'ability' &&
+        weaponMode.abilityId === abilityId
+      ) {
+        setWeaponMode(null);
+        setHoveredCell(null);
+        return;
+      }
+      const defaultTargetId = opponents?.[0]?.playerId;
+      if (abilityId === 'silent_run') {
+        onShipAbility?.(abilityId);
+        setWeaponMode(null);
+        setHoveredCell(null);
+        return;
+      }
+      if (abilityId === 'barrage') {
+        if (defaultTargetId) {
+          onShipAbility?.(abilityId, defaultTargetId);
+        }
+        setWeaponMode(null);
+        setHoveredCell(null);
+        return;
+      }
+      if (defaultTargetId) {
+        setWeaponMode({
+          weapon: 'ability',
+          abilityId,
+          targetPlayerId: defaultTargetId,
+        });
+      }
+    },
+    [isMyTurn, isGameOver, weaponMode, opponents, onShipAbility],
   );
 
   const handleCellHover = useCallback(
@@ -148,45 +208,46 @@ export function SeaBattleBoards({
     setHoveredCell(null);
   }, []);
 
-  // Compute preview cells for sonar (area scales with grid size, matching backend getSonarSide)
   const sonarPreviewCells = useMemo(() => {
     if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
     const side = gridSize <= 10 ? 3 : gridSize <= 15 ? 5 : 7;
-    const cells = new Set<string>();
-    const rStart = hoveredCell.row - Math.floor((side - 1) / 2);
-    const rEnd = rStart + side - 1;
-    const cStart = hoveredCell.col - Math.floor((side - 1) / 2);
-    const cEnd = cStart + side - 1;
-    for (let r = rStart; r <= rEnd; r++) {
-      for (let c = cStart; c <= cEnd; c++) {
-        if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
-          cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
-        }
-      }
-    }
-    return cells;
+    return getBoxCells(
+      weaponMode.targetPlayerId,
+      hoveredCell.row,
+      hoveredCell.col,
+      Math.floor((side - 1) / 2),
+      gridSize,
+    );
   }, [weaponMode, hoveredCell, gridSize]);
 
-  // Compute preview cells for radar (band of rows/columns, matching backend getRadarLines)
+  const abilityPreviewCells = useMemo(() => {
+    if (weaponMode?.weapon !== 'ability' || !hoveredCell) return null;
+    const radius =
+      weaponMode.abilityId === 'sonar_ping'
+        ? 2
+        : weaponMode.abilityId === 'scout'
+          ? 1
+          : 0;
+    return getBoxCells(
+      weaponMode.targetPlayerId,
+      hoveredCell.row,
+      hoveredCell.col,
+      radius,
+      gridSize,
+    );
+  }, [weaponMode, hoveredCell, gridSize]);
+
   const radarPreviewCells = useMemo(() => {
     if (weaponMode?.weapon !== 'radar' || !hoveredCell) return null;
     const lines = gridSize <= 10 ? 1 : gridSize <= 15 ? 3 : 5;
     const halfWidth = Math.floor(lines / 2);
     const cells = new Set<string>();
     const axis = weaponMode.radarAxis ?? 'row';
-    if (axis === 'row') {
-      for (let dr = -halfWidth; dr <= halfWidth; dr++) {
-        const r = hoveredCell.row + dr;
-        if (r < 0 || r >= gridSize) continue;
-        for (let c = 0; c < gridSize; c++) {
-          cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
-        }
-      }
-    } else {
-      for (let dc = -halfWidth; dc <= halfWidth; dc++) {
-        const c = hoveredCell.col + dc;
-        if (c < 0 || c >= gridSize) continue;
-        for (let r = 0; r < gridSize; r++) {
+    for (let d = -halfWidth; d <= halfWidth; d++) {
+      for (let i = 0; i < gridSize; i++) {
+        const r = axis === 'row' ? hoveredCell.row + d : i;
+        const c = axis === 'col' ? hoveredCell.col + d : i;
+        if (r >= 0 && r < gridSize && c >= 0 && c < gridSize) {
           cells.add(`${weaponMode.targetPlayerId}-${r}-${c}`);
         }
       }
@@ -196,13 +257,40 @@ export function SeaBattleBoards({
 
   const isWeaponMode = weaponMode !== null;
 
-  const sonarActive = weaponMode?.weapon === 'sonar';
-  const radarActive = weaponMode?.weapon === 'radar';
+  const handleSelectSonar = useCallback(() => {
+    if (isSonarDisabled) return;
+    const targetId = opponents?.[0]?.playerId;
+    if (targetId) {
+      setWeaponMode({ weapon: 'sonar', targetPlayerId: targetId });
+    }
+  }, [isSonarDisabled, opponents]);
+
+  const handleSelectRadar = useCallback(() => {
+    if (isRadarDisabled) return;
+    const targetId = opponents?.[0]?.playerId;
+    if (targetId) {
+      setWeaponMode({
+        weapon: 'radar',
+        targetPlayerId: targetId,
+        radarAxis: 'row',
+      });
+    }
+  }, [isRadarDisabled, opponents]);
+
+  const handleToggleRadarAxis = useCallback(() => {
+    if (isRadarDisabled) return;
+    const targetId = opponents?.[0]?.playerId;
+    if (!targetId) return;
+    setWeaponMode({
+      weapon: 'radar',
+      targetPlayerId: targetId,
+      radarAxis: weaponMode?.radarAxis === 'col' ? 'row' : 'col',
+    });
+  }, [isRadarDisabled, opponents, weaponMode?.radarAxis]);
 
   const handleKeyboardFire = useCallback(
     (row: number, col: number) => {
       if (!isMyTurn || isGameOver) return;
-      // Fire on first opponent
       const targetId = opponents?.[0]?.playerId;
       if (targetId) {
         attack(targetId, row, col);
@@ -276,133 +364,30 @@ export function SeaBattleBoards({
           {isMyTurn && snapshot.mode === 'speed' && currentPlayer && (
             <TurnTimer deadline={currentPlayer.turnDeadline} />
           )}
-          {!isGameOver && (hasSonar || hasRadar) && (
-            <div className="flex gap-2 px-2 -mb-1 justify-center flex-wrap items-center">
-              {hasSonar && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isSonarDisabled) return;
-                    if (opponents?.length === 1) {
-                      setWeaponMode({
-                        weapon: 'sonar',
-                        targetPlayerId: opponents[0].playerId,
-                      });
-                    } else if (opponents && opponents.length > 1) {
-                      setWeaponMode({
-                        weapon: 'sonar',
-                        targetPlayerId: opponents[0].playerId,
-                      });
-                    }
-                  }}
-                  disabled={isSonarDisabled}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 ${
-                    isSonarDisabled
-                      ? 'opacity-35 cursor-not-allowed'
-                      : 'cursor-pointer'
-                  } ${
-                    sonarActive
-                      ? 'text-cyan-400 border border-cyan-400 bg-cyan-400/15'
-                      : 'text-neutral-200 border border-cyan-400/30 bg-cyan-400/5'
-                  }`}
-                >
-                  🔊 {t('games.create.seaBattleSonar') || 'Sonar'}
-                  {sonarUsed && ' ✓'}
-                </button>
-              )}
-              {hasRadar && (
-                <div className="flex gap-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (isRadarDisabled) return;
-                      if (opponents?.length === 1) {
-                        setWeaponMode({
-                          weapon: 'radar',
-                          targetPlayerId: opponents[0].playerId,
-                          radarAxis: 'row',
-                        });
-                      } else if (opponents && opponents.length > 1) {
-                        setWeaponMode({
-                          weapon: 'radar',
-                          targetPlayerId: opponents[0].playerId,
-                          radarAxis: 'row',
-                        });
-                      }
-                    }}
-                    disabled={isRadarDisabled}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-l-lg text-[13px] font-semibold transition-all duration-150 ${
-                      isRadarDisabled
-                        ? 'opacity-35 cursor-not-allowed'
-                        : 'cursor-pointer'
-                    } ${
-                      radarActive
-                        ? 'text-purple-400 border border-purple-400 bg-purple-400/15 border-r-0'
-                        : 'text-neutral-200 border border-purple-400/30 bg-purple-400/5 border-r-0'
-                    }`}
-                  >
-                    📡 {t('games.create.seaBattleRadar') || 'Radar'}
-                    {radarUsed && ' ✓'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (isRadarDisabled) return;
-                      const targetId = opponents?.[0]?.playerId;
-                      if (!targetId) return;
-                      setWeaponMode({
-                        weapon: 'radar',
-                        targetPlayerId: targetId,
-                        radarAxis:
-                          weaponMode?.radarAxis === 'col' ? 'row' : 'col',
-                      });
-                    }}
-                    disabled={isRadarDisabled}
-                    title="Toggle row / column"
-                    className={`flex items-center px-2.5 py-2 rounded-r-lg text-[11px] font-semibold transition-all duration-150 ${
-                      isRadarDisabled
-                        ? 'opacity-35 cursor-not-allowed'
-                        : 'cursor-pointer'
-                    } ${
-                      radarActive
-                        ? 'text-purple-300 border border-purple-400 bg-purple-400/15'
-                        : 'text-neutral-400 border border-purple-400/30 bg-purple-400/5'
-                    }`}
-                  >
-                    {weaponMode?.radarAxis === 'col' ? '↕' : '↔'}
-                  </button>
-                </div>
-              )}
-              {isWeaponMode && (
-                <button
-                  type="button"
-                  onClick={cancelWeaponMode}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150 cursor-pointer text-red-400 border border-red-400/40 bg-red-400/10"
-                >
-                  ✕ Cancel
-                </button>
-              )}
-              {isWeaponMode && (
-                <span
-                  className={`text-xs font-semibold ${
-                    weaponMode.weapon === 'sonar'
-                      ? 'text-cyan-400'
-                      : 'text-purple-400'
-                  }`}
-                >
-                  {weaponMode.weapon === 'sonar'
-                    ? 'Tap a cell on the target board'
-                    : `Tap a cell to scan its ${weaponMode.radarAxis === 'col' ? 'column' : 'row'}`}
-                </span>
-              )}
-            </div>
+          {!isGameOver && (hasSonar || hasRadar || isWeaponMode) && (
+            <SeaBattleWeaponsBar
+              hasSonar={hasSonar}
+              hasRadar={hasRadar}
+              sonarUsed={sonarUsed}
+              radarUsed={radarUsed}
+              isSonarDisabled={isSonarDisabled}
+              isRadarDisabled={isRadarDisabled}
+              weaponMode={weaponMode}
+              onSelectSonar={handleSelectSonar}
+              onSelectRadar={handleSelectRadar}
+              onToggleRadarAxis={handleToggleRadarAxis}
+              onCancel={cancelWeaponMode}
+            />
           )}
           {!isGameOver && snapshot.shipAbilities && currentPlayer && (
             <ShipAbilitiesPanel
               player={currentPlayer}
               cooldowns={snapshot.abilityCooldowns?.[currentUserId ?? '']}
               disabled={!isMyTurn}
-              onUseAbility={onShipAbility}
+              activeAbilityId={
+                weaponMode?.weapon === 'ability' ? weaponMode.abilityId : null
+              }
+              onUseAbility={handleShipAbilityClick}
             />
           )}
           <AttackBoard
@@ -423,7 +408,9 @@ export function SeaBattleBoards({
             weaponPreviewCells={
               weaponMode?.weapon === 'sonar'
                 ? sonarPreviewCells
-                : radarPreviewCells
+                : weaponMode?.weapon === 'radar'
+                  ? radarPreviewCells
+                  : abilityPreviewCells
             }
             weaponPreviewType={weaponMode?.weapon ?? null}
             onCellHover={isWeaponMode ? handleCellHover : undefined}

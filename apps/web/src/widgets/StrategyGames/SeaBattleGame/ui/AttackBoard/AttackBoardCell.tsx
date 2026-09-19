@@ -19,7 +19,7 @@ interface AttackBoardCellProps {
   highlight?: 'sonar' | 'radar' | 'scanWave' | null;
   highlightCellState?: number;
   isWeaponPreview?: boolean;
-  weaponPreviewType?: 'sonar' | 'radar' | null;
+  weaponPreviewType?: 'sonar' | 'radar' | 'ability' | null;
   isWeaponClickable?: boolean;
   isKeyboardCursor?: boolean;
   isChatHighlighted?: boolean;
@@ -84,7 +84,9 @@ export const AttackBoardCell = memo(function AttackBoardCell({
       ? 'rgba(6, 182, 212, 0.08)'
       : isWeaponPreview && weaponPreviewType === 'radar'
         ? 'rgba(168, 85, 247, 0.08)'
-        : undefined;
+        : isWeaponPreview
+          ? 'rgba(251, 191, 36, 0.12)'
+          : undefined;
 
   const chatHighlightColor = isChatHighlighted
     ? 'rgba(99, 102, 241, 0.15)'
@@ -134,7 +136,12 @@ export const AttackBoardCell = memo(function AttackBoardCell({
             boxShadow: '0 0 6px 1px rgba(168, 85, 247, 0.4)',
             borderColor: 'rgba(168, 85, 247, 0.5)',
           }
-        : {};
+        : isWeaponPreview
+          ? {
+              boxShadow: '0 0 6px 1px rgba(251, 191, 36, 0.5)',
+              borderColor: 'rgba(251, 191, 36, 0.6)',
+            }
+          : {};
 
   const chatHighlightStyle: React.CSSProperties = isChatHighlighted
     ? {

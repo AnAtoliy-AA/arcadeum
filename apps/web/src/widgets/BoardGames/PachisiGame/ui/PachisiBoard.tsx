@@ -59,6 +59,44 @@ function buildTokenPositionMap(
   return map;
 }
 
+function extractLastRoll(snapshot: PachisiClientState): {
+  die: number;
+  rollerId: string | null;
+} | null {
+  if (snapshot.die != null) {
+    return {
+      die: snapshot.die,
+      rollerId: snapshot.playerOrder[snapshot.currentTurnIndex] ?? null,
+    };
+  }
+  if (snapshot.lastDie != null) {
+    return {
+      die: snapshot.lastDie,
+      rollerId: snapshot.lastRollerId ?? null,
+    };
+  }
+  if (snapshot.logs && snapshot.logs.length > 0) {
+    for (let i = snapshot.logs.length - 1; i >= 0; i--) {
+      const entry = snapshot.logs[i];
+      const match = entry.message.match(/rolled\s+(?:a\s+)?(\d+)/i);
+      if (match) {
+        const val = parseInt(match[1], 10);
+        if (val >= 1 && val <= 6) {
+          return { die: val, rollerId: entry.senderId ?? null };
+        }
+      }
+    }
+  }
+  return null;
+}
+
+function hasRecentNoMoves(snapshot: PachisiClientState): boolean {
+  if (snapshot.phase === 'move') return false;
+  if (!snapshot.logs || snapshot.logs.length === 0) return false;
+  const lastEntry = snapshot.logs[snapshot.logs.length - 1];
+  return Boolean(lastEntry?.message.toLowerCase().includes('no legal moves'));
+}
+
 export function PachisiBoard({
   snapshot,
   currentUserId,
@@ -72,17 +110,40 @@ export function PachisiBoard({
   const theme = usePachisiTheme();
   const isFullscreen = useWidgetFullscreen();
 
-  const [lastDie, setLastDie] = useState<number | null>(snapshot.die);
-  if (snapshot.die != null && snapshot.die !== lastDie) {
-    setLastDie(snapshot.die);
+  const extracted = useMemo(() => extractLastRoll(snapshot), [snapshot]);
+  const isLastRollNoMoves = useMemo(
+    () => hasRecentNoMoves(snapshot),
+    [snapshot],
+  );
+
+  const [lastDie, setLastDie] = useState<number | null>(
+    snapshot.die ?? snapshot.lastDie ?? extracted?.die ?? null,
+  );
+  if (
+    (snapshot.die != null && snapshot.die !== lastDie) ||
+    (extracted?.die != null && extracted.die !== lastDie)
+  ) {
+    setLastDie(snapshot.die ?? extracted?.die ?? null);
   }
 
+  const isMyRoll =
+    (myTurn && snapshot.die != null) ||
+    (extracted?.rollerId != null && extracted.rollerId === currentUserId);
+
   const [myLastDie, setMyLastDie] = useState<number | null>(
-    myTurn && snapshot.die != null ? snapshot.die : null,
+    isMyRoll && (snapshot.die ?? extracted?.die) != null
+      ? (snapshot.die ?? extracted?.die ?? null)
+      : null,
   );
-  if (myTurn && snapshot.die != null && snapshot.die !== myLastDie) {
-    setMyLastDie(snapshot.die);
+  if (
+    isMyRoll &&
+    (snapshot.die ?? extracted?.die) != null &&
+    (snapshot.die ?? extracted?.die) !== myLastDie
+  ) {
+    setMyLastDie(snapshot.die ?? extracted?.die ?? null);
   }
+
+  const effectiveLastDie = myLastDie ?? lastDie ?? extracted?.die ?? null;
 
   const canRoll = myTurn && snapshot.phase === 'roll';
   const canMove = myTurn && snapshot.phase === 'move';
@@ -248,9 +309,11 @@ export function PachisiBoard({
         currentUserId={currentUserId}
         finishedCounts={finishedCounts}
         isGameOver={isGameOver}
-        lastDie={lastDie}
-        myLastDie={myLastDie}
+        isLastRollNoMoves={isLastRollNoMoves}
+        lastDie={effectiveLastDie}
+        lastRollerId={extracted?.rollerId ?? null}
         movableCount={movable.size}
+        myLastDie={myLastDie}
         myTurn={myTurn}
         onPassTurn={onPassTurn}
         snapshot={snapshot}
@@ -405,14 +468,14 @@ export function PachisiBoard({
         </div>
 
         <DiceOverlay
-          canRoll={canRoll}
-          isRolling={isRolling}
-          isGameOver={isGameOver}
           actionBusy={actionBusy}
-          die={snapshot.die}
-          lastDie={lastDie}
-          myLastDie={myLastDie}
           boardRotation={boardRotation}
+          canRoll={canRoll}
+          die={snapshot.die}
+          isGameOver={isGameOver}
+          isRolling={isRolling}
+          lastDie={effectiveLastDie}
+          myLastDie={myLastDie}
           onRoll={onRoll}
         />
       </div>

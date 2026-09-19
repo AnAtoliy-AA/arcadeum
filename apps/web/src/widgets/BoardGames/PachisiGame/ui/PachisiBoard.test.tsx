@@ -352,4 +352,60 @@ describe('PachisiBoard', () => {
       '6',
     );
   });
+
+  it('displays rolled number inside pachisi-no-moves container in move phase with no legal moves', () => {
+    const moveNoMovesState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 3,
+    };
+    renderBoard(moveNoMovesState);
+    const noMovesEl = screen.getByTestId('pachisi-no-moves');
+    expect(noMovesEl).toBeInTheDocument();
+    expect(noMovesEl).toHaveTextContent('3');
+  });
+
+  it('displays rolled number and no-moves banner when turn passes with no legal moves', () => {
+    const passedState: PachisiClientState = {
+      ...mockState,
+      phase: 'roll',
+      currentTurnIndex: 1,
+      die: null,
+      lastDie: 2,
+      lastRollerId: 'p1',
+      logs: [
+        {
+          id: 'log-1',
+          type: 'action',
+          message: 'Player rolled a 2.',
+          createdAt: new Date().toISOString(),
+          senderId: 'p1',
+        },
+        {
+          id: 'log-2',
+          type: 'system',
+          message: 'Rolled a 2. No legal moves available. Turn passes.',
+          createdAt: new Date().toISOString(),
+          senderId: 'p1',
+        },
+      ],
+    };
+    render(
+      <PachisiThemeProvider variant="adventure">
+        <PachisiBoard
+          currentUserId="p1"
+          myTurn={false}
+          onMove={vi.fn()}
+          onRoll={vi.fn()}
+          snapshot={passedState}
+        />
+      </PachisiThemeProvider>,
+    );
+    expect(screen.getByTestId('pachisi-no-moves-banner')).toBeInTheDocument();
+    expect(screen.getByTestId('pachisi-no-moves-banner')).toHaveTextContent(
+      '2',
+    );
+    expect(screen.getByTestId('pachisi-die-result')).toBeInTheDocument();
+    expect(screen.getByTestId('pachisi-die-result')).toHaveTextContent('2');
+  });
 });

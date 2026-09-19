@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.13] - 2026-09-19
+
+### Added
+- enhance pachisi piece visuals, rotation, and fix token stacking (ARC-965) (ARC-965)
+
+
 ## [1.30.12] - 2026-09-19
 
 ### Added

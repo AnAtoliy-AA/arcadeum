@@ -152,6 +152,28 @@ export function getPseudoLegalMovesForSquare(
       for (const [df, dr] of deltas) {
         addIfValid(fromFileIdx + df, fromRankIdx + dr);
       }
+
+      const homeRankIdx = color === 'white' ? 0 : 7;
+      if (fromRankIdx === homeRankIdx && fromFileIdx === 4) {
+        const rightClear = !board[fromRow]?.[5] && !board[fromRow]?.[6];
+        if (
+          rightClear &&
+          board[fromRow]?.[7]?.type === 'rook' &&
+          board[fromRow]?.[7]?.color === color
+        ) {
+          targets.push({ file: FILES[6], rank: RANKS[homeRankIdx] });
+        }
+
+        const leftClear =
+          !board[fromRow]?.[3] && !board[fromRow]?.[2] && !board[fromRow]?.[1];
+        if (
+          leftClear &&
+          board[fromRow]?.[0]?.type === 'rook' &&
+          board[fromRow]?.[0]?.color === color
+        ) {
+          targets.push({ file: FILES[2], rank: RANKS[homeRankIdx] });
+        }
+      }
       break;
     }
   }

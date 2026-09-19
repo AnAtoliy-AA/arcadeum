@@ -102,16 +102,6 @@ export const esMessages = {
           'Saca un seis para lanzar, captura rivales en plena carrera y llega primero a casa.',
       },
       faq: {
-        gameOver: {
-          won: '¡Victoria!',
-          lost: 'Derrota',
-          draw: 'Empate',
-          messages: {
-            won: 'Todas tus fichas están en casa: ¡primer puesto!',
-            lost: 'Te han ganado la carrera. ¡Suerte la próxima vez!',
-            draw: 'La partida terminó en empate.',
-          },
-        },
         rules: {
           question: '¿Cómo se gana en Pachisi?',
           answer:
@@ -238,6 +228,16 @@ export const esMessages = {
       sixesTitle: 'Seises',
       sixes:
         'Sacar un 6 otorga otra tirada. Sacar tres seges seguidos pierde el turno por completo.',
+    },
+    gameOver: {
+      won: '¡Victoria!',
+      lost: 'Derrota',
+      draw: 'Empate',
+      messages: {
+        won: 'Todas tus fichas están en casa: ¡primer puesto!',
+        lost: 'Te han ganado la carrera. ¡Suerte la próxima vez!',
+        draw: 'La partida terminó en empate.',
+      },
     },
   },
 };

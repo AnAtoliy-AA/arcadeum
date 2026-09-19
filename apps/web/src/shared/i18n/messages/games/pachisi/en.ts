@@ -98,16 +98,6 @@ export const enMessages = {
           'Roll a six to launch, capture rivals mid-race, and reach home first.',
       },
       faq: {
-        gameOver: {
-          won: 'Victory!',
-          lost: 'Defeat',
-          draw: 'Draw',
-          messages: {
-            won: 'All your tokens are home - first place!',
-            lost: 'Someone raced you to it. Better luck next time!',
-            draw: 'The game ended in a draw.',
-          },
-        },
         rules: {
           question: 'How do you win at Pachisi?',
           answer:
@@ -233,6 +223,16 @@ export const enMessages = {
       sixesTitle: 'Sixes',
       sixes:
         'Rolling a 6 grants another roll. Rolling three 6s in a row forfeits the turn entirely.',
+    },
+    gameOver: {
+      won: 'Victory!',
+      lost: 'Defeat',
+      draw: 'Draw',
+      messages: {
+        won: 'All your tokens are home - first place!',
+        lost: 'Someone raced you to it. Better luck next time!',
+        draw: 'The game ended in a draw.',
+      },
     },
   },
 };

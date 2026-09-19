@@ -311,5 +311,15 @@ export const esMessages = {
         },
       },
     },
+    gameOver: {
+      won: '¡Ganaste!',
+      lost: 'Perdiste.',
+      draw: 'Empate.',
+      messages: {
+        won: '¡Sacaste todas tus fichas primero! Gran carrera.',
+        lost: 'Tu oponente sacó todas sus fichas. ¡Mejor suerte la próxima vez!',
+        draw: 'La partida terminó en empate.',
+      },
+    },
   },
 };

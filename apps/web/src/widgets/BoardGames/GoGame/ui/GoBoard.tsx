@@ -87,12 +87,9 @@ const CellRenderer = memo(function CellRenderer({
         : null
     : null;
 
-  const territoryColor =
-    territory && territory.owner !== 'neutral' && !cell
-      ? territory.owner === 'black'
-        ? 'rgba(0,0,0,0.18)'
-        : 'rgba(255,255,255,0.35)'
-      : undefined;
+  const isTerritory = Boolean(
+    territory && territory.owner !== 'neutral' && !cell,
+  );
 
   return (
     <button
@@ -111,11 +108,14 @@ const CellRenderer = memo(function CellRenderer({
       )}
       {...focusProps}
     >
-      {territoryColor ? (
+      {isTerritory && territory ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-[6%] rounded-sm z-[1]"
-          style={{ backgroundColor: territoryColor }}
+          data-testid={`go-territory-${territory.owner}`}
+          className={cx(
+            'pointer-events-none absolute inset-[6%] rounded-sm z-[1]',
+            territory.owner === 'black' ? 'bg-black/20' : 'bg-white/40',
+          )}
         />
       ) : null}
 

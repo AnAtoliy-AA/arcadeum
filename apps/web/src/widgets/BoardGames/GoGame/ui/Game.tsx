@@ -281,11 +281,12 @@ function GoGameImpl({
                   {t('games.go_v1.game.pass')}
                 </Button>
               ) : null}
-              {!isGameOver && myTurn ? (
+              {!isGameOver ? (
                 <Button
                   variant="secondary"
                   size="md"
                   data-testid="go-territory-toggle"
+                  aria-pressed={showTerritory}
                   onClick={() => setShowTerritory((v) => !v)}
                   className={
                     showTerritory ? 'ring-2 ring-[var(--primary)]' : ''

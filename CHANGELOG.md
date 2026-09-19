@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.16] - 2026-09-19
+
+### Added
+- report passed and failed platforms in result notification
+- add edge-tts voiceover with graceful fallback
+- enhance scenarios, loading overlays, and game AI
+
+### Fixed
+- resolve edge-tts across users and mix voice into all video types
+
+
 ## [1.30.15] - 2026-09-19
 
 ### Added

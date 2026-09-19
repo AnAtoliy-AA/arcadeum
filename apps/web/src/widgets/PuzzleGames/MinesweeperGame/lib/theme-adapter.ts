@@ -47,18 +47,18 @@ const NUMBER_COLORS = [
 export function sharedThemeToMinesweeper(theme: GameTheme): MinesweeperTheme {
   return {
     background: `linear-gradient(160deg, ${theme.colors.background} 0%, ${theme.colors.surface} 100%)`,
-    boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.85)`,
+    boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.96)`,
     boardBorder: theme.colors.border,
     cellHidden: `linear-gradient(180deg, ${theme.colors.primary} 0%, ${theme.colors.glow} 100%)`,
-    cellHiddenBorder: theme.colors.border,
-    cellHiddenHover: `rgba(${hexToRgb(theme.colors.highlight)}, 0.35)`,
-    cellRevealed: 'rgba(0, 0, 0, 0.45)',
-    cellRevealedBorder: `rgba(${hexToRgb(theme.colors.text)}, 0.15)`,
+    cellHiddenBorder: `rgba(${hexToRgb(theme.colors.border)}, 0.6)`,
+    cellHiddenHover: `rgba(${hexToRgb(theme.colors.highlight)}, 0.4)`,
+    cellRevealed: 'rgba(0, 0, 0, 0.55)',
+    cellRevealedBorder: `rgba(${hexToRgb(theme.colors.text)}, 0.18)`,
     flagColor: theme.colors.highlight,
     mineColor: '#ef4444',
     numberColors: NUMBER_COLORS,
     textColor: theme.colors.text,
-    borderRadius: '8px',
+    borderRadius: '12px',
     bgImage: theme.bgImage,
   };
 }

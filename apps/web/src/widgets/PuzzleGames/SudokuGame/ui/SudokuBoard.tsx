@@ -19,6 +19,7 @@ function boardVars(theme: SudokuTheme): CSSProperties {
   return {
     '--sdk-board-bg': theme.boardBackground,
     '--sdk-board-border': theme.boardBorder,
+    '--sdk-cell-bg': theme.cellBackground,
     '--sdk-line-thin': theme.lineThin,
     '--sdk-line-thick': theme.lineThick,
     '--sdk-selected': theme.selectedCell,
@@ -52,7 +53,7 @@ export function SudokuBoard({
       aria-label="Sudoku"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl border-2 border-[var(--sdk-board-border)] bg-black/20 p-1 sm:p-1.5 shadow-2xl select-none transition-all duration-200',
+        'mx-auto grid aspect-square w-full grid-cols-9 rounded-2xl sm:rounded-3xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-1 sm:p-1.5 shadow-2xl backdrop-blur-2xl select-none transition-all duration-200 ring-1 ring-white/10 overflow-hidden',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100dvh-14rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))]',
@@ -62,74 +63,74 @@ export function SudokuBoard({
         <div key={rowIdx} role="row" className="contents">
           {game.cells.slice(rowIdx * 9, rowIdx * 9 + 9).map((value, colIdx) => {
             const index = rowIdx * 9 + colIdx;
-        const row = rowOf(index);
-        const col = colOf(index);
-        const isSelected = selected === index;
-        const isPeer =
-          !isSelected &&
-          selected !== null &&
-          (rowOf(selected) === row ||
-            colOf(selected) === col ||
-            boxIdOf(selected) === boxIdOf(index));
-        const isSameNumber =
-          value !== 0 && selectedValue !== 0 && value === selectedValue;
-        const hasConflict = conflicts.has(index);
-        const given = isGiven(game, index);
+            const row = rowOf(index);
+            const col = colOf(index);
+            const isSelected = selected === index;
+            const isPeer =
+              !isSelected &&
+              selected !== null &&
+              (rowOf(selected) === row ||
+                colOf(selected) === col ||
+                boxIdOf(selected) === boxIdOf(index));
+            const isSameNumber =
+              value !== 0 && selectedValue !== 0 && value === selectedValue;
+            const hasConflict = conflicts.has(index);
+            const given = isGiven(game, index);
 
-        return (
-          <button
-            key={index}
-            type="button"
-            role="gridcell"
-            aria-selected={isSelected}
-            onClick={() => onSelect(index)}
-            className={cx(
-              'relative flex items-center justify-center font-mono transition-colors',
-              col % 3 === 2 && col !== 8
-                ? 'border-r-2 border-r-[var(--sdk-line-thick)]'
-                : 'border-r border-r-[var(--sdk-line-thin)]',
-              row % 3 === 2 && row !== 8
-                ? 'border-b-2 border-b-[var(--sdk-line-thick)]'
-                : 'border-b border-b-[var(--sdk-line-thin)]',
-              isSelected
-                ? 'z-10 bg-[var(--sdk-selected)] ring-2 ring-[var(--primary)] ring-inset'
-                : isSameNumber
-                  ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)]'
-                  : isPeer
-                    ? 'bg-[var(--sdk-peer)]'
-                    : 'bg-white/[0.04] hover:bg-white/10',
-              hasConflict &&
-                'bg-rose-950/70 text-rose-400 ring-1 ring-rose-500/50',
-            )}
-          >
-            {value !== 0 ? (
-              <span
+            return (
+              <button
+                key={index}
+                type="button"
+                role="gridcell"
+                aria-selected={isSelected}
+                onClick={() => onSelect(index)}
                 className={cx(
-                  'text-lg sm:text-xl tabular-nums',
-                  isFullscreen && 'md:text-2xl lg:text-3xl',
-                  hasConflict
-                    ? 'font-extrabold text-rose-400'
-                    : given
-                      ? 'font-bold text-[var(--sdk-given)]'
-                      : 'font-extrabold text-[var(--sdk-player-val)]',
+                  'relative flex items-center justify-center font-mono transition-colors select-none',
+                  col % 3 === 2 && col !== 8
+                    ? 'border-r-2 border-r-[var(--sdk-line-thick)]'
+                    : 'border-r border-r-[var(--sdk-line-thin)]',
+                  row % 3 === 2 && row !== 8
+                    ? 'border-b-2 border-b-[var(--sdk-line-thick)]'
+                    : 'border-b border-b-[var(--sdk-line-thin)]',
+                  isSelected
+                    ? 'z-10 bg-[var(--sdk-selected)] ring-2 ring-[var(--primary)] shadow-[0_0_12px_var(--primary)] ring-inset font-black'
+                    : isSameNumber
+                      ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)] ring-1 ring-[var(--primary)]/40 ring-inset'
+                      : isPeer
+                        ? 'bg-[var(--sdk-peer)]'
+                        : 'bg-[var(--sdk-cell-bg)] hover:bg-white/15',
+                  hasConflict &&
+                    'bg-rose-950/80 text-rose-400 ring-1 ring-rose-500/60 ring-inset',
                 )}
               >
-                {value}
-              </span>
-            ) : (
-              <NotesGrid notes={game.notes[index]} />
-            )}
-            {notesMode && isSelected && (
-              <span
-                aria-hidden="true"
-                className="absolute right-0.5 top-0 text-[9px] leading-none text-[var(--primary)] opacity-80"
-              >
-                ✎
-              </span>
-            )}
-          </button>
-        );
-      })}
+                {value !== 0 ? (
+                  <span
+                    className={cx(
+                      'text-lg sm:text-xl tabular-nums',
+                      isFullscreen && 'md:text-2xl lg:text-3xl',
+                      hasConflict
+                        ? 'font-extrabold text-rose-400'
+                        : given
+                          ? 'font-bold text-[var(--sdk-given)]'
+                          : 'font-extrabold text-[var(--sdk-player-val)]',
+                    )}
+                  >
+                    {value}
+                  </span>
+                ) : (
+                  <NotesGrid notes={game.notes[index]} />
+                )}
+                {notesMode && isSelected && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute right-0.5 top-0 text-[9px] leading-none text-[var(--primary)] opacity-80"
+                  >
+                    ✎
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       ))}
     </div>

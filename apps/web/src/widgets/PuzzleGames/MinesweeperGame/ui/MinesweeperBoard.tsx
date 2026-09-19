@@ -115,8 +115,8 @@ export function MinesweeperBoard({
       <div
         style={boardVars(theme)}
         className={cx(
-          'w-max max-w-full h-fit self-center rounded-2xl border-2 border-[var(--ms-board-border)] bg-black/20 shadow-2xl select-none transition-colors duration-200',
-          isFullscreen ? 'p-2 sm:p-3' : 'p-1.5 sm:p-2.5',
+          'w-max max-w-full h-fit self-center rounded-2xl sm:rounded-3xl border-2 border-[var(--ms-board-border)] bg-[var(--ms-board-bg)] shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-colors duration-200 overflow-hidden',
+          isFullscreen ? 'p-2 sm:p-3.5' : 'p-1.5 sm:p-3',
         )}
         role="grid"
         aria-label={t('games.minesweeper_v1.board.label')}
@@ -181,7 +181,7 @@ function MineCell({
       type="button"
       role="gridcell"
       className={cx(
-        'flex aspect-square items-center justify-center font-mono font-extrabold transition-colors',
+        'flex aspect-square items-center justify-center font-mono font-extrabold transition-all select-none',
         isBeginner
           ? isFullscreen
             ? 'h-9 w-9 min-w-[36px] sm:h-11 sm:w-11 sm:min-w-[44px] md:h-12 md:w-12 md:min-w-[48px] lg:h-13 lg:w-13 lg:min-w-[52px] xl:h-14 xl:w-14 xl:min-w-[56px] rounded-xl text-base sm:text-lg lg:text-xl'
@@ -194,11 +194,11 @@ function MineCell({
               ? 'h-7 w-7 min-w-[28px] sm:h-7.5 sm:w-7.5 sm:min-w-[30px] md:h-8 md:w-8 md:min-w-[32px] lg:h-8.5 lg:w-8.5 lg:min-w-[34px] xl:h-9 xl:w-9 xl:min-w-[36px] rounded-lg text-xs sm:text-sm'
               : 'h-6 w-6 min-w-[24px] sm:h-7 sm:w-7 sm:min-w-[28px] md:h-7.5 md:w-7.5 md:min-w-[30px] lg:h-8 lg:w-8 lg:min-w-[32px] rounded-lg text-xs sm:text-sm',
         revealed
-          ? 'cursor-default border border-[var(--ms-cell-revealed-border)] bg-[var(--ms-cell-revealed)] text-[var(--color)] shadow-inner'
-          : 'cursor-pointer border border-[var(--ms-cell-hidden-border)] bg-white/10 text-[var(--color)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95',
+          ? 'cursor-default border border-black/50 border-t-black/70 border-l-black/70 border-b-white/10 border-r-white/10 bg-black/60 text-[var(--color)] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]'
+          : 'cursor-pointer border border-white/20 border-t-white/40 border-l-white/30 border-b-black/40 border-r-black/40 bg-gradient-to-b from-white/20 via-white/10 to-black/25 text-[var(--color)] shadow-[0_2px_4px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.3)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95 active:shadow-inner active:brightness-90',
         showMine &&
           lost &&
-          'border-red-500 bg-red-500/20 text-red-500 shadow-red-500/30',
+          'border-red-500 bg-red-600/30 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.5)]',
       )}
       onClick={onReveal}
       onContextMenu={(event) => {
@@ -246,6 +246,7 @@ function MineCell({
         <span
           aria-hidden="true"
           className={cx(
+            'drop-shadow-xs font-black',
             NUMBER_COLOR_CLASSES[cell.adjacent] ?? 'text-[var(--color)]',
           )}
         >

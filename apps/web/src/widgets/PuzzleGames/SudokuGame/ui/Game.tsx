@@ -296,7 +296,7 @@ function SudokuKeypad({
   return (
     <div
       className={cx(
-        'flex w-full flex-col items-center gap-2',
+        'flex w-full flex-col items-center gap-2 rounded-2xl sm:rounded-3xl border-2 border-[var(--sdk-board-border)] bg-[var(--sdk-board-bg)] p-2 sm:p-2.5 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-all duration-200 mt-1',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100dvh-14rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(48vh,24.5rem))] sm:max-w-[min(100vw-2rem,min(50vh,25.5rem))]',
@@ -320,24 +320,24 @@ function SudokuKeypad({
                   : t('games.sudoku_v1.controls.placeDigit', { digit })
               }
               className={cx(
-                'flex flex-col items-center justify-center rounded-lg border py-1 sm:py-1.5 font-mono transition-all',
+                'flex flex-col items-center justify-center rounded-xl border py-1.5 sm:py-2 font-mono transition-all shadow-sm select-none',
                 isCompleted
-                  ? 'border-dashed border-[var(--borderColor)] bg-[var(--backgroundHover)] opacity-30 cursor-not-allowed'
+                  ? 'border-dashed border-white/10 bg-black/20 opacity-25 cursor-not-allowed'
                   : notesMode
-                    ? 'border-[var(--primary)]/40 bg-[var(--primary)]/15 text-[var(--color)] hover:bg-[var(--primary)]/25 active:scale-95'
-                    : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)]/50 hover:bg-[var(--glassBgHover)] active:scale-95',
-                'disabled:opacity-40 disabled:cursor-not-allowed',
+                    ? 'border-[var(--primary)] bg-[var(--primary)]/25 text-[var(--color)] shadow-inner hover:bg-[var(--primary)]/35 active:scale-95 ring-1 ring-[var(--primary)]/50'
+                    : 'border-white/15 bg-white/10 text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/20 active:scale-95 hover:shadow-md',
+                'disabled:opacity-60 disabled:cursor-not-allowed',
               )}
             >
               <span
                 className={cx(
-                  'text-sm font-extrabold sm:text-base',
+                  'text-sm font-extrabold sm:text-base drop-shadow-xs',
                   isFullscreen && 'md:text-lg',
                 )}
               >
                 {digit}
               </span>
-              <span className="text-[9px] sm:text-[10px] text-[var(--textSecondary)] font-medium">
+              <span className="text-[9px] sm:text-[10px] text-[var(--textSecondary)] font-semibold">
                 {remaining}
               </span>
             </button>
@@ -345,17 +345,17 @@ function SudokuKeypad({
         })}
       </div>
 
-      <div className="flex w-full items-center justify-center gap-2">
+      <div className="flex w-full items-center justify-center gap-2 select-none">
         <button
           type="button"
           onClick={onToggleNotes}
           aria-pressed={notesMode}
           title={t('games.sudoku_v1.controls.notesHint')}
           className={cx(
-            'flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs sm:text-sm font-bold transition-all',
+            'flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs sm:text-sm font-bold transition-all shadow-sm',
             notesMode
-              ? 'border-[var(--primary)] bg-[var(--primary)]/20 text-[var(--color)] shadow-md shadow-[var(--primary)]/20 ring-1 ring-[var(--primary)]'
-              : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--glassBgHover)]',
+              ? 'border-[var(--primary)] bg-[var(--primary)]/30 text-[var(--color)] shadow-md shadow-[var(--primary)]/20 ring-1 ring-[var(--primary)]'
+              : 'border-white/15 bg-white/10 text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/20 active:scale-95',
           )}
         >
           <span>✎</span>
@@ -367,7 +367,7 @@ function SudokuKeypad({
           onClick={onErase}
           disabled={selected === null}
           title={t('games.sudoku_v1.controls.erase')}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[var(--glassBorder)] bg-[var(--glassBg)] px-3 py-1.5 text-xs sm:text-sm font-bold text-[var(--color)] transition-all hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-xs sm:text-sm font-bold text-[var(--color)] shadow-sm transition-all hover:border-rose-500/60 hover:bg-rose-500/20 hover:text-rose-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <span>⌫</span>
           <span>{t('games.sudoku_v1.controls.erase')}</span>

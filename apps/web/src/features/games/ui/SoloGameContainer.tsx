@@ -364,12 +364,12 @@ export function SoloGameContainer({
               className={cx(
                 'object-cover object-center transition-opacity duration-300',
                 isFullscreen
-                  ? 'opacity-50 sm:opacity-60'
-                  : 'opacity-40 sm:opacity-50',
+                  ? 'opacity-35 sm:opacity-45'
+                  : 'opacity-30 sm:opacity-40',
               )}
             />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/20 via-transparent to-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/15 via-transparent to-black/60 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/50 pointer-events-none" />
           </div>
         )}
 

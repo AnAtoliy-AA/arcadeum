@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { PachisiTokenView } from './PachisiTokenView';
 import type { PachisiClientState } from '../types';
 
 interface PachisiStatusStripProps {
@@ -80,12 +81,13 @@ export function PachisiStatusStrip({
             return (
               <span
                 key={`score-${pid}`}
-                className={`pachisi-score-pill-seat-${seat} flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
+                className={`pachisi-score-pill-seat-${seat} flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
                   isMe ? 'ring-1 ring-white/60' : ''
                 }`}
               >
-                <span
-                  className={`pachisi-token pachisi-token-seat-${seat} h-2.5 w-2.5 rounded-full border`}
+                <PachisiTokenView
+                  seat={seat}
+                  className="h-3.5 w-3.5 shrink-0 shadow-sm"
                 />
                 <HomeIcon className="h-3 w-3 opacity-70" />
                 {finished}/{total}

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.17] - 2026-09-19
+
+### Added
+- accumulate and persist scanned cells across teammates (ARC-sea-battle-prevent-layout-shift)
+- add interactive targeting and preview for ship abilities (ARC-sea-battle-prevent-layout-shift)
+
+### Fixed
+- set lastSonar on abilities and resize sonar to 3x3 (ARC-sea-battle-prevent-layout-shift)
+- safely extract targetPlayerId and abilityId in gateway (ARC-sea-battle-prevent-layout-shift)
+- replace opacity pulsing with box-shadow glow on targetable opponent field
+- avoid conflicting background and backgroundColor styles on BoardCell
+- prevent fields jumping on turn change and connect ship abilities
+
+
 ## [1.30.16] - 2026-09-19
 
 ### Added

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.11] - 2026-09-19
+
+### Added
+- show rolled dice and improve UX when no moves available in pachisi (ARC-965) (ARC-965)
+
+
 ## [1.30.10] - 2026-09-19
 
 ### Added

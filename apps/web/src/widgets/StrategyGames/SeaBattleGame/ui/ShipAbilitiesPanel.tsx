@@ -6,6 +6,7 @@ import type { SeaBattlePlayerState } from '../types';
 interface ShipAbilitiesPanelProps {
   player: SeaBattlePlayerState;
   cooldowns?: Record<string, number>;
+  disabled?: boolean;
   onUseAbility?: (
     abilityId: string,
     targetPlayerId?: string,
@@ -74,6 +75,7 @@ const ALL_ABILITIES = [
 export function ShipAbilitiesPanel({
   player,
   cooldowns,
+  disabled = false,
   onUseAbility,
 }: ShipAbilitiesPanelProps) {
   const [expanded, setExpanded] = useState(false);
@@ -111,18 +113,23 @@ export function ShipAbilitiesPanel({
         <div className="flex gap-1.5 flex-wrap justify-center">
           {availableAbilities.map((ab) => {
             const onCooldown = ab.currentCooldown > 0;
+            const isBtnDisabled = disabled || onCooldown;
             return (
               <button
                 key={ab.id}
                 type="button"
-                disabled={onCooldown}
+                disabled={isBtnDisabled}
                 onClick={() => onUseAbility?.(ab.id)}
                 className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold transition-all ${
-                  onCooldown
+                  isBtnDisabled
                     ? 'opacity-40 cursor-not-allowed bg-neutral-800 text-neutral-500 border border-neutral-700'
                     : `cursor-pointer bg-neutral-800/50 border border-neutral-600 hover:border-neutral-400 ${ab.color}`
                 }`}
-                title={ab.description}
+                title={
+                  disabled && !onCooldown
+                    ? `${ab.description} (Available on your turn)`
+                    : ab.description
+                }
               >
                 <span>{ab.icon}</span>
                 <span>{ab.name}</span>

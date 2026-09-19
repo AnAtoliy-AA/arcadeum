@@ -259,13 +259,17 @@ export function SeaBattleBoards({
 
       {(isBattlePhase || isGameOver) && snapshot && (
         <>
-          {isMyTurn && snapshot.mode === 'salvo' && currentPlayer && (
+          {!isGameOver && snapshot.mode === 'salvo' && currentPlayer && (
             <div className="flex items-center justify-center gap-2 py-1">
-              <span className="text-[13px] font-semibold text-amber-400">
+              <span
+                className={`text-[13px] font-semibold ${
+                  isMyTurn ? 'text-amber-400' : 'text-neutral-500'
+                }`}
+              >
                 ⚔️ Salvo:{' '}
-                {currentPlayer.salvoShotsRemaining ??
-                  currentPlayer.shipsRemaining}{' '}
-                shots remaining
+                {isMyTurn
+                  ? `${currentPlayer.salvoShotsRemaining ?? currentPlayer.shipsRemaining} shots remaining`
+                  : "Opponent's turn"}
               </span>
             </div>
           )}
@@ -393,10 +397,11 @@ export function SeaBattleBoards({
               )}
             </div>
           )}
-          {isMyTurn && snapshot.shipAbilities && currentPlayer && (
+          {!isGameOver && snapshot.shipAbilities && currentPlayer && (
             <ShipAbilitiesPanel
               player={currentPlayer}
               cooldowns={snapshot.abilityCooldowns?.[currentUserId ?? '']}
+              disabled={!isMyTurn}
               onUseAbility={onShipAbility}
             />
           )}

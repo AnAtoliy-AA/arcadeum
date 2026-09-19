@@ -229,6 +229,19 @@ export class SeaBattleGateway extends BaseGameGateway<Record<string, unknown>> {
           'seaBattle.session.radar_result',
           { row: payload.row, col: payload.col },
         ),
+      'seaBattle.session.use_ship_ability': (client, payload) =>
+        this.dispatchAction(
+          client,
+          payload,
+          'useShipAbility',
+          'seaBattle.session.ship_ability_result',
+          {
+            abilityId: payload.abilityId,
+            targetPlayerId: payload.targetPlayerId,
+            row: payload.row,
+            col: payload.col,
+          },
+        ),
       'seaBattle.session.history_note': this.wrapHandler(
         'post history note',
         async (client, payload, roomId, userId) => {

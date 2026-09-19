@@ -10,74 +10,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.30.12] - 2026-09-19
 
 ### Added
-- add move-in-chat with board highlighting for all board games
 
+- add move-in-chat with board highlighting for all board games
 
 ## [1.30.11] - 2026-09-19
 
 ### Added
-- show rolled dice and improve UX when no moves available in pachisi (ARC-965) (ARC-965)
 
+- show rolled dice and improve UX when no moves available in pachisi (ARC-965) (ARC-965)
 
 ## [1.30.10] - 2026-09-19
 
 ### Added
-- modernize backgammon gameplay, ui ux, and playability (ARC-964) (ARC-964)
 
+- modernize backgammon gameplay, ui ux, and playability (ARC-964) (ARC-964)
 
 ## [1.30.9] - 2026-09-18
 
 ### Fixed
-- defer level-up modal when user is in a game room
 
+- defer level-up modal when user is in a game room
 
 ## [1.30.8] - 2026-09-18
 
 ### Added
+
 - add 3d euler settling, flick gesture, and thematic skins (ARC-963) (ARC-963)
 - modernize 3d dice roll animation and unify overlay across games (ARC-963) (ARC-963)
-
 
 ## [1.30.7] - 2026-09-18
 
 ### Added
+
 - implement tactical abilities, drafting, and bumping in cat dash (ARC-962) (ARC-962)
 - add realistic 3D racing cat character art and dossier inspection (ARC-962) (ARC-962)
 - upgrade cat dash with realistic cats, reusable dice animation, and flagship dashboard (ARC-962) (ARC-962)
 
 ### Fixed
-- resolve hook naming in game widget and bonus space roll advancement (ARC-962) (ARC-962)
 
+- resolve hook naming in game widget and bonus space roll advancement (ARC-962) (ARC-962)
 
 ## [1.30.6] - 2026-09-17
 
 ### Added
+
 - add buy-and-gift flow for non-owned shop items
 
 ### Fixed
-- remove unused balance state from GiftDialog
 
+- remove unused balance state from GiftDialog
 
 ## [1.30.5] - 2026-09-17
 
 ### Fixed
-- fix shop purchase E11000 duplicate key on walletSignature index
 
+- fix shop purchase E11000 duplicate key on walletSignature index
 
 ## [1.30.4] - 2026-09-17
 
 ### Fixed
-- make premium+ games available to higher roles (ARC-961) (ARC-961)
 
+- make premium+ games available to higher roles (ARC-961) (ARC-961)
 
 ## [1.30.3] - 2026-09-16
 
 ### Added
+
 - rework chess landing UI UX and remove em-dashes across app (ARC-960) (ARC-960)
 
 ### Improved
-- lazy-load blog registry, parallelize game pages, add watchdog/capture backoff
 
+- lazy-load blog registry, parallelize game pages, add watchdog/capture backoff
 
 ## [1.30.2] - 2026-09-16
 

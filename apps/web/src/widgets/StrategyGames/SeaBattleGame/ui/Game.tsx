@@ -5,12 +5,14 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
-import type { SeaBattleGameProps } from '../types';
-import { MIN_PLAYERS } from '../types';
+import { MIN_PLAYERS, type SeaBattleGameProps } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
-import { useGameEndState, useGameRoomActions } from '@/features/games/hooks';
-import { useGameChatIntegration } from '@/features/games/hooks';
+import {
+  useGameEndState,
+  useGameRoomActions,
+  useGameChatIntegration,
+} from '@/features/games/hooks';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -20,7 +22,6 @@ import {
 } from '@/features/games/ui/GameWidgetContainer';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useGameSound } from '@/shared/lib/game-sounds';
-
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_THEMES } from '../lib/constants';
@@ -28,10 +29,8 @@ import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
-
 import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
-
 import { RulesModal } from './RulesModal';
 import './styles/sea-battle.scss';
 

@@ -6,6 +6,27 @@
   border-color: var(--pachisi-yard-border);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.08);
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  --pachisi-counter-rot: 0deg;
+}
+
+.pachisi-board-rot-0 {
+  transform: rotate(0deg);
+  --pachisi-counter-rot: 0deg;
+}
+
+.pachisi-board-rot-90 {
+  transform: rotate(90deg);
+  --pachisi-counter-rot: -90deg;
+}
+
+.pachisi-board-rot-180 {
+  transform: rotate(180deg);
+  --pachisi-counter-rot: -180deg;
+}
+
+.pachisi-board-rot-270 {
+  transform: rotate(270deg);
+  --pachisi-counter-rot: -270deg;
 }
 
 @for $i from 1 through 15 {
@@ -98,6 +119,8 @@
 
 .pachisi-cell-star {
   color: var(--pachisi-safe-star);
+  transform: rotate(var(--pachisi-counter-rot, 0deg));
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pachisi-lane-seat-0 {
@@ -125,30 +148,67 @@
   border-color: var(--pachisi-cell-border);
 }
 
+.pachisi-center-home-content {
+  transform: rotate(var(--pachisi-counter-rot, 0deg));
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .pachisi-token {
-  border-color: var(--pachisi-token-border);
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    transparent 45%,
-    rgba(0, 0, 0, 0.12) 100%
-  );
+  border-width: 1.5px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.45),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pachisi-token-content {
+  transform: rotate(var(--pachisi-counter-rot, 0deg));
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pachisi-token-seat-0 {
-  background-color: var(--pachisi-seat-0);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-0) 70%, #ffffff) 0%, var(--pachisi-seat-0) 65%, color-mix(in srgb, var(--pachisi-seat-0) 65%, #000000) 100%);
+  border-color: color-mix(in srgb, var(--pachisi-seat-0) 50%, #ffffff);
 }
 
 .pachisi-token-seat-1 {
-  background-color: var(--pachisi-seat-1);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-1) 70%, #ffffff) 0%, var(--pachisi-seat-1) 65%, color-mix(in srgb, var(--pachisi-seat-1) 65%, #000000) 100%);
+  border-color: color-mix(in srgb, var(--pachisi-seat-1) 50%, #ffffff);
 }
 
 .pachisi-token-seat-2 {
-  background-color: var(--pachisi-seat-2);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-2) 70%, #ffffff) 0%, var(--pachisi-seat-2) 65%, color-mix(in srgb, var(--pachisi-seat-2) 65%, #000000) 100%);
+  border-color: color-mix(in srgb, var(--pachisi-seat-2) 50%, #ffffff);
 }
 
 .pachisi-token-seat-3 {
-  background-color: var(--pachisi-seat-3);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-3) 70%, #ffffff) 0%, var(--pachisi-seat-3) 65%, color-mix(in srgb, var(--pachisi-seat-3) 65%, #000000) 100%);
+  border-color: color-mix(in srgb, var(--pachisi-seat-3) 50%, #ffffff);
+}
+
+.pachisi-yard-slot-empty {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1.5px dashed rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.pachisi-yard-active-seat-0 {
+  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-0) 50%, transparent);
+}
+
+.pachisi-yard-active-seat-1 {
+  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-1) 50%, transparent);
+}
+
+.pachisi-yard-active-seat-2 {
+  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-2) 50%, transparent);
+}
+
+.pachisi-yard-active-seat-3 {
+  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-3) 50%, transparent);
 }
 
 .pachisi-score-pill-seat-0 {

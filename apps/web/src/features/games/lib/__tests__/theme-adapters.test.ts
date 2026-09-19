@@ -12,6 +12,7 @@ import { sharedThemeToGame2048 } from '@/widgets/PuzzleGames/Game2048/lib/theme-
 import { sharedThemeToMinesweeper } from '@/widgets/PuzzleGames/MinesweeperGame/lib/theme-adapter';
 import { sharedThemeToSolitaire } from '@/widgets/PuzzleGames/SolitaireGame/lib/theme-adapter';
 import { sharedThemeToSudoku } from '@/widgets/PuzzleGames/SudokuGame/lib/theme-adapter';
+import { sharedThemeToPachisi } from '@/widgets/BoardGames/PachisiGame/lib/theme-adapter';
 
 describe('theme-adapters', () => {
   const cyberpunk = SHARED_THEMES.find((t) => t.id === 'cyberpunk')!;
@@ -105,5 +106,17 @@ describe('theme-adapters', () => {
     expect(sdkTheme.bgImage).toBe(underwater.bgImage);
     expect(sdkTheme.boardBorder).toBe(underwater.colors.border);
     expect(sdkTheme.conflictColor).toBe('#ef4444');
+  });
+
+  it('Pachisi theme adapter converts visual properties and guarantees distinct seat colors', () => {
+    const fantasy = SHARED_THEMES.find((t) => t.id === 'fantasy')!;
+    const pachisiTheme = sharedThemeToPachisi(fantasy);
+    expect(pachisiTheme.bgImage).toBe(fantasy.bgImage);
+    expect(pachisiTheme.seatColors).toHaveLength(4);
+    expect(pachisiTheme.seatColors[0]).not.toBe(pachisiTheme.seatColors[2]);
+    expect(pachisiTheme.seatColors[0]).not.toBe(pachisiTheme.seatColors[1]);
+    expect(pachisiTheme.seatColors[1]).not.toBe(pachisiTheme.seatColors[3]);
+    const uniqueColors = new Set(pachisiTheme.seatColors);
+    expect(uniqueColors.size).toBe(4);
   });
 });

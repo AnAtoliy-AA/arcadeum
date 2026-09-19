@@ -62,6 +62,18 @@ describe('PachisiBoard', () => {
     expect(screen.getByTestId('cell-51')).toBeInTheDocument();
   });
 
+  it('does not render yard tokens on track cells in initial state and applies board rotation class', () => {
+    renderBoard(mockState);
+    const board = screen.getByTestId('pachisi-board');
+    expect(board).toHaveClass('pachisi-board-rot-180');
+    for (let i = 0; i < 52; i++) {
+      expect(screen.queryByTestId(`token-cell-${i}-0`)).toBeNull();
+      expect(screen.queryByTestId(`token-cell-${i}-1`)).toBeNull();
+      expect(screen.queryByTestId(`token-cell-${i}-2`)).toBeNull();
+      expect(screen.queryByTestId(`token-cell-${i}-3`)).toBeNull();
+    }
+  });
+
   it('shows the roll button on my roll turn and emits a roll', () => {
     const handleRoll = vi.fn();
     renderBoard(mockState, vi.fn(), handleRoll);
@@ -407,5 +419,47 @@ describe('PachisiBoard', () => {
     );
     expect(screen.getByTestId('pachisi-die-result')).toBeInTheDocument();
     expect(screen.getByTestId('pachisi-die-result')).toHaveTextContent('2');
+  });
+
+  it('renders all tokens when multiple occupy the same home-lane cell', () => {
+    const multiHomeLaneState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 2,
+      tokens: {
+        ...mockState.tokens,
+        p1: [
+          { id: 0, progress: 52 },
+          { id: 1, progress: 52 },
+          { id: 2, progress: -1 },
+          { id: 3, progress: -1 },
+        ],
+      },
+    };
+    renderBoard(multiHomeLaneState);
+    expect(screen.getByTestId('lane-token-0-1')).toBeInTheDocument();
+    expect(screen.getByTestId('lane-token-0-1-1')).toBeInTheDocument();
+  });
+
+  it('maintains stack count badge on track cells when a token is movable', () => {
+    const stackedMovableState: PachisiClientState = {
+      ...mockState,
+      phase: 'move',
+      die: 3,
+      tokens: {
+        ...mockState.tokens,
+        p1: [
+          { id: 0, progress: 5 },
+          { id: 1, progress: 5 },
+          { id: 2, progress: -1 },
+          { id: 3, progress: -1 },
+        ],
+      },
+    };
+    renderBoard(stackedMovableState);
+    expect(screen.getByTestId('token-cell-5-0')).toBeInTheDocument();
+    expect(screen.getByTestId('token-cell-5-1')).toBeInTheDocument();
+    const cell = screen.getByTestId('cell-5');
+    expect(cell).toHaveTextContent('2');
   });
 });

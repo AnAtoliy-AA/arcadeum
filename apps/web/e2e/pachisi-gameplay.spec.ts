@@ -212,6 +212,14 @@ test.describe('Pachisi Gameplay Styles, Fullscreen and Dice', () => {
     const yardToken = page.getByTestId('yard-token-0-0');
     await expect(yardToken).toBeVisible();
     await expect(yardToken).toHaveClass(/animate-bounce/);
+    await expect(yardToken).toHaveClass(/pachisi-token-seat-0/);
+    await expect(yardToken.locator('svg')).toBeVisible();
+
+    const oppYardToken = page.getByTestId('yard-token-2-0');
+    await expect(oppYardToken).toBeVisible();
+    await expect(oppYardToken).toHaveClass(/pachisi-token-seat-2/);
+    await expect(oppYardToken.locator('svg')).toBeVisible();
+
     await yardToken.click({ force: true });
   });
 

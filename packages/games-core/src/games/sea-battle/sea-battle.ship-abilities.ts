@@ -11,6 +11,7 @@ import {
   SeaBattlePlayer,
   SeaBattleState,
 } from './sea-battle.types';
+import { recordScannedCells } from './sea-battle.utils';
 import type {
   GameActionResult,
   GameLogEntry,
@@ -89,6 +90,13 @@ export function executeShipAbility(
         radius: 1,
         cells,
       };
+      recordScannedCells(
+        state,
+        player.playerId,
+        target.playerId,
+        cells,
+        'ability',
+      );
       state.logs.push(
         createLog('action', `🔍 Scout revealed ${cells.length} cells!`, {
           senderId: player.playerId,
@@ -174,6 +182,13 @@ export function executeShipAbility(
         radius: 1,
         cells,
       };
+      recordScannedCells(
+        state,
+        player.playerId,
+        target.playerId,
+        cells,
+        'ability',
+      );
       const cellLabel = `${ROW_LABELS[payload.row]}${COL_LABELS[payload.col]}`;
       state.logs.push(
         createLog(
@@ -255,6 +270,13 @@ export function executeShipAbility(
         radius: 0,
         cells: [{ row: payload.row, col: payload.col, state: cellState }],
       };
+      recordScannedCells(
+        state,
+        player.playerId,
+        target.playerId,
+        [{ row: payload.row, col: payload.col, state: cellState }],
+        'ability',
+      );
       const cellLabel = `${ROW_LABELS[payload.row]}${COL_LABELS[payload.col]}`;
       state.logs.push(
         createLog(

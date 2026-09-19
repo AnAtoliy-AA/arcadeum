@@ -19,6 +19,13 @@ export interface ShipCell {
   col: number;
 }
 
+export interface ScannedCell {
+  row: number;
+  col: number;
+  state: CellState;
+  source: 'sonar' | 'radar' | 'ability';
+}
+
 export interface Ship {
   id: string;
   name: string;
@@ -76,6 +83,7 @@ export interface SeaBattleState {
     radius: number;
     cells: { row: number; col: number; state: CellState }[];
   };
+  scannedCells?: Record<string, unknown>;
   lastRadar?: {
     attackerId: string;
     targetId: string;

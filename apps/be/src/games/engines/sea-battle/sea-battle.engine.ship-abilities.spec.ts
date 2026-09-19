@@ -10,8 +10,8 @@ describe('SeaBattleEngine — ship abilities', () => {
     timestamp: new Date(),
   });
 
-  function battleState() {
-    const s = engine.initializeState(['a', 'b'], {
+  function battleState(playerIds: string[] = ['a', 'b']) {
+    const s = engine.initializeState(playerIds, {
       shipAbilities: true,
     });
     s.phase = GAME_PHASE.BATTLE;
@@ -115,5 +115,65 @@ describe('SeaBattleEngine — ship abilities', () => {
     });
     expect(result.success).toBe(false);
     expect(result.error).toBe('Unknown ability');
+  });
+
+  it('accumulates scanned cells across teammates and sanitizes for opponents', () => {
+    const s = battleState(['a', 'b', 'c', 'd']);
+    s.teams = [
+      {
+        id: 'team-1',
+        name: 'Team 1',
+        color: '#ff0000',
+        playerIds: ['a', 'c'],
+        currentShooterIndex: 0,
+      },
+      {
+        id: 'team-2',
+        name: 'Team 2',
+        color: '#0000ff',
+        playerIds: ['b', 'd'],
+        currentShooterIndex: 0,
+      },
+    ];
+
+    const r1 = engine.executeAction(s, 'useShipAbility', ctx('a'), {
+      abilityId: 'scout',
+      targetPlayerId: 'b',
+      row: 1,
+      col: 1,
+    });
+    expect(r1.success).toBe(true);
+
+    const r2 = engine.executeAction(r1.state!, 'useShipAbility', ctx('c'), {
+      abilityId: 'sonar_ping',
+      targetPlayerId: 'b',
+      row: 5,
+      col: 5,
+    });
+    expect(r2.success).toBe(true);
+
+    const finalState = r2.state!;
+    const sanitizedA = engine.sanitizeStateForPlayer(
+      finalState,
+      'a',
+    ) as typeof s;
+    const sanitizedC = engine.sanitizeStateForPlayer(
+      finalState,
+      'c',
+    ) as typeof s;
+    const sanitizedB = engine.sanitizeStateForPlayer(
+      finalState,
+      'b',
+    ) as typeof s;
+
+    const scansForTeam = sanitizedA.scannedCells?.['b'] as Array<unknown>;
+    expect(Array.isArray(scansForTeam)).toBe(true);
+    expect(scansForTeam.length).toBe(18);
+
+    const scansForTeammateC = sanitizedC.scannedCells?.['b'] as Array<unknown>;
+    expect(scansForTeammateC.length).toBe(18);
+
+    const scansForOpponentB = sanitizedB.scannedCells?.['b'] as Array<unknown>;
+    expect(scansForOpponentB).toBeUndefined();
   });
 });

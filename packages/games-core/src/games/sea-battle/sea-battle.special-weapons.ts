@@ -5,6 +5,7 @@ import {
   SonarPayload,
   RadarPayload,
 } from './sea-battle.types';
+import { recordScannedCells } from './sea-battle.utils';
 import { GameActionResult } from '../../base/game-engine.interface';
 
 function getSonarSide(_gridSize: number): number {
@@ -62,6 +63,8 @@ export function executeSonar(
     radius: Math.floor((side - 1) / 2),
     cells,
   };
+
+  recordScannedCells(state, player.playerId, target.playerId, cells, 'sonar');
 
   state.logs.push({
     id: `sonar-${Date.now()}`,
@@ -133,6 +136,8 @@ export function executeRadar(
     halfWidth,
     cells,
   };
+
+  recordScannedCells(state, player.playerId, target.playerId, cells, 'radar');
 
   state.logs.push({
     id: `radar-${Date.now()}`,

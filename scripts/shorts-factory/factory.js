@@ -321,16 +321,21 @@ async function pollForApproval(id, metadataPath) {
 /**
  * Reports the posting result to Telegram bot
  */
-async function reportResult(id, success, message, platforms) {
-  if (!CONFIG.enableApproval) return;
+async function reportResult(id, success, message, platforms, failedPlatforms = []) {
+  if (!CONFIG.enableApproval || !id) return;
 
   try {
     await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/result`,
       {
         id,
+        pendingId: id,
+        success,
         status: success ? 'posted' : 'failed',
-        result: { success, message, platforms },
+        message,
+        platforms,
+        failedPlatforms,
+        result: { success, message, platforms, failedPlatforms },
       },
       { timeout: 120000 },
     );
@@ -3565,9 +3570,17 @@ async function publishToSocials(videoPath, caption) {
 
   const successes = results.filter((r) => r.success);
   const failures = results.filter((r) => !r.success);
+  let message = '';
+  if (successes.length > 0 && failures.length === 0) {
+    message = `Published to ${successes.map((r) => r.platform).join(', ')}`;
+  } else if (successes.length > 0 && failures.length > 0) {
+    message = `Partial publish: passed [${successes.map((r) => r.platform).join(', ')}], failed [${failures.map((f) => f.platform).join(', ')}]`;
+  } else {
+    message = `Publish failed: ${failures.map((f) => `${f.platform} (${f.error})`).join(', ') || 'none'}`;
+  }
   return {
     success: successes.length > 0,
-    message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
+    message,
     platforms: successes.map((r) => r.platform),
     failedPlatforms: failures.map((r) => ({
       platform: r.platform,
@@ -3666,13 +3679,13 @@ async function main() {
       log('info', 'Step 3: Publishing to social platforms...');
       const result = await publishToSocials(outputVideoPath, caption);
 
-      // Report result if we have a pending ID
       if (approval.pendingId) {
         await reportResult(
           approval.pendingId,
           result.success,
           result.message,
           result.platforms,
+          result.failedPlatforms,
         );
       }
     } else if (approval.regenerated) {

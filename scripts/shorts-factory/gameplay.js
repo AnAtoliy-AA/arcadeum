@@ -1788,15 +1788,20 @@ async function requestApproval(videoPath, caption, gameName, options = {}) {
   return { approved: true, autoApproved: true, pendingId: id };
 }
 
-async function reportResult(id, success, message, platforms) {
+async function reportResult(id, success, message, platforms, failedPlatforms = []) {
   if (!CONFIG.enableApproval || !id) return;
   try {
     await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/result`,
       {
         id,
+        pendingId: id,
+        success,
         status: success ? 'posted' : 'failed',
-        result: { success, message, platforms },
+        message,
+        platforms,
+        failedPlatforms,
+        result: { success, message, platforms, failedPlatforms },
       },
       { timeout: 30000 },
     );
@@ -2893,8 +2898,8 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
 
   const results = { full: null, short: null };
   const postedPlatforms = [];
+  const failedPlatforms = [];
 
-  // --- Full video → YouTube Video (horizontal) ---
   if (CONFIG.postizYouTubeId && fullPath) {
     try {
       log('info', 'Uploading full video (desktop 1920x1080)...');
@@ -2905,10 +2910,10 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
       postedPlatforms.push('YouTube (Desktop)');
     } catch (err) {
       log('error', 'Full video YouTube post failed', { error: err.message });
+      failedPlatforms.push({ platform: 'YouTube (Desktop)', error: err.message });
     }
   }
 
-  // --- Short clip → YouTube Short + Instagram Reel + TikTok (vertical) ---
   if (shortPath) {
     try {
       log('info', 'Uploading short clip (mobile 1080x1920)...');
@@ -2922,6 +2927,7 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
           postedPlatforms.push('YouTube Shorts');
         } catch (err) {
           log('error', 'YouTube Short post failed', { error: err.message });
+          failedPlatforms.push({ platform: 'YouTube Shorts', error: err.message });
         }
       }
 
@@ -2932,6 +2938,7 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
           postedPlatforms.push('Instagram Reels');
         } catch (err) {
           log('error', 'Instagram Reel post failed', { error: err.message });
+          failedPlatforms.push({ platform: 'Instagram Reels', error: err.message });
         }
       }
 
@@ -2942,6 +2949,7 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
           postedPlatforms.push('TikTok');
         } catch (err) {
           log('error', 'TikTok post failed', { error: err.message });
+          failedPlatforms.push({ platform: 'TikTok', error: err.message });
         }
       }
 
@@ -2952,19 +2960,42 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
           postedPlatforms.push('X/Twitter');
         } catch (err) {
           log('error', 'X/Twitter post failed', { error: err.message });
+          failedPlatforms.push({ platform: 'X/Twitter', error: err.message });
         }
       }
     } catch (err) {
       log('error', 'Short clip upload failed', { error: err.message });
+      if (CONFIG.postizYouTubeId) {
+        failedPlatforms.push({ platform: 'YouTube Shorts', error: `Upload failed: ${err.message}` });
+      }
+      if (CONFIG.postizInstagramId) {
+        failedPlatforms.push({ platform: 'Instagram Reels', error: `Upload failed: ${err.message}` });
+      }
+      if (CONFIG.postizTiktokId) {
+        failedPlatforms.push({ platform: 'TikTok', error: `Upload failed: ${err.message}` });
+      }
+      if (CONFIG.postizXId) {
+        failedPlatforms.push({ platform: 'X/Twitter', error: `Upload failed: ${err.message}` });
+      }
     }
   }
 
   const success = postedPlatforms.length > 0;
+  let message = '';
+  if (postedPlatforms.length > 0 && failedPlatforms.length === 0) {
+    message = `Posted to ${postedPlatforms.join(', ')}`;
+  } else if (postedPlatforms.length > 0 && failedPlatforms.length > 0) {
+    message = `Partial publish: passed [${postedPlatforms.join(', ')}], failed [${failedPlatforms.map((f) => f.platform).join(', ')}]`;
+  } else {
+    message = `Publish failed: ${failedPlatforms.map((f) => `${f.platform} (${f.error})`).join(', ') || 'No platforms configured or succeeded'}`;
+  }
+
   await reportResult(
     approval.pendingId,
     success,
-    success ? `Posted to ${postedPlatforms.join(', ')}` : 'Publish failed',
+    message,
     postedPlatforms,
+    failedPlatforms,
   );
 
   return results;

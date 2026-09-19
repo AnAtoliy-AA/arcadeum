@@ -309,5 +309,15 @@ export const enMessages = {
         },
       },
     },
+    gameOver: {
+      won: 'You won!',
+      lost: 'You lost.',
+      draw: 'Draw.',
+      messages: {
+        won: 'You bore off all your checkers first! Great race.',
+        lost: 'Your opponent bore off all their checkers. Better luck next time!',
+        draw: 'The game ended in a draw.',
+      },
+    },
   },
 };

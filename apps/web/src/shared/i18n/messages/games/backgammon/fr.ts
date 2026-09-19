@@ -311,5 +311,15 @@ export const frMessages = {
         },
       },
     },
+    gameOver: {
+      won: 'Vous avez gagné !',
+      lost: 'Vous avez perdu.',
+      draw: 'Nulle.',
+      messages: {
+        won: 'Vous avez sorti tous vos pions en premier ! Belle course.',
+        lost: 'Votre adversaire a sorti tous ses pions. Plus de chance la prochaine fois !',
+        draw: "La partie s'est terminée par une nulle.",
+      },
+    },
   },
 };

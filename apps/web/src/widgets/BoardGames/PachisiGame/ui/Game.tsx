@@ -20,6 +20,7 @@ import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';
 import { usePachisiState } from '../hooks/usePachisiState';
 import { usePachisiActions } from '../hooks/usePachisiActions';
 import { PachisiThemeProvider } from '../lib/PachisiThemeContext';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { PachisiLobby } from './PachisiLobby';
 import { PachisiBoard } from './PachisiBoard';
 import { RulesModal } from './RulesModal';
@@ -109,6 +110,11 @@ function PachisiGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'pachisi_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
@@ -219,6 +225,7 @@ function PachisiGameImpl({
           onPassTurn={handlePass}
           onRoll={handleRoll}
           snapshot={snapshot}
+          highlightedCells={chatHighlightCells}
         />
       ) : null}
     </div>

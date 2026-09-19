@@ -57,6 +57,7 @@ interface BackgammonBoardProps {
   onRoll: () => void;
   onMove: (payload: MoveCheckerPayload) => void;
   isRolling?: boolean;
+  highlightedCells?: { row: number; col: number }[];
 }
 
 export function BackgammonBoard({
@@ -66,6 +67,7 @@ export function BackgammonBoard({
   onRoll,
   onMove,
   isRolling,
+  highlightedCells = [],
 }: BackgammonBoardProps) {
   const theme = useBackgammonTheme();
   const [selectedFrom, setSelectedFrom] = useState<number | 'bar' | null>(null);
@@ -168,6 +170,14 @@ export function BackgammonBoard({
     onDeselect: () => setSelectedFrom(null),
   });
 
+  const highlightedPointIndices = useMemo(() => {
+    const indices = new Set<number>();
+    for (const cell of highlightedCells) {
+      indices.add(pointAtNavCoords(cell.row, cell.col, isFlipped));
+    }
+    return indices;
+  }, [highlightedCells, isFlipped]);
+
   const topLeft = isFlipped ? [11, 10, 9, 8, 7, 6] : [12, 13, 14, 15, 16, 17];
   const topRight = isFlipped ? [5, 4, 3, 2, 1, 0] : [18, 19, 20, 21, 22, 23];
   const bottomLeft = isFlipped
@@ -214,6 +224,7 @@ export function BackgammonBoard({
                 <BackgammonPoint
                   cellFocusProps={getPointCellProps(true, idx)}
                   currentUserId={currentUserId}
+                  isHighlighted={highlightedPointIndices.has(idx)}
                   isMovable={movablePoints.has(idx)}
                   isSelected={selectedFrom === idx}
                   isTop={true}
@@ -241,6 +252,7 @@ export function BackgammonBoard({
                 <BackgammonPoint
                   cellFocusProps={getPointCellProps(true, idx)}
                   currentUserId={currentUserId}
+                  isHighlighted={highlightedPointIndices.has(idx)}
                   isMovable={movablePoints.has(idx)}
                   isSelected={selectedFrom === idx}
                   isTop={true}
@@ -272,6 +284,7 @@ export function BackgammonBoard({
                 <BackgammonPoint
                   cellFocusProps={getPointCellProps(false, idx)}
                   currentUserId={currentUserId}
+                  isHighlighted={highlightedPointIndices.has(idx)}
                   isMovable={movablePoints.has(idx)}
                   isSelected={selectedFrom === idx}
                   isTop={false}
@@ -292,6 +305,7 @@ export function BackgammonBoard({
                 <BackgammonPoint
                   cellFocusProps={getPointCellProps(false, idx)}
                   currentUserId={currentUserId}
+                  isHighlighted={highlightedPointIndices.has(idx)}
                   isMovable={movablePoints.has(idx)}
                   isSelected={selectedFrom === idx}
                   isTop={false}

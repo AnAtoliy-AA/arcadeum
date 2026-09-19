@@ -22,6 +22,7 @@ import type { CatDashGameProps } from '../types';
 import { useCatDashState } from '../hooks/useCatDashState';
 import { useCatDashActions } from '../hooks/useCatDashActions';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { CatDashLobby } from './Lobby';
 import { CatDashBoard } from './Board';
@@ -104,6 +105,11 @@ function CatDashGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'cat_dash_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -189,6 +195,7 @@ function CatDashGameImpl({
             snapshot={snapshot}
             disabled={!myTurn || isGameOver}
             resolveName={resolveDisplayNameBound}
+            highlightedCells={chatHighlightCells}
           />
           {isGameOver && snapshot?.winner && (
             <div className="flex flex-col items-center gap-2 p-4 bg-emerald-500/15 rounded-3xl border border-emerald-500/40 shadow-2xl shadow-emerald-500/20 backdrop-blur-md max-w-md mx-auto">

@@ -41,6 +41,7 @@ interface AttackPlayerBoardProps {
   radarCellStates?: Map<string, number> | null;
   scanWaveHighlightCells?: Set<string> | null;
   scanWaveCellStates?: Map<string, number> | null;
+  chatHighlightCells?: Set<string> | null;
   weaponPreviewCells?: Set<string> | null;
   weaponPreviewType?: 'sonar' | 'radar' | null;
   onAttack?: (targetPlayerId: string, row: number, col: number) => void;
@@ -69,6 +70,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
   radarCellStates,
   scanWaveHighlightCells,
   scanWaveCellStates,
+  chatHighlightCells,
   weaponPreviewCells,
   weaponPreviewType,
   onAttack,
@@ -239,6 +241,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
                   ? scanWaveCellStates.get(cellKey)
                   : undefined;
           const isWeaponPreview = !isMe && weaponPreviewCells?.has(cellKey);
+          const isChatHighlighted = !isMe && chatHighlightCells?.has(cellKey);
           const isKeyboardCursor =
             !isMe &&
             keyboardCursor?.row === rIndex &&
@@ -258,6 +261,7 @@ export const AttackPlayerBoard = memo(function AttackPlayerBoard({
               weaponPreviewType={!isMe ? weaponPreviewType : null}
               isWeaponClickable={isWeaponClickable}
               isKeyboardCursor={isKeyboardCursor}
+              isChatHighlighted={isChatHighlighted}
               theme={theme}
               rIndex={rIndex}
               cIndex={cIndex}

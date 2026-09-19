@@ -22,6 +22,7 @@ interface AttackBoardCellProps {
   weaponPreviewType?: 'sonar' | 'radar' | null;
   isWeaponClickable?: boolean;
   isKeyboardCursor?: boolean;
+  isChatHighlighted?: boolean;
   /** Roving-tabindex/focus attributes from the board's keyboard navigation. */
   cellFocusProps?: Record<string, unknown>;
 }
@@ -42,6 +43,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   weaponPreviewType,
   isWeaponClickable = false,
   isKeyboardCursor = false,
+  isChatHighlighted = false,
   cellFocusProps,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
@@ -116,6 +118,14 @@ export const AttackBoardCell = memo(function AttackBoardCell({
           }
         : {};
 
+  const chatHighlightStyle: React.CSSProperties = isChatHighlighted
+    ? {
+        boxShadow: '0 0 8px 2px rgba(99, 102, 241, 0.6)',
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.15)',
+      }
+    : {};
+
   const isShipCell = displayState === CELL_STATE.SHIP;
 
   return (
@@ -132,6 +142,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
           : undefined,
         ...highlightStyle,
         ...previewStyle,
+        ...chatHighlightStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
         ...(isKeyboardCursor
           ? {
@@ -195,6 +206,12 @@ export const AttackBoardCell = memo(function AttackBoardCell({
                 ? '🚢'
                 : '📡'}
         </div>
+      )}
+      {isChatHighlighted && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[80%] w-[80%] rounded-full border-[2px] border-indigo-400/80 bg-indigo-500/15 z-15 animate-pulse"
+        />
       )}
     </BoardCell>
   );

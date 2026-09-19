@@ -11,6 +11,7 @@ import {
   useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -87,6 +88,11 @@ function GoGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'go_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -258,6 +264,7 @@ function GoGameImpl({
               koPoint={snapshot.koPoint}
               myColor={myColor}
               showTerritory={showTerritory || isGameOver}
+              highlightedCells={chatHighlightCells}
               ariaLabel={t('games.go_v1.board.ariaLabel', {
                 size: snapshot.boardSize ?? snapshot.options.boardSize ?? 9,
               })}

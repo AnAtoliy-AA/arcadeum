@@ -31,7 +31,7 @@ export function executeRollDiceHelper(
   player.hasBonus = false;
 
   const logs = [
-    createLog('action', `Rolled ${roll}, moving ${movement} spaces`, {
+    createLog('action', `Rolled ${roll}, moving ${movement} spaces Move at (0, ${player.position + movement})`, {
       senderId: player.playerId,
     }),
   ];

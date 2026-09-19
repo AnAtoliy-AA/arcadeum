@@ -11,6 +11,7 @@ import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
 import { useGameEndState, useGameRoomActions } from '@/features/games/hooks';
 import { useGameChatIntegration } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
@@ -308,6 +309,10 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     resolveActorColor,
   );
 
+  const chatHighlightCells = useGameChatStore((s) =>
+    s.highlightedCells.length > 0 ? s.highlightedCells : s.persistedCells,
+  );
+
   const cardVariant = (room?.gameOptions?.theme ||
     room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
@@ -468,6 +473,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             resolveDisplayNameBound={resolveDisplayNameBound}
             teammateIds={teammateIds}
             teams={teams}
+            highlightedCells={chatHighlightCells}
           />
         }
         modals={

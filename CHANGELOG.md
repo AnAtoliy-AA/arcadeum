@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.19] - 2026-09-19
+
+### Fixed
+- keep territory toggle visible throughout match (ARC-go-territory-toggle)
+
+
 ## [1.30.18] - 2026-09-19
 
 ### Added

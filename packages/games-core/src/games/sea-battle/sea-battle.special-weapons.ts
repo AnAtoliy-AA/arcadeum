@@ -7,10 +7,8 @@ import {
 } from './sea-battle.types';
 import { GameActionResult } from '../../base/game-engine.interface';
 
-function getSonarSide(gridSize: number): number {
-  if (gridSize <= 10) return 3;
-  if (gridSize <= 15) return 5;
-  return 7;
+function getSonarSide(_gridSize: number): number {
+  return 3;
 }
 
 function getRadarLines(gridSize: number): number {

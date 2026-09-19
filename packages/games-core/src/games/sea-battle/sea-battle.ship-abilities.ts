@@ -68,7 +68,6 @@ export function executeShipAbility(
 
   switch (payload.abilityId) {
     case 'scout': {
-      // Reveal a 3×3 area on target board
       if (!target || payload.row === undefined || payload.col === undefined) {
         return { success: false, error: 'Scout requires target, row, col' };
       }
@@ -82,6 +81,14 @@ export function executeShipAbility(
           }
         }
       }
+      state.lastSonar = {
+        attackerId: player.playerId,
+        targetId: target.playerId,
+        centerRow: payload.row,
+        centerCol: payload.col,
+        radius: 1,
+        cells,
+      };
       state.logs.push(
         createLog('action', `🔍 Scout revealed ${cells.length} cells!`, {
           senderId: player.playerId,
@@ -142,24 +149,31 @@ export function executeShipAbility(
     }
 
     case 'sonar_ping': {
-      // Reveal if any ship is within 2 cells of target
       if (!target || payload.row === undefined || payload.col === undefined) {
         return { success: false, error: 'Sonar Ping requires target, row, col' };
       }
       let hasShip = false;
-      for (let dr = -2; dr <= 2; dr++) {
-        for (let dc = -2; dc <= 2; dc++) {
+      const cells: { row: number; col: number; state: CellState }[] = [];
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
           const r = payload.row + dr;
           const c = payload.col + dc;
           if (r >= 0 && r < state.gridSize && c >= 0 && c < state.gridSize) {
+            cells.push({ row: r, col: c, state: target.board[r][c] });
             if (target.board[r][c] === CELL_STATE.SHIP) {
               hasShip = true;
-              break;
             }
           }
         }
-        if (hasShip) break;
       }
+      state.lastSonar = {
+        attackerId: player.playerId,
+        targetId: target.playerId,
+        centerRow: payload.row,
+        centerCol: payload.col,
+        radius: 1,
+        cells,
+      };
       const cellLabel = `${ROW_LABELS[payload.row]}${COL_LABELS[payload.col]}`;
       state.logs.push(
         createLog(
@@ -229,11 +243,18 @@ export function executeShipAbility(
     }
 
     case 'patrol_scout': {
-      // Reveal a single cell
       if (!target || payload.row === undefined || payload.col === undefined) {
         return { success: false, error: 'Patrol Scout requires target, row, col' };
       }
       const cellState = target.board[payload.row][payload.col];
+      state.lastSonar = {
+        attackerId: player.playerId,
+        targetId: target.playerId,
+        centerRow: payload.row,
+        centerCol: payload.col,
+        radius: 0,
+        cells: [{ row: payload.row, col: payload.col, state: cellState }],
+      };
       const cellLabel = `${ROW_LABELS[payload.row]}${COL_LABELS[payload.col]}`;
       state.logs.push(
         createLog(

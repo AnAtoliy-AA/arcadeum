@@ -34,7 +34,7 @@ function getWeaponModeHint(weaponMode: NonNullable<WeaponMode>): string {
     return 'Tap a cell to scout 3×3 area';
   }
   if (weaponMode.abilityId === 'sonar_ping') {
-    return 'Tap a cell to ping 5×5 area';
+    return 'Tap a cell to ping 3×3 area';
   }
   if (weaponMode.abilityId === 'torpedo') {
     return 'Tap a target cell to launch torpedo';

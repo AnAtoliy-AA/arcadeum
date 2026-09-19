@@ -76,6 +76,21 @@ describe('SeaBattleEngine — ship abilities', () => {
     });
     expect(result.success).toBe(true);
     expect(result.state?.abilityCooldowns?.['a']?.['scout']).toBe(3);
+    expect(result.state?.lastSonar?.radius).toBe(1);
+    expect(result.state?.lastSonar?.cells.length).toBe(9);
+  });
+
+  it('validates and executes sonar_ping with 3x3 scan area and sets lastSonar', () => {
+    const s = battleState();
+    const result = engine.executeAction(s, 'useShipAbility', ctx('a'), {
+      abilityId: 'sonar_ping',
+      targetPlayerId: 'b',
+      row: 2,
+      col: 2,
+    });
+    expect(result.success).toBe(true);
+    expect(result.state?.lastSonar?.radius).toBe(1);
+    expect(result.state?.lastSonar?.cells.length).toBe(9);
   });
 
   it('validates and executes silent_run self-buff without target', () => {

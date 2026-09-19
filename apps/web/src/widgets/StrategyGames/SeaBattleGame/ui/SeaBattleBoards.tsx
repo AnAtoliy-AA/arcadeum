@@ -210,12 +210,11 @@ export function SeaBattleBoards({
 
   const sonarPreviewCells = useMemo(() => {
     if (weaponMode?.weapon !== 'sonar' || !hoveredCell) return null;
-    const side = gridSize <= 10 ? 3 : gridSize <= 15 ? 5 : 7;
     return getBoxCells(
       weaponMode.targetPlayerId,
       hoveredCell.row,
       hoveredCell.col,
-      Math.floor((side - 1) / 2),
+      1,
       gridSize,
     );
   }, [weaponMode, hoveredCell, gridSize]);
@@ -223,11 +222,9 @@ export function SeaBattleBoards({
   const abilityPreviewCells = useMemo(() => {
     if (weaponMode?.weapon !== 'ability' || !hoveredCell) return null;
     const radius =
-      weaponMode.abilityId === 'sonar_ping'
-        ? 2
-        : weaponMode.abilityId === 'scout'
-          ? 1
-          : 0;
+      weaponMode.abilityId === 'sonar_ping' || weaponMode.abilityId === 'scout'
+        ? 1
+        : 0;
     return getBoxCells(
       weaponMode.targetPlayerId,
       hoveredCell.row,

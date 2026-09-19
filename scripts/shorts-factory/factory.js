@@ -100,7 +100,8 @@ const CONFIG = {
   factoryBotRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
   factoryBotEmail: process.env.SHORTS_FACTORY_BOT_EMAIL || '',
   factoryBotPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
-  factoryBeUrl: process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
+  factoryBeUrl:
+    process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
 
   // Approval settings
   approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
@@ -332,20 +333,30 @@ const CAPTIONS = [
 async function getFactoryBotTokens() {
   if (CONFIG.factoryBotToken) {
     log('info', 'Using existing SHORTS_FACTORY_BOT_TOKEN from env');
-    return { accessToken: CONFIG.factoryBotToken, refreshToken: CONFIG.factoryBotRefreshToken };
+    return {
+      accessToken: CONFIG.factoryBotToken,
+      refreshToken: CONFIG.factoryBotRefreshToken,
+    };
   }
 
   if (!CONFIG.factoryBotEmail || !CONFIG.factoryBotPassword) {
-    log('warn', 'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)');
+    log(
+      'warn',
+      'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)',
+    );
     return null;
   }
 
   log('info', `Auto-login as bot user: ${CONFIG.factoryBotEmail}`);
   try {
-    const res = await axios.post(`${CONFIG.factoryBeUrl}/auth/login`, {
-      email: CONFIG.factoryBotEmail,
-      password: CONFIG.factoryBotPassword,
-    }, { timeout: 15000 });
+    const res = await axios.post(
+      `${CONFIG.factoryBeUrl}/auth/login`,
+      {
+        email: CONFIG.factoryBotEmail,
+        password: CONFIG.factoryBotPassword,
+      },
+      { timeout: 15000 },
+    );
 
     const { accessToken, refreshToken } = res.data || {};
     if (accessToken) {
@@ -355,7 +366,10 @@ async function getFactoryBotTokens() {
     log('warn', 'Bot login returned no accessToken');
     return null;
   } catch (err) {
-    log('warn', 'Bot login failed', { error: err.message, status: err.response?.status });
+    log('warn', 'Bot login failed', {
+      error: err.message,
+      status: err.response?.status,
+    });
     return null;
   }
 }
@@ -1306,7 +1320,8 @@ const SCENARIOS = [
   },
   {
     name: 'gameToLeaderboard',
-    caption:       'Play hard, rank high, and win prizes! 📈🏆 Seasonal rankings, promotion matches, and division tiers. #competitive #gaming #arcadeumgames',
+    caption:
+      'Play hard, rank high, and win prizes! 📈🏆 Seasonal rankings, promotion matches, and division tiers. #competitive #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1536,6 +1551,596 @@ const SCENARIOS = [
     ],
   },
 
+  // ─── THEME SHOWCASE — ALL 12 THEMES ─────────────────────────────────────
+
+  {
+    name: 'themeShowcaseGalaxy',
+    caption:
+      'Galaxy theme on Chess — play among the stars! 🌌♟️ Cosmic boards, nebula backgrounds, and star-field animated pieces. #galaxy #chess #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=galaxy', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseFantasy',
+    caption:
+      'Fantasy theme on Checkers — battle through enchanted lands! 🧙✨ Dragon squares, wizard pieces, and mythical board designs. #fantasy #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/checkers?theme=fantasy', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseWestern',
+    caption:
+      'Wild West Pachisi — race through the frontier! 🤠🎲 Cowboy tokens, desert boards, and saloon vibes. #western #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi?theme=western', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseEgypt',
+    caption:
+      'Ancient Egypt meets Backgammon! 🏺🎲 Hieroglyphic boards, golden checkers, and pharaoh vibes. Play themed games on arcadeum.games #egypt #backgammon #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon?theme=egypt', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseSteampunk',
+    caption:
+      'Steampunk Sea Battle — Victorian naval warfare! ⚙️⚓ Brass cannons, gear-powered torpedoes, and clockwork fleet animations. #steampunk #seabattle #aesthetic #arcadeumgames',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/sea-battle?theme=steampunk',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseZen',
+    caption:
+      'Zen Go — find peace in every stone you place 🧘⬛⬜ Bamboo boards, calm water animations, and meditative soundscapes. #zen #go #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/go?theme=zen', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseAdventure',
+    caption:
+      'Adventure theme on Chess — conquer the mountain pass! ⛰️♟️ Rocky terrain boards, explorer pieces, and wilderness vibes. #adventure #chess #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=adventure', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseCrime',
+    caption:
+      "Crime theme on Texas Hold'em — bluff in the back alley! 🕵️🂠 Noir poker tables, detective chips, and underground casino vibes. #crime #poker #aesthetic #arcadeumgames",
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/texas-holdem?theme=crime',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseHorror',
+    caption:
+      'Horror Hearts — dodge the Queen of Death! 👻♥️ Haunted card designs, skull animations, and spooky ambiance. #horror #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts?theme=horror', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseHighAltitude',
+    caption:
+      'High Altitude Checkers — battle on the mountain peak! 🏔️🔴⚫ Rocky terrain boards, snow-capped piece designs, and altitude vibes. #mountain #checkers #aesthetic #arcadeumgames',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/checkers?theme=high-altitude-hike',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+
+  // ─── NEW GAMEPLAY ROOMS ────────────────────────────────────────────────────
+
+  {
+    name: 'pachisiGameplay',
+    requiresAuth: true,
+    caption:
+      'Pachisi — the ancient royal dice race goes online! 🎲👑 4 tokens, safe zones, captures, and home stretch — every roll is a new battle. #pachisi #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'backgammonGameplay',
+    requiresAuth: true,
+    caption:
+      'Backgammon online — roll dice, move checkers, bear off! 🎲🏆 Pip count, prime strategy, and doubling cube — the OG strategy game reborn. #backgammon #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'heartsGameplay',
+    requiresAuth: true,
+    caption:
+      'Hearts online — dodge the Queen of Spades or shoot the moon! ♥️♠ 4-player trick-taking at its finest on arcadeum.games #hearts #cardgame #tricktaking #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'spadesGameplay',
+    requiresAuth: true,
+    caption:
+      'Spades online — team up and dominate! ♠️🤝 Bid smart, play trump, and count bags — team trick-taking strategy at its best. #spades #cardgame #multiplayer #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/spades', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'goGameplay',
+    requiresAuth: true,
+    caption:
+      'Go online — surround, capture, conquer! ⚫⚪ 19x19 board, territory scoring, and life-and-death battles. The deepest strategy game ever made. #go #baduk #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/go', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'texasHoldemGameplay',
+    requiresAuth: true,
+    caption:
+      "Texas Hold'em poker — all in or fold? 🂠🔥 Preflop, flop, turn, river — bluff your way to the pot on arcadeum.games #poker #texasholdem #cardgame #arcadeumgames",
+    steps: [
+      { type: 'navigate', url: '/en/games/texas-holdem', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'catDashGameplay',
+    requiresAuth: true,
+    caption:
+      'Cat Dash — run, jump, collect! 🐱💨 This endless runner is the most chaotic fun on the web. How far can you go? arcadeum.games #catdash #runner #arcade #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/cat-dash', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 100, wait: 600 },
+    ],
+  },
+
+  // ─── MULTI-GAME THEME HOPS ────────────────────────────────────────────────
+
+  {
+    name: 'themeHopCyberpunkToGalaxy',
+    caption:
+      'Cyberpunk chess to Galaxy backgammon — two totally different vibes! 🌆🌌 Themed skins for every mood on arcadeum.games #gaming #themes #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      {
+        type: 'navigate',
+        url: '/en/games/backgammon?theme=galaxy',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'themeHopEgyptToZen',
+    caption:
+      'Ancient Egypt to peaceful Zen — Arcadeum has a theme for every vibe! 🏺🧘 Switch themes, same great games on arcadeum.games #egypt #zen #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon?theme=egypt', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/go?theme=zen', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'themeHopWesternToHorror',
+    caption:
+      'Wild West dice to Horror cards — Arcadeum themes are WILD! 🤠👻 12 themed skins to choose from on arcadeum.games #western #horror #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi?theme=western', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/hearts?theme=horror', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'themeHopSteampunkToFantasy',
+    caption:
+      'Steampunk battleships to Fantasy checkers — the variety is insane! ⚙️🧙 Every game on arcadeum.games has stunning themed skins. #steampunk #fantasy #gaming #aesthetic',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/sea-battle?theme=steampunk',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/checkers?theme=fantasy', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+
+  // ─── ENGAGING STORY FLOWS ─────────────────────────────────────────────────
+
+  {
+    name: 'speedrunnerFlow',
+    caption:
+      'Speed-running all 20+ games on Arcadeum — which is your favorite? 🎮⚡ Chess, Sea Battle, Pachisi, Go, Poker, Hearts — all free! #gaming #speedrun #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+      { type: 'navigate', url: '/en/games/sea-battle', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+      { type: 'navigate', url: '/en/games/pachisi', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+      { type: 'navigate', url: '/en/games/go', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+    ],
+  },
+  {
+    name: 'epicBoardGamesShowcase',
+    caption:
+      'The greatest board games ever made — all in one place! 🎲♟️⚫ Chess, Backgammon, Go, Checkers, and Pachisi — all ranked, all free. arcadeum.games #boardgames #classic #strategy #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon?theme=egypt', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/chess?theme=galaxy', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/go?theme=zen', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'cardGamesShowcase',
+    caption:
+      'Hearts, Spades, Cascade, Critical, and Poker — all in one app! 🂳♥️♠️ Every card game you love, with ranked matchmaking. arcadeum.games #cardgames #multiplayer #gaming #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/spades', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/cascade', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'catalogThemeDiscovery',
+    caption:
+      'Did you know Arcadeum Games has 12 visual themes? 🎨💀 Galaxy, Cyberpunk, Western, Egypt, Horror, Zen — pick your vibe! #gaming #themes #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-chess_v1"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'navigate', url: '/en/games/chess?theme=galaxy', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'dailyChallengeFlow',
+    caption:
+      'Daily challenges with bonus rewards — play every day and level up! 🏆🔥 Login streaks, daily tokens, and challenge completions. #dailychallenge #gaming #rewards #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en', wait: 2500 },
+      { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="hero-cta-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/rewards', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', selector: '[data-testid="daily-rewards"]', wait: 1500 },
+      { type: 'navigate', url: '/en/games/chess', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'catalogToPachisiFlow',
+    caption:
+      'Discovered Pachisi in the catalog — the ancient royal board game! 🎲👑 4 tokens, safe zones, and home stretch — classic Ludo evolved. arcadeum.games #pachisi #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-pachisi_v1"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="games-catalog-card-pachisi_v1"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
+      },
+    ],
+  },
+  {
+    name: 'catalogToBackgammonFlow',
+    caption:
+      'Found Backgammon in the catalog — time to roll! 🎲⚡ 24 points, 15 checkers, doubling cube — the OG strategy game. arcadeum.games #backgammon #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 500, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-backgammon_v1"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="games-catalog-card-backgammon_v1"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
+      },
+    ],
+  },
+
   // ─── CHESS-SPECIFIC SCENARIOS ─────────────────────────────────────────────
 
   {
@@ -1636,7 +2241,7 @@ const SCENARIOS = [
   {
     name: 'chessOpenings',
     caption:
-      'From Scholar\'s Mate to Queen\'s Gambit — Stockfish 19 analyzes every opening move ♟️📚 Learn the best openings at arcadeum.games #chessopening #queensgambit #stockfish19 #chessstrategy #arcadeumgames',
+      "From Scholar's Mate to Queen's Gambit — Stockfish 19 analyzes every opening move ♟️📚 Learn the best openings at arcadeum.games #chessopening #queensgambit #stockfish19 #chessstrategy #arcadeumgames",
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -2124,7 +2729,54 @@ async function executeStep(page, step) {
       const url = `${CONFIG.baseUrl}${step.url}`;
       log('info', `Step: Navigate to ${url}`);
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page
+        .evaluate(() => {
+          const existing = document.getElementById('arcadeum-factory-loader');
+          if (existing) existing.remove();
+          const style = document.createElement('style');
+          style.id = 'arcadeum-factory-loader-style';
+          style.textContent = `
+          @keyframes fLoaderSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          @keyframes fLoaderPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+          @keyframes fLoaderDot { 0%,80%,100% { transform:scale(0.5);opacity:0.3; } 40% { transform:scale(1);opacity:1; } }
+          @keyframes fLoaderFadeOut { from { opacity:1; } to { opacity:0; pointer-events:none; } }
+        `;
+          document.head.appendChild(style);
+          const loader = document.createElement('div');
+          loader.id = 'arcadeum-factory-loader';
+          loader.style.cssText =
+            'position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,#080c18 0%,#0d1224 50%,#080c18 100%);font-family:-apple-system,BlinkMacSystemFont,sans-serif;pointer-events:none;';
+          const ring = document.createElement('div');
+          ring.style.cssText =
+            'width:48px;height:48px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-right-color:#a5b4fc;border-radius:50%;animation:fLoaderSpin 0.85s linear infinite;';
+          const logo = document.createElement('div');
+          logo.style.cssText =
+            'font-size:18px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:fLoaderPulse 1.8s ease-in-out infinite;';
+          logo.textContent = 'arcadeum.games';
+          const dotsWrap = document.createElement('div');
+          dotsWrap.style.cssText = 'display:flex;gap:5px;';
+          [0, 0.2, 0.4].forEach((delay) => {
+            const d = document.createElement('div');
+            d.style.cssText = `width:6px;height:6px;background:#6366f1;border-radius:50%;animation:fLoaderDot 1.1s ease-in-out ${delay}s infinite;`;
+            dotsWrap.appendChild(d);
+          });
+          loader.appendChild(ring);
+          loader.appendChild(logo);
+          loader.appendChild(dotsWrap);
+          document.body.appendChild(loader);
+        })
+        .catch(() => {});
       await waitForContent(page);
+      await page
+        .evaluate(() => {
+          const loader = document.getElementById('arcadeum-factory-loader');
+          if (loader) {
+            loader.style.transition = 'opacity 0.35s ease';
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 350);
+          }
+        })
+        .catch(() => {});
       await dismissAnyOverlays(page);
       if (step.wait) await sleep(step.wait);
       break;
@@ -2425,9 +3077,35 @@ function getScenarioTags(scenarioName) {
     name.includes('spades') ||
     name.includes('catdash') ||
     name.includes('2048') ||
-    name.includes('sea')
+    name.includes('sea') ||
+    name.includes('pachisi') ||
+    name.includes('go') ||
+    name.includes('holdem') ||
+    name.includes('showcase') ||
+    name.includes('themehop') ||
+    name.includes('speedrunner')
   ) {
     tags.push('#gamers', '#p2e', '#onlinegaming');
+  }
+
+  if (
+    name.includes('theme') ||
+    name.includes('aesthetic') ||
+    name.includes('skin')
+  ) {
+    tags.push('#aesthetic', '#gamingaesthetic', '#themes');
+  }
+
+  if (
+    name.includes('pachisi') ||
+    name.includes('backgammon') ||
+    name.includes('go') ||
+    name.includes('checkers') ||
+    name.includes('boardgame') ||
+    name.includes('epic') ||
+    name.includes('catalog')
+  ) {
+    tags.push('#boardgame', '#classic', '#strategy');
   }
 
   if (name.includes('gameplay') || name.includes('room')) {

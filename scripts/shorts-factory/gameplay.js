@@ -102,7 +102,8 @@ const CONFIG = {
   botRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
   botEmail: process.env.SHORTS_FACTORY_BOT_EMAIL || '',
   botPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
-  beUrl: process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
+  beUrl:
+    process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
 };
 
 // ============================================================================
@@ -112,20 +113,30 @@ const CONFIG = {
 async function getBotTokens() {
   if (CONFIG.botToken) {
     log('info', 'Using existing SHORTS_FACTORY_BOT_TOKEN from env');
-    return { accessToken: CONFIG.botToken, refreshToken: CONFIG.botRefreshToken };
+    return {
+      accessToken: CONFIG.botToken,
+      refreshToken: CONFIG.botRefreshToken,
+    };
   }
 
   if (!CONFIG.botEmail || !CONFIG.botPassword) {
-    log('warn', 'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)');
+    log(
+      'warn',
+      'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)',
+    );
     return null;
   }
 
   log('info', `Auto-login as bot user: ${CONFIG.botEmail}`);
   try {
-    const res = await axios.post(`${CONFIG.beUrl}/auth/login`, {
-      email: CONFIG.botEmail,
-      password: CONFIG.botPassword,
-    }, { timeout: 15000 });
+    const res = await axios.post(
+      `${CONFIG.beUrl}/auth/login`,
+      {
+        email: CONFIG.botEmail,
+        password: CONFIG.botPassword,
+      },
+      { timeout: 15000 },
+    );
 
     const { accessToken, refreshToken } = res.data || {};
     if (accessToken) {
@@ -135,7 +146,10 @@ async function getBotTokens() {
     log('warn', 'Bot login returned no accessToken');
     return null;
   } catch (err) {
-    log('warn', 'Bot login failed', { error: err.message, status: err.response?.status });
+    log('warn', 'Bot login failed', {
+      error: err.message,
+      status: err.response?.status,
+    });
     return null;
   }
 }
@@ -159,6 +173,9 @@ const GAMES = [
       '💥 MISSILE LAUNCH!',
       '🎯 DIRECT HIT!',
       '🔥 FLEET ON FIRE!',
+      '⚓ SHIP SUNK!',
+      '🌊 TORPEDO AWAY!',
+      '🎖️ ADMIRAL MOVE!',
     ],
     captions: [
       'Can you sink their entire fleet before yours goes down? ⚓💥 10x10 grid, 5 ships, pure naval strategy. Play free on arcadeum.games #seabattle #battleship #gaming #shorts #navalstrategy',
@@ -166,7 +183,12 @@ const GAMES = [
       'One wrong move and your fleet is GONE ⚓😱 Real-time naval combat with sound effects, hit markers, and ship sinking animations. Play Sea Battle on arcadeum.games #seabattle #naval #gaming #battleship',
       'Place your ships, guess their positions, sink their fleet! ⚓🎯 5 ship sizes: Carrier(5), Battleship(4), Cruiser(3), Submarine(3), Destroyer(2). Play at arcadeum.games #seabattle #placement #strategy',
       'Auto-place your fleet or position manually — then attack! ⚓🔥 Cross-pattern targeting, hit/miss/sunk feedback, and full game replay. arcadeum.games #seabattle #navalcombat #replay',
+      'Steampunk naval warfare - sink or be sunk! 🚂⚓ Gear-powered torpedoes, brass cannons, and Victorian fleet tactics. arcadeum.games #seabattle #steampunk #naval',
+      'Underwater theme Sea Battle hits DIFFERENT 🌊🐠 Deep sea ambiance, glowing torpedoes, and coral-decorated boards. arcadeum.games #seabattle #underwater #aesthetic',
     ],
+    _lastHit: null,
+    _huntMode: false,
+    _huntCandidates: [],
     moves: [],
     async waitForGame(page) {
       for (let i = 0; i < 3; i++) {
@@ -227,26 +249,82 @@ const GAMES = [
       await sleep(400);
     },
     async makeMove(page) {
-      const targetCells = page.locator(
-        '[data-row]:not([aria-label*="hit"]):not([aria-label*="miss"]):not([aria-label*="sunk"]), .sb-cell.sb-attackable',
-      );
+      const getAttackable = () =>
+        page.locator(
+          '.sb-cell.sb-attackable, [data-row][data-col]:not([aria-label*="hit"]):not([aria-label*="miss"]):not([aria-label*="sunk"])',
+        );
+
+      if (this._huntMode && this._huntCandidates.length > 0) {
+        const [row, col] = this._huntCandidates.shift();
+        const cell = page.locator(`[data-row="${row}"][data-col="${col}"]`);
+        if ((await cell.count()) > 0) {
+          const label = (await cell.getAttribute('aria-label')) || '';
+          if (
+            !label.includes('hit') &&
+            !label.includes('miss') &&
+            !label.includes('sunk')
+          ) {
+            await cell.scrollIntoViewIfNeeded({ timeout: 500 }).catch(() => {});
+            await cell.click({ force: true });
+            await sleep(400);
+            const afterLabel = (await cell.getAttribute('aria-label')) || '';
+            if (afterLabel.includes('hit') && !afterLabel.includes('sunk')) {
+              const nr = parseInt(row, 10);
+              const nc = parseInt(col, 10);
+              this._huntCandidates.push(
+                ...[
+                  [nr - 1, nc],
+                  [nr + 1, nc],
+                  [nr, nc - 1],
+                  [nr, nc + 1],
+                ]
+                  .filter(([r, c]) => r >= 0 && r <= 9 && c >= 0 && c <= 9)
+                  .map(([r, c]) => [String(r), String(c)]),
+              );
+            } else if (afterLabel.includes('sunk')) {
+              this._huntMode = false;
+              this._huntCandidates = [];
+            }
+            return true;
+          }
+        }
+      }
+
+      const targetCells = getAttackable();
       const count = await targetCells.count();
       if (count > 0) {
         const idx = Math.floor(Math.random() * count);
         const cell = targetCells.nth(idx);
+        const row = await cell.getAttribute('data-row');
+        const col = await cell.getAttribute('data-col');
         await cell.scrollIntoViewIfNeeded({ timeout: 500 }).catch(() => {});
         await cell.click({ force: true });
+        if (row && col) {
+          await sleep(400);
+          const afterLabel = (await cell.getAttribute('aria-label')) || '';
+          if (afterLabel.includes('hit') && !afterLabel.includes('sunk')) {
+            this._huntMode = true;
+            const nr = parseInt(row, 10);
+            const nc = parseInt(col, 10);
+            this._huntCandidates = [
+              [nr - 1, nc],
+              [nr + 1, nc],
+              [nr, nc - 1],
+              [nr, nc + 1],
+            ]
+              .filter(([r, c]) => r >= 0 && r <= 9 && c >= 0 && c <= 9)
+              .map(([r, c]) => [String(r), String(c)]);
+          }
+        }
         return true;
       }
       return false;
     },
     async isMyTurn(page) {
-      const emptyCells = await page
-        .locator(
-          '[data-row]:not([aria-label*="hit"]):not([aria-label*="miss"]):not([aria-label*="sunk"])',
-        )
+      const attackable = await page
+        .locator('.sb-cell.sb-attackable, .sb-board-grid.sb-my-turn')
         .count();
-      return emptyCells > 0;
+      return attackable > 0;
     },
   },
   {
@@ -270,6 +348,10 @@ const GAMES = [
       '💀 BACK RANK MATE!',
       '🏆 ENDGAME MASTERY!',
       '⚡ DISCOVERED CHECK!',
+      '🌌 GALAXY GAMBIT!',
+      '🌊 DEEP SEA DEFENSE!',
+      '⚙️ STEAMPUNK SACRIFICE!',
+      '🧘 ZEN ENDGAME!',
     ],
     captions: [
       'Chess powered by Stockfish 19 — the newest version deployed September 2026. The strongest chess engine ever built ♟️🧠 40 personalized AI bots of all difficulties, from beginner to grandmaster. Play free at arcadeum.games #chess #stockfish #stockfish19 #chessengine #onlinechess #chessbot',
@@ -279,7 +361,7 @@ const GAMES = [
       '6 chess variants: Standard, Chess960, Atomic, Crazyhouse, King of the Hill, Three-Check — all Stockfish 19 powered 🎲 Try them all at arcadeum.games #chess960 #variantchess #atomicchess #crazyhouse #kingofthehill',
       'Real-time Stockfish 19 analysis with accuracy scores and move classifications 📊🎯 Blunders, mistakes, excellent moves — see it all. The newest engine version, deployed September 2026. Improve fast at arcadeum.games #chessanalysis #gamereview #chessimprovement',
       'Can you beat Stockfish 19? The strongest open-source chess engine, latest version September 2026 ♟️💪 40 bots to challenge, from casual to engine-level. Test yourself at arcadeum.games #chess #stockfish19 #challenge #chesspuzzle',
-      'From Scholar\'s Mate to Queen\'s Gambit to Sicilian Defense — Stockfish 19 analyzes every opening ♟️📚 Opening explorer with 1000+ lines, mainline and sideline analysis. Learn and dominate at arcadeum.games #chessopening #queensgambit #sicilian #chessstrategy',
+      "From Scholar's Mate to Queen's Gambit to Sicilian Defense — Stockfish 19 analyzes every opening ♟️📚 Opening explorer with 1000+ lines, mainline and sideline analysis. Learn and dominate at arcadeum.games #chessopening #queensgambit #sicilian #chessstrategy",
       'Blitz chess with Stockfish 19 real-time eval — see every blunder and brilliancy ⚡🧠 3|0, 3|2, 5|0, 5|3 time controls. Play now at arcadeum.games #blitzchess #chessblitz #realeval #stockfish19 #timcontrol',
       'Chess960 with Stockfish 19 — randomized starting positions, pure chess intuition ♟️🎲 No memorized openings, just raw calculation. Try the variant at arcadeum.games #chess960 #fischerandom #chessvariant #stockfish',
       'Stockfish 19 post-game analysis reveals your best moves and biggest mistakes 📊🔍 Centipawn loss, accuracy percentage, and phase-by-phase breakdown. Review every game at arcadeum.games #chessreview #postgame #chessimprovement #stockfish19',
@@ -289,38 +371,77 @@ const GAMES = [
       'Daily chess games — play at your own pace, one move per day ♟️⏰ Perfect for thoughtful, strategic games against friends or strangers. Start a game at arcadeum.games #dailychess #correspondence #slowchess',
       'Live Stockfish 19 eval bar during your game — watch the evaluation swing in real time 📊⚡ See exactly when you made the winning move or the fatal blunder. Play at arcadeum.games #realeval #stockfish19 #livechess #evaluation',
     ],
-    moves: [
-      { from: 'e2', to: 'e4' },
-      { from: 'g1', to: 'f3' },
-      { from: 'd2', to: 'd4' },
-      { from: 'b1', to: 'c3' },
-      { from: 'f1', to: 'c4' },
-      { from: 'c1', to: 'f4' },
-      { from: 'e1', to: 'g1' },
-      { from: 'd1', to: 'h5' },
-      { from: 'a2', to: 'a3' },
-      { from: 'h2', to: 'h3' },
-      { from: 'g2', to: 'g4' },
-      { from: 'f3', to: 'g5' },
-      { from: 'c4', to: 'f7' },
-      { from: 'd4', to: 'd5' },
-      { from: 'c3', to: 'd5' },
-      { from: 'f4', to: 'g5' },
-      { from: 'h5', to: 'f7' },
-      { from: 'e4', to: 'e5' },
-      { from: 'f3', to: 'e5' },
-      { from: 'd5', to: 'f6' },
-      { from: 'g5', to: 'f7' },
-      { from: 'c3', to: 'b5' },
-      { from: 'd1', to: 'd4' },
-      { from: 'f1', to: 'b5' },
-      { from: 'c1', to: 'g5' },
-      { from: 'e4', to: 'd5' },
-      { from: 'f3', to: 'd4' },
-      { from: 'b1', to: 'd2' },
-      { from: 'g1', to: 'f3' },
-      { from: 'd2', to: 'f3' },
+    _openingIndex: 0,
+    _openings: [
+      [
+        { from: 'e2', to: 'e4' },
+        { from: 'g1', to: 'f3' },
+        { from: 'd2', to: 'd4' },
+        { from: 'f1', to: 'c4' },
+        { from: 'c1', to: 'f4' },
+        { from: 'e1', to: 'g1' },
+        { from: 'd1', to: 'h5' },
+        { from: 'h5', to: 'f7' },
+        { from: 'f3', to: 'g5' },
+        { from: 'c4', to: 'f7' },
+        { from: 'b1', to: 'c3' },
+        { from: 'c3', to: 'd5' },
+      ],
+      [
+        { from: 'd2', to: 'd4' },
+        { from: 'c2', to: 'c4' },
+        { from: 'g1', to: 'f3' },
+        { from: 'b1', to: 'c3' },
+        { from: 'c1', to: 'f4' },
+        { from: 'e2', to: 'e3' },
+        { from: 'f1', to: 'd3' },
+        { from: 'e1', to: 'g1' },
+        { from: 'd1', to: 'b3' },
+        { from: 'f4', to: 'e5' },
+        { from: 'e5', to: 'f6' },
+        { from: 'd3', to: 'b5' },
+      ],
+      [
+        { from: 'e2', to: 'e4' },
+        { from: 'd2', to: 'd4' },
+        { from: 'c2', to: 'c3' },
+        { from: 'g1', to: 'f3' },
+        { from: 'f1', to: 'c4' },
+        { from: 'e1', to: 'g1' },
+        { from: 'c4', to: 'e6' },
+        { from: 'f3', to: 'g5' },
+        { from: 'd1', to: 'h5' },
+        { from: 'g5', to: 'f7' },
+        { from: 'c1', to: 'g5' },
+        { from: 'b1', to: 'c3' },
+      ],
+      [
+        { from: 'e2', to: 'e4' },
+        { from: 'g1', to: 'f3' },
+        { from: 'f1', to: 'b5' },
+        { from: 'e1', to: 'g1' },
+        { from: 'd2', to: 'd4' },
+        { from: 'b1', to: 'c3' },
+        { from: 'c1', to: 'g5' },
+        { from: 'd1', to: 'd3' },
+        { from: 'a1', to: 'd1' },
+        { from: 'b5', to: 'c6' },
+        { from: 'f3', to: 'e5' },
+        { from: 'g5', to: 'h4' },
+      ],
     ],
+    moves: [],
+    getNextMove() {
+      const opening =
+        this._openings[this._openingIndex % this._openings.length];
+      const move = opening[this._moveIdx % opening.length];
+      this._moveIdx = (this._moveIdx || 0) + 1;
+      if (this._moveIdx >= opening.length) {
+        this._openingIndex++;
+        this._moveIdx = 0;
+      }
+      return move;
+    },
     async waitForGame(page) {
       await page.waitForSelector(
         '[data-testid="chess-e2"], [data-testid="chess-d2"], [data-testid^="chess-"], [role="gridcell"]',
@@ -328,12 +449,13 @@ const GAMES = [
       );
       await sleep(1000);
     },
-    async makeMove(page, move) {
+    async makeMove(page) {
+      const move = this.getNextMove();
       if (move && move.from && move.to) {
         const fromCell = page.locator(`[data-testid="chess-${move.from}"]`);
         if ((await fromCell.count()) > 0) {
           await fromCell.click({ force: true });
-          await sleep(300);
+          await sleep(280);
           const toCell = page.locator(`[data-testid="chess-${move.to}"]`);
           if ((await toCell.count()) > 0) {
             await toCell.click({ force: true });
@@ -346,19 +468,24 @@ const GAMES = [
         '[aria-label*="white"][role="gridcell"], [data-testid^="chess-"]',
       );
       const pieceCount = await myPieces.count();
-      for (let i = 0; i < Math.min(pieceCount, 8); i++) {
-        const piece = myPieces.nth(i);
+      for (let i = 0; i < Math.min(pieceCount, 10); i++) {
+        const piece = myPieces.nth(Math.floor(Math.random() * pieceCount));
         await piece.click({ force: true });
         await sleep(200);
         const legalTargets = page.locator('[aria-label*="legal move"]');
         if ((await legalTargets.count()) > 0) {
-          await legalTargets.first().click({ force: true });
+          const idx = Math.floor(Math.random() * (await legalTargets.count()));
+          await legalTargets.nth(idx).click({ force: true });
           return true;
         }
       }
       return false;
     },
     async isMyTurn(page) {
+      const legalMoves = await page
+        .locator('[aria-label*="legal move"]')
+        .count();
+      if (legalMoves > 0) return true;
       return await page.evaluate(() => {
         return document.querySelectorAll('[data-testid^="chess-"]').length > 0;
       });
@@ -444,7 +571,7 @@ const GAMES = [
     actionPhrases: ['🔥 FAST MOVE!', '🎯 3 IN A ROW!', '⚡ PERFECT TRAP!'],
     captions: [
       'Classic Tic-Tac-Toe speed challenge! ❌⭕ 3x3 grid, first to 3 in a row — but with ranked matchmaking and win streaks. Play free on arcadeum.games #tictactoe #speedgame #arcadeumgames',
-      'Think Tic-Tac-Toe is easy? Try it with REAL opponents ❌⭕ Center control, fork threats, and forced draws — there\'s more strategy than you think. arcadeum.games #tictactoe #multiplayer #gaming',
+      "Think Tic-Tac-Toe is easy? Try it with REAL opponents ❌⭕ Center control, fork threats, and forced draws — there's more strategy than you think. arcadeum.games #tictactoe #multiplayer #gaming",
       'Win in under 5 seconds ⚡❌⭕ Real-time matchmaking, win/loss tracking, and leaderboard rankings. Play Tic-Tac-Toe now on arcadeum.games #speedgame #quickplay #ranked',
       'Tic-Tac-Toe but make it COMPETITIVE ❌⭕ Daily challenges, win streaks, and seasonal leaderboards. Play at arcadeum.games #tictactoe #competitive #dailychallenge',
     ],
@@ -638,12 +765,21 @@ const GAMES = [
         'linear-gradient(135deg, rgba(120,53,15,0.95), rgba(217,119,6,0.95))',
       shadow: 'rgba(217,119,6,0.6)',
     },
-    actionPhrases: ['🎲 DOUBLE SIX!', '🏃 BEAR OFF!', '👑 BOARD DOMINATION!'],
+    actionPhrases: [
+      '🎲 DOUBLE SIX!',
+      '🏃 BEAR OFF!',
+      '👑 BOARD DOMINATION!',
+      '🎯 BLOT HIT!',
+      '⚡ PRIME BUILT!',
+      '🔥 RACE MODE!',
+    ],
     captions: [
       'Master the ancient art of Backgammon! 🎲🏆 24 points, 15 checkers, doubling cube — the OG strategy game. Play online for free on arcadeum.games #backgammon #boardgame #tactics',
       'Backgammon but make it INTENSE 🎲🔥 Bar re-entry, bearing off, and gammon/backgammon wins — deep strategy meets luck. Roll your way to victory on arcadeum.games #backgammon #strategy #gaming',
       'The OG dice game goes online 🎲♟️ Pip count, prime formations, and blitz attacks — every roll matters. Play Backgammon free on arcadeum.games #backgammon #boardgame #dice',
       'Backgammon with doubling cube — raise the stakes! 🎲💰 Crawford rule, match play, and tournament mode. Play at arcadeum.games #backgammon #doublingcube #tournament',
+      'Ancient Egypt meets modern strategy 🏺🎲 Play Backgammon with the Egypt theme — hieroglyphic boards, golden checkers. arcadeum.games #backgammon #egypt #aesthetic',
+      'Galaxy Backgammon — roll dice among the stars! 🌌🎲 Cosmic boards, nebula backgrounds, and star-field animations. arcadeum.games #backgammon #galaxy #aesthetic',
     ],
     moves: [],
     async waitForGame(page) {
@@ -657,18 +793,29 @@ const GAMES = [
       const rollBtn = page.locator('[data-testid="dice-roll-button"]');
       if ((await rollBtn.count()) > 0 && (await rollBtn.isEnabled())) {
         await rollBtn.click({ force: true });
-        return true;
+        await sleep(600);
       }
       const movable = page.locator(
-        '[data-testid^="checker-point-"]:not([disabled])',
+        '[data-testid^="checker-point-"]:not([disabled]):not([aria-disabled="true"])',
       );
-      if ((await movable.count()) > 0) {
-        await movable.first().click({ force: true });
+      const mCount = await movable.count();
+      if (mCount > 0) {
+        const idx = Math.floor(Math.random() * mCount);
+        await movable.nth(idx).click({ force: true });
+        await sleep(400);
+        const targets = page.locator('[data-testid^="checker-target-"]');
+        if ((await targets.count()) > 0) {
+          await targets.first().click({ force: true });
+        }
         return true;
       }
       return false;
     },
     async isMyTurn(page) {
+      const rollBtn = page.locator(
+        '[data-testid="dice-roll-button"]:not([disabled])',
+      );
+      if ((await rollBtn.count()) > 0) return true;
       const label = page.locator('[data-testid="turn-indicator-label"]');
       if ((await label.count()) === 0) return false;
       const text = await label.textContent();
@@ -778,7 +925,7 @@ const GAMES = [
     },
     actionPhrases: ['✨ GLOW BOOST!', '🌀 DRIFT TURN!', '💥 HIGH SCORE!'],
     captions: [
-      'Glide, glow, and survive the neon grid! 🐍✨ Real-time multiplayer snake — eat, grow, don\'t crash. Free at arcadeum.games #glimworm #arcade #indiegames',
+      "Glide, glow, and survive the neon grid! 🐍✨ Real-time multiplayer snake — eat, grow, don't crash. Free at arcadeum.games #glimworm #arcade #indiegames",
       'Snake went MULTIPLAYER and it goes HARD 🐍🔥 Neon aesthetics, power-ups, and 8-player battles. Play Glimworm on arcadeum.games #glimworm #snakegame',
       'Neon vibes, addictive gameplay 🐍💜 Boost pads, shrink zones, and collision mechanics. Play Glimworm free on arcadeum.games #arcade #casualgame',
       'Glimworm — competitive multiplayer snake! 🐍⚡ Leaderboards, daily challenges, and seasonal skins. Play at arcadeum.games #glimworm #multiplayer #competitive',
@@ -848,10 +995,10 @@ const GAMES = [
     },
     actionPhrases: ['💰 RAISE!', '🃏 POCKET ACES!', '🔥 ALL IN!'],
     captions: [
-      'High-stakes poker action — can you read the bluff? 🃏💰 2-card hand, 5 community cards, pot odds — real Texas Hold\'em. Play free on arcadeum.games #poker #texasholdem #cardgames',
-      'Go all in or fold? Texas Hold\'em with real opponents! ♠️🔥 Preflop, flop, turn, river — four betting rounds, one winner. arcadeum.games #pokergame #multiplayer #arcadeumgames',
-      'Your poker face vs the world 🃏😏 Bluffing, raising, and all-in moments — every hand is a battle. Play Texas Hold\'em on arcadeum.games #poker #texasholdem',
-      'Texas Hold\'em with pot odds and hand rankings 🃏📊 Royal flush to high card — know your hands, read your opponents. Play at arcadeum.games #poker #handranking #strategy',
+      "High-stakes poker action — can you read the bluff? 🃏💰 2-card hand, 5 community cards, pot odds — real Texas Hold'em. Play free on arcadeum.games #poker #texasholdem #cardgames",
+      "Go all in or fold? Texas Hold'em with real opponents! ♠️🔥 Preflop, flop, turn, river — four betting rounds, one winner. arcadeum.games #pokergame #multiplayer #arcadeumgames",
+      "Your poker face vs the world 🃏😏 Bluffing, raising, and all-in moments — every hand is a battle. Play Texas Hold'em on arcadeum.games #poker #texasholdem",
+      "Texas Hold'em with pot odds and hand rankings 🃏📊 Royal flush to high card — know your hands, read your opponents. Play at arcadeum.games #poker #handranking #strategy",
     ],
     moves: [],
     async waitForGame(page) {
@@ -956,37 +1103,72 @@ const GAMES = [
         'linear-gradient(135deg, rgba(217,119,6,0.95), rgba(168,85,247,0.95))',
       shadow: 'rgba(217,119,6,0.6)',
     },
-    actionPhrases: ['🎲 LUCKY ROLL!', '🏃 TOKEN ADVANCE!', '👑 SAFE ZONE!'],
+    actionPhrases: [
+      '🎲 LUCKY ROLL!',
+      '🏃 TOKEN ADVANCE!',
+      '👑 SAFE ZONE!',
+      '💥 TOKEN CAPTURED!',
+      '🎯 PERFECT MOVE!',
+      '🌟 SAFE SQUARE!',
+      '🏁 HOME STRETCH!',
+    ],
     captions: [
       'The ancient game of Pachisi — roll dice and race to the center! 🎲👑 4 tokens, safe zones, and home stretch — classic Ludo strategy. arcadeum.games #pachisi #boardgame #strategy',
       'Pachisi online — will your tokens make it home? 🎲🏆 Block, capture, and race — every roll changes the game. Play free on arcadeum.games #boardgamereels #classic',
       "Roll the dice. Race home. Don't get captured! 🎲🏃 Star squares, bar re-entry, and golden tokens. Play Pachisi on arcadeum.games #pachisi #boardgame",
       'Pachisi — the royal board game goes online! 🎲👑 4-player multiplayer, tournament mode, and daily challenges. Play at arcadeum.games #pachisi #royalgame #multiplayer',
+      'Western Pachisi — roll dice in the wild west! 🤠🎲 Cowboy tokens, desert boards, and gold rush races. arcadeum.games #pachisi #western #aesthetic',
+      'Fantasy Pachisi — magical tokens race through enchanted lands! 🧙🎲 Dragon squares, wizard safe zones, and mythical dice. arcadeum.games #pachisi #fantasy #boardgame',
+      'Crime Pachisi — race through the city streets! 🕵️🎲 Noir boards, detective tokens, and heist-themed safe houses. arcadeum.games #pachisi #crime #aesthetic',
     ],
     moves: [],
     async waitForGame(page) {
       await page.waitForSelector(
         '[data-testid="pachisi-board"], [data-testid="game-board-section"], [data-testid="dice-roll-button"]',
-        { timeout: 20000 },
+        { timeout: 25000 },
       );
-      await sleep(500);
+      await sleep(800);
     },
     async makeMove(page) {
-      const rollBtn = page.locator('[data-testid="dice-roll-button"]');
-      if ((await rollBtn.count()) > 0 && (await rollBtn.isEnabled())) {
-        await rollBtn.click({ force: true });
-        await sleep(800);
-      }
-      const movable = page.locator(
-        '[data-testid^="pachisi-token-"]:not([disabled])',
+      const rollBtn = page.locator(
+        '[data-testid="dice-roll-button"]:not([disabled])',
       );
-      if ((await movable.count()) > 0) {
-        await movable.first().click({ force: true });
-        return true;
+      if ((await rollBtn.count()) > 0) {
+        await rollBtn.click({ force: true });
+        await sleep(1000);
+      }
+      const tokenSelectors = [
+        '[data-testid^="pachisi-token-0"]',
+        '[data-testid^="pachisi-token-1"]',
+        '[data-testid^="pachisi-token-2"]',
+        '[data-testid^="pachisi-token-3"]',
+        '[data-testid^="pachisi-token-"]:not([disabled]):not([aria-disabled="true"])',
+      ];
+      for (const sel of tokenSelectors) {
+        const tokens = page.locator(sel);
+        const count = await tokens.count();
+        if (count > 0) {
+          const activeIdx = Math.floor(Math.random() * count);
+          const token = tokens.nth(activeIdx);
+          const isDisabled = await token.getAttribute('disabled');
+          const ariaDisabled = await token.getAttribute('aria-disabled');
+          if (!isDisabled && ariaDisabled !== 'true') {
+            await token.click({ force: true });
+            return true;
+          }
+        }
       }
       return false;
     },
     async isMyTurn(page) {
+      const rollBtn = page.locator(
+        '[data-testid="dice-roll-button"]:not([disabled])',
+      );
+      if ((await rollBtn.count()) > 0) return true;
+      const movable = page.locator(
+        '[data-testid^="pachisi-token-"]:not([disabled]):not([aria-disabled="true"])',
+      );
+      if ((await movable.count()) > 0) return true;
       const label = page.locator('[data-testid="turn-indicator-label"]');
       if ((await label.count()) === 0) return false;
       const text = await label.textContent();
@@ -1147,6 +1329,150 @@ async function cleanOldOutput(maxAgeDays) {
   } catch {}
 }
 
+async function injectLoadingOverlay(page) {
+  try {
+    await page.evaluate(() => {
+      const existing = document.getElementById('arcadeum-loading-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'arcadeum-loading-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        z-index: 9999998;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background: linear-gradient(135deg, #0a0e1a 0%, #0f1629 50%, #0a0e1a 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        pointer-events: none;
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes arcadeumSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes arcadeumPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(0.96); }
+        }
+        @keyframes arcadeumDot {
+          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes arcadeumFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `;
+      document.head.appendChild(style);
+
+      const ring = document.createElement('div');
+      ring.style.cssText = `
+        width: 56px; height: 56px;
+        border: 3px solid rgba(99,102,241,0.2);
+        border-top-color: #6366f1;
+        border-right-color: #818cf8;
+        border-radius: 50%;
+        animation: arcadeumSpin 0.9s linear infinite;
+      `;
+
+      const logo = document.createElement('div');
+      logo.style.cssText = `
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #818cf8, #6366f1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: arcadeumPulse 2s ease-in-out infinite;
+      `;
+      logo.textContent = 'arcadeum.games';
+
+      const dots = document.createElement('div');
+      dots.style.cssText = `display: flex; gap: 6px; animation: arcadeumFadeIn 0.4s ease forwards;`;
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('div');
+        dot.style.cssText = `
+          width: 7px; height: 7px;
+          background: #6366f1;
+          border-radius: 50%;
+          animation: arcadeumDot 1.2s ease-in-out infinite;
+          animation-delay: ${i * 0.2}s;
+        `;
+        dots.appendChild(dot);
+      }
+
+      overlay.appendChild(ring);
+      overlay.appendChild(logo);
+      overlay.appendChild(dots);
+      document.body.appendChild(overlay);
+    });
+  } catch {}
+}
+
+async function removeLoadingOverlay(page) {
+  try {
+    await page.evaluate(() => {
+      const overlay = document.getElementById('arcadeum-loading-overlay');
+      if (overlay) {
+        overlay.style.transition = 'opacity 0.4s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 400);
+      }
+    });
+  } catch {}
+}
+
+async function injectThemeBadge(page, themeName, themeEmoji) {
+  if (!themeName) return;
+  try {
+    await page.evaluate(
+      ({ name, emoji }) => {
+        const existing = document.getElementById('arcadeum-theme-badge');
+        if (existing) existing.remove();
+
+        const badge = document.createElement('div');
+        badge.id = 'arcadeum-theme-badge';
+        badge.style.cssText = `
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 999997;
+        pointer-events: none;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(8px);
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      `;
+        badge.textContent = `${emoji} ${name} theme`;
+        document.body.appendChild(badge);
+        requestAnimationFrame(() => {
+          badge.style.opacity = '1';
+          badge.style.transform = 'translateY(0)';
+        });
+      },
+      { name: themeName, emoji: themeEmoji || '🎨' },
+    );
+  } catch {}
+}
+
 async function injectKineticHookOverlay(page, game) {
   try {
     const colors = game.hookColors || {
@@ -1177,8 +1503,19 @@ async function injectKineticHookOverlay(page, game) {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       `;
 
+        const pulseRing = document.createElement('div');
+        pulseRing.style.cssText = `
+          position: absolute;
+          inset: -6px;
+          border-radius: 9999px;
+          border: 2px solid ${shadow};
+          animation: hookPulseRing 1.5s ease-out infinite;
+          pointer-events: none;
+        `;
+
         const badge = document.createElement('div');
         badge.id = 'arcadeum-hook-badge';
+        badge.style.cssText = `position: relative;`;
         badge.innerHTML = `
         <div style="
           background: ${gradient};
@@ -1195,10 +1532,28 @@ async function injectKineticHookOverlay(page, game) {
           align-items: center;
           gap: 8px;
           animation: popInBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          position: relative;
         ">
           ${hookText}
         </div>
       `;
+
+        const watermark = document.createElement('div');
+        watermark.style.cssText = `
+          position: fixed;
+          bottom: 20px;
+          left: 16px;
+          z-index: 999998;
+          pointer-events: none;
+          font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 1px;
+          color: rgba(255,255,255,0.55);
+          text-transform: uppercase;
+        `;
+        watermark.textContent = 'arcadeum.games';
+        document.body.appendChild(watermark);
 
         const style = document.createElement('style');
         style.textContent = `
@@ -1212,8 +1567,13 @@ async function injectKineticHookOverlay(page, game) {
           50% { transform: scale(1.15) rotate(2deg); opacity: 1; }
           100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
+        @keyframes hookPulseRing {
+          0% { transform: scale(1); opacity: 0.8; }
+          100% { transform: scale(1.6); opacity: 0; }
+        }
       `;
 
+        badge.appendChild(pulseRing);
         overlay.appendChild(style);
         overlay.appendChild(badge);
         document.body.appendChild(overlay);
@@ -1535,8 +1895,11 @@ async function recordSession(
 
     const page = await context.newPage();
 
+    await injectLoadingOverlay(page);
+
     const gameUrl = `${CONFIG.baseUrl}${game.url}`;
-    await page.goto(gameUrl, { waitUntil: 'networkidle', timeout: 30000 });
+    await page.goto(gameUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await injectLoadingOverlay(page);
 
     const dismissAnyOverlays = async () => {
       try {
@@ -1614,6 +1977,31 @@ async function recordSession(
     await game.waitForGame(page);
     await dismissAnyOverlays();
     log('info', `${label}: game board loaded`);
+
+    await removeLoadingOverlay(page);
+
+    const urlThemeMatch = game.url.match(/[?&]theme=([^&]+)/);
+    if (urlThemeMatch) {
+      const themeId = urlThemeMatch[1];
+      const THEME_LABELS = {
+        cyberpunk: { name: 'Cyberpunk', emoji: '🌆' },
+        underwater: { name: 'Underwater', emoji: '🌊' },
+        adventure: { name: 'Adventure', emoji: '⛰️' },
+        crime: { name: 'Crime', emoji: '🕵️' },
+        horror: { name: 'Horror', emoji: '👻' },
+        'high-altitude-hike': { name: 'Mountain', emoji: '🏔️' },
+        galaxy: { name: 'Galaxy', emoji: '🌌' },
+        fantasy: { name: 'Fantasy', emoji: '🧙' },
+        western: { name: 'Western', emoji: '🤠' },
+        egypt: { name: 'Egypt', emoji: '🏺' },
+        steampunk: { name: 'Steampunk', emoji: '⚙️' },
+        zen: { name: 'Zen', emoji: '🧘' },
+      };
+      const info = THEME_LABELS[themeId];
+      if (info) {
+        await injectThemeBadge(page, info.name, info.emoji);
+      }
+    }
 
     if (isMobile) {
       await injectKineticHookOverlay(page, game);

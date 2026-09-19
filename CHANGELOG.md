@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.12] - 2026-09-19
+
+### Added
+- add move-in-chat with board highlighting for all board games
+
+
 ## [1.30.11] - 2026-09-19
 
 ### Added

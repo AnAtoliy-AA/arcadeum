@@ -90,14 +90,21 @@ export class SeaBattleGateway extends BaseGameGateway<Record<string, unknown>> {
     emitExtra?: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const targetPlayerId = extractString(payload, 'targetPlayerId');
+    const targetPlayerId =
+      typeof payload?.targetPlayerId === 'string'
+        ? payload.targetPlayerId.trim()
+        : '';
     if (!targetPlayerId && action !== 'useShipAbility') {
       throw new WsException('targetPlayerId is required');
     }
+    const abilityId =
+      typeof payload?.abilityId === 'string'
+        ? payload.abilityId.trim()
+        : undefined;
     validatePayloadUserId(client, userId);
     try {
       await this.gameService.executeActionByRoom(userId, roomId, action, {
-        abilityId: payload.abilityId,
+        abilityId,
         targetPlayerId: targetPlayerId || undefined,
         row: payload.row,
         col: payload.col,

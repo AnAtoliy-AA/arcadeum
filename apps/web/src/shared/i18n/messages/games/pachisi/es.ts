@@ -194,6 +194,11 @@ export const esMessages = {
       tokensHome: 'En Casa',
       captured: '¡Capturada!',
       noLegalMoves: 'Sin movimientos legales con esta tirada',
+      noLegalMovesWithRoll: 'Sacaste {{value}} - Sin movimientos posibles',
+      noLegalMovesTurnPassed:
+        'Sacaste {{value}} - Sin movimientos (turno pasado)',
+      needSixToExit: 'Necesitas un 6 para salir de la yarda',
+      opponentRolledNoMoves: 'Rival sacó {{value}} - Sin movimientos',
       passTurn: 'Pasar turno',
       tapToken: 'Toca una ficha resaltada para moverla',
       moveTokenAria: 'Mover ficha {{id}}',

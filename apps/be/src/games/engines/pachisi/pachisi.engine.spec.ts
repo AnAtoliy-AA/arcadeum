@@ -92,6 +92,8 @@ describe('PachisiEngine', () => {
 
     expect(res.state?.phase).toBe(GAME_PHASE.ROLL);
     expect(res.state?.die).toBeNull();
+    expect(res.state?.lastDie).toBe(3);
+    expect(res.state?.lastRollerId).toBe(player1);
     expect(res.state?.currentTurnIndex).toBe(1);
   });
 

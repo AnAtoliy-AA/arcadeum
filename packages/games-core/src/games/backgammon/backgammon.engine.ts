@@ -320,7 +320,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       newState.dice = [];
       newState.phase = GAME_PHASE.ROLL;
       newState.logs.push(
-        this.createLogEntry('action', 'No legal moves — turn passed.', {
+        this.createLogEntry('action', 'No legal moves - turn passed.', {
           senderId: context.userId,
         }),
       );

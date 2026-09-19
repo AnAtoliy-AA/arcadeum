@@ -192,6 +192,10 @@ export interface SeaBattleSnapshot {
     halfWidth: number;
     cells: { row: number; col: number; state: CellState }[];
   };
+  scannedCells?: Record<
+    string,
+    { row: number; col: number; state: CellState; source?: string }[]
+  >;
   shipAbilities?: boolean;
   abilityCooldowns?: Record<string, Record<string, number>>;
 }

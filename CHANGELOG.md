@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.10] - 2026-09-19
+
+### Added
+- modernize backgammon gameplay, ui ux, and playability (ARC-964) (ARC-964)
+
+
 ## [1.30.9] - 2026-09-18
 
 ### Fixed

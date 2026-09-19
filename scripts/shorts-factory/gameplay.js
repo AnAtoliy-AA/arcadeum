@@ -104,7 +104,55 @@ const CONFIG = {
   botPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
   beUrl:
     process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
+  // TTS / Voice
+  edgeTtsBin:
+    process.env.EDGE_TTS_BIN ||
+    `${process.env.HOME || '/home/ubuntu'}/tts-venv/bin/edge-tts`,
+  ttsVoice: process.env.EDGE_TTS_VOICE || 'en-US-GuyNeural',
+  ttsEnabled: process.env.EDGE_TTS_ENABLED !== 'false',
 };
+
+// ============================================================================
+// TTS VOICEOVER — edge-tts (graceful fallback if unavailable)
+// ============================================================================
+
+async function generateVoiceover(text, outputPath) {
+  if (!CONFIG.ttsEnabled) return null;
+  try {
+    const { access } = require('fs/promises');
+    await access(CONFIG.edgeTtsBin);
+  } catch {
+    log('warn', `edge-tts binary not found at ${CONFIG.edgeTtsBin} — skipping voice`);
+    return null;
+  }
+  try {
+    const cleanText = text
+      .replace(/[#\n]/g, ' ')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 300);
+    await new Promise((resolve, reject) => {
+      const proc = spawn(CONFIG.edgeTtsBin, [
+        '--voice', CONFIG.ttsVoice,
+        '--text', cleanText,
+        '--write-media', outputPath,
+      ]);
+      let stderr = '';
+      proc.stderr.on('data', (d) => { stderr += d.toString(); });
+      proc.on('close', (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`edge-tts exited ${code}: ${stderr.slice(-200)}`));
+      });
+      proc.on('error', reject);
+    });
+    log('info', `Voiceover generated: ${outputPath}`);
+    return outputPath;
+  } catch (err) {
+    log('warn', 'edge-tts failed — video will have no voice', { error: err.message });
+    return null;
+  }
+}
 
 // ============================================================================
 // BOT AUTH — auto-login if no token set
@@ -1677,7 +1725,7 @@ async function removeMoveCounter(page) {
   } catch {}
 }
 
-async function requestApproval(videoPath, caption, gameName) {
+async function requestApproval(videoPath, caption, gameName, options = {}) {
   if (!CONFIG.enableApproval) {
     log('info', 'Approval flow disabled, posting directly');
     return { approved: true, autoApproved: false, pendingId: null };
@@ -1693,6 +1741,8 @@ async function requestApproval(videoPath, caption, gameName) {
     game: gameName,
     status: 'pending',
     createdAt: new Date().toISOString(),
+    voiceUnavailable: options.voiceUnavailable || false,
+    note: options.voiceUnavailable ? '⚠️ Voice unavailable (edge-tts offline)' : undefined,
   };
 
   const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
@@ -2463,6 +2513,7 @@ async function processShortClip(
   rawVideoPath,
   recordedDuration,
   gameplayStartOffsetMs = 0,
+  voiceoverPath = null,
 ) {
   log('info', 'Processing short clip (mobile)...');
 
@@ -2517,45 +2568,58 @@ async function processShortClip(
       .catch(() => false));
 
   let ffmpegArgs;
-  if (audioTrack && hasSfx) {
+  if (audioTrack && hasSfx && voiceoverPath) {
     const fadeOutStart = Math.max(0, shortLen - CONFIG.fadeOutDuration);
     ffmpegArgs = [
-      '-ss',
-      String(clipStart),
-      '-i',
-      rawVideoPath,
-      '-i',
-      audioTrack,
-      '-i',
-      hitSfx,
-      '-i',
-      moveSfx,
+      '-ss', String(clipStart),
+      '-i', rawVideoPath,
+      '-i', audioTrack,
+      '-i', hitSfx,
+      '-i', moveSfx,
+      '-i', voiceoverPath,
+      '-filter_complex',
+      `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
+        `[1:a]volume=0.2[bg];` +
+        `[2:a]adelay=3500|3500,volume=0.85[sfx1];` +
+        `[3:a]adelay=1800|1800,volume=0.85[sfx2];` +
+        `[4:a]adelay=500|500,volume=1.4[voice];` +
+        `[bg][sfx1][sfx2][voice]amix=inputs=4:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}[a]`,
+      '-map', '[v]', '-map', '[a]',
+      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac', '-b:a', '128k', '-t', String(shortLen), '-y', mainPath,
+    ];
+  } else if (audioTrack && hasSfx) {
+    const fadeOutStart = Math.max(0, shortLen - CONFIG.fadeOutDuration);
+    ffmpegArgs = [
+      '-ss', String(clipStart),
+      '-i', rawVideoPath,
+      '-i', audioTrack,
+      '-i', hitSfx,
+      '-i', moveSfx,
       '-filter_complex',
       `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
         `[1:a]volume=0.35[bg];` +
         `[2:a]adelay=3500|3500,volume=0.85[sfx1];` +
         `[3:a]adelay=1800|1800,volume=0.85[sfx2];` +
         `[bg][sfx1][sfx2]amix=inputs=3:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}[a]`,
-      '-map',
-      '[v]',
-      '-map',
-      '[a]',
-      '-c:v',
-      'libx264',
-      '-preset',
-      'fast',
-      '-crf',
-      '23',
-      '-pix_fmt',
-      'yuv420p',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-t',
-      String(shortLen),
-      '-y',
-      mainPath,
+      '-map', '[v]', '-map', '[a]',
+      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac', '-b:a', '128k', '-t', String(shortLen), '-y', mainPath,
+    ];
+  } else if (audioTrack && voiceoverPath) {
+    ffmpegArgs = [
+      '-ss', String(clipStart),
+      '-i', rawVideoPath,
+      '-i', audioTrack,
+      '-i', voiceoverPath,
+      '-filter_complex',
+      `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
+        `[1:a]volume=0.2[bg];` +
+        `[2:a]adelay=500|500,volume=1.4[voice];` +
+        `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}[a]`,
+      '-map', '[v]', '-map', '[a]',
+      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-pix_fmt', 'yuv420p',
+      '-c:a', 'aac', '-b:a', '128k', '-t', String(shortLen), '-shortest', '-y', mainPath,
     ];
   } else if (audioTrack) {
     ffmpegArgs = [
@@ -2815,13 +2879,13 @@ async function postToX(uploadedFile, caption) {
   return res.data;
 }
 
-async function publishBoth(fullPath, shortPath, caption, gameName = 'game') {
+async function publishBoth(fullPath, shortPath, caption, gameName = 'game', options = {}) {
   log('info', 'Publishing to social platforms...');
 
   if (!CONFIG.postizApiKey) throw new Error('POSTIZ_API_KEY must be set');
 
   const approvalTarget = shortPath || fullPath;
-  const approval = await requestApproval(approvalTarget, caption, gameName);
+  const approval = await requestApproval(approvalTarget, caption, gameName, options);
   if (!approval.approved) {
     log('info', 'Video was not approved by admin, skipping publish');
     return { skipped: true, reason: 'unapproved' };
@@ -2945,10 +3009,19 @@ async function main() {
 
     log('info', `Selected game: ${game.name} (${game.url})`);
 
+    const voiceoverPath = path.join(
+      CONFIG.rawCapturesDir,
+      `voice-${Date.now()}.mp3`,
+    );
     const caption =
       game.captions && game.captions.length > 0
         ? randomElement(game.captions)
         : game.caption;
+    const voicePath = await generateVoiceover(caption, voiceoverPath);
+    const voiceUnavailable = !voicePath;
+    if (voiceUnavailable) {
+      log('warn', 'Voiceover unavailable — video will have no voice track');
+    }
 
     let fullOutputPath = null;
     let shortOutputPath = null;
@@ -2985,6 +3058,7 @@ async function main() {
         mobileCapture.videoPath,
         mobileCapture.duration,
         mobileCapture.gameplayStartOffsetMs,
+        voicePath,
       );
     }
 
@@ -2995,7 +3069,7 @@ async function main() {
       if (shortOutputPath)
         log('info', 'Short clip saved to: ' + shortOutputPath);
     } else {
-      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name);
+      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name, { voiceUnavailable });
     }
 
     await cleanDirectory(CONFIG.rawCapturesDir);

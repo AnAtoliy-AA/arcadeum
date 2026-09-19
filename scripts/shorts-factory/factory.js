@@ -107,6 +107,12 @@ const CONFIG = {
   approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
   pollIntervalMs: 30 * 1000, // 30 seconds
   enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
+  // TTS / Voice
+  edgeTtsBin:
+    process.env.EDGE_TTS_BIN ||
+    `${process.env.HOME || '/home/ubuntu'}/tts-venv/bin/edge-tts`,
+  ttsVoice: process.env.EDGE_TTS_VOICE || 'en-US-GuyNeural',
+  ttsEnabled: process.env.EDGE_TTS_ENABLED !== 'false',
 };
 
 const FALLBACK_GAME_SLUGS = [
@@ -170,10 +176,48 @@ async function ensurePendingDir() {
   await mkdir(CONFIG.pendingDir, { recursive: true });
 }
 
+async function generateVoiceover(text, outputPath) {
+  if (!CONFIG.ttsEnabled) return null;
+  try {
+    const { access } = require('fs/promises');
+    await access(CONFIG.edgeTtsBin);
+  } catch {
+    log('warn', `edge-tts binary not found at ${CONFIG.edgeTtsBin} — skipping voice`);
+    return null;
+  }
+  try {
+    const cleanText = text
+      .replace(/[#\n]/g, ' ')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 300);
+    await new Promise((resolve, reject) => {
+      const proc = spawn(CONFIG.edgeTtsBin, [
+        '--voice', CONFIG.ttsVoice,
+        '--text', cleanText,
+        '--write-media', outputPath,
+      ]);
+      let stderr = '';
+      proc.stderr.on('data', (d) => { stderr += d.toString(); });
+      proc.on('close', (code) => {
+        if (code === 0) resolve();
+        else reject(new Error(`edge-tts exited ${code}: ${stderr.slice(-200)}`));
+      });
+      proc.on('error', reject);
+    });
+    log('info', `Voiceover generated: ${outputPath}`);
+    return outputPath;
+  } catch (err) {
+    log('warn', 'edge-tts failed — video will have no voice', { error: err.message });
+    return null;
+  }
+}
+
 /**
  * Saves video to pending directory and notifies Telegram bot
  */
-async function requestApproval(videoPath, caption, scenario) {
+async function requestApproval(videoPath, caption, scenario, options = {}) {
   if (!CONFIG.enableApproval) {
     log('info', 'Approval flow disabled, posting directly');
     return { approved: true, autoApproved: false, pendingId: null };
@@ -189,6 +233,8 @@ async function requestApproval(videoPath, caption, scenario) {
     scenario,
     status: 'pending',
     createdAt: new Date().toISOString(),
+    voiceUnavailable: options.voiceUnavailable || false,
+    note: options.voiceUnavailable ? '⚠️ Voice unavailable (edge-tts offline)' : undefined,
   };
 
   // Save pending metadata
@@ -3603,7 +3649,17 @@ async function main() {
     const caption = `${baseCaption}\n\nPlay now: ${CONFIG.baseUrl}\n\n${hashtags}`;
     log('info', `Selected caption: "${caption}"`);
 
-    const approval = await requestApproval(outputVideoPath, caption, scenario);
+    const voiceoverPath = path.join(
+      CONFIG.rawCapturesDir,
+      `voice-${Date.now()}.mp3`,
+    );
+    const voicePath = await generateVoiceover(baseCaption, voiceoverPath);
+    const voiceUnavailable = !voicePath;
+    if (voiceUnavailable) {
+      log('warn', 'Voiceover unavailable — video will have no voice track');
+    }
+
+    const approval = await requestApproval(outputVideoPath, caption, scenario, { voiceUnavailable });
 
     if (approval.approved) {
       // Step 4: Post to social media

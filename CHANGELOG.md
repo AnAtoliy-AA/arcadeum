@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.18] - 2026-09-19
+
+### Added
+- rework game fields to eliminate excessive transparency and improve UI/UX (ARC-rework-solo-games-fields)
+
+
 ## [1.30.17] - 2026-09-19
 
 ### Added

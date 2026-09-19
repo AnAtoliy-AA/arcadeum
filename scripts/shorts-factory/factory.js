@@ -176,13 +176,29 @@ async function ensurePendingDir() {
   await mkdir(CONFIG.pendingDir, { recursive: true });
 }
 
+async function resolveEdgeTtsBin() {
+  const { access } = require('fs/promises');
+  const candidates = [
+    CONFIG.edgeTtsBin,
+    '/usr/local/bin/edge-tts',
+    '/usr/bin/edge-tts',
+    '/home/ubuntu/tts-venv/bin/edge-tts',
+    path.join(process.env.HOME || '', 'tts-venv/bin/edge-tts'),
+  ].filter(Boolean);
+  for (const bin of candidates) {
+    try {
+      await access(bin);
+      return bin;
+    } catch {}
+  }
+  return null;
+}
+
 async function generateVoiceover(text, outputPath) {
   if (!CONFIG.ttsEnabled) return null;
-  try {
-    const { access } = require('fs/promises');
-    await access(CONFIG.edgeTtsBin);
-  } catch {
-    log('warn', `edge-tts binary not found at ${CONFIG.edgeTtsBin} — skipping voice`);
+  const bin = await resolveEdgeTtsBin();
+  if (!bin) {
+    log('warn', 'edge-tts binary not found — skipping voice');
     return null;
   }
   try {
@@ -193,7 +209,7 @@ async function generateVoiceover(text, outputPath) {
       .trim()
       .slice(0, 300);
     await new Promise((resolve, reject) => {
-      const proc = spawn(CONFIG.edgeTtsBin, [
+      const proc = spawn(bin, [
         '--voice', CONFIG.ttsVoice,
         '--text', cleanText,
         '--write-media', outputPath,
@@ -3204,19 +3220,16 @@ function getScenarioTags(scenarioName) {
 /**
  * Processes the raw video with FFmpeg: trim, add audio, append end card
  */
-async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
+async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0, voiceoverPath = null) {
   log('info', 'Starting FFmpeg video processing...');
 
-  // Ensure output directory exists
   await ensureDir(CONFIG.outputDir);
 
-  // Select a random audio track
   const tracks = await getAudioTracks();
   const audioTrack = randomElement(tracks);
   const trackVolume = getTrackVolume(audioTrack);
   log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
 
-  // Calculate trim duration (cap at 13 seconds for optimal 15s total duration with end card)
   const startOffsetSec = Math.max(0, startOffsetMs / 1000);
   const remainingDuration = Math.max(
     3,
@@ -3242,37 +3255,75 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   );
   const outputPath = path.join(CONFIG.outputDir, `arcadeum-${timestamp}.mp4`);
 
-  // Step 1: Trim video and add audio
-  await runFFmpeg(
-    [
-      '-ss',
-      startOffsetSec.toFixed(3),
-      '-i',
-      rawVideoPath,
-      '-i',
-      audioTrack,
-      '-t',
-      trimDuration.toFixed(3),
-      '-vf',
-      `eq=contrast=1.05:saturation=1.15,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
-      '-af',
-      `volume=${trackVolume},afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
-      '-c:v',
-      'libx264',
-      '-preset',
-      'fast',
-      '-crf',
-      '23',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-y',
-      '-shortest',
-      mainVideoPath,
-    ],
-    'main video',
-  );
+  if (voiceoverPath) {
+    await runFFmpeg(
+      [
+        '-ss',
+        startOffsetSec.toFixed(3),
+        '-i',
+        rawVideoPath,
+        '-i',
+        audioTrack,
+        '-i',
+        voiceoverPath,
+        '-t',
+        trimDuration.toFixed(3),
+        '-filter_complex',
+        `[0:v]eq=contrast=1.05:saturation=1.15,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}[v];` +
+          `[1:a]volume=${(trackVolume * 0.5).toFixed(2)}[bg];` +
+          `[2:a]adelay=500|500,volume=1.4[voice];` +
+          `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}[a]`,
+        '-map',
+        '[v]',
+        '-map',
+        '[a]',
+        '-c:v',
+        'libx264',
+        '-preset',
+        'fast',
+        '-crf',
+        '23',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '128k',
+        '-y',
+        mainVideoPath,
+      ],
+      'main video with voice',
+    );
+  } else {
+    await runFFmpeg(
+      [
+        '-ss',
+        startOffsetSec.toFixed(3),
+        '-i',
+        rawVideoPath,
+        '-i',
+        audioTrack,
+        '-t',
+        trimDuration.toFixed(3),
+        '-vf',
+        `eq=contrast=1.05:saturation=1.15,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
+        '-af',
+        `volume=${trackVolume},afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
+        '-c:v',
+        'libx264',
+        '-preset',
+        'fast',
+        '-crf',
+        '23',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '128k',
+        '-y',
+        '-shortest',
+        mainVideoPath,
+      ],
+      'main video',
+    );
+  }
 
   // Step 2: Create end card (black background + logo.png overlay + random CTA + fade-in audio)
   const logoPath = path.join(
@@ -3646,16 +3697,6 @@ async function main() {
       `Raw video captured at: ${rawVideoPath} (${captureResult.duration}ms)`,
     );
 
-    // Step 2: Process video with FFmpeg
-    log('info', 'Step 2: Processing video with FFmpeg...');
-    outputVideoPath = await processVideo(
-      rawVideoPath,
-      captureResult.duration,
-      captureResult.startOffsetMs,
-    );
-    log('info', `Processed video saved at: ${outputVideoPath}`);
-
-    // Step 3: Request approval (if enabled)
     const baseCaption = captureResult.caption || randomElement(CAPTIONS);
     const scenario = captureResult.scenario || 'unknown';
     const hashtags = getScenarioTags(scenario);
@@ -3671,6 +3712,15 @@ async function main() {
     if (voiceUnavailable) {
       log('warn', 'Voiceover unavailable — video will have no voice track');
     }
+
+    log('info', 'Step 2: Processing video with FFmpeg...');
+    outputVideoPath = await processVideo(
+      rawVideoPath,
+      captureResult.duration,
+      captureResult.startOffsetMs,
+      voicePath,
+    );
+    log('info', `Processed video saved at: ${outputVideoPath}`);
 
     const approval = await requestApproval(outputVideoPath, caption, scenario, { voiceUnavailable });
 

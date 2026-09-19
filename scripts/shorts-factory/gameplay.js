@@ -116,13 +116,29 @@ const CONFIG = {
 // TTS VOICEOVER — edge-tts (graceful fallback if unavailable)
 // ============================================================================
 
+async function resolveEdgeTtsBin() {
+  const { access } = require('fs/promises');
+  const candidates = [
+    CONFIG.edgeTtsBin,
+    '/usr/local/bin/edge-tts',
+    '/usr/bin/edge-tts',
+    '/home/ubuntu/tts-venv/bin/edge-tts',
+    path.join(process.env.HOME || '', 'tts-venv/bin/edge-tts'),
+  ].filter(Boolean);
+  for (const bin of candidates) {
+    try {
+      await access(bin);
+      return bin;
+    } catch {}
+  }
+  return null;
+}
+
 async function generateVoiceover(text, outputPath) {
   if (!CONFIG.ttsEnabled) return null;
-  try {
-    const { access } = require('fs/promises');
-    await access(CONFIG.edgeTtsBin);
-  } catch {
-    log('warn', `edge-tts binary not found at ${CONFIG.edgeTtsBin} — skipping voice`);
+  const bin = await resolveEdgeTtsBin();
+  if (!bin) {
+    log('warn', 'edge-tts binary not found — skipping voice');
     return null;
   }
   try {
@@ -133,7 +149,7 @@ async function generateVoiceover(text, outputPath) {
       .trim()
       .slice(0, 300);
     await new Promise((resolve, reject) => {
-      const proc = spawn(CONFIG.edgeTtsBin, [
+      const proc = spawn(bin, [
         '--voice', CONFIG.ttsVoice,
         '--text', cleanText,
         '--write-media', outputPath,
@@ -2423,7 +2439,7 @@ async function concatVideos(parts, outputPath, label) {
   await unlink(concatList).catch(() => {});
 }
 
-async function processFullVideo(rawVideoPath, recordedDuration) {
+async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = null) {
   log('info', 'Processing full video (desktop)...');
 
   const tracks = await getAudioTracks();
@@ -2448,61 +2464,95 @@ async function processFullVideo(rawVideoPath, recordedDuration) {
     `gameplay-full-${timestamp}.mp4`,
   );
 
-  const ffmpegArgs = audioTrack
-    ? [
-        '-i',
-        rawVideoPath,
-        '-i',
-        audioTrack,
-        '-t',
-        String(durationSec),
-        '-af',
-        `afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}`,
-        '-map',
-        '0:v:0',
-        '-map',
-        '1:a:0',
-        '-c:v',
-        'libx264',
-        '-preset',
-        'fast',
-        '-crf',
-        '23',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-y',
-        '-shortest',
-        mainPath,
-      ]
-    : [
-        '-i',
-        rawVideoPath,
-        '-f',
-        'lavfi',
-        '-i',
-        'anullsrc=r=44100:cl=stereo',
-        '-t',
-        String(durationSec),
-        '-map',
-        '0:v:0',
-        '-map',
-        '1:a:0',
-        '-c:v',
-        'libx264',
-        '-preset',
-        'fast',
-        '-crf',
-        '23',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-y',
-        '-shortest',
-        mainPath,
-      ];
+  let ffmpegArgs;
+  if (audioTrack && voiceoverPath) {
+    ffmpegArgs = [
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-i',
+      voiceoverPath,
+      '-t',
+      String(durationSec),
+      '-filter_complex',
+      `[1:a]volume=0.2[bg];` +
+        `[2:a]adelay=500|500,volume=1.4[voice];` +
+        `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}[a]`,
+      '-map',
+      '0:v:0',
+      '-map',
+      '[a]',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      mainPath,
+    ];
+  } else if (audioTrack) {
+    ffmpegArgs = [
+      '-i',
+      rawVideoPath,
+      '-i',
+      audioTrack,
+      '-t',
+      String(durationSec),
+      '-af',
+      `afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}`,
+      '-map',
+      '0:v:0',
+      '-map',
+      '1:a:0',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      '-shortest',
+      mainPath,
+    ];
+  } else {
+    ffmpegArgs = [
+      '-i',
+      rawVideoPath,
+      '-f',
+      'lavfi',
+      '-i',
+      'anullsrc=r=44100:cl=stereo',
+      '-t',
+      String(durationSec),
+      '-map',
+      '0:v:0',
+      '-map',
+      '1:a:0',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '23',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-y',
+      '-shortest',
+      mainPath,
+    ];
+  }
 
   await runFFmpeg(ffmpegArgs, 'full main video');
 
@@ -3073,6 +3123,7 @@ async function main() {
       fullOutputPath = await processFullVideo(
         desktopCapture.videoPath,
         desktopCapture.duration,
+        voicePath,
       );
     }
 

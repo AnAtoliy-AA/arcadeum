@@ -199,7 +199,7 @@ function Game2048Table() {
               onClick={() => handleMove('up')}
               data-testid="pad-up"
               aria-label="Move Up"
-              className="absolute top-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute top-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50"
             >
               ▲
             </button>
@@ -208,7 +208,7 @@ function Game2048Table() {
               onClick={() => handleMove('left')}
               data-testid="pad-left"
               aria-label="Move Left"
-              className="absolute left-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute left-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50"
             >
               ◀
             </button>
@@ -217,7 +217,7 @@ function Game2048Table() {
               onClick={() => handleMove('down')}
               data-testid="pad-down"
               aria-label="Move Down"
-              className="absolute bottom-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute bottom-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50"
             >
               ▼
             </button>
@@ -226,11 +226,11 @@ function Game2048Table() {
               onClick={() => handleMove('right')}
               data-testid="pad-right"
               aria-label="Move Right"
-              className="absolute right-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute right-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50"
             >
               ▶
             </button>
-            <div className="h-5 w-5 rounded-full bg-[var(--backgroundHover)]" />
+            <div className="h-5 w-5 rounded-full bg-[var(--backgroundHover)] border border-[var(--glassBorder)]" />
           </div>
           <p className="text-center text-xs text-[var(--textSecondary)]">
             {t('games.game_2048_v1.board.controlsHint')}

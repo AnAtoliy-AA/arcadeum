@@ -43,10 +43,7 @@ const LIGHT_TEXT_FROM = 8;
 
 export function tileColor(value: number): string {
   if (value <= 0) return 'transparent';
-  const index = Math.min(
-    Math.log2(value) - 1,
-    TILE_COLORS.length - 1,
-  );
+  const index = Math.min(Math.log2(value) - 1, TILE_COLORS.length - 1);
   return TILE_COLORS[Math.max(index, 0)];
 }
 
@@ -57,15 +54,15 @@ export function tileTextColor(value: number): string {
 export function sharedThemeToGame2048(theme: GameTheme): Game2048Theme {
   return {
     background: `linear-gradient(160deg, ${theme.colors.background} 0%, ${theme.colors.surface} 100%)`,
-    boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.85)`,
+    boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.96)`,
     boardBorder: theme.colors.border,
-    emptyCell: `rgba(${hexToRgb(theme.colors.text)}, 0.08)`,
+    emptyCell: `rgba(${hexToRgb(theme.colors.background)}, 0.65)`,
     tileColors: TILE_COLORS,
     tileTextLight: '#f9f6f2',
     tileTextDark: '#776e65',
     glow: theme.colors.glow,
     textColor: theme.colors.text,
-    borderRadius: '8px',
+    borderRadius: '16px',
     bgImage: theme.bgImage,
   };
 }

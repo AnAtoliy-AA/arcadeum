@@ -15,12 +15,14 @@ interface BoardProps {
   snapshot: CatDashClientState;
   disabled?: boolean;
   resolveName?: (id?: string | null) => string;
+  highlightedCells?: { row: number; col: number }[];
 }
 
 export const CatDashBoard = memo(function CatDashBoard({
   snapshot,
   disabled: _disabled,
   resolveName = (id) => id ?? '',
+  highlightedCells = [],
 }: BoardProps) {
   const { tokens, variant } = useCatDashTheme();
 
@@ -77,6 +79,14 @@ export const CatDashBoard = memo(function CatDashBoard({
 
   const spaceRadius = 22;
 
+  const highlightedSpaceIndices = useMemo(() => {
+    const indices = new Set<number>();
+    for (const cell of highlightedCells) {
+      if (cell.col >= 0 && cell.col < total) indices.add(cell.col);
+    }
+    return indices;
+  }, [highlightedCells, total]);
+
   return (
     <div className="flex flex-col gap-3 items-center w-full p-2">
       <svg
@@ -129,6 +139,19 @@ export const CatDashBoard = memo(function CatDashBoard({
 
           return (
             <g key={space.id ?? i}>
+              {highlightedSpaceIndices.has(i) && (
+                <circle
+                  cx={pos.x}
+                  cy={pos.y}
+                  r={spaceRadius + 5}
+                  fill="none"
+                  stroke="#6366f1"
+                  strokeWidth={3}
+                  opacity={0.7}
+                  className="animate-pulse"
+                  filter="url(#glow)"
+                />
+              )}
               <circle
                 cx={pos.x}
                 cy={pos.y}

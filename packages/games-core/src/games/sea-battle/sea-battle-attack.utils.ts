@@ -153,7 +153,7 @@ export function executeAttack(
   state.logs.push(
     createLog(
       'action',
-      `attacked ${cellLabel} — ${resultMark} ${result.toUpperCase()}!`,
+      `attacked ${cellLabel} — ${resultMark} ${result.toUpperCase()}! Move at (${row}, ${col})`,
       {
         senderId: player.playerId,
         targetId: target.playerId,

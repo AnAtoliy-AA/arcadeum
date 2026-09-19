@@ -212,10 +212,13 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       }
 
       const finishedCount = countFinished(moverTokens);
+      const progress = movedToken.progress;
+      const trackRow = progress <= 11 ? progress : progress <= 23 ? 23 - progress : progress <= 35 ? progress - 24 : 47 - progress;
+      const trackCol = progress <= 11 ? 0 : progress <= 23 ? 1 : progress <= 35 ? 2 : 3;
       newState.logs.push(
         this.createLogEntry(
           'action',
-          `Moved token to position ${movedToken.progress}. (${finishedCount}/${tokensPerVariant(newState.options.mode)} home)`,
+          `Move at (${trackRow}, ${trackCol}) Moved token to position ${progress}. (${finishedCount}/${tokensPerVariant(newState.options.mode)} home)`,
           { senderId: context.userId },
         ),
       );

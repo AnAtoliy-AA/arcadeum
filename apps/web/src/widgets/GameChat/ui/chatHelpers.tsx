@@ -9,18 +9,45 @@ const RESULT_COLORS: Record<string, string> = {
 
 const RESULT_PATTERN = /\b(HIT|MISS|SUNK)\b/;
 
-const MOVE_PATTERN = /Mark placed at \((-?\d+), (-?\d+)\)/;
+const LEGACY_MOVE_PATTERN = /Mark placed at \((-?\d+), (-?\d+)\)/;
+const PLACEMENT_PATTERN = /Move at \((-?\d+), (-?\d+)\)/;
+const FROM_TO_PATTERN =
+  /Move from \((-?\d+), (-?\d+)\) to \((-?\d+), (-?\d+)\)/;
 
 const EMOJI_STARTER = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
 
 export type SystemRowKind = 'round' | 'combo' | 'join' | 'elim';
 
-export function parseMoveCell(
-  message: string,
-): { row: number; col: number } | null {
-  const m = MOVE_PATTERN.exec(message);
-  if (!m) return null;
-  return { row: Number(m[1]), col: Number(m[2]) };
+export interface MoveCell {
+  row: number;
+  col: number;
+}
+
+export interface FromToMove {
+  from: MoveCell;
+  to: MoveCell;
+}
+
+export type ParsedMove = MoveCell | FromToMove;
+
+export function isFromToMove(move: ParsedMove): move is FromToMove {
+  return 'from' in move && 'to' in move;
+}
+
+export function parseMoveCell(message: string): ParsedMove | null {
+  const fromTo = FROM_TO_PATTERN.exec(message);
+  if (fromTo) {
+    return {
+      from: { row: Number(fromTo[1]), col: Number(fromTo[2]) },
+      to: { row: Number(fromTo[3]), col: Number(fromTo[4]) },
+    };
+  }
+  const placement =
+    PLACEMENT_PATTERN.exec(message) ?? LEGACY_MOVE_PATTERN.exec(message);
+  if (placement) {
+    return { row: Number(placement[1]), col: Number(placement[2]) };
+  }
+  return null;
 }
 
 export function renderResultHighlights(message: string): ReactNode {

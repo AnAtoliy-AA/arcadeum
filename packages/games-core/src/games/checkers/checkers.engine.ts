@@ -209,11 +209,13 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
 
     let moveDesc: string;
     if (isMultiJump) {
-      moveDesc = `Multi-jump: ${payload.steps.length} captures`;
+      const firstStep = payload.steps[0];
+      const lastStepFinal = payload.steps[payload.steps.length - 1];
+      moveDesc = `Multi-jump: ${payload.steps.length} captures Move from (${firstStep.fromRow}, ${firstStep.fromCol}) to (${lastStepFinal.toRow}, ${lastStepFinal.toCol})`;
     } else if (isCapture) {
-      moveDesc = `Captured piece at (${lastStep.capturedRow}, ${lastStep.capturedCol})`;
+      moveDesc = `Move at (${lastStep.capturedRow}, ${lastStep.capturedCol})`;
     } else {
-      moveDesc = `Moved from (${lastStep.fromRow}, ${lastStep.fromCol}) to (${lastStep.toRow}, ${lastStep.toCol})`;
+      moveDesc = `Move from (${lastStep.fromRow}, ${lastStep.fromCol}) to (${lastStep.toRow}, ${lastStep.toCol})`;
     }
 
     newState.logs.push(

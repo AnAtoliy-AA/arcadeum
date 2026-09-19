@@ -32,6 +32,7 @@ interface PachisiBoardProps {
   onRoll: () => void;
   onMove: (tokenId: number) => void;
   onPassTurn?: () => void;
+  highlightedCells?: { row: number; col: number }[];
 }
 
 interface PlacedToken {
@@ -107,6 +108,7 @@ export function PachisiBoard({
   onRoll,
   onMove,
   onPassTurn,
+  highlightedCells = [],
 }: PachisiBoardProps) {
   const { t } = useTranslation();
   const theme = usePachisiTheme();
@@ -200,6 +202,17 @@ export function PachisiBoard({
         : new Set<number>(),
     [canMove, currentUserId, snapshot.die, snapshot.tokens],
   );
+
+  const highlightedTrackCells = useMemo(() => {
+    const indices = new Set<number>();
+    for (const cell of highlightedCells) {
+      const matchIdx = TRACK_COORDS.findIndex(
+        ([r, c]) => r === cell.row && c === cell.col,
+      );
+      if (matchIdx >= 0) indices.add(matchIdx);
+    }
+    return indices;
+  }, [highlightedCells]);
 
   const trackTokens = useMemo(() => {
     const map = new Map<number, PlacedToken[]>();
@@ -357,7 +370,9 @@ export function PachisiBoard({
           const highlightClass =
             lastMove?.fromCell === idx || lastMove?.toCell === idx
               ? 'pachisi-cell-highlight'
-              : '';
+              : highlightedTrackCells.has(idx)
+                ? 'ring-2 ring-indigo-400/80 bg-indigo-500/20 animate-pulse'
+                : '';
           return (
             <div
               key={`track-${idx}`}

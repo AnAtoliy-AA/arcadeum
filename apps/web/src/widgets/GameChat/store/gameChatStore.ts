@@ -37,7 +37,9 @@ interface GameChatStore {
   currentUserId: string | null;
   chatPanelOpen: boolean;
   highlightedCell: { row: number; col: number } | null;
+  highlightedCells: { row: number; col: number }[];
   persistedCell: { row: number; col: number } | null;
+  persistedCells: { row: number; col: number }[];
   setLogs: (logs: ChatLogEntry[]) => void;
   addLog: (entry: ChatLogEntry) => void;
   registerSendMessage: (
@@ -52,7 +54,9 @@ interface GameChatStore {
   setCurrentUserId: (id: string | null) => void;
   setChatPanelOpen: (open: boolean) => void;
   setHighlightedCell: (cell: { row: number; col: number } | null) => void;
+  setHighlightedCells: (cells: { row: number; col: number }[]) => void;
   setPersistedCell: (cell: { row: number; col: number } | null) => void;
+  setPersistedCells: (cells: { row: number; col: number }[]) => void;
   clear: () => void;
 }
 
@@ -66,7 +70,9 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
   currentUserId: null,
   chatPanelOpen: false,
   highlightedCell: null,
+  highlightedCells: [],
   persistedCell: null,
+  persistedCells: [],
   setLogs: (logs) => set({ logs }),
   addLog: (entry) => set((s) => ({ logs: [...s.logs, entry] })),
   registerSendMessage: (fn) => set({ sendMessage: fn }),
@@ -77,16 +83,36 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
   registerResolveEquipped: (fn) => set({ resolveEquipped: fn }),
   setCurrentUserId: (id) => set({ currentUserId: id }),
   setChatPanelOpen: (open) => set({ chatPanelOpen: open }),
-  setHighlightedCell: (cell) => set({ highlightedCell: cell }),
+  setHighlightedCell: (cell) =>
+    set({ highlightedCell: cell, highlightedCells: cell ? [cell] : [] }),
+  setHighlightedCells: (cells) =>
+    set({ highlightedCells: cells, highlightedCell: cells[0] ?? null }),
   setPersistedCell: (cell) =>
-    set((s) => ({
-      persistedCell:
+    set((s) => {
+      const isSame =
         cell &&
         s.persistedCell?.row === cell.row &&
-        s.persistedCell?.col === cell.col
-          ? null
-          : cell,
-    })),
+        s.persistedCell?.col === cell.col;
+      return {
+        persistedCell: isSame ? null : cell,
+        persistedCells: isSame ? [] : cell ? [cell] : [],
+      };
+    }),
+  setPersistedCells: (cells) =>
+    set((s) => {
+      const isSame =
+        cells.length > 0 &&
+        s.persistedCells.length === cells.length &&
+        cells.every(
+          (c, i) =>
+            c.row === s.persistedCells[i]?.row &&
+            c.col === s.persistedCells[i]?.col,
+        );
+      return {
+        persistedCells: isSame ? [] : cells,
+        persistedCell: isSame ? null : (cells[0] ?? null),
+      };
+    }),
   clear: () =>
     set({
       logs: [],
@@ -98,7 +124,9 @@ export const useGameChatStore = create<GameChatStore>((set) => ({
       currentUserId: null,
       chatPanelOpen: false,
       highlightedCell: null,
+      highlightedCells: [],
       persistedCell: null,
+      persistedCells: [],
     }),
 }));
 

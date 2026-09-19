@@ -9,6 +9,7 @@ import {
   inferSysKind,
   parseEmoteMessage,
   parseMoveCell,
+  isFromToMove,
   renderResultHighlights,
 } from './chatHelpers';
 
@@ -76,8 +77,28 @@ export function ChatLogItem({
   onDeleteMessage,
 }: ChatLogItemProps) {
   if (log.type === 'system' || log.type === 'action') {
-    const moveCell = parseMoveCell(log.message);
-    if (moveCell) {
+    const parsedMove = parseMoveCell(log.message);
+    if (parsedMove) {
+      if (isFromToMove(parsedMove)) {
+        return (
+          <GameChatRow
+            senderId={log.senderId ?? null}
+            senderName={log.senderId ? senderName : undefined}
+            senderColor={senderColor}
+            content={log.message}
+            type="action"
+            isOwn={false}
+            resolveEquipped={resolveEquipped}
+            moveCells={[parsedMove.from, parsedMove.to]}
+            onMoveCellsHover={(cells) =>
+              useGameChatStore.getState().setHighlightedCells(cells)
+            }
+            onMoveCellsClick={(cells) =>
+              useGameChatStore.getState().setPersistedCells(cells)
+            }
+          />
+        );
+      }
       return (
         <GameChatRow
           senderId={log.senderId ?? null}
@@ -87,7 +108,7 @@ export function ChatLogItem({
           type="action"
           isOwn={false}
           resolveEquipped={resolveEquipped}
-          moveCell={moveCell}
+          moveCell={parsedMove}
           onMoveHover={(cell) =>
             useGameChatStore.getState().setHighlightedCell(cell)
           }

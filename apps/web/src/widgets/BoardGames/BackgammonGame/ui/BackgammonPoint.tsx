@@ -16,6 +16,7 @@ interface BackgammonPointProps {
   isTop: boolean;
   isSelected: boolean;
   isMovable?: boolean;
+  isHighlighted?: boolean;
   targetInfo?: TargetInfo | null;
   currentUserId: string | null;
   playerOrder: string[];
@@ -29,6 +30,7 @@ export const BackgammonPoint = memo(function BackgammonPoint({
   isTop,
   isSelected,
   isMovable = false,
+  isHighlighted = false,
   targetInfo,
   currentUserId: _currentUserId,
   playerOrder,
@@ -83,6 +85,13 @@ export const BackgammonPoint = memo(function BackgammonPoint({
           className={isSelected ? 'fill-purple-300' : 'fill-white/20'}
         />
       </svg>
+
+      {isHighlighted ? (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[90%] w-[90%] rounded-full border-[3px] border-indigo-400/80 bg-indigo-500/20 z-15 animate-pulse"
+        />
+      ) : null}
 
       <div
         className={cx(

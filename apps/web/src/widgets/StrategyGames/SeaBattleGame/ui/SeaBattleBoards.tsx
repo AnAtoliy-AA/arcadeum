@@ -58,6 +58,7 @@ interface SeaBattleBoardsProps {
   ) => string;
   teammateIds?: string[];
   teams?: SeaBattleTeam[];
+  highlightedCells?: { row: number; col: number }[];
 }
 
 export function SeaBattleBoards({
@@ -84,6 +85,7 @@ export function SeaBattleBoards({
   resolveDisplayNameBound,
   teammateIds,
   teams,
+  highlightedCells = [],
 }: SeaBattleBoardsProps) {
   const { t } = useTranslation();
   const [weaponMode, setWeaponMode] = useState<WeaponMode>(null);
@@ -423,6 +425,7 @@ export function SeaBattleBoards({
             onCellHoverEnd={isWeaponMode ? handleCellHoverEnd : undefined}
             weaponMode={isWeaponMode}
             keyboardCursor={cursor}
+            highlightedCells={highlightedCells}
           />
         </>
       )}

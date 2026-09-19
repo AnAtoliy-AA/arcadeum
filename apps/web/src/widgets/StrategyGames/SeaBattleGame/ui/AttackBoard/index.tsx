@@ -32,6 +32,7 @@ export interface AttackBoardProps {
   weaponMode?: boolean;
   showEliminatedPlayers?: boolean;
   keyboardCursor?: { row: number; col: number } | null;
+  highlightedCells?: { row: number; col: number }[];
 }
 
 export function getVisibleOpponents<
@@ -67,6 +68,7 @@ export const AttackBoard = memo(function AttackBoard({
   weaponMode,
   showEliminatedPlayers = false,
   keyboardCursor,
+  highlightedCells = [],
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -176,6 +178,17 @@ export const AttackBoard = memo(function AttackBoard({
     return map;
   }, [effectiveLastRadar]);
 
+  const chatHighlightSet = useMemo(() => {
+    if (highlightedCells.length === 0) return null;
+    const set = new Set<string>();
+    for (const cell of highlightedCells) {
+      for (const opponent of opponents) {
+        set.add(`${opponent.playerId}-${cell.row}-${cell.col}`);
+      }
+    }
+    return set;
+  }, [highlightedCells, opponents]);
+
   // Scan wave: highlight sets for all opponents
   const scanWaveHighlightSets = useMemo(() => {
     if (!scanWaveActive || !snapshot?.lastScanWave) return null;
@@ -267,6 +280,7 @@ export const AttackBoard = memo(function AttackBoard({
               radarCellStates={isRadarTarget ? radarCellStates : null}
               scanWaveHighlightCells={scanWaveSet}
               scanWaveCellStates={scanWaveStates}
+              chatHighlightCells={chatHighlightSet}
               weaponPreviewCells={weaponPreviewCells}
               weaponPreviewType={weaponPreviewType}
               onAttack={onAttack}

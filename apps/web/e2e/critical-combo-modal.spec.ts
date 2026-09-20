@@ -91,7 +91,7 @@ test.describe('Critical Combo Modal', () => {
     await cancelCard.click();
     await cancelCard.click();
 
-    const playButton = page.getByTestId('hand-rail-play-button');
+    const playButton = page.getByTestId('hand-rail-play');
     await expect(playButton).toBeVisible();
     await expect(playButton).toBeEnabled();
     await playButton.click();

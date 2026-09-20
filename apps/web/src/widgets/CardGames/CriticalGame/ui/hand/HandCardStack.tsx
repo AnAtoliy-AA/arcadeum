@@ -178,6 +178,7 @@ export function HandCardStack({
         tabIndex={disabled ? -1 : 0}
         aria-pressed={isSelected}
         aria-disabled={disabled}
+        data-card={card.id}
         data-testid={`hand-card-${card.id}`}
         data-role={role}
         data-selected={isSelected ? 'true' : 'false'}
@@ -193,7 +194,6 @@ export function HandCardStack({
           disabled && 'opacity-50 cursor-not-allowed pointer-events-none',
         )}
       >
-        {/* Full Bleed Card Artwork or Fallback */}
         <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
           {hasArtFor(cardVariant, card.id) ? (
             <CardImage variant={cardVariant ?? ''} cardType={card.id} />
@@ -202,19 +202,22 @@ export function HandCardStack({
           )}
         </div>
 
-        {/* Name & Description Scrim */}
         {(showName || showDescription) && (
           <div className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-1.5 pb-1.5 pt-4 gap-0.5 pointer-events-none bg-gradient-to-t from-black/95 via-black/75 to-transparent">
             {showName && (
               <span
                 className="text-[9px] font-extrabold tracking-[0.3px] uppercase text-center drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] line-clamp-1"
                 style={{ color: borderColor }}
+                data-testid={`hand-card-name-${card.id}`}
               >
                 {name}
               </span>
             )}
             {showDescription && (
-              <span className="text-[8px] leading-[10px] font-semibold text-center text-slate-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] line-clamp-2">
+              <span
+                className="text-[8px] leading-[10px] font-semibold text-center text-slate-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] line-clamp-2"
+                data-testid={`hand-card-description-${card.id}`}
+              >
                 {description}
               </span>
             )}

@@ -89,7 +89,9 @@ test.describe('Critical Combo Modal', () => {
     const cancelCard = page.getByTestId('hand-card-cancel');
     await expect(cancelCard).toBeVisible();
     await cancelCard.click();
+    await expect(cancelCard).toHaveAttribute('data-selected-count', '1');
     await cancelCard.click();
+    await expect(cancelCard).toHaveAttribute('data-selected-count', '2');
 
     const playButton = page.getByTestId('hand-rail-play');
     await expect(playButton).toBeVisible();

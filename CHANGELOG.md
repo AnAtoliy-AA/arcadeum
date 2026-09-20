@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.22] - 2026-09-20
+
+### Added
+- rework rooms page filters with multi-select dropdowns and UI components (ARC-961) (ARC-961)
+
+
 ## [1.30.21] - 2026-09-20
 
 ### Added

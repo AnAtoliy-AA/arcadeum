@@ -10,6 +10,7 @@ import {
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { CAT_DASH_THEMES } from '../lib/constants';
 import { CatDashRulesModal } from './RulesModal';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -52,6 +53,7 @@ export const CatDashLobby = memo(function CatDashLobby({
 }: CatDashLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
   const [showRacerBio, setShowRacerBio] = useState(false);
 
   const options = useMemo(
@@ -98,7 +100,7 @@ export const CatDashLobby = memo(function CatDashLobby({
     <div className="flex flex-col items-stretch gap-3 p-2">
       <LobbyOptionSection title={t('games.create.sectionVariant')}>
         <GameThemePicker
-          selectedTheme={options.theme ?? 'adventure'}
+          selectedTheme={options.theme ?? equippedTheme}
           onSelect={handleThemeChange}
           disabled={!isHost}
         />

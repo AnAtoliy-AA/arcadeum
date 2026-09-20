@@ -35,6 +35,13 @@ export function getThemeById(themeId: string): GameTheme | undefined {
   return THEME_INDEX.get(themeId);
 }
 
+export function skinIdToThemeId(skinId: string | null): string | undefined {
+  if (!skinId || skinId === 'game-skin-default') return undefined;
+  const prefix = 'game-skin-';
+  if (skinId.startsWith(prefix)) return skinId.slice(prefix.length);
+  return undefined;
+}
+
 export function getTranslatedSharedThemes(
   themeMessages?: Record<
     string,

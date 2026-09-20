@@ -9,6 +9,7 @@ import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { MIN_PLAYERS, getDefaultShipCount } from '../types';
 import { SEA_BATTLE_THEMES } from '../lib/constants';
 import { TranslationKey } from '@/shared/i18n/useTranslation';
@@ -69,10 +70,11 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
   onRefresh,
   t,
 }: SeaBattleLobbyProps) {
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
   const roomVariant =
     (room.gameOptions?.theme as string) ||
     (room.gameOptions?.variant as string) ||
-    'adventure';
+    equippedTheme;
   const [selectedVariant, setSelectedVariant] = React.useState(roomVariant);
   const { setOption } = useRoomOptions({
     roomId: room.id,
@@ -125,10 +127,10 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         gridSize: opts.gridSize ?? gs,
         shipCount: opts.shipCount ?? getDefaultShipCount(gs),
         variant: opts.variant ?? 'classic',
-        theme: opts.theme ?? opts.variant ?? 'adventure',
+        theme: opts.theme ?? opts.variant ?? equippedTheme,
       });
     }
-  }, [room.id, room.status, room.gameOptions, setOption]);
+  }, [room.id, room.status, room.gameOptions, setOption, equippedTheme]);
 
   // Team mode state derived from room game options
   const teamOpts = (room.gameOptions ?? {}) as SeaBattleGameOptions;

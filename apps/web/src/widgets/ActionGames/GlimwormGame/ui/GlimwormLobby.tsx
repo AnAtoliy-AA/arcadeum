@@ -21,6 +21,7 @@ import { gamesApi } from '@/features/games/api';
 import type { CatalogVariant } from '@/features/games/api';
 import { useGlimwormStore } from '../store/glimwormStore';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
 import type { GlimwormVariant } from '../types';
 
@@ -68,6 +69,7 @@ export function GlimwormLobby({
     roomId: room.id,
     userId: currentUserId,
   });
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
   const selectedColor = useGlimwormStore((s) => s.selectedColor);
   const setColor = useGlimwormStore((s) => s.setColor);
   const latestSnapshot = useGlimwormStore((s) => s.latestSnapshot);
@@ -175,7 +177,7 @@ export function GlimwormLobby({
       <div className="flex flex-col items-stretch gap-4 p-3 rounded-xl">
         <LobbyOptionSection title={t('games.create.sectionVariant')}>
           <GameThemePicker
-            selectedTheme={(room.gameOptions?.theme as string) || 'adventure'}
+            selectedTheme={(room.gameOptions?.theme as string) || equippedTheme}
             onSelect={(themeId) => setOption({ theme: themeId })}
             disabled={!isHost}
           />

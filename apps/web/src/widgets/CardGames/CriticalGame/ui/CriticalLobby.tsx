@@ -11,6 +11,7 @@ import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { Typography } from '@arcadeum/ui';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { CARD_VARIANTS, RANDOM_VARIANT } from '../lib/constants';
 import { RulesModal } from './RulesModal';
 import { TranslationKey } from '@/shared/i18n/useTranslation';
@@ -82,6 +83,7 @@ export function CriticalLobby({
 }: CriticalLobbyProps) {
   const [showRules, setShowRules] = useState(false);
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
 
   const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
     new Map(),
@@ -91,7 +93,7 @@ export function CriticalLobby({
     (room.gameOptions?.theme as string) ||
     (room.gameOptions?.cardVariant as string) ||
     (room.gameOptions?.variant as string) ||
-    'adventure';
+    equippedTheme;
   const variantInfo = getVariantInfo(cardVariant);
   const theme = getCriticalTheme(cardVariant);
   const isFastMode = room.gameOptions?.idleTimerEnabled;

@@ -11,6 +11,7 @@ import {
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { CASCADE_THEMES } from '../lib/constants';
 import {
   type CascadeMode,
@@ -42,7 +43,7 @@ const CASCADE_LOBBY_THEME = {
   buttonGradient: 'linear-gradient(135deg, #7c3aed 0%, #4338ca 100%)',
 };
 
-function resolveOptions(raw: unknown): CascadeOptions {
+function resolveOptions(raw: unknown, fallbackTheme: string): CascadeOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
@@ -54,7 +55,7 @@ function resolveOptions(raw: unknown): CascadeOptions {
   const mode: CascadeMode = knownModes.includes(r.mode as CascadeMode)
     ? (r.mode as CascadeMode)
     : 'classic';
-  const theme = (r.theme ?? r.variant ?? 'adventure') as CascadeTheme;
+  const theme = (r.theme ?? r.variant ?? fallbackTheme) as CascadeTheme;
   return {
     variant: theme,
     theme,
@@ -81,9 +82,10 @@ export function CascadeLobby({
 }: CascadeLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
-    [room.gameOptions],
+    () => resolveOptions(room.gameOptions, equippedTheme),
+    [room.gameOptions, equippedTheme],
   );
 
   const handleOptionChange = useCallback(

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.23] - 2026-09-20
+
+### Added
+- add game themes to shop and preselect equipped skin in room creation
+
+
 ## [1.30.22] - 2026-09-20
 
 ### Added

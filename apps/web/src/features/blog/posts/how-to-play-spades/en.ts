@@ -16,6 +16,28 @@ export const post: BlogPost = {
       text: 'Spades is the most popular partnership trick-taking game in the world: four players, two fixed partnerships sitting across from each other, and a standard 52-card deck dealt 13 cards at a time. Unlike Whist or Bridge there is no auction to pick a trump suit — spades are always trump, and the entire game revolves around one question: how many tricks can you and your partner honestly promise to take? You can learn the rules in ten minutes, yet the bidding, the bag penalties, and the Nil contract give the game surprising depth. This guide covers the setup and the deal, bidding including Nil, the trick-play rules, the scoring system, and the partnership habits that turn careful bids into wins — all framed for playing Spades online.',
     },
     {
+      type: 'stat-card',
+      title: 'Spades at a Glance',
+      stats: [
+        { value: '4', label: 'Players', description: '2 fixed partnerships' },
+        {
+          value: '500',
+          label: 'Target score',
+          description: 'First team to 500 wins',
+        },
+        {
+          value: '+100',
+          label: 'Nil success',
+          description: 'Flat bonus for winning zero tricks',
+        },
+        {
+          value: '10 bags',
+          label: 'Bag penalty',
+          description: '-100 points on the 10th overtrick',
+        },
+      ],
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Teams, the deal, and the goal',
@@ -158,6 +180,35 @@ export const post: BlogPost = {
     {
       type: 'paragraph',
       text: 'Spades rewards exactly these habits: honest bids, disciplined bag accounting, protective play around Nil, and patient trump management. None of it takes talent — only attention. Play a few hands on Arcadeum, watch how strong partnerships bid together, and the scoreboard starts leaning your way within a single evening.',
+    },
+    {
+      type: 'cta',
+      href: '/blog/how-to-win-spades',
+      text: 'Ready to go deeper? Read the Advanced Spades Strategy guide',
+      description:
+        'Bidding psychology, sandbagging, nil execution, and endgame math — the strategies that win consistently.',
+    },
+  ],
+  faq: [
+    {
+      question: 'What happens if I bid too high and miss my contract?',
+      answer:
+        'You lose 10 points for every trick in your bid. A team bid of 7 that only wins 5 tricks loses 70 points — the same penalty whether you miss by 1 or 5 tricks. Missing hurts far more than bags, so bid accurately rather than conservatively.',
+    },
+    {
+      question: 'Can I bid zero without going Nil?',
+      answer:
+        "No. In standard Spades, the minimum bid is 1 trick per player. The only legal way to bid zero is the Nil contract, which carries a separate +100/-100 scoring and requires your partner's hand to cover you.",
+    },
+    {
+      question: 'What is the difference between regular Nil and blind Nil?',
+      answer:
+        'Regular Nil is declared after you see your cards. Blind Nil is declared before you see your hand — and is worth +200 if successful, -200 if failed. Most Arcadeum games use regular Nil only; blind Nil is an optional rule available in advanced room settings.',
+    },
+    {
+      question: 'When should I break spades intentionally?',
+      answer:
+        "Breaking spades is usually forced (you ruff when void in a led suit). Intentionally leading spades to break them is correct when you hold many high spades and want to draw the opponent's trumps — preventing them from ruffing your side-suit winners later.",
     },
   ],
   howTo: {

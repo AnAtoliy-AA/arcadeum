@@ -149,6 +149,33 @@ const POST_MANIFEST: Record<
   'patch-notes-v1-24': {
     en: () => import('./posts/patch-notes-v1-24/en'),
   },
+  'chess-opening-traps': {
+    en: () => import('./posts/chess-opening-traps/en'),
+  },
+  'how-to-win-chess-endgames': {
+    en: () => import('./posts/how-to-win-chess-endgames/en'),
+  },
+  'how-to-win-spades': {
+    en: () => import('./posts/how-to-win-spades/en'),
+  },
+  'how-to-win-hearts-advanced': {
+    en: () => import('./posts/how-to-win-hearts-advanced/en'),
+  },
+  'backgammon-pip-count-guide': {
+    en: () => import('./posts/backgammon-pip-count-guide/en'),
+  },
+  'how-to-win-checkers': {
+    en: () => import('./posts/how-to-win-checkers/en'),
+  },
+  'how-to-solve-sudoku-advanced': {
+    en: () => import('./posts/how-to-solve-sudoku-advanced/en'),
+  },
+  'sea-battle-advanced': {
+    en: () => import('./posts/sea-battle-advanced/en'),
+  },
+  'go-life-death-problems': {
+    en: () => import('./posts/go-life-death-problems/en'),
+  },
 };
 
 /** Canonical slugs for every published post, in stable order. */

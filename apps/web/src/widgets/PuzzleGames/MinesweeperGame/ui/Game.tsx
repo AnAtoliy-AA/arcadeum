@@ -61,6 +61,14 @@ function MinesweeperTable() {
     (state) => state.changeDifficulty,
   );
   const newGame = useMinesweeperStore((state) => state.newGame);
+  const undo = useMinesweeperStore((state) => state.undo);
+  const canUndo = useMinesweeperStore(
+    (state) =>
+      state.history.length > 0 &&
+      state.startedAt !== null &&
+      state.finishedAt === null &&
+      state.game.status === 'playing',
+  );
 
   const [flagMode, setFlagMode] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
@@ -232,6 +240,7 @@ function MinesweeperTable() {
       hud={hud}
       controls={controls}
       actions={actions}
+      undo={{ onUndo: undo, canUndo }}
       loadingMessage="games.minesweeper_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,

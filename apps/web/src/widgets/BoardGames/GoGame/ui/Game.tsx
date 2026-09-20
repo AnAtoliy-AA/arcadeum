@@ -3,6 +3,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Button } from '@arcadeum/ui';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -386,6 +387,7 @@ function GoGameImpl({
           title: 'Go',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentPlayerId,
             isMyTurn: myTurn,

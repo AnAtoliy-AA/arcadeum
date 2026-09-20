@@ -35,6 +35,7 @@ import {
   SoloActionButton,
   type SoloActionButtonProps,
 } from './SoloActionButton';
+import { SoloUndoButton } from './SoloUndoButton';
 
 export {
   formatDuration,
@@ -83,6 +84,11 @@ export interface SoloGameContainerProps {
   actions?: ReactNode;
   children: ReactNode;
   controls?: ReactNode;
+  undo?: {
+    onUndo: () => void;
+    canUndo: boolean;
+    disabled?: boolean;
+  };
   modal: {
     result: 'victory' | 'defeat' | null;
     gameName: string;
@@ -119,6 +125,7 @@ export function SoloGameContainer({
   actions,
   children,
   controls,
+  undo,
   modal,
   loadingMessage,
 }: SoloGameContainerProps) {
@@ -303,7 +310,18 @@ export function SoloGameContainer({
         pause={resolvedPause}
         finishedAt={finishedAt}
         controls={controls}
-        actions={actions}
+        actions={
+          <>
+            {undo && (
+              <SoloUndoButton
+                onUndo={undo.onUndo}
+                canUndo={undo.canUndo}
+                disabled={undo.disabled}
+              />
+            )}
+            {actions}
+          </>
+        }
         isFullscreen={isFullscreen}
         showLeaderboard={showLeaderboard}
         onToggleLeaderboard={() => setShowLeaderboard((prev) => !prev)}

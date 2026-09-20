@@ -1,6 +1,7 @@
 'use client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -479,6 +480,7 @@ function ChessGameImpl({
           title: t('games.chess_v1.name'),
           subtitle: room?.name,
           onToggleResult: toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId:
               displaySnapshot?.players.find(

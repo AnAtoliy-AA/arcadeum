@@ -42,6 +42,10 @@ function Game2048Table() {
   const move = useGame2048Store((state) => state.move);
   const continuePlaying = useGame2048Store((state) => state.continuePlaying);
   const newGame = useGame2048Store((state) => state.newGame);
+  const undo = useGame2048Store((state) => state.undo);
+  const canUndo = useGame2048Store(
+    (state) => state.history.length > 0 && state.finishedAt === null,
+  );
 
   const isRunning = finishedAt === null;
   const pause = useSoloPause(isRunning, finishedAt);
@@ -66,13 +70,19 @@ function Game2048Table() {
         D: 'right',
       };
       const direction = keyMap[event.key];
-      if (!direction) return;
+      if (!direction) {
+        if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault();
+          undo();
+        }
+        return;
+      }
       event.preventDefault();
       move(direction);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [move, pause.isPaused]);
+  }, [move, pause.isPaused, undo]);
 
   const maxTile = useMemo(() => Math.max(0, ...grid), [grid]);
 
@@ -159,6 +169,7 @@ function Game2048Table() {
       onNewGame={newGame}
       statsItems={statsItems}
       actions={actions}
+      undo={{ onUndo: undo, canUndo }}
       loadingMessage="games.game_2048_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,

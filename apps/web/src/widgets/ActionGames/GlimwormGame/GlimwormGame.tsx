@@ -13,6 +13,7 @@ import { GlimwormResultOverlay } from './ui/GlimwormResultOverlay';
 import { useGlimwormStore } from './store/glimwormStore';
 import { gameSocket } from '@/shared/lib/socket';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
@@ -111,6 +112,7 @@ export default function GlimwormGame(
           variantEmoji: '🪱',
           title: t('games.glimworm_v1.name'),
           subtitle: room.name,
+          extraActions: <UndoButton disabled={isEnded} />,
           turnStatusVariant: isCountdown
             ? 'waiting'
             : isEnded

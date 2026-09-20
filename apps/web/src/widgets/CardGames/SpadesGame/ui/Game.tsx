@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo, useEffect } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -279,6 +280,7 @@ function SpadesGameImpl({
           variantEmoji: variantTokens.emoji,
           title: t('games.spades_v1.name'),
           subtitle: room?.name,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentEntryId ?? null,
             isMyTurn: myTurn,

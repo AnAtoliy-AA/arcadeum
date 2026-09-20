@@ -9,7 +9,7 @@ import {
   ModalButton,
   OptionButton,
 } from '@arcadeum/ui';
-import { CardsGrid, Card as BaseCard } from './cards';
+import { Card as BaseCard } from './cards';
 
 export { ModalButton, OptionButton };
 
@@ -91,8 +91,9 @@ function ModalFrame({
   const key = (variant ?? '') as keyof typeof MODAL_FRAME_VARIANT_CLASS;
   return (
     <div
+      data-game-modal=""
       className={cx(
-        'flex flex-col items-stretch bg-[var(--background)] text-[var(--color)] border-2 border-[var(--glassBorderStrong)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[10000] max-[480px]:rounded-[16px] max-[480px]:max-h-[85vh] max-[480px]:mx-2',
+        'flex flex-col items-stretch bg-[#151718] text-[#ecefee] border-2 border-[var(--glassBorderStrong)] rounded-[24px] max-w-[600px] w-full max-h-[90%] relative overflow-hidden z-[10000] max-[480px]:rounded-[16px] max-[480px]:max-h-[85vh] max-[480px]:mx-2',
         MODAL_FRAME_VARIANT_CLASS[key],
         className,
       )}
@@ -208,7 +209,7 @@ export function ModalTitle({
   return (
     <span
       className={cx(
-        'text-[24px] font-bold text-[var(--color)]',
+        'text-[24px] font-bold text-white',
         MODAL_ACCENT_TEXT_CLASS[key],
         className,
       )}
@@ -230,7 +231,7 @@ export const CloseButton = ({
   'data-testid'?: string;
 }) => (
   <Button
-    className="text-[var(--color)] hover:rotate-[90deg] hover:text-[var(--primary)] hover:bg-[var(--backgroundHover)]"
+    className="text-white/80 hover:rotate-[90deg] hover:text-white hover:bg-white/10"
     variant="icon"
     size="sm"
     gameVariant={variant as GameVariant}
@@ -268,7 +269,7 @@ export function SectionLabel({
   return (
     <span
       className={cx(
-        'text-[14px] font-semibold uppercase tracking-[0.5px] mb-3',
+        'text-[14px] font-semibold uppercase tracking-[0.5px] mb-3 text-amber-400',
         MODAL_ACCENT_TEXT_CLASS[key],
         className,
       )}
@@ -324,14 +325,14 @@ export function ScrollableCardsGrid({
   children?: React.ReactNode;
 }) {
   return (
-    <CardsGrid
+    <div
       className={cx(
-        'max-h-[55vh] overflow-y-auto p-2 max-[480px]:max-h-[40vh] max-[480px]:p-1',
+        'flex flex-wrap justify-center gap-3 max-h-[55vh] overflow-y-auto p-2 max-[480px]:max-h-[40vh] max-[480px]:p-1',
         className,
       )}
     >
       {children}
-    </CardsGrid>
+    </div>
   );
 }
 
@@ -356,7 +357,11 @@ export function SelectableCard({
 }) {
   return (
     <BaseCard
-      className={cx(selected ? 'scale-[1.05]' : undefined, className)}
+      className={cx(
+        'shrink-0',
+        selected ? 'scale-[1.05]' : undefined,
+        className,
+      )}
       style={selected ? { ...style, borderColor: 'white' } : style}
       variant={variant}
       onClick={onClick}

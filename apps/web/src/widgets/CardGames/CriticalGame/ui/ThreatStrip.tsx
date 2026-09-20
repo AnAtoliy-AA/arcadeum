@@ -104,9 +104,9 @@ export function ThreatStrip({
     // supplied so older snapshots keep their 3-col layout.
     gridTemplateColumns: showRemaining ? 'auto 1fr auto auto' : 'auto 1fr auto',
     alignItems: 'center',
-    gap: 10,
-    padding: '6px 14px',
-    minWidth: 240,
+    gap: 8,
+    padding: '4px 10px',
+    minWidth: 200,
     borderRadius: 9999,
     background: 'rgba(0,0,0,0.45)',
     border: `1px solid ${shouldPulse ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)'}`,

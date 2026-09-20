@@ -32,10 +32,10 @@ export interface CriticalGameProps extends BaseGameWidgetProps {}
  */
 export interface EventComboModalState {
   availableComboCards: Array<{
-    card: CriticalComboCard;
+    card: CriticalCard;
     availableModes: ('pair' | 'trio')[];
   }>;
-  selectedComboCard: CriticalComboCard | null;
+  selectedComboCard: CriticalCard | null;
   fiverAvailable: boolean;
 }
 

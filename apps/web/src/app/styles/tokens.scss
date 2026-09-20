@@ -29,9 +29,22 @@
   --glassBgHover: rgba(241, 245, 249, 0.95);
 }
 
-[data-theme='dark'] {
+[data-theme='dark'],
+[data-game-modal] {
+  --background: #151718;
+  --foreground: #ecefee;
+  --color: #ecefee;
+  --textSecondary: #94a3b8;
+  --muted-foreground: #94a3b8;
+  --glassBg: rgba(15, 17, 18, 0.85);
+  --glassBgHover: rgba(255, 255, 255, 0.12);
+  --glassBorder: rgba(255, 255, 255, 0.12);
+  --glassBorderStrong: rgba(255, 255, 255, 0.22);
+  --primary: #38bdf8;
+  --borderColor: #32353d;
   --backgroundRadialStart: rgba(56, 189, 248, 0.12);
   --backgroundRadialEnd: #151718;
+  color-scheme: dark;
 }
 
 [data-vision-mode='deuteranopia'] {

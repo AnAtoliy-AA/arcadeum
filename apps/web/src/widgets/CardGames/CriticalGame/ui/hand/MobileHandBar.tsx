@@ -76,15 +76,13 @@ export function MobileHandBar({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))',
-    paddingTop: 8,
-    paddingLeft: 12,
-    paddingRight: 12,
+    paddingBottom: 'calc(4px + env(safe-area-inset-bottom, 0px))',
+    paddingTop: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
     background: 'rgba(7, 10, 17, 0.94)',
     borderTop: '1px solid rgba(255,255,255,0.10)',
     boxShadow: '0 -8px 24px rgba(0,0,0,0.45)',
-    // Above OpponentTile (z-100) and below modals (z-1000+).
-    // In fullscreen mode, above GameWidgetContainer (z-1100).
     zIndex: isFullscreen ? 1200 : 150,
     backdropFilter: 'blur(8px)',
   };
@@ -94,14 +92,14 @@ export function MobileHandBar({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    minHeight: 48,
+    minHeight: 40,
   };
 
   const pillStyle: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 4,
-    padding: '4px 10px',
+    padding: '3px 8px',
     borderRadius: 9999,
     border: '1px solid rgba(255,255,255,0.10)',
     fontSize: 11,
@@ -129,9 +127,9 @@ export function MobileHandBar({
     return {
       flex: opts.flex ?? 1,
       minWidth: 0,
-      minHeight: 44,
-      padding: '0 10px',
-      borderRadius: 10,
+      minHeight: 38,
+      padding: '0 8px',
+      borderRadius: 8,
       border: opts.primary
         ? `1px solid ${accent}`
         : '1px solid rgba(255,255,255,0.22)',
@@ -141,7 +139,7 @@ export function MobileHandBar({
           : 'rgba(255,255,255,0.12)'
         : 'rgba(255,255,255,0.10)',
       color: opts.primary && opts.enabled ? '#0b0b0b' : '#ffffff',
-      fontSize: 12,
+      fontSize: 11,
       fontWeight: 800,
       letterSpacing: '0.3px',
       textTransform: 'uppercase',
@@ -154,16 +152,16 @@ export function MobileHandBar({
   }
 
   const overflowButtonStyle: CSSProperties = {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     borderRadius: 9999,
     border: '1px solid rgba(255,255,255,0.22)',
     background: 'rgba(255,255,255,0.12)',
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 800,
     cursor: 'pointer',
-    lineHeight: '40px',
+    lineHeight: '36px',
   };
 
   const popoverStyle: CSSProperties = {

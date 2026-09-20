@@ -3,7 +3,6 @@ import type { CriticalCard } from '../types';
 import { getCardTranslationKey } from '../lib/cardUtils';
 import {
   LastPlayedCard,
-  CardCorner,
   CardFrame,
   CardInner,
   CardName,
@@ -46,10 +45,6 @@ export const LastPlayedCardDisplay: React.FC<LastPlayedCardDisplayProps> = ({
     >
       <CardImage variant={cardVariant ?? ''} cardType={lastCard as string} />
       <GradientScrim />
-      <CardCorner position="tl" variant={cardVariant} />
-      <CardCorner position="tr" variant={cardVariant} />
-      <CardCorner position="bl" variant={cardVariant} />
-      <CardCorner position="br" variant={cardVariant} />
       <CardFrame variant={cardVariant} />
       <CardInner>
         <CardNameContainer variant={cardVariant as GameVariant}>

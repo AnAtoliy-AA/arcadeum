@@ -258,4 +258,55 @@ describe('HandCards', () => {
       screen.queryByTestId('hand-card-count-evade-2'),
     ).not.toBeInTheDocument();
   });
+
+  it('scrolls the track on mouse pointer drag and toggles isDragging cursor', () => {
+    renderCards();
+    const track = screen.getByTestId('hand-cards');
+    expect(track.className).toMatch(/cursor-grab/);
+    fireEvent.pointerDown(track, {
+      pointerType: 'mouse',
+      button: 0,
+      clientX: 200,
+    });
+    expect(track.className).toMatch(/cursor-grabbing/);
+    fireEvent.pointerMove(window, { clientX: 150 });
+    expect(track.scrollLeft).toBe(50);
+    fireEvent.pointerUp(window);
+    expect(track.className).toMatch(/cursor-grab/);
+  });
+
+  it('does not fire onToggleSelect when pointer is dragged across a card', () => {
+    const onToggleSelect = vi.fn();
+    renderCards({ onToggleSelect });
+    const card = screen.getByTestId('hand-card-evade-2');
+    fireEvent.pointerDown(card, { clientX: 100, clientY: 50 });
+    fireEvent.pointerMove(card, { clientX: 150, clientY: 50 });
+    fireEvent.pointerUp(card, { clientX: 150, clientY: 50 });
+    expect(onToggleSelect).not.toHaveBeenCalled();
+  });
+
+  it('combines duplicate cards into stacks when groupDuplicates is true', () => {
+    const onSelectUids = vi.fn();
+    render(
+      <HandCards
+        cards={handWithUids(['strike', 'strike', 'evade'] as CriticalCard[])}
+        selectedUids={[]}
+        onToggleSelect={vi.fn()}
+        onSelectUids={onSelectUids}
+        groupDuplicates={true}
+      />,
+    );
+
+    expect(screen.getByTestId('hand-card-strike')).toBeInTheDocument();
+    expect(screen.getByTestId('hand-card-count-strike')).toHaveTextContent(
+      '×2',
+    );
+    expect(screen.getByTestId('hand-card-evade')).toBeInTheDocument();
+
+    const strike = screen.getByTestId('hand-card-strike');
+    fireEvent.pointerDown(strike, { clientX: 10, clientY: 10 });
+    fireEvent.pointerUp(strike, { clientX: 10, clientY: 10 });
+
+    expect(onSelectUids).toHaveBeenCalledWith(['strike-0']);
+  });
 });

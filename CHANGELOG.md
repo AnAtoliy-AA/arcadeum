@@ -10,63 +10,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.30.20] - 2026-09-20
 
 ### Added
-- wire undo button into all solo and multiplayer games
 
+- wire undo button into all solo and multiplayer games
 
 ## [1.30.19] - 2026-09-19
 
 ### Fixed
-- keep territory toggle visible throughout match (ARC-go-territory-toggle)
 
+- keep territory toggle visible throughout match (ARC-go-territory-toggle)
 
 ## [1.30.18] - 2026-09-19
 
 ### Added
-- rework game fields to eliminate excessive transparency and improve UI/UX (ARC-rework-solo-games-fields)
 
+- rework game fields to eliminate excessive transparency and improve UI/UX (ARC-rework-solo-games-fields)
 
 ## [1.30.17] - 2026-09-19
 
 ### Added
+
 - accumulate and persist scanned cells across teammates (ARC-sea-battle-prevent-layout-shift)
 - add interactive targeting and preview for ship abilities (ARC-sea-battle-prevent-layout-shift)
 
 ### Fixed
+
 - set lastSonar on abilities and resize sonar to 3x3 (ARC-sea-battle-prevent-layout-shift)
 - safely extract targetPlayerId and abilityId in gateway (ARC-sea-battle-prevent-layout-shift)
 - replace opacity pulsing with box-shadow glow on targetable opponent field
 - avoid conflicting background and backgroundColor styles on BoardCell
 - prevent fields jumping on turn change and connect ship abilities
 
-
 ## [1.30.16] - 2026-09-19
 
 ### Added
+
 - report passed and failed platforms in result notification
 - add edge-tts voiceover with graceful fallback
 - enhance scenarios, loading overlays, and game AI
 
 ### Fixed
-- resolve edge-tts across users and mix voice into all video types
 
+- resolve edge-tts across users and mix voice into all video types
 
 ## [1.30.15] - 2026-09-19
 
 ### Added
-- support castling as a premove
 
+- support castling as a premove
 
 ## [1.30.14] - 2026-09-19
 
 ### Fixed
-- add missing game over translations for Backgammon and fix Pachisi placement
 
+- add missing game over translations for Backgammon and fix Pachisi placement
 
 ## [1.30.13] - 2026-09-19
 
 ### Added
-- enhance pachisi piece visuals, rotation, and fix token stacking (ARC-965) (ARC-965)
 
+- enhance pachisi piece visuals, rotation, and fix token stacking (ARC-965) (ARC-965)
 
 ## [1.30.12] - 2026-09-19
 

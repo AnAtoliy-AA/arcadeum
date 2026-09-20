@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import type { ComponentProps, CSSProperties, ReactNode } from 'react';
-import { Button, type GameVariant } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 
 export type ModalProps = {
@@ -76,6 +76,7 @@ export type ModalFrameProps = {
   role?: string;
   'aria-label'?: string;
   'data-testid'?: string;
+  'data-theme'?: string;
 };
 
 const FRAME_VARIANT_CLASSES: Record<ModalVariant, string> = {
@@ -96,14 +97,19 @@ export const ModalFrame = ({
   role,
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
+  'data-theme': dataTheme,
 }: ModalFrameProps) => (
   <div
     id={id}
     role={role}
     aria-label={ariaLabel}
     data-testid={dataTestId}
+    data-theme={
+      dataTheme ?? (variant && variant !== 'default' ? variant : 'dark')
+    }
+    data-game-modal=""
     className={cx(
-      'relative w-full max-w-[600px] h-full max-h-[calc(100dvh-40px)] overflow-hidden',
+      'relative w-full max-w-[600px] h-full max-h-[calc(100dvh-40px)] overflow-hidden bg-[#151718] text-[#ecefee]',
       variant === 'cyberpunk' ? 'rounded-[4px]' : 'rounded-[24px]',
       FRAME_VARIANT_CLASSES[variant],
       className,
@@ -145,6 +151,7 @@ export const ModalContent = ({
   id,
   'aria-label': ariaLabel,
   'data-testid': dataTestId,
+  'data-theme': dataTheme,
 }: {
   variant?: string;
   maxWidth?: string | number;
@@ -156,6 +163,7 @@ export const ModalContent = ({
   id?: string;
   'aria-label'?: string;
   'data-testid'?: string;
+  'data-theme'?: string;
 }) => {
   const resolvedVariant = resolveModalVariant(variant);
   const hasSticky = header || footer;
@@ -165,6 +173,7 @@ export const ModalContent = ({
       id={id}
       aria-label={ariaLabel}
       data-testid={dataTestId}
+      data-theme={dataTheme}
       className={cx('m-auto', hasSticky ? 'flex flex-col' : '', className)}
       style={maxWidth ? { maxWidth, ...style } : style}
       variant={resolvedVariant}
@@ -218,7 +227,7 @@ export const ModalHeader = ({
 );
 
 const TITLE_VARIANT_CLASSES: Record<ModalVariant, string> = {
-  default: 'text-[var(--color)]',
+  default: 'text-white drop-shadow-sm',
   cyberpunk:
     'uppercase tracking-[2px] text-[#d946ef] [text-shadow:0_0_10px_rgba(232,121,249,0.5)]',
   underwater:
@@ -242,7 +251,7 @@ export const ModalTitle = ({
     <span
       data-testid={dataTestId}
       className={cx(
-        'text-[28px] font-bold',
+        'text-[28px] font-bold text-white',
         TITLE_VARIANT_CLASSES[resolvedVariant],
         className,
       )}
@@ -257,7 +266,7 @@ interface CloseButtonProps extends ComponentProps<typeof Button> {
 }
 
 export const CloseButton = ({
-  accent,
+  accent: _accent,
   onClick,
   disabled,
   className,
@@ -266,22 +275,20 @@ export const CloseButton = ({
   'data-testid': dataTestId,
   children,
 }: CloseButtonProps) => (
-  <Button
+  <button
+    type="button"
     className={cx(
-      'text-[var(--color)] hover:rotate-[180deg] hover:scale-[1.1] hover:text-[var(--primary)]',
+      'flex items-center justify-center w-8 h-8 rounded-full text-white/80 hover:text-white hover:bg-white/10 hover:rotate-90 hover:scale-110 active:scale-95 transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50',
       className,
     )}
-    variant="icon"
-    size="sm"
     data-testid={dataTestId}
-    gameVariant={accent as GameVariant}
     onClick={onClick}
     disabled={disabled}
     title={title}
     aria-label={ariaLabel}
   >
     {children}
-  </Button>
+  </button>
 );
 
 export const ModalActions = ({
@@ -309,7 +316,7 @@ export const ModalSection = ({
 );
 
 const SECTION_LABEL_VARIANT_CLASSES: Record<ModalVariant, string> = {
-  default: 'text-[var(--textSecondary)]',
+  default: 'text-amber-400 tracking-wider',
   cyberpunk: 'text-[#06b6d4] [text-shadow:0_0_5px_rgba(6,182,212,0.5)]',
   underwater: 'text-[#22d3ee] [text-shadow:0_0_5px_rgba(34,211,238,0.5)]',
 };

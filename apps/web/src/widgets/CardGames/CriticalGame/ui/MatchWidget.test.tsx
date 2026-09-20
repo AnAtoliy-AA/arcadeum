@@ -94,21 +94,14 @@ vi.mock('./hand/HandZone', () => ({
         data-testid="hand-zone-stub-play"
         onClick={onPlay}
       />
-      <button
-        type="button"
-        data-testid="hand-zone-stub-select-strike-0"
-        onClick={() => onToggleSelect('strike-0')}
-      />
-      <button
-        type="button"
-        data-testid="hand-zone-stub-select-strike-1"
-        onClick={() => onToggleSelect('strike-1')}
-      />
-      <button
-        type="button"
-        data-testid="hand-zone-stub-select-targeted_strike-0"
-        onClick={() => onToggleSelect('targeted_strike-0')}
-      />
+      {cards.map((c) => (
+        <button
+          key={c.uid}
+          type="button"
+          data-testid={`hand-zone-stub-select-${c.uid}`}
+          onClick={() => onToggleSelect(c.uid)}
+        />
+      ))}
       {onOpenRules && (
         <button
           type="button"
@@ -292,6 +285,8 @@ describe('MatchWidget (ARC-635)', () => {
     expect(handleOpenEventCombo).toHaveBeenCalledWith(
       ['strike', 'strike'],
       ['strike', 'strike', 'evade'],
+      'pair',
+      null,
     );
   });
 

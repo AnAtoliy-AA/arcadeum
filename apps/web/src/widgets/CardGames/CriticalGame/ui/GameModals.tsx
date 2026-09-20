@@ -28,7 +28,6 @@ const OmniscienceModal = dynamic(() => import('./OmniscienceModal'), {
 import type {
   CriticalCard,
   EventComboModalState,
-  CriticalComboCard,
   CriticalPlayerState,
   OmniscienceModalState,
 } from '../types';
@@ -50,7 +49,7 @@ export interface GameModalsProps {
   aliveOpponents: CriticalPlayerState[];
   selfHand: CriticalCard[];
   discardPile: CriticalCard[];
-  onSelectComboCard: (card: CriticalComboCard) => void;
+  onSelectComboCard: (card: CriticalCard) => void;
   onSelectMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   onSelectTarget: (target: string | null) => void;
   onSelectCard: (card: CriticalCard | null) => void;

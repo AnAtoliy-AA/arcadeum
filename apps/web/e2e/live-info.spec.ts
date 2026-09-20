@@ -98,7 +98,14 @@ test.describe('Live Platform Info & Online Users', () => {
     const filtersContainer = page.getByTestId('games-filters-container');
     await expect(filtersContainer).toBeVisible();
 
-    const inProgressBtn = filtersContainer.getByRole('checkbox', {
+    const statusDropdown = filtersContainer.getByTestId(
+      'rooms-filter-status-dropdown',
+    );
+    if (await statusDropdown.isVisible()) {
+      await statusDropdown.click();
+    }
+
+    const inProgressBtn = page.getByRole('checkbox', {
       name: /In Progress|Идут матчи|En curso|En cours|Ідуць матчы/i,
     });
     await expect(inProgressBtn).toBeVisible();

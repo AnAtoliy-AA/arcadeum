@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState, useEffect } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useSocket, gameSocket } from '@/shared/lib/socket';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -10,7 +11,6 @@ import {
 } from '@/shared/i18n/useTranslation';
 
 interface UndoButtonProps {
-  /** When true, the button is disabled (e.g. game over) */
   disabled?: boolean;
 }
 
@@ -63,33 +63,20 @@ export function UndoButton({ disabled = false }: UndoButtonProps) {
     : (notification ?? t('games.undo.request' as TranslationKey));
 
   return (
-    <div
-      style={{
-        display: 'inline-flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 4,
-      }}
+    <button
+      type="button"
+      onClick={requestUndo}
+      disabled={waiting || disabled}
+      data-testid="multiplayer-undo-button"
+      className={cx(
+        'inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold transition-colors active:scale-95 select-none whitespace-nowrap',
+        disabled || waiting
+          ? 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--textSecondary)] opacity-50 cursor-not-allowed'
+          : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/10',
+      )}
     >
-      <button
-        type="button"
-        onClick={requestUndo}
-        disabled={waiting || disabled}
-        style={{
-          padding: '8px 16px',
-          borderRadius: 8,
-          border: '1px solid var(--glassBorder)',
-          backgroundColor: waiting ? 'var(--glassBgHover)' : 'var(--glassBg)',
-          color: disabled ? 'var(--textSecondary)' : 'var(--color)',
-          fontSize: 14,
-          fontWeight: 600,
-          cursor: disabled || waiting ? 'not-allowed' : 'pointer',
-          opacity: disabled ? 0.5 : 1,
-          transition: 'opacity 0.2s',
-        }}
-      >
-        {label}
-      </button>
-    </div>
+      <span>↩️</span>
+      <span>{label}</span>
+    </button>
   );
 }

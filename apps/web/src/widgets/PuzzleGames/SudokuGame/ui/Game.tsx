@@ -51,6 +51,10 @@ function SudokuTable() {
   const note = useSudokuStore((state) => state.note);
   const changeDifficulty = useSudokuStore((state) => state.changeDifficulty);
   const newGame = useSudokuStore((state) => state.newGame);
+  const undo = useSudokuStore((state) => state.undo);
+  const canUndo = useSudokuStore(
+    (state) => state.history.length > 0 && state.finishedAt === null,
+  );
 
   const [selected, setSelected] = useState<number | null>(null);
   const [notesMode, setNotesMode] = useState(false);
@@ -136,6 +140,13 @@ function SudokuTable() {
         case 'N':
           setNotesMode((mode) => !mode);
           break;
+        case 'z':
+        case 'Z':
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            undo();
+          }
+          break;
         default: {
           const digit = Number(event.key);
           if (Number.isInteger(digit) && digit >= 1 && digit <= 9) {
@@ -144,7 +155,7 @@ function SudokuTable() {
         }
       }
     },
-    [pause.isPaused, applyDigit, erase, moveSelection],
+    [pause.isPaused, applyDigit, erase, moveSelection, undo],
   );
 
   const stats: GameResultStats | null = useMemo(() => {
@@ -232,6 +243,7 @@ function SudokuTable() {
       statsItems={statsItems}
       controls={controls}
       actions={actions}
+      undo={{ onUndo: undo, canUndo }}
       loadingMessage="games.sudoku_v1.board.loading"
       modal={{
         result: 'victory',

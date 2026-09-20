@@ -20,6 +20,7 @@ import {
   GameWidgetContainer,
   type TurnStatusVariant,
 } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { SeaBattleLobby } from './SeaBattleLobby';
@@ -33,7 +34,6 @@ import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
 import { RulesModal } from './RulesModal';
 import './styles/sea-battle.scss';
-
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,
   room: initialRoom,
@@ -45,7 +45,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   onShowRulesClose,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
-
   const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
     useGameRoomActions(roomId, initialRoom);
 
@@ -378,6 +377,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       variantEmoji: currentVariant?.emoji ?? '🚢',
       title: headerTitle,
       subtitle: room?.name,
+      extraActions: <UndoButton disabled={isGameOver} />,
       turnStatusVariant: turnStatus.variant,
       turnStatusText: turnStatus.text,
       turnAvatar: currentTurnPlayer ? (
@@ -395,13 +395,13 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       currentVariant,
       headerTitle,
       room?.name,
+      isGameOver,
       turnStatus,
       currentTurnPlayer,
       resolveDisplayNameBound,
       gameEnd.toggleResult,
     ],
   );
-
   if (!room) return null;
 
   // Lobby — early return before GameWidgetContainer

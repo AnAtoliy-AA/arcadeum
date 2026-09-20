@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -426,6 +427,7 @@ function CheckersGameImpl({
           title: 'Checkers',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -288,6 +289,7 @@ function CatDashGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Cat Dash',
           subtitle: room?.name,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentEntryId,
             isMyTurn: myTurn,

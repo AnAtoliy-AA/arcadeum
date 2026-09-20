@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -304,6 +305,7 @@ function TicTacToeGameImpl({
           title: 'Tic-Tac-Toe',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentShooterId,
             isMyTurn: myTurn,

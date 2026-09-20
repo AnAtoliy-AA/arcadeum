@@ -37,8 +37,8 @@ export function DiscardPile({
       <CardSlot
         role="lastPlayed"
         style={{
-          width: isNarrow ? 80 : 140,
-          height: isNarrow ? 112 : 196,
+          width: isNarrow ? 76 : 120,
+          height: isNarrow ? 106 : 168,
         }}
       >
         <LastPlayedCardDisplay
@@ -97,7 +97,7 @@ export function DiscardPile({
         )}
       </CardSlot>
       <span
-        className="text-[12px] font-extrabold tracking-[0.4px] opacity-[0.85]"
+        className="text-[12px] font-extrabold tracking-[0.4px] text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
         data-testid="arena-discard-pile-count"
       >
         {t('games.table.state.discard')} · {count}

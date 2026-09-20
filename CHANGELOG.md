@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.21] - 2026-09-20
+
+### Added
+- redesign combo modal using SharedModal with high-contrast styling (ARC-critical-game-enhancements)
+- match blind card backs with board theme and streamline trio/fiver pickers (ARC-critical-game-enhancements)
+- stack duplicate cards in hand with count badges and steppers (ARC-critical-game-enhancements)
+- add desktop drag-to-scroll navigation for hand cards (ARC-critical-game-enhancements)
+
+### Fixed
+- clean up table card borders and eliminate background corner leaks (ARC-critical-game-enhancements)
+- fix event combo handlers and store state for pairs, trios, and fivers (ARC-critical-game-enhancements)
+- optimize responsive layout for compact and mobile landscape viewports (ARC-critical-game-enhancements)
+
+### Improved
+- remove non-composited pulse animation from catalog genre dots (ARC-critical-game-enhancements)
+
+### Refactored
+- migrate give favor modal to SharedModal with crisp visual contrast (ARC-critical-game-enhancements)
+- integrate SharedModal with scoped dark theme tokens (ARC-critical-game-enhancements)
+
+
 ## [1.30.20] - 2026-09-20
 
 ### Added

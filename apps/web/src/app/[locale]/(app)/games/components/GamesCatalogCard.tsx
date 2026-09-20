@@ -51,7 +51,7 @@ export function GamesCatalogCard({
 
           <div className="box-border absolute top-2.5 left-2.5 z-[4] flex items-center gap-1.5 pointer-events-none">
             <span className="box-border inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-black/80 text-white/95 text-[11px] font-semibold border border-white/20 backdrop-blur-md shadow-md">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
               {game.genre}
               {game.pace ? ` · ${game.pace}` : ''}
             </span>

@@ -200,7 +200,6 @@ export function ActiveGameView({
     omniscienceModal,
     setOmniscienceModal,
     handleCloseOmniscienceModal,
-    handleConfirmEventCombo,
     favorModal,
   } = useCriticalModals({
     playFavor: actions.playFavor,
@@ -264,6 +263,7 @@ export function ActiveGameView({
 
   const {
     handleOpenFiverCombo,
+    handleConfirmEventCombo,
     handleConfirmStash,
     handleConfirmMark,
     handleConfirmStealDraw,

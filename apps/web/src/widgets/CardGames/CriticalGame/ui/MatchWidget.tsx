@@ -24,7 +24,6 @@ import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions
 import type { UseAutoplayReturn } from '../hooks/useAutoplay';
 import type {
   CriticalCard,
-  CriticalComboCard,
   CriticalPlayerState,
   CriticalSnapshot,
   GameRoomSummary,
@@ -61,10 +60,13 @@ export interface MatchWidgetProps {
   actions: UseGameActionsReturn;
   handlePlayActionCard: (card: CriticalCard) => void;
   handleOpenEventCombo: (
-    cards: CriticalComboCard[],
+    cards: CriticalCard[],
     hand: CriticalCard[],
+    initialMode?: 'pair' | 'trio' | 'fiver' | null,
+    initialTarget?: string | null,
+    initialFiverCards?: CriticalCard[],
   ) => void;
-  handleOpenFiverCombo: () => void;
+  handleOpenFiverCombo: (initialCards?: CriticalCard[]) => void;
   formatLogMessage: (message?: string | null) => string;
   /**
    * Optional. The hand's fullscreen affordance — when omitted (the widget now
@@ -324,9 +326,14 @@ export function MatchWidget({
           handlePlayActionCard(cardId);
         }
       } else if (detected.kind === 'pair' || detected.kind === 'triple') {
-        handleOpenEventCombo(asComboCards(detected.selected), hand);
+        handleOpenEventCombo(
+          asComboCards(detected.selected),
+          hand,
+          detected.kind === 'triple' ? 'trio' : 'pair',
+          targetPlayerId,
+        );
       } else if (detected.kind === 'five') {
-        handleOpenFiverCombo();
+        handleOpenFiverCombo(detected.selected.map((s) => s.id));
       }
       setSelectedUids([]);
       setTargetPlayerId(null);
@@ -453,6 +460,7 @@ export function MatchWidget({
               cards={handCards}
               selectedUids={validSelectedUids}
               onToggleSelect={handleToggleSelect}
+              onSelectUids={setSelectedUids}
               onClearSelection={handleClearSelection}
               combo={combo}
               defuseCount={defuseCount}

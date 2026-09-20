@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.24] - 2026-09-20
+
+### Added
+- rework hearts and spades UI and UX for mobile (ARC-hearts-spades-mobile-ui)
+
+
 ## [1.30.23] - 2026-09-20
 
 ### Added

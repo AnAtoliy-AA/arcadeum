@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.20] - 2026-09-20
+
+### Added
+- wire undo button into all solo and multiplayer games
+
+
 ## [1.30.19] - 2026-09-19
 
 ### Fixed

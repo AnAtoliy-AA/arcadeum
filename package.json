@@ -46,9 +46,9 @@
     "jimp": "^0.22.12",
     "lint-staged": "^15.5.2",
     "markdown-it": "^14.3.2",
-    "prettier": "3.9.6",
+    "prettier": "3.9.8",
     "standard-version": "^9.5.0",
-    "turbo": "^2.10.12"
+    "turbo": "^2.10.13"
   },
   "pnpm": {
     "overrides": {

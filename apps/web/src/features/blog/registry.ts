@@ -149,6 +149,69 @@ const POST_MANIFEST: Record<
   'patch-notes-v1-24': {
     en: () => import('./posts/patch-notes-v1-24/en'),
   },
+  'chess-opening-traps': {
+    en: () => import('./posts/chess-opening-traps/en'),
+    ru: () => import('./posts/chess-opening-traps/ru'),
+    es: () => import('./posts/chess-opening-traps/es'),
+    fr: () => import('./posts/chess-opening-traps/fr'),
+    by: () => import('./posts/chess-opening-traps/by'),
+  },
+  'how-to-win-chess-endgames': {
+    en: () => import('./posts/how-to-win-chess-endgames/en'),
+    ru: () => import('./posts/how-to-win-chess-endgames/ru'),
+    es: () => import('./posts/how-to-win-chess-endgames/es'),
+    fr: () => import('./posts/how-to-win-chess-endgames/fr'),
+    by: () => import('./posts/how-to-win-chess-endgames/by'),
+  },
+  'how-to-win-spades': {
+    en: () => import('./posts/how-to-win-spades/en'),
+    ru: () => import('./posts/how-to-win-spades/ru'),
+    es: () => import('./posts/how-to-win-spades/es'),
+    fr: () => import('./posts/how-to-win-spades/fr'),
+    by: () => import('./posts/how-to-win-spades/by'),
+  },
+  'how-to-win-hearts-advanced': {
+    en: () => import('./posts/how-to-win-hearts-advanced/en'),
+    ru: () => import('./posts/how-to-win-hearts-advanced/ru'),
+    es: () => import('./posts/how-to-win-hearts-advanced/es'),
+    fr: () => import('./posts/how-to-win-hearts-advanced/fr'),
+    by: () => import('./posts/how-to-win-hearts-advanced/by'),
+  },
+  'backgammon-pip-count-guide': {
+    en: () => import('./posts/backgammon-pip-count-guide/en'),
+    ru: () => import('./posts/backgammon-pip-count-guide/ru'),
+    es: () => import('./posts/backgammon-pip-count-guide/es'),
+    fr: () => import('./posts/backgammon-pip-count-guide/fr'),
+    by: () => import('./posts/backgammon-pip-count-guide/by'),
+  },
+  'how-to-win-checkers': {
+    en: () => import('./posts/how-to-win-checkers/en'),
+    ru: () => import('./posts/how-to-win-checkers/ru'),
+    es: () => import('./posts/how-to-win-checkers/es'),
+    fr: () => import('./posts/how-to-win-checkers/fr'),
+    by: () => import('./posts/how-to-win-checkers/by'),
+  },
+  'how-to-solve-sudoku-advanced': {
+    en: () => import('./posts/how-to-solve-sudoku-advanced/en'),
+    ru: () => import('./posts/how-to-solve-sudoku-advanced/ru'),
+    es: () => import('./posts/how-to-solve-sudoku-advanced/es'),
+    fr: () => import('./posts/how-to-solve-sudoku-advanced/fr'),
+    by: () => import('./posts/how-to-solve-sudoku-advanced/by'),
+  },
+  'sea-battle-advanced': {
+    en: () => import('./posts/sea-battle-advanced/en'),
+    ru: () => import('./posts/sea-battle-advanced/ru'),
+    es: () => import('./posts/sea-battle-advanced/es'),
+    fr: () => import('./posts/sea-battle-advanced/fr'),
+    by: () => import('./posts/sea-battle-advanced/by'),
+  },
+  'go-life-death-problems': {
+    en: () => import('./posts/go-life-death-problems/en'),
+    ru: () => import('./posts/go-life-death-problems/ru'),
+    es: () => import('./posts/go-life-death-problems/es'),
+    fr: () => import('./posts/go-life-death-problems/fr'),
+    by: () => import('./posts/go-life-death-problems/by'),
+  },
 };
 
 /** Canonical slugs for every published post, in stable order. */

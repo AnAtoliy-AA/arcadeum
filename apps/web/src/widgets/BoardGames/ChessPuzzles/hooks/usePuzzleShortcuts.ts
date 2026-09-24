@@ -10,6 +10,8 @@ interface UsePuzzleShortcutsOptions {
   onShowSolution?: () => void;
   onToggleZen?: () => void;
   onFlipBoard?: () => void;
+  onToggleBlindfold?: () => void;
+  onPeek?: () => void;
 }
 
 export function usePuzzleShortcuts({
@@ -20,6 +22,8 @@ export function usePuzzleShortcuts({
   onShowSolution,
   onToggleZen,
   onFlipBoard,
+  onToggleBlindfold,
+  onPeek,
 }: UsePuzzleShortcutsOptions) {
   useEffect(() => {
     if (!enabled) return;
@@ -78,6 +82,20 @@ export function usePuzzleShortcuts({
             onFlipBoard();
           }
           break;
+        case 'b':
+        case 'B':
+          if (onToggleBlindfold) {
+            e.preventDefault();
+            onToggleBlindfold();
+          }
+          break;
+        case 'p':
+        case 'P':
+          if (onPeek) {
+            e.preventDefault();
+            onPeek();
+          }
+          break;
       }
     };
 
@@ -93,5 +111,7 @@ export function usePuzzleShortcuts({
     onShowSolution,
     onToggleZen,
     onFlipBoard,
+    onToggleBlindfold,
+    onPeek,
   ]);
 }

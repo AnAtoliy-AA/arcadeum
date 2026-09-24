@@ -27,6 +27,7 @@ import {
   recordPuzzleResult,
   playTacticsAudio,
 } from '@/features/chess/lib/puzzle-analytics';
+import { recordRatingUpdate } from '@/features/chess/lib/puzzle-rating';
 
 export type PuzzlePhase =
   'waiting' | 'opponent' | 'player' | 'solved' | 'failed' | 'solution';
@@ -213,9 +214,10 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         playSound('error');
         playTacticsAudio('fail');
         recordPuzzleResult(puzzle, false, [...playerMoves, normalizedMove]);
+        const ratingUpdate = recordRatingUpdate(puzzle, false);
         setResult({
           solved: false,
-          ratingChange: -10,
+          ratingChange: ratingUpdate.change,
           puzzle,
         });
         options.onFailed?.(puzzle);
@@ -257,11 +259,21 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         playSound('gameEnd');
         playTacticsAudio('solve');
         recordPuzzleResult(puzzle, true, updatedMoves);
+        const ratingUpdate = recordRatingUpdate(puzzle, true);
         options.onSolved?.({ puzzle, moves: updatedMoves, timeMs });
         solvePuzzle(puzzle.puzzleId, updatedMoves, timeMs)
-          .then(setResult)
+          .then((res) => {
+            setResult({
+              ...res,
+              ratingChange: ratingUpdate.change,
+            });
+          })
           .catch(() => {
-            setResult({ solved: true, ratingChange: 10, puzzle });
+            setResult({
+              solved: true,
+              ratingChange: ratingUpdate.change,
+              puzzle,
+            });
           });
         return;
       }

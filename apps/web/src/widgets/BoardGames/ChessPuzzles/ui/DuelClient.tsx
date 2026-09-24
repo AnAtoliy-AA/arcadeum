@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ChessPuzzleTabs } from './ChessPuzzleTabs';
 import { PuzzleDuel } from './PuzzleDuel';
+import { OnlinePuzzleDuel } from './OnlinePuzzleDuel';
 import { PuzzleAnalyticsModal } from './PuzzleAnalyticsModal';
 
 interface DuelClientProps {
@@ -10,6 +12,11 @@ interface DuelClientProps {
 }
 
 export function DuelClient({ locale }: DuelClientProps) {
+  const searchParams = useSearchParams();
+  const roomParam = searchParams?.get('room') || undefined;
+  const [duelMode, setDuelMode] = useState<'bot' | 'online'>(
+    roomParam ? 'online' : 'bot',
+  );
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
 
   return (
@@ -31,7 +38,41 @@ export function DuelClient({ locale }: DuelClientProps) {
           onOpenAnalytics={() => setAnalyticsOpen(true)}
         />
 
-        <PuzzleDuel />
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <button
+            type="button"
+            onClick={() => setDuelMode('bot')}
+            data-testid="tab-duel-bot"
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              duelMode === 'bot'
+                ? 'bg-[var(--primary)] text-white shadow-md'
+                : 'bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'
+            }`}
+          >
+            🤖 Solo vs Bot
+          </button>
+          <button
+            type="button"
+            onClick={() => setDuelMode('online')}
+            data-testid="tab-duel-online"
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors ${
+              duelMode === 'online'
+                ? 'bg-[var(--primary)] text-white shadow-md'
+                : 'bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'
+            }`}
+          >
+            👥 1v1 Online (Invite Friend)
+          </button>
+        </div>
+
+        {duelMode === 'bot' ? (
+          <PuzzleDuel />
+        ) : (
+          <OnlinePuzzleDuel
+            initialRoomCode={roomParam}
+            onBackToBot={() => setDuelMode('bot')}
+          />
+        )}
 
         <PuzzleAnalyticsModal
           isOpen={analyticsOpen}

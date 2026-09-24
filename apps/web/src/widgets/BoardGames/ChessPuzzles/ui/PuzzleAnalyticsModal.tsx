@@ -9,6 +9,11 @@ import {
   clearMistakesQueue,
   type ThemeStat,
 } from '@/features/chess/lib/puzzle-analytics';
+import {
+  getUserPuzzleRating,
+  getRatingHistory,
+} from '@/features/chess/lib/puzzle-rating';
+import { PuzzleRatingChart } from './PuzzleRatingChart';
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 
 interface PuzzleAnalyticsModalProps {
@@ -37,6 +42,16 @@ export function PuzzleAnalyticsModal({
   const mistakes = useMemo(() => {
     void refreshKey;
     return loadMistakesQueue();
+  }, [refreshKey]);
+
+  const userRating = useMemo(() => {
+    void refreshKey;
+    return getUserPuzzleRating();
+  }, [refreshKey]);
+
+  const ratingHistory = useMemo(() => {
+    void refreshKey;
+    return getRatingHistory();
   }, [refreshKey]);
 
   const overallAccuracy = useMemo(() => {
@@ -92,7 +107,7 @@ export function PuzzleAnalyticsModal({
                 : 'text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'
             }`}
           >
-            Tactical Radar
+            Tactical Radar & Elo
           </button>
           <button
             type="button"
@@ -115,6 +130,11 @@ export function PuzzleAnalyticsModal({
 
         {activeTab === 'analytics' ? (
           <div className="flex flex-col gap-5">
+            <PuzzleRatingChart
+              history={ratingHistory}
+              currentRating={userRating}
+            />
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
                 <div className="text-[10px] text-[var(--textSecondary)] font-medium">

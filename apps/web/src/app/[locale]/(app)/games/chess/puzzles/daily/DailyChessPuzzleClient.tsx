@@ -11,6 +11,8 @@ import {
   type DailyStreakState,
 } from '@/shared/lib/daily-streak';
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
+import { savePersonalBest } from '@/features/chess/lib/daily-leaderboard';
+import { DailyLeaderboardModal } from '@/widgets/BoardGames/ChessPuzzles/ui/DailyLeaderboardModal';
 
 interface DailyChessPuzzleClientProps {
   locale: string;
@@ -58,6 +60,7 @@ export function DailyChessPuzzleClient({
     timeMs: number;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -70,6 +73,7 @@ export function DailyChessPuzzleClient({
   const handleSolved = useCallback(
     (info: { puzzle: ChessPuzzle; moves: string[]; timeMs: number }) => {
       setSolvedInfo(info);
+      savePersonalBest(info.puzzle.puzzleId, info.timeMs);
       const updated = DailyStreakManager.recordCompletion();
       setStreakState(updated);
     },
@@ -171,6 +175,14 @@ export function DailyChessPuzzleClient({
                 Today
               </Button>
             )}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setLeaderboardOpen(true)}
+              data-testid="open-speed-leaderboard-btn"
+            >
+              ⚡ Speed Leaderboard
+            </Button>
           </div>
 
           <div className="mt-3 flex items-center gap-2 text-xs text-[var(--textSecondary)]">
@@ -228,6 +240,14 @@ export function DailyChessPuzzleClient({
           date={selectedDate}
           onSolved={handleSolved}
           onShare={handleShare}
+        />
+
+        <DailyLeaderboardModal
+          isOpen={leaderboardOpen}
+          onClose={() => setLeaderboardOpen(false)}
+          dateStr={selectedDate}
+          puzzleId={solvedInfo?.puzzle.puzzleId || `daily-${selectedDate}`}
+          lastSolveTimeMs={solvedInfo?.timeMs}
         />
       </div>
     </main>

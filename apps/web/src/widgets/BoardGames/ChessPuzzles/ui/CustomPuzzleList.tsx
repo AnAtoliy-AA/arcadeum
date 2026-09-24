@@ -16,6 +16,7 @@ interface CustomPuzzleListProps {
   onPlay: (puzzle: ChessPuzzle) => void;
   onCreateNew: () => void;
   onRefresh: () => void;
+  onImportPgn?: () => void;
 }
 
 export function CustomPuzzleList({
@@ -24,6 +25,7 @@ export function CustomPuzzleList({
   onPlay,
   onCreateNew,
   onRefresh,
+  onImportPgn,
 }: CustomPuzzleListProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -109,6 +111,14 @@ export function CustomPuzzleList({
             data-testid="export-puzzles-btn"
           >
             Export JSON
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onImportPgn}
+            data-testid="import-pgn-btn"
+          >
+            Import PGN
           </Button>
           <Button
             variant="secondary"

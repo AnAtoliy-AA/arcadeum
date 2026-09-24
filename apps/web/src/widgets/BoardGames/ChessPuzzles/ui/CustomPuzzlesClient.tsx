@@ -6,6 +6,7 @@ import { Button } from '@arcadeum/ui';
 import { ChessPuzzleTabs } from './ChessPuzzleTabs';
 import { CustomPuzzleCreator } from './CustomPuzzleCreator';
 import { CustomPuzzleList } from './CustomPuzzleList';
+import { PgnPuzzleImporter } from './PgnPuzzleImporter';
 import { PuzzleGame } from './Game';
 import {
   loadCustomPuzzles,
@@ -17,7 +18,7 @@ interface CustomPuzzlesClientProps {
   locale: string;
 }
 
-type ViewState = 'list' | 'create' | 'play';
+type ViewState = 'list' | 'create' | 'play' | 'pgn';
 
 export function CustomPuzzlesClient({ locale }: CustomPuzzlesClientProps) {
   const searchParams = useSearchParams();
@@ -79,12 +80,34 @@ export function CustomPuzzlesClient({ locale }: CustomPuzzlesClientProps) {
           />
         )}
 
+        {view === 'pgn' && (
+          <div className="w-full flex flex-col gap-4">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] backdrop-blur-md">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleBackToList}
+                data-testid="back-from-pgn-btn"
+              >
+                ← Back to Custom Puzzles
+              </Button>
+            </div>
+            <PgnPuzzleImporter
+              onImportSuccess={() => {
+                refreshPuzzles();
+                setView('list');
+              }}
+            />
+          </div>
+        )}
+
         {view === 'list' && (
           <CustomPuzzleList
             puzzles={puzzles}
             locale={locale}
             onPlay={handlePlayPuzzle}
             onCreateNew={() => setView('create')}
+            onImportPgn={() => setView('pgn')}
             onRefresh={refreshPuzzles}
           />
         )}

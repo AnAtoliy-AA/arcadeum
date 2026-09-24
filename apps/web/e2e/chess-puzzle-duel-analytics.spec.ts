@@ -15,7 +15,7 @@ test.describe('Chess Puzzle Duel and Tactical Analytics', () => {
     await mockSession(page);
   });
 
-  it('renders puzzle duel page and selects difficulty to start match', async ({
+  test('renders puzzle duel page and selects difficulty to start match', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles/duel');
@@ -37,7 +37,7 @@ test.describe('Chess Puzzle Duel and Tactical Analytics', () => {
     await expect(page.getByTestId('duel-timer')).toBeVisible();
   });
 
-  it('toggles zen mode and board flipping on rated puzzle game', async ({
+  test('toggles zen mode and board flipping on rated puzzle game', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles');
@@ -52,7 +52,7 @@ test.describe('Chess Puzzle Duel and Tactical Analytics', () => {
     await flipBtn.click();
   });
 
-  it('opens tactical analytics modal and displays stats and radar tabs', async ({
+  test('opens tactical analytics modal and displays stats and radar tabs', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles');

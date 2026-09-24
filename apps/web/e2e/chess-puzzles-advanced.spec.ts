@@ -15,7 +15,7 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     await mockSession(page);
   });
 
-  it('toggles blindfold visualization mode and reveals peek button', async ({
+  test('toggles blindfold visualization mode and reveals peek button', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles');
@@ -32,7 +32,7 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     await expect(peekBtn).toHaveText(/Peeking/);
   });
 
-  it('displays tactical elo rating chart inside analytics modal', async ({
+  test('displays tactical elo rating chart inside analytics modal', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles');
@@ -48,7 +48,7 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     await closeBtn.click();
   });
 
-  it('imports classical study via PGN importer on custom puzzles page', async ({
+  test('imports classical study via PGN importer on custom puzzles page', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles/custom');
@@ -70,7 +70,9 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     );
   });
 
-  it('switches to 1v1 online duel and creates room code', async ({ page }) => {
+  test('switches to 1v1 online duel and creates room code', async ({
+    page,
+  }) => {
     await navigateTo(page, '/en/games/chess/puzzles/duel');
 
     const onlineTab = page.getByTestId('tab-duel-online');
@@ -85,7 +87,7 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     await expect(page.getByTestId('copy-room-link-btn')).toBeVisible();
   });
 
-  it('opens daily speed-run leaderboard modal on daily puzzle page', async ({
+  test('opens daily speed-run leaderboard modal on daily puzzle page', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles/daily');

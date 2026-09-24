@@ -9,6 +9,7 @@ import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 interface PuzzleGameProps {
   mode?: 'daily' | 'rated' | 'themed';
   theme?: string;
+  date?: Date | string;
   onSolved?: (result: {
     puzzle: ChessPuzzle;
     moves: string[];
@@ -20,6 +21,7 @@ interface PuzzleGameProps {
 function PuzzleGameImpl({
   mode = 'rated',
   theme,
+  date,
   onSolved,
   onShare,
 }: PuzzleGameProps) {
@@ -42,7 +44,7 @@ function PuzzleGameImpl({
     showHint,
     showSolution,
     selectSquare,
-  } = usePuzzleState({ mode, theme, onSolved });
+  } = usePuzzleState({ mode, theme, date, onSolved });
 
   const handleNext = useCallback(() => {
     void loadPuzzle();

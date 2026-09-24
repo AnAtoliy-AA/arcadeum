@@ -31,6 +31,7 @@ interface UsePuzzleStateOptions {
   mode?: 'daily' | 'rated' | 'themed';
   theme?: string;
   rating?: number;
+  date?: Date | string;
   onSolved?: (res: {
     puzzle: ChessPuzzle;
     moves: string[];
@@ -40,7 +41,7 @@ interface UsePuzzleStateOptions {
 }
 
 export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
-  const { mode = 'rated', theme, rating } = options;
+  const { mode = 'rated', theme, rating, date } = options;
   const { playSound } = useChessSounds();
 
   const [puzzle, setPuzzle] = useState<ChessPuzzle | null>(null);
@@ -123,7 +124,7 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
       try {
         let p: ChessPuzzle | null = null;
         if (mode === 'daily') {
-          p = await getDailyPuzzle();
+          p = await getDailyPuzzle(date);
         } else {
           p = await getRandomPuzzle(activeRating, activeTheme);
         }
@@ -140,7 +141,7 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         setLoading(false);
       }
     },
-    [mode, theme, rating, clearAllTimers, initPuzzleState],
+    [mode, theme, rating, date, clearAllTimers, initPuzzleState],
   );
 
   useEffect(() => {

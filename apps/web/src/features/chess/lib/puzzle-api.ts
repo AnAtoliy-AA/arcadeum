@@ -41,23 +41,73 @@ import {
 export { THEME_CATEGORIES, type ThemeCategoryId };
 export const CURATED_DAILY_PUZZLES: ChessPuzzle[] = CURATED_PUZZLES;
 
-export function getCuratedDailyPuzzle(date = new Date()): ChessPuzzle {
+const puzzleTierCache: Record<string, ChessPuzzle[]> = {};
+
+async function loadStaticPuzzles(
+  tier: 'daily' | 'easy' | 'medium' | 'hard' | 'master',
+): Promise<ChessPuzzle[]> {
+  if (puzzleTierCache[tier] && puzzleTierCache[tier].length > 0) {
+    return puzzleTierCache[tier];
+  }
+  if (typeof window === 'undefined') return [];
+  try {
+    const res = await fetch(`/puzzles/puzzles-${tier}.json`);
+    if (!res.ok) return [];
+    const data = (await res.json()) as ChessPuzzle[];
+    puzzleTierCache[tier] = data;
+    return data;
+  } catch {
+    return [];
+  }
+}
+
+function getTierForRating(
+  rating?: number,
+): 'easy' | 'medium' | 'hard' | 'master' {
+  if (!rating || rating < 1200) return 'easy';
+  if (rating < 1600) return 'medium';
+  if (rating < 2000) return 'hard';
+  return 'master';
+}
+
+export function getCuratedDailyPuzzle(dateInput?: Date | string): ChessPuzzle {
+  const date =
+    typeof dateInput === 'string'
+      ? new Date(dateInput.includes('T') ? dateInput : `${dateInput}T00:00:00Z`)
+      : (dateInput ?? new Date());
   const seed =
     date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate();
   const index = seed % CURATED_DAILY_PUZZLES.length;
   return CURATED_DAILY_PUZZLES[index]!;
 }
 
-export async function getDailyPuzzle(): Promise<ChessPuzzle> {
+export async function getDailyPuzzle(
+  dateInput?: Date | string,
+): Promise<ChessPuzzle> {
+  const date =
+    typeof dateInput === 'string'
+      ? new Date(dateInput.includes('T') ? dateInput : `${dateInput}T00:00:00Z`)
+      : (dateInput ?? new Date());
   try {
     const res = await apiFetch<ChessPuzzle | null>('/chess/puzzles/daily');
     if (res && res.fen && Array.isArray(res.moves) && res.moves.length > 0) {
       return res;
     }
-  } catch {
-    return getCuratedDailyPuzzle();
+  } catch {}
+
+  const staticDaily = await loadStaticPuzzles('daily');
+  if (staticDaily.length > 0) {
+    const startOfYear = new Date(Date.UTC(date.getFullYear(), 0, 1));
+    const dayOfYear = Math.floor(
+      (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) -
+        startOfYear.getTime()) /
+        86400000,
+    );
+    const index = Math.abs(dayOfYear) % staticDaily.length;
+    return staticDaily[index] ?? CURATED_DAILY_PUZZLES[0]!;
   }
-  return getCuratedDailyPuzzle();
+
+  return getCuratedDailyPuzzle(date);
 }
 
 export async function getRandomPuzzle(
@@ -73,9 +123,20 @@ export async function getRandomPuzzle(
       `/chess/puzzles/random${qs ? `?${qs}` : ''}`,
     );
     if (res && res.fen) return res;
-  } catch {
-    return getLocalFallbackPuzzle(rating, theme);
+  } catch {}
+
+  const targetTier = getTierForRating(rating);
+  const staticPool = await loadStaticPuzzles(targetTier);
+  if (staticPool.length > 0) {
+    let pool = staticPool;
+    if (theme && theme !== 'all') {
+      const themeMatches = pool.filter((p) => p.themes.includes(theme));
+      if (themeMatches.length > 0) pool = themeMatches;
+    }
+    const idx = Math.floor(Math.random() * pool.length);
+    return pool[idx] ?? staticPool[0]!;
   }
+
   return getLocalFallbackPuzzle(rating, theme);
 }
 

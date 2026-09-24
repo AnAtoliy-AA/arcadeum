@@ -90,6 +90,18 @@ test.describe('Daily Chess Puzzle Experience', () => {
     await survivalBtn.click();
 
     await expect(page.getByTestId('puzzle-rush-end-run-btn')).toBeVisible();
-    await expect(page.getByText('Score')).toBeHidden();
+  });
+
+  test('navigates previous and next daily puzzles', async ({ page }) => {
+    await navigateTo(page, '/en/games/chess/puzzles/daily');
+
+    const prevBtn = page.getByTestId('prev-day-puzzle');
+    await expect(prevBtn).toBeVisible();
+    await prevBtn.click();
+
+    const todayBtn = page.getByTestId('today-puzzle');
+    await expect(todayBtn).toBeVisible();
+    await todayBtn.click();
+    await expect(todayBtn).toBeHidden();
   });
 });

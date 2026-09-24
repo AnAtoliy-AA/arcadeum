@@ -32,64 +32,14 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export const CURATED_DAILY_PUZZLES: ChessPuzzle[] = [
-  {
-    puzzleId: 'daily-2026-1',
-    fen: 'r1bqkb1r/pppp1ppp/2n5/4p3/2B1n3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 5',
-    moves: ['c4f7', 'e8f7'],
-    rating: 1250,
-    themes: ['sacrifice', 'fork', 'opening'],
-    openingTags: ['Italian Game'],
-  },
-  {
-    puzzleId: 'daily-2026-2',
-    fen: 'r1b2rk1/ppp2ppp/8/8/2B5/8/PPP2PPP/3R2K1 w - - 0 1',
-    moves: ['c4f7', 'f8f7', 'd1d8'],
-    rating: 1300,
-    themes: ['backRankMate', 'deflection'],
-    openingTags: ['Middlegame'],
-  },
-  {
-    puzzleId: 'daily-2026-3',
-    fen: 'r2qkb1r/pp2pppp/2n1b3/3n4/2BP4/5N2/PP3PPP/RNBQK2R w KQkq - 2 8',
-    moves: ['f3g5', 'd8d6'],
-    rating: 1400,
-    themes: ['tactics', 'advantage'],
-    openingTags: ['Scandinavian Defense'],
-  },
-  {
-    puzzleId: 'daily-2026-4',
-    fen: '6k1/5ppp/8/8/8/8/5PPP/4R1K1 w - - 0 1',
-    moves: ['e1e8'],
-    rating: 1100,
-    themes: ['mateIn1', 'backRankMate'],
-    openingTags: ['Endgame'],
-  },
-  {
-    puzzleId: 'daily-2026-5',
-    fen: 'r1bqk2r/pppp1ppp/2n5/1B2p3/4n3/5N2/PPPP1PPP/RNBQ1RK1 w kq - 0 6',
-    moves: ['f1e1', 'd7d5'],
-    rating: 1350,
-    themes: ['pin', 'middlegame'],
-    openingTags: ['Ruy Lopez'],
-  },
-  {
-    puzzleId: 'daily-2026-6',
-    fen: 'r1b1k2r/ppppqppp/2n5/4n3/1bP2B2/5N2/PP1NPPPP/R2QKB1R w KQkq - 0 8',
-    moves: ['f3e5', 'c6e5'],
-    rating: 1200,
-    themes: ['discoveredAttack', 'trap'],
-    openingTags: ['Budapest Gambit'],
-  },
-  {
-    puzzleId: 'daily-2026-7',
-    fen: 'r4rk1/ppp2ppp/8/3q4/8/8/PPP2PPP/R3R1K1 w - - 0 1',
-    moves: ['e1e7'],
-    rating: 1250,
-    themes: ['seventhRank', 'rookEndgame'],
-    openingTags: ['Endgame'],
-  },
-];
+import {
+  CURATED_PUZZLES,
+  THEME_CATEGORIES,
+  type ThemeCategoryId,
+} from './curated-puzzles';
+
+export { THEME_CATEGORIES, type ThemeCategoryId };
+export const CURATED_DAILY_PUZZLES: ChessPuzzle[] = CURATED_PUZZLES;
 
 export function getCuratedDailyPuzzle(date = new Date()): ChessPuzzle {
   const seed =
@@ -116,7 +66,7 @@ export async function getRandomPuzzle(
 ): Promise<ChessPuzzle | null> {
   const params = new URLSearchParams();
   if (rating) params.set('rating', String(rating));
-  if (theme) params.set('theme', theme);
+  if (theme && theme !== 'all') params.set('theme', theme);
   const qs = params.toString();
   try {
     const res = await apiFetch<ChessPuzzle | null>(
@@ -124,11 +74,25 @@ export async function getRandomPuzzle(
     );
     if (res && res.fen) return res;
   } catch {
-    const idx = Math.floor(Math.random() * CURATED_DAILY_PUZZLES.length);
-    return CURATED_DAILY_PUZZLES[idx] ?? null;
+    return getLocalFallbackPuzzle(rating, theme);
   }
-  const idx = Math.floor(Math.random() * CURATED_DAILY_PUZZLES.length);
-  return CURATED_DAILY_PUZZLES[idx] ?? null;
+  return getLocalFallbackPuzzle(rating, theme);
+}
+
+function getLocalFallbackPuzzle(rating?: number, theme?: string): ChessPuzzle {
+  let pool = CURATED_DAILY_PUZZLES;
+  if (theme && theme !== 'all') {
+    const themeMatches = pool.filter((p) => p.themes.includes(theme));
+    if (themeMatches.length > 0) pool = themeMatches;
+  }
+  if (rating && pool.length > 1) {
+    const ratingMatches = pool.filter(
+      (p) => Math.abs(p.rating - rating) <= 250,
+    );
+    if (ratingMatches.length > 0) pool = ratingMatches;
+  }
+  const idx = Math.floor(Math.random() * pool.length);
+  return pool[idx] ?? CURATED_DAILY_PUZZLES[0]!;
 }
 
 export async function solvePuzzle(

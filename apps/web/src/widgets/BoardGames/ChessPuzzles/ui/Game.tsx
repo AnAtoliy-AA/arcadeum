@@ -4,7 +4,6 @@ import { memo, useCallback } from 'react';
 import { usePuzzleState } from '../hooks/usePuzzleState';
 import { PuzzleBoard } from './PuzzleBoard';
 import { PuzzleControls } from './PuzzleControls';
-
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 
 interface PuzzleGameProps {
@@ -24,11 +23,29 @@ function PuzzleGameImpl({
   onSolved,
   onShare,
 }: PuzzleGameProps) {
-  const { puzzle, phase, result, loading, loadPuzzle, makeMove } =
-    usePuzzleState({ mode, theme, onSolved });
+  const {
+    puzzle,
+    board,
+    playerColor,
+    phase,
+    result,
+    loading,
+    selectedSquare,
+    legalDestinations,
+    lastMove,
+    hintMove,
+    isCheck,
+    kingPosition,
+    loadPuzzle,
+    makeMove,
+    retry,
+    showHint,
+    showSolution,
+    selectSquare,
+  } = usePuzzleState({ mode, theme, onSolved });
 
   const handleNext = useCallback(() => {
-    loadPuzzle();
+    void loadPuzzle();
   }, [loadPuzzle]);
 
   if (loading && !puzzle) {
@@ -54,7 +71,20 @@ function PuzzleGameImpl({
   return (
     <div className="flex flex-col md:flex-row md:items-start gap-3 w-full max-w-[900px] mx-auto p-3">
       <div className="flex flex-col gap-2 md:flex-none md:w-[min(70vmin,560px)] md:sticky md:top-3">
-        <PuzzleBoard puzzle={puzzle} phase={phase} onMove={makeMove} />
+        <PuzzleBoard
+          puzzle={puzzle}
+          phase={phase}
+          onMove={makeMove}
+          board={board}
+          playerColor={playerColor}
+          selectedSquare={selectedSquare}
+          legalMoves={legalDestinations}
+          lastMove={lastMove}
+          hintMove={hintMove}
+          isCheck={isCheck}
+          kingPosition={kingPosition}
+          onSelectSquare={selectSquare}
+        />
       </div>
 
       <div className="flex flex-col gap-3 flex-1 min-w-0 md:max-w-[280px]">
@@ -64,6 +94,9 @@ function PuzzleGameImpl({
           ratingChange={result?.ratingChange}
           mode={mode}
           onNext={handleNext}
+          onRetry={retry}
+          onShowSolution={showSolution}
+          onHint={showHint}
           onShare={onShare}
         />
 

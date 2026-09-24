@@ -1,9 +1,18 @@
 'use client';
 
+import { use } from 'react';
 import { PuzzleRush } from '@/widgets/BoardGames/ChessPuzzles/ui/PuzzleRush';
+import { ChessPuzzleTabs } from '@/widgets/BoardGames/ChessPuzzles/ui/ChessPuzzleTabs';
 
+interface ChessPuzzleRushPageProps {
+  params: Promise<{ locale: string }>;
+}
 
-export default function ChessPuzzleRushPage() {
+export default function ChessPuzzleRushPage({
+  params,
+}: ChessPuzzleRushPageProps) {
+  const { locale } = use(params);
+
   return (
     <main className="flex flex-col items-center min-h-screen py-6">
       <div className="w-full max-w-[900px] px-4">
@@ -14,6 +23,7 @@ export default function ChessPuzzleRushPage() {
           Solve as many puzzles as you can before time runs out or you lose 3
           lives
         </p>
+        <ChessPuzzleTabs activeTab="rush" locale={locale} />
         <PuzzleRush />
       </div>
     </main>

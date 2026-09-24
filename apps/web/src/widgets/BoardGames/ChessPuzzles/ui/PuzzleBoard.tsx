@@ -4,42 +4,105 @@ import { memo, useMemo, useCallback, useState } from 'react';
 import { ChessBoard } from '@/widgets/BoardGames/ChessGame/ui/ChessBoard';
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 import { parseFenPiecePlacement } from '@/features/analysis/lib/fen';
-import type { BoardPosition, File, Rank } from '@/widgets/BoardGames/ChessGame/types';
+import type {
+  Board,
+  BoardPosition,
+  File,
+  Rank,
+  PieceColor,
+} from '@/widgets/BoardGames/ChessGame/types';
+import type { PuzzlePhase } from '../hooks/usePuzzleState';
 
 interface PuzzleBoardProps {
   puzzle: ChessPuzzle;
-  phase: 'waiting' | 'opponent' | 'player' | 'solved' | 'failed';
+  phase: PuzzlePhase;
   onMove: (moveUci: string) => void;
+  board?: Board | null;
+  playerColor?: PieceColor;
+  selectedSquare?: BoardPosition | null;
+  legalMoves?: BoardPosition[];
+  lastMove?: { from: BoardPosition; to: BoardPosition } | null;
+  hintMove?: { from: BoardPosition; to: BoardPosition } | null;
+  isCheck?: boolean;
+  kingPosition?: BoardPosition | null;
+  onSelectSquare?: (pos: BoardPosition | null) => void;
 }
 
-function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
-  const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(null);
+function PuzzleBoardImpl({
+  puzzle,
+  phase,
+  onMove,
+  board: externalBoard,
+  playerColor: externalPlayerColor,
+  selectedSquare: externalSelectedSquare,
+  legalMoves: externalLegalMoves,
+  lastMove: externalLastMove,
+  hintMove,
+  isCheck = false,
+  kingPosition = null,
+  onSelectSquare,
+}: PuzzleBoardProps) {
+  const [internalSelectedSquare, setInternalSelectedSquare] =
+    useState<BoardPosition | null>(null);
 
-  const board = useMemo(() => parseFenPiecePlacement(puzzle.fen), [puzzle.fen]);
+  const fallbackBoard = useMemo(
+    () => parseFenPiecePlacement(puzzle.fen),
+    [puzzle.fen],
+  );
+
+  const board = externalBoard ?? fallbackBoard;
 
   const currentColor = useMemo(() => {
+    if (externalPlayerColor) return externalPlayerColor;
     const parts = puzzle.fen.split(' ');
-    return (parts[1] === 'w' ? 'white' : 'black') as 'white' | 'black';
-  }, [puzzle.fen]);
+    return (parts[1] === 'b' ? 'black' : 'white') as PieceColor;
+  }, [puzzle.fen, externalPlayerColor]);
 
-  const legalMoves = useMemo(() => {
-    return [];
-  }, []);
+  const selectedSquare =
+    externalSelectedSquare !== undefined
+      ? externalSelectedSquare
+      : internalSelectedSquare;
+
+  const legalMoves = externalLegalMoves ?? [];
+  const lastMove = externalLastMove ?? null;
 
   const handleSquareClick = useCallback(
     (file: File, rank: Rank) => {
       if (phase !== 'player') return;
 
+      const targetPos: BoardPosition = { file, rank };
+
       if (selectedSquare) {
+        if (
+          selectedSquare.file === targetPos.file &&
+          selectedSquare.rank === targetPos.rank
+        ) {
+          if (onSelectSquare) {
+            onSelectSquare(null);
+          } else {
+            setInternalSelectedSquare(null);
+          }
+          return;
+        }
+
         const moveUci = `${selectedSquare.file}${selectedSquare.rank}${file}${rank}`;
         onMove(moveUci);
-        setSelectedSquare(null);
+
+        if (onSelectSquare) {
+          onSelectSquare(null);
+        } else {
+          setInternalSelectedSquare(null);
+        }
         return;
       }
 
-      setSelectedSquare({ file, rank });
+      if (onSelectSquare) {
+        onSelectSquare(targetPos);
+      } else {
+        setInternalSelectedSquare(targetPos);
+      }
     },
-    [phase, selectedSquare, onMove],
+    [phase, selectedSquare, onMove, onSelectSquare],
   );
 
   const handlePieceDrop = useCallback(
@@ -47,9 +110,22 @@ function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
       if (phase !== 'player') return;
       const moveUci = `${fromFile}${fromRank}${toFile}${toRank}`;
       onMove(moveUci);
+      if (onSelectSquare) {
+        onSelectSquare(null);
+      } else {
+        setInternalSelectedSquare(null);
+      }
     },
-    [phase, onMove],
+    [phase, onMove, onSelectSquare],
   );
+
+  const handleDeselect = useCallback(() => {
+    if (onSelectSquare) {
+      onSelectSquare(null);
+    } else {
+      setInternalSelectedSquare(null);
+    }
+  }, [onSelectSquare]);
 
   const isDisabled = phase !== 'player';
 
@@ -61,13 +137,13 @@ function PuzzleBoardImpl({ puzzle, phase, onMove }: PuzzleBoardProps) {
       disabled={isDisabled}
       selectedSquare={selectedSquare}
       legalMoves={legalMoves}
-      lastMove={null}
-      hintMove={null}
-      isCheck={false}
-      kingPosition={null}
+      lastMove={lastMove}
+      hintMove={hintMove}
+      isCheck={isCheck}
+      kingPosition={kingPosition}
       ariaLabel="Chess puzzle board"
       onSquareClick={handleSquareClick}
-      onDeselectSquare={() => setSelectedSquare(null)}
+      onDeselectSquare={handleDeselect}
       onPieceDrop={handlePieceDrop}
     />
   );

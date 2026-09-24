@@ -1,16 +1,31 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { PuzzleBoard } from './PuzzleBoard';
 import { PuzzleControls } from './PuzzleControls';
+import { PuzzleRushMenu, type RushMode } from './PuzzleRushMenu';
+import { PuzzleRushGameOver } from './PuzzleRushGameOver';
 import type {
   ChessPuzzle,
   PuzzleSolveResult,
 } from '@/features/chess/lib/puzzle-api';
 import { getRandomPuzzle, solvePuzzle } from '@/features/chess/lib/puzzle-api';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import type {
+  Board,
+  BoardPosition,
+} from '@arcadeum/games-core/games/chess/chess.types';
+import type { PieceColor } from '@arcadeum/games-core/games/chess/chess.constants';
+import {
+  getPuzzleInitialBoard,
+  getPuzzleTurnColor,
+  applyUciMoveToBoard,
+  parseUciMove,
+  getLegalDestinations,
+} from '../lib/puzzle-chess-engine';
+import { useChessSounds } from '@/widgets/BoardGames/ChessGame/hooks/useChessSounds';
+import type { PuzzlePhase } from '../hooks/usePuzzleState';
 
-type RushMode = 'survival' | 'timed';
 type RushPhase = 'menu' | 'playing' | 'gameover';
 
 interface PuzzleRushProps {
@@ -19,22 +34,54 @@ interface PuzzleRushProps {
 
 export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
   const { t } = useTranslation();
+  const { playSound } = useChessSounds();
+
   const [phase, setPhase] = useState<RushPhase>('menu');
   const [mode, setMode] = useState<RushMode>(initialMode ?? 'survival');
   const [puzzle, setPuzzle] = useState<ChessPuzzle | null>(null);
-  const [puzzlePhase, setPuzzlePhase] = useState<
-    'waiting' | 'opponent' | 'player' | 'solved' | 'failed'
-  >('waiting');
+  const [board, setBoard] = useState<Board | null>(null);
+  const [puzzlePhase, setPuzzlePhase] = useState<PuzzlePhase>('waiting');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [timeLeft, setTimeLeft] = useState(180);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
+  const [moveIndex, setMoveIndex] = useState(0);
   const [playerMoves, setPlayerMoves] = useState<string[]>([]);
   const [rating, setRating] = useState(1200);
+  const [lastMove, setLastMove] = useState<{
+    from: BoardPosition;
+    to: BoardPosition;
+  } | null>(null);
+  const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
+    null,
+  );
+  const [isCheck, setIsCheck] = useState(false);
+  const [highScores, setHighScores] = useState<Record<RushMode, number>>(() => {
+    if (typeof window === 'undefined') return { survival: 0, timed: 0 };
+    try {
+      const s = parseInt(
+        localStorage.getItem('arcadeum_rush_best_survival') ?? '0',
+        10,
+      );
+      const tm = parseInt(
+        localStorage.getItem('arcadeum_rush_best_timed') ?? '0',
+        10,
+      );
+      return {
+        survival: isNaN(s) ? 0 : s,
+        timed: isNaN(tm) ? 0 : tm,
+      };
+    } catch {
+      return { survival: 0, timed: 0 };
+    }
+  });
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const actionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const startTimeRef = useRef<number>(0);
+  const gameStartTimeRef = useRef<number>(0);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) {
@@ -43,20 +90,81 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
     }
   }, []);
 
-  const loadPuzzle = useCallback(async () => {
-    setPuzzlePhase('waiting');
-    setPlayerMoves([]);
-    try {
-      const p = await getRandomPuzzle(rating);
-      setPuzzle(p);
-      if (p) {
-        setPuzzlePhase('opponent');
-        startTimeRef.current = Date.now();
-      }
-    } catch {
-      setPuzzle(null);
+  const clearActionTimer = useCallback(() => {
+    if (actionTimerRef.current) {
+      clearTimeout(actionTimerRef.current);
+      actionTimerRef.current = null;
     }
-  }, [rating]);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopTimer();
+      clearActionTimer();
+    };
+  }, [stopTimer, clearActionTimer]);
+
+  const playerColor: PieceColor = useMemo(() => {
+    if (!puzzle) return 'white';
+    return getPuzzleTurnColor(puzzle.fen);
+  }, [puzzle]);
+
+  const loadPuzzle = useCallback(
+    async (currentRating?: number) => {
+      clearActionTimer();
+      setPuzzlePhase('waiting');
+      setPlayerMoves([]);
+      setMoveIndex(0);
+      setLastMove(null);
+      setSelectedSquare(null);
+      setIsCheck(false);
+
+      const queryRating = currentRating ?? rating;
+      try {
+        const p = await getRandomPuzzle(queryRating);
+        if (p) {
+          const initBoard = getPuzzleInitialBoard(p.fen);
+          setPuzzle(p);
+          setBoard(initBoard);
+          setPuzzlePhase('player');
+          startTimeRef.current = Date.now();
+        } else {
+          setPuzzle(null);
+          setBoard(null);
+        }
+      } catch {
+        setPuzzle(null);
+        setBoard(null);
+      }
+    },
+    [rating, clearActionTimer],
+  );
+
+  const endGame = useCallback(
+    (finalScore: number) => {
+      stopTimer();
+      clearActionTimer();
+      setPhase('gameover');
+      const timeElapsed = Math.floor(
+        (Date.now() - gameStartTimeRef.current) / 1000,
+      );
+      setTotalTime(timeElapsed);
+
+      try {
+        const currentBest = highScores[mode] ?? 0;
+        if (finalScore > currentBest) {
+          localStorage.setItem(
+            `arcadeum_rush_best_${mode}`,
+            String(finalScore),
+          );
+          setHighScores((prev) => ({ ...prev, [mode]: finalScore }));
+        }
+      } catch {
+        // ignore
+      }
+    },
+    [mode, highScores, stopTimer, clearActionTimer],
+  );
 
   const handleStart = useCallback(
     (selectedMode: RushMode) => {
@@ -69,13 +177,19 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
       setBestStreak(0);
       setTotalTime(0);
       setRating(1200);
+      gameStartTimeRef.current = Date.now();
 
       if (selectedMode === 'timed') {
         timerRef.current = setInterval(() => {
           setTimeLeft((prev) => {
             if (prev <= 1) {
               stopTimer();
-              setPhase('gameover');
+              setPhase((cur) => {
+                if (cur === 'playing') {
+                  return 'gameover';
+                }
+                return cur;
+              });
               return 0;
             }
             return prev - 1;
@@ -83,168 +197,231 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
         }, 1000);
       }
 
-      void loadPuzzle();
+      void loadPuzzle(1200);
     },
     [loadPuzzle, stopTimer],
   );
 
-  useEffect(() => {
-    if (puzzlePhase === 'opponent' && puzzle) {
-      const timer = setTimeout(() => setPuzzlePhase('player'), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [puzzlePhase, puzzle]);
+  const legalMoves = useMemo(() => {
+    if (!board || !selectedSquare || puzzlePhase !== 'player') return [];
+    return getLegalDestinations(board, playerColor, selectedSquare);
+  }, [board, selectedSquare, puzzlePhase, playerColor]);
 
-  useEffect(() => {
-    return () => stopTimer();
-  }, [stopTimer]);
+  const selectSquare = useCallback(
+    (pos: BoardPosition | null) => {
+      if (puzzlePhase !== 'player' || !board) {
+        setSelectedSquare(null);
+        return;
+      }
+      if (!pos) {
+        setSelectedSquare(null);
+        return;
+      }
+      const rankIdx = 8 - pos.rank;
+      const fileIdx = pos.file.charCodeAt(0) - 97;
+      const piece = board[rankIdx]?.[fileIdx];
+      if (piece && piece.color === playerColor) {
+        setSelectedSquare(pos);
+      } else {
+        setSelectedSquare(null);
+      }
+    },
+    [puzzlePhase, board, playerColor],
+  );
 
   const handleMove = useCallback(
     (moveUci: string) => {
-      if (!puzzle || puzzlePhase !== 'player') return;
+      if (!puzzle || !board || puzzlePhase !== 'player') return;
 
-      const newMoves = [...playerMoves, moveUci];
-      setPlayerMoves(newMoves);
+      const normalizedMove = moveUci.toLowerCase();
+      const expectedMove = puzzle.moves[moveIndex]?.toLowerCase();
+      if (!expectedMove) return;
 
-      const expectedMoves = puzzle.moves;
-      const isCorrect =
-        newMoves.length <= expectedMoves.length &&
-        newMoves.every((m, i) => m === expectedMoves[i]);
+      const isPromoMatch =
+        expectedMove.startsWith(normalizedMove) ||
+        normalizedMove.startsWith(expectedMove);
+
+      const isCorrect = normalizedMove === expectedMove || isPromoMatch;
 
       if (!isCorrect) {
         setPuzzlePhase('failed');
+        playSound('error');
+
         if (mode === 'survival') {
-          setLives((prev) => {
-            const next = prev - 1;
-            if (next <= 0) {
-              stopTimer();
-              setPhase('gameover');
-            }
-            return next;
-          });
-        } else {
-          setStreak(0);
+          const nextLives = lives - 1;
+          setLives(nextLives);
+          if (nextLives <= 0) {
+            endGame(score);
+            return;
+          }
         }
+        setStreak(0);
+
+        actionTimerRef.current = setTimeout(() => {
+          actionTimerRef.current = null;
+          void loadPuzzle();
+        }, 800);
         return;
       }
 
-      if (newMoves.length === expectedMoves.length) {
+      const activeMove = isPromoMatch ? expectedMove : normalizedMove;
+      const {
+        nextBoard,
+        isCapture,
+        isCheck: oppCheck,
+      } = applyUciMoveToBoard(board, activeMove);
+
+      setBoard(nextBoard);
+      const parsed = parseUciMove(activeMove);
+      setLastMove(parsed);
+      setSelectedSquare(null);
+      setIsCheck(oppCheck);
+
+      if (isCapture) {
+        playSound('capture');
+      } else if (oppCheck) {
+        playSound('check');
+      } else {
+        playSound('move');
+      }
+
+      const nextIndex = moveIndex + 1;
+      const updatedMoves = [...playerMoves, activeMove];
+      setPlayerMoves(updatedMoves);
+      setMoveIndex(nextIndex);
+
+      if (nextIndex >= puzzle.moves.length) {
         setPuzzlePhase('solved');
-        setScore((prev) => prev + 1);
-        setStreak((prev) => {
-          const next = prev + 1;
-          if (next > bestStreak) setBestStreak(next);
-          return next;
-        });
-        setRating((prev) => prev + 10);
-        setTotalTime(Math.floor((Date.now() - startTimeRef.current) / 1000));
+        playSound('gameEnd');
+        const nextScore = score + 1;
+        setScore(nextScore);
+
+        const nextStreak = streak + 1;
+        setStreak(nextStreak);
+        const updatedBestStreak = Math.max(bestStreak, nextStreak);
+        setBestStreak(updatedBestStreak);
+
+        const newRating = rating + 10;
+        setRating(newRating);
 
         const timeMs = Date.now() - startTimeRef.current;
-        void solvePuzzle(puzzle.puzzleId, newMoves, timeMs).then(
-          (result: PuzzleSolveResult) => {
-            if (result.ratingChange) {
-              setRating((prev) => prev + result.ratingChange);
+        void solvePuzzle(puzzle.puzzleId, updatedMoves, timeMs).then(
+          (res: PuzzleSolveResult) => {
+            if (res.ratingChange) {
+              setRating((prev) => prev + res.ratingChange);
             }
           },
         );
 
-        setTimeout(() => void loadPuzzle(), 1000);
+        actionTimerRef.current = setTimeout(() => {
+          actionTimerRef.current = null;
+          void loadPuzzle(newRating);
+        }, 600);
+        return;
       }
+
+      const opponentMove = puzzle.moves[nextIndex];
+      if (!opponentMove) return;
+
+      setPuzzlePhase('opponent');
+
+      actionTimerRef.current = setTimeout(() => {
+        actionTimerRef.current = null;
+        const {
+          nextBoard: boardAfterOpponent,
+          isCapture: oppCapture,
+          isCheck: playerCheck,
+        } = applyUciMoveToBoard(nextBoard, opponentMove);
+
+        setBoard(boardAfterOpponent);
+        setLastMove(parseUciMove(opponentMove));
+        setIsCheck(playerCheck);
+
+        if (oppCapture) {
+          playSound('capture');
+        } else if (playerCheck) {
+          playSound('check');
+        } else {
+          playSound('move');
+        }
+
+        const afterOppIndex = nextIndex + 1;
+        setMoveIndex(afterOppIndex);
+
+        if (afterOppIndex >= puzzle.moves.length) {
+          setPuzzlePhase('solved');
+          playSound('gameEnd');
+          const nextScore = score + 1;
+          setScore(nextScore);
+          const nextStreak = streak + 1;
+          setStreak(nextStreak);
+          setBestStreak((prev) => Math.max(prev, nextStreak));
+          setRating((prev) => prev + 10);
+
+          actionTimerRef.current = setTimeout(() => {
+            actionTimerRef.current = null;
+            void loadPuzzle();
+          }, 600);
+        } else {
+          setPuzzlePhase('player');
+        }
+      }, 450);
     },
-    [puzzle, puzzlePhase, playerMoves, mode, bestStreak, loadPuzzle, stopTimer],
+    [
+      puzzle,
+      board,
+      puzzlePhase,
+      moveIndex,
+      playerMoves,
+      mode,
+      lives,
+      score,
+      streak,
+      bestStreak,
+      rating,
+      playSound,
+      loadPuzzle,
+      endGame,
+    ],
   );
 
   const handleEndGame = useCallback(() => {
-    stopTimer();
-    setPhase('gameover');
-  }, [stopTimer]);
+    endGame(score);
+  }, [endGame, score]);
 
   if (phase === 'menu') {
-    return (
-      <div className="flex flex-col items-center gap-6 p-8 max-w-md mx-auto">
-        <div className="text-center">
-          <h2 className="text-2xl font-black text-[var(--color)] mb-2">
-            {t('games.chess_v1.puzzleRush.title')}
-          </h2>
-          <p className="text-sm text-[var(--textSecondary)]">
-            {t('games.chess_v1.puzzleRush.subtitle')}
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 w-full">
-          <button
-            type="button"
-            onClick={() => handleStart('survival')}
-            className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-base font-bold cursor-pointer hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg shadow-emerald-500/20"
-          >
-            {t('games.chess_v1.puzzleRush.survival')}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleStart('timed')}
-            className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 text-white text-base font-bold cursor-pointer hover:from-sky-600 hover:to-indigo-600 transition-all shadow-lg shadow-sky-500/20"
-          >
-            {t('games.chess_v1.puzzleRush.timed')}
-          </button>
-        </div>
-      </div>
-    );
+    return <PuzzleRushMenu highScores={highScores} onStart={handleStart} />;
   }
 
   if (phase === 'gameover') {
     return (
-      <div className="flex flex-col items-center gap-4 p-8 max-w-md mx-auto">
-        <h2 className="text-2xl font-black text-[var(--color)]">
-          {t('games.chess_v1.puzzleRush.gameOver')}
-        </h2>
-        <div className="grid grid-cols-2 gap-3 w-full">
-          <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-[var(--color)]">
-              {score}
-            </span>
-            <span className="text-[10px] text-[var(--textSecondary)]">
-              Score
-            </span>
-          </div>
-          <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-orange-400">
-              {bestStreak}
-            </span>
-            <span className="text-[10px] text-[var(--textSecondary)]">
-              Best Streak
-            </span>
-          </div>
-          <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-sky-400">
-              {totalTime}s
-            </span>
-            <span className="text-[10px] text-[var(--textSecondary)]">
-              Time
-            </span>
-          </div>
-          <div className="flex flex-col items-center p-3 rounded-xl bg-[var(--backgroundHover)] border border-[var(--glassBorder)]">
-            <span className="text-3xl font-black text-purple-400">
-              {rating}
-            </span>
-            <span className="text-[10px] text-[var(--textSecondary)]">
-              Rating
-            </span>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => setPhase('menu')}
-          className="w-full py-3 px-6 rounded-xl bg-[var(--primary)]/15 border border-[var(--primary)]/30 text-[var(--color)] text-sm font-bold cursor-pointer hover:bg-[var(--primary)]/25 transition-colors"
-        >
-          {t('games.chess_v1.puzzleRush.playAgain')}
-        </button>
-      </div>
+      <PuzzleRushGameOver
+        score={score}
+        bestStreak={bestStreak}
+        totalTime={totalTime}
+        rating={rating}
+        onPlayAgain={() => setPhase('menu')}
+      />
     );
   }
 
   return (
     <div className="flex flex-col md:flex-row md:items-start gap-3 w-full max-w-[900px] mx-auto p-3">
       <div className="flex flex-col gap-2 md:flex-none md:w-[min(70vmin,560px)] md:sticky md:top-3">
-        <PuzzleBoard puzzle={puzzle!} phase={puzzlePhase} onMove={handleMove} />
+        {puzzle && (
+          <PuzzleBoard
+            puzzle={puzzle}
+            phase={puzzlePhase}
+            onMove={handleMove}
+            board={board}
+            playerColor={playerColor}
+            selectedSquare={selectedSquare}
+            legalMoves={legalMoves}
+            lastMove={lastMove}
+            isCheck={isCheck}
+            onSelectSquare={selectSquare}
+          />
+        )}
       </div>
       <div className="flex flex-col gap-3 flex-1 min-w-0 md:max-w-[280px]">
         <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)]">
@@ -280,6 +457,7 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
         <button
           type="button"
           onClick={handleEndGame}
+          data-testid="puzzle-rush-end-run-btn"
           className="w-full py-2 px-3 rounded-lg bg-red-500/15 border border-red-500/30 text-red-500 text-xs font-semibold cursor-pointer hover:bg-red-500/25 transition-colors"
         >
           {t('games.chess_v1.puzzleRush.endRun')}

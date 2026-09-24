@@ -3,13 +3,14 @@ import { render, screen } from '@testing-library/react';
 import { ChessPuzzleTabs } from '../ChessPuzzleTabs';
 
 describe('ChessPuzzleTabs', () => {
-  it('renders all four training mode tabs', () => {
+  it('renders all training mode tabs including custom puzzles', () => {
     render(<ChessPuzzleTabs activeTab="daily" locale="en" />);
 
     expect(screen.getByTestId('chess-puzzle-tabs')).toBeInTheDocument();
     expect(screen.getByText('Daily Puzzle')).toBeInTheDocument();
     expect(screen.getByText('Rated Puzzles')).toBeInTheDocument();
     expect(screen.getByText('Puzzle Rush')).toBeInTheDocument();
+    expect(screen.getByText('Custom Puzzles')).toBeInTheDocument();
     expect(screen.getByText('Coordinates')).toBeInTheDocument();
   });
 

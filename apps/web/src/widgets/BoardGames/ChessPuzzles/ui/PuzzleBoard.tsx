@@ -14,9 +14,9 @@ import type {
 import type { PuzzlePhase } from '../hooks/usePuzzleState';
 
 interface PuzzleBoardProps {
-  puzzle: ChessPuzzle;
-  phase: PuzzlePhase;
-  onMove: (moveUci: string) => void;
+  puzzle?: ChessPuzzle;
+  phase?: PuzzlePhase;
+  onMove?: (moveUci: string) => void;
   board?: Board | null;
   playerColor?: PieceColor;
   selectedSquare?: BoardPosition | null;
@@ -30,7 +30,7 @@ interface PuzzleBoardProps {
 
 function PuzzleBoardImpl({
   puzzle,
-  phase,
+  phase = 'player',
   onMove,
   board: externalBoard,
   playerColor: externalPlayerColor,
@@ -45,18 +45,23 @@ function PuzzleBoardImpl({
   const [internalSelectedSquare, setInternalSelectedSquare] =
     useState<BoardPosition | null>(null);
 
+  const puzzleFen = puzzle?.fen;
+
   const fallbackBoard = useMemo(
-    () => parseFenPiecePlacement(puzzle.fen),
-    [puzzle.fen],
+    () => (puzzleFen ? parseFenPiecePlacement(puzzleFen) : []),
+    [puzzleFen],
   );
 
   const board = externalBoard ?? fallbackBoard;
 
   const currentColor = useMemo(() => {
     if (externalPlayerColor) return externalPlayerColor;
-    const parts = puzzle.fen.split(' ');
-    return (parts[1] === 'b' ? 'black' : 'white') as PieceColor;
-  }, [puzzle.fen, externalPlayerColor]);
+    if (puzzleFen) {
+      const parts = puzzleFen.split(' ');
+      return (parts[1] === 'b' ? 'black' : 'white') as PieceColor;
+    }
+    return 'white' as PieceColor;
+  }, [puzzleFen, externalPlayerColor]);
 
   const selectedSquare =
     externalSelectedSquare !== undefined
@@ -86,7 +91,7 @@ function PuzzleBoardImpl({
         }
 
         const moveUci = `${selectedSquare.file}${selectedSquare.rank}${file}${rank}`;
-        onMove(moveUci);
+        onMove?.(moveUci);
 
         if (onSelectSquare) {
           onSelectSquare(null);
@@ -109,7 +114,7 @@ function PuzzleBoardImpl({
     (fromFile: File, fromRank: Rank, toFile: File, toRank: Rank) => {
       if (phase !== 'player') return;
       const moveUci = `${fromFile}${fromRank}${toFile}${toRank}`;
-      onMove(moveUci);
+      onMove?.(moveUci);
       if (onSelectSquare) {
         onSelectSquare(null);
       } else {

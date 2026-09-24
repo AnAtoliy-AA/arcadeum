@@ -7,7 +7,8 @@ import { PuzzleControls } from './PuzzleControls';
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 
 interface PuzzleGameProps {
-  mode?: 'daily' | 'rated' | 'themed';
+  mode?: 'daily' | 'rated' | 'themed' | 'custom';
+  customPuzzle?: ChessPuzzle;
   theme?: string;
   date?: Date | string;
   onSolved?: (result: {
@@ -20,6 +21,7 @@ interface PuzzleGameProps {
 
 function PuzzleGameImpl({
   mode = 'rated',
+  customPuzzle,
   theme,
   date,
   onSolved,
@@ -44,7 +46,7 @@ function PuzzleGameImpl({
     showHint,
     showSolution,
     selectSquare,
-  } = usePuzzleState({ mode, theme, date, onSolved });
+  } = usePuzzleState({ mode, customPuzzle, theme, date, onSolved });
 
   const handleNext = useCallback(() => {
     void loadPuzzle();

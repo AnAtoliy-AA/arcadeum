@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { cx } from '@arcadeum/ui/utils/cx';
 
-export type ChessTrainingTab = 'daily' | 'rated' | 'rush' | 'learn';
+export type ChessTrainingTab = 'daily' | 'rated' | 'rush' | 'learn' | 'custom';
 
 interface ChessPuzzleTabsProps {
   activeTab: ChessTrainingTab;
@@ -32,6 +32,12 @@ export function ChessPuzzleTabs({ activeTab, locale }: ChessPuzzleTabsProps) {
       id: 'rush',
       label: 'Puzzle Rush',
       href: `${prefix}/games/chess/puzzles/rush`,
+    },
+    {
+      id: 'custom',
+      label: 'Custom Puzzles',
+      href: `${prefix}/games/chess/puzzles/custom`,
+      badge: 'Create',
     },
     {
       id: 'learn',

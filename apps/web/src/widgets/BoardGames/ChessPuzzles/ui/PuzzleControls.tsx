@@ -9,7 +9,7 @@ interface PuzzleControlsProps {
   rating: number;
   ratingChange?: number;
   streak?: number;
-  mode?: 'daily' | 'rated' | 'themed';
+  mode?: 'daily' | 'rated' | 'themed' | 'custom';
   onNext: () => void;
   onRetry?: () => void;
   onShowSolution?: () => void;

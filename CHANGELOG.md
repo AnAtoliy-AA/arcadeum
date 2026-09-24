@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.25] - 2026-09-24
+
+### Added
+- add ru/es/fr/by translations for all 9 strategy articles
+- add 9 deep-dive strategy articles, premium UI, and FAQ blocks
+
+
 ## [1.30.24] - 2026-09-20
 
 ### Added

@@ -23,6 +23,10 @@ import {
   getLegalDestinations,
 } from '../lib/puzzle-chess-engine';
 import { useChessSounds } from '@/widgets/BoardGames/ChessGame/hooks/useChessSounds';
+import {
+  recordPuzzleResult,
+  playTacticsAudio,
+} from '@/features/chess/lib/puzzle-analytics';
 
 export type PuzzlePhase =
   'waiting' | 'opponent' | 'player' | 'solved' | 'failed' | 'solution';
@@ -65,6 +69,11 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
   } | null>(null);
   const [isCheck, setIsCheck] = useState(false);
   const [kingPosition, setKingPosition] = useState<BoardPosition | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  const toggleFlipBoard = useCallback(() => {
+    setIsFlipped((prev) => !prev);
+  }, []);
 
   const startTimeRef = useRef<number>(0);
   const loadedRef = useRef(false);
@@ -202,6 +211,8 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
       if (!matches) {
         setPhase('failed');
         playSound('error');
+        playTacticsAudio('fail');
+        recordPuzzleResult(puzzle, false, [...playerMoves, normalizedMove]);
         setResult({
           solved: false,
           ratingChange: -10,
@@ -244,6 +255,8 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         const timeMs = Date.now() - startTimeRef.current;
         setPhase('solved');
         playSound('gameEnd');
+        playTacticsAudio('solve');
+        recordPuzzleResult(puzzle, true, updatedMoves);
         options.onSolved?.({ puzzle, moves: updatedMoves, timeMs });
         solvePuzzle(puzzle.puzzleId, updatedMoves, timeMs)
           .then(setResult)
@@ -292,6 +305,8 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
           const timeMs = Date.now() - startTimeRef.current;
           setPhase('solved');
           playSound('gameEnd');
+          playTacticsAudio('solve');
+          recordPuzzleResult(puzzle, true, updatedMoves);
           options.onSolved?.({ puzzle, moves: updatedMoves, timeMs });
           solvePuzzle(puzzle.puzzleId, updatedMoves, timeMs)
             .then(setResult)
@@ -389,5 +404,7 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
     showHint,
     showSolution,
     selectSquare,
+    isFlipped,
+    toggleFlipBoard,
   };
 }

@@ -1,14 +1,20 @@
 import Link from 'next/link';
 import { cx } from '@arcadeum/ui/utils/cx';
 
-export type ChessTrainingTab = 'daily' | 'rated' | 'rush' | 'learn' | 'custom';
+export type ChessTrainingTab =
+  'daily' | 'rated' | 'rush' | 'duel' | 'custom' | 'learn';
 
 interface ChessPuzzleTabsProps {
   activeTab: ChessTrainingTab;
   locale?: string;
+  onOpenAnalytics?: () => void;
 }
 
-export function ChessPuzzleTabs({ activeTab, locale }: ChessPuzzleTabsProps) {
+export function ChessPuzzleTabs({
+  activeTab,
+  locale,
+  onOpenAnalytics,
+}: ChessPuzzleTabsProps) {
   const prefix = locale ? `/${locale}` : '';
 
   const tabs: Array<{
@@ -32,6 +38,12 @@ export function ChessPuzzleTabs({ activeTab, locale }: ChessPuzzleTabsProps) {
       id: 'rush',
       label: 'Puzzle Rush',
       href: `${prefix}/games/chess/puzzles/rush`,
+    },
+    {
+      id: 'duel',
+      label: 'Puzzle Duel',
+      href: `${prefix}/games/chess/puzzles/duel`,
+      badge: '1v1',
     },
     {
       id: 'custom',
@@ -81,6 +93,16 @@ export function ChessPuzzleTabs({ activeTab, locale }: ChessPuzzleTabsProps) {
           </Link>
         );
       })}
+      {onOpenAnalytics && (
+        <button
+          type="button"
+          onClick={onOpenAnalytics}
+          data-testid="chess-puzzle-tab-analytics"
+          className="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--backgroundHover)]"
+        >
+          <span>📊 Analytics</span>
+        </button>
+      )}
     </div>
   );
 }

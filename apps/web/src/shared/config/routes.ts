@@ -37,6 +37,7 @@ export const buildRoutes = (locale: Locale) => {
     chessPuzzles: `/${locale}/${s('games')}/chess/puzzles`,
     chessDailyPuzzle: `/${locale}/${s('games')}/chess/puzzles/daily`,
     chessPuzzleRush: `/${locale}/${s('games')}/chess/puzzles/rush`,
+    chessPuzzleDuel: `/${locale}/${s('games')}/chess/puzzles/duel`,
     chessCustomPuzzles: `/${locale}/${s('games')}/chess/puzzles/custom`,
     chessCoordinates: `/${locale}/${s('games')}/chess/learn`,
     checkers: `/${locale}/${s('games')}/checkers`,

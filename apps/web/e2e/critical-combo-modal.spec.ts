@@ -93,7 +93,9 @@ test.describe('Critical Combo Modal', () => {
     await cancelCard.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '2');
 
-    const playButton = page.getByTestId('hand-rail-play');
+    const playButton = page
+      .getByTestId('hand-rail-play')
+      .or(page.getByTestId('mobile-hand-bar-play'));
     await expect(playButton).toBeVisible();
     await expect(playButton).toBeEnabled();
     await playButton.click();

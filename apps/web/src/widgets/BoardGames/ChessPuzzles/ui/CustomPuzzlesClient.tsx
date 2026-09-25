@@ -92,12 +92,7 @@ export function CustomPuzzlesClient({ locale }: CustomPuzzlesClientProps) {
                 ← Back to Custom Puzzles
               </Button>
             </div>
-            <PgnPuzzleImporter
-              onImportSuccess={() => {
-                refreshPuzzles();
-                setView('list');
-              }}
-            />
+            <PgnPuzzleImporter onImportSuccess={refreshPuzzles} />
           </div>
         )}
 

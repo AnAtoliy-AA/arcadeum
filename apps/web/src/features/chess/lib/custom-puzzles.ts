@@ -48,8 +48,8 @@ export const FEN_PRESETS: Array<{
   },
   {
     label: 'Smothered Mate Setup',
-    fen: '6rk/5Npp/8/8/8/8/8/7K w - - 0 1',
-    moves: ['f7h6', 'g8h8', 'h6f7'],
+    fen: '5r1k/6pp/7N/8/8/1Q6/8/7K w - - 0 1',
+    moves: ['b3g8', 'f8g8', 'h6f7'],
   },
 ];
 

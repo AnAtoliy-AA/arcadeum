@@ -9,6 +9,7 @@ import {
   getRandomPuzzle,
   solvePuzzle,
   getDailyPuzzle,
+  getInitialPuzzleSync,
 } from '@/features/chess/lib/puzzle-api';
 import type {
   Board,
@@ -50,9 +51,17 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
   const { mode = 'rated', customPuzzle, theme, rating, date } = options;
   const { playSound } = useChessSounds();
 
-  const [puzzle, setPuzzle] = useState<ChessPuzzle | null>(null);
-  const [board, setBoard] = useState<Board | null>(null);
-  const [phase, setPhase] = useState<PuzzlePhase>('waiting');
+  const [puzzle, setPuzzle] = useState<ChessPuzzle | null>(() =>
+    getInitialPuzzleSync(mode, customPuzzle, date, theme, rating),
+  );
+  const [board, setBoard] = useState<Board | null>(() => {
+    const init = getInitialPuzzleSync(mode, customPuzzle, date, theme, rating);
+    return init ? getPuzzleInitialBoard(init.fen) : null;
+  });
+  const [phase, setPhase] = useState<PuzzlePhase>(() => {
+    const init = getInitialPuzzleSync(mode, customPuzzle, date, theme, rating);
+    return init ? 'player' : 'waiting';
+  });
   const [moveIndex, setMoveIndex] = useState(0);
   const [playerMoves, setPlayerMoves] = useState<string[]>([]);
   const [result, setResult] = useState<PuzzleSolveResult | null>(null);
@@ -77,8 +86,8 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
   }, []);
 
   const startTimeRef = useRef<number>(0);
-  const loadedRef = useRef(false);
   const mountedRef = useRef(false);
+  const prevCustomRef = useRef(customPuzzle);
   const opponentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const solutionTimersRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
 
@@ -120,6 +129,13 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
     startTimeRef.current = Date.now();
   }, []);
 
+  useEffect(() => {
+    if (customPuzzle && customPuzzle !== prevCustomRef.current) {
+      prevCustomRef.current = customPuzzle;
+      initPuzzleState(customPuzzle);
+    }
+  }, [customPuzzle, initPuzzleState]);
+
   const loadPuzzle = useCallback(
     async (overrideRating?: number, overrideTheme?: string) => {
       if (!mountedRef.current) return;
@@ -158,14 +174,11 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
   );
 
   useEffect(() => {
-    if (loadedRef.current) return;
     mountedRef.current = true;
-    loadedRef.current = true;
-    void loadPuzzle();
     return () => {
       mountedRef.current = false;
     };
-  }, [loadPuzzle]);
+  }, []);
 
   const legalDestinations = useMemo(() => {
     if (!board || !selectedSquare || phase !== 'player') return [];

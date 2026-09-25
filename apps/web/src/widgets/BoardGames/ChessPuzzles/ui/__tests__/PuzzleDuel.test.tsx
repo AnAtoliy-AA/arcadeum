@@ -2,15 +2,20 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { PuzzleDuel } from '../PuzzleDuel';
 
-vi.mock('@/features/chess/lib/puzzle-api', () => ({
-  getRandomPuzzle: vi.fn().mockResolvedValue({
+const { mockPuzzle } = vi.hoisted(() => ({
+  mockPuzzle: {
     puzzleId: 'duel_test_1',
     fen: '6k1/5ppp/8/8/8/8/8/4R1K1 w - - 0 1',
     moves: ['e1e8'],
     rating: 1500,
     themes: ['backRankMate'],
     openingTags: ['Duel Test'],
-  }),
+  },
+}));
+
+vi.mock('@/features/chess/lib/puzzle-api', () => ({
+  getRandomPuzzle: vi.fn().mockResolvedValue(mockPuzzle),
+  getInitialPuzzleSync: vi.fn().mockReturnValue(mockPuzzle),
 }));
 
 if (typeof globalThis.ResizeObserver === 'undefined') {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Button } from '@arcadeum/ui';
 import { PuzzleGame } from '@/widgets/BoardGames/ChessPuzzles/ui/Game';
@@ -45,14 +45,29 @@ function formatCountdown(totalSeconds: number): string {
     .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
+function subscribeToMidnightClock(callback: () => void) {
+  const interval = setInterval(callback, 1000);
+  return () => clearInterval(interval);
+}
+
+function getCountdownSnapshot(): string {
+  return formatCountdown(getSecondsUntilMidnightUtc());
+}
+
+function getCountdownServerSnapshot(): string {
+  return '--:--:--';
+}
+
 export function DailyChessPuzzleClient({
   locale,
 }: DailyChessPuzzleClientProps) {
+  const countdown = useSyncExternalStore(
+    subscribeToMidnightClock,
+    getCountdownSnapshot,
+    getCountdownServerSnapshot,
+  );
   const [streakState, setStreakState] = useState<DailyStreakState>(() =>
     DailyStreakManager.getStreakState(),
-  );
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(() =>
-    getSecondsUntilMidnightUtc(),
   );
   const [solvedInfo, setSolvedInfo] = useState<{
     puzzle: ChessPuzzle;
@@ -61,14 +76,6 @@ export function DailyChessPuzzleClient({
   } | null>(null);
   const [copied, setCopied] = useState(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSecondsRemaining(getSecondsUntilMidnightUtc());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleSolved = useCallback(
     (info: { puzzle: ChessPuzzle; moves: string[]; timeMs: number }) => {
@@ -191,7 +198,7 @@ export function DailyChessPuzzleClient({
               data-testid="countdown-timer"
               className="font-mono font-bold text-[var(--accent)] bg-[var(--glassBg)] border border-[var(--glassBorder)] px-2.5 py-0.5 rounded-md"
             >
-              {formatCountdown(secondsRemaining)}
+              {countdown}
             </span>
           </div>
         </div>

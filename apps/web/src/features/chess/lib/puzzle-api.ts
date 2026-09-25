@@ -140,7 +140,10 @@ export async function getRandomPuzzle(
   return getLocalFallbackPuzzle(rating, theme);
 }
 
-function getLocalFallbackPuzzle(rating?: number, theme?: string): ChessPuzzle {
+export function getLocalFallbackPuzzle(
+  rating?: number,
+  theme?: string,
+): ChessPuzzle {
   let pool = CURATED_DAILY_PUZZLES;
   if (theme && theme !== 'all') {
     const themeMatches = pool.filter((p) => p.themes.includes(theme));
@@ -154,6 +157,18 @@ function getLocalFallbackPuzzle(rating?: number, theme?: string): ChessPuzzle {
   }
   const idx = Math.floor(Math.random() * pool.length);
   return pool[idx] ?? CURATED_DAILY_PUZZLES[0]!;
+}
+
+export function getInitialPuzzleSync(
+  mode?: 'daily' | 'rated' | 'themed' | 'custom',
+  customPuzzle?: ChessPuzzle,
+  date?: Date | string,
+  theme?: string,
+  rating?: number,
+): ChessPuzzle {
+  if (customPuzzle) return customPuzzle;
+  if (mode === 'daily') return getCuratedDailyPuzzle(date);
+  return getLocalFallbackPuzzle(rating, theme);
 }
 
 export async function solvePuzzle(

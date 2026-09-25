@@ -48,9 +48,9 @@ export const CLASSIC_PGN_STUDIES: Array<{
 [White "Tactician"]
 [Black "Defender"]
 [Result "1-0"]
-[FEN "6rk/5Npp/8/8/8/8/8/7K w - - 0 1"]
+[FEN "5r1k/6pp/7N/8/8/1Q6/8/7K w - - 0 1"]
 
-1. Nh6 gxh6 2. Qg8+ Rxg8 3. Nf7# 1-0`,
+1. Qg8+ Rxg8 2. Nf7# 1-0`,
   },
   {
     title: 'Back-Rank Decoy Deflection',
@@ -60,9 +60,9 @@ export const CLASSIC_PGN_STUDIES: Array<{
 [White "White"]
 [Black "Black"]
 [Result "1-0"]
-[FEN "3r2k1/5ppp/8/8/8/8/1Q3PPP/6K1 w - - 0 1"]
+[FEN "4r1k1/5ppp/8/8/8/8/5PPP/1Q1R2K1 w - - 0 1"]
 
-1. Qb8 Rxb8 2. Rd1 1-0`,
+1. Qb5 Rf8 2. Rd7 1-0`,
   },
 ];
 

@@ -32,9 +32,9 @@ function PgnPuzzleImporterImpl({ onImportSuccess }: PgnPuzzleImporterProps) {
     if (index === 0) {
       setMovesUci('b5d7 f6d7 b3b8 d7b8 d1d8');
     } else if (index === 1) {
-      setMovesUci('f7h6 g8h8 d8g8 g8g8 h6f7');
+      setMovesUci('b3g8 f8g8 h6f7');
     } else {
-      setMovesUci('b2b8 d8b8 c1d1');
+      setMovesUci('b1b5 e8f8 d1d7');
     }
     setStatusMessage(null);
   }, []);

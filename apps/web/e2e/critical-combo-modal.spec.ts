@@ -90,7 +90,9 @@ test.describe('Critical Combo Modal', () => {
     await expect(cancelCard).toBeVisible();
     await cancelCard.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '1');
-    await cancelCard.click();
+    const incButton = page.getByTestId('stack-inc-cancel');
+    await expect(incButton).toBeVisible();
+    await incButton.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '2');
 
     const playButton = page

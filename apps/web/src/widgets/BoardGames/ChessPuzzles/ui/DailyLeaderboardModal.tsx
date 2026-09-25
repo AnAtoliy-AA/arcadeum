@@ -58,6 +58,7 @@ function DailyLeaderboardModalImpl({
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="text-[var(--textSecondary)] hover:text-[var(--color)] p-1 rounded-lg text-lg"
             data-testid="close-leaderboard-modal"
           >

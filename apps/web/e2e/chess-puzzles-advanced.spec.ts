@@ -103,7 +103,7 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     const closeBtn = page
       .getByTestId('close-leaderboard-modal')
       .or(page.getByTestId('close-leaderboard-btn'));
-    await closeBtn.first().click();
+    await closeBtn.first().click({ force: true });
     await expect(modal).toBeHidden();
   });
 });

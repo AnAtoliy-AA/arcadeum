@@ -29,6 +29,18 @@ export class ChessPuzzle {
 
   @Prop({ default: 0 })
   solutions!: number;
+
+  @Prop({ default: false })
+  isCustom!: boolean;
+
+  @Prop({ required: false })
+  authorId?: string;
+
+  @Prop({ required: false })
+  title?: string;
+
+  @Prop({ required: false })
+  description?: string;
 }
 
 export type ChessPuzzleDocument = ChessPuzzle & Document;
@@ -38,3 +50,5 @@ ChessPuzzleSchema.index({ puzzleId: 1 }, { unique: true });
 ChessPuzzleSchema.index({ rating: 1 });
 ChessPuzzleSchema.index({ themes: 1 });
 ChessPuzzleSchema.index({ openingTags: 1 });
+ChessPuzzleSchema.index({ authorId: 1 });
+ChessPuzzleSchema.index({ isCustom: 1 });

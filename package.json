@@ -24,6 +24,8 @@
     "check-sitemap": "node scripts/check-sitemap.js",
     "check-hreflang": "pnpm --filter web run seo:hreflang:audit",
     "docs:check": "node scripts/check-doc-links.js",
+    "puzzles:generate": "node scripts/generate-chess-puzzles.mjs",
+    "puzzles:seed": "node scripts/seed-chess-puzzles.mjs",
     "shorts:daily": "node scripts/shorts-factory/daily-runner.js",
     "shorts:daily:preview": "node scripts/shorts-factory/daily-runner.js --preview",
     "shorts:gameplay": "node scripts/shorts-factory/gameplay.js",

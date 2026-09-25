@@ -7,6 +7,7 @@ import {
 } from './chess-puzzle-user.schema';
 import { ChessPuzzlesService } from './chess-puzzles.service';
 import { ChessPuzzlesController } from './chess-puzzles.controller';
+import { ChessPuzzleDuelGateway } from './chess-puzzle-duel.gateway';
 import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
 import { ChessStockfishModule } from '../engine/chess-stockfish.module';
 
@@ -22,7 +23,7 @@ import { ChessStockfishModule } from '../engine/chess-stockfish.module';
     ChessStockfishModule,
   ],
   controllers: [ChessPuzzlesController],
-  providers: [ChessPuzzlesService],
+  providers: [ChessPuzzlesService, ChessPuzzleDuelGateway],
   exports: [ChessPuzzlesService],
 })
 export class ChessPuzzlesModule {}

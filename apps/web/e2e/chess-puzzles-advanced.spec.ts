@@ -100,8 +100,10 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     await expect(modal).toBeVisible();
     await expect(page.getByText('Daily Solvers Leaderboard')).toBeVisible();
 
-    const closeBtn = page.getByTestId('close-leaderboard-btn');
-    await closeBtn.click();
+    const closeBtn = page
+      .getByTestId('close-leaderboard-modal')
+      .or(page.getByTestId('close-leaderboard-btn'));
+    await closeBtn.first().click();
     await expect(modal).toBeHidden();
   });
 });

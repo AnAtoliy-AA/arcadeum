@@ -101,9 +101,8 @@ test.describe('Live Platform Info & Online Users', () => {
     const statusDropdown = filtersContainer.getByTestId(
       'rooms-filter-status-dropdown',
     );
-    if (await statusDropdown.isVisible()) {
-      await statusDropdown.click();
-    }
+    await expect(statusDropdown).toBeVisible();
+    await statusDropdown.click();
 
     const inProgressBtn = page.getByRole('checkbox', {
       name: /In Progress|Идут матчи|En curso|En cours|Ідуць матчы/i,
@@ -111,6 +110,8 @@ test.describe('Live Platform Info & Online Users', () => {
     await expect(inProgressBtn).toBeVisible();
     await inProgressBtn.click();
     await expect(page).toHaveURL(/.*status=in_progress.*/);
+
+    await statusDropdown.click();
 
     const clearAllBtn = page.getByTestId('rooms-filter-clear-all');
     await expect(clearAllBtn).toBeVisible();

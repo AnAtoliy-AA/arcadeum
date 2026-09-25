@@ -79,6 +79,8 @@ test.describe('Rooms Page Filter UX', () => {
     await lobbyBtn.click();
     await expect(page).toHaveURL(/.*status=lobby.*/);
 
+    await statusDropdown.click();
+
     const clearAllBtn = page.getByTestId('rooms-filter-clear-all');
     await expect(clearAllBtn).toBeVisible();
     await clearAllBtn.click();

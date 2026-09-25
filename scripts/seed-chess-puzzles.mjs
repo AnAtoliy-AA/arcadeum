@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 const PUZZLES_PATH = join(
   process.cwd(),
-  'apps/web/public/puzzles/puzzles-all.json',
+  'scripts/data/puzzles/puzzles-all.json',
 );
 const MONGO_URI =
   process.env.OCI_MONGO_URI ||

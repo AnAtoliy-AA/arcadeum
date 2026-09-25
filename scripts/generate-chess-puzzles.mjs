@@ -2,7 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const TARGET_COUNT = parseInt(process.env.PUZZLE_COUNT || '12000', 10);
-const OUT_DIR = join(process.cwd(), 'apps/web/public/puzzles');
+const OUT_DIR = join(process.cwd(), 'scripts/data/puzzles');
 
 function computeRating(base, tierIndex, spread = 300) {
   return base + (tierIndex % spread);

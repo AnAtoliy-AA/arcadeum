@@ -1,10 +1,19 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { PuzzleBoard } from './PuzzleBoard';
+import dynamic from 'next/dynamic';
 import { PuzzleControls } from './PuzzleControls';
 import { PuzzleRushMenu, type RushMode } from './PuzzleRushMenu';
 import { PuzzleRushGameOver } from './PuzzleRushGameOver';
+import {
+  useRushHighScores,
+  saveRushHighScore,
+} from '../lib/puzzle-rush-storage';
+
+const PuzzleBoard = dynamic(
+  () => import('./PuzzleBoard').then((mod) => mod.PuzzleBoard),
+  { ssr: false },
+);
 import type {
   ChessPuzzle,
   PuzzleSolveResult,
@@ -58,25 +67,7 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
     null,
   );
   const [isCheck, setIsCheck] = useState(false);
-  const [highScores, setHighScores] = useState<Record<RushMode, number>>(() => {
-    if (typeof window === 'undefined') return { survival: 0, timed: 0 };
-    try {
-      const s = parseInt(
-        localStorage.getItem('arcadeum_rush_best_survival') ?? '0',
-        10,
-      );
-      const tm = parseInt(
-        localStorage.getItem('arcadeum_rush_best_timed') ?? '0',
-        10,
-      );
-      return {
-        survival: isNaN(s) ? 0 : s,
-        timed: isNaN(tm) ? 0 : tm,
-      };
-    } catch {
-      return { survival: 0, timed: 0 };
-    }
-  });
+  const highScores = useRushHighScores();
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const actionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -150,20 +141,9 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
       );
       setTotalTime(timeElapsed);
 
-      try {
-        const currentBest = highScores[mode] ?? 0;
-        if (finalScore > currentBest) {
-          localStorage.setItem(
-            `arcadeum_rush_best_${mode}`,
-            String(finalScore),
-          );
-          setHighScores((prev) => ({ ...prev, [mode]: finalScore }));
-        }
-      } catch {
-        // ignore
-      }
+      saveRushHighScore(mode, finalScore);
     },
-    [mode, highScores, stopTimer, clearActionTimer],
+    [mode, stopTimer, clearActionTimer],
   );
 
   const handleStart = useCallback(

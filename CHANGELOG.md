@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.26] - 2026-09-25
+
+### Added
+- add dynamic rating, blindfold tactics, pgn importer, online duel, and speed leaderboard (ARC-chess-puzzle-enhancements)
+- add puzzle duels, tactical radar analytics, mistakes review, and zen mode (ARC-chess-puzzle-enhancements)
+- allow users to create, play, and share custom puzzles (ARC-chess-puzzle-enhancements)
+- procedural puzzle generation and daily challenge navigation (ARC-chess-puzzle-enhancements)
+- enhance puzzles with multi-move play, hints, themes, and rush modes (ARC-chess-puzzle-enhancements)
+
+### Fixed
+- fix pgn study validation and optimize puzzle initial paint (ARC-chess-puzzle-enhancements)
+- use test instead of it in playwright puzzle specs (ARC-chess-puzzle-enhancements)
+
+### Improved
+- convert puzzle rush page to server component and optimize LCP (ARC-chess-puzzle-enhancements)
+
+### Refactored
+- remove static puzzle json files from web public bundle (ARC-chess-puzzle-enhancements)
+
+
 ## [1.30.25] - 2026-09-24
 
 ### Added

@@ -1,8 +1,6 @@
-import type { eventsEn } from './en';
-
 export type { eventsEn } from './en';
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadEventsMessages(locale: string) {
   switch (locale) {
     case 'en':

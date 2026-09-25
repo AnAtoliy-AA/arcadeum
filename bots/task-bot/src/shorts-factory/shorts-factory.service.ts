@@ -142,7 +142,15 @@ export class ShortsFactoryService {
   }): Promise<void> {
     if (!this.adminChatId) return;
 
-    const emoji = result.success ? '✅' : '❌';
+    const hasSuccess = Boolean(result.platforms?.length);
+    const hasFailure = Boolean(result.failedPlatforms?.length);
+    const emoji = !hasFailure ? '✅' : hasSuccess ? '⚠️' : '❌';
+    const statusText = !hasFailure
+      ? 'Completed'
+      : hasSuccess
+        ? 'Partially Completed'
+        : 'Failed';
+
     const successList = result.platforms?.length
       ? '\n\n<b>Published to:</b>\n' +
         result.platforms.map((p) => `  ✅ ${p}`).join('\n')
@@ -159,7 +167,7 @@ export class ShortsFactoryService {
       : '';
 
     const text =
-      `${emoji} <b>Post ${result.success ? 'Completed' : 'Failed'}</b>\n\n` +
+      `${emoji} <b>Post ${statusText}</b>\n\n` +
       `${result.message ?? ''}` +
       successList +
       failureList;

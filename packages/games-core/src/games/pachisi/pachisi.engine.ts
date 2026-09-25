@@ -93,8 +93,9 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       seats,
       tokens,
       die: null,
+      lastDie: null,
+      lastRollerId: null,
       consecutiveSixes: 0,
-      // Fairness: randomize who moves first instead of always player 0.
       currentTurnIndex: randomInt(0, playerIds.length),
       playerOrder: [...playerIds],
       players,
@@ -155,7 +156,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
           newState.logs.push(
             this.createLogEntry(
               'system',
-              'Three sixes in a row — turn forfeited.',
+              'Three sixes in a row - turn forfeited.',
             ),
           );
           return this.endTurn(newState);
@@ -165,13 +166,15 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       }
 
       newState.die = d;
+      newState.lastDie = d;
+      newState.lastRollerId = context.userId;
 
       const legalMoves = getAllLegalMoves(newState, context.userId);
       if (legalMoves.length === 0) {
         newState.logs.push(
           this.createLogEntry(
             'system',
-            'No legal moves available. Turn passes.',
+            `Rolled a ${d}. No legal moves available. Turn passes.`,
           ),
         );
         return this.endTurn(newState);
@@ -209,10 +212,13 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       }
 
       const finishedCount = countFinished(moverTokens);
+      const progress = movedToken.progress;
+      const trackRow = progress <= 11 ? progress : progress <= 23 ? 23 - progress : progress <= 35 ? progress - 24 : 47 - progress;
+      const trackCol = progress <= 11 ? 0 : progress <= 23 ? 1 : progress <= 35 ? 2 : 3;
       newState.logs.push(
         this.createLogEntry(
           'action',
-          `Moved token to position ${movedToken.progress}. (${finishedCount}/${tokensPerVariant(newState.options.mode)} home)`,
+          `Move at (${trackRow}, ${trackCol}) Moved token to position ${progress}. (${finishedCount}/${tokensPerVariant(newState.options.mode)} home)`,
           { senderId: context.userId },
         ),
       );
@@ -244,7 +250,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       if (!passCheck.ok) return this.errorResult(passCheck.error);
 
       newState.logs.push(
-        this.createLogEntry('action', 'No legal moves — turn passed.', {
+        this.createLogEntry('action', 'No legal moves - turn passed.', {
           senderId: context.userId,
         }),
       );

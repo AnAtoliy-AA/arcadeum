@@ -5,21 +5,24 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
-import type { SeaBattleGameProps } from '../types';
-import { MIN_PLAYERS } from '../types';
+import { MIN_PLAYERS, type SeaBattleGameProps } from '../types';
 import { useSeaBattleState } from '../hooks/useSeaBattleState';
 import { useSeaBattleActions } from '../hooks/useSeaBattleActions';
-import { useGameEndState, useGameRoomActions } from '@/features/games/hooks';
-import { useGameChatIntegration } from '@/features/games/hooks';
+import {
+  useGameEndState,
+  useGameRoomActions,
+  useGameChatIntegration,
+} from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import {
   GameWidgetContainer,
   type TurnStatusVariant,
 } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useGameSound } from '@/shared/lib/game-sounds';
-
 import { SeaBattleLobby } from './SeaBattleLobby';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_THEMES } from '../lib/constants';
@@ -27,13 +30,10 @@ import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
 import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useShowRulesOnRoomEntry } from '@/shared/hooks/useShowRulesOnRoomEntry';
-
 import { SeaBattleModals } from './SeaBattleModals';
 import { SeaBattleBoards } from './SeaBattleBoards';
-
 import { RulesModal } from './RulesModal';
 import './styles/sea-battle.scss';
-
 export const SeaBattleGame = memo(function SeaBattleGame({
   roomId,
   room: initialRoom,
@@ -45,7 +45,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   onShowRulesClose,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
-
   const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
     useGameRoomActions(roomId, initialRoom);
 
@@ -308,6 +307,10 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     resolveActorColor,
   );
 
+  const chatHighlightCells = useGameChatStore((s) =>
+    s.highlightedCells.length > 0 ? s.highlightedCells : s.persistedCells,
+  );
+
   const cardVariant = (room?.gameOptions?.theme ||
     room?.gameOptions?.variant ||
     room?.gameOptions?.cardVariant) as string | undefined;
@@ -374,6 +377,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       variantEmoji: currentVariant?.emoji ?? '🚢',
       title: headerTitle,
       subtitle: room?.name,
+      extraActions: <UndoButton disabled={isGameOver} />,
       turnStatusVariant: turnStatus.variant,
       turnStatusText: turnStatus.text,
       turnAvatar: currentTurnPlayer ? (
@@ -391,13 +395,13 @@ export const SeaBattleGame = memo(function SeaBattleGame({
       currentVariant,
       headerTitle,
       room?.name,
+      isGameOver,
       turnStatus,
       currentTurnPlayer,
       resolveDisplayNameBound,
       gameEnd.toggleResult,
     ],
   );
-
   if (!room) return null;
 
   // Lobby — early return before GameWidgetContainer
@@ -468,6 +472,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
             resolveDisplayNameBound={resolveDisplayNameBound}
             teammateIds={teammateIds}
             teams={teams}
+            highlightedCells={chatHighlightCells}
           />
         }
         modals={

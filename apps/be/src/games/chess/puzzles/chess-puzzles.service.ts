@@ -267,4 +267,47 @@ export class ChessPuzzlesService {
       alternatives: hint.alternatives,
     };
   }
+
+  async createCustomPuzzle(
+    userId: string,
+    dto: import('./dto/create-custom-puzzle.dto').CreateCustomPuzzleDto,
+  ): Promise<ChessPuzzleDocument> {
+    const puzzleId = `custom_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    return this.puzzleModel.create({
+      puzzleId,
+      fen: dto.fen.trim(),
+      moves: dto.moves.map((m) => m.trim().toLowerCase()),
+      rating: clamp(dto.rating ?? 1500, 400, 3500),
+      ratingDeviation: 100,
+      themes: (dto.themes ?? ['custom']).map(sanitize),
+      openingTags: dto.title ? [sanitize(dto.title)] : ['Custom Puzzle'],
+      isCustom: true,
+      authorId: sanitize(userId),
+      title: dto.title ? sanitize(dto.title) : undefined,
+      description: dto.description ? sanitize(dto.description) : undefined,
+    });
+  }
+
+  async getCustomPuzzles(userId?: string): Promise<ChessPuzzleDocument[]> {
+    const filter = userId
+      ? { isCustom: true, authorId: sanitize(userId) }
+      : { isCustom: true };
+    return this.puzzleModel.find(filter).sort({ _id: -1 }).limit(50).exec();
+  }
+
+  async deleteCustomPuzzle(
+    userId: string,
+    puzzleId: string,
+  ): Promise<{ deleted: boolean }> {
+    const safePuzzleId = sanitize(puzzleId);
+    const safeUserId = sanitize(userId);
+    const result = await this.puzzleModel
+      .deleteOne({
+        puzzleId: safePuzzleId,
+        authorId: safeUserId,
+        isCustom: true,
+      })
+      .exec();
+    return { deleted: (result.deletedCount ?? 0) > 0 };
+  }
 }

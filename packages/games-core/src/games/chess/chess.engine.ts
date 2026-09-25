@@ -459,9 +459,15 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       notation += '+';
     }
 
+    const fromRow = 8 - move.from.rank;
+    const fromCol = move.from.file.charCodeAt(0) - 97;
+    const toRow = 8 - move.to.rank;
+    const toCol = move.to.file.charCodeAt(0) - 97;
+    const moveLog = `${notation} Move from (${fromRow}, ${fromCol}) to (${toRow}, ${toCol})`;
+
     newState.logs = [
       ...state.logs,
-      this.createLogEntry('action', notation, { senderId: context.userId }),
+      this.createLogEntry('action', moveLog, { senderId: context.userId }),
     ];
 
     if (!hasLegalMoves) {

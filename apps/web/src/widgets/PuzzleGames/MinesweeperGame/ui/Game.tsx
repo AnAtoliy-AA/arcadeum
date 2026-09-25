@@ -61,6 +61,14 @@ function MinesweeperTable() {
     (state) => state.changeDifficulty,
   );
   const newGame = useMinesweeperStore((state) => state.newGame);
+  const undo = useMinesweeperStore((state) => state.undo);
+  const canUndo = useMinesweeperStore(
+    (state) =>
+      state.history.length > 0 &&
+      state.startedAt !== null &&
+      state.finishedAt === null &&
+      state.game.status === 'playing',
+  );
 
   const [flagMode, setFlagMode] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
@@ -127,11 +135,11 @@ function MinesweeperTable() {
   }, [finished, game.difficulty, game.mineCount, t]);
 
   const hud = (
-    <div className="flex items-center gap-2 sm:gap-3 px-1">
-      <div className="flex items-center rounded-lg border border-rose-500/40 bg-[var(--backgroundHover)] px-2 py-0.5 shadow-inner">
+    <div className="flex items-center gap-2 sm:gap-3 px-1 select-none">
+      <div className="flex items-center rounded-lg border-2 border-slate-700/80 bg-black/90 px-2.5 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10">
         <span
           data-testid="minesweeper-mines-left"
-          className="font-mono text-sm sm:text-base font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]"
+          className="font-mono text-sm sm:text-base font-black tracking-widest text-red-500 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]"
         >
           {formatDigits(minesLeft)}
         </span>
@@ -142,15 +150,15 @@ function MinesweeperTable() {
         onClick={newGame}
         aria-label={t('games.minesweeper_v1.hud.newGame')}
         data-testid="minesweeper-face-button"
-        className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-full border border-amber-400/60 bg-gradient-to-b from-amber-300 to-amber-500 text-base sm:text-lg shadow-md transition-transform active:scale-90"
+        className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border-2 border-amber-300 bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-base sm:text-lg shadow-md shadow-amber-500/30 transition-transform active:scale-90"
       >
         {faceIcon}
       </button>
 
-      <div className="flex items-center rounded-lg border border-rose-500/40 bg-[var(--backgroundHover)] px-2 py-0.5 shadow-inner">
+      <div className="flex items-center rounded-lg border-2 border-slate-700/80 bg-black/90 px-2.5 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10">
         <span
           data-testid="minesweeper-timer"
-          className="font-mono text-sm sm:text-base font-black tracking-widest text-red-600 dark:text-red-400 tabular-nums drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]"
+          className="font-mono text-sm sm:text-base font-black tracking-widest text-red-500 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]"
         >
           {formatDigits(elapsedSeconds)}
         </span>
@@ -232,6 +240,7 @@ function MinesweeperTable() {
       hud={hud}
       controls={controls}
       actions={actions}
+      undo={{ onUndo: undo, canUndo }}
       loadingMessage="games.minesweeper_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,

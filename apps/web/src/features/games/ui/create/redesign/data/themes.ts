@@ -78,7 +78,7 @@ export const GAMES: Record<GameId, GameMeta> = {
   cascade_v1: {
     id: 'cascade_v1',
     title: 'Cascade',
-    desc: 'Shedding card game in the Crazy Eights family — stack penalties and four selectable themes.',
+    desc: 'Shedding card game in the Crazy Eights family - stack penalties and four selectable themes.',
     players: { min: 2, max: 10, label: '2–10' },
     duration: '10 min',
     kind: 'Card · matching',
@@ -138,7 +138,7 @@ export const GAMES: Record<GameId, GameMeta> = {
   hearts_v1: {
     id: 'hearts_v1',
     title: 'Hearts',
-    desc: 'Classic 4-player trick-taking card game — avoid penalty cards and shoot the moon.',
+    desc: 'Classic 4-player trick-taking card game - avoid penalty cards and shoot the moon.',
     players: { min: 4, max: 4, label: '4' },
     duration: '30 min',
     kind: 'Card · trick-taking',
@@ -150,7 +150,7 @@ export const GAMES: Record<GameId, GameMeta> = {
   spades_v1: {
     id: 'spades_v1',
     title: 'Spades',
-    desc: 'Classic 4-player partnership card game — bid your tricks and let spades trump.',
+    desc: 'Classic 4-player partnership card game - bid your tricks and let spades trump.',
     players: { min: 4, max: 4, label: '4' },
     duration: '35 min',
     kind: 'Card · partnership',
@@ -162,7 +162,7 @@ export const GAMES: Record<GameId, GameMeta> = {
   go_v1: {
     id: 'go_v1',
     title: 'Go',
-    desc: 'Classic Go on 9×9–19×19 boards — surround territory, capture groups, and beat the MCTS bot.',
+    desc: 'Classic Go on 9×9–19×19 boards - surround territory, capture groups, and beat the MCTS bot.',
     players: { min: 2, max: 2, label: '2' },
     duration: '10–40 min',
     kind: 'Board · territory',
@@ -174,7 +174,7 @@ export const GAMES: Record<GameId, GameMeta> = {
   pachisi_v1: {
     id: 'pachisi_v1',
     title: 'Pachisi',
-    desc: 'Classic cross-and-circle race for 2–4 players — roll a six, capture rivals, race home.',
+    desc: 'Classic cross-and-circle race for 2–4 players - roll a six, capture rivals, race home.',
     players: { min: 2, max: 4, label: '2–4' },
     duration: '15 min',
     kind: 'Board · race',

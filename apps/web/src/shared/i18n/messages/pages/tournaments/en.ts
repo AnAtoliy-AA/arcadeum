@@ -2,7 +2,7 @@ export const tournamentsEn = {
   title: 'Tournaments',
   subtitle: 'Compete against the best players worldwide',
   description:
-    'Join exciting tournaments, climb the brackets, and compete for exclusive prizes and bragging rights. New tournaments are added regularly — find one that fits your schedule and skill level.',
+    'Join exciting tournaments, climb the brackets, and compete for exclusive prizes and bragging rights. New tournaments are added regularly - find one that fits your schedule and skill level.',
   features: [
     {
       title: 'Dynamic Brackets',

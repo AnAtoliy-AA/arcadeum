@@ -1,9 +1,9 @@
 export const landing = {
   meta: {
-    title: 'Critical — Jeu de cartes explosif gratuit en ligne | Navigateur',
+    title: 'Critical - Jeu de cartes explosif gratuit en ligne | Navigateur',
     description:
-      "Jouez gratuitement à Critical en ligne — un jeu de cartes stratégique et rapide où vous piochez, désamorcez et survivez à l'explosion. 2 à 5 joueurs, IA, decks thématiques, sans téléchargement.",
-    ogTitle: 'Critical en ligne — Jeu de cartes explosif gratuit',
+      "Jouez gratuitement à Critical en ligne - un jeu de cartes stratégique et rapide où vous piochez, désamorcez et survivez à l'explosion. 2 à 5 joueurs, IA, decks thématiques, sans téléchargement.",
+    ogTitle: 'Critical en ligne - Jeu de cartes explosif gratuit',
     ogDescription:
       "Piochez, désamorcez, survivez. Le dernier survivant gagne. Jouez gratuitement à Critical dans votre navigateur entre amis ou contre l'IA.",
     keywords:
@@ -14,11 +14,11 @@ export const landing = {
     tagline:
       'Un jeu de cartes en ligne gratuit de bluff, de vol et de chance explosive',
     intro:
-      "Critical est un jeu de cartes stratégique et rapide inspiré d'Exploding Kittens. Piochez à votre tour, esquivez la carte instable cachée dans le paquet et utilisez Attaques, Sauts, Vols et Combos pour pousser l'explosion vers quelqu'un d'autre. Sur Arcadeum, vous pouvez jouer à Critical directement dans votre navigateur — gratuitement, entre amis ou contre l'IA, sans téléchargement.",
+      "Critical est un jeu de cartes stratégique et rapide inspiré d'Exploding Kittens. Piochez à votre tour, esquivez la carte instable cachée dans le paquet et utilisez Attaques, Sauts, Vols et Combos pour pousser l'explosion vers quelqu'un d'autre. Sur Arcadeum, vous pouvez jouer à Critical directement dans votre navigateur - gratuitement, entre amis ou contre l'IA, sans téléchargement.",
     ctaPlay: 'Créer un salon Critical',
     ctaRooms: 'Voir les salons ouverts',
     ctaQuickplay: "Jouer contre l'IA",
-    ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
+    ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
     ctaPlayHuman: 'Trouver un adversaire humain',
     ctaGroupLabel: 'Démarrage rapide Critical',
     eyebrow: 'Gratuit · 2 à 5 joueurs · Sans inscription',
@@ -43,11 +43,11 @@ export const landing = {
       },
       draw: {
         title: '2. Prenez votre main de départ',
-        body: 'Chaque joueur commence avec une carte Désamorçage et sept cartes d’Action aléatoires. Le paquet contient une ou plusieurs cartes Critical — l’explosion que vous essayez d’éviter.',
+        body: 'Chaque joueur commence avec une carte Désamorçage et sept cartes d’Action aléatoires. Le paquet contient une ou plusieurs cartes Critical - l’explosion que vous essayez d’éviter.',
       },
       play: {
         title: '3. Jouez des cartes d’Action ou piochez',
-        body: 'À votre tour, jouez autant de cartes d’Action que vous voulez — Attaque, Saut, Voir l’avenir, Vol, combos de deux ou trois identiques. Terminez en piochant une carte du paquet.',
+        body: 'À votre tour, jouez autant de cartes d’Action que vous voulez - Attaque, Saut, Voir l’avenir, Vol, combos de deux ou trois identiques. Terminez en piochant une carte du paquet.',
       },
       survive: {
         title: '4. Désamorcez la Critical ou explosez',
@@ -58,14 +58,14 @@ export const landing = {
   about: {
     title: 'À propos de Critical',
     paragraphs: [
-      'Critical est une version moderne du genre des decks explosifs popularisé par Exploding Kittens. Les joueurs piochent à tour de rôle dans un paquet partagé contenant une ou plusieurs cartes instables « Critical ». Si vous en piochez une, vous êtes éliminé — sauf si vous pouvez jouer un Désamorçage pour la neutraliser.',
+      'Critical est une version moderne du genre des decks explosifs popularisé par Exploding Kittens. Les joueurs piochent à tour de rôle dans un paquet partagé contenant une ou plusieurs cartes instables « Critical ». Si vous en piochez une, vous êtes éliminé - sauf si vous pouvez jouer un Désamorçage pour la neutraliser.',
       "Entre les pioches, les joueurs jouent des cartes d'Action pour sauter leur tour, forcer les adversaires à piocher, regarder dans le paquet ou voler des cartes avec des combos de deux ou trois cartes identiques. Chaque décision est un petit pari : utiliser un Désamorçage tôt pour contrôler le paquet, ou le garder pour la manche qui se termine en flammes.",
-      'Sur Arcadeum, Critical fonctionne entièrement dans votre navigateur — sans téléchargement, sans inscription. Vous pouvez créer un salon privé et partager le lien, rejoindre une partie publique ouverte ou remplir les places vides avec des bots IA pour jouer en solo. Les manches durent généralement de 10 à 15 minutes, parfait pour une pause café ou une session rapide entre amis.',
+      'Sur Arcadeum, Critical fonctionne entièrement dans votre navigateur - sans téléchargement, sans inscription. Vous pouvez créer un salon privé et partager le lien, rejoindre une partie publique ouverte ou remplir les places vides avec des bots IA pour jouer en solo. Les manches durent généralement de 10 à 15 minutes, parfait pour une pause café ou une session rapide entre amis.',
     ],
   },
   finalCta: {
     title: 'Prêt à jouer ?',
-    subtitle: 'Créez un salon et partagez le lien — le paquet vous attend.',
+    subtitle: 'Créez un salon et partagez le lien - le paquet vous attend.',
   },
   faq: {
     title: 'Questions fréquentes',

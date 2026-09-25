@@ -105,6 +105,13 @@ export const post: BlogPost = {
         'Open a Hearts room, share the link with friends, or play against AI bots. Classic rules with passing and shooting the moon.',
     },
     {
+      type: 'cta',
+      href: '/blog/how-to-win-hearts-advanced',
+      text: 'Go deeper: Advanced Hearts — Reading Opponents and Moon-Shooting Tells',
+      description:
+        'Multi-hand planning, pip counting, and recognizing moon-shooting setups before it is too late.',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'TL;DR — the four habits that win games',
@@ -122,6 +129,29 @@ export const post: BlogPost = {
     {
       type: 'paragraph',
       text: 'Hearts is a game where information is everything. Every card played tells a story, and the player who reads the most stories wins the most games. Practice tracking suits, master the art of voiding, and know when to take the risk of shooting the moon.',
+    },
+  ],
+  faq: [
+    {
+      question: 'What is the best card to pass in Hearts?',
+      answer:
+        'Usually your highest card in the suit you have fewest of — this creates a void. The Queen of Spades is often good to pass unless you have enough spades to protect it (Ace, King, and three others is generally enough). Never pass the 2 of Clubs or you may be forced to lead trick one badly.',
+    },
+    {
+      question: 'Can I shoot the moon if I hold the Queen of Spades?',
+      answer:
+        'Yes — in fact the Queen is required for a moon shot. You must collect ALL 13 hearts AND the Queen. If you hold the Queen but another player takes a single heart, the shot fails.',
+    },
+    {
+      question:
+        'What happens when multiple players reach 100 points at the same time?',
+      answer:
+        'The player with the lowest score at that point wins. If two players are tied for lowest, play continues for additional hands until the tie is broken.',
+    },
+    {
+      question: 'Is it always wrong to take tricks in Hearts?',
+      answer:
+        'No — there are situations where taking a trick is correct: blocking a moon-shooter requires taking at least one heart, and sometimes strategic point-taking (accepting 3-4 hearts to stay in the mid-range) is better than desperate avoidance that leads to taking the Queen.',
     },
   ],
   howTo: {

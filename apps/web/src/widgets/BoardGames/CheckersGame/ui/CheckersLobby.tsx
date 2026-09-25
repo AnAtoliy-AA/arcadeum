@@ -11,6 +11,7 @@ import {
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { RulesModal } from './RulesModal';
 import { CHECKERS_THEMES } from '../lib/constants';
 import type { CheckersOptions, CheckersTheme, Mode } from '../types';
@@ -43,7 +44,7 @@ interface CheckersLobbyProps {
   onShowRulesClose: () => void;
 }
 
-function resolveOptions(raw: unknown): CheckersOptions {
+function resolveOptions(raw: unknown, fallbackTheme: string): CheckersOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
@@ -52,8 +53,8 @@ function resolveOptions(raw: unknown): CheckersOptions {
     backwardCaptures: boolean;
   }>;
   return {
-    theme: (r.theme ?? r.variant ?? 'adventure') as CheckersTheme,
-    variant: (r.theme ?? r.variant ?? 'adventure') as CheckersTheme,
+    theme: (r.theme ?? r.variant ?? fallbackTheme) as CheckersTheme,
+    variant: (r.theme ?? r.variant ?? fallbackTheme) as CheckersTheme,
     mode: (r.mode ?? 'american') as Mode,
     forcedCaptures: r.forcedCaptures !== false,
     backwardCaptures: r.backwardCaptures === true,
@@ -104,10 +105,11 @@ export function CheckersLobby({
 }: CheckersLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
 
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
-    [room.gameOptions],
+    () => resolveOptions(room.gameOptions, equippedTheme),
+    [room.gameOptions, equippedTheme],
   );
   const variant = options.variant;
   const mode = options.mode;

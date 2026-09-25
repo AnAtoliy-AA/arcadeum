@@ -28,6 +28,7 @@ import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameStatusMessage } from './GameStatusMessage';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
@@ -200,7 +201,6 @@ export function ActiveGameView({
     omniscienceModal,
     setOmniscienceModal,
     handleCloseOmniscienceModal,
-    handleConfirmEventCombo,
     favorModal,
   } = useCriticalModals({
     playFavor: actions.playFavor,
@@ -264,6 +264,7 @@ export function ActiveGameView({
 
   const {
     handleOpenFiverCombo,
+    handleConfirmEventCombo,
     handleConfirmStash,
     handleConfirmMark,
     handleConfirmStealDraw,
@@ -315,6 +316,7 @@ export function ActiveGameView({
           variantEmoji: variantMeta?.emoji ?? '🎴',
           title: headerTitle,
           subtitle: room.name,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: { onClockUserId: turnPlayerId, isMyTurn, isGameOver },
         }}
         board={

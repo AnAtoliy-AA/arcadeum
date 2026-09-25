@@ -15,7 +15,7 @@ describe('GameAcademySection', () => {
 
     expect(screen.getByTestId('game-academy-section')).toBeInTheDocument();
     expect(
-      screen.getByText('Arcadeum Academy — Interactive Puzzles'),
+      screen.getByText('Arcadeum Academy: Interactive Puzzles'),
     ).toBeInTheDocument();
     expect(
       screen.getByText('Academy Challenge 1: The Winning Fork'),

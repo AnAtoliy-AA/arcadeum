@@ -35,7 +35,7 @@ test.describe('Daily Chess Puzzle Experience', () => {
     await expect(page.getByTestId('chess-puzzle-tab-learn')).toBeVisible();
   });
 
-  test('navigates seamlessly between daily and rated puzzles via training tabs', async ({
+  test('navigates seamlessly between daily, rated, and rush via training tabs', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/chess/puzzles/daily');
@@ -48,6 +48,20 @@ test.describe('Daily Chess Puzzle Experience', () => {
       page.getByRole('heading', { level: 1, name: 'Chess Training' }),
     ).toBeVisible();
 
+    const themeFilters = page.getByTestId('puzzle-theme-filters');
+    await expect(themeFilters).toBeVisible();
+    await expect(page.getByTestId('theme-chip-fork')).toBeVisible();
+
+    const rushTab = page.getByTestId('chess-puzzle-tab-rush');
+    await rushTab.click();
+
+    await expect(page).toHaveURL(/\/en\/games\/chess\/puzzles\/rush$/);
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Puzzle Rush' }),
+    ).toBeVisible();
+    await expect(page.getByTestId('puzzle-rush-survival-btn')).toBeVisible();
+    await expect(page.getByTestId('puzzle-rush-timed-btn')).toBeVisible();
+
     const dailyTab = page.getByTestId('chess-puzzle-tab-daily');
     await dailyTab.click();
 
@@ -55,5 +69,39 @@ test.describe('Daily Chess Puzzle Experience', () => {
     await expect(
       page.getByRole('heading', { level: 1, name: 'Daily Chess Puzzle' }),
     ).toBeVisible();
+  });
+
+  test('filters tactics by theme chip on rated puzzles page', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/chess/puzzles');
+
+    const forkChip = page.getByTestId('theme-chip-fork');
+    await expect(forkChip).toBeVisible();
+    await forkChip.click();
+
+    await expect(page.getByTestId('puzzle-hint-btn')).toBeVisible();
+  });
+
+  test('starts a puzzle rush survival session', async ({ page }) => {
+    await navigateTo(page, '/en/games/chess/puzzles/rush');
+
+    const survivalBtn = page.getByTestId('puzzle-rush-survival-btn');
+    await survivalBtn.click();
+
+    await expect(page.getByTestId('puzzle-rush-end-run-btn')).toBeVisible();
+  });
+
+  test('navigates previous and next daily puzzles', async ({ page }) => {
+    await navigateTo(page, '/en/games/chess/puzzles/daily');
+
+    const prevBtn = page.getByTestId('prev-day-puzzle');
+    await expect(prevBtn).toBeVisible();
+    await prevBtn.click();
+
+    const todayBtn = page.getByTestId('today-puzzle');
+    await expect(todayBtn).toBeVisible();
+    await todayBtn.click();
+    await expect(todayBtn).toBeHidden();
   });
 });

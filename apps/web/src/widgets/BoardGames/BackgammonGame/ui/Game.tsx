@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -24,6 +25,7 @@ import type {
 import { useBackgammonState } from '../hooks/useBackgammonState';
 import { useBackgammonActions } from '../hooks/useBackgammonActions';
 import { BackgammonThemeProvider } from '../lib/BackgammonThemeContext';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { BackgammonLobby } from './BackgammonLobby';
 import { BackgammonBoard } from './BackgammonBoard';
 import { RulesModal } from './RulesModal';
@@ -85,16 +87,28 @@ function BackgammonGameImpl({
   const { play } = useGameSound('backgammon_v1');
 
   const handleRoll = useCallback(() => {
+    play('shake');
     play('roll');
     rollDice();
   }, [rollDice, play]);
 
   const handleMove = useCallback(
     (...args: Parameters<typeof moveChecker>) => {
-      play('move');
+      const payload = args[0];
+      if (
+        payload &&
+        typeof payload.to === 'number' &&
+        snapshot?.points[payload.to]?.count === 1 &&
+        snapshot?.points[payload.to]?.playerId &&
+        snapshot?.points[payload.to]?.playerId !== currentUserId
+      ) {
+        play('capture');
+      } else {
+        play('move');
+      }
       return moveChecker(...args);
     },
-    [moveChecker, play],
+    [moveChecker, play, snapshot, currentUserId],
   );
 
   const resolveDisplayNameBound = useCallback(
@@ -109,6 +123,11 @@ function BackgammonGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'backgammon_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
@@ -222,6 +241,7 @@ function BackgammonGameImpl({
           onMove={handleMove}
           onRoll={handleRoll}
           snapshot={snapshot}
+          highlightedCells={chatHighlightCells}
         />
       ) : null}
     </div>
@@ -274,6 +294,7 @@ function BackgammonGameImpl({
           title: t('games.backgammon_v1.name'),
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

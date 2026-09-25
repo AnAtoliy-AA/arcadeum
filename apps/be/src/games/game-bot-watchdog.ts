@@ -35,6 +35,9 @@ export class GameBotWatchdog {
   private consecutiveFailures = 0;
   private nextRun = 0;
 
+  /** Shared across all instances to avoid duplicate "not connected" logs. */
+  private static lastDisconnectedLogAt = 0;
+
   constructor(
     private readonly gameId: string,
     private readonly sessionsService: GameSessionsService,
@@ -63,10 +66,14 @@ export class GameBotWatchdog {
     if (now < this.nextRun) return;
 
     if (Number(this.mongoConnection.readyState) !== READY_STATE) {
-      if (this.consecutiveFailures === 0) {
+      if (
+        this.consecutiveFailures === 0 &&
+        Date.now() - GameBotWatchdog.lastDisconnectedLogAt > INTERVAL_MS
+      ) {
         this.logger.warn(
           `MongoDB not connected (readyState=${String(this.mongoConnection.readyState)}), skipping watchdog tick`,
         );
+        GameBotWatchdog.lastDisconnectedLogAt = Date.now();
       }
       this.consecutiveFailures++;
       const backoffMs = Math.min(

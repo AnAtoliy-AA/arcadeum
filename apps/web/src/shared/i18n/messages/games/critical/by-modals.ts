@@ -46,7 +46,7 @@ export const modals = {
   favor: {
     title: 'Запытаць ласку',
     selectPlayer: 'Выберыце гульца',
-    description: 'Выберыце гульца — ён выбера, якую карту вам аддаць.',
+    description: 'Выберыце гульца - ён выбера, якую карту вам аддаць.',
     cardsCount: '{{count}} карт',
     confirm: 'Запытаць ласку',
   },

@@ -2,7 +2,7 @@ export const enMessages = {
   sudoku_v1: {
     name: 'Sudoku',
     description:
-      'Classic Sudoku — fill the 9×9 grid so every row, column and box holds 1–9 once',
+      'Classic Sudoku - fill the 9×9 grid so every row, column and box holds 1–9 once',
     summary:
       'The world’s favorite number puzzle: pure logic, three difficulties, pencil marks included.',
     board: {
@@ -22,7 +22,7 @@ export const enMessages = {
     controls: {
       notes: 'Notes',
       notesHint:
-        'Toggle pencil marks — digits go into the cell as candidates instead of answers',
+        'Toggle pencil marks - digits go into the cell as candidates instead of answers',
       erase: 'Erase',
       placeDigit: 'Place digit {{digit}}',
       noteDigit: 'Toggle note {{digit}}',
@@ -31,7 +31,7 @@ export const enMessages = {
       wonTitle: 'Solved!',
       wonBody:
         'Grid complete with {{mistakes}} mistake(s) along the way. Nicely done.',
-      flawlessBody: 'Flawless solve — not a single wrong entry.',
+      flawlessBody: 'Flawless solve - not a single wrong entry.',
       playAgain: 'Play again',
     },
     rules: {
@@ -40,12 +40,12 @@ export const enMessages = {
       gameplay:
         'Tap a cell and pick a digit from the pad or keyboard. Switch to Notes mode to jot candidate numbers before committing.',
       scoring:
-        'Wrong entries count as mistakes but stay on the board for you to fix — a clean, quick solve is the goal.',
+        'Wrong entries count as mistakes but stay on the board for you to fix - a clean, quick solve is the goal.',
     },
     landing: {
       tagline: 'Single-player · No signup',
       meta: {
-        title: 'Sudoku — Free Online Number Puzzle Game | Arcadeum',
+        title: 'Sudoku - Free Online Number Puzzle Game | Arcadeum',
         description:
           'Play Sudoku free online at Arcadeum. Easy, medium and hard puzzles with unique solutions, pencil marks, keyboard play, and saved progress. No download, no signup.',
         keywords:
@@ -60,7 +60,7 @@ export const enMessages = {
       features: {
         solo: {
           title: 'Truly single-player',
-          body: 'No accounts, no waiting rooms — a fresh unique puzzle in one click.',
+          body: 'No accounts, no waiting rooms - a fresh unique puzzle in one click.',
         },
         progress: {
           title: 'Progress is saved',
@@ -75,12 +75,12 @@ export const enMessages = {
         q1: {
           question: 'Is Sudoku free to play?',
           answer:
-            'Yes — Sudoku on Arcadeum is completely free, requires no download, and needs no account to start playing.',
+            'Yes - Sudoku on Arcadeum is completely free, requires no download, and needs no account to start playing.',
         },
         q2: {
           question: 'Does every puzzle have one solution?',
           answer:
-            'Yes. Every generated puzzle is verified to admit exactly one solution — you can always reason your way to it.',
+            'Yes. Every generated puzzle is verified to admit exactly one solution - you can always reason your way to it.',
         },
         q3: {
           question: 'Can I play on my phone?',
@@ -130,7 +130,7 @@ export const enMessages = {
         },
         join: {
           title: 'Scan the rows',
-          body: 'Find where a digit fits by elimination — tap the cell, then tap its number on the pad.',
+          body: 'Find where a digit fits by elimination - tap the cell, then tap its number on the pad.',
         },
         play: {
           title: 'Complete the grid',

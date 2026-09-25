@@ -4,7 +4,6 @@ import { getCardTranslationKey } from '../lib/cardUtils';
 import {
   LastPlayedCard,
   DeckCard,
-  CardCorner,
   CardFrame,
   CardInner,
   CardName,
@@ -45,7 +44,6 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
   const topCard = deck[0];
 
   if ((topCard as string) !== 'hidden') {
-    // Show Face Up Card in the Deck Slot (some game variants allow this)
     return (
       <LastPlayedCard
         data-testid="deck-card"
@@ -55,10 +53,6 @@ export const DeckDisplay: React.FC<DeckDisplayProps> = ({
       >
         <CardImage variant={cardVariant ?? ''} cardType={topCard as string} />
         <GradientScrim />
-        <CardCorner position="tl" variant={cardVariant} />
-        <CardCorner position="tr" variant={cardVariant} />
-        <CardCorner position="bl" variant={cardVariant} />
-        <CardCorner position="br" variant={cardVariant} />
         <CardFrame variant={cardVariant} />
         <CardInner style={{ zIndex: 2 }}>
           <CardNameContainer variant={cardVariant as GameVariant}>

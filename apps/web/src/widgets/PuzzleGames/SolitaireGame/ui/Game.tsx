@@ -38,6 +38,10 @@ function SolitaireTable() {
   const draw = useSolitaireStore((state) => state.draw);
   const move = useSolitaireStore((state) => state.move);
   const newGame = useSolitaireStore((state) => state.newGame);
+  const undo = useSolitaireStore((state) => state.undo);
+  const canUndo = useSolitaireStore(
+    (state) => state.history.length > 0 && state.finishedAt === null,
+  );
 
   const { play } = useGameSound('solitaire_v1');
   const [selection, setSelection] = useState<MoveSource | null>(null);
@@ -127,6 +131,7 @@ function SolitaireTable() {
       onNewGame={newGame}
       statsItems={statsItems}
       actions={actions}
+      undo={{ onUndo: undo, canUndo }}
       loadingMessage="games.solitaire_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,

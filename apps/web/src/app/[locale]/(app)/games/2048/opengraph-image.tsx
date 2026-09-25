@@ -8,7 +8,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
-export const alt = '2048 — free online sliding tile puzzle on Arcadeum Games';
+export const alt = '2048 - free online sliding tile puzzle on Arcadeum Games';
 
 type Props = { params: Promise<{ locale: string }> };
 

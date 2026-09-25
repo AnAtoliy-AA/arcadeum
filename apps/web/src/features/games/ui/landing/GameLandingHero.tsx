@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Badge, Button } from '@arcadeum/ui';
@@ -10,6 +10,7 @@ import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
 import { GameInviteModal } from './GameInviteModal';
+import { gamesApi } from '@/features/games/api';
 
 export function GameLandingHero({
   gameId,
@@ -33,9 +34,29 @@ export function GameLandingHero({
   createRoomHref,
   heroVisual,
   comingSoon = false,
+  quickNavItems,
 }: GameLandingHeroProps) {
   const { theme } = useGameLandingTheme();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isAiBattleOpen, setIsAiBattleOpen] = useState(false);
+  const [effectiveComingSoon, setEffectiveComingSoon] = useState(comingSoon);
+
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog()
+      .then((res) => {
+        if (cancelled) return;
+        const entry = res.games.find((g) => g.gameId === gameId);
+        if (entry) {
+          setEffectiveComingSoon(entry.comingSoon);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [gameId]);
 
   const createHref = createRoomHref
     ? createRoomHref.includes('?')
@@ -44,9 +65,16 @@ export function GameLandingHero({
     : undefined;
 
   return (
-    <header className="box-border relative w-full pt-6 pb-12 overflow-hidden">
+    <header
+      id="play"
+      className="box-border relative w-full pt-6 pb-12 overflow-hidden"
+    >
       <div className="box-border grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div className="box-border flex flex-col gap-5 lg:col-span-7">
+        <div
+          className={`box-border flex flex-col gap-5 ${
+            heroVisual ? 'lg:col-span-7' : 'lg:col-span-12 max-w-4xl'
+          }`}
+        >
           <div className="box-border flex flex-wrap items-center gap-2">
             {eyebrow ? (
               <Badge variant="info" size="sm">
@@ -104,58 +132,102 @@ export function GameLandingHero({
 
           <GameLandingLiveStats gameId={gameId} />
 
-          <div className="box-border flex flex-wrap items-center gap-3 pt-2">
-            <QuickplayCta
-              gameId={gameId}
-              theme={theme}
-              ctaQuickplay={ctaQuickplayLabel}
-              ctaQuickplayError={ctaQuickplayErrorLabel}
-              ctaPlayHuman={ctaPlayHumanLabel}
-              ctaPlayHumanError={ctaPlayHumanErrorLabel}
-              disabled={comingSoon}
-            />
-
-            {!comingSoon && isAiVsAiSupported(gameId) ? (
-              <AIvsAIViewer
+          <div className="box-border flex flex-col gap-2.5 pt-2">
+            <div className="box-border flex flex-wrap items-center gap-2.5">
+              <QuickplayCta
                 gameId={gameId}
                 theme={theme}
-                buttonVariant="outline"
+                ctaQuickplay={ctaQuickplayLabel}
+                ctaQuickplayError={ctaQuickplayErrorLabel}
+                ctaPlayHuman={ctaPlayHumanLabel}
+                ctaPlayHumanError={ctaPlayHumanErrorLabel}
+                size="md"
+                disabled={effectiveComingSoon}
               />
-            ) : null}
 
-            <Link href={roomsHref} className="box-border inline-flex">
-              <Button variant="secondary" size="lg">
-                {browseRoomsLabel}
+              {createHref ? (
+                effectiveComingSoon ? (
+                  <span className="box-border inline-flex">
+                    <Button variant="outline" size="md" disabled>
+                      {createRoomLabel}
+                    </Button>
+                  </span>
+                ) : (
+                  <Link href={createHref} className="box-border inline-flex">
+                    <Button variant="outline" size="md">
+                      {createRoomLabel}
+                    </Button>
+                  </Link>
+                )
+              ) : null}
+            </div>
+
+            <div className="box-border flex flex-wrap items-center gap-2">
+              <Link href={roomsHref} className="box-border inline-flex">
+                <Button variant="secondary" size="sm">
+                  {browseRoomsLabel}
+                </Button>
+              </Link>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsInviteOpen(true)}
+              >
+                Invite / Share 🔗
               </Button>
-            </Link>
 
-            {createHref ? (
-              comingSoon ? (
-                <span className="box-border inline-flex">
-                  <Button variant="victory" size="lg" disabled>
-                    {createRoomLabel}
-                  </Button>
-                </span>
-              ) : (
-                <Link href={createHref} className="box-border inline-flex">
-                  <Button variant="victory" size="lg">
-                    {createRoomLabel}
-                  </Button>
-                </Link>
-              )
+              {!effectiveComingSoon && isAiVsAiSupported(gameId) ? (
+                <Button
+                  variant={isAiBattleOpen ? 'primary' : 'outline'}
+                  size="sm"
+                  onClick={() => setIsAiBattleOpen(!isAiBattleOpen)}
+                >
+                  {isAiBattleOpen ? 'Close AI Battle ▴' : 'Watch AI vs AI 🤖'}
+                </Button>
+              ) : null}
+            </div>
+
+            {isAiBattleOpen &&
+            !effectiveComingSoon &&
+            isAiVsAiSupported(gameId) ? (
+              <div className="box-border p-4 rounded-2xl bg-[var(--surfaceBg)] border border-[var(--borderColor)] backdrop-blur-md max-w-md">
+                <AIvsAIViewer
+                  gameId={gameId}
+                  theme={theme}
+                  buttonVariant="victory"
+                />
+              </div>
             ) : null}
-
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setIsInviteOpen(true)}
-            >
-              Invite / Share 🔗
-            </Button>
           </div>
 
+          {quickNavItems && quickNavItems.length > 0 ? (
+            <nav
+              aria-label="Quick navigation"
+              className="box-border flex flex-wrap items-center gap-2 pt-2.5 border-t border-[var(--borderColor)]/40 mt-1"
+            >
+              <span className="box-border text-xs font-semibold uppercase tracking-wider text-[var(--color)] mr-1">
+                Explore:
+              </span>
+              {quickNavItems.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.href ?? `#${item.id}`}
+                  className="box-border inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--surfaceBg)] border border-[var(--borderColor)] text-[var(--foreground)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all"
+                >
+                  <span>{item.label}</span>
+                  {item.badge ? (
+                    <span className="box-border px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--primary)] text-white">
+                      {item.badge}
+                    </span>
+                  ) : null}
+                </a>
+              ))}
+            </nav>
+          ) : null}
+
           {chips && chips.length > 0 ? (
-            <div className="box-border flex flex-wrap items-center gap-2 pt-2">
+            <div className="box-border flex flex-wrap items-center gap-2 pt-1">
               {chips.map((chip) => (
                 <span
                   key={chip}
@@ -170,7 +242,7 @@ export function GameLandingHero({
 
         {heroVisual ? (
           <div className="box-border lg:col-span-5 flex justify-center items-center w-full">
-            <div className="box-border relative w-full max-w-full sm:max-w-[460px] p-4 sm:p-6 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] shadow-2xl backdrop-blur-md flex flex-col items-center justify-center overflow-hidden">
+            <div className="box-border relative w-full max-w-full sm:max-w-[480px] flex flex-col items-center justify-center">
               {heroVisual}
             </div>
           </div>

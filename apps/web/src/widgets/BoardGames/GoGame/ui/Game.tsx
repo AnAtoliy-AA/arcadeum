@@ -3,6 +3,7 @@
 import { memo, useCallback, useMemo, useState } from 'react';
 import { Button } from '@arcadeum/ui';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -11,6 +12,7 @@ import {
   useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -87,6 +89,11 @@ function GoGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'go_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -258,6 +265,7 @@ function GoGameImpl({
               koPoint={snapshot.koPoint}
               myColor={myColor}
               showTerritory={showTerritory || isGameOver}
+              highlightedCells={chatHighlightCells}
               ariaLabel={t('games.go_v1.board.ariaLabel', {
                 size: snapshot.boardSize ?? snapshot.options.boardSize ?? 9,
               })}
@@ -274,11 +282,12 @@ function GoGameImpl({
                   {t('games.go_v1.game.pass')}
                 </Button>
               ) : null}
-              {!isGameOver && myTurn ? (
+              {!isGameOver ? (
                 <Button
                   variant="secondary"
                   size="md"
                   data-testid="go-territory-toggle"
+                  aria-pressed={showTerritory}
                   onClick={() => setShowTerritory((v) => !v)}
                   className={
                     showTerritory ? 'ring-2 ring-[var(--primary)]' : ''
@@ -378,6 +387,7 @@ function GoGameImpl({
           title: 'Go',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentPlayerId,
             isMyTurn: myTurn,

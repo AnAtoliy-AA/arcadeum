@@ -16,6 +16,8 @@ export function UnifiedGameLanding({
   breadcrumbs,
   accentGlow = 'blue',
   hero,
+  quickNavItems,
+  topSection,
   specifications,
   comparison,
   highlights,
@@ -54,25 +56,10 @@ export function UnifiedGameLanding({
           createRoomHref={hero.createRoomHref}
           heroVisual={hero.heroVisual}
           comingSoon={comingSoon}
+          quickNavItems={quickNavItems ?? hero.quickNavItems}
         />
 
-        {specifications ? (
-          <GameSpecTable
-            title={specifications.title}
-            kicker={specifications.kicker}
-            items={specifications.items}
-          />
-        ) : null}
-
-        {comparison ? (
-          <PlatformComparisonTable
-            title={comparison.title}
-            kicker={comparison.kicker}
-            subtitle={comparison.subtitle}
-            columns={comparison.columns}
-            rows={comparison.rows}
-          />
-        ) : null}
+        {topSection}
 
         {highlights ? (
           <GameHighlightsGrid
@@ -101,6 +88,24 @@ export function UnifiedGameLanding({
             baseHref={themes.baseHref}
             createRoomLabel={themes.createRoomLabel}
             comingSoon={comingSoon}
+          />
+        ) : null}
+
+        {specifications ? (
+          <GameSpecTable
+            title={specifications.title}
+            kicker={specifications.kicker}
+            items={specifications.items}
+          />
+        ) : null}
+
+        {comparison ? (
+          <PlatformComparisonTable
+            title={comparison.title}
+            kicker={comparison.kicker}
+            subtitle={comparison.subtitle}
+            columns={comparison.columns}
+            rows={comparison.rows}
           />
         ) : null}
 

@@ -138,31 +138,49 @@ export function GameThemesShowcase({
   const isSeaBattle = gameId === 'sea_battle_v1';
   const hasRealArt = gameId && SUPPORTED_GAME_IDS.has(gameId);
 
+  const selectedThemeObj =
+    themes.find((t) => t.id === activeTheme) ?? themes[0];
+  const separator = baseHref?.includes('?') ? '&' : '?';
+  const activeHref =
+    baseHref && !comingSoon && selectedThemeObj
+      ? `${baseHref}${separator}theme=${selectedThemeObj.id}`
+      : undefined;
+
   return (
-    <section className="box-border flex flex-col gap-6 py-8">
-      <div className="box-border flex flex-col gap-1">
-        {kicker ? (
-          <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
-            {kicker}
-          </span>
-        ) : null}
-        <h2 className="box-border m-0 text-2xl sm:text-3xl font-bold text-[var(--foreground)]">
-          {title}
-        </h2>
-        {subtitle ? (
-          <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 max-w-2xl">
-            {subtitle}
-          </p>
+    <section id="themes" className="box-border flex flex-col gap-6 py-8">
+      <div className="box-border flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div className="box-border flex flex-col gap-1">
+          {kicker ? (
+            <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
+              {kicker}
+            </span>
+          ) : null}
+          <h2 className="box-border m-0 text-2xl sm:text-3xl font-bold text-[var(--foreground)]">
+            {title}
+          </h2>
+          {subtitle ? (
+            <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 max-w-2xl">
+              {subtitle}
+            </p>
+          ) : null}
+        </div>
+
+        {activeHref ? (
+          <div className="box-border shrink-0">
+            <Link
+              href={activeHref}
+              className="box-border inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold bg-[var(--primary)] text-white hover:opacity-95 shadow-md transition-all no-underline"
+            >
+              <span>
+                {createRoomLabel}: {selectedThemeObj.name} →
+              </span>
+            </Link>
+          </div>
         ) : null}
       </div>
 
-      <div className="box-border grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="box-border grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {themes.map((theme) => {
-          const separator = baseHref?.includes('?') ? '&' : '?';
-          const href =
-            baseHref && !comingSoon
-              ? `${baseHref}${separator}theme=${theme.id}`
-              : undefined;
           const visual = getThemeVisual(theme.id);
           const isCurrent = activeTheme === theme.id;
 
@@ -180,14 +198,14 @@ export function GameThemesShowcase({
               }}
               data-testid={`theme-card-${theme.id}`}
               className={cx(
-                'box-border flex flex-col justify-between h-full p-3 sm:p-4 rounded-2xl bg-[var(--glassBg)] border backdrop-blur-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group overflow-hidden cursor-pointer text-left',
+                'box-border flex flex-col justify-between p-2.5 sm:p-3 rounded-xl bg-[var(--glassBg)] border backdrop-blur-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 group overflow-hidden cursor-pointer text-left',
                 isCurrent
-                  ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/50 shadow-lg'
+                  ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/50 shadow-md bg-[var(--primary)]/5'
                   : visual.accentBorder,
               )}
             >
-              <div className="box-border flex flex-col gap-3">
-                <div className="box-border h-36 sm:h-44 w-full rounded-xl border border-[var(--borderColor)] flex flex-col items-center justify-center relative overflow-hidden group-hover:scale-[1.02] transition-transform shadow-inner bg-[var(--background)] p-1">
+              <div className="box-border flex flex-col gap-2">
+                <div className="box-border h-24 sm:h-28 w-full rounded-lg border border-[var(--borderColor)] flex flex-col items-center justify-center relative overflow-hidden group-hover:scale-[1.02] transition-transform shadow-inner bg-[var(--background)] p-1">
                   {theme.preview ? (
                     theme.preview
                   ) : isSeaBattle ? (
@@ -202,68 +220,41 @@ export function GameThemesShowcase({
                     </div>
                   ) : (
                     <div
-                      className={`box-border w-full h-full bg-gradient-to-br ${visual.gradient} flex flex-col items-center justify-between p-2.5`}
+                      className={`box-border w-full h-full bg-gradient-to-br ${visual.gradient} flex flex-col items-center justify-between p-2`}
                     >
                       <div className="box-border flex items-center justify-between w-full">
-                        <span className="text-base select-none">
+                        <span className="text-sm select-none">
                           {visual.icon}
                         </span>
                         <div className="box-border flex items-center gap-1">
                           {visual.chipColors.map((colorClass, cIdx) => (
                             <span
                               key={cIdx}
-                              className={`box-border inline-block w-2 h-2 rounded-full ${colorClass} shadow-sm`}
+                              className={`box-border inline-block w-1.5 h-1.5 rounded-full ${colorClass} shadow-sm`}
                             />
                           ))}
                         </div>
                       </div>
-                      <span className="box-border text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[var(--foreground)] px-2 py-0.5 rounded-md bg-[var(--background)]/75 backdrop-blur-md border border-[var(--borderColor)] shadow-sm">
+                      <span className="box-border text-[10px] font-bold uppercase tracking-wider text-[var(--foreground)] px-1.5 py-0.5 rounded bg-[var(--background)]/80 backdrop-blur-md border border-[var(--borderColor)] shadow-sm">
                         {theme.name}
                       </span>
                     </div>
                   )}
                 </div>
 
-                <div className="box-border flex flex-col gap-1">
+                <div className="box-border flex flex-col gap-0.5">
                   <div className="box-border flex items-center justify-between gap-1">
-                    <span className="box-border text-sm sm:text-base font-bold text-[var(--foreground)] truncate">
+                    <span className="box-border text-xs sm:text-sm font-bold text-[var(--foreground)] truncate">
                       {theme.name}
                     </span>
                     {isCurrent ? (
-                      <span className="box-border text-[10px] px-1.5 py-0.5 rounded font-bold uppercase bg-[var(--primary)] text-[var(--primaryForeground,white)]">
+                      <span className="box-border text-[9px] px-1 py-0.5 rounded font-bold uppercase bg-[var(--primary)] text-white shrink-0">
                         Previewing
-                      </span>
-                    ) : theme.tag ? (
-                      <span className="box-border text-[10px] px-1.5 py-0.5 rounded font-bold uppercase bg-[var(--primary)]/10 text-[var(--color)]">
-                        {theme.tag}
                       </span>
                     ) : null}
                   </div>
-                  {theme.description ? (
-                    <p className="box-border m-0 text-xs text-[var(--foreground)] opacity-90 line-clamp-2 leading-relaxed">
-                      {theme.description}
-                    </p>
-                  ) : null}
                 </div>
               </div>
-
-              {href ? (
-                <div className="box-border pt-3 mt-1 border-t border-[var(--borderColor)]/40 flex items-center justify-between">
-                  <Link
-                    href={href}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setTheme(theme.id);
-                    }}
-                    className="box-border text-xs font-semibold text-[var(--color)] hover:underline inline-flex items-center gap-1 no-underline"
-                  >
-                    {createRoomLabel} →
-                  </Link>
-                  <span className="box-border text-[10px] uppercase tracking-wider font-semibold text-[var(--foreground)] opacity-85 group-hover:opacity-100 transition-opacity">
-                    {isCurrent ? 'Active' : 'Preview'}
-                  </span>
-                </div>
-              ) : null}
             </div>
           );
         })}

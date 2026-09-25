@@ -8,20 +8,20 @@ export const frMessages = {
     landing: {
       meta: {
         title:
-          'Échecs en ligne — Bullet, Blitz, Rapide, Quotidien et Chess960 | Arcadeum',
+          'Échecs en ligne - Bullet, Blitz, Rapide, Quotidien et Chess960 | Arcadeum',
         description:
-          'Jouez aux échecs en ligne avec le moteur Stockfish 19, les contrôles de temps bullet/blitz/rapide/quotidien, 6 variantes, 12 personnalités IA, Puzzle Rush, annulation de coup, importation PGN, tables de finales, appariement automatique et revue de partie — tout gratuit.',
+          'Jouez aux échecs en ligne avec le moteur Stockfish 19, les contrôles de temps bullet/blitz/rapide/quotidien, 6 variantes, 12 personnalités IA, Puzzle Rush, annulation de coup, importation PGN, tables de finales, appariement automatique et revue de partie - tout gratuit.',
         keywords:
           "échecs en ligne, jeu d'échecs, échecs multijoueur, chess960, bullet échecs, blitz, rapide, échecs quotidiens, stockfish 19, puzzles d'échecs, puzzle rush, analyse d'échecs, tables de finales, syzygy, jouer aux échecs gratuitement, moteur d'échecs en ligne, IA échecs, variantes d'échecs, échecs atomiques, crazyhouse, roi de la colline, trois échecs, tournois d'échecs, clubs d'échecs",
         howToPlayTitle: 'Comment jouer à {{gameName}}',
       },
       hero: {
-        title: 'Échecs — Le jeu de stratégie ultime',
+        title: 'Échecs - Le jeu de stratégie ultime',
         subtitle:
           'Propulsé par Stockfish 19. Bullet, blitz, rapide, quotidien et Chess960. Jouez contre des amis, 20 personnalités IA ou toute la communauté.',
         createRoom: 'Créer une salle',
         ctaQuickplay: "Jouer contre l'IA",
-        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
+        ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
         browseRooms: 'Parcourir les salles',
         backToGames: '← Jeux',
       },
@@ -32,7 +32,7 @@ export const frMessages = {
         },
         variants: {
           title: '6 variantes',
-          body: 'Standard, Chess960, Roi de la Colline, Trois Échecs, Crazyhouse et Atomique — chacune avec ses conditions de victoire.',
+          body: 'Standard, Chess960, Roi de la Colline, Trois Échecs, Crazyhouse et Atomique - chacune avec ses conditions de victoire.',
         },
         clock: {
           title: 'Tout contrôle de temps',
@@ -77,7 +77,7 @@ export const frMessages = {
         takeback: {
           question: 'Puis-je annuler un coup ?',
           answer:
-            'Oui — utilisez le bouton Annuler pour demander une réversion. Votre adversaire doit accepter avant que le coup ne soit annulé. Disponible dans les parties amicales et classées.',
+            'Oui - utilisez le bouton Annuler pour demander une réversion. Votre adversaire doit accepter avant que le coup ne soit annulé. Disponible dans les parties amicales et classées.',
         },
         puzzlerush: {
           question: "Qu'est-ce que Puzzle Rush ?",
@@ -115,17 +115,17 @@ export const frMessages = {
           {
             key: 'engine',
             title: 'Moteur Stockfish 19',
-            body: "Analyse en temps réel avec Stockfish 19 et le réseau neuronal SFNNv16 — le plus fort moteur d'échecs open source au monde.",
+            body: "Analyse en temps réel avec Stockfish 19 et le réseau neuronal SFNNv16 - le plus fort moteur d'échecs open source au monde.",
           },
           {
             key: 'bots',
             title: '20 personnalités IA',
-            body: "Pas seulement des niveaux de difficulté — 20 personnages uniques avec styles de jeu, répertoires d'ouvertures et gestion du temps distincts. Rating 400–2800.",
+            body: "Pas seulement des niveaux de difficulté - 20 personnages uniques avec styles de jeu, répertoires d'ouvertures et gestion du temps distincts. Rating 400–2800.",
           },
           {
             key: 'variants',
             title: '6 variantes',
-            body: 'Standard, Chess960 (Fischer Random), Roi de la Colline, Trois Échecs, Crazyhouse et Atomique — chacune avec ses conditions de victoire.',
+            body: 'Standard, Chess960 (Fischer Random), Roi de la Colline, Trois Échecs, Crazyhouse et Atomique - chacune avec ses conditions de victoire.',
           },
           {
             key: 'friction',
@@ -145,7 +145,7 @@ export const frMessages = {
           {
             key: 'tablebases',
             title: 'Tables de finales',
-            body: 'Tables Syzygy pour les positions avec 7 pièces ou moins — jeu de finales parfait au niveau des grands maîtres.',
+            body: 'Tables Syzygy pour les positions avec 7 pièces ou moins - jeu de finales parfait au niveau des grands maîtres.',
           },
           {
             key: 'broadcast',
@@ -257,7 +257,7 @@ export const frMessages = {
       },
       s3: {
         title: 'Surveillez l’horloge',
-        body: 'Votre horloge décompte pendant votre tour — tomber à zéro perd la partie. Son, musique et partage se trouvent dans ce panneau.',
+        body: 'Votre horloge décompte pendant votre tour - tomber à zéro perd la partie. Son, musique et partage se trouvent dans ce panneau.',
       },
       s4: {
         title: 'De l’aide au besoin',
@@ -392,10 +392,10 @@ export const frMessages = {
         'Résolvez des problèmes tactiques pour améliorer votre classement',
       loading: 'Chargement du problème...',
       noPuzzles: 'Aucun problème disponible',
-      yourTurn: 'Votre tour — trouvez le meilleur coup',
+      yourTurn: 'Votre tour - trouvez le meilleur coup',
       opponentThinking: "L'adversaire réfléchit...",
       correct: 'Correct !',
-      incorrect: 'Incorrect — réessayez',
+      incorrect: 'Incorrect - réessayez',
       nextPuzzle: 'Problème suivant',
       getHint: 'Obtenir un indice',
       themes: 'Thèmes',
@@ -409,9 +409,9 @@ export const frMessages = {
       title: 'Rush de problèmes',
       subtitle: 'Résolvez autant de problèmes que possible',
       survival: 'Mode Survie',
-      survivalDesc: '3 vies — une erreur vous coûte une vie',
+      survivalDesc: '3 vies - une erreur vous coûte une vie',
       timed: 'Mode Chronométré',
-      timedDesc: '3 minutes — résolvez-en un maximum',
+      timedDesc: '3 minutes - résolvez-en un maximum',
       gameOver: 'Temps écoulé !',
       playAgain: 'Rejouer',
       endRun: 'Terminer la session',

@@ -2,268 +2,220 @@ import type { Locale } from '@/shared/i18n';
 import { DEFAULT_LOCALE } from '@/shared/i18n';
 import type { BlogPost } from './types';
 
-import { post as howToPlaySeaBattleEn } from './posts/how-to-play-sea-battle/en';
-import { post as howToPlaySeaBattleEs } from './posts/how-to-play-sea-battle/es';
-import { post as howToPlaySeaBattleFr } from './posts/how-to-play-sea-battle/fr';
-import { post as howToPlaySeaBattleRu } from './posts/how-to-play-sea-battle/ru';
-import { post as howToPlaySeaBattleBy } from './posts/how-to-play-sea-battle/by';
-
-import { post as seaBattlePlacementsEn } from './posts/sea-battle-best-strategies-and-placements/en';
-import { post as seaBattlePlacementsEs } from './posts/sea-battle-best-strategies-and-placements/es';
-import { post as seaBattlePlacementsFr } from './posts/sea-battle-best-strategies-and-placements/fr';
-import { post as seaBattlePlacementsRu } from './posts/sea-battle-best-strategies-and-placements/ru';
-import { post as seaBattlePlacementsBy } from './posts/sea-battle-best-strategies-and-placements/by';
-
-import { post as howToPlayChessEn } from './posts/how-to-play-chess/en';
-import { post as howToPlayChessEs } from './posts/how-to-play-chess/es';
-import { post as howToPlayChessFr } from './posts/how-to-play-chess/fr';
-import { post as howToPlayChessRu } from './posts/how-to-play-chess/ru';
-import { post as howToPlayChessBy } from './posts/how-to-play-chess/by';
-
-import { post as howToPlayCheckersEn } from './posts/how-to-play-checkers/en';
-import { post as howToPlayCheckersEs } from './posts/how-to-play-checkers/es';
-import { post as howToPlayCheckersFr } from './posts/how-to-play-checkers/fr';
-import { post as howToPlayCheckersRu } from './posts/how-to-play-checkers/ru';
-import { post as howToPlayCheckersBy } from './posts/how-to-play-checkers/by';
-
-import { post as howToPlayBackgammonEn } from './posts/how-to-play-backgammon/en';
-import { post as howToPlayBackgammonEs } from './posts/how-to-play-backgammon/es';
-import { post as howToPlayBackgammonFr } from './posts/how-to-play-backgammon/fr';
-import { post as howToPlayBackgammonRu } from './posts/how-to-play-backgammon/ru';
-import { post as howToPlayBackgammonBy } from './posts/how-to-play-backgammon/by';
-
-import { post as howToPlayHeartsEn } from './posts/how-to-play-hearts/en';
-import { post as howToPlayHeartsEs } from './posts/how-to-play-hearts/es';
-import { post as howToPlayHeartsFr } from './posts/how-to-play-hearts/fr';
-import { post as howToPlayHeartsRu } from './posts/how-to-play-hearts/ru';
-import { post as howToPlayHeartsBy } from './posts/how-to-play-hearts/by';
-
-import { post as howToPlaySpadesEn } from './posts/how-to-play-spades/en';
-import { post as howToPlaySpadesEs } from './posts/how-to-play-spades/es';
-import { post as howToPlaySpadesFr } from './posts/how-to-play-spades/fr';
-import { post as howToPlaySpadesRu } from './posts/how-to-play-spades/ru';
-import { post as howToPlaySpadesBy } from './posts/how-to-play-spades/by';
-
-import { post as howToPlaySolitaireEn } from './posts/how-to-play-solitaire/en';
-import { post as howToPlaySolitaireEs } from './posts/how-to-play-solitaire/es';
-import { post as howToPlaySolitaireFr } from './posts/how-to-play-solitaire/fr';
-import { post as howToPlaySolitaireRu } from './posts/how-to-play-solitaire/ru';
-import { post as howToPlaySolitaireBy } from './posts/how-to-play-solitaire/by';
-
-import { post as howToPlayMinesweeperEn } from './posts/how-to-play-minesweeper/en';
-import { post as howToPlayMinesweeperEs } from './posts/how-to-play-minesweeper/es';
-import { post as howToPlayMinesweeperFr } from './posts/how-to-play-minesweeper/fr';
-import { post as howToPlayMinesweeperRu } from './posts/how-to-play-minesweeper/ru';
-import { post as howToPlayMinesweeperBy } from './posts/how-to-play-minesweeper/by';
-
-import { post as howToPlaySudokuEn } from './posts/how-to-play-sudoku/en';
-import { post as howToPlaySudokuEs } from './posts/how-to-play-sudoku/es';
-import { post as howToPlaySudokuFr } from './posts/how-to-play-sudoku/fr';
-import { post as howToPlaySudokuRu } from './posts/how-to-play-sudoku/ru';
-import { post as howToPlaySudokuBy } from './posts/how-to-play-sudoku/by';
-
-import { post as howToWin2048En } from './posts/how-to-win-2048/en';
-import { post as howToWin2048Es } from './posts/how-to-win-2048/es';
-import { post as howToWin2048Fr } from './posts/how-to-win-2048/fr';
-import { post as howToWin2048Ru } from './posts/how-to-win-2048/ru';
-import { post as howToWin2048By } from './posts/how-to-win-2048/by';
-
-import { post as howToWinTicTacToeEn } from './posts/how-to-win-tic-tac-toe/en';
-import { post as howToWinTicTacToeEs } from './posts/how-to-win-tic-tac-toe/es';
-import { post as howToWinTicTacToeFr } from './posts/how-to-win-tic-tac-toe/fr';
-import { post as howToWinTicTacToeRu } from './posts/how-to-win-tic-tac-toe/ru';
-import { post as howToWinTicTacToeBy } from './posts/how-to-win-tic-tac-toe/by';
-
-import { post as howToPlayGoEn } from './posts/how-to-play-go/en';
-import { post as howToPlayGoEs } from './posts/how-to-play-go/es';
-import { post as howToPlayGoFr } from './posts/how-to-play-go/fr';
-import { post as howToPlayGoRu } from './posts/how-to-play-go/ru';
-import { post as howToPlayGoBy } from './posts/how-to-play-go/by';
-
-import { post as howToPlayCriticalEn } from './posts/how-to-play-critical/en';
-import { post as howToPlayCriticalEs } from './posts/how-to-play-critical/es';
-import { post as howToPlayCriticalFr } from './posts/how-to-play-critical/fr';
-import { post as howToPlayCriticalRu } from './posts/how-to-play-critical/ru';
-import { post as howToPlayCriticalBy } from './posts/how-to-play-critical/by';
-
-import { post as howToPlayCascadeEn } from './posts/how-to-play-cascade/en';
-import { post as howToPlayCascadeEs } from './posts/how-to-play-cascade/es';
-import { post as howToPlayCascadeFr } from './posts/how-to-play-cascade/fr';
-import { post as howToPlayCascadeRu } from './posts/how-to-play-cascade/ru';
-import { post as howToPlayCascadeBy } from './posts/how-to-play-cascade/by';
-
-import { post as howToPlayGlimwormEn } from './posts/how-to-play-glimworm/en';
-import { post as howToPlayGlimwormEs } from './posts/how-to-play-glimworm/es';
-import { post as howToPlayGlimwormFr } from './posts/how-to-play-glimworm/fr';
-import { post as howToPlayGlimwormRu } from './posts/how-to-play-glimworm/ru';
-import { post as howToPlayGlimwormBy } from './posts/how-to-play-glimworm/by';
-
-import { post as howToPlayCatDashEn } from './posts/how-to-play-cat-dash/en';
-import { post as howToPlayCatDashEs } from './posts/how-to-play-cat-dash/es';
-import { post as howToPlayCatDashFr } from './posts/how-to-play-cat-dash/fr';
-import { post as howToPlayCatDashRu } from './posts/how-to-play-cat-dash/ru';
-import { post as howToPlayCatDashBy } from './posts/how-to-play-cat-dash/by';
-
-import { post as howToPlayPachisiEn } from './posts/how-to-play-pachisi/en';
-import { post as howToPlayPachisiEs } from './posts/how-to-play-pachisi/es';
-import { post as howToPlayPachisiFr } from './posts/how-to-play-pachisi/fr';
-import { post as howToPlayPachisiRu } from './posts/how-to-play-pachisi/ru';
-import { post as howToPlayPachisiBy } from './posts/how-to-play-pachisi/by';
-
-import { post as platformStatsEn } from './posts/platform-stats/en';
-import { post as annotatedChessReplayEn } from './posts/annotated-chess-replay/en';
-import { post as climbingRankedEn } from './posts/climbing-ranked/en';
-import { post as patchNotesV124En } from './posts/patch-notes-v1-24/en';
-
 /**
- * Registry of all blog posts, grouped by canonical slug. Each slug points
- * to a per-locale record so the index page and post page can look up the
- * right localized copy in O(1), and so the sitemap can enumerate every
- * (locale, slug) pair without a directory scan at request time.
+ * Slug → locale → file path mapping.  Posts are loaded on demand via
+ * dynamic `import()` so only the modules actually needed for the current
+ * request are bundled into the server chunk.
  */
-const POSTS: Record<string, Partial<Record<Locale, BlogPost>>> = {
+const POST_MANIFEST: Record<
+  string,
+  Partial<Record<Locale, () => Promise<{ post: BlogPost }>>>
+> = {
   'sea-battle-best-strategies-and-placements': {
-    en: seaBattlePlacementsEn,
-    es: seaBattlePlacementsEs,
-    fr: seaBattlePlacementsFr,
-    ru: seaBattlePlacementsRu,
-    by: seaBattlePlacementsBy,
+    en: () => import('./posts/sea-battle-best-strategies-and-placements/en'),
+    es: () => import('./posts/sea-battle-best-strategies-and-placements/es'),
+    fr: () => import('./posts/sea-battle-best-strategies-and-placements/fr'),
+    ru: () => import('./posts/sea-battle-best-strategies-and-placements/ru'),
+    by: () => import('./posts/sea-battle-best-strategies-and-placements/by'),
   },
   'how-to-play-sea-battle': {
-    en: howToPlaySeaBattleEn,
-    es: howToPlaySeaBattleEs,
-    fr: howToPlaySeaBattleFr,
-    ru: howToPlaySeaBattleRu,
-    by: howToPlaySeaBattleBy,
+    en: () => import('./posts/how-to-play-sea-battle/en'),
+    es: () => import('./posts/how-to-play-sea-battle/es'),
+    fr: () => import('./posts/how-to-play-sea-battle/fr'),
+    ru: () => import('./posts/how-to-play-sea-battle/ru'),
+    by: () => import('./posts/how-to-play-sea-battle/by'),
   },
   'how-to-play-chess': {
-    en: howToPlayChessEn,
-    es: howToPlayChessEs,
-    fr: howToPlayChessFr,
-    ru: howToPlayChessRu,
-    by: howToPlayChessBy,
+    en: () => import('./posts/how-to-play-chess/en'),
+    es: () => import('./posts/how-to-play-chess/es'),
+    fr: () => import('./posts/how-to-play-chess/fr'),
+    ru: () => import('./posts/how-to-play-chess/ru'),
+    by: () => import('./posts/how-to-play-chess/by'),
   },
   'how-to-play-checkers': {
-    en: howToPlayCheckersEn,
-    es: howToPlayCheckersEs,
-    fr: howToPlayCheckersFr,
-    ru: howToPlayCheckersRu,
-    by: howToPlayCheckersBy,
+    en: () => import('./posts/how-to-play-checkers/en'),
+    es: () => import('./posts/how-to-play-checkers/es'),
+    fr: () => import('./posts/how-to-play-checkers/fr'),
+    ru: () => import('./posts/how-to-play-checkers/ru'),
+    by: () => import('./posts/how-to-play-checkers/by'),
   },
   'how-to-play-backgammon': {
-    en: howToPlayBackgammonEn,
-    es: howToPlayBackgammonEs,
-    fr: howToPlayBackgammonFr,
-    ru: howToPlayBackgammonRu,
-    by: howToPlayBackgammonBy,
+    en: () => import('./posts/how-to-play-backgammon/en'),
+    es: () => import('./posts/how-to-play-backgammon/es'),
+    fr: () => import('./posts/how-to-play-backgammon/fr'),
+    ru: () => import('./posts/how-to-play-backgammon/ru'),
+    by: () => import('./posts/how-to-play-backgammon/by'),
   },
   'how-to-play-hearts': {
-    en: howToPlayHeartsEn,
-    es: howToPlayHeartsEs,
-    fr: howToPlayHeartsFr,
-    ru: howToPlayHeartsRu,
-    by: howToPlayHeartsBy,
+    en: () => import('./posts/how-to-play-hearts/en'),
+    es: () => import('./posts/how-to-play-hearts/es'),
+    fr: () => import('./posts/how-to-play-hearts/fr'),
+    ru: () => import('./posts/how-to-play-hearts/ru'),
+    by: () => import('./posts/how-to-play-hearts/by'),
   },
   'how-to-play-spades': {
-    en: howToPlaySpadesEn,
-    es: howToPlaySpadesEs,
-    fr: howToPlaySpadesFr,
-    ru: howToPlaySpadesRu,
-    by: howToPlaySpadesBy,
+    en: () => import('./posts/how-to-play-spades/en'),
+    es: () => import('./posts/how-to-play-spades/es'),
+    fr: () => import('./posts/how-to-play-spades/fr'),
+    ru: () => import('./posts/how-to-play-spades/ru'),
+    by: () => import('./posts/how-to-play-spades/by'),
   },
   'how-to-play-solitaire': {
-    en: howToPlaySolitaireEn,
-    es: howToPlaySolitaireEs,
-    fr: howToPlaySolitaireFr,
-    ru: howToPlaySolitaireRu,
-    by: howToPlaySolitaireBy,
+    en: () => import('./posts/how-to-play-solitaire/en'),
+    es: () => import('./posts/how-to-play-solitaire/es'),
+    fr: () => import('./posts/how-to-play-solitaire/fr'),
+    ru: () => import('./posts/how-to-play-solitaire/ru'),
+    by: () => import('./posts/how-to-play-solitaire/by'),
   },
   'how-to-play-minesweeper': {
-    en: howToPlayMinesweeperEn,
-    es: howToPlayMinesweeperEs,
-    fr: howToPlayMinesweeperFr,
-    ru: howToPlayMinesweeperRu,
-    by: howToPlayMinesweeperBy,
+    en: () => import('./posts/how-to-play-minesweeper/en'),
+    es: () => import('./posts/how-to-play-minesweeper/es'),
+    fr: () => import('./posts/how-to-play-minesweeper/fr'),
+    ru: () => import('./posts/how-to-play-minesweeper/ru'),
+    by: () => import('./posts/how-to-play-minesweeper/by'),
   },
   'how-to-play-sudoku': {
-    en: howToPlaySudokuEn,
-    es: howToPlaySudokuEs,
-    fr: howToPlaySudokuFr,
-    ru: howToPlaySudokuRu,
-    by: howToPlaySudokuBy,
+    en: () => import('./posts/how-to-play-sudoku/en'),
+    es: () => import('./posts/how-to-play-sudoku/es'),
+    fr: () => import('./posts/how-to-play-sudoku/fr'),
+    ru: () => import('./posts/how-to-play-sudoku/ru'),
+    by: () => import('./posts/how-to-play-sudoku/by'),
   },
   'how-to-win-2048': {
-    en: howToWin2048En,
-    es: howToWin2048Es,
-    fr: howToWin2048Fr,
-    ru: howToWin2048Ru,
-    by: howToWin2048By,
+    en: () => import('./posts/how-to-win-2048/en'),
+    es: () => import('./posts/how-to-win-2048/es'),
+    fr: () => import('./posts/how-to-win-2048/fr'),
+    ru: () => import('./posts/how-to-win-2048/ru'),
+    by: () => import('./posts/how-to-win-2048/by'),
   },
   'how-to-win-tic-tac-toe': {
-    en: howToWinTicTacToeEn,
-    es: howToWinTicTacToeEs,
-    fr: howToWinTicTacToeFr,
-    ru: howToWinTicTacToeRu,
-    by: howToWinTicTacToeBy,
+    en: () => import('./posts/how-to-win-tic-tac-toe/en'),
+    es: () => import('./posts/how-to-win-tic-tac-toe/es'),
+    fr: () => import('./posts/how-to-win-tic-tac-toe/fr'),
+    ru: () => import('./posts/how-to-win-tic-tac-toe/ru'),
+    by: () => import('./posts/how-to-win-tic-tac-toe/by'),
   },
   'how-to-play-go': {
-    en: howToPlayGoEn,
-    es: howToPlayGoEs,
-    fr: howToPlayGoFr,
-    ru: howToPlayGoRu,
-    by: howToPlayGoBy,
+    en: () => import('./posts/how-to-play-go/en'),
+    es: () => import('./posts/how-to-play-go/es'),
+    fr: () => import('./posts/how-to-play-go/fr'),
+    ru: () => import('./posts/how-to-play-go/ru'),
+    by: () => import('./posts/how-to-play-go/by'),
   },
   'how-to-play-critical': {
-    en: howToPlayCriticalEn,
-    es: howToPlayCriticalEs,
-    fr: howToPlayCriticalFr,
-    ru: howToPlayCriticalRu,
-    by: howToPlayCriticalBy,
+    en: () => import('./posts/how-to-play-critical/en'),
+    es: () => import('./posts/how-to-play-critical/es'),
+    fr: () => import('./posts/how-to-play-critical/fr'),
+    ru: () => import('./posts/how-to-play-critical/ru'),
+    by: () => import('./posts/how-to-play-critical/by'),
   },
   'how-to-play-cascade': {
-    en: howToPlayCascadeEn,
-    es: howToPlayCascadeEs,
-    fr: howToPlayCascadeFr,
-    ru: howToPlayCascadeRu,
-    by: howToPlayCascadeBy,
+    en: () => import('./posts/how-to-play-cascade/en'),
+    es: () => import('./posts/how-to-play-cascade/es'),
+    fr: () => import('./posts/how-to-play-cascade/fr'),
+    ru: () => import('./posts/how-to-play-cascade/ru'),
+    by: () => import('./posts/how-to-play-cascade/by'),
   },
   'how-to-play-glimworm': {
-    en: howToPlayGlimwormEn,
-    es: howToPlayGlimwormEs,
-    fr: howToPlayGlimwormFr,
-    ru: howToPlayGlimwormRu,
-    by: howToPlayGlimwormBy,
+    en: () => import('./posts/how-to-play-glimworm/en'),
+    es: () => import('./posts/how-to-play-glimworm/es'),
+    fr: () => import('./posts/how-to-play-glimworm/fr'),
+    ru: () => import('./posts/how-to-play-glimworm/ru'),
+    by: () => import('./posts/how-to-play-glimworm/by'),
   },
   'how-to-play-cat-dash': {
-    en: howToPlayCatDashEn,
-    es: howToPlayCatDashEs,
-    fr: howToPlayCatDashFr,
-    ru: howToPlayCatDashRu,
-    by: howToPlayCatDashBy,
+    en: () => import('./posts/how-to-play-cat-dash/en'),
+    es: () => import('./posts/how-to-play-cat-dash/es'),
+    fr: () => import('./posts/how-to-play-cat-dash/fr'),
+    ru: () => import('./posts/how-to-play-cat-dash/ru'),
+    by: () => import('./posts/how-to-play-cat-dash/by'),
   },
   'how-to-play-pachisi': {
-    en: howToPlayPachisiEn,
-    es: howToPlayPachisiEs,
-    fr: howToPlayPachisiFr,
-    ru: howToPlayPachisiRu,
-    by: howToPlayPachisiBy,
+    en: () => import('./posts/how-to-play-pachisi/en'),
+    es: () => import('./posts/how-to-play-pachisi/es'),
+    fr: () => import('./posts/how-to-play-pachisi/fr'),
+    ru: () => import('./posts/how-to-play-pachisi/ru'),
+    by: () => import('./posts/how-to-play-pachisi/by'),
   },
   'platform-stats': {
-    en: platformStatsEn,
+    en: () => import('./posts/platform-stats/en'),
   },
   'annotated-chess-replay': {
-    en: annotatedChessReplayEn,
+    en: () => import('./posts/annotated-chess-replay/en'),
   },
   'climbing-ranked': {
-    en: climbingRankedEn,
+    en: () => import('./posts/climbing-ranked/en'),
   },
   'patch-notes-v1-24': {
-    en: patchNotesV124En,
+    en: () => import('./posts/patch-notes-v1-24/en'),
+  },
+  'chess-opening-traps': {
+    en: () => import('./posts/chess-opening-traps/en'),
+    ru: () => import('./posts/chess-opening-traps/ru'),
+    es: () => import('./posts/chess-opening-traps/es'),
+    fr: () => import('./posts/chess-opening-traps/fr'),
+    by: () => import('./posts/chess-opening-traps/by'),
+  },
+  'how-to-win-chess-endgames': {
+    en: () => import('./posts/how-to-win-chess-endgames/en'),
+    ru: () => import('./posts/how-to-win-chess-endgames/ru'),
+    es: () => import('./posts/how-to-win-chess-endgames/es'),
+    fr: () => import('./posts/how-to-win-chess-endgames/fr'),
+    by: () => import('./posts/how-to-win-chess-endgames/by'),
+  },
+  'how-to-win-spades': {
+    en: () => import('./posts/how-to-win-spades/en'),
+    ru: () => import('./posts/how-to-win-spades/ru'),
+    es: () => import('./posts/how-to-win-spades/es'),
+    fr: () => import('./posts/how-to-win-spades/fr'),
+    by: () => import('./posts/how-to-win-spades/by'),
+  },
+  'how-to-win-hearts-advanced': {
+    en: () => import('./posts/how-to-win-hearts-advanced/en'),
+    ru: () => import('./posts/how-to-win-hearts-advanced/ru'),
+    es: () => import('./posts/how-to-win-hearts-advanced/es'),
+    fr: () => import('./posts/how-to-win-hearts-advanced/fr'),
+    by: () => import('./posts/how-to-win-hearts-advanced/by'),
+  },
+  'backgammon-pip-count-guide': {
+    en: () => import('./posts/backgammon-pip-count-guide/en'),
+    ru: () => import('./posts/backgammon-pip-count-guide/ru'),
+    es: () => import('./posts/backgammon-pip-count-guide/es'),
+    fr: () => import('./posts/backgammon-pip-count-guide/fr'),
+    by: () => import('./posts/backgammon-pip-count-guide/by'),
+  },
+  'how-to-win-checkers': {
+    en: () => import('./posts/how-to-win-checkers/en'),
+    ru: () => import('./posts/how-to-win-checkers/ru'),
+    es: () => import('./posts/how-to-win-checkers/es'),
+    fr: () => import('./posts/how-to-win-checkers/fr'),
+    by: () => import('./posts/how-to-win-checkers/by'),
+  },
+  'how-to-solve-sudoku-advanced': {
+    en: () => import('./posts/how-to-solve-sudoku-advanced/en'),
+    ru: () => import('./posts/how-to-solve-sudoku-advanced/ru'),
+    es: () => import('./posts/how-to-solve-sudoku-advanced/es'),
+    fr: () => import('./posts/how-to-solve-sudoku-advanced/fr'),
+    by: () => import('./posts/how-to-solve-sudoku-advanced/by'),
+  },
+  'sea-battle-advanced': {
+    en: () => import('./posts/sea-battle-advanced/en'),
+    ru: () => import('./posts/sea-battle-advanced/ru'),
+    es: () => import('./posts/sea-battle-advanced/es'),
+    fr: () => import('./posts/sea-battle-advanced/fr'),
+    by: () => import('./posts/sea-battle-advanced/by'),
+  },
+  'go-life-death-problems': {
+    en: () => import('./posts/go-life-death-problems/en'),
+    ru: () => import('./posts/go-life-death-problems/ru'),
+    es: () => import('./posts/go-life-death-problems/es'),
+    fr: () => import('./posts/go-life-death-problems/fr'),
+    by: () => import('./posts/go-life-death-problems/by'),
   },
 };
 
 /** Canonical slugs for every published post, in stable order. */
-export const POST_SLUGS = Object.keys(POSTS);
+export const POST_SLUGS = Object.keys(POST_MANIFEST);
 
 /**
  * Look up a single post by slug for a locale. Falls back to the default
@@ -272,10 +224,16 @@ export const POST_SLUGS = Object.keys(POSTS);
  * an hreflang chain so Google knows which URL is the canonical one for
  * each language.
  */
-export function getPost(slug: string, locale: Locale): BlogPost | undefined {
-  const byLocale = POSTS[slug];
+export async function getPost(
+  slug: string,
+  locale: Locale,
+): Promise<BlogPost | undefined> {
+  const byLocale = POST_MANIFEST[slug];
   if (!byLocale) return undefined;
-  return byLocale[locale] ?? byLocale[DEFAULT_LOCALE];
+  const loader = byLocale[locale] ?? byLocale[DEFAULT_LOCALE];
+  if (!loader) return undefined;
+  const mod = await loader();
+  return mod.post;
 }
 
 /**
@@ -284,8 +242,11 @@ export function getPost(slug: string, locale: Locale): BlogPost | undefined {
  * translated yet, so the listing page always shows every published
  * piece of content rather than an inconsistent locale-dependent set.
  */
-export function getPosts(locale: Locale): BlogPost[] {
-  return POST_SLUGS.map((slug) => getPost(slug, locale))
+export async function getPosts(locale: Locale): Promise<BlogPost[]> {
+  const posts = await Promise.all(
+    POST_SLUGS.map((slug) => getPost(slug, locale)),
+  );
+  return posts
     .filter((p): p is BlogPost => !!p)
     .sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
 }
@@ -297,14 +258,15 @@ export function getPosts(locale: Locale): BlogPost[] {
  * surface every post that matches at least one of them. Case-insensitive
  * so locale-translated tags (e.g. `Bataille navale`) still match.
  */
-export function getPostsByTag(
+export async function getPostsByTag(
   locale: Locale,
   tags: ReadonlyArray<string>,
   limit = 4,
-): BlogPost[] {
+): Promise<BlogPost[]> {
   if (!tags.length) return [];
   const needles = tags.map((t) => t.toLowerCase());
-  return getPosts(locale)
+  const all = await getPosts(locale);
+  return all
     .filter((p) => p.tags.some((tag) => needles.includes(tag.toLowerCase())))
     .slice(0, limit);
 }

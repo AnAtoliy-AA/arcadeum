@@ -128,7 +128,7 @@ export function SolitaireBoard({
   return (
     <div
       style={boardVars(theme)}
-      className="relative w-full rounded-2xl sm:rounded-3xl border border-[var(--sol-table-border)] bg-black/15 p-1.5 sm:p-4 shadow-2xl select-none transition-colors duration-200 overflow-hidden"
+      className="relative w-full rounded-2xl sm:rounded-3xl border-2 border-[var(--sol-table-border)] bg-[var(--sol-table-bg)] p-2 sm:p-4 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-colors duration-200 overflow-hidden"
     >
       <div className="grid grid-cols-7 gap-1.5 sm:gap-3 items-start">
         <button
@@ -143,7 +143,7 @@ export function SolitaireBoard({
             'relative aspect-[68/96] w-full rounded-xl border-2 transition-all block',
             game.stock.length > 0
               ? 'cursor-pointer border-[var(--sol-card-back-border)] shadow-md hover:-translate-y-0.5'
-              : 'cursor-pointer border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)]',
+              : 'cursor-pointer border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] shadow-inner hover:border-[var(--primary)]',
           )}
         >
           {game.stock.length > 0 ? (
@@ -167,7 +167,7 @@ export function SolitaireBoard({
           )}
         </button>
 
-        <div className="relative aspect-[68/96] w-full rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)]">
+        <div className="relative aspect-[68/96] w-full rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] shadow-inner">
           {game.waste.length > 0 && (
             <div className="absolute inset-0">
               <CardView
@@ -195,7 +195,7 @@ export function SolitaireBoard({
               type="button"
               onClick={() => tryMove({ kind: 'foundation', foundationIndex })}
               aria-label={`${t('games.solitaire_v1.board.foundation')} ${SUIT_GLYPHS[suit]}`}
-              className="relative aspect-[68/96] w-full rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] transition-colors hover:border-[var(--primary)] block"
+              className="relative aspect-[68/96] w-full rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] shadow-inner transition-colors hover:border-[var(--primary)] block"
             >
               {pile.length > 0 ? (
                 <div className="pointer-events-none absolute inset-0">
@@ -203,7 +203,7 @@ export function SolitaireBoard({
                 </div>
               ) : (
                 <span
-                  className="flex h-full w-full items-center justify-center text-lg sm:text-2xl text-[var(--textSecondary)] opacity-40 select-none"
+                  className="flex h-full w-full items-center justify-center text-lg sm:text-2xl text-[var(--textSecondary)] opacity-50 select-none font-bold"
                   aria-hidden="true"
                 >
                   {SUIT_GLYPHS[suit]}
@@ -222,7 +222,7 @@ export function SolitaireBoard({
                 type="button"
                 aria-label={`${t('games.solitaire_v1.board.pile')} ${pileIndex + 1}`}
                 onClick={() => tryMove({ kind: 'tableau', pileIndex })}
-                className="aspect-[68/96] w-full cursor-pointer rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] hover:border-[var(--primary)] block"
+                className="aspect-[68/96] w-full cursor-pointer rounded-xl border-2 border-dashed border-[var(--sol-empty-slot-border)] bg-[var(--sol-empty-slot)] shadow-inner hover:border-[var(--primary)] block"
               />
             ) : (
               <ul className="m-0 flex list-none flex-col p-0">

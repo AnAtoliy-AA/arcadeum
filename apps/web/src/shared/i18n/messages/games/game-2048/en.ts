@@ -2,7 +2,7 @@ export const enMessages = {
   game_2048_v1: {
     name: '2048',
     description:
-      'The addictive tile-merging puzzle — slide, merge, and chase the 2048 tile',
+      'The addictive tile-merging puzzle - slide, merge, and chase the 2048 tile',
     summary:
       'Swipe the numbered tiles together, double them over and over, and see how far past 2048 you can go.',
     board: {
@@ -23,7 +23,7 @@ export const enMessages = {
         'You built the legendary tile. Keep going for an even bigger score?',
       lostTitle: 'Board jammed',
       lostBody:
-        'No moves left — every square is full. Shuffle up and try again!',
+        'No moves left - every square is full. Shuffle up and try again!',
       playAgain: 'Play again',
       keepGoing: 'Keep going',
     },
@@ -38,7 +38,7 @@ export const enMessages = {
     landing: {
       tagline: 'Single-player · No signup',
       meta: {
-        title: '2048 — Free Online Tile-Merging Puzzle Game | Arcadeum',
+        title: '2048 - Free Online Tile-Merging Puzzle Game | Arcadeum',
         description:
           'Play 2048 free online at Arcadeum. Slide and merge numbered tiles on a 4×4 grid, chase your best score, with saved progress. No download, no signup.',
         keywords:
@@ -47,13 +47,13 @@ export const enMessages = {
       hero: {
         title: '2048',
         subtitle:
-          'The famously addictive merging puzzle. Simple rules, endless depth — how far past 2048 can you get?',
+          'The famously addictive merging puzzle. Simple rules, endless depth - how far past 2048 can you get?',
         ctaPlay: 'Play now',
       },
       features: {
         solo: {
           title: 'Truly single-player',
-          body: 'No accounts, no waiting rooms — a fresh board is one click away.',
+          body: 'No accounts, no waiting rooms - a fresh board is one click away.',
         },
         progress: {
           title: 'Progress is saved',
@@ -68,17 +68,17 @@ export const enMessages = {
         q1: {
           question: 'Is 2048 free to play?',
           answer:
-            'Yes — 2048 on Arcadeum is completely free, requires no download, and needs no account to start playing.',
+            'Yes - 2048 on Arcadeum is completely free, requires no download, and needs no account to start playing.',
         },
         q2: {
           question: 'How do I play on mobile?',
           answer:
-            'Just swipe anywhere on the board — up, down, left, or right. On desktop use the arrow keys or WASD.',
+            'Just swipe anywhere on the board - up, down, left, or right. On desktop use the arrow keys or WASD.',
         },
         q3: {
           question: 'What happens after I reach 2048?',
           answer:
-            'You win — and you can keep playing the same board for an even higher score.',
+            'You win - and you can keep playing the same board for an even higher score.',
         },
         q4: {
           question: 'What is the optimal strategy to reach the 2048 tile?',
@@ -88,7 +88,7 @@ export const enMessages = {
         q5: {
           question: 'What tiles spawn after each move?',
           answer:
-            'Every valid slide spawns a new tile on an empty cell — with a 90% probability of a 2 and a 10% chance of a 4.',
+            'Every valid slide spawns a new tile on an empty cell - with a 90% probability of a 2 and a 10% chance of a 4.',
         },
         q6: {
           question: 'How is the score calculated?',
@@ -127,7 +127,7 @@ export const enMessages = {
         },
         play: {
           title: 'Chase 2048',
-          body: 'Plan corners and chains carefully — the grid fills up fast, and a jammed board ends the run.',
+          body: 'Plan corners and chains carefully - the grid fills up fast, and a jammed board ends the run.',
         },
       },
     },

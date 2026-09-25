@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
+  Param,
   Body,
   Query,
   UseGuards,
@@ -9,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt/jwt.guard';
 import { ChessPuzzlesService } from './chess-puzzles.service';
+import { CreateCustomPuzzleDto } from './dto/create-custom-puzzle.dto';
 
 @Controller('chess/puzzles')
 export class ChessPuzzlesController {
@@ -102,5 +105,28 @@ export class ChessPuzzlesController {
       return { error: 'fen is required' };
     }
     return this.puzzlesService.getHint(body.fen, req.user.id);
+  }
+
+  @Post('custom')
+  @UseGuards(JwtAuthGuard)
+  async createCustomPuzzle(
+    @Body() body: CreateCustomPuzzleDto,
+    @Request() req: { user: { id: string } },
+  ) {
+    return this.puzzlesService.createCustomPuzzle(req.user.id, body);
+  }
+
+  @Get('custom')
+  async getCustomPuzzles(@Request() req?: { user?: { id?: string } }) {
+    return this.puzzlesService.getCustomPuzzles(req?.user?.id);
+  }
+
+  @Delete('custom/:id')
+  @UseGuards(JwtAuthGuard)
+  async deleteCustomPuzzle(
+    @Param('id') puzzleId: string,
+    @Request() req: { user: { id: string } },
+  ) {
+    return this.puzzlesService.deleteCustomPuzzle(req.user.id, puzzleId);
   }
 }

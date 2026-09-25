@@ -47,7 +47,7 @@ export const createEs = {
   cascadeModeSpeed: 'Rápido',
   cascadeModeClassicHint: 'Reglas completas con apilamiento',
   cascadeModePureHint:
-    'Sin apilamiento — las cartas de robar se resuelven de inmediato',
+    'Sin apilamiento - las cartas de robar se resuelven de inmediato',
   cascadeModeSpeedHint: 'Apilamiento habilitado con temporizador por turno',
   cascadeLastCardCall: 'Llamada de Cascada en Última Carta',
   cascadeLastCardCallHint: 'Carrera por llamar con 1 carta',
@@ -99,7 +99,7 @@ export const createEs = {
     },
     teams: {
       title: 'Modo por equipos',
-      desc: 'Empareja jugadores en flotas — 2v2 o 3v3.',
+      desc: 'Empareja jugadores en flotas - 2v2 o 3v3.',
     },
     spectators: {
       title: 'Permitir espectadores',

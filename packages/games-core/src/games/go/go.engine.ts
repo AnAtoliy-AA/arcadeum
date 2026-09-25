@@ -204,10 +204,11 @@ export class GoEngine extends BaseGameEngine<GoState> {
       outcome.capturedStones.length > 0
         ? ` — captured ${outcome.capturedStones.length}`
         : '';
+    const gtpLabel = coordinateLabel(newState.boardSize, payload.row, payload.col);
     newState.logs.push(
       this.createLogEntry(
         'action',
-        `${COLOR_LABEL[color]} played ${coordinateLabel(newState.boardSize, payload.row, payload.col)}${capturedLabel}.`,
+        `${COLOR_LABEL[color]} played ${gtpLabel}${capturedLabel} Move at (${payload.row}, ${payload.col}).`,
         { senderId: context.userId },
       ),
     );

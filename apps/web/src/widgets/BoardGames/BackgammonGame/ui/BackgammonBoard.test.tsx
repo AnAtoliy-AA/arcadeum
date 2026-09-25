@@ -151,4 +151,44 @@ describe('BackgammonBoard', () => {
       expect(el).toHaveAttribute('role', 'button');
     }
   });
+
+  it('renders flipped board for player 2 with home board at bottom right', () => {
+    render(
+      <BackgammonBoard
+        currentUserId="p2"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={mockState}
+      />,
+    );
+
+    const point23 = screen.getByTestId('point-23');
+    expect(point23).toBeInTheDocument();
+    expect(screen.getByText('Home: 19-24 (Bottom)')).toBeInTheDocument();
+  });
+
+  it('shows bar enter indicator when user has checkers on the bar', () => {
+    const barState: BackgammonClientState = {
+      ...mockState,
+      bar: { p1: 1, p2: 0 },
+      phase: 'move',
+      dice: [4],
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={barState}
+      />,
+    );
+
+    expect(screen.getByText('ENTER')).toBeInTheDocument();
+    const barZone = screen.getByTestId('bar-zone');
+    fireEvent.click(barZone);
+    expect(screen.getByTestId('point-20').textContent).toContain('+4');
+  });
 });

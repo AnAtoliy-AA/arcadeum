@@ -9,6 +9,7 @@ import { HomeGameCard } from './HomeGameCard';
 import { HomeGameDetailsModal } from './modals/HomeGameDetailsModal';
 import { useHomeGamesSlider } from './useHomeGamesSlider';
 import { gamesApi } from '@/features/games/api';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
 interface DetailsState {
   gameId: string | null;
@@ -19,6 +20,7 @@ export default function HomeGames() {
   const { messages } = useLanguage();
   const homeCopy = messages.home ?? {};
   const sectionRef = useScrollReveal<HTMLElement>();
+  const { snapshot } = useSessionTokens();
 
   const [comingSoonMap, setComingSoonMap] = useState<Map<string, boolean>>(
     new Map(),
@@ -27,7 +29,7 @@ export default function HomeGames() {
   useEffect(() => {
     let cancelled = false;
     gamesApi
-      .getCatalog()
+      .getCatalog({ token: snapshot.accessToken || undefined })
       .then((res) => {
         if (cancelled) return;
         const map = new Map<string, boolean>();
@@ -42,7 +44,7 @@ export default function HomeGames() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [snapshot.accessToken]);
 
   const categories = useMemo(() => {
     const cats = new Set(featuredGames.map((g) => g.category));

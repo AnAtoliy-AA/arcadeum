@@ -44,6 +44,9 @@ export interface CatDashPlayer {
   abilitiesUsed: string[];
   isReady: boolean;
   hasBonus: boolean;
+  shielded?: boolean;
+  speedBoostPending?: number;
+  extraRollPending?: boolean;
 }
 
 export interface TrackSpace {

@@ -7,29 +7,263 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.28] - 2026-09-25
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.30.27] - 2026-09-25
+
+### Changed
+- Internal improvements and maintenance
+
+
+## [1.30.26] - 2026-09-25
+
+### Added
+- add dynamic rating, blindfold tactics, pgn importer, online duel, and speed leaderboard (ARC-chess-puzzle-enhancements)
+- add puzzle duels, tactical radar analytics, mistakes review, and zen mode (ARC-chess-puzzle-enhancements)
+- allow users to create, play, and share custom puzzles (ARC-chess-puzzle-enhancements)
+- procedural puzzle generation and daily challenge navigation (ARC-chess-puzzle-enhancements)
+- enhance puzzles with multi-move play, hints, themes, and rush modes (ARC-chess-puzzle-enhancements)
+
+### Fixed
+- fix pgn study validation and optimize puzzle initial paint (ARC-chess-puzzle-enhancements)
+- use test instead of it in playwright puzzle specs (ARC-chess-puzzle-enhancements)
+
+### Improved
+- convert puzzle rush page to server component and optimize LCP (ARC-chess-puzzle-enhancements)
+
+### Refactored
+- remove static puzzle json files from web public bundle (ARC-chess-puzzle-enhancements)
+
+
+## [1.30.25] - 2026-09-24
+
+### Added
+- add ru/es/fr/by translations for all 9 strategy articles
+- add 9 deep-dive strategy articles, premium UI, and FAQ blocks
+
+
+## [1.30.24] - 2026-09-20
+
+### Added
+- rework hearts and spades UI and UX for mobile (ARC-hearts-spades-mobile-ui)
+
+
+## [1.30.23] - 2026-09-20
+
+### Added
+- add game themes to shop and preselect equipped skin in room creation
+
+
+## [1.30.22] - 2026-09-20
+
+### Added
+- rework rooms page filters with multi-select dropdowns and UI components (ARC-961) (ARC-961)
+
+
+## [1.30.21] - 2026-09-20
+
+### Added
+- redesign combo modal using SharedModal with high-contrast styling (ARC-critical-game-enhancements)
+- match blind card backs with board theme and streamline trio/fiver pickers (ARC-critical-game-enhancements)
+- stack duplicate cards in hand with count badges and steppers (ARC-critical-game-enhancements)
+- add desktop drag-to-scroll navigation for hand cards (ARC-critical-game-enhancements)
+
+### Fixed
+- clean up table card borders and eliminate background corner leaks (ARC-critical-game-enhancements)
+- fix event combo handlers and store state for pairs, trios, and fivers (ARC-critical-game-enhancements)
+- optimize responsive layout for compact and mobile landscape viewports (ARC-critical-game-enhancements)
+
+### Improved
+- remove non-composited pulse animation from catalog genre dots (ARC-critical-game-enhancements)
+
+### Refactored
+- migrate give favor modal to SharedModal with crisp visual contrast (ARC-critical-game-enhancements)
+- integrate SharedModal with scoped dark theme tokens (ARC-critical-game-enhancements)
+
+
+## [1.30.20] - 2026-09-20
+
+### Added
+
+- wire undo button into all solo and multiplayer games
+
+## [1.30.19] - 2026-09-19
+
+### Fixed
+
+- keep territory toggle visible throughout match (ARC-go-territory-toggle)
+
+## [1.30.18] - 2026-09-19
+
+### Added
+
+- rework game fields to eliminate excessive transparency and improve UI/UX (ARC-rework-solo-games-fields)
+
+## [1.30.17] - 2026-09-19
+
+### Added
+
+- accumulate and persist scanned cells across teammates (ARC-sea-battle-prevent-layout-shift)
+- add interactive targeting and preview for ship abilities (ARC-sea-battle-prevent-layout-shift)
+
+### Fixed
+
+- set lastSonar on abilities and resize sonar to 3x3 (ARC-sea-battle-prevent-layout-shift)
+- safely extract targetPlayerId and abilityId in gateway (ARC-sea-battle-prevent-layout-shift)
+- replace opacity pulsing with box-shadow glow on targetable opponent field
+- avoid conflicting background and backgroundColor styles on BoardCell
+- prevent fields jumping on turn change and connect ship abilities
+
+## [1.30.16] - 2026-09-19
+
+### Added
+
+- report passed and failed platforms in result notification
+- add edge-tts voiceover with graceful fallback
+- enhance scenarios, loading overlays, and game AI
+
+### Fixed
+
+- resolve edge-tts across users and mix voice into all video types
+
+## [1.30.15] - 2026-09-19
+
+### Added
+
+- support castling as a premove
+
+## [1.30.14] - 2026-09-19
+
+### Fixed
+
+- add missing game over translations for Backgammon and fix Pachisi placement
+
+## [1.30.13] - 2026-09-19
+
+### Added
+
+- enhance pachisi piece visuals, rotation, and fix token stacking (ARC-965) (ARC-965)
+
+## [1.30.12] - 2026-09-19
+
+### Added
+
+- add move-in-chat with board highlighting for all board games
+
+## [1.30.11] - 2026-09-19
+
+### Added
+
+- show rolled dice and improve UX when no moves available in pachisi (ARC-965) (ARC-965)
+
+## [1.30.10] - 2026-09-19
+
+### Added
+
+- modernize backgammon gameplay, ui ux, and playability (ARC-964) (ARC-964)
+
+## [1.30.9] - 2026-09-18
+
+### Fixed
+
+- defer level-up modal when user is in a game room
+
+## [1.30.8] - 2026-09-18
+
+### Added
+
+- add 3d euler settling, flick gesture, and thematic skins (ARC-963) (ARC-963)
+- modernize 3d dice roll animation and unify overlay across games (ARC-963) (ARC-963)
+
+## [1.30.7] - 2026-09-18
+
+### Added
+
+- implement tactical abilities, drafting, and bumping in cat dash (ARC-962) (ARC-962)
+- add realistic 3D racing cat character art and dossier inspection (ARC-962) (ARC-962)
+- upgrade cat dash with realistic cats, reusable dice animation, and flagship dashboard (ARC-962) (ARC-962)
+
+### Fixed
+
+- resolve hook naming in game widget and bonus space roll advancement (ARC-962) (ARC-962)
+
+## [1.30.6] - 2026-09-17
+
+### Added
+
+- add buy-and-gift flow for non-owned shop items
+
+### Fixed
+
+- remove unused balance state from GiftDialog
+
+## [1.30.5] - 2026-09-17
+
+### Fixed
+
+- fix shop purchase E11000 duplicate key on walletSignature index
+
+## [1.30.4] - 2026-09-17
+
+### Fixed
+
+- make premium+ games available to higher roles (ARC-961) (ARC-961)
+
+## [1.30.3] - 2026-09-16
+
+### Added
+
+- rework chess landing UI UX and remove em-dashes across app (ARC-960) (ARC-960)
+
+### Improved
+
+- lazy-load blog registry, parallelize game pages, add watchdog/capture backoff
+
+## [1.30.2] - 2026-09-16
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.1] - 2026-09-15
+
+### Refactored
+
+- migrate from Docker to PM2 bare-metal deployment
+
+## [1.30.0] - 2026-09-14
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.29.48] - 2026-09-14
 
 ### Added
-- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
 
+- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
 
 ## [1.29.47] - 2026-09-14
 
 ### Added
-- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
 
+- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
 
 ## [1.29.46] - 2026-09-13
 
 ### Added
-- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
 
+- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
 
 ## [1.29.45] - 2026-09-13
 
 ### Added
-- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
 
+- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
 
 ## [1.29.44] - 2026-09-13
 

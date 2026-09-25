@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { PachisiTokenView } from './PachisiTokenView';
 import type { PachisiClientState } from '../types';
 
 interface PachisiStatusStripProps {
@@ -13,6 +14,9 @@ interface PachisiStatusStripProps {
   isGameOver: boolean;
   actionBusy?: boolean;
   lastDie: number | null;
+  myLastDie?: number | null;
+  lastRollerId?: string | null;
+  isLastRollNoMoves?: boolean;
   finishedCounts: Map<string, number>;
   onPassTurn?: () => void;
 }
@@ -52,6 +56,9 @@ export function PachisiStatusStrip({
   isGameOver,
   actionBusy = false,
   lastDie,
+  myLastDie,
+  lastRollerId,
+  isLastRollNoMoves = false,
   finishedCounts,
   onPassTurn,
 }: PachisiStatusStripProps) {
@@ -59,6 +66,8 @@ export function PachisiStatusStrip({
 
   const seatOf = (pid: string): number => snapshot.seats[pid] ?? 0;
   const isExtraRoll = myTurn && canRoll && snapshot.consecutiveSixes > 0;
+  const displayLastDie =
+    myLastDie ?? lastDie ?? snapshot.die ?? snapshot.lastDie ?? null;
 
   return (
     <div className="flex w-full flex-col gap-2">
@@ -72,12 +81,13 @@ export function PachisiStatusStrip({
             return (
               <span
                 key={`score-${pid}`}
-                className={`pachisi-score-pill-seat-${seat} flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
+                className={`pachisi-score-pill-seat-${seat} flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
                   isMe ? 'ring-1 ring-white/60' : ''
                 }`}
               >
-                <span
-                  className={`pachisi-token pachisi-token-seat-${seat} h-2.5 w-2.5 rounded-full border`}
+                <PachisiTokenView
+                  seat={seat}
+                  className="h-3.5 w-3.5 shrink-0 shadow-sm"
                 />
                 <HomeIcon className="h-3 w-3 opacity-70" />
                 {finished}/{total}
@@ -97,9 +107,18 @@ export function PachisiStatusStrip({
             </span>
           )}
 
-          {lastDie != null && !isGameOver && !canRoll && (
-            <span className="text-[10px] font-semibold text-white/50">
-              {t('games.pachisi_v1.game.lastRoll', { value: lastDie })}
+          {displayLastDie != null && !isGameOver && (
+            <span
+              className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-bold text-white/90 shadow-sm"
+              data-testid="pachisi-status-last-roll"
+            >
+              <span className="text-[10px] text-emerald-400">🎲</span>
+              <span className="font-black text-emerald-300">
+                {displayLastDie}
+              </span>
+              <span className="text-white/80">
+                {t('games.pachisi_v1.game.lastRoll', { value: displayLastDie })}
+              </span>
             </span>
           )}
         </div>
@@ -122,13 +141,27 @@ export function PachisiStatusStrip({
           className="flex flex-col items-center gap-1.5"
           data-testid="pachisi-no-moves"
         >
-          <div className="text-center text-[12px] font-bold text-amber-300">
-            {t('games.pachisi_v1.game.noLegalMoves')}
+          <div className="flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-950/60 px-3 py-1 text-center text-[12px] font-bold text-amber-300 shadow-md">
+            {displayLastDie != null && (
+              <span className="flex items-center gap-1 rounded bg-amber-500/20 px-1.5 py-0.5 text-amber-200">
+                <span>🎲</span>
+                <span className="font-black text-amber-100">
+                  {displayLastDie}
+                </span>
+              </span>
+            )}
+            <span>
+              {displayLastDie != null
+                ? t('games.pachisi_v1.game.noLegalMovesWithRoll', {
+                    value: displayLastDie,
+                  })
+                : t('games.pachisi_v1.game.noLegalMoves')}
+            </span>
           </div>
           {onPassTurn && (
             <button
               aria-label={t('games.pachisi_v1.game.passTurn')}
-              className="rounded-lg border border-amber-500/40 bg-amber-950/50 px-3 py-1 text-[11px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95 disabled:opacity-50"
+              className="cursor-pointer rounded-lg border border-amber-500/40 bg-amber-950/50 px-3 py-1 text-[11px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95 disabled:opacity-50"
               data-testid="pachisi-pass-button"
               disabled={actionBusy}
               onClick={onPassTurn}
@@ -141,13 +174,34 @@ export function PachisiStatusStrip({
       )}
 
       {!myTurn && !isGameOver && (
-        <div
-          className="text-center text-[12px] font-semibold text-white/50"
-          data-testid="pachisi-waiting"
-        >
-          {snapshot.phase === 'roll'
-            ? t('games.pachisi_v1.game.waitingForOpponentRoll')
-            : t('games.pachisi_v1.game.waitingForOpponentMove')}
+        <div className="flex flex-col items-center gap-1">
+          {isLastRollNoMoves && displayLastDie != null && (
+            <div
+              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-950/40 px-2.5 py-1 text-[11px] font-bold text-amber-300 shadow-sm"
+              data-testid="pachisi-no-moves-banner"
+            >
+              <span className="rounded bg-amber-500/20 px-1 font-black text-amber-200">
+                🎲 {displayLastDie}
+              </span>
+              <span>
+                {lastRollerId === currentUserId
+                  ? t('games.pachisi_v1.game.noLegalMovesTurnPassed', {
+                      value: displayLastDie,
+                    })
+                  : t('games.pachisi_v1.game.opponentRolledNoMoves', {
+                      value: displayLastDie,
+                    })}
+              </span>
+            </div>
+          )}
+          <div
+            className="text-center text-[12px] font-semibold text-white/50"
+            data-testid="pachisi-waiting"
+          >
+            {snapshot.phase === 'roll'
+              ? t('games.pachisi_v1.game.waitingForOpponentRoll')
+              : t('games.pachisi_v1.game.waitingForOpponentMove')}
+          </div>
         </div>
       )}
     </div>

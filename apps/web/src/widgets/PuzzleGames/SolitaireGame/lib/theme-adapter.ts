@@ -25,20 +25,20 @@ export interface SolitaireTheme {
 export function sharedThemeToSolitaire(theme: GameTheme): SolitaireTheme {
   return {
     background: `linear-gradient(160deg, ${theme.colors.background} 0%, ${theme.colors.surface} 100%)`,
-    tableBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.85)`,
+    tableBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.96)`,
     tableBorder: theme.colors.border,
-    emptySlot: `rgba(${hexToRgb(theme.colors.text)}, 0.06)`,
-    emptySlotBorder: theme.colors.border,
+    emptySlot: `rgba(${hexToRgb(theme.colors.background)}, 0.65)`,
+    emptySlotBorder: `rgba(${hexToRgb(theme.colors.border)}, 0.55)`,
     cardFace: '#fdfdfb',
     cardFaceBorder: theme.colors.border,
     cardBack: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.glow} 100%)`,
-    cardBackBorder: `rgba(${hexToRgb(theme.colors.text)}, 0.25)`,
+    cardBackBorder: `rgba(${hexToRgb(theme.colors.text)}, 0.35)`,
     redSuit: '#dc2626',
     blackSuit: '#1f2937',
     selectedRing: theme.colors.glow,
     movableHint: `rgba(${hexToRgb(theme.colors.highlight)}, 0.55)`,
     textColor: theme.colors.text,
-    borderRadius: '10px',
+    borderRadius: '16px',
     bgImage: theme.bgImage,
   };
 }

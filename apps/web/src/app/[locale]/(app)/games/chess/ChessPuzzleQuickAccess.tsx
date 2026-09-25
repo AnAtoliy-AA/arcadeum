@@ -38,8 +38,7 @@ export function ChessPuzzleQuickAccess({
     {
       icon: '⚡',
       title: 'Puzzle Rush',
-      description:
-        'Survive 3 lives or beat the clock — how many can you solve?',
+      description: 'Survive 3 lives or beat the clock: how many can you solve?',
       href: puzzleRushHref,
     },
     {

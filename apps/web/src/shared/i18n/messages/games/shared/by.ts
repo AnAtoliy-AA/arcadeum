@@ -8,7 +8,7 @@ export const byMessages = {
   glimworm_v1: { name: 'Глімворм' },
   lounge: {
     activeTitle: 'Гульнявыя залы',
-    emptyTitle: 'Зараз няма адкрытых пакояў — пачніце гульню супраць ІІ.',
+    emptyTitle: 'Зараз няма адкрытых пакояў - пачніце гульню супраць ІІ.',
     emptyFeaturedLink: 'Або сыграйце ў Марскі бой супраць ШI →',
     loadingRooms: 'Загрузка залаў...',
     searchPlaceholder: 'Пошук гульняў...',
@@ -42,7 +42,7 @@ export const byMessages = {
   },
   aiVsAi: {
     watchCta: 'Глядзець ШІ супраць ШІ',
-    error: 'Не атрымалася запусціць — паспрабуйце яшчэ раз',
+    error: 'Не атрымалася запусціць - паспрабуйце яшчэ раз',
     delayLabel: 'Затрымка ходу',
   },
   tutorial: {
@@ -55,7 +55,7 @@ export const byMessages = {
       stepOf: 'Крок {{current}} з {{total}}',
       completeTitle: 'Навучанне завершана!',
       completeBody:
-        'Выдатна — цяпер вы ведаеце асновы гульні {{game}}. Поспеху за сталом!',
+        'Выдатна - цяпер вы ведаеце асновы гульні {{game}}. Поспеху за сталом!',
       close: 'Закрыць',
     },
   },
@@ -91,7 +91,7 @@ export const byMessages = {
     incorrect: 'Няправільны пароль',
   },
   room: {
-    gameArea: 'Гульнявая зона — інтэграцыя ў рэальным часе хутка з’явіцца',
+    gameArea: 'Гульнявая зона - інтэграцыя ў рэальным часе хутка з’явіцца',
     loading: 'Загрузка сервера...',
     pendingNotice: {
       title: 'Сервер прачынаецца...',

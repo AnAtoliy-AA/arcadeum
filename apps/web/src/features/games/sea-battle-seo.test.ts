@@ -4,11 +4,11 @@ import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n';
 import { loadMessages } from '@/shared/i18n/messages';
 
 describe('Sea Battle SEO & Rich Snippets', () => {
-  it('registers the new strategic placement blog guide across all locales', () => {
+  it('registers the new strategic placement blog guide across all locales', async () => {
     expect(POST_SLUGS).toContain('sea-battle-best-strategies-and-placements');
 
     for (const locale of SUPPORTED_LOCALES) {
-      const post = getPost(
+      const post = await getPost(
         'sea-battle-best-strategies-and-placements',
         locale as Locale,
       );

@@ -4,7 +4,7 @@ export const esMessages = {
     description:
       'Empareja por color o número, encadena cartas Roba-Dos y Comodín +4 para inundar al siguiente jugador, y vacía tu mano primero para ganar.',
     summary:
-      'Un juego de cartas de descarte de la familia Ochos Locos — ocho temas seleccionables, 2–10 jugadores, penalizaciones encadenables.',
+      'Un juego de cartas de descarte de la familia Ochos Locos - ocho temas seleccionables, 2–10 jugadores, penalizaciones encadenables.',
     variants: {
       cosmic: {
         name: 'Cósmico',
@@ -22,12 +22,12 @@ export const esMessages = {
       },
       elemental: {
         name: 'Elemental',
-        description: 'Fuego, Piedra, Hoja y Marea — paleta natural y limpia.',
+        description: 'Fuego, Piedra, Hoja y Marea - paleta natural y limpia.',
       },
       classic: {
         name: 'Clásico',
         description:
-          'Colores tradicionales de juego de cartas — limpio y atemporal.',
+          'Colores tradicionales de juego de cartas - limpio y atemporal.',
       },
       neon: {
         name: 'Neón',
@@ -36,11 +36,11 @@ export const esMessages = {
       tropical: {
         name: 'Tropical',
         description:
-          'Hibisco, Palma, Océano — vibraciones de playa y colores cálidos.',
+          'Hibisco, Palma, Océano - vibraciones de playa y colores cálidos.',
       },
       steampunk: {
         name: 'Steampunk',
-        description: 'Latón, Caldera, Verdín — estética mecánica victoriana.',
+        description: 'Latón, Caldera, Verdín - estética mecánica victoriana.',
       },
       adventure: {
         name: 'Aventura',
@@ -49,19 +49,19 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Cascade — juego de cartas multijugador de descarte en línea',
+        title: 'Cascade - juego de cartas multijugador de descarte en línea',
         description:
-          'Juega a Cascade en línea — un juego de cartas de descarte con cadenas de Roba-Dos / Comodín +4 y cuatro temas visuales. 2–10 jugadores, salas gratis al instante, sin instalación.',
+          'Juega a Cascade en línea - un juego de cartas de descarte con cadenas de Roba-Dos / Comodín +4 y cuatro temas visuales. 2–10 jugadores, salas gratis al instante, sin instalación.',
         keywords:
           'cascade, ochos locos, juego de cartas multijugador, juego de cartas en línea, juego de descarte, juego de cartas de combinación',
       },
       hero: {
-        title: 'Cascade — el juego de cartas de encadenado, reinventado',
+        title: 'Cascade - el juego de cartas de encadenado, reinventado',
         subtitle:
           'Combina color o número. Encadena penalizaciones. Elige entre ocho temas visuales. 2–10 jugadores.',
         createRoom: 'Crear sala',
         ctaQuickplay: 'Jugar contra la IA',
-        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+        ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
         browseRooms: 'Buscar salas',
       },
       highlights: {
@@ -71,7 +71,7 @@ export const esMessages = {
         },
         themes: {
           title: '8 temas visuales',
-          body: 'Cósmico, Arcano, Cyberpunk, Elemental, Clásico, Neón, Tropical, Steampunk — las reglas no cambian, el aspecto sí.',
+          body: 'Cósmico, Arcano, Cyberpunk, Elemental, Clásico, Neón, Tropical, Steampunk - las reglas no cambian, el aspecto sí.',
         },
         stacking: {
           title: 'Penalizaciones encadenables',
@@ -254,7 +254,7 @@ export const esMessages = {
       chooseColor: 'Elige un color',
       cards: '{{count}} cartas',
       callCascade: '¡Cascade!',
-      callCascadeSelf: '¡Cascade! — sálvate',
+      callCascadeSelf: '¡Cascade! - sálvate',
       backToGames: '← Juegos',
     },
     tutorial: {
@@ -268,7 +268,7 @@ export const esMessages = {
       },
       s3: {
         title: 'Acumula penalizaciones',
-        body: 'Pasa un Draw-Two con otro Draw-Two o apila un Wild +4 — si rechazas, pagas el precio completo.',
+        body: 'Pasa un Draw-Two con otro Draw-Two o apila un Wild +4 - si rechazas, pagas el precio completo.',
       },
       s4: {
         title: '¿Sin jugada? Roba',

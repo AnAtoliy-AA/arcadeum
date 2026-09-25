@@ -75,7 +75,7 @@ export const fr = {
     tabRegister: 'Créer un compte',
     headingSignIn: 'Heureux de vous revoir.',
     headingRegister: 'Rendez-le officiel.',
-    subSignIn: "Utilisez l'un des boutons ci-dessous — le plus rapide.",
+    subSignIn: "Utilisez l'un des boutons ci-dessous - le plus rapide.",
     subRegister: 'Cela prend 30 secondes. Choisissez comment commencer.',
     orWithEmail: 'ou par e-mail',
     emailLabel: 'Adresse e-mail',
@@ -115,7 +115,7 @@ export const fr = {
     featureProgressTitle: 'Vos progrès sont sauvegardés',
     featureProgressDetail: 'stats, amis et déblocages sont conservés.',
     proof:
-      'Rejoint par {{count}} joueurs cette semaine — voyez qui est en ligne dans Parcourir les jeux.',
+      'Rejoint par {{count}} joueurs cette semaine - voyez qui est en ligne dans Parcourir les jeux.',
     proofCount: '',
     footHome: "← Retour à l'accueil",
     footGames: 'Parcourir les jeux',

@@ -56,7 +56,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/glimworm/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Glimworm — real-time multiplayer game on Arcadeum',
+          alt: 'Glimworm - real-time multiplayer game on Arcadeum',
         },
       ],
     },
@@ -75,8 +75,10 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
   const routes = buildRoutes(locale);
-  const comingSoon = await isGameComingSoon(GLIMWORM_SLUG);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(GLIMWORM_SLUG),
+    getTranslations(locale),
+  ]);
   const landing = messages.games?.glimworm_v1?.landing;
   const gameName = messages.games?.glimworm_v1?.name ?? 'Glimworm';
   const description = landing?.meta?.description ?? '';
@@ -106,7 +108,7 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
             `How to Play Glimworm on ${appConfig.appName}`,
           description:
             landing.meta?.description ??
-            'Play Glimworm — a neon multiplayer snake arena for 2 to 10 players. No download or signup required.',
+            'Play Glimworm - a neon multiplayer snake arena for 2 to 10 players. No download or signup required.',
           steps: Object.values(landing.howToPlay.steps).map((s) => ({
             name: s.title,
             text: s.body,
@@ -122,7 +124,11 @@ export default async function GlimwormLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const relatedPosts = getPostsByTag(locale, ['Glimworm', 'Snake', 'Arcade']);
+  const relatedPosts = await getPostsByTag(locale, [
+    'Glimworm',
+    'Snake',
+    'Arcade',
+  ]);
 
   return (
     <>

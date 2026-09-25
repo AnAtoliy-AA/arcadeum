@@ -14,7 +14,7 @@ import {
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 export const alt =
-  'Go (Weiqi / Baduk) — free online board game on Arcadeum Games';
+  'Go (Weiqi / Baduk) - free online board game on Arcadeum Games';
 
 export const dynamic = 'force-static';
 export function generateStaticParams() {

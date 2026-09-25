@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
+import uiPreset from '../../packages/ui/tailwind.config';
 
 /**
  * Tailwind for apps/web — used by the home page.
@@ -15,6 +16,7 @@ import plugin from 'tailwindcss/plugin';
  *   `animate-*` utilities instead of SCSS classes.
  */
 export default {
+  presets: [uiPreset],
   content: ['./src/**/*.{ts,tsx}', '../../packages/ui/src/**/*.{ts,tsx}'],
   corePlugins: {
     preflight: false,
@@ -140,11 +142,6 @@ export default {
             opacity: '0.7',
           },
           '100%': { transform: 'translate(-50%, -50%) scale(0)', opacity: '0' },
-        },
-        'animated-dice-shake': {
-          '0%, 100%': { transform: 'rotate(0deg) scale(1)' },
-          '25%': { transform: 'rotate(-8deg) scale(1.06)' },
-          '75%': { transform: 'rotate(8deg) scale(1.06)' },
         },
       },
       animation: {

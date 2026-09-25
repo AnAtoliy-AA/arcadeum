@@ -7,7 +7,6 @@ export function generateTrack(
   trackLength: number = 60,
 ): TrackSpace[] {
   const track: TrackSpace[] = [];
-
   const maxIndex = trackLength - 1;
 
   for (let i = 0; i <= maxIndex; i++) {
@@ -62,14 +61,18 @@ export function checkWinCondition(
 }
 
 export function getAvailableAbilities(
-  _catId: string,
+  catId: string,
   abilitiesUsed: string[],
 ): string[] {
-  const abilities = CAT_ABILITIES[_catId as keyof typeof CAT_ABILITIES];
+  const abilities = CAT_ABILITIES[catId as keyof typeof CAT_ABILITIES];
   if (!abilities) return [];
   return abilities
-    .map((_, index) => `ability_${index + 1}`)
-    .filter((ability) => !abilitiesUsed.includes(ability));
+    .map((a, index) => a.id ?? `ability_${index + 1}`)
+    .filter(
+      (ability, index) =>
+        !abilitiesUsed.includes(ability) &&
+        !abilitiesUsed.includes(`ability_${index + 1}`),
+    );
 }
 
 export function applySpaceEffect(effect: SpaceEffect): {

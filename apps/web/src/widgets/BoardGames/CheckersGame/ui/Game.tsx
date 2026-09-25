@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -10,6 +11,7 @@ import {
   useGameResult,
   useGameEndState,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -84,6 +86,10 @@ function CheckersGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'checkers_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCell = useGameChatStore((s) => s.highlightedCell);
+  const persistedCell = useGameChatStore((s) => s.persistedCell);
+  const effectiveHighlight = highlightedCell ?? persistedCell;
 
   const handleReorderPlayers = useCallback(
     async (newOrder: string[]) => {
@@ -357,6 +363,7 @@ function CheckersGameImpl({
             board={displayBoard}
             players={snapshot.players}
             selectedPiece={selectedPiece}
+            highlightedCell={effectiveHighlight}
             disabled={!myTurn || isGameOver}
             ariaLabel={`Checkers ${displayBoard.length}×${displayBoard.length} board`}
             onCellClick={handleCellClick}
@@ -420,6 +427,7 @@ function CheckersGameImpl({
           title: 'Checkers',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

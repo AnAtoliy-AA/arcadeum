@@ -1,10 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { appConfig } from '@/shared/config/app-config';
-import {
-  LOCALE_SLUGS,
-  SUPPORTED_LOCALES,
-  type SlugKey,
-} from '@/shared/config/locale-slugs';
+import { LOCALE_SLUGS, SUPPORTED_LOCALES } from '@/shared/config/locale-slugs';
 import { NOINDEX_SLUGS } from '@/shared/config/noindex-pages';
 
 export default function robots(): MetadataRoute.Robots {
@@ -13,9 +9,7 @@ export default function robots(): MetadataRoute.Robots {
   // the per-locale variants, Googlebot would still attempt to crawl them
   // and the `x-robots-tag` header is the only thing that would catch it.
   const localizedPrivatePaths = SUPPORTED_LOCALES.flatMap((locale) =>
-    [...NOINDEX_SLUGS].map(
-      (key) => `/${locale}/${LOCALE_SLUGS[locale][key]}/`,
-    ),
+    [...NOINDEX_SLUGS].map((key) => `/${locale}/${LOCALE_SLUGS[locale][key]}/`),
   );
 
   // /games is public, but creating a room is not. Room detail pages live

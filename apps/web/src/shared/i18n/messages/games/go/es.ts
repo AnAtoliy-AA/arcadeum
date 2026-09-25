@@ -7,7 +7,7 @@ export const esMessages = {
       '¡Rodea territorio, captura grupos y supera a tu oponente en el juego de tablero más elegante jamás inventado!',
     landing: {
       meta: {
-        title: 'Go — Juego de Tablero Multijugador Online Gratis | Arcadeum',
+        title: 'Go - Juego de Tablero Multijugador Online Gratis | Arcadeum',
         description:
           'Juega al Go online gratis en Arcadeum. Reglas clásicas de Baduk/Weiqi en tableros de 9×9, 13×13 y 19×19 con capturas, regla de ko, puntuación por área e oponentes IA.',
         keywords:
@@ -33,7 +33,7 @@ export const esMessages = {
         },
         captures: {
           title: 'Capturas y Ko',
-          body: 'Rodea grupos para eliminarlos — la regla de ko lo mantiene justo',
+          body: 'Rodea grupos para eliminarlos - la regla de ko lo mantiene justo',
         },
         botAI: {
           title: 'Oponentes IA',
@@ -53,14 +53,14 @@ export const esMessages = {
         },
         play: {
           title: 'Rodea y Captura',
-          body: 'Coloca piedras, rodea territorio y captura grupos — dos pases terminan la partida y la puntuación por área decide al ganador.',
+          body: 'Coloca piedras, rodea territorio y captura grupos - dos pases terminan la partida y la puntuación por área decide al ganador.',
           tip: 'El komi de 7.5 puntos compensa a las blancas por mover segundo.',
         },
       },
       themes: {
         title: 'Juega a Tu Estilo',
         subtitle:
-          'Todos los temas compartidos de Arcadeum están disponibles — el tablero se adapta a tu estilo.',
+          'Todos los temas compartidos de Arcadeum están disponibles - el tablero se adapta a tu estilo.',
       },
       sections: {
         faqTitle: 'Preguntas Frecuentes',
@@ -106,7 +106,7 @@ export const esMessages = {
         koRule: {
           question: '¿Qué es la regla de ko?',
           answer:
-            'No puedes recapturar inmediatamente si eso recrea la posición anterior del tablero. Tras una captura de ko debes jugar en otro lugar — el punto prohibido aparece marcado en el tablero.',
+            'No puedes recapturar inmediatamente si eso recrea la posición anterior del tablero. Tras una captura de ko debes jugar en otro lugar - el punto prohibido aparece marcado en el tablero.',
         },
         boardSize: {
           question: '¿Qué tamaño de tablero elegir?',
@@ -188,14 +188,14 @@ export const esMessages = {
       draw: 'Empate',
       messages: {
         won: '¡Victoria! Has rodeado más territorio. ¿Listo para otra partida?',
-        lost: 'Derrota — tu rival controló más área. ¿Quieres la revancha?',
-        draw: 'Empate — tablero perfectamente equilibrado. ¿Jugar de nuevo?',
+        lost: 'Derrota - tu rival controló más área. ¿Quieres la revancha?',
+        draw: 'Empate - tablero perfectamente equilibrado. ¿Jugar de nuevo?',
       },
     },
     tutorial: {
       s1: {
         title: 'Rodea territorio',
-        body: 'Coloca piedras para cercar puntos vacíos. Cuando ambos pasen, gana el área mayor — Blanco empieza con la compensación del komi.',
+        body: 'Coloca piedras para cercar puntos vacíos. Cuando ambos pasen, gana el área mayor - Blanco empieza con la compensación del komi.',
       },
       s2: {
         title: 'Corta las libertades',
@@ -203,7 +203,7 @@ export const esMessages = {
       },
       s3: {
         title: 'Ojo con el ko',
-        body: 'No puedes recapturar al instante recreando la posición anterior — juega en otro sitio primero. Dos pases consecutivos terminan la partida.',
+        body: 'No puedes recapturar al instante recreando la posición anterior - juega en otro sitio primero. Dos pases consecutivos terminan la partida.',
       },
       s4: {
         title: 'Herramientas del oficio',
@@ -219,7 +219,7 @@ export const esMessages = {
       capture:
         'Un grupo sin puntos vacíos adyacentes (libertades) es capturado y retirado del tablero.',
       koTitle: 'Regla de Ko',
-      ko: 'Recapturar inmediatamente recreando la posición anterior está prohibido — juega primero en otro lugar.',
+      ko: 'Recapturar inmediatamente recreando la posición anterior está prohibido - juega primero en otro lugar.',
       passTitle: 'Pases',
       pass: 'Dos pases consecutivos terminan la partida. Pasa cuando no queden jugadas valiosas.',
       scoringTitle: 'Puntuación',

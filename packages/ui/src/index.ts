@@ -71,3 +71,6 @@ export * from './components/AnimatedDice';
 export * from './components/InfiniteScroll';
 export * from './components/GameSpecTable';
 export * from './components/PlatformComparisonTable';
+export * from './components/SearchInput/SearchInput';
+export * from './components/SegmentedControl/SegmentedControl';
+export * from './components/MultiSelectDropdown/MultiSelectDropdown';

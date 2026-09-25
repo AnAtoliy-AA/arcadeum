@@ -161,10 +161,14 @@ const PlacementBoardCell = memo(
     return (
       <BoardCell
         style={{
-          background:
+          backgroundColor:
+            isShip && !isInvalidCell
+              ? undefined
+              : getCellBg(cellState, theme, isHovered, isInvalidCell),
+          backgroundImage:
             isShip && !isInvalidCell
               ? 'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)'
-              : getCellBg(cellState, theme, isHovered, isInvalidCell),
+              : undefined,
           borderColor: isInvalidCell
             ? 'rgba(239,68,68,0.6)'
             : isShip

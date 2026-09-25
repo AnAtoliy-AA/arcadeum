@@ -88,21 +88,43 @@ export function useCriticalModals({
   const handleConfirmEventCombo = useCallback(() => {
     if (!playEventCombo) return;
     const current = useCriticalGameStore.getState();
-    const comboCard = current.eventComboModal?.selectedComboCard;
-    if (current.selectedMode === 'pair') {
+    if (current.selectedMode === 'fiver') {
+      if (
+        current.selectedFiverCards.length !== 5 ||
+        !current.selectedDiscardCard
+      ) {
+        return;
+      }
       playEventCombo(
-        comboCard ?? null,
-        'pair',
-        current.selectedTarget ?? undefined,
+        null,
+        'fiver',
         undefined,
-        current.selectedIndex ?? undefined,
+        undefined,
+        undefined,
+        current.selectedDiscardCard,
+        current.selectedFiverCards,
+      );
+      current.closeEventComboModal();
+      return;
+    }
+    const comboCard = current.eventComboModal?.selectedComboCard;
+    if (!comboCard || !current.selectedMode || !current.selectedTarget) return;
+    if (current.selectedMode === 'pair') {
+      if (current.selectedIndex === null) return;
+      playEventCombo(
+        comboCard,
+        'pair',
+        current.selectedTarget,
+        undefined,
+        current.selectedIndex,
       );
     } else if (current.selectedMode === 'trio') {
+      if (!current.selectedCard) return;
       playEventCombo(
-        comboCard ?? null,
-        'triple',
-        current.selectedTarget ?? undefined,
-        comboCard ?? undefined,
+        comboCard,
+        'trio',
+        current.selectedTarget,
+        current.selectedCard,
       );
     }
     current.closeEventComboModal();

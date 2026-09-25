@@ -30,7 +30,7 @@ const TILE_STYLE_MAP: Record<number, string> = {
 
 function getTileClasses(value: number): string {
   if (value === 0) {
-    return 'bg-[var(--g2048-empty-cell)] border border-[var(--g2048-board-border)]/40';
+    return 'bg-[var(--g2048-empty-cell)] border border-white/5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.4)]';
   }
   return (
     TILE_STYLE_MAP[value] ??
@@ -80,7 +80,7 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
       data-testid="game-2048-board"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-black/20 p-2 sm:p-3 shadow-2xl select-none transition-all duration-200',
+        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border-2 border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-all duration-200 overflow-hidden',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100dvh-12rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))]',

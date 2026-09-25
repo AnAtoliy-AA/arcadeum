@@ -35,6 +35,7 @@ import {
   SoloActionButton,
   type SoloActionButtonProps,
 } from './SoloActionButton';
+import { SoloUndoButton } from './SoloUndoButton';
 
 export {
   formatDuration,
@@ -83,6 +84,11 @@ export interface SoloGameContainerProps {
   actions?: ReactNode;
   children: ReactNode;
   controls?: ReactNode;
+  undo?: {
+    onUndo: () => void;
+    canUndo: boolean;
+    disabled?: boolean;
+  };
   modal: {
     result: 'victory' | 'defeat' | null;
     gameName: string;
@@ -119,6 +125,7 @@ export function SoloGameContainer({
   actions,
   children,
   controls,
+  undo,
   modal,
   loadingMessage,
 }: SoloGameContainerProps) {
@@ -303,7 +310,18 @@ export function SoloGameContainer({
         pause={resolvedPause}
         finishedAt={finishedAt}
         controls={controls}
-        actions={actions}
+        actions={
+          <>
+            {undo && (
+              <SoloUndoButton
+                onUndo={undo.onUndo}
+                canUndo={undo.canUndo}
+                disabled={undo.disabled}
+              />
+            )}
+            {actions}
+          </>
+        }
         isFullscreen={isFullscreen}
         showLeaderboard={showLeaderboard}
         onToggleLeaderboard={() => setShowLeaderboard((prev) => !prev)}
@@ -364,12 +382,12 @@ export function SoloGameContainer({
               className={cx(
                 'object-cover object-center transition-opacity duration-300',
                 isFullscreen
-                  ? 'opacity-50 sm:opacity-60'
-                  : 'opacity-40 sm:opacity-50',
+                  ? 'opacity-35 sm:opacity-45'
+                  : 'opacity-30 sm:opacity-40',
               )}
             />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/20 via-transparent to-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/15 via-transparent to-black/60 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/50 pointer-events-none" />
           </div>
         )}
 

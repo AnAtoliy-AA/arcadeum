@@ -18,7 +18,7 @@ export const enMessages = {
       },
       s3: {
         title: 'Fast rooms tick',
-        body: 'In fast rooms a turn timer plays for you when time runs out — keep the pace and plan ahead.',
+        body: 'In fast rooms a turn timer plays for you when time runs out - keep the pace and plan ahead.',
       },
       s4: {
         title: 'Table talk',
@@ -211,7 +211,7 @@ export const enMessages = {
       threat: {
         label: 'Threat',
         oddsTitle:
-          'Minimum chance the next draw is a Critical card (visible cards only — hidden cards could raise this)',
+          'Minimum chance the next draw is a Critical card (visible cards only - hidden cards could raise this)',
         oddsTitleServer: 'Chance the next draw is a Critical card',
         defusesTitle: 'Defuses you hold',
         remainingTitle: 'Dangerous cards still in the deck',
@@ -239,7 +239,7 @@ export const enMessages = {
       flash: {
         draw: 'Drew {{card}}',
         play: 'Played {{card}}',
-        defuse: 'Defused — {{card}} reinserted',
+        defuse: 'Defused - {{card}} reinserted',
         eliminated: '{{name}} eliminated',
         critical: '⚠ Critical drawn',
       },

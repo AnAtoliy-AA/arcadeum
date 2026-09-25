@@ -10,8 +10,8 @@ import {
 } from '@/shared/i18n';
 
 describe('Hreflang & Canonical URL Integrity', () => {
-  it('sitemap generates reciprocal hreflang links across all supported locales', () => {
-    const entries = sitemap();
+  it('sitemap generates reciprocal hreflang links across all supported locales', async () => {
+    const entries = await sitemap();
     expect(entries.length).toBeGreaterThan(0);
 
     const urlMap = new Map<string, Record<string, string>>();

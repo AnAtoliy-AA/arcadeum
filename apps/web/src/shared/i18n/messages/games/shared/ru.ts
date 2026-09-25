@@ -10,7 +10,7 @@ export const ruMessages = {
   glimworm_v1: { name: 'Глимворм' },
   lounge: {
     activeTitle: 'Игровые залы',
-    emptyTitle: 'Сейчас нет открытых комнат — начните игру против ИИ.',
+    emptyTitle: 'Сейчас нет открытых комнат - начните игру против ИИ.',
     emptyFeaturedLink: 'Или сыграйте в Морской бой против ИИ →',
     loadingRooms: 'Загрузка залов...',
     searchPlaceholder: 'Поиск игр...',
@@ -44,7 +44,7 @@ export const ruMessages = {
   },
   aiVsAi: {
     watchCta: 'Смотреть ИИ против ИИ',
-    error: 'Не удалось запустить — попробуйте ещё раз',
+    error: 'Не удалось запустить - попробуйте ещё раз',
     delayLabel: 'Задержка хода',
   },
   tutorial: {
@@ -57,7 +57,7 @@ export const ruMessages = {
       stepOf: 'Шаг {{current}} из {{total}}',
       completeTitle: 'Обучение завершено!',
       completeBody:
-        'Отлично — теперь вы знаете основы игры {{game}}. Удачи за столом!',
+        'Отлично - теперь вы знаете основы игры {{game}}. Удачи за столом!',
       close: 'Закрыть',
     },
   },
@@ -93,7 +93,7 @@ export const ruMessages = {
     incorrect: 'Неверный пароль',
   },
   room: {
-    gameArea: 'Игровая зона — интеграция в реальном времени скоро появится',
+    gameArea: 'Игровая зона - интеграция в реальном времени скоро появится',
     loading: 'Загрузка сервера...',
     pendingNotice: {
       title: 'Сервер просыпается...',
@@ -227,7 +227,7 @@ export const ruMessages = {
     cascadeModePure: 'Чистый',
     cascadeModeSpeed: 'Быстрый',
     cascadeModeClassicHint: 'Полный набор правил со стакингом',
-    cascadeModePureHint: 'Без стакинга — карты тяги разыгрываются сразу',
+    cascadeModePureHint: 'Без стакинга - карты тяги разыгрываются сразу',
     cascadeModeSpeedHint: 'Стакинг включён с таймером на ход',
     cascadeLastCardCall: 'Каскад на последней карте',
     cascadeLastCardCallHint: 'Гонка за вызов при 1 карте',
@@ -242,7 +242,7 @@ export const ruMessages = {
     title2: 'Новый стол.',
     titleAccent: 'За секунды.',
     intro:
-      'Выберите игру, настройте правила — мы создадим зал и ссылку для приглашения.',
+      'Выберите игру, настройте правила - мы создадим зал и ссылку для приглашения.',
     selected: 'Выбрано',
     optional: 'Опционально',
     required: 'обязательно',
@@ -279,7 +279,7 @@ export const ruMessages = {
       },
       teams: {
         title: 'Командный режим',
-        desc: 'Разделите игроков на флоты — 2v2 или 3v3.',
+        desc: 'Разделите игроков на флоты - 2v2 или 3v3.',
       },
       spectators: {
         title: 'Разрешить зрителей',

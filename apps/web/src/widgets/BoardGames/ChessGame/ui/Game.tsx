@@ -1,6 +1,7 @@
 'use client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -9,6 +10,7 @@ import {
   useGameResultModal,
   useGameResult,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import {
@@ -149,6 +151,11 @@ function ChessGameImpl({
   );
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
   const {
     rematchLoading,
     handleRematch,
@@ -425,6 +432,7 @@ function ChessGameImpl({
       onToggleBestMove={streamer.toggleBestMove}
       onToggleThreats={streamer.toggleThreats}
       spectatorCount={spectatorCount}
+      chatHighlightCells={chatHighlightCells}
     />
   );
   const themeVariant =
@@ -472,6 +480,7 @@ function ChessGameImpl({
           title: t('games.chess_v1.name'),
           subtitle: room?.name,
           onToggleResult: toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId:
               displaySnapshot?.players.find(

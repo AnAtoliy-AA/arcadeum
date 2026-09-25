@@ -2,7 +2,7 @@ export const frMessages = {
   pachisi_v1: {
     name: 'Pachisi',
     description:
-      'Jeu de course classique en croix — faites un six, capturez vos rivaux et ramenez tous vos pions à la maison',
+      'Jeu de course classique en croix - faites un six, capturez vos rivaux et ramenez tous vos pions à la maison',
     summary:
       'Lancez le dé, faites la course avec vos pions, capturez vos rivaux et soyez le premier à tout rentrer !',
     variants: {
@@ -18,7 +18,7 @@ export const frMessages = {
     landing: {
       meta: {
         title:
-          'Pachisi — Jeu de Plateau de Course Multijoueur Gratuit | Arcadeum',
+          'Pachisi - Jeu de Plateau de Course Multijoueur Gratuit | Arcadeum',
         description:
           'Jouez au Pachisi (Ludo) gratuitement en ligne sur Arcadeum. Faites un six pour lancer vos pions, capturez vos rivaux et rentrez chez vous en premier. 2–4 joueurs, bots IA, plateaux thématisés.',
         keywords:
@@ -87,7 +87,7 @@ export const frMessages = {
         backToGames: 'Tous les Jeux',
         heroEyebrow: 'La Classique Course Croix-et-Cercle',
         heroIntro:
-          'Le jeu de poursuite intemporel : dés, captures et dernières lignes droites — facile à apprendre, infiniment rejouable.',
+          'Le jeu de poursuite intemporel : dés, captures et dernières lignes droites - facile à apprendre, infiniment rejouable.',
         heroCategory: 'Jeu de Plateau',
         playersBadge: '2–4 Joueurs',
         durationBadge: '10–20 min',
@@ -102,16 +102,6 @@ export const frMessages = {
           'Faites un six pour lancer, capturez en pleine course et rentrez premier !',
       },
       faq: {
-        gameOver: {
-          won: 'Victoire !',
-          lost: 'Défaite',
-          draw: 'Match nul',
-          messages: {
-            won: 'Tous vos pions sont rentrés — première place !',
-            lost: 'On vous a devancé. Plus de chance la prochaine fois !',
-            draw: 'La partie s’est terminée par un match nul.',
-          },
-        },
         rules: {
           question: 'Comment gagner au Pachisi ?',
           answer:
@@ -194,6 +184,10 @@ export const frMessages = {
       tokensHome: 'Rentrés',
       captured: 'Capturé !',
       noLegalMoves: 'Aucun coup possible avec ce lancer',
+      noLegalMovesWithRoll: 'Obtenu {{value}} - Aucun coup possible',
+      noLegalMovesTurnPassed: 'Obtenu {{value}} - Aucun coup (tour passé)',
+      needSixToExit: 'Il faut un 6 pour sortir du yard',
+      opponentRolledNoMoves: 'Adversaire a obtenu {{value}} - Aucun coup',
       passTurn: 'Passer le tour',
       tapToken: 'Touchez un pion surligné pour le déplacer',
       moveTokenAria: 'Déplacer le pion {{id}}',
@@ -204,7 +198,7 @@ export const frMessages = {
     tutorial: {
       s1: {
         title: 'Un six et vous sortez',
-        body: 'Lancez le dé à votre tour et déplacez un pion. Il faut un 6 pour quitter la cour — et ce 6 offre un lancer supplémentaire.',
+        body: 'Lancez le dé à votre tour et déplacez un pion. Il faut un 6 pour quitter la cour - et ce 6 offre un lancer supplémentaire.',
       },
       s2: {
         title: 'Renvoyez-les chez eux',
@@ -216,23 +210,33 @@ export const frMessages = {
       },
       s4: {
         title: 'La gourmandise se paie',
-        body: 'Trois 6 d’affilée annulent tout votre tour — parfois le coup sûr est le meilleur.',
+        body: 'Trois 6 d’affilée annulent tout votre tour - parfois le coup sûr est le meilleur.',
       },
     },
     rules: {
       title: 'Règles du Pachisi',
       objectiveTitle: 'Objectif',
       objective:
-        'Amenez tous vos pions de votre parc, autour du plateau dans le sens horaire, par votre couloir coloré jusqu’au centre. Le premier à tout rentrer gagne.',
+        "Amenez tous vos pions de votre parc, autour du plateau dans le sens horaire, par votre couloir coloré jusqu'au centre. Le premier à tout rentrer gagne.",
       movementTitle: 'Lancers et Déplacements',
       movement:
-        'À votre tour, lancez un dé et avancez un pion d’autant de cases. Il faut un 6 pour sortir un pion du parc vers votre case de départ.',
+        "À votre tour, lancez un dé et avancez un pion d'autant de cases. Il faut un 6 pour sortir un pion du parc vers votre case de départ.",
       captureTitle: 'Captures et Cases Sûres',
       capture:
         'Atterrir sur une case occupée par un adversaire renvoie son pion au parc. Les cases étoile et votre case départ sont sûres : personne ne peut vous y capturer.',
       sixesTitle: 'Les Six',
       sixes:
-        'Un 6 offre un lancer supplémentaire. Trois 6 d’affilée font perdre le tour entier.',
+        "Un 6 offre un lancer supplémentaire. Trois 6 d'affilée font perdre le tour entier.",
+    },
+    gameOver: {
+      won: 'Victoire !',
+      lost: 'Défaite',
+      draw: 'Match nul',
+      messages: {
+        won: 'Tous vos pions sont rentrés - première place !',
+        lost: 'On vous a devancé. Plus de chance la prochaine fois !',
+        draw: "La partie s'est terminée par un match nul.",
+      },
     },
   },
 };

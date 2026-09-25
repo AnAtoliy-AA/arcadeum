@@ -24,13 +24,15 @@ RUN apk add --no-cache dumb-init curl
 
 # Stockfish 19 (latest stable, released 2026-09-05)
 # Download Linux x86-64 universal binary during build
-RUN curl -L -o /tmp/sf19.tar.gz \
+# Note: stockfish binary is glibc-linked; gcompat provides compatibility on musl-based Alpine
+RUN apk add --no-cache gcompat curl \
+    && curl -L -o /tmp/sf19.tar.gz \
       "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz" \
     && tar -xzf /tmp/sf19.tar.gz -C /tmp/ \
     && find /tmp -name "stockfish" -type f -executable -exec cp {} /usr/local/bin/stockfish \; \
     && chmod +x /usr/local/bin/stockfish \
-    && rm -rf /tmp/sf19.tar.gz /tmp/stockfish \
-    && stockfish <<< "uci" 2>/dev/null | head -1
+    && rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract /tmp/stockfish-* \
+    && echo "uci" | stockfish 2>/dev/null | head -1
 
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--dns-result-order=ipv4first --max-old-space-size=1536"

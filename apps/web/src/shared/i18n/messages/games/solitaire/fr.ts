@@ -10,7 +10,7 @@ export const frMessages = {
       recycle: 'Recycler la défausse',
       foundation: 'Fondation',
       pile: 'Colonne',
-      selectedHint: 'Carte sélectionnée — choisissez une destination',
+      selectedHint: 'Carte sélectionnée - choisissez une destination',
       loading: 'Mélange…',
     },
     hud: {
@@ -23,7 +23,7 @@ export const frMessages = {
       wonTitle: 'Gagné !',
       wonBody: 'Les quatre fondations sont complètes. Partie brillante !',
       lostTitle: 'Plus aucun coup',
-      lostBody: 'La position est bloquée — mélangez et réessayez !',
+      lostBody: 'La position est bloquée - mélangez et réessayez !',
       playAgain: 'Rejouer',
     },
     rules: {
@@ -37,7 +37,7 @@ export const frMessages = {
     landing: {
       tagline: 'Solo · Sans inscription',
       meta: {
-        title: 'Solitaire — Jeu de cartes Klondike gratuit en ligne | Arcadeum',
+        title: 'Solitaire - Jeu de cartes Klondike gratuit en ligne | Arcadeum',
         description:
           'Jouez au solitaire Klondike classique gratuitement sur Arcadeum. Sans téléchargement ni inscription : casse-tête solo avec score, chronomètre et progression sauvegardée.',
         keywords:
@@ -67,12 +67,12 @@ export const frMessages = {
         q1: {
           question: 'Le solitaire est-il gratuit ?',
           answer:
-            'Oui — le solitaire sur Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
+            'Oui - le solitaire sur Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
         },
         q2: {
           question: 'Faut-il un adversaire ?',
           answer:
-            'Non. Le solitaire est un jeu solo qui tourne entièrement dans votre navigateur — parfait pour une petite pause.',
+            'Non. Le solitaire est un jeu solo qui tourne entièrement dans votre navigateur - parfait pour une petite pause.',
         },
         q3: {
           question: 'Ma progression est-elle sauvegardée ?',

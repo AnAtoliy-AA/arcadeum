@@ -81,7 +81,7 @@ export const en = {
     tabRegister: 'Create account',
     headingSignIn: 'Welcome back.',
     headingRegister: 'Make it official.',
-    subSignIn: "Use one of the buttons below — whichever's fastest.",
+    subSignIn: "Use one of the buttons below - whichever's fastest.",
     subRegister: 'Takes 30 seconds. Pick a way to start below.',
     orWithEmail: 'or with email',
     emailLabel: 'Email address',
@@ -121,7 +121,7 @@ export const en = {
     featureProgressTitle: 'Your progress is safe',
     featureProgressDetail: 'stats, friends, and unlocks all carry over.',
     proof:
-      'Joined by {{count}} players this week — see who’s online in Browse Games.',
+      'Joined by {{count}} players this week - see who’s online in Browse Games.',
     proofCount: '',
     footHome: '← Back home',
     footGames: 'Browse games',

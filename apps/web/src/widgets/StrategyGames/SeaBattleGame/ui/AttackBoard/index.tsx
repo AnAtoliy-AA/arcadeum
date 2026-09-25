@@ -26,12 +26,13 @@ export interface AttackBoardProps {
   shipCount?: number;
   snapshot?: SeaBattleSnapshot | null;
   weaponPreviewCells?: Set<string> | null;
-  weaponPreviewType?: 'sonar' | 'radar' | null;
+  weaponPreviewType?: 'sonar' | 'radar' | 'ability' | null;
   onCellHover?: (playerId: string, row: number, col: number) => void;
   onCellHoverEnd?: () => void;
   weaponMode?: boolean;
   showEliminatedPlayers?: boolean;
   keyboardCursor?: { row: number; col: number } | null;
+  highlightedCells?: { row: number; col: number }[];
 }
 
 export function getVisibleOpponents<
@@ -67,6 +68,7 @@ export const AttackBoard = memo(function AttackBoard({
   weaponMode,
   showEliminatedPlayers = false,
   keyboardCursor,
+  highlightedCells = [],
 }: AttackBoardProps) {
   const { t } = useTranslation();
   const theme = useSeaBattleTheme();
@@ -140,23 +142,62 @@ export const AttackBoard = memo(function AttackBoard({
     }, sw.duration * 1000);
   }, [snapshot?.lastScanWave, snapshot?.phase]);
 
-  const sonarHighlightSet = useMemo(() => {
-    const ls = effectiveLastSonar;
-    if (!ls) return null;
-    const set = new Set<string>();
-    ls.cells.forEach((c) => set.add(`${ls.targetId}-${c.row}-${c.col}`));
-    return set;
-  }, [effectiveLastSonar]);
+  const cachedScansRef = useRef<
+    Map<string, { set: Set<string>; states: Map<string, number> }>
+  >(new Map());
 
-  const sonarCellStates = useMemo(() => {
-    const ls = effectiveLastSonar;
-    if (!ls) return null;
-    const map = new Map<string, number>();
-    ls.cells.forEach((c) =>
-      map.set(`${ls.targetId}-${c.row}-${c.col}`, c.state),
-    );
-    return map;
-  }, [effectiveLastSonar]);
+  const accumulatedScannedMap = useMemo(() => {
+    if (snapshot?.phase !== 'battle') {
+      cachedScansRef.current.clear();
+      return new Map<
+        string,
+        { set: Set<string>; states: Map<string, number> }
+      >();
+    }
+
+    const map = cachedScansRef.current;
+    const scannedCells = snapshot?.scannedCells;
+    if (scannedCells) {
+      for (const [targetId, cells] of Object.entries(scannedCells)) {
+        let entry = map.get(targetId);
+        if (!entry) {
+          entry = { set: new Set<string>(), states: new Map<string, number>() };
+          map.set(targetId, entry);
+        }
+        for (const c of cells) {
+          const key = `${targetId}-${c.row}-${c.col}`;
+          entry.set.add(key);
+          entry.states.set(key, c.state);
+        }
+      }
+    }
+
+    if (effectiveLastSonar) {
+      const targetId = effectiveLastSonar.targetId;
+      let entry = map.get(targetId);
+      if (!entry) {
+        entry = { set: new Set<string>(), states: new Map<string, number>() };
+        map.set(targetId, entry);
+      }
+      for (const c of effectiveLastSonar.cells) {
+        const key = `${targetId}-${c.row}-${c.col}`;
+        entry.set.add(key);
+        entry.states.set(key, c.state);
+      }
+    }
+
+    const result = new Map<
+      string,
+      { set: Set<string>; states: Map<string, number> }
+    >();
+    for (const [targetId, entry] of map.entries()) {
+      result.set(targetId, {
+        set: new Set(entry.set),
+        states: new Map(entry.states),
+      });
+    }
+    return result;
+  }, [snapshot?.phase, snapshot?.scannedCells, effectiveLastSonar]);
 
   const radarHighlightSet = useMemo(() => {
     const lr = effectiveLastRadar;
@@ -175,6 +216,17 @@ export const AttackBoard = memo(function AttackBoard({
     );
     return map;
   }, [effectiveLastRadar]);
+
+  const chatHighlightSet = useMemo(() => {
+    if (highlightedCells.length === 0) return null;
+    const set = new Set<string>();
+    for (const cell of highlightedCells) {
+      for (const opponent of opponents) {
+        set.add(`${opponent.playerId}-${cell.row}-${cell.col}`);
+      }
+    }
+    return set;
+  }, [highlightedCells, opponents]);
 
   // Scan wave: highlight sets for all opponents
   const scanWaveHighlightSets = useMemo(() => {
@@ -239,8 +291,7 @@ export const AttackBoard = memo(function AttackBoard({
         {opponents.map((opponent) => {
           const isTeammate = !!teammateIds?.includes(opponent.playerId);
           const team = playerTeamMap?.get(opponent.playerId);
-          const isSonarTarget =
-            effectiveLastSonar?.targetId === opponent.playerId;
+          const opponentScans = accumulatedScannedMap.get(opponent.playerId);
           const isRadarTarget =
             effectiveLastRadar?.targetId === opponent.playerId;
           const scanWaveSet =
@@ -261,12 +312,13 @@ export const AttackBoard = memo(function AttackBoard({
               isTeammate={isTeammate}
               team={team}
               shipCount={shipCount}
-              sonarHighlightCells={isSonarTarget ? sonarHighlightSet : null}
-              sonarCellStates={isSonarTarget ? sonarCellStates : null}
+              sonarHighlightCells={opponentScans?.set ?? null}
+              sonarCellStates={opponentScans?.states ?? null}
               radarHighlightCells={isRadarTarget ? radarHighlightSet : null}
               radarCellStates={isRadarTarget ? radarCellStates : null}
               scanWaveHighlightCells={scanWaveSet}
               scanWaveCellStates={scanWaveStates}
+              chatHighlightCells={chatHighlightSet}
               weaponPreviewCells={weaponPreviewCells}
               weaponPreviewType={weaponPreviewType}
               onAttack={onAttack}

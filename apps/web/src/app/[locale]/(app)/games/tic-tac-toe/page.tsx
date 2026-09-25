@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/tic-tac-toe/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Tic-Tac-Toe — free multiplayer on Arcadeum',
+          alt: 'Tic-Tac-Toe - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -60,7 +60,10 @@ export async function generateMetadata({
 export default async function TicTacToeLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(TIC_TAC_TOE_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.tic_tac_toe_v1?.landing;
@@ -88,7 +91,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Tic Tac Toe on ${appConfig.appName}`,
           description:
-            'Play Tic-Tac-Toe online — free multiplayer for 2 to 5 players.',
+            'Play Tic-Tac-Toe online - free multiplayer for 2 to 5 players.',
           steps: [
             {
               name: landing.steps?.create?.title ?? 'Create a room',
@@ -119,8 +122,6 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(TIC_TAC_TOE_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-tic-tac-toe" data={jsonLd} />
@@ -148,7 +149,7 @@ export default async function TicTacToeLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Tic Tac Toe',
           'Board Game',
           'Крестики-нолики',

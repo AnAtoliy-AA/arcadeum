@@ -20,7 +20,6 @@ const config = {
   ci: {
     collect: {
       url: urls,
-      numberOfRuns: 1,
       settings: {
         chromeFlags:
           '--no-sandbox --disable-gpu --disable-dev-shm-usage --disable-setuid-sandbox',

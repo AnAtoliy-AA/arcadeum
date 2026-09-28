@@ -9,7 +9,7 @@ test.describe('Shorts Factory Gameplay and Scenarios Canvas', () => {
     const html = page.locator('html');
     await expect(html).toHaveAttribute(
       'data-theme',
-      /dark|arcade|cyberpunk|galaxy/,
+      /dark|arcade|cyberpunk|galaxy/i,
     );
 
     const bodyBg = await page.evaluate(() => {

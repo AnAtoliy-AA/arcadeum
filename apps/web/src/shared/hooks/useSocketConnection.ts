@@ -25,20 +25,15 @@ export function useSocketConnection(): void {
         lastKeyRef.current = accessToken;
         connectSockets(accessToken);
       }
-    } else if (userId) {
-      const key = `anon:${userId}`;
-      if (key !== lastKeyRef.current) {
-        lastKeyRef.current = key;
-        connectSocketsAnonymous(userId);
-      }
     } else {
-      // No token and no userId yet — try localStorage for anonymous id
+      disconnectSockets();
       void getOrCreateAnonymousId().then((anonId) => {
-        if (anonId) {
-          const key = `anon:${anonId}`;
+        const targetId = userId || anonId;
+        if (targetId) {
+          const key = `anon:${targetId}`;
           if (key !== lastKeyRef.current) {
             lastKeyRef.current = key;
-            connectSocketsAnonymous(anonId);
+            connectSocketsAnonymous(targetId);
           }
         }
       });
@@ -59,11 +54,25 @@ export function useSocketConnection(): void {
           lastKeyRef.current = accessToken;
           connectSockets(accessToken);
         }
-      } else if (userId) {
-        const key = `anon:${userId}`;
-        if (key !== lastKeyRef.current) {
-          lastKeyRef.current = key;
-          connectSocketsAnonymous(userId);
+      } else {
+        disconnectSockets();
+        const targetId = userId || null;
+        if (targetId) {
+          const key = `anon:${targetId}`;
+          if (key !== lastKeyRef.current) {
+            lastKeyRef.current = key;
+            connectSocketsAnonymous(targetId);
+          }
+        } else {
+          void getOrCreateAnonymousId().then((anonId) => {
+            if (anonId) {
+              const key = `anon:${anonId}`;
+              if (key !== lastKeyRef.current) {
+                lastKeyRef.current = key;
+                connectSocketsAnonymous(anonId);
+              }
+            }
+          });
         }
       }
     });

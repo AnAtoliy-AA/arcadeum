@@ -7,21 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.29] - 2026-09-28
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.30.28] - 2026-09-25
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.30.27] - 2026-09-25
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.30.26] - 2026-09-25
 
 ### Added
+
 - add dynamic rating, blindfold tactics, pgn importer, online duel, and speed leaderboard (ARC-chess-puzzle-enhancements)
 - add puzzle duels, tactical radar analytics, mistakes review, and zen mode (ARC-chess-puzzle-enhancements)
 - allow users to create, play, and share custom puzzles (ARC-chess-puzzle-enhancements)
@@ -29,61 +36,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - enhance puzzles with multi-move play, hints, themes, and rush modes (ARC-chess-puzzle-enhancements)
 
 ### Fixed
+
 - fix pgn study validation and optimize puzzle initial paint (ARC-chess-puzzle-enhancements)
 - use test instead of it in playwright puzzle specs (ARC-chess-puzzle-enhancements)
 
 ### Improved
+
 - convert puzzle rush page to server component and optimize LCP (ARC-chess-puzzle-enhancements)
 
 ### Refactored
-- remove static puzzle json files from web public bundle (ARC-chess-puzzle-enhancements)
 
+- remove static puzzle json files from web public bundle (ARC-chess-puzzle-enhancements)
 
 ## [1.30.25] - 2026-09-24
 
 ### Added
+
 - add ru/es/fr/by translations for all 9 strategy articles
 - add 9 deep-dive strategy articles, premium UI, and FAQ blocks
-
 
 ## [1.30.24] - 2026-09-20
 
 ### Added
-- rework hearts and spades UI and UX for mobile (ARC-hearts-spades-mobile-ui)
 
+- rework hearts and spades UI and UX for mobile (ARC-hearts-spades-mobile-ui)
 
 ## [1.30.23] - 2026-09-20
 
 ### Added
-- add game themes to shop and preselect equipped skin in room creation
 
+- add game themes to shop and preselect equipped skin in room creation
 
 ## [1.30.22] - 2026-09-20
 
 ### Added
-- rework rooms page filters with multi-select dropdowns and UI components (ARC-961) (ARC-961)
 
+- rework rooms page filters with multi-select dropdowns and UI components (ARC-961) (ARC-961)
 
 ## [1.30.21] - 2026-09-20
 
 ### Added
+
 - redesign combo modal using SharedModal with high-contrast styling (ARC-critical-game-enhancements)
 - match blind card backs with board theme and streamline trio/fiver pickers (ARC-critical-game-enhancements)
 - stack duplicate cards in hand with count badges and steppers (ARC-critical-game-enhancements)
 - add desktop drag-to-scroll navigation for hand cards (ARC-critical-game-enhancements)
 
 ### Fixed
+
 - clean up table card borders and eliminate background corner leaks (ARC-critical-game-enhancements)
 - fix event combo handlers and store state for pairs, trios, and fivers (ARC-critical-game-enhancements)
 - optimize responsive layout for compact and mobile landscape viewports (ARC-critical-game-enhancements)
 
 ### Improved
+
 - remove non-composited pulse animation from catalog genre dots (ARC-critical-game-enhancements)
 
 ### Refactored
+
 - migrate give favor modal to SharedModal with crisp visual contrast (ARC-critical-game-enhancements)
 - integrate SharedModal with scoped dark theme tokens (ARC-critical-game-enhancements)
-
 
 ## [1.30.20] - 2026-09-20
 

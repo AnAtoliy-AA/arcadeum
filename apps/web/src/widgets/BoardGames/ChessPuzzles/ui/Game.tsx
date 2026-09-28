@@ -131,12 +131,6 @@ function PuzzleGameImpl({
     );
   }
 
-  const boardOrientColor = isFlipped
-    ? playerColor === 'white'
-      ? 'black'
-      : 'white'
-    : playerColor;
-
   return (
     <div
       className={
@@ -222,7 +216,8 @@ function PuzzleGameImpl({
             phase={phase}
             onMove={makeMove}
             board={displayBoard}
-            playerColor={boardOrientColor}
+            playerColor={playerColor}
+            isFlipped={isFlipped}
             selectedSquare={selectedSquare}
             legalMoves={legalDestinations}
             lastMove={lastMove}

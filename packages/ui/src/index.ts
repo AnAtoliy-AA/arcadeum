@@ -74,3 +74,4 @@ export * from './components/PlatformComparisonTable';
 export * from './components/SearchInput/SearchInput';
 export * from './components/SegmentedControl/SegmentedControl';
 export * from './components/MultiSelectDropdown/MultiSelectDropdown';
+export * from './components/Checkerboard';

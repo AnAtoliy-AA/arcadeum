@@ -10,10 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.30.30] - 2026-09-28
 
 ### Fixed
+
 - optimize games catalog rendering and restore default lighthouse runs (ARC-shorts-factory-anti-white-screen)
 - support case-insensitive dark theme in e2e test (ARC-shorts-factory-anti-white-screen)
 - eliminate white screens and upgrade video quality (ARC-shorts-factory-anti-white-screen)
-
 
 ## [1.30.29] - 2026-09-28
 

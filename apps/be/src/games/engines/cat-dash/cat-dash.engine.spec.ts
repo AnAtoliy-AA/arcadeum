@@ -172,12 +172,9 @@ describe('CatDashEngine', () => {
       const state = engine.initializeState(['p1', 'p2']);
       expect(state.players[0].powerTokens).toBe(3);
 
-      const abilityRes = engine.executeAction(
-        state,
-        'useAbility',
-        ctx('p1'),
-        { abilityId: 'neon_boost' },
-      );
+      const abilityRes = engine.executeAction(state, 'useAbility', ctx('p1'), {
+        abilityId: 'neon_boost',
+      });
       expect(abilityRes.success).toBe(true);
       const s1 = abilityRes.state as CatDashState;
       expect(s1.players[0].powerTokens).toBe(2);
@@ -191,12 +188,9 @@ describe('CatDashEngine', () => {
 
     it('activates shield and absorbs obstacle', () => {
       const state = engine.initializeState(['p1', 'p2']);
-      const abilityRes = engine.executeAction(
-        state,
-        'useAbility',
-        ctx('p1'),
-        { abilityId: 'neon_shield' },
-      );
+      const abilityRes = engine.executeAction(state, 'useAbility', ctx('p1'), {
+        abilityId: 'neon_shield',
+      });
       expect(abilityRes.success).toBe(true);
       const s1 = abilityRes.state as CatDashState;
       expect(s1.players[0].shielded).toBe(true);
@@ -208,12 +202,9 @@ describe('CatDashEngine', () => {
       state.players[0].position = 2;
       state.players[1].position = 6;
 
-      const abilityRes = engine.executeAction(
-        state,
-        'useAbility',
-        ctx('p1'),
-        { abilityId: 'whiskers_slingshot' },
-      );
+      const abilityRes = engine.executeAction(state, 'useAbility', ctx('p1'), {
+        abilityId: 'whiskers_slingshot',
+      });
       expect(abilityRes.success).toBe(true);
       const s1 = abilityRes.state as CatDashState;
       expect(s1.players[0].position).toBe(8);

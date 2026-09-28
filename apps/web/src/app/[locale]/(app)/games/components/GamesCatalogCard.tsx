@@ -25,7 +25,7 @@ export function GamesCatalogCard({
 
   return (
     <div
-      className={`group box-border relative flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-[var(--primary)]/50 text-inherit ${
+      className={`group box-border relative flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-[var(--primary)]/50 text-inherit ${
         isDisabled ? 'opacity-70 pointer-events-none' : ''
       }`}
     >
@@ -37,7 +37,7 @@ export function GamesCatalogCard({
       >
         <div className="box-border relative h-52 w-full bg-slate-950 border-b border-[var(--borderColor)] overflow-hidden flex items-center justify-center">
           <div className="box-border absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent z-[2] pointer-events-none" />
-          <div className="box-border absolute -inset-4 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent blur-xl pointer-events-none" />
+          <div className="box-border absolute -inset-4 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent pointer-events-none" />
 
           <GameSymbol
             gameId={game.id}
@@ -50,7 +50,7 @@ export function GamesCatalogCard({
           </div>
 
           <div className="box-border absolute top-2.5 left-2.5 z-[4] flex items-center gap-1.5 pointer-events-none">
-            <span className="box-border inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-black/80 text-white/95 text-[11px] font-semibold border border-white/20 backdrop-blur-md shadow-md">
+            <span className="box-border inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-black/90 text-white/95 text-[11px] font-semibold border border-white/20 shadow-md">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)]" />
               {game.genre}
               {game.pace ? ` · ${game.pace}` : ''}
@@ -59,7 +59,7 @@ export function GamesCatalogCard({
 
           <div className="box-border absolute top-2.5 right-2.5 z-[4] flex items-center gap-1.5 pointer-events-none">
             {isDisabled ? (
-              <span className="box-border text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-500/60 backdrop-blur-md shadow-md">
+              <span className="box-border text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-500/60 shadow-md">
                 {unavailableLabel}
               </span>
             ) : game.isDemo ? (
@@ -67,14 +67,14 @@ export function GamesCatalogCard({
                 {demoBadgeLabel}
               </span>
             ) : (
-              <span className="box-border text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/50 backdrop-blur-md">
+              <span className="box-border text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/25 text-emerald-300 border border-emerald-500/50">
                 Ready
               </span>
             )}
           </div>
 
           <div className="box-border absolute bottom-2.5 right-2.5 z-[4] flex items-center gap-1 pointer-events-none">
-            <span className="box-border text-[10px] font-medium px-2 py-0.5 rounded-md bg-black/80 text-white/90 border border-white/10 backdrop-blur-md">
+            <span className="box-border text-[10px] font-medium px-2 py-0.5 rounded-md bg-black/90 text-white/90 border border-white/10">
               ⏱ {game.duration}
             </span>
           </div>

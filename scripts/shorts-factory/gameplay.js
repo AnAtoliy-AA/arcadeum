@@ -113,7 +113,7 @@ const CONFIG = {
 };
 
 // ============================================================================
-// TTS VOICEOVER — edge-tts (graceful fallback if unavailable)
+// TTS VOICEOVER - edge-tts (graceful fallback if unavailable)
 // ============================================================================
 
 async function resolveEdgeTtsBin() {
@@ -138,7 +138,7 @@ async function generateVoiceover(text, outputPath) {
   if (!CONFIG.ttsEnabled) return null;
   const bin = await resolveEdgeTtsBin();
   if (!bin) {
-    log('warn', 'edge-tts binary not found — skipping voice');
+    log('warn', 'edge-tts binary not found - skipping voice');
     return null;
   }
   try {
@@ -150,28 +150,36 @@ async function generateVoiceover(text, outputPath) {
       .slice(0, 300);
     await new Promise((resolve, reject) => {
       const proc = spawn(bin, [
-        '--voice', CONFIG.ttsVoice,
-        '--text', cleanText,
-        '--write-media', outputPath,
+        '--voice',
+        CONFIG.ttsVoice,
+        '--text',
+        cleanText,
+        '--write-media',
+        outputPath,
       ]);
       let stderr = '';
-      proc.stderr.on('data', (d) => { stderr += d.toString(); });
+      proc.stderr.on('data', (d) => {
+        stderr += d.toString();
+      });
       proc.on('close', (code) => {
         if (code === 0) resolve();
-        else reject(new Error(`edge-tts exited ${code}: ${stderr.slice(-200)}`));
+        else
+          reject(new Error(`edge-tts exited ${code}: ${stderr.slice(-200)}`));
       });
       proc.on('error', reject);
     });
     log('info', `Voiceover generated: ${outputPath}`);
     return outputPath;
   } catch (err) {
-    log('warn', 'edge-tts failed — video will have no voice', { error: err.message });
+    log('warn', 'edge-tts failed - video will have no voice', {
+      error: err.message,
+    });
     return null;
   }
 }
 
 // ============================================================================
-// BOT AUTH — auto-login if no token set
+// BOT AUTH - auto-login if no token set
 // ============================================================================
 
 async function getBotTokens() {
@@ -243,10 +251,10 @@ const GAMES = [
     ],
     captions: [
       'Can you sink their entire fleet before yours goes down? ⚓💥 10x10 grid, 5 ships, pure naval strategy. Play free on arcadeum.games #seabattle #battleship #gaming #shorts #navalstrategy',
-      'Master naval strategy and outplay bots & friends! 🚢🌊 Placement phase, targeting phase, and sinking mechanics — every move matters. No download required on arcadeum.games #seabattlegame #strategy #multiplayer',
+      'Master naval strategy and outplay bots & friends! 🚢🌊 Placement phase, targeting phase, and sinking mechanics - every move matters. No download required on arcadeum.games #seabattlegame #strategy #multiplayer',
       'One wrong move and your fleet is GONE ⚓😱 Real-time naval combat with sound effects, hit markers, and ship sinking animations. Play Sea Battle on arcadeum.games #seabattle #naval #gaming #battleship',
       'Place your ships, guess their positions, sink their fleet! ⚓🎯 5 ship sizes: Carrier(5), Battleship(4), Cruiser(3), Submarine(3), Destroyer(2). Play at arcadeum.games #seabattle #placement #strategy',
-      'Auto-place your fleet or position manually — then attack! ⚓🔥 Cross-pattern targeting, hit/miss/sunk feedback, and full game replay. arcadeum.games #seabattle #navalcombat #replay',
+      'Auto-place your fleet or position manually - then attack! ⚓🔥 Cross-pattern targeting, hit/miss/sunk feedback, and full game replay. arcadeum.games #seabattle #navalcombat #replay',
       'Steampunk naval warfare - sink or be sunk! 🚂⚓ Gear-powered torpedoes, brass cannons, and Victorian fleet tactics. arcadeum.games #seabattle #steampunk #naval',
       'Underwater theme Sea Battle hits DIFFERENT 🌊🐠 Deep sea ambiance, glowing torpedoes, and coral-decorated boards. arcadeum.games #seabattle #underwater #aesthetic',
     ],
@@ -395,7 +403,7 @@ const GAMES = [
     name: 'chess',
     slug: 'chess_v1',
     url: '/en/games/chess',
-    hookText: '♟️ STOCKFISH 19 — STRONGEST ENGINE EVER',
+    hookText: '♟️ STOCKFISH 19 - STRONGEST ENGINE EVER',
     hookColors: {
       gradient:
         'linear-gradient(135deg, rgba(30,30,30,0.95), rgba(212,175,55,0.95))',
@@ -418,22 +426,22 @@ const GAMES = [
       '🧘 ZEN ENDGAME!',
     ],
     captions: [
-      'Chess powered by Stockfish 19 — the newest version deployed September 2026. The strongest chess engine ever built ♟️🧠 40 personalized AI bots of all difficulties, from beginner to grandmaster. Play free at arcadeum.games #chess #stockfish #stockfish19 #chessengine #onlinechess #chessbot',
-      'Bullet, blitz, rapid, or daily — every time control available with Stockfish 19 analysis ⚡⏱ Real-time move eval, accuracy scores, and game review. Play vs AI or friends at arcadeum.games #chess #bulletchess #blitzchess #chesstimer #chessanalysis',
+      'Chess powered by Stockfish 19 - the newest version deployed September 2026. The strongest chess engine ever built ♟️🧠 40 personalized AI bots of all difficulties, from beginner to grandmaster. Play free at arcadeum.games #chess #stockfish #stockfish19 #chessengine #onlinechess #chessbot',
+      'Bullet, blitz, rapid, or daily - every time control available with Stockfish 19 analysis ⚡⏱ Real-time move eval, accuracy scores, and game review. Play vs AI or friends at arcadeum.games #chess #bulletchess #blitzchess #chesstimer #chessanalysis',
       '40 personalized AI bot personalities rated 400–2800, all powered by Stockfish 19 🤖 Each bot has a unique name, avatar, and playstyle. Pick your opponent and improve your game at arcadeum.games #chess #aichess #chessbot #stockfish #personalities',
-      'Puzzle Rush — solve as many Stockfish 19-rated tactics as you can in 3 minutes 🧩🔥 500+ puzzles ranked by difficulty, from fork tricks to endgame studies. Sharpen your skills at arcadeum.games #puzzlerush #chesstactics #puzzles #tactics',
-      '6 chess variants: Standard, Chess960, Atomic, Crazyhouse, King of the Hill, Three-Check — all Stockfish 19 powered 🎲 Try them all at arcadeum.games #chess960 #variantchess #atomicchess #crazyhouse #kingofthehill',
-      'Real-time Stockfish 19 analysis with accuracy scores and move classifications 📊🎯 Blunders, mistakes, excellent moves — see it all. The newest engine version, deployed September 2026. Improve fast at arcadeum.games #chessanalysis #gamereview #chessimprovement',
+      'Puzzle Rush - solve as many Stockfish 19-rated tactics as you can in 3 minutes 🧩🔥 500+ puzzles ranked by difficulty, from fork tricks to endgame studies. Sharpen your skills at arcadeum.games #puzzlerush #chesstactics #puzzles #tactics',
+      '6 chess variants: Standard, Chess960, Atomic, Crazyhouse, King of the Hill, Three-Check - all Stockfish 19 powered 🎲 Try them all at arcadeum.games #chess960 #variantchess #atomicchess #crazyhouse #kingofthehill',
+      'Real-time Stockfish 19 analysis with accuracy scores and move classifications 📊🎯 Blunders, mistakes, excellent moves - see it all. The newest engine version, deployed September 2026. Improve fast at arcadeum.games #chessanalysis #gamereview #chessimprovement',
       'Can you beat Stockfish 19? The strongest open-source chess engine, latest version September 2026 ♟️💪 40 bots to challenge, from casual to engine-level. Test yourself at arcadeum.games #chess #stockfish19 #challenge #chesspuzzle',
-      "From Scholar's Mate to Queen's Gambit to Sicilian Defense — Stockfish 19 analyzes every opening ♟️📚 Opening explorer with 1000+ lines, mainline and sideline analysis. Learn and dominate at arcadeum.games #chessopening #queensgambit #sicilian #chessstrategy",
-      'Blitz chess with Stockfish 19 real-time eval — see every blunder and brilliancy ⚡🧠 3|0, 3|2, 5|0, 5|3 time controls. Play now at arcadeum.games #blitzchess #chessblitz #realeval #stockfish19 #timcontrol',
-      'Chess960 with Stockfish 19 — randomized starting positions, pure chess intuition ♟️🎲 No memorized openings, just raw calculation. Try the variant at arcadeum.games #chess960 #fischerandom #chessvariant #stockfish',
+      "From Scholar's Mate to Queen's Gambit to Sicilian Defense - Stockfish 19 analyzes every opening ♟️📚 Opening explorer with 1000+ lines, mainline and sideline analysis. Learn and dominate at arcadeum.games #chessopening #queensgambit #sicilian #chessstrategy",
+      'Blitz chess with Stockfish 19 real-time eval - see every blunder and brilliancy ⚡🧠 3|0, 3|2, 5|0, 5|3 time controls. Play now at arcadeum.games #blitzchess #chessblitz #realeval #stockfish19 #timcontrol',
+      'Chess960 with Stockfish 19 - randomized starting positions, pure chess intuition ♟️🎲 No memorized openings, just raw calculation. Try the variant at arcadeum.games #chess960 #fischerandom #chessvariant #stockfish',
       'Stockfish 19 post-game analysis reveals your best moves and biggest mistakes 📊🔍 Centipawn loss, accuracy percentage, and phase-by-phase breakdown. Review every game at arcadeum.games #chessreview #postgame #chessimprovement #stockfish19',
-      'Puzzle Rush leaderboard — how many Stockfish 19-rated puzzles can you solve? 🧩🏆 Compete against players worldwide, track your rating, climb the ranks at arcadeum.games #puzzlerush #chesstactics #leaderboard #stockfish #worldwide',
-      '40 AI bot personalities — from "Beginner Bob" to "Grandmaster Ghost" 👻♟️ Each bot has unique opening preferences, tactical style, and endgame technique. Meet them at arcadeum.games #chess #aibots #personalities #stockfish19',
-      'Rated chess with ELO tracking — every game affects your rating 📈♟️ Matchmaking pairs you with similar-skilled opponents. Track your progress at arcadeum.games #chessrating #elo #matchmaking #competitivechess',
-      'Daily chess games — play at your own pace, one move per day ♟️⏰ Perfect for thoughtful, strategic games against friends or strangers. Start a game at arcadeum.games #dailychess #correspondence #slowchess',
-      'Live Stockfish 19 eval bar during your game — watch the evaluation swing in real time 📊⚡ See exactly when you made the winning move or the fatal blunder. Play at arcadeum.games #realeval #stockfish19 #livechess #evaluation',
+      'Puzzle Rush leaderboard - how many Stockfish 19-rated puzzles can you solve? 🧩🏆 Compete against players worldwide, track your rating, climb the ranks at arcadeum.games #puzzlerush #chesstactics #leaderboard #stockfish #worldwide',
+      '40 AI bot personalities - from "Beginner Bob" to "Grandmaster Ghost" 👻♟️ Each bot has unique opening preferences, tactical style, and endgame technique. Meet them at arcadeum.games #chess #aibots #personalities #stockfish19',
+      'Rated chess with ELO tracking - every game affects your rating 📈♟️ Matchmaking pairs you with similar-skilled opponents. Track your progress at arcadeum.games #chessrating #elo #matchmaking #competitivechess',
+      'Daily chess games - play at your own pace, one move per day ♟️⏰ Perfect for thoughtful, strategic games against friends or strangers. Start a game at arcadeum.games #dailychess #correspondence #slowchess',
+      'Live Stockfish 19 eval bar during your game - watch the evaluation swing in real time 📊⚡ See exactly when you made the winning move or the fatal blunder. Play at arcadeum.games #realeval #stockfish19 #livechess #evaluation',
     ],
     _openingIndex: 0,
     _openings: [
@@ -567,10 +575,10 @@ const GAMES = [
     },
     actionPhrases: ['👑 KING ME!', '🎯 JUMP & CAPTURE!', '⚡ PERFECT MOVE!'],
     captions: [
-      'Diagonal jumps and double captures! 🔴⚫ 8x8 board, forced captures, king promotion — classic checkers with competitive ranking. Play on arcadeum.games #checkers #draughts #boardgames #competitive',
+      'Diagonal jumps and double captures! 🔴⚫ 8x8 board, forced captures, king promotion - classic checkers with competitive ranking. Play on arcadeum.games #checkers #draughts #boardgames #competitive',
       'Outsmart your opponent in classic Checkers! 🏆 Forced capture rule, king pieces that move backwards, and multi-jump combos. Free at arcadeum.games #boardgamereels #tactics #arcadeumgames',
-      'Checkers speed run — can you king ALL your pieces? 🔴⚫ Single jumps, double jumps, triple jumps — chain them for devastating combos. arcadeum.games #checkers #boardgame #quickplay',
-      'Checkers with ranked matchmaking — every game counts! 🔴⚫ ELO-based pairing, game history, and move analysis. Play at arcadeum.games #checkers #ranked #competitive #boardgame',
+      'Checkers speed run - can you king ALL your pieces? 🔴⚫ Single jumps, double jumps, triple jumps - chain them for devastating combos. arcadeum.games #checkers #boardgame #quickplay',
+      'Checkers with ranked matchmaking - every game counts! 🔴⚫ ELO-based pairing, game history, and move analysis. Play at arcadeum.games #checkers #ranked #competitive #boardgame',
     ],
     moves: [],
     async waitForGame(page) {
@@ -634,8 +642,8 @@ const GAMES = [
     },
     actionPhrases: ['🔥 FAST MOVE!', '🎯 3 IN A ROW!', '⚡ PERFECT TRAP!'],
     captions: [
-      'Classic Tic-Tac-Toe speed challenge! ❌⭕ 3x3 grid, first to 3 in a row — but with ranked matchmaking and win streaks. Play free on arcadeum.games #tictactoe #speedgame #arcadeumgames',
-      "Think Tic-Tac-Toe is easy? Try it with REAL opponents ❌⭕ Center control, fork threats, and forced draws — there's more strategy than you think. arcadeum.games #tictactoe #multiplayer #gaming",
+      'Classic Tic-Tac-Toe speed challenge! ❌⭕ 3x3 grid, first to 3 in a row - but with ranked matchmaking and win streaks. Play free on arcadeum.games #tictactoe #speedgame #arcadeumgames',
+      "Think Tic-Tac-Toe is easy? Try it with REAL opponents ❌⭕ Center control, fork threats, and forced draws - there's more strategy than you think. arcadeum.games #tictactoe #multiplayer #gaming",
       'Win in under 5 seconds ⚡❌⭕ Real-time matchmaking, win/loss tracking, and leaderboard rankings. Play Tic-Tac-Toe now on arcadeum.games #speedgame #quickplay #ranked',
       'Tic-Tac-Toe but make it COMPETITIVE ❌⭕ Daily challenges, win streaks, and seasonal leaderboards. Play at arcadeum.games #tictactoe #competitive #dailychallenge',
     ],
@@ -685,10 +693,10 @@ const GAMES = [
     },
     actionPhrases: ['🌈 COLOR SWITCH!', '⚡ CARD COMBO!', '💥 POWER PLAY!'],
     captions: [
-      'Fast multiplayer card matching mayhem! 🃏🌈 Color picker, card stacking, and cascade combos — every round is different. Free at arcadeum.games #cardgames #cascade #partygames',
+      'Fast multiplayer card matching mayhem! 🃏🌈 Color picker, card stacking, and cascade combos - every round is different. Free at arcadeum.games #cardgames #cascade #partygames',
       'Cascade is DEEPER than you think 🎴🔥 Draw pile management, color chain bonuses, and hand optimization. Master the strategy on arcadeum.games #cardgame #strategy #gaming',
       'Color combos that make your brain EXPLODE 🌈💥 Stack matching colors, chain cascades, and clear the board. Play Cascade free on arcadeum.games #cascade #cardgame #combos',
-      'Cascade card game — the strategy is DEEP 🎴🏆 Color matching, hand management, and cascade chains. Play at arcadeum.games #cascade #strategy #cardgame #deep',
+      'Cascade card game - the strategy is DEEP 🎴🏆 Color matching, hand management, and cascade chains. Play at arcadeum.games #cascade #strategy #cardgame #deep',
     ],
     moves: [],
     _lastLabel: null,
@@ -778,10 +786,10 @@ const GAMES = [
     },
     actionPhrases: ['💥 COMBO HIT!', '🛡️ SHIELD UP!', '⚡ CRITICAL STRIKE!'],
     captions: [
-      'Stack your deck and unleash critical combos! ⚡🃏 Card types: Attack, Shield, Heal, Special — build your strategy. Play on arcadeum.games #cardbattler #criticalgame #gaming',
-      'Critical hits feel SO satisfying ⚡🔥 Health bars, damage numbers, combo multipliers — survive 10 rounds to win. arcadeum.games #critical #cardbattler',
+      'Stack your deck and unleash critical combos! ⚡🃏 Card types: Attack, Shield, Heal, Special - build your strategy. Play on arcadeum.games #cardbattler #criticalgame #gaming',
+      'Critical hits feel SO satisfying ⚡🔥 Health bars, damage numbers, combo multipliers - survive 10 rounds to win. arcadeum.games #critical #cardbattler',
       'Build your deck. Destroy your opponent. ⚡🃏 20+ unique cards, deck building, and critical hit mechanics. Play Critical on arcadeum.games #cardgame #battle #deckbuilding',
-      'Critical card game — high pressure, high reward ⚡🃏 Draw phase, play phase, discard management — every turn counts. Play at arcadeum.games #critical #cardgame #highstakes',
+      'Critical card game - high pressure, high reward ⚡🃏 Draw phase, play phase, discard management - every turn counts. Play at arcadeum.games #critical #cardgame #highstakes',
     ],
     moves: [],
     async waitForGame(page) {
@@ -838,12 +846,12 @@ const GAMES = [
       '🔥 RACE MODE!',
     ],
     captions: [
-      'Master the ancient art of Backgammon! 🎲🏆 24 points, 15 checkers, doubling cube — the OG strategy game. Play online for free on arcadeum.games #backgammon #boardgame #tactics',
-      'Backgammon but make it INTENSE 🎲🔥 Bar re-entry, bearing off, and gammon/backgammon wins — deep strategy meets luck. Roll your way to victory on arcadeum.games #backgammon #strategy #gaming',
-      'The OG dice game goes online 🎲♟️ Pip count, prime formations, and blitz attacks — every roll matters. Play Backgammon free on arcadeum.games #backgammon #boardgame #dice',
-      'Backgammon with doubling cube — raise the stakes! 🎲💰 Crawford rule, match play, and tournament mode. Play at arcadeum.games #backgammon #doublingcube #tournament',
-      'Ancient Egypt meets modern strategy 🏺🎲 Play Backgammon with the Egypt theme — hieroglyphic boards, golden checkers. arcadeum.games #backgammon #egypt #aesthetic',
-      'Galaxy Backgammon — roll dice among the stars! 🌌🎲 Cosmic boards, nebula backgrounds, and star-field animations. arcadeum.games #backgammon #galaxy #aesthetic',
+      'Master the ancient art of Backgammon! 🎲🏆 24 points, 15 checkers, doubling cube - the OG strategy game. Play online for free on arcadeum.games #backgammon #boardgame #tactics',
+      'Backgammon but make it INTENSE 🎲🔥 Bar re-entry, bearing off, and gammon/backgammon wins - deep strategy meets luck. Roll your way to victory on arcadeum.games #backgammon #strategy #gaming',
+      'The OG dice game goes online 🎲♟️ Pip count, prime formations, and blitz attacks - every roll matters. Play Backgammon free on arcadeum.games #backgammon #boardgame #dice',
+      'Backgammon with doubling cube - raise the stakes! 🎲💰 Crawford rule, match play, and tournament mode. Play at arcadeum.games #backgammon #doublingcube #tournament',
+      'Ancient Egypt meets modern strategy 🏺🎲 Play Backgammon with the Egypt theme - hieroglyphic boards, golden checkers. arcadeum.games #backgammon #egypt #aesthetic',
+      'Galaxy Backgammon - roll dice among the stars! 🌌🎲 Cosmic boards, nebula backgrounds, and star-field animations. arcadeum.games #backgammon #galaxy #aesthetic',
     ],
     moves: [],
     async waitForGame(page) {
@@ -898,10 +906,10 @@ const GAMES = [
     },
     actionPhrases: ['🃏 CARD PASSING!', '♠ QUEEN OF SPADES!', '🌙 MOON SHOT!'],
     captions: [
-      'Dodge Hearts and the Queen of Spades! ♥♠ 4 players, pass 3 cards, shoot the moon — classic trick-taking. Play Hearts free on arcadeum.games #hearts #cardgame #tricktaking',
-      'Can you Shoot the Moon without taking a single Heart? ♥🌙 26 points for hearts, 13 for Queen of Spades — avoid them all. arcadeum.games #hearts #cardgame #strategy',
-      'The Queen of Spades is coming for you ♠😱 Pass left, pass right, pass across — every round changes. Play Hearts on arcadeum.games #hearts #tricktaking #classic',
-      'Hearts card game online — avoid the Queen, win the round! ♥🃏 Void suits, shoot the moon, and nil bids. Play at arcadeum.games #hearts #tricktaking #multiplayer',
+      'Dodge Hearts and the Queen of Spades! ♥♠ 4 players, pass 3 cards, shoot the moon - classic trick-taking. Play Hearts free on arcadeum.games #hearts #cardgame #tricktaking',
+      'Can you Shoot the Moon without taking a single Heart? ♥🌙 26 points for hearts, 13 for Queen of Spades - avoid them all. arcadeum.games #hearts #cardgame #strategy',
+      'The Queen of Spades is coming for you ♠😱 Pass left, pass right, pass across - every round changes. Play Hearts on arcadeum.games #hearts #tricktaking #classic',
+      'Hearts card game online - avoid the Queen, win the round! ♥🃏 Void suits, shoot the moon, and nil bids. Play at arcadeum.games #hearts #tricktaking #multiplayer',
     ],
     moves: [],
     async waitForGame(page) {
@@ -944,10 +952,10 @@ const GAMES = [
       '🏆 TERRITORY CONTROLLED!',
     ],
     captions: [
-      'The ancient game of Go — simple rules, infinite depth! ⚫⚪ 19x19 board, 361 intersections, more atoms than stars. Play free on arcadeum.games #go #baduk #boardgame #strategy',
-      'Go is the DEEPEST strategy game ever made ⚫⚪ Liberties, captures, ko fights, and sente — infinite complexity. Play it free on arcadeum.games #go #baduk #strategy',
+      'The ancient game of Go - simple rules, infinite depth! ⚫⚪ 19x19 board, 361 intersections, more atoms than stars. Play free on arcadeum.games #go #baduk #boardgame #strategy',
+      'Go is the DEEPEST strategy game ever made ⚫⚪ Liberties, captures, ko fights, and sente - infinite complexity. Play it free on arcadeum.games #go #baduk #strategy',
       'Surround. Capture. Conquer. ⚫⚪ Territory scoring, life and death, and joseki patterns. Play Go online at arcadeum.games #go #baduk #boardgame',
-      'Go — the game that defeated AI before chess ⚫⚪ Monte Carlo tree search meets human intuition. Play at arcadeum.games #go #baduk #deepeststrategy',
+      'Go - the game that defeated AI before chess ⚫⚪ Monte Carlo tree search meets human intuition. Play at arcadeum.games #go #baduk #deepeststrategy',
     ],
     moves: [],
     async waitForGame(page) {
@@ -989,10 +997,10 @@ const GAMES = [
     },
     actionPhrases: ['✨ GLOW BOOST!', '🌀 DRIFT TURN!', '💥 HIGH SCORE!'],
     captions: [
-      "Glide, glow, and survive the neon grid! 🐍✨ Real-time multiplayer snake — eat, grow, don't crash. Free at arcadeum.games #glimworm #arcade #indiegames",
+      "Glide, glow, and survive the neon grid! 🐍✨ Real-time multiplayer snake - eat, grow, don't crash. Free at arcadeum.games #glimworm #arcade #indiegames",
       'Snake went MULTIPLAYER and it goes HARD 🐍🔥 Neon aesthetics, power-ups, and 8-player battles. Play Glimworm on arcadeum.games #glimworm #snakegame',
       'Neon vibes, addictive gameplay 🐍💜 Boost pads, shrink zones, and collision mechanics. Play Glimworm free on arcadeum.games #arcade #casualgame',
-      'Glimworm — competitive multiplayer snake! 🐍⚡ Leaderboards, daily challenges, and seasonal skins. Play at arcadeum.games #glimworm #multiplayer #competitive',
+      'Glimworm - competitive multiplayer snake! 🐍⚡ Leaderboards, daily challenges, and seasonal skins. Play at arcadeum.games #glimworm #multiplayer #competitive',
     ],
     moves: [],
     async waitForGame(page) {
@@ -1030,7 +1038,7 @@ const GAMES = [
       'Dash, leap, and collect treats in Cat Dash! 🐱🏃 Endless runner, increasing speed, obstacle variety. Free on arcadeum.games #catdash #runner #casualgames',
       'This cat goes FAST 🐱💨 Power-ups, coin collection, and distance multipliers. How far can you run? arcadeum.games #catdash #arcade #runner',
       'Jump over everything. Collect everything. 🐱🐟 One-tap controls, combo scoring, and daily distance challenges. Play Cat Dash on arcadeum.games #catdash #runner',
-      'Cat Dash — the cutest endless runner! 🐱⭐ Unlockable cat skins, obstacle courses, and global leaderboards. Play at arcadeum.games #catdash #cutegame #runner',
+      'Cat Dash - the cutest endless runner! 🐱⭐ Unlockable cat skins, obstacle courses, and global leaderboards. Play at arcadeum.games #catdash #cutegame #runner',
     ],
     moves: [],
     async waitForGame(page) {
@@ -1059,10 +1067,10 @@ const GAMES = [
     },
     actionPhrases: ['💰 RAISE!', '🃏 POCKET ACES!', '🔥 ALL IN!'],
     captions: [
-      "High-stakes poker action — can you read the bluff? 🃏💰 2-card hand, 5 community cards, pot odds — real Texas Hold'em. Play free on arcadeum.games #poker #texasholdem #cardgames",
-      "Go all in or fold? Texas Hold'em with real opponents! ♠️🔥 Preflop, flop, turn, river — four betting rounds, one winner. arcadeum.games #pokergame #multiplayer #arcadeumgames",
-      "Your poker face vs the world 🃏😏 Bluffing, raising, and all-in moments — every hand is a battle. Play Texas Hold'em on arcadeum.games #poker #texasholdem",
-      "Texas Hold'em with pot odds and hand rankings 🃏📊 Royal flush to high card — know your hands, read your opponents. Play at arcadeum.games #poker #handranking #strategy",
+      "High-stakes poker action - can you read the bluff? 🃏💰 2-card hand, 5 community cards, pot odds - real Texas Hold'em. Play free on arcadeum.games #poker #texasholdem #cardgames",
+      "Go all in or fold? Texas Hold'em with real opponents! ♠️🔥 Preflop, flop, turn, river - four betting rounds, one winner. arcadeum.games #pokergame #multiplayer #arcadeumgames",
+      "Your poker face vs the world 🃏😏 Bluffing, raising, and all-in moments - every hand is a battle. Play Texas Hold'em on arcadeum.games #poker #texasholdem",
+      "Texas Hold'em with pot odds and hand rankings 🃏📊 Royal flush to high card - know your hands, read your opponents. Play at arcadeum.games #poker #handranking #strategy",
     ],
     moves: [],
     async waitForGame(page) {
@@ -1118,10 +1126,10 @@ const GAMES = [
     },
     actionPhrases: ['♠️ TRUMP CARD!', '🎯 TRICK WON!', '👑 NIL BID!'],
     captions: [
-      'Team up and dominate in Spades! ♠️🏆 4 players, 2 teams, trump cards — bid smart, play smart. Play with friends on arcadeum.games #spades #cardgame #tricktaking',
-      'Can you nail the blind nil? Spades online! ♠️🔥 Bag penalties, nil bids, and book counting — team strategy at its finest. Free at arcadeum.games #spadesreels #strategy #arcadeumgames',
-      'Spades requires TRUST 🤝♠️ Communication, bidding accuracy, and trump management — your partner depends on you. Play with friends on arcadeum.games #spades #multiplayer #cardgame',
-      'Spades — the ultimate team card game! ♠️📊 Bag tracking, nil bids, and overtrick penalties. Play at arcadeum.games #spades #teambased #competitive',
+      'Team up and dominate in Spades! ♠️🏆 4 players, 2 teams, trump cards - bid smart, play smart. Play with friends on arcadeum.games #spades #cardgame #tricktaking',
+      'Can you nail the blind nil? Spades online! ♠️🔥 Bag penalties, nil bids, and book counting - team strategy at its finest. Free at arcadeum.games #spadesreels #strategy #arcadeumgames',
+      'Spades requires TRUST 🤝♠️ Communication, bidding accuracy, and trump management - your partner depends on you. Play with friends on arcadeum.games #spades #multiplayer #cardgame',
+      'Spades - the ultimate team card game! ♠️📊 Bag tracking, nil bids, and overtrick penalties. Play at arcadeum.games #spades #teambased #competitive',
     ],
     moves: [],
     async waitForGame(page) {
@@ -1177,13 +1185,13 @@ const GAMES = [
       '🏁 HOME STRETCH!',
     ],
     captions: [
-      'The ancient game of Pachisi — roll dice and race to the center! 🎲👑 4 tokens, safe zones, and home stretch — classic Ludo strategy. arcadeum.games #pachisi #boardgame #strategy',
-      'Pachisi online — will your tokens make it home? 🎲🏆 Block, capture, and race — every roll changes the game. Play free on arcadeum.games #boardgamereels #classic',
+      'The ancient game of Pachisi - roll dice and race to the center! 🎲👑 4 tokens, safe zones, and home stretch - classic Ludo strategy. arcadeum.games #pachisi #boardgame #strategy',
+      'Pachisi online - will your tokens make it home? 🎲🏆 Block, capture, and race - every roll changes the game. Play free on arcadeum.games #boardgamereels #classic',
       "Roll the dice. Race home. Don't get captured! 🎲🏃 Star squares, bar re-entry, and golden tokens. Play Pachisi on arcadeum.games #pachisi #boardgame",
-      'Pachisi — the royal board game goes online! 🎲👑 4-player multiplayer, tournament mode, and daily challenges. Play at arcadeum.games #pachisi #royalgame #multiplayer',
-      'Western Pachisi — roll dice in the wild west! 🤠🎲 Cowboy tokens, desert boards, and gold rush races. arcadeum.games #pachisi #western #aesthetic',
-      'Fantasy Pachisi — magical tokens race through enchanted lands! 🧙🎲 Dragon squares, wizard safe zones, and mythical dice. arcadeum.games #pachisi #fantasy #boardgame',
-      'Crime Pachisi — race through the city streets! 🕵️🎲 Noir boards, detective tokens, and heist-themed safe houses. arcadeum.games #pachisi #crime #aesthetic',
+      'Pachisi - the royal board game goes online! 🎲👑 4-player multiplayer, tournament mode, and daily challenges. Play at arcadeum.games #pachisi #royalgame #multiplayer',
+      'Western Pachisi - roll dice in the wild west! 🤠🎲 Cowboy tokens, desert boards, and gold rush races. arcadeum.games #pachisi #western #aesthetic',
+      'Fantasy Pachisi - magical tokens race through enchanted lands! 🧙🎲 Dragon squares, wizard safe zones, and mythical dice. arcadeum.games #pachisi #fantasy #boardgame',
+      'Crime Pachisi - race through the city streets! 🕵️🎲 Noir boards, detective tokens, and heist-themed safe houses. arcadeum.games #pachisi #crime #aesthetic',
     ],
     moves: [],
     async waitForGame(page) {
@@ -1251,10 +1259,10 @@ const GAMES = [
     },
     actionPhrases: ['🔢 BIG MERGE!', '⚡ COMBO SLIDE!', '🏆 NEW HIGH SCORE!'],
     captions: [
-      'Can you reach 2048? Swipe and merge! 🧩🔥 4x4 grid, tile sliding, and exponential scoring — how high can you go? Play on arcadeum.games #2048 #puzzle #brainteaser',
-      "2048 is ADDICTIVE — once you start you can't stop 🧩💯 Corner strategy, tile management, and merge chains. Play free on arcadeum.games #2048 #puzzle #gaming",
+      'Can you reach 2048? Swipe and merge! 🧩🔥 4x4 grid, tile sliding, and exponential scoring - how high can you go? Play on arcadeum.games #2048 #puzzle #brainteaser',
+      "2048 is ADDICTIVE - once you start you can't stop 🧩💯 Corner strategy, tile management, and merge chains. Play free on arcadeum.games #2048 #puzzle #gaming",
       'Merge tiles, chase the 2048! 🧩🏆 Undo moves, high score tracking, and endless mode. How high can you score? arcadeum.games #2048 #puzzle',
-      '2048 puzzle game — slide, merge, win! 🧩⚡ Smooth animations, score multipliers, and daily puzzles. Play at arcadeum.games #2048 #puzzle #slide',
+      '2048 puzzle game - slide, merge, win! 🧩⚡ Smooth animations, score multipliers, and daily puzzles. Play at arcadeum.games #2048 #puzzle #slide',
     ],
     moves: [],
     async waitForGame(page) {
@@ -1758,7 +1766,9 @@ async function requestApproval(videoPath, caption, gameName, options = {}) {
     status: 'pending',
     createdAt: new Date().toISOString(),
     voiceUnavailable: options.voiceUnavailable || false,
-    note: options.voiceUnavailable ? '⚠️ Voice unavailable (edge-tts offline)' : undefined,
+    note: options.voiceUnavailable
+      ? '⚠️ Voice unavailable (edge-tts offline)'
+      : undefined,
   };
 
   const metadataPath = path.join(CONFIG.pendingDir, `${id}.json`);
@@ -1804,7 +1814,13 @@ async function requestApproval(videoPath, caption, gameName, options = {}) {
   return { approved: true, autoApproved: true, pendingId: id };
 }
 
-async function reportResult(id, success, message, platforms, failedPlatforms = []) {
+async function reportResult(
+  id,
+  success,
+  message,
+  platforms,
+  failedPlatforms = [],
+) {
   if (!CONFIG.enableApproval || !id) return;
   try {
     await axios.post(
@@ -1899,6 +1915,8 @@ async function recordSession(
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
+        '--background-color=0xff080c18',
+        '--blink-settings=forceDarkModeEnabled=true',
       ],
     });
 
@@ -1919,6 +1937,23 @@ async function recordSession(
 
     const context = await browser.newContext(contextOptions);
     const sessionStartTime = Date.now();
+
+    await context.addInitScript(() => {
+      try {
+        if (document.documentElement) {
+          document.documentElement.style.backgroundColor = '#080c18';
+        }
+        const style = document.createElement('style');
+        style.id = 'arcadeum-anti-white-screen';
+        style.textContent = `
+          html, body {
+            background-color: #080c18 !important;
+            color-scheme: dark !important;
+          }
+        `;
+        (document.head || document.documentElement).appendChild(style);
+      } catch {}
+    });
 
     await context.addInitScript(
       ({ accessToken, refreshToken, gameSlugs }) => {
@@ -1960,11 +1995,22 @@ async function recordSession(
     } else {
       log(
         'warn',
-        `${label}: No bot auth — quickplay may fail if auth is required. Set SHORTS_FACTORY_BOT_EMAIL/PASSWORD in .env.`,
+        `${label}: No bot auth - quickplay may fail if auth is required. Set SHORTS_FACTORY_BOT_EMAIL/PASSWORD in .env.`,
       );
     }
 
     const page = await context.newPage();
+    try {
+      const cdp = await context.newCDPSession(page);
+      await cdp.send('Emulation.setDefaultBackgroundColorOverride', {
+        color: { r: 8, g: 12, b: 24, a: 1 },
+      });
+    } catch (e) {
+      log(
+        'warn',
+        `${label}: failed to set CDP background override: ${e.message}`,
+      );
+    }
 
     await injectLoadingOverlay(page);
 
@@ -2033,16 +2079,12 @@ async function recordSession(
 
     await dismissAnyOverlays();
 
-    const gameplayStartOffsetMs = Date.now() - sessionStartTime;
     await startBtn
       .evaluate((btn) => btn.click())
       .catch(async () => {
         await startBtn.click({ force: true });
       });
-    log(
-      'info',
-      `${label}: clicked Start Game (gameplay offset: ${(gameplayStartOffsetMs / 1000).toFixed(1)}s)`,
-    );
+    log('info', `${label}: clicked Start Game`);
 
     // Step 3: Wait for game board
     await game.waitForGame(page);
@@ -2050,6 +2092,15 @@ async function recordSession(
     log('info', `${label}: game board loaded`);
 
     await removeLoadingOverlay(page);
+
+    const gameplayStartOffsetMs = Math.max(
+      0,
+      Date.now() - sessionStartTime - 250,
+    );
+    log(
+      'info',
+      `${label}: gameplay ready (accurate trim offset: ${(gameplayStartOffsetMs / 1000).toFixed(2)}s)`,
+    );
 
     const urlThemeMatch = game.url.match(/[?&]theme=([^&]+)/);
     if (urlThemeMatch) {
@@ -2439,7 +2490,12 @@ async function concatVideos(parts, outputPath, label) {
   await unlink(concatList).catch(() => {});
 }
 
-async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = null) {
+async function processFullVideo(
+  rawVideoPath,
+  recordedDuration,
+  gameplayStartOffsetMs = 0,
+  voiceoverPath = null,
+) {
   log('info', 'Processing full video (desktop)...');
 
   const tracks = await getAudioTracks();
@@ -2451,8 +2507,18 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
     );
   }
   const timestamp = Date.now();
-  const durationSec = Math.min(Math.ceil(recordedDuration / 1000), 70);
+  const clipStart = Math.max(0, (gameplayStartOffsetMs || 0) / 1000);
+  const remainingSec = Math.max(
+    10,
+    (recordedDuration - (gameplayStartOffsetMs || 0)) / 1000,
+  );
+  const durationSec = Math.min(Math.ceil(remainingSec), 70);
   const fadeStart = Math.max(0, durationSec - CONFIG.fadeOutDuration);
+
+  log(
+    'info',
+    `Full video cut: start at ${clipStart.toFixed(2)}s, length ${durationSec.toFixed(1)}s`,
+  );
 
   const mainPath = path.join(
     CONFIG.outputDir,
@@ -2469,6 +2535,8 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
     ffmpegArgs = [
       '-i',
       rawVideoPath,
+      '-ss',
+      String(clipStart),
       '-i',
       audioTrack,
       '-i',
@@ -2476,11 +2544,12 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
       '-t',
       String(durationSec),
       '-filter_complex',
-      `[1:a]volume=0.2[bg];` +
+      `[0:v]fade=t=in:st=0:d=0.4,eq=contrast=1.06:saturation=1.18,format=yuv420p[v];` +
+        `[1:a]volume=0.2[bg];` +
         `[2:a]adelay=500|500,volume=1.4[voice];` +
         `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}[a]`,
       '-map',
-      '0:v:0',
+      '[v]',
       '-map',
       '[a]',
       '-c:v',
@@ -2488,7 +2557,7 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
       '-preset',
       'fast',
       '-crf',
-      '23',
+      '22',
       '-c:a',
       'aac',
       '-b:a',
@@ -2500,22 +2569,25 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
     ffmpegArgs = [
       '-i',
       rawVideoPath,
+      '-ss',
+      String(clipStart),
       '-i',
       audioTrack,
       '-t',
       String(durationSec),
-      '-af',
-      `afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}`,
+      '-filter_complex',
+      `[0:v]fade=t=in:st=0:d=0.4,eq=contrast=1.06:saturation=1.18,format=yuv420p[v];` +
+        `[1:a]afade=t=out:st=${fadeStart}:d=${CONFIG.fadeOutDuration}[a]`,
       '-map',
-      '0:v:0',
+      '[v]',
       '-map',
-      '1:a:0',
+      '[a]',
       '-c:v',
       'libx264',
       '-preset',
       'fast',
       '-crf',
-      '23',
+      '22',
       '-c:a',
       'aac',
       '-b:a',
@@ -2528,14 +2600,18 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
     ffmpegArgs = [
       '-i',
       rawVideoPath,
+      '-ss',
+      String(clipStart),
       '-f',
       'lavfi',
       '-i',
       'anullsrc=r=44100:cl=stereo',
       '-t',
       String(durationSec),
+      '-filter_complex',
+      `[0:v]fade=t=in:st=0:d=0.4,eq=contrast=1.06:saturation=1.18,format=yuv420p[v]`,
       '-map',
-      '0:v:0',
+      '[v]',
       '-map',
       '1:a:0',
       '-c:v',
@@ -2543,7 +2619,7 @@ async function processFullVideo(rawVideoPath, recordedDuration, voiceoverPath = 
       '-preset',
       'fast',
       '-crf',
-      '23',
+      '22',
       '-c:a',
       'aac',
       '-b:a',
@@ -2626,68 +2702,135 @@ async function processShortClip(
   if (audioTrack && hasSfx && voiceoverPath) {
     const fadeOutStart = Math.max(0, shortLen - CONFIG.fadeOutDuration);
     ffmpegArgs = [
-      '-ss', String(clipStart),
-      '-i', rawVideoPath,
-      '-i', audioTrack,
-      '-i', hitSfx,
-      '-i', moveSfx,
-      '-i', voiceoverPath,
+      '-i',
+      rawVideoPath,
+      '-ss',
+      String(clipStart),
+      '-i',
+      audioTrack,
+      '-i',
+      hitSfx,
+      '-i',
+      moveSfx,
+      '-i',
+      voiceoverPath,
       '-filter_complex',
-      `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
+      `[0:v]fade=t=in:st=0:d=0.35,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,eq=contrast=1.06:saturation=1.18,format=yuv420p[v];` +
         `[1:a]volume=0.2[bg];` +
         `[2:a]adelay=3500|3500,volume=0.85[sfx1];` +
         `[3:a]adelay=1800|1800,volume=0.85[sfx2];` +
         `[4:a]adelay=500|500,volume=1.4[voice];` +
         `[bg][sfx1][sfx2][voice]amix=inputs=4:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}[a]`,
-      '-map', '[v]', '-map', '[a]',
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-pix_fmt', 'yuv420p',
-      '-c:a', 'aac', '-b:a', '128k', '-t', String(shortLen), '-y', mainPath,
+      '-map',
+      '[v]',
+      '-map',
+      '[a]',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '22',
+      '-pix_fmt',
+      'yuv420p',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-t',
+      String(shortLen),
+      '-y',
+      mainPath,
     ];
   } else if (audioTrack && hasSfx) {
     const fadeOutStart = Math.max(0, shortLen - CONFIG.fadeOutDuration);
     ffmpegArgs = [
-      '-ss', String(clipStart),
-      '-i', rawVideoPath,
-      '-i', audioTrack,
-      '-i', hitSfx,
-      '-i', moveSfx,
+      '-i',
+      rawVideoPath,
+      '-ss',
+      String(clipStart),
+      '-i',
+      audioTrack,
+      '-i',
+      hitSfx,
+      '-i',
+      moveSfx,
       '-filter_complex',
-      `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
+      `[0:v]fade=t=in:st=0:d=0.35,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,eq=contrast=1.06:saturation=1.18,format=yuv420p[v];` +
         `[1:a]volume=0.35[bg];` +
         `[2:a]adelay=3500|3500,volume=0.85[sfx1];` +
         `[3:a]adelay=1800|1800,volume=0.85[sfx2];` +
         `[bg][sfx1][sfx2]amix=inputs=3:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart}:d=${CONFIG.fadeOutDuration}[a]`,
-      '-map', '[v]', '-map', '[a]',
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-pix_fmt', 'yuv420p',
-      '-c:a', 'aac', '-b:a', '128k', '-t', String(shortLen), '-y', mainPath,
+      '-map',
+      '[v]',
+      '-map',
+      '[a]',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '22',
+      '-pix_fmt',
+      'yuv420p',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-t',
+      String(shortLen),
+      '-y',
+      mainPath,
     ];
   } else if (audioTrack && voiceoverPath) {
     ffmpegArgs = [
-      '-ss', String(clipStart),
-      '-i', rawVideoPath,
-      '-i', audioTrack,
-      '-i', voiceoverPath,
-      '-filter_complex',
-      `[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p[v];` +
-        `[1:a]volume=0.2[bg];` +
-        `[2:a]adelay=500|500,volume=1.4[voice];` +
-        `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}[a]`,
-      '-map', '[v]', '-map', '[a]',
-      '-c:v', 'libx264', '-preset', 'fast', '-crf', '23', '-pix_fmt', 'yuv420p',
-      '-c:a', 'aac', '-b:a', '128k', '-t', String(shortLen), '-shortest', '-y', mainPath,
-    ];
-  } else if (audioTrack) {
-    ffmpegArgs = [
+      '-i',
+      rawVideoPath,
       '-ss',
       String(clipStart),
       '-i',
+      audioTrack,
+      '-i',
+      voiceoverPath,
+      '-filter_complex',
+      `[0:v]fade=t=in:st=0:d=0.35,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,eq=contrast=1.06:saturation=1.18,format=yuv420p[v];` +
+        `[1:a]volume=0.2[bg];` +
+        `[2:a]adelay=500|500,volume=1.4[voice];` +
+        `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}[a]`,
+      '-map',
+      '[v]',
+      '-map',
+      '[a]',
+      '-c:v',
+      'libx264',
+      '-preset',
+      'fast',
+      '-crf',
+      '22',
+      '-pix_fmt',
+      'yuv420p',
+      '-c:a',
+      'aac',
+      '-b:a',
+      '128k',
+      '-t',
+      String(shortLen),
+      '-shortest',
+      '-y',
+      mainPath,
+    ];
+  } else if (audioTrack) {
+    ffmpegArgs = [
+      '-i',
       rawVideoPath,
+      '-ss',
+      String(clipStart),
       '-i',
       audioTrack,
       '-t',
       String(shortLen),
       '-vf',
-      `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p`,
+      `fade=t=in:st=0:d=0.35,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,eq=contrast=1.06:saturation=1.18,format=yuv420p`,
       '-af',
       `afade=t=out:st=${Math.max(0, shortLen - CONFIG.fadeOutDuration)}:d=${CONFIG.fadeOutDuration}`,
       '-map',
@@ -2699,7 +2842,7 @@ async function processShortClip(
       '-preset',
       'fast',
       '-crf',
-      '23',
+      '22',
       '-pix_fmt',
       'yuv420p',
       '-c:a',
@@ -2712,10 +2855,10 @@ async function processShortClip(
     ];
   } else {
     ffmpegArgs = [
-      '-ss',
-      String(clipStart),
       '-i',
       rawVideoPath,
+      '-ss',
+      String(clipStart),
       '-f',
       'lavfi',
       '-i',
@@ -2723,7 +2866,7 @@ async function processShortClip(
       '-t',
       String(shortLen),
       '-vf',
-      `scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,format=yuv420p`,
+      `fade=t=in:st=0:d=0.35,scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,eq=contrast=1.06:saturation=1.18,format=yuv420p`,
       '-map',
       '0:v:0',
       '-map',
@@ -2733,7 +2876,7 @@ async function processShortClip(
       '-preset',
       'fast',
       '-crf',
-      '23',
+      '22',
       '-pix_fmt',
       'yuv420p',
       '-c:a',
@@ -2934,13 +3077,24 @@ async function postToX(uploadedFile, caption) {
   return res.data;
 }
 
-async function publishBoth(fullPath, shortPath, caption, gameName = 'game', options = {}) {
+async function publishBoth(
+  fullPath,
+  shortPath,
+  caption,
+  gameName = 'game',
+  options = {},
+) {
   log('info', 'Publishing to social platforms...');
 
   if (!CONFIG.postizApiKey) throw new Error('POSTIZ_API_KEY must be set');
 
   const approvalTarget = shortPath || fullPath;
-  const approval = await requestApproval(approvalTarget, caption, gameName, options);
+  const approval = await requestApproval(
+    approvalTarget,
+    caption,
+    gameName,
+    options,
+  );
   if (!approval.approved) {
     log('info', 'Video was not approved by admin, skipping publish');
     return { skipped: true, reason: 'unapproved' };
@@ -2960,7 +3114,10 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
       postedPlatforms.push('YouTube (Desktop)');
     } catch (err) {
       log('error', 'Full video YouTube post failed', { error: err.message });
-      failedPlatforms.push({ platform: 'YouTube (Desktop)', error: err.message });
+      failedPlatforms.push({
+        platform: 'YouTube (Desktop)',
+        error: err.message,
+      });
     }
   }
 
@@ -2977,7 +3134,10 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
           postedPlatforms.push('YouTube Shorts');
         } catch (err) {
           log('error', 'YouTube Short post failed', { error: err.message });
-          failedPlatforms.push({ platform: 'YouTube Shorts', error: err.message });
+          failedPlatforms.push({
+            platform: 'YouTube Shorts',
+            error: err.message,
+          });
         }
       }
 
@@ -2988,7 +3148,10 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
           postedPlatforms.push('Instagram Reels');
         } catch (err) {
           log('error', 'Instagram Reel post failed', { error: err.message });
-          failedPlatforms.push({ platform: 'Instagram Reels', error: err.message });
+          failedPlatforms.push({
+            platform: 'Instagram Reels',
+            error: err.message,
+          });
         }
       }
 
@@ -3016,16 +3179,28 @@ async function publishBoth(fullPath, shortPath, caption, gameName = 'game', opti
     } catch (err) {
       log('error', 'Short clip upload failed', { error: err.message });
       if (CONFIG.postizYouTubeId) {
-        failedPlatforms.push({ platform: 'YouTube Shorts', error: `Upload failed: ${err.message}` });
+        failedPlatforms.push({
+          platform: 'YouTube Shorts',
+          error: `Upload failed: ${err.message}`,
+        });
       }
       if (CONFIG.postizInstagramId) {
-        failedPlatforms.push({ platform: 'Instagram Reels', error: `Upload failed: ${err.message}` });
+        failedPlatforms.push({
+          platform: 'Instagram Reels',
+          error: `Upload failed: ${err.message}`,
+        });
       }
       if (CONFIG.postizTiktokId) {
-        failedPlatforms.push({ platform: 'TikTok', error: `Upload failed: ${err.message}` });
+        failedPlatforms.push({
+          platform: 'TikTok',
+          error: `Upload failed: ${err.message}`,
+        });
       }
       if (CONFIG.postizXId) {
-        failedPlatforms.push({ platform: 'X/Twitter', error: `Upload failed: ${err.message}` });
+        failedPlatforms.push({
+          platform: 'X/Twitter',
+          error: `Upload failed: ${err.message}`,
+        });
       }
     }
   }
@@ -3101,7 +3276,7 @@ async function main() {
     const voicePath = await generateVoiceover(caption, voiceoverPath);
     const voiceUnavailable = !voicePath;
     if (voiceUnavailable) {
-      log('warn', 'Voiceover unavailable — video will have no voice track');
+      log('warn', 'Voiceover unavailable - video will have no voice track');
     }
 
     let fullOutputPath = null;
@@ -3123,6 +3298,7 @@ async function main() {
       fullOutputPath = await processFullVideo(
         desktopCapture.videoPath,
         desktopCapture.duration,
+        desktopCapture.gameplayStartOffsetMs,
         voicePath,
       );
     }
@@ -3132,7 +3308,7 @@ async function main() {
       const mobileCapture = await recordSession(
         game,
         { width: 430, height: 932 },
-        30000, // 30s total — enough for navigation + real gameplay
+        30000, // 30s total - enough for navigation + real gameplay
         'mobile',
         true,
       );
@@ -3151,7 +3327,9 @@ async function main() {
       if (shortOutputPath)
         log('info', 'Short clip saved to: ' + shortOutputPath);
     } else {
-      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name, { voiceUnavailable });
+      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name, {
+        voiceUnavailable,
+      });
     }
 
     await cleanDirectory(CONFIG.rawCapturesDir);

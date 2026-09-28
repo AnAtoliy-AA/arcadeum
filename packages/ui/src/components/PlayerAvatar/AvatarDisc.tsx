@@ -101,6 +101,7 @@ export function AvatarDisc({
           : {}),
       }}
       data-testid={testId ? `${testId}-disc` : undefined}
+      data-avatar-url={avatarUrl ?? undefined}
     >
       {showFrame ? (
         <div
@@ -147,6 +148,8 @@ export function AvatarDisc({
       ) : null}
       {avatarSprite ? (
         <div
+          data-testid={testId ? `${testId}-sprite` : undefined}
+          data-avatar-url={avatarUrl ?? undefined}
           style={{
             width: innerImage,
             height: innerImage,
@@ -160,6 +163,7 @@ export function AvatarDisc({
       ) : avatarUrl ? (
         <img
           src={avatarUrl}
+          data-avatar-url={avatarUrl}
           alt={name}
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}

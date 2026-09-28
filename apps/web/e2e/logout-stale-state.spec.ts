@@ -8,7 +8,11 @@ test.describe('Logout stale state', () => {
   }) => {
     test.skip(!!viewport && viewport.width < 768, 'Desktop-only test');
 
-    await mockSession(page, { displayName: 'PrevUser', role: 'free' });
+    await mockSession(page, {
+      displayName: 'PrevUser',
+      role: 'free',
+      persistent: false,
+    });
     await page.addInitScript(() => {
       window.isPlaywright = true;
     });
@@ -28,7 +32,12 @@ test.describe('Logout stale state', () => {
     await page.evaluate(() => {
       window.localStorage.removeItem('web_session_tokens_v1');
       window.localStorage.removeItem('arcadeum_anon_id');
+      document.cookie = 'access_token=; path=/; max-age=0';
+      document.cookie = 'web_access_token=; path=/; max-age=0';
+      document.cookie = 'refresh_token=; path=/; max-age=0';
+      document.cookie = 'web_refresh_token=; path=/; max-age=0';
     });
+    await page.context().clearCookies();
 
     await navigateTo(page, '/');
 
@@ -51,7 +60,11 @@ test.describe('Logout stale state', () => {
   }) => {
     test.skip(!!viewport && viewport.width < 768, 'Desktop-only test');
 
-    await mockSession(page, { displayName: 'AvatarUser', role: 'free' });
+    await mockSession(page, {
+      displayName: 'AvatarUser',
+      role: 'free',
+      persistent: false,
+    });
     await page.addInitScript(() => {
       window.isPlaywright = true;
     });
@@ -67,14 +80,24 @@ test.describe('Logout stale state', () => {
 
     await page.evaluate(() => {
       window.localStorage.removeItem('web_session_tokens_v1');
+      document.cookie = 'access_token=; path=/; max-age=0';
+      document.cookie = 'web_access_token=; path=/; max-age=0';
+      document.cookie = 'refresh_token=; path=/; max-age=0';
+      document.cookie = 'web_refresh_token=; path=/; max-age=0';
     });
+    await page.context().clearCookies();
     await navigateTo(page, '/');
 
     const avatar = page.getByTestId('header-equipped-avatar');
     await expect(avatar).toBeVisible();
     const src = await avatar.evaluate((el) => {
       const img = el.querySelector('img');
-      return img?.src ?? '';
+      if (img?.src) return img.src;
+      const sprite = el.querySelector('[data-avatar-url]');
+      if (sprite) return sprite.getAttribute('data-avatar-url') ?? '';
+      const disc = el.querySelector('[data-testid$="-disc"]');
+      if (disc) return disc.getAttribute('data-avatar-url') ?? '';
+      return el.getAttribute('data-avatar-url') ?? '';
     });
     expect(src).toMatch(/default/);
   });
@@ -87,6 +110,8 @@ test.describe('Logout stale state', () => {
     });
 
     await page.addInitScript(() => {
+      if (window.sessionStorage.getItem('__test_session_seeded')) return;
+      window.sessionStorage.setItem('__test_session_seeded', 'true');
       const snap = {
         provider: 'local',
         accessToken: 'prev-token',
@@ -132,14 +157,14 @@ test.describe('Logout stale state', () => {
 
     await navigateTo(page, '/');
 
-    const socketAuth = await page.evaluate(() => {
-      const gs = window.gameSocket as
-        { auth?: Record<string, unknown> } | undefined;
-      return gs?.auth ?? null;
-    });
-
-    expect(
-      (socketAuth as Record<string, unknown> | null)?.token ?? null,
-    ).toBeNull();
+    await expect
+      .poll(async () => {
+        return page.evaluate(() => {
+          const gs = window.gameSocket as
+            { auth?: Record<string, unknown> } | undefined;
+          return (gs?.auth as Record<string, unknown> | null)?.token ?? null;
+        });
+      })
+      .toBeNull();
   });
 });

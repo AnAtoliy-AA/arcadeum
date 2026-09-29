@@ -79,7 +79,10 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
   } | null>(null);
   const [isCheck, setIsCheck] = useState(false);
   const [kingPosition, setKingPosition] = useState<BoardPosition | null>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(() => {
+    const init = getInitialPuzzleSync(mode, customPuzzle, date, theme, rating);
+    return init ? getPuzzleTurnColor(init.fen) === 'black' : false;
+  });
 
   const toggleFlipBoard = useCallback(() => {
     setIsFlipped((prev) => !prev);
@@ -115,8 +118,10 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
 
   const initPuzzleState = useCallback((p: ChessPuzzle) => {
     const initialBoard = getPuzzleInitialBoard(p.fen);
+    const turnColor = getPuzzleTurnColor(p.fen);
     setPuzzle(p);
     setBoard(initialBoard);
+    setIsFlipped(turnColor === 'black');
     setPhase('player');
     setMoveIndex(0);
     setPlayerMoves([]);

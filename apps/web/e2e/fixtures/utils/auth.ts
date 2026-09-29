@@ -16,6 +16,8 @@ export interface MockSessionOptions {
   xp?: number;
   level?: number;
   equippedBadgeId?: string | null;
+  displayName?: string;
+  username?: string;
 }
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
@@ -37,8 +39,8 @@ export async function mockSession(
     updatedAt: new Date().toISOString(),
     userId: MOCK_OBJECT_ID,
     email: 'test@example.com',
-    username: 'testuser',
-    displayName: 'Test User',
+    username: options.username ?? 'testuser',
+    displayName: options.displayName ?? 'Test User',
     role: options.role ?? null,
     xp: options.xp ?? 0,
     level: options.level ?? 1,
@@ -107,7 +109,11 @@ export async function mockSession(
     await page.addInitScript(setSession, snapshot);
   } else {
     await page.addInitScript((s) => {
-      if (!document.cookie.includes('__arcadeum_session_mocked=true')) {
+      if (
+        !document.cookie.includes('__arcadeum_session_mocked=true') &&
+        !window.sessionStorage.getItem('__arcadeum_session_mocked')
+      ) {
+        window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
         window.localStorage.setItem(
           'web_session_tokens_v1',
           JSON.stringify({ state: { snapshot: s }, version: 0 }),
@@ -124,8 +130,8 @@ export async function mockSession(
       user: {
         id: MOCK_OBJECT_ID,
         email: 'test@example.com',
-        username: 'testuser',
-        displayName: 'Test User',
+        username: options.username ?? 'testuser',
+        displayName: options.displayName ?? 'Test User',
         role: options.role ?? 'free',
         xp: options.xp ?? 0,
         level: options.level ?? 1,

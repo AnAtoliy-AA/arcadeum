@@ -250,7 +250,6 @@ export const useSessionStore = create<SessionState>()(
             refreshToken: null,
             accessTokenExpiresAt: null,
             refreshTokenExpiresAt: null,
-            // Clear profile fields when logged out to prevent stale display
             ...(hasToken
               ? {}
               : {
@@ -259,6 +258,13 @@ export const useSessionStore = create<SessionState>()(
                   username: null,
                   displayName: null,
                   role: null,
+                  equippedAvatarId: null,
+                  equippedBadgeId: null,
+                  equippedNameColorId: null,
+                  equippedFrameId: null,
+                  equippedAuraId: null,
+                  equippedBannerId: null,
+                  equippedGameSkinId: null,
                 }),
           },
           mode: s.mode,
@@ -281,8 +287,9 @@ export const useSessionStore = create<SessionState>()(
           const handleStorage = (e: StorageEvent) => {
             if (e.key !== 'web_session_tokens_v1') return;
             if (e.newValue) return;
-            if (current.snapshot.userId) {
-              current.clearTokens();
+            const live = useSessionStore.getState();
+            if (live.snapshot.userId) {
+              live.clearTokens();
             }
           };
 

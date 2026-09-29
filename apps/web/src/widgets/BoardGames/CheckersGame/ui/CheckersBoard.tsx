@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { Checkerboard } from '@arcadeum/ui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
+import { boardVars } from '../lib/theme-adapter';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import type { Board, CheckersPlayer } from '../types';
 
@@ -13,7 +15,6 @@ interface CheckersBoardProps {
   disabled: boolean;
   ariaLabel: string;
   onCellClick: (row: number, col: number) => void;
-  /** Clears the current piece selection (Escape key). */
   onDeselect?: () => void;
   isFlipped?: boolean;
 }
@@ -47,16 +48,6 @@ export function CheckersBoard({
     return map;
   }, [players]);
 
-  const rows = useMemo(() => {
-    const arr = Array.from({ length: boardSize }, (_, i) => i);
-    return isFlipped ? arr.reverse() : arr;
-  }, [boardSize, isFlipped]);
-
-  const cols = useMemo(() => {
-    const arr = Array.from({ length: boardSize }, (_, i) => i);
-    return isFlipped ? arr.reverse() : arr;
-  }, [boardSize, isFlipped]);
-
   const { gridProps, getCellProps } = useBoardKeyboardNavigation({
     rows: boardSize,
     cols: boardSize,
@@ -67,7 +58,7 @@ export function CheckersBoard({
 
   const cellLabel = useCallback(
     (row: number, col: number, piece: Board[number][number] | null) => {
-      const pos = `${String.fromCharCode(97 + col)}${row + 1}`;
+      const pos = `${String.fromCharCode(97 + col)}${8 - row}`;
       if (!piece) return `${ariaLabel} ${pos} empty`;
       const color = playerColorMap[piece.playerId] ?? 'unknown';
       const type = piece.type === 'king' ? 'king' : 'man';
@@ -76,131 +67,93 @@ export function CheckersBoard({
     [ariaLabel, playerColorMap],
   );
 
+  const vars = useMemo(() => boardVars(theme), [theme]);
+
   return (
     <div
-      className="flex flex-col items-stretch w-full max-w-[480px] self-center rounded-[14px] overflow-hidden border-[3px] shadow-[0_12px_36px_rgba(0,0,0,0.6)]"
-      style={{
-        aspectRatio: '1/1',
-        borderColor: '#44403c',
-        backgroundColor: '#1c1917',
-      }}
-      role="grid"
-      aria-label={ariaLabel}
+      style={vars}
+      className="flex flex-col items-stretch w-full max-w-[480px] self-center"
       data-testid="checkers-board"
       {...gridProps}
     >
-      {rows.map((row) => (
-        <div
-          className="flex items-stretch flex-row flex-1"
-          key={row}
-          role="row"
-        >
-          {cols.map((col) => {
-            const isDarkSquare = (row + col) % 2 === 1;
-            const piece = board[row][col];
-            const isSelected =
-              selectedPiece?.row === row && selectedPiece?.col === col;
-            const isHighlighted =
-              highlightedCell?.row === row && highlightedCell?.col === col;
-            const pieceColor = piece ? playerColorMap[piece.playerId] : null;
-            const navRow = rows.indexOf(row);
-            const navCol = cols.indexOf(col);
+      <Checkerboard
+        rows={boardSize}
+        cols={boardSize}
+        isFlipped={isFlipped}
+        ariaLabel={ariaLabel}
+        dataTestId="checkers-checkerboard"
+        renderCell={({
+          row,
+          col,
+          isDark,
+          isBottomRank,
+          isLastFile,
+          rankLabel,
+          fileLabel,
+        }) => {
+          const piece = board[row]?.[col] ?? null;
+          const isSelected =
+            selectedPiece?.row === row && selectedPiece?.col === col;
+          const isHighlighted =
+            highlightedCell?.row === row && highlightedCell?.col === col;
+          const pieceColor = piece ? playerColorMap[piece.playerId] : null;
 
-            return (
-              <div
-                className="flex flex-col flex-1 items-center justify-center relative select-none focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)]"
-                style={{
-                  cursor: disabled ? 'default' : 'pointer',
-                  backgroundColor: isSelected
-                    ? theme.selectedPiece
-                    : isHighlighted
-                      ? 'rgba(99, 102, 241, 0.35)'
-                      : isDarkSquare
-                        ? theme.darkSquare
-                        : theme.lightSquare,
-                }}
-                onClick={() => handleClick(row, col)}
-                key={`${row}-${col}`}
-                role="button"
-                aria-label={cellLabel(row, col, piece)}
-                data-testid={`checkers-cell-${row}-${col}`}
-                {...getCellProps(navRow, navCol)}
-              >
-                {piece ? (
-                  <div
-                    className="relative flex flex-col w-[76%] h-[76%] rounded-full items-center justify-center shadow-lg transition-transform active:scale-95"
-                    style={{
-                      backgroundColor:
-                        pieceColor === 'light'
-                          ? theme.lightPiece
-                          : theme.darkPiece,
-                      border: `2px solid ${
-                        pieceColor === 'light'
-                          ? theme.lightPieceBorder
-                          : theme.darkPieceBorder
-                      }`,
-                      boxShadow:
-                        '0 4px 8px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.3)',
-                    }}
-                  >
-                    <div
-                      className="absolute inset-[3px] rounded-full pointer-events-none"
-                      style={{
-                        border: `1px solid ${
-                          pieceColor === 'light'
-                            ? 'rgba(0, 0, 0, 0.15)'
-                            : 'rgba(255, 255, 255, 0.2)'
-                        }`,
-                      }}
-                    />
-                    <div
-                      className="absolute inset-[6px] rounded-full pointer-events-none"
-                      style={{
-                        border: `1px solid ${
-                          pieceColor === 'light'
-                            ? 'rgba(0, 0, 0, 0.1)'
-                            : 'rgba(255, 255, 255, 0.12)'
-                        }`,
-                      }}
-                    />
-                    {piece.type === 'king' ? (
-                      <span
-                        className="relative z-10 select-none text-base sm:text-lg leading-none"
-                        style={{
-                          color: theme.kingCrown,
-                          filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6))',
-                        }}
-                      >
-                        👑
-                      </span>
-                    ) : null}
-                  </div>
-                ) : null}
-                {navCol === cols.length - 1 && (
-                  <span
-                    className="absolute right-1 top-0.5 text-[9px] font-bold opacity-60 pointer-events-none"
-                    style={{
-                      color: isDarkSquare ? '#e2e8f0' : '#475569',
-                    }}
-                  >
-                    {8 - row}
-                  </span>
-                )}
-                {navRow === rows.length - 1 && (
-                  <span
-                    className="absolute left-1 bottom-0.5 text-[9px] font-bold opacity-60 pointer-events-none"
-                    style={{
-                      color: isDarkSquare ? '#e2e8f0' : '#475569',
-                    }}
-                  >
-                    {String.fromCharCode(97 + col)}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      ))}
+          let bgClass = isDark
+            ? 'bg-[var(--board-square-dark)]'
+            : 'bg-[var(--board-square-light)]';
+
+          if (isSelected) {
+            bgClass =
+              'bg-[var(--checkers-selected-piece)] ring-2 ring-amber-400/80 inset-ring';
+          } else if (isHighlighted) {
+            bgClass = 'bg-indigo-500/35 ring-2 ring-indigo-400/70';
+          }
+
+          return (
+            <div
+              key={`${row}-${col}`}
+              role="button"
+              aria-label={cellLabel(row, col, piece)}
+              data-testid={`checkers-cell-${row}-${col}`}
+              className={`flex-1 aspect-square relative flex items-center justify-center overflow-hidden select-none touch-manipulation transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)] ${bgClass} ${
+                disabled ? 'cursor-default' : 'cursor-pointer'
+              }`}
+              onClick={() => handleClick(row, col)}
+              {...getCellProps(row, col)}
+            >
+              {isLastFile && rankLabel && (
+                <span className="pointer-events-none absolute top-0.5 right-0.5 text-[9px] sm:text-[11px] font-bold font-mono text-[var(--board-coord)] opacity-70 leading-none">
+                  {rankLabel}
+                </span>
+              )}
+
+              {isBottomRank && fileLabel && (
+                <span className="pointer-events-none absolute bottom-0.5 left-0.5 text-[9px] sm:text-[11px] font-bold font-mono text-[var(--board-coord)] opacity-70 leading-none">
+                  {fileLabel}
+                </span>
+              )}
+
+              {piece ? (
+                <div
+                  className={`pointer-events-none relative flex flex-col w-[76%] h-[76%] rounded-full items-center justify-center shadow-lg transition-transform active:scale-95 border-2 ${
+                    pieceColor === 'light'
+                      ? 'bg-[var(--checkers-piece-light)] border-[var(--checkers-piece-light-border)]'
+                      : 'bg-[var(--checkers-piece-dark)] border-[var(--checkers-piece-dark-border)]'
+                  }`}
+                >
+                  <div className="absolute inset-[3px] rounded-full pointer-events-none border border-black/15 dark:border-white/20" />
+                  <div className="absolute inset-[6px] rounded-full pointer-events-none border border-black/10 dark:border-white/10" />
+                  {piece.type === 'king' ? (
+                    <span className="relative z-10 select-none text-base sm:text-lg leading-none text-[var(--checkers-king-crown)] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                      👑
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          );
+        }}
+      />
     </div>
   );
 }

@@ -106,4 +106,29 @@ test.describe('Advanced Chess Puzzles Suite', () => {
     await closeBtn.first().click({ force: true });
     await expect(modal).toBeHidden();
   });
+
+  test('renders chess training hub with preloaded sprite and server content', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/chess/puzzles');
+
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Chess Training' }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        'Improve your chess with daily puzzles, rush mode, 1v1 duels, and mistake reviews',
+      ),
+    ).toBeVisible();
+
+    const spritePreload = page
+      .locator(
+        'link[rel="preload"][href="/images/chess/arcadeum_chess_sprite.svg"]',
+      )
+      .first();
+    await expect(spritePreload).toHaveAttribute('as', 'image');
+
+    const themeFilters = page.getByTestId('puzzle-theme-filters');
+    await expect(themeFilters).toBeVisible();
+  });
 });

@@ -246,12 +246,7 @@ export class GiftService {
         itemId: recipientRow.itemId,
         purchaseId: recipientRow.purchaseId,
         acquiredVia: recipientRow.acquiredVia as
-          | 'coins'
-          | 'gems'
-          | 'arcadeum'
-          | 'grant'
-          | 'starter'
-          | 'gift',
+          'coins' | 'gems' | 'arcadeum' | 'grant' | 'starter' | 'gift',
         paidAmount: recipientRow.paidAmount ?? null,
         paidCurrency:
           (recipientRow.paidCurrency as 'coins' | 'gems' | null) ?? null,

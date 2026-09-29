@@ -205,7 +205,10 @@ export function ShopActionPanel({
         ) ?? null)
       : null;
     const canSell =
-      equippedRow !== null && equippedItem !== null && !equippedItem.starter;
+      equippedRow !== null &&
+      equippedItem !== null &&
+      !equippedItem.starter &&
+      equippedItem.purchasable !== false;
 
     return (
       <PanelFrame

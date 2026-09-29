@@ -121,9 +121,11 @@ test.describe('Advanced Chess Puzzles Suite', () => {
       ),
     ).toBeVisible();
 
-    const spritePreload = page.locator(
-      'link[rel="preload"][href="/images/chess/arcadeum_chess_sprite.svg"]',
-    );
+    const spritePreload = page
+      .locator(
+        'link[rel="preload"][href="/images/chess/arcadeum_chess_sprite.svg"]',
+      )
+      .first();
     await expect(spritePreload).toHaveAttribute('as', 'image');
 
     const themeFilters = page.getByTestId('puzzle-theme-filters');

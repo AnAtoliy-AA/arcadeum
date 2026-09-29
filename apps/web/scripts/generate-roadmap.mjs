@@ -283,6 +283,12 @@ function parseRoadmapMarkdown(content) {
 
 async function main() {
   if (!existsSync(ROADMAP_PATH)) {
+    if (existsSync(OUT_PATH)) {
+      console.log(
+        `[generate-roadmap] ROADMAP_PATH not found, using existing ${OUT_PATH}`,
+      );
+      return;
+    }
     console.error(`[generate-roadmap] File not found: ${ROADMAP_PATH}`);
     process.exit(1);
   }

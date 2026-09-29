@@ -51,6 +51,12 @@ function parseChangelog(content) {
 
 async function main() {
   if (!existsSync(CHANGELOG_PATH)) {
+    if (existsSync(OUT_PATH)) {
+      console.log(
+        `[generate-changelog] CHANGELOG_PATH not found, using existing ${OUT_PATH}`,
+      );
+      return;
+    }
     console.error(`[generate-changelog] File not found: ${CHANGELOG_PATH}`);
     process.exit(1);
   }

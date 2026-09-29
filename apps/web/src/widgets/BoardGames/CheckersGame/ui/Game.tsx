@@ -36,6 +36,8 @@ import { CheckersBoard } from './CheckersBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { CHECKERS_THEMES } from '../lib/constants';
+import { useCheckersCoach } from '../hooks/useCheckersCoach';
+import { CheckersCoachControls } from '@/features/coach/ui/CheckersCoachControls';
 
 function CheckersGameImpl({
   roomId,
@@ -71,6 +73,24 @@ function CheckersGameImpl({
     roomId,
     userId: currentUserId,
   });
+
+  const coach = useCheckersCoach({
+    room,
+    currentUserId,
+    snapshot,
+    myTurn,
+    isGameOver,
+  });
+
+  const hintText = useMemo(() => {
+    if (!coach.hint) return null;
+    const fromCoord = `${String.fromCharCode(97 + coach.hint.from.col)}${8 - coach.hint.from.row}`;
+    const toCoord = `${String.fromCharCode(97 + coach.hint.to.col)}${8 - coach.hint.to.row}`;
+    const isJump = coach.hint.steps.some((s) => s.capturedRow !== undefined);
+    return isJump
+      ? `Suggested move: ${fromCoord} to ${toCoord} (jump)`
+      : `Suggested move: ${fromCoord} to ${toCoord}`;
+  }, [coach.hint]);
 
   const { play } = useGameSound('checkers_v1');
 
@@ -364,12 +384,26 @@ function CheckersGameImpl({
             players={snapshot.players}
             selectedPiece={selectedPiece}
             highlightedCell={effectiveHighlight}
+            hintCell={
+              coach.hint ? { from: coach.hint.from, to: coach.hint.to } : null
+            }
             disabled={!myTurn || isGameOver}
             ariaLabel={`Checkers ${displayBoard.length}×${displayBoard.length} board`}
             onCellClick={handleCellClick}
             onDeselect={() => setSelectedPiece(null)}
             isFlipped={isFlipped}
           />
+          {coach.visible && (
+            <div className="flex justify-center p-2 w-full">
+              <CheckersCoachControls
+                enabled={coach.enabled}
+                hintAvailable={coach.hintAvailable}
+                hintText={hintText}
+                onToggle={coach.toggleEnabled}
+                onHint={coach.requestHint}
+              />
+            </div>
+          )}
         </>
       ) : null}
     </div>

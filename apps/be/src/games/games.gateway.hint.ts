@@ -12,6 +12,8 @@ import type {
 } from './sessions/game-sessions.service';
 import type { GamesService } from './games.service';
 import type { ChessBotService } from './engines/chess/chess-bot.service';
+import type { CheckersBotService } from './checkers/checkers-bot.service';
+import type { BackgammonBotService } from './backgammon/backgammon-bot.service';
 import type {
   BoardPosition,
   ChessMove,
@@ -19,6 +21,15 @@ import type {
   ChessState,
 } from '@arcadeum/games-core/games/chess/chess.types';
 import type { PieceType } from '@arcadeum/games-core/games/chess/chess.constants';
+import type {
+  CheckersState,
+  MovePayload,
+  MoveStep,
+} from '@arcadeum/games-core/games/checkers/checkers.types';
+import type {
+  BackgammonState,
+  MoveCheckerPayload,
+} from '@arcadeum/games-core/games/backgammon/backgammon.types';
 
 export type HintRejectionReason =
   | 'ranked'
@@ -28,13 +39,36 @@ export type HintRejectionReason =
   | 'not_your_turn'
   | 'no_legal_moves';
 
-export interface HintMovePayload {
+export interface ChessHintMovePayload {
+  gameType?: 'chess';
   from: BoardPosition;
   to: BoardPosition;
   piece: ChessPiece;
   captured: ChessPiece | null;
   promotion: PieceType | null;
   isCastle: boolean;
+}
+
+export interface CheckersHintMovePayload {
+  gameType: 'checkers';
+  from: { row: number; col: number };
+  to: { row: number; col: number };
+  steps: MoveStep[];
+}
+
+export interface BackgammonHintMovePayload {
+  gameType: 'backgammon';
+  from: number | 'bar';
+  to: number | 'off';
+}
+
+export type HintMovePayload =
+  ChessHintMovePayload | CheckersHintMovePayload | BackgammonHintMovePayload;
+
+export interface HintBotServices {
+  chess?: ChessBotService;
+  checkers?: CheckersBotService;
+  backgammon?: BackgammonBotService;
 }
 
 type HintResultPayload =
@@ -53,7 +87,7 @@ type HintResultPayload =
       ts: number;
     };
 
-function serializeHintMove(move: ChessMove): HintMovePayload {
+function serializeHintMove(move: ChessMove): ChessHintMovePayload {
   return {
     from: move.from,
     to: move.to,
@@ -61,6 +95,27 @@ function serializeHintMove(move: ChessMove): HintMovePayload {
     captured: move.captured ?? null,
     promotion: move.promotion ?? null,
     isCastle: move.isCastle ?? false,
+  };
+}
+
+function serializeCheckersHintMove(move: MovePayload): CheckersHintMovePayload {
+  const first = move.steps[0];
+  const last = move.steps[move.steps.length - 1];
+  return {
+    gameType: 'checkers',
+    from: { row: first.fromRow, col: first.fromCol },
+    to: { row: last.toRow, col: last.toCol },
+    steps: move.steps,
+  };
+}
+
+function serializeBackgammonHintMove(
+  move: MoveCheckerPayload,
+): BackgammonHintMovePayload {
+  return {
+    gameType: 'backgammon',
+    from: move.from,
+    to: move.to,
   };
 }
 
@@ -83,11 +138,6 @@ function rejectHint(
   });
 }
 
-/**
- * Coach Mode (ARC-926): computes a best-move hint for the requesting player
- * using the server-side chess bot at expert strength. Replies ONLY to the
- * requesting socket — never broadcast to the room.
- */
 export async function handleRequestHint(
   logger: Logger,
   server: Server,
@@ -96,13 +146,24 @@ export async function handleRequestHint(
   payload: unknown,
   sessionsService: GameSessionsService,
   gamesService: GamesService,
-  chessBotService: ChessBotService,
+  botsOrChess?: HintBotServices | ChessBotService,
+  extraCheckersBot?: CheckersBotService,
+  extraBackgammonBot?: BackgammonBotService,
 ): Promise<void> {
-  const decrypted = maybeDecrypt<{
-    roomId?: string;
-    sessionId?: string;
-    userId?: string;
-  }>(payload);
+  const chessBot =
+    botsOrChess && 'findBestMove' in botsOrChess
+      ? botsOrChess
+      : botsOrChess?.chess;
+  const checkersBot =
+    botsOrChess && 'findBestMove' in botsOrChess
+      ? extraCheckersBot
+      : (botsOrChess?.checkers ?? extraCheckersBot);
+  const backgammonBot =
+    botsOrChess && 'findBestMove' in botsOrChess
+      ? extraBackgammonBot
+      : (botsOrChess?.backgammon ?? extraBackgammonBot);
+
+  const decrypted = maybeDecrypt<Record<string, unknown>>(payload);
   const roomId = extractString(decrypted, 'roomId');
   const sessionId = extractString(decrypted, 'sessionId');
   const userId = extractString(decrypted, 'userId');
@@ -127,38 +188,128 @@ export async function handleRequestHint(
     rejectHint(client, roomId, sessionId, 'ranked');
     return;
   }
-  if (!session.gameId.startsWith('chess')) {
-    rejectHint(client, roomId, sessionId, 'unsupported_game');
+
+  if (session.gameId.startsWith('chess')) {
+    if (!chessBot) {
+      rejectHint(client, roomId, sessionId, 'unsupported_game');
+      return;
+    }
+    const state = session.state as unknown as ChessState;
+    const color = state.players.find((p) => p.playerId === userId)?.color;
+    if (!color) {
+      rejectHint(client, roomId, sessionId, 'not_participant');
+      return;
+    }
+    if (session.status !== 'active') {
+      rejectHint(client, roomId, sessionId, 'game_over');
+      return;
+    }
+    if (state.currentTurnColor !== color) {
+      rejectHint(client, roomId, sessionId, 'not_your_turn');
+      return;
+    }
+    const hintState = { ...state, botDifficulty: 'expert' as const };
+    const move = chessBot.findBestMove(hintState);
+    if (!move) {
+      rejectHint(client, roomId, sessionId, 'no_legal_moves');
+      return;
+    }
+    emitHintResult(client, {
+      ok: true,
+      roomId,
+      sessionId,
+      move: serializeHintMove(move),
+      ts: Date.now(),
+    });
     return;
   }
 
-  const state = session.state as unknown as ChessState;
-  const color = state.players.find((p) => p.playerId === userId)?.color;
-  if (!color) {
-    rejectHint(client, roomId, sessionId, 'not_participant');
-    return;
-  }
-  if (session.status !== 'active') {
-    rejectHint(client, roomId, sessionId, 'game_over');
-    return;
-  }
-  if (state.currentTurnColor !== color) {
-    rejectHint(client, roomId, sessionId, 'not_your_turn');
+  if (session.gameId.startsWith('checkers')) {
+    if (!checkersBot) {
+      rejectHint(client, roomId, sessionId, 'unsupported_game');
+      return;
+    }
+    const state = session.state as unknown as CheckersState;
+    const player = state.players?.find((p) => p.playerId === userId);
+    if (!player) {
+      rejectHint(client, roomId, sessionId, 'not_participant');
+      return;
+    }
+    if (session.status !== 'active' || state.phase !== 'playing') {
+      rejectHint(client, roomId, sessionId, 'game_over');
+      return;
+    }
+    const currentTurnPlayerId = state.playerOrder?.[state.currentTurnIndex];
+    if (currentTurnPlayerId !== userId) {
+      rejectHint(client, roomId, sessionId, 'not_your_turn');
+      return;
+    }
+    const mode: 'american' | 'international' | 'russian' =
+      state.options?.mode === 'international' ||
+      state.options?.mode === 'russian'
+        ? state.options.mode
+        : 'american';
+    const hintState: CheckersState = {
+      ...state,
+      options: { ...state.options, mode, botDifficulty: 'expert' as const },
+    };
+    const move = checkersBot.pickMove(hintState, userId);
+    if (!move || !move.steps || move.steps.length === 0) {
+      rejectHint(client, roomId, sessionId, 'no_legal_moves');
+      return;
+    }
+    emitHintResult(client, {
+      ok: true,
+      roomId,
+      sessionId,
+      move: serializeCheckersHintMove(move),
+      ts: Date.now(),
+    });
     return;
   }
 
-  const hintState = { ...state, botDifficulty: 'expert' as const };
-  const move = chessBotService.findBestMove(hintState);
-  if (!move) {
-    rejectHint(client, roomId, sessionId, 'no_legal_moves');
+  if (session.gameId.startsWith('backgammon')) {
+    if (!backgammonBot) {
+      rejectHint(client, roomId, sessionId, 'unsupported_game');
+      return;
+    }
+    const state = session.state as unknown as BackgammonState;
+    const player = state.players?.find((p) => p.playerId === userId);
+    if (!player) {
+      rejectHint(client, roomId, sessionId, 'not_participant');
+      return;
+    }
+    if (session.status !== 'active' || state.phase === 'game_over') {
+      rejectHint(client, roomId, sessionId, 'game_over');
+      return;
+    }
+    const currentTurnPlayerId = state.playerOrder?.[state.currentTurnIndex];
+    if (currentTurnPlayerId !== userId) {
+      rejectHint(client, roomId, sessionId, 'not_your_turn');
+      return;
+    }
+    if (state.phase !== 'move' || !state.dice || state.dice.length === 0) {
+      rejectHint(client, roomId, sessionId, 'no_legal_moves');
+      return;
+    }
+    const hintState = {
+      ...state,
+      options: { ...state.options, aiDifficulty: 'expert' as const },
+    };
+    const move = backgammonBot.pickMove(hintState, userId);
+    if (!move) {
+      rejectHint(client, roomId, sessionId, 'no_legal_moves');
+      return;
+    }
+    emitHintResult(client, {
+      ok: true,
+      roomId,
+      sessionId,
+      move: serializeBackgammonHintMove(move),
+      ts: Date.now(),
+    });
     return;
   }
 
-  emitHintResult(client, {
-    ok: true,
-    roomId,
-    sessionId,
-    move: serializeHintMove(move),
-    ts: Date.now(),
-  });
+  rejectHint(client, roomId, sessionId, 'unsupported_game');
 }

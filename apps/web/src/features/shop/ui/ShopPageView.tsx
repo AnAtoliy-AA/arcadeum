@@ -36,6 +36,7 @@ import type {
   NextGemPackView,
   WalletBalanceView,
 } from '../server/shop.types';
+import { getLevelForBadge } from '@/shared/lib/level-rewards';
 
 // The page-level `hero` slice comes straight from i18n (`pages.shop.hero`)
 // and only carries the hero's own strings. The Equip/Unequip/Equipped strings
@@ -128,7 +129,15 @@ export function ShopPageView({
     [liveCatalog],
   );
   const badges = useMemo(
-    () => liveCatalog.filter((c) => c.category === 'badge'),
+    () =>
+      liveCatalog
+        .filter((c) => c.category === 'badge')
+        .slice()
+        .sort((a, b) => {
+          const lvlA = getLevelForBadge(a.id) ?? Number.MAX_SAFE_INTEGER;
+          const lvlB = getLevelForBadge(b.id) ?? Number.MAX_SAFE_INTEGER;
+          return lvlA - lvlB;
+        }),
     [liveCatalog],
   );
   const nameColors = useMemo(

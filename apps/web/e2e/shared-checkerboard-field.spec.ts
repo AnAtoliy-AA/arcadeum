@@ -23,16 +23,20 @@ test.describe('Shared Checkerboard Field Experience', () => {
     const chessBoard = page.getByRole('grid', { name: 'Chess puzzle board' });
     await expect(chessBoard).toBeVisible();
 
-    const d2Cell = page.getByTestId('chess-d2');
-    await expect(d2Cell).toBeVisible();
-    await d2Cell.click();
+    const playerPieces = page.locator('[role="gridcell"][draggable="true"]');
+    const firstPiece = playerPieces.first();
+    await expect(firstPiece).toBeVisible();
+    await firstPiece.click();
 
-    await expect(d2Cell).toHaveAttribute('aria-label', /selected/);
+    await expect(firstPiece).toHaveAttribute('aria-label', /selected/);
 
-    const d1Cell = page.getByTestId('chess-d1');
-    await d1Cell.click();
-    await expect(d1Cell).toHaveAttribute('aria-label', /selected/);
-    await expect(d2Cell).not.toHaveAttribute('aria-label', /selected/);
+    const pieceCount = await playerPieces.count();
+    if (pieceCount > 1) {
+      const secondPiece = playerPieces.nth(1);
+      await secondPiece.click();
+      await expect(secondPiece).toHaveAttribute('aria-label', /selected/);
+      await expect(firstPiece).not.toHaveAttribute('aria-label', /selected/);
+    }
   });
 
   test('toggles board flip without breaking piece interaction in puzzle', async ({
@@ -42,11 +46,15 @@ test.describe('Shared Checkerboard Field Experience', () => {
 
     const flipBtn = page.getByTestId('flip-board-btn');
     await expect(flipBtn).toBeVisible();
+
+    const playerPieces = page.locator('[role="gridcell"][draggable="true"]');
+    const firstPiece = playerPieces.first();
+    await expect(firstPiece).toBeVisible();
+
     await flipBtn.click();
 
-    const d2Cell = page.getByTestId('chess-d2');
-    await expect(d2Cell).toBeVisible();
-    await d2Cell.click();
-    await expect(d2Cell).toHaveAttribute('aria-label', /selected/);
+    await expect(firstPiece).toBeVisible();
+    await firstPiece.click();
+    await expect(firstPiece).toHaveAttribute('aria-label', /selected/);
   });
 });

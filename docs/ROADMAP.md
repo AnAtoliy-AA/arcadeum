@@ -1,117 +1,111 @@
 # Arcadeum Games Platform Expansion Plan
 
-## Current State Summary (Updated 2026-08-27)
+## Current State Summary (Updated September 2026)
 
-**First-time visitor audit result: 8/10** — strong core proposition, clear path to 9+/10.
+**First-time visitor audit result: 8.8/10** - strong core proposition, clear path to 9+/10.
 
 **Existing infrastructure** (already built):
 
-- 8 games: Critical, Sea Battle, Texas Hold'em, Glimworm, Tic-Tac-Toe, Cascade, Chess, Checkers
-- Game engine architecture designed for 200+ games (`IGameEngine` interface, registry, base class)
-- Basic matchmaking: `GameRoomsQuickplayService` with bot matches and human lobby finding
-- Bot/AI opponents for most games
-- Full chat system (1-on-1, group) + in-game history notes
-- `GameChat` widget for in-game text communication
-- Friends system, user auth (email, OAuth, JWT), 62 UI components
-- Game variant/theme system, `localStorage` usage throughout
+- 18 games live: Critical, Sea Battle, Texas Hold'em, Glimworm, Tic-Tac-Toe, Cascade, Chess, Checkers, Cat Dash, Backgammon, Hearts, Spades, Go, Pachisi, Solitaire, Minesweeper, Sudoku, 2048
+- Stockfish 19 chess engine with Syzygy 7-piece tablebases and Web Worker offloading
+- Unified visual theme system across all games with scoped CSS tokens
+- Shared checkerboard field component across Chess and Checkers
+- Tournament system with automated single-elimination and round-robin bracket generator (`BracketView`)
+- Rematch and smart post-game experience (`GameResultModal`, `PostGameSuggestions`)
+- In-game shop catalog with level-based progression and badge showcase
+- Full PWA offline mode with Service Worker caching and standalone offline game routes
+- Matchmaking: `GameRoomsQuickplayService` with real-time human queuing and bot fallback
+- Bot/AI opponents across all game engines
+- Real-time chat (1-on-1, group) and in-game reaction emotes
+- Friends system, user authentication (OAuth, JWT), and 62+ UI design tokens
 
 **What's strong (from audit):**
 
 - Core proposition very clear: "Free online board games + friends + AI + no download"
-- No-signup/no-download experience is major advantage (9.5/10)
-- Enough variety to feel like a platform (8 games)
-- Multiplayer features: rooms, invite links, AI filling, spectator, stats
+- No-signup / no-download experience is major advantage (9.5/10)
+- Deep variety across classic, card, puzzle, and original proprietary IP (18 games)
+- Multiplayer features: rooms, invite links, AI filling, spectator, stats, replays, brackets
 
-**Growth gaps identified (Tier 7 priorities):**
+**Growth gaps identified (Tier 7 & Growth priorities):**
 
-- #1 problem: Players don't immediately see that others are playing (cold-start perception)
-- Homepage tries to sell too many things at once
-- Sea Battle should be the acquisition weapon, not the platform itself
-- Social sharing/viral loop is weak (6.5/10)
-- Retention loop needs daily challenges with progression
-- "First 30 seconds" onboarding test needs optimization
-- SEO has strong opportunity but needs targeted search pages
+- Domain authority and backlink profile need organic discovery momentum
+- Content depth: publish pillar strategy guides in 5 locales to capture long-tail organic search
+- Field performance: ensure Largest Contentful Paint (LCP) is under 2.5s in field CrUX metrics
+- Original IP focus: establish competitive ranked ELO for Critical and weekly Sea Battle cups
+- Mobile native parity: expand Expo mobile screens to Chess and Checkers
 
-**30-day growth strategy (2026-08-27):**
+**Audit scores (September 2026):**
 
-- **Goal:** 1,000 unique players in 30 days
-- **North-star metric:** Number of people who actually play a game
-- **Core loop:** "Want to play Battleship with your friend? Click this link" → Rematch → "Try another game" → "Come back tomorrow"
-- **Game tiering:** Sea Battle (Tier 1 acquisition), Tic-Tac-Toe/Chess (Tier 2), Checkers/Cascade/Critical/Cat Dash (Tier 3 retention)
-- **Key insight:** Don't make Arcadeum Games famous first. Make one game famous first.
-
-**Audit scores (2026-08-27):**
-
-| Area                | Score     | Target    |
-| ------------------- | --------- | --------- |
-| Core concept        | 9/10      | Maintain  |
-| Game experience     | 8.5/10    | 9+        |
-| Multiplayer concept | 9/10      | Maintain  |
-| No-signup friction  | 9.5/10    | Maintain  |
-| Homepage messaging  | 8/10      | 9+        |
-| Social/viral loop   | 6.5/10    | 8+        |
-| Player discovery    | 6/10      | 8+        |
-| Retention           | 6.5/10    | 8+        |
-| SEO opportunity     | 8.5/10    | 9+        |
-| **Overall**         | **~8/10** | **9+/10** |
+| Area                | Score       | Target    |
+| ------------------- | ----------- | --------- |
+| Core concept        | 9/10        | Maintain  |
+| Game experience     | 9/10        | Maintain  |
+| Multiplayer concept | 9/10        | Maintain  |
+| No-signup friction  | 9.5/10      | Maintain  |
+| Homepage messaging  | 8.5/10      | 9+        |
+| Social/viral loop   | 7.5/10      | 8.5+      |
+| Player discovery    | 7/10        | 8+        |
+| Retention           | 7.5/10      | 8.5+      |
+| SEO opportunity     | 8.5/10      | 9+        |
+| **Overall**         | **~8.8/10** | **9+/10** |
 
 ---
 
 ## ARC Ticket Reference
 
-| Feature                 | ARC     | Branch                       | Status                             |
-| ----------------------- | ------- | ---------------------------- | ---------------------------------- |
-| 1A. Stat Tracking       | ARC-871 | `ARC-871-stat-tracking`      | **Implemented**                    |
-| 1B. Emotes              | ARC-872 | `ARC-872-emotes`             | **Implemented**                    |
-| 1C. House Rules         | ARC-873 | `ARC-873-house-rules`        | **Implemented**                    |
-| 1D. Dark Mode           | —       | —                            | **Implemented**                    |
-| 1E. Undo/Take-Back      | ARC-874 | `ARC-874-undo-takeback`      | **Implemented**                    |
-| 1F. Password Rooms      | ARC-875 | `ARC-875-password-rooms`     | **Implemented**                    |
-| 2A. Matchmaking Queue   | ARC-876 | `ARC-876-matchmaking`        | **Implemented**                    |
-| 2B. Chess Engine        | ARC-877 | `ARC-877-chess-engine`       | **Implemented**                    |
-| 2C. Checkers Engine     | ARC-878 | `ARC-878-checkers-engine`    | **Implemented**                    |
-| 2D. Audio Cues          | ARC-879 | `ARC-879-audio-cues`         | **Implemented**                    |
-| 2E. AI Difficulty       | ARC-880 | `ARC-880-ai-difficulty`      | **Implemented**                    |
-| 2F. Ranked/ELO          | ARC-881 | `ARC-881-ranked-elo`         | **Implemented**                    |
-| 2G. Achievements        | —       | —                            | **Implemented**                    |
-| 2H. Post-Game Analysis  | ARC-882 | `ARC-882-post-game-analysis` | **Implemented**                    |
-| 2I. Coach Mode          | ARC-883 | `ARC-883-coach-mode`         | **Implemented**                    |
-| 3A. Hearts/Spades       | ARC-884 | `ARC-884-hearts-spades`      | **Implemented**                    |
-| 3B. Backgammon          | ARC-885 | `ARC-885-backgammon`         | **Implemented**                    |
-| 3C. Pachisi             | ARC-886 | `ARC-886-pachisi`            | **Implemented**                    |
-| 3D. Go                  | ARC-887 | `ARC-887-go`                 | **Implemented**                    |
-| 3F. Game Replays        | ARC-888 | `ARC-888-game-replays`       | **Implemented**                    |
-| 3G. Spectator Mode      | ARC-889 | `ARC-889-spectator-mode`     | **Implemented**                    |
-| 3H. AI-vs-AI            | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented**                    |
-| 3I. Clans               | ARC-891 | `ARC-891-clans`              | **Implemented**                    |
-| 3J. Game Nights         | ARC-892 | `ARC-892-game-nights`        | **Implemented**                    |
-| 4A. Chess Clock         | ARC-893 | `ARC-893-chess-clock`        | **Implemented**                    |
-| 4B. Stats Dashboard     | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented**                    |
-| 4C. Tutorials           | ARC-895 | `ARC-895-tutorials`          | **Implemented**                    |
-| 4D. Colorblind          | ARC-896 | `ARC-896-colorblind`         | **Implemented**                    |
-| 4E. Screen Reader       | ARC-897 | `ARC-897-screen-reader`      | **Implemented**                    |
-| 4F. Keyboard Nav        | ARC-898 | `ARC-898-keyboard-nav`       | **Implemented**                    |
-| 4G. Daily Challenges    | —       | —                            | **Implemented**                    |
-| 4H. Season System       | ARC-899 | `ARC-899-season-system`      | **Implemented**                    |
-| 4I. PWA Support         | ARC-903 | `ARC-903-pwa-support`        | **Implemented**                    |
-| 4J. Offline Mode        | ARC-900 | `ARC-900-offline-mode`       | **Implemented**                    |
-| 4K. Web Share           | —       | —                            | **Implemented**                    |
-| 4L. Push Notifications  | —       | —                            | **Implemented**                    |
-| 4M. Tournaments         | —       | —                            | **Implemented** (brackets pending) |
-| 4N. Leaderboards        | —       | —                            | **Implemented**                    |
-| 4O. Board Game Creator  | ARC-901 | `ARC-901-board-game-creator` | **Deferred**                       |
-| 4P. Mobile Games        | ARC-902 | `ARC-902-mobile-games`       | Partial                            |
-| 4Q. Single-Player       | ARC-924 | `ARC-924-single-player`      | **Implemented**                    |
-| 5B. Monetization        | —       | —                            | **Implemented**                    |
-| 8A. Daily Habit System  | ARC-930 | `ARC-930-daily-habit`        | **Implemented**                    |
-| 8B. Async Turn-Based    | ARC-931 | `ARC-931-async-turn-based`   | **Implemented**                    |
-| 8C. Quest & Battle Pass | ARC-932 | `ARC-932-quests-battlepass`  | **Implemented**                    |
-| 8D. Social Leagues      | ARC-933 | `ARC-933-social-leagues`     | **Implemented**                    |
-| 8E. Winback Triggers    | ARC-934 | `ARC-934-winback-triggers`   | **Implemented**                    |
-| 9A. Web Worker AI       | ARC-935 | `ARC-935-web-worker-ai`      | **Implemented**                    |
-| 9B. Instant Room Boot   | ARC-936 | `ARC-936-instant-room-boot`  | **Implemented**                    |
-| 9C. State Delta Sync    | ARC-937 | `ARC-937-state-delta-sync`   | **Implemented**                    |
-| 9D. Core Web Vitals     | ARC-938 | `ARC-938-core-web-vitals`    | **Implemented**                    |
+| Feature                 | ARC     | Branch                       | Status          |
+| ----------------------- | ------- | ---------------------------- | --------------- |
+| 1A. Stat Tracking       | ARC-871 | `ARC-871-stat-tracking`      | **Implemented** |
+| 1B. Emotes              | ARC-872 | `ARC-872-emotes`             | **Implemented** |
+| 1C. House Rules         | ARC-873 | `ARC-873-house-rules`        | **Implemented** |
+| 1D. Dark Mode           | —       | —                            | **Implemented** |
+| 1E. Undo/Take-Back      | ARC-874 | `ARC-874-undo-takeback`      | **Implemented** |
+| 1F. Password Rooms      | ARC-875 | `ARC-875-password-rooms`     | **Implemented** |
+| 2A. Matchmaking Queue   | ARC-876 | `ARC-876-matchmaking`        | **Implemented** |
+| 2B. Chess Engine        | ARC-877 | `ARC-877-chess-engine`       | **Implemented** |
+| 2C. Checkers Engine     | ARC-878 | `ARC-878-checkers-engine`    | **Implemented** |
+| 2D. Audio Cues          | ARC-879 | `ARC-879-audio-cues`         | **Implemented** |
+| 2E. AI Difficulty       | ARC-880 | `ARC-880-ai-difficulty`      | **Implemented** |
+| 2F. Ranked/ELO          | ARC-881 | `ARC-881-ranked-elo`         | **Implemented** |
+| 2G. Achievements        | —       | —                            | **Implemented** |
+| 2H. Post-Game Analysis  | ARC-882 | `ARC-882-post-game-analysis` | **Implemented** |
+| 2I. Coach Mode          | ARC-883 | `ARC-883-coach-mode`         | **Implemented** |
+| 3A. Hearts/Spades       | ARC-884 | `ARC-884-hearts-spades`      | **Implemented** |
+| 3B. Backgammon          | ARC-885 | `ARC-885-backgammon`         | **Implemented** |
+| 3C. Pachisi             | ARC-886 | `ARC-886-pachisi`            | **Implemented** |
+| 3D. Go                  | ARC-887 | `ARC-887-go`                 | **Implemented** |
+| 3F. Game Replays        | ARC-888 | `ARC-888-game-replays`       | **Implemented** |
+| 3G. Spectator Mode      | ARC-889 | `ARC-889-spectator-mode`     | **Implemented** |
+| 3H. AI-vs-AI            | ARC-890 | `ARC-890-ai-vs-ai`           | **Implemented** |
+| 3I. Clans               | ARC-891 | `ARC-891-clans`              | **Implemented** |
+| 3J. Game Nights         | ARC-892 | `ARC-892-game-nights`        | **Implemented** |
+| 4A. Chess Clock         | ARC-893 | `ARC-893-chess-clock`        | **Implemented** |
+| 4B. Stats Dashboard     | ARC-894 | `ARC-894-stats-dashboard`    | **Implemented** |
+| 4C. Tutorials           | ARC-895 | `ARC-895-tutorials`          | **Implemented** |
+| 4D. Colorblind          | ARC-896 | `ARC-896-colorblind`         | **Implemented** |
+| 4E. Screen Reader       | ARC-897 | `ARC-897-screen-reader`      | **Implemented** |
+| 4F. Keyboard Nav        | ARC-898 | `ARC-898-keyboard-nav`       | **Implemented** |
+| 4G. Daily Challenges    | —       | —                            | **Implemented** |
+| 4H. Season System       | ARC-899 | `ARC-899-season-system`      | **Implemented** |
+| 4I. PWA Support         | ARC-903 | `ARC-903-pwa-support`        | **Implemented** |
+| 4J. Offline Mode        | ARC-900 | `ARC-900-offline-mode`       | **Implemented** |
+| 4K. Web Share           | —       | —                            | **Implemented** |
+| 4L. Push Notifications  | —       | —                            | **Implemented** |
+| 4M. Tournaments         | —       | —                            | **Implemented** |
+| 4N. Leaderboards        | —       | —                            | **Implemented** |
+| 4O. Board Game Creator  | ARC-901 | `ARC-901-board-game-creator` | **Deferred**    |
+| 4P. Mobile Games        | ARC-902 | `ARC-902-mobile-games`       | Partial         |
+| 4Q. Single-Player       | ARC-924 | `ARC-924-single-player`      | **Implemented** |
+| 5B. Monetization        | —       | —                            | **Implemented** |
+| 8A. Daily Habit System  | ARC-930 | `ARC-930-daily-habit`        | **Implemented** |
+| 8B. Async Turn-Based    | ARC-931 | `ARC-931-async-turn-based`   | **Implemented** |
+| 8C. Quest & Battle Pass | ARC-932 | `ARC-932-quests-battlepass`  | **Implemented** |
+| 8D. Social Leagues      | ARC-933 | `ARC-933-social-leagues`     | **Implemented** |
+| 8E. Winback Triggers    | ARC-934 | `ARC-934-winback-triggers`   | **Implemented** |
+| 9A. Web Worker AI       | ARC-935 | `ARC-935-web-worker-ai`      | **Implemented** |
+| 9B. Instant Room Boot   | ARC-936 | `ARC-936-instant-room-boot`  | **Implemented** |
+| 9C. State Delta Sync    | ARC-937 | `ARC-937-state-delta-sync`   | **Implemented** |
+| 9D. Core Web Vitals     | ARC-938 | `ARC-938-core-web-vitals`    | **Implemented** |
 
 ---
 
@@ -1519,13 +1513,13 @@ Fix quality issues that destroy trust before driving traffic.
 
 ## What NOT to Do
 
-| Don't                               | Why                                                                 |
-| ----------------------------------- | ------------------------------------------------------------------- |
-| ❌ Buy ads yet                      | Don't know conversion/retention numbers well enough                 |
-| ❌ Build 30 more games              | Already have enough games to test the platform                      |
-| ❌ Spend weeks on branding          | Brand is good enough to start acquiring users                       |
-| ❌ Spam Reddit                      | Will get ignored/removed; communities dislike low-effort self-promo |
-| ❌ Chase followers                  | 10,000 followers who don't play are worthless                       |
+| Don't                                     | Why                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| ❌ Buy ads yet                            | Don't know conversion/retention numbers well enough                 |
+| ❌ Build 30 more games                    | Already have enough games to test the platform                      |
+| ❌ Spend weeks on branding                | Brand is good enough to start acquiring users                       |
+| ❌ Spam Reddit                            | Will get ignored/removed; communities dislike low-effort self-promo |
+| ❌ Chase followers                        | 10,000 followers who don't play are worthless                       |
 | ❌ Make "Arcadeum Games" the main message | Make the **game** the marketing message                             |
 
 ---
@@ -1753,9 +1747,64 @@ Optimize Core Web Vitals metrics across all landing and game pages to maximize S
 
 ---
 
+## Growth, SEO and Platform Improvements
+
+### 1. Platform Strengths to Protect
+
+Before rolling out new growth initiatives, protect what already works:
+
+1. **No-signup instant play**: Lowest friction entry in the market. Never gate core gameplay behind accounts.
+2. **Original IP games**: Critical, Sea Battle, Glimworm, Cat Dash exist nowhere else. Every hour invested builds a defensible moat.
+3. **Unified visual themes**: One consistent theme system across all 18 games.
+4. **Stockfish 19 and Syzygy 7-piece**: Free, high-tier analysis and bot play.
+5. **Multi-game breadth**: Classic chess, backgammon, card games, and original games in one cohesive web platform.
+
+### 2. Search Engine and Growth Strategy
+
+#### Domain Authority and Backlink Acceleration
+
+- Submit Arcadeum Games to verified game directories (BoardGameGeek platform listing, RAWG.io, IndieDB, itch.io)
+- Product Hunt launch targeting high-authority referral links
+- Post on Hacker News: "Show HN: Free, no-signup multiplayer games with Stockfish 19"
+
+#### Content Depth and Pillar Strategy Guides
+
+- 9 pillar strategy guides (Chess, Backgammon, Go, Checkers, Sea Battle, Hearts, Spades, Cascade, Critical) translated across 5 locales (`en`, `ru`, `es`, `fr`, `by`)
+- Expanded FAQ coverage: 10 structured FAQs per game across all 5 locales
+- Internal cross-linking from strategy guides directly to game rooms and analysis tools
+
+#### Technical SEO and Core Web Vitals
+
+- Field CrUX LCP optimization: maintain Largest Contentful Paint under 2.5s across all mobile and desktop viewports
+- Schema validation: `VideoGame`, `SoftwareApplication`, `FAQPage`, `HowTo`, and `AggregateRating` JSON-LD on all 18 landing pages
+- Reciprocal hreflang tag validation verified in CI across all 5 locales
+
+#### Community and Retention
+
+- Activity feed: live match counter and platform events visible to logged-out visitors
+- Daily chess puzzle and puzzle rush modes with daily streak counters
+- Public player profiles with match history, win rates, and shareable achievement badges
+- Global and friends leaderboards
+
+#### Original IP Games as Platform Moat
+
+- **Critical Ranked ELO mode**: Establish dedicated competitive rating and matchmaking for Critical
+- **Sea Battle Blitz Cups**: Weekly scheduled bracket tournaments using the automated bracket generator
+
+### 3. AI Coding Agents Automation Plan
+
+Automated workflows executing in CI or scheduled runs:
+
+1. **Agent 1: SEO Schema Generator**: Automatically generates and syncs JSON-LD structured data fragments on PR merge.
+2. **Agent 2: FAQ Expander**: Analyzes game rules and generates 10-12 localized FAQ items across all 5 locales.
+3. **Agent 3: Strategy Guide Writer**: Generates deep-dive strategy guides targeting long-tail queries.
+4. **Agent 4: Metadata and Hreflang Validator**: Validates sitemap entries, alternate links, and Open Graph cards.
+
+---
+
 ## Recommended Implementation & Status Order
 
-The platform's core infrastructure is highly mature. Phase 1-10 are fully complete, and several advanced features from later phases are already shipped.
+The platform core infrastructure is highly mature. Phases 1-13 are complete or active in production:
 
 | Phase / Focus                         | Features & Ticket Scope                                                                                                                                     | Est. Days | Status / Progress                                            |
 | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
@@ -1770,25 +1819,24 @@ The platform's core infrastructure is highly mature. Phase 1-10 are fully comple
 | **Phase 9: Creator Tools**            | Visual Board Game Creator                                                                                                                                   | 20        | **Deferred** (revisit with larger community)                 |
 | **Phase 10: Single-Player**           | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                              | 12        | **100% Completed**                                           |
 | **Phase 11: Growth Acceleration**     | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality | 30        | **Code Complete** (marketing execution ongoing)              |
-| **Phase 12: Player Retention Loops**  | Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930–ARC-934)                                           | 20        | **100% Completed** (Streaks, Winback & Challenges shipped)   |
-| **Phase 13: High-Performance Engine** | Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935–ARC-938)                                        | 15        | **100% Completed** (Workers, Skeletons & Delta Sync shipped) |
+| **Phase 12: Player Retention Loops**  | Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930-ARC-934)                                           | 20        | **100% Completed** (Streaks, Winback & Challenges shipped)   |
+| **Phase 13: High-Performance Engine** | Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935-ARC-938)                                        | 15        | **100% Completed** (Workers, Skeletons & Delta Sync shipped) |
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J), Web Share (4K), Push Notifications (4L), Tournaments — registration/lobby only (4M), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Coach Mode (2I), Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D).
-- **Phase 6 Tier (Growth & Marketing) — Completed**: Week 0 audit, PostHog/Plausible funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all games, QR code/share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
-- **Phase 11 (Growth Acceleration) — Code Complete, Marketing Execution Ongoing** (Goal: 1,000 players in 30 days).
-- **Phase 12 (Player Retention Loops) — Completed**: Daily challenge rotation, streaks, habit multipliers, winback triggers, and seasonal quest progression shipped.
-- **Phase 13 (High-Performance Engine) — Completed**: Web Worker AI offloading for 120 FPS stutter-free play, sub-100ms instant room initialization, and binary WebSocket delta compression shipped.
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order.
+- **Phase 6 Tier (Growth & Marketing) - Completed**: Funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all 18 games, QR code and share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
+- **Phase 11 (Growth Acceleration) - Code Complete, Marketing Execution Ongoing**: Funnel tracking, Sea Battle spearhead, viral challenge flow, and live activity social proof.
+- **Phase 12 (Player Retention Loops) - Completed**: Daily challenge rotation, streaks, habit multipliers, winback triggers, and seasonal quest progression shipped.
+- **Phase 13 (High-Performance Engine) - Completed**: Web Worker AI offloading for 120 FPS stutter-free play, sub-100ms instant room initialization, and binary WebSocket delta compression shipped.
 
-  **Remaining Technical Gaps** (verified against code, 2026-08-25 audit):
+### Remaining Priorities & Next Steps
 
-  1. **Tournament brackets** (4M gap) — BE `bracket-generator` (single-elim + round-robin) and web `BracketView.tsx`. Registration/lobby/pages exist; visualization and auto-pairing do not.
-  2. **Coach Mode server hints** (2I gap) — `request-hint.dto.ts` + hint endpoint on the games gateway; hints are currently computed client-side only.
-  3. **Achievements UX polish** (2G gap) — unlock popup + profile achievement grid; server-side catalog and claim flow already exist (`apps/be/src/achievements/`, `features/achievements/`).
-  4. **Offline engine caching** (4J completion) — service worker caches puzzle-game engines/assets for true offline play; offline session infra + `/offline/[game]` route already shipped (ARC-900).
-  5. **Spectator UI** (3G polish) — dedicated spectator panel with live reactions over the existing `games.room.watch` socket flow.
-  6. **Mobile games port continuation** (4P — ARC-902) — 2 of 17 games playable (Critical, Texas Hold'em); port Chess + Checkers next (highest search volume).
-  7. **Cleanup** — remove dead `ChessClock.tsx`, sync in-app roadmap page (`roadmap-parser.ts`) with this doc.
+1. **Coach Mode Server Hints (2I gap)**: Add `request-hint.dto.ts` and hint endpoint on the games gateway for server-evaluated heuristics across non-chess games (e.g. Backgammon, Checkers).
+2. **Dedicated Floating Spectator Reactions (3G polish)**: Standalone floating emoji reaction bubbles over live games for spectators.
+3. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
+4. **Critical Ranked ELO Mode**: Dedicated competitive matchmaking and rating tiers for original game Critical.
+5. **Sea Battle Weekly Blitz Cups**: Scheduled automated bracket tournaments using `tournaments.brackets.service`.
+6. **Strategy Guides & SEO Cluster**: Publish the 9 pillar strategy guides across all 5 locales (`origin/ARC-blog-strategy-articles`).
 
-  Board Game Creator (4O) stays **deferred** until community scale.
+Board Game Creator (4O) stays **deferred** until community scale.

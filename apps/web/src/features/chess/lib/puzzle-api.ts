@@ -90,6 +90,7 @@ export async function getRandomPuzzle(
 export function getLocalFallbackPuzzle(
   rating?: number,
   theme?: string,
+  deterministic = false,
 ): ChessPuzzle {
   let pool = CURATED_DAILY_PUZZLES;
   if (theme && theme !== 'all') {
@@ -101,6 +102,9 @@ export function getLocalFallbackPuzzle(
       (p) => Math.abs(p.rating - rating) <= 250,
     );
     if (ratingMatches.length > 0) pool = ratingMatches;
+  }
+  if (deterministic) {
+    return pool[0] ?? CURATED_DAILY_PUZZLES[0]!;
   }
   const idx = Math.floor(Math.random() * pool.length);
   return pool[idx] ?? CURATED_DAILY_PUZZLES[0]!;
@@ -115,7 +119,7 @@ export function getInitialPuzzleSync(
 ): ChessPuzzle {
   if (customPuzzle) return customPuzzle;
   if (mode === 'daily') return getCuratedDailyPuzzle(date);
-  return getLocalFallbackPuzzle(rating, theme);
+  return getLocalFallbackPuzzle(rating, theme, true);
 }
 
 export async function solvePuzzle(

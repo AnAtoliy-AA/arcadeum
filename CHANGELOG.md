@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.34] - 2026-09-29
+
+### Improved
+- optimize chess puzzles lcp with ssg and dynamic imports (ARC-roadmap-single-doc)
+
+### Documentation
+- unify platform roadmap and consolidate improvements (ARC-roadmap-single-doc)
+
+
 ## [1.30.33] - 2026-09-29
 
 ### Added

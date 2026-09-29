@@ -1,113 +1,91 @@
-'use client';
+import type { Metadata } from 'next';
+import { appConfig } from '@/shared/config/app-config';
+import { buildRoutes } from '@/shared/config/routes';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
+import { getTranslations } from '@/shared/i18n/server';
+import { buildBreadcrumbJsonLd } from '@/shared/seo/breadcrumbJsonLd';
+import { JsonLd } from '@/shared/ui/JsonLd';
+import { ChessPuzzlesClient } from './ChessPuzzlesClient';
 
-import { useState, use } from 'react';
-import { Button } from '@arcadeum/ui';
-import { PuzzleGame } from '@/widgets/BoardGames/ChessPuzzles/ui/Game';
-import { ChessPuzzleTabs } from '@/widgets/BoardGames/ChessPuzzles/ui/ChessPuzzleTabs';
-import { PuzzleAnalyticsModal } from '@/widgets/BoardGames/ChessPuzzles/ui/PuzzleAnalyticsModal';
-import {
-  THEME_CATEGORIES,
-  type ChessPuzzle,
-} from '@/features/chess/lib/puzzle-api';
-import { removeMistakeFromQueue } from '@/features/chess/lib/puzzle-analytics';
-import { cx } from '@arcadeum/ui/utils/cx';
+export const dynamic = 'force-static';
+export const revalidate = 300;
 
 interface ChessPuzzlesPageProps {
   params: Promise<{ locale: string }>;
 }
 
-export default function ChessPuzzlesPage({ params }: ChessPuzzlesPageProps) {
-  const { locale } = use(params);
-  const [selectedTheme, setSelectedTheme] = useState('all');
-  const [analyticsOpen, setAnalyticsOpen] = useState(false);
-  const [reviewPuzzle, setReviewPuzzle] = useState<ChessPuzzle | null>(null);
+export async function generateMetadata({
+  params,
+}: ChessPuzzlesPageProps): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const messages = await getTranslations(locale);
+  const chessName = messages.games?.chess_v1?.name ?? 'Chess';
+  return {
+    title: `${chessName} Training & Tactical Puzzles | Arcadeum`,
+    description:
+      'Improve your chess tactical vision with rated puzzles, rush mode, 1v1 duels, and mistake reviews.',
+  };
+}
 
-  const handleMistakeSolved = (res: { puzzle: ChessPuzzle }) => {
-    removeMistakeFromQueue(res.puzzle.puzzleId);
+export default async function ChessPuzzlesPage({
+  params,
+}: ChessPuzzlesPageProps) {
+  const { locale: rawLocale } = await params;
+  const locale: Locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const messages = await getTranslations(locale);
+  const routes = buildRoutes(locale);
+
+  const breadcrumbs = buildBreadcrumbJsonLd({
+    locale,
+    homeLabel: messages.seo?.home?.title ?? 'Home',
+    trail: [
+      {
+        name: messages.games?.chess_v1?.name ?? 'Chess',
+        url: `${appConfig.siteUrl}${routes.chessLanding}`,
+      },
+      {
+        name: 'Puzzles',
+        url: `${appConfig.siteUrl}${routes.chessPuzzles}`,
+      },
+    ],
+  });
+
+  const puzzlesSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'LearningResource',
+    name: 'Chess Tactical Puzzles',
+    description:
+      'Improve your chess tactical vision with rated puzzles, rush mode, 1v1 duels, and mistake reviews.',
+    url: `${appConfig.siteUrl}${routes.chessPuzzles}`,
+    inLanguage: locale,
+    educationalLevel: 'Beginner to Grandmaster',
+    learningResourceType: 'Practice Problem',
   };
 
   return (
-    <main className="flex flex-col items-center min-h-screen py-6">
-      <div className="w-full max-w-[900px] px-4">
-        <h1 className="text-2xl font-bold text-[var(--color)] mb-4 text-center">
-          Chess Training
-        </h1>
-        <p className="text-sm text-[var(--textSecondary)] text-center mb-6">
-          Improve your chess with daily puzzles, rush mode, 1v1 duels, and
-          mistake reviews
-        </p>
-        <ChessPuzzleTabs
-          activeTab="rated"
-          locale={locale}
-          onOpenAnalytics={() => setAnalyticsOpen(true)}
-        />
-
-        {reviewPuzzle ? (
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-500/30">
-              <span className="text-xs font-semibold text-amber-300">
-                Reviewing Missed Tactic:{' '}
-                {reviewPuzzle.openingTags?.[0] || 'Puzzle'} (
-                {reviewPuzzle.rating})
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setReviewPuzzle(null)}
-                data-testid="exit-review-mode-btn"
-              >
-                ← Back to Rated
-              </Button>
-            </div>
-            <PuzzleGame
-              key={reviewPuzzle.puzzleId}
-              mode="custom"
-              customPuzzle={reviewPuzzle}
-              onSolved={handleMistakeSolved}
-            />
-          </div>
-        ) : (
-          <>
-            <div
-              data-testid="puzzle-theme-filters"
-              className="flex items-center justify-center gap-1.5 flex-wrap mb-6 max-w-2xl mx-auto"
-            >
-              {THEME_CATEGORIES.map((cat) => {
-                const isActive = selectedTheme === cat.id;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setSelectedTheme(cat.id)}
-                    data-testid={`theme-chip-${cat.id}`}
-                    className={cx(
-                      'px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all duration-150',
-                      isActive
-                        ? 'bg-[var(--primary)] text-white shadow-sm'
-                        : 'bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--foreground)]',
-                    )}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <PuzzleGame
-              key={selectedTheme}
-              mode={selectedTheme === 'all' ? 'rated' : 'themed'}
-              theme={selectedTheme === 'all' ? undefined : selectedTheme}
-            />
-          </>
-        )}
-
-        <PuzzleAnalyticsModal
-          isOpen={analyticsOpen}
-          onClose={() => setAnalyticsOpen(false)}
-          onTrainTheme={(theme) => setSelectedTheme(theme)}
-          onReviewMistake={(p) => setReviewPuzzle(p)}
-        />
-      </div>
-    </main>
+    <>
+      <link
+        rel="preload"
+        href="/images/chess/arcadeum_chess_sprite.svg"
+        as="image"
+        type="image/svg+xml"
+        fetchPriority="high"
+      />
+      <JsonLd data={breadcrumbs} />
+      <JsonLd data={puzzlesSchema} />
+      <main className="flex flex-col items-center min-h-screen py-6">
+        <div className="w-full max-w-[900px] px-4">
+          <h1 className="text-2xl font-bold text-[var(--color)] mb-4 text-center">
+            Chess Training
+          </h1>
+          <p className="text-sm text-[var(--textSecondary)] text-center mb-6">
+            Improve your chess with daily puzzles, rush mode, 1v1 duels, and
+            mistake reviews
+          </p>
+          <ChessPuzzlesClient locale={locale} />
+        </div>
+      </main>
+    </>
   );
 }

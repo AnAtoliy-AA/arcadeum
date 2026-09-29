@@ -21,7 +21,13 @@ import {
 } from '@/shared/i18n/useTranslation';
 import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useGameSound } from '@/shared/lib/game-sounds';
-import type { Board, CheckersGameProps, MoveStep, Mode } from '../types';
+import type {
+  Board,
+  CheckersGameProps,
+  MoveStep,
+  Mode,
+  BoardPosition,
+} from '../types';
 import { MODE_CONFIGS } from '../types';
 import { useCheckersState } from '../hooks/useCheckersState';
 import { useCheckersActions } from '../hooks/useCheckersActions';
@@ -201,10 +207,9 @@ function CheckersGameImpl({
       : t('games.checkers_v1.status.waiting');
   }, [snapshot, isGameOver, myTurn, result, t]);
 
-  const [selectedPiece, setSelectedPiece] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<BoardPosition | null>(
+    null,
+  );
   const [pendingSteps, setPendingSteps] = useState<MoveStep[]>([]);
   const [optimisticBoard, setOptimisticBoard] = useState<Board | null>(null);
   const [lastServerBoard, setLastServerBoard] = useState<Board | null>(null);

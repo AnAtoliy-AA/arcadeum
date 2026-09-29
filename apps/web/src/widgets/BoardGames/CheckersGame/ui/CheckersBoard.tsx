@@ -5,16 +5,16 @@ import { Checkerboard } from '@arcadeum/ui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
 import { boardVars } from '../lib/theme-adapter';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
-import type { Board, CheckersPlayer } from '../types';
+import type { Board, CheckersPlayer, BoardPosition } from '../types';
 
 interface CheckersBoardProps {
   board: Board;
   players: CheckersPlayer[];
-  selectedPiece: { row: number; col: number } | null;
-  highlightedCell?: { row: number; col: number } | null;
+  selectedPiece: BoardPosition | null;
+  highlightedCell?: BoardPosition | null;
   hintCell?: {
-    from: { row: number; col: number };
-    to: { row: number; col: number };
+    from: BoardPosition;
+    to: BoardPosition;
   } | null;
   disabled: boolean;
   ariaLabel: string;

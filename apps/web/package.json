@@ -9,11 +9,11 @@
     "edge >= 93"
   ],
   "scripts": {
-    "predev": "node scripts/generate-roadmap.mjs",
+    "predev": "node scripts/generate-roadmap.mjs && node scripts/generate-changelog.mjs",
     "dev": "pnpm --filter @arcadeum/games-core build && rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "dev:next": "rm -rf .next && node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next dev",
     "start": "node ../../scripts/run-with-port.js .env.local WEB_PORT 3000 -- next start",
-    "prebuild": "node scripts/generate-roadmap.mjs",
+    "prebuild": "node scripts/generate-roadmap.mjs && node scripts/generate-changelog.mjs",
     "build": "next build",
     "postbuild": "node scripts/fix-standalone-swc.mjs && node scripts/generate-build-id.mjs && node scripts/generate-game-sizes.mjs",
     "lint": "eslint",

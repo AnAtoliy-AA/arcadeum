@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.33] - 2026-09-29
+
+### Added
+- order badges by level in shop and inventory (ARC-shop-badge-order-by-level)
+
+
 ## [1.30.32] - 2026-09-28
 
 ### Added

@@ -5,13 +5,17 @@ import { Checkerboard } from '@arcadeum/ui';
 import { useCheckersTheme } from '../lib/CheckersThemeContext';
 import { boardVars } from '../lib/theme-adapter';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
-import type { Board, CheckersPlayer } from '../types';
+import type { Board, CheckersPlayer, BoardPosition } from '../types';
 
 interface CheckersBoardProps {
   board: Board;
   players: CheckersPlayer[];
-  selectedPiece: { row: number; col: number } | null;
-  highlightedCell?: { row: number; col: number } | null;
+  selectedPiece: BoardPosition | null;
+  highlightedCell?: BoardPosition | null;
+  hintCell?: {
+    from: BoardPosition;
+    to: BoardPosition;
+  } | null;
   disabled: boolean;
   ariaLabel: string;
   onCellClick: (row: number, col: number) => void;
@@ -24,6 +28,7 @@ export function CheckersBoard({
   players,
   selectedPiece,
   highlightedCell,
+  hintCell,
   disabled,
   ariaLabel,
   onCellClick,
@@ -96,6 +101,9 @@ export function CheckersBoard({
             selectedPiece?.row === row && selectedPiece?.col === col;
           const isHighlighted =
             highlightedCell?.row === row && highlightedCell?.col === col;
+          const isHintFrom =
+            hintCell?.from.row === row && hintCell?.from.col === col;
+          const isHintTo = hintCell?.to.row === row && hintCell?.to.col === col;
           const pieceColor = piece ? playerColorMap[piece.playerId] : null;
 
           let bgClass = isDark
@@ -105,6 +113,10 @@ export function CheckersBoard({
           if (isSelected) {
             bgClass =
               'bg-[var(--checkers-selected-piece)] ring-2 ring-amber-400/80 inset-ring';
+          } else if (isHintFrom) {
+            bgClass = 'bg-amber-400/30 ring-2 ring-amber-400/90';
+          } else if (isHintTo) {
+            bgClass = 'bg-emerald-500/30 ring-2 ring-emerald-400/80';
           } else if (isHighlighted) {
             bgClass = 'bg-indigo-500/35 ring-2 ring-indigo-400/70';
           }

@@ -1824,7 +1824,7 @@ The platform core infrastructure is highly mature. Phases 1-13 are complete or a
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order.
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls).
 - **Phase 6 Tier (Growth & Marketing) - Completed**: Funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all 18 games, QR code and share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
 - **Phase 11 (Growth Acceleration) - Code Complete, Marketing Execution Ongoing**: Funnel tracking, Sea Battle spearhead, viral challenge flow, and live activity social proof.
 - **Phase 12 (Player Retention Loops) - Completed**: Daily challenge rotation, streaks, habit multipliers, winback triggers, and seasonal quest progression shipped.
@@ -1832,11 +1832,10 @@ The platform core infrastructure is highly mature. Phases 1-13 are complete or a
 
 ### Remaining Priorities & Next Steps
 
-1. **Coach Mode Server Hints (2I gap)**: Add `request-hint.dto.ts` and hint endpoint on the games gateway for server-evaluated heuristics across non-chess games (e.g. Backgammon, Checkers).
-2. **Dedicated Floating Spectator Reactions (3G polish)**: Standalone floating emoji reaction bubbles over live games for spectators.
-3. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
-4. **Critical Ranked ELO Mode**: Dedicated competitive matchmaking and rating tiers for original game Critical.
-5. **Sea Battle Weekly Blitz Cups**: Scheduled automated bracket tournaments using `tournaments.brackets.service`.
-6. **Strategy Guides & SEO Cluster**: Publish the 9 pillar strategy guides across all 5 locales (`origin/ARC-blog-strategy-articles`).
+1. **Dedicated Floating Spectator Reactions (3G polish)**: Standalone floating emoji reaction bubbles over live games for spectators.
+2. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
+3. **Critical Ranked ELO Mode**: Dedicated competitive matchmaking and rating tiers for original game Critical.
+4. **Sea Battle Weekly Blitz Cups**: Scheduled automated bracket tournaments using `tournaments.brackets.service`.
+5. **Strategy Guides & SEO Cluster**: Publish the 9 pillar strategy guides across all 5 locales (`origin/ARC-blog-strategy-articles`).
 
 Board Game Creator (4O) stays **deferred** until community scale.

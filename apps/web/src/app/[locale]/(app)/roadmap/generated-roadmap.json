@@ -1,0 +1,737 @@
+{
+  "tiers": [
+    {
+      "id": "tier1",
+      "label": "Quick Wins",
+      "effort": "1-3 days each",
+      "color": "#22c55e",
+      "gradient": "linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))",
+      "icon": "⚡",
+      "features": [
+        {
+          "title": "Persistent Account-less Stat Tracking",
+          "desc": "Pure frontend feature. No backend changes needed.",
+          "effort": "1-2 days",
+          "status": "implemented",
+          "arc": "ARC-871"
+        },
+        {
+          "title": "In-game Emotes & Quick Reactions",
+          "desc": "Extend the existing `history_notes` system with predefined emote actions.",
+          "effort": "1-2 days",
+          "status": "implemented",
+          "arc": "ARC-872"
+        },
+        {
+          "title": "Structured House Rules / Game Config",
+          "desc": "Extend the existing `gameOptions` system with per-game structured configs.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-873"
+        },
+        {
+          "title": "Dark Mode",
+          "desc": "Use the existing CSS-variable theme system (`ThemeContext` + `packages/ui/src/themeDefinitions.ts`) — `data-theme` on `<html>` swaps the `--*` tokens Tailwind classes read",
+          "effort": "1 day",
+          "status": "implemented"
+        },
+        {
+          "title": "Undo / Take-Back",
+          "desc": "Allow players to request an undo in casual games.",
+          "effort": "1-2 days",
+          "status": "implemented",
+          "arc": "ARC-874"
+        },
+        {
+          "title": "Invite-Only Rooms with Passwords",
+          "desc": "Add optional `password` field to `GameRoom` schema",
+          "effort": "1 day",
+          "status": "implemented",
+          "arc": "ARC-875"
+        }
+      ]
+    },
+    {
+      "id": "tier2",
+      "label": "Core Additions",
+      "effort": "2-7 days each",
+      "color": "#3b82f6",
+      "gradient": "linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05))",
+      "icon": "🎮",
+      "features": [
+        {
+          "title": "Improved Matchmaking with Queue System",
+          "desc": "The basic `findHumanMatch()` exists but is simple. Enhance it.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-876"
+        },
+        {
+          "title": "Chess Engine",
+          "desc": "Well-defined rules, huge audience. This is the #1 game to add.",
+          "effort": "5-7 days",
+          "status": "implemented",
+          "arc": "ARC-877"
+        },
+        {
+          "title": "Checkers Engine",
+          "desc": "Simpler than chess, well-understood rules.",
+          "effort": "4-5 days",
+          "status": "implemented",
+          "arc": "ARC-878"
+        },
+        {
+          "title": "Emote Sound Effects / Audio Cues",
+          "desc": "Lightweight audio feedback without full voice chat.",
+          "effort": "1 day",
+          "status": "implemented",
+          "arc": "ARC-879"
+        },
+        {
+          "title": "AI Difficulty Tiers",
+          "desc": "Currently bots appear to be single-difficulty. Add Easy/Medium/Hard/Expert levels.",
+          "effort": "2-3 days per game",
+          "status": "implemented",
+          "arc": "ARC-880"
+        },
+        {
+          "title": "Ranked Play / ELO Rating",
+          "desc": "Per-game skill rating system.",
+          "effort": "5-7 days",
+          "status": "implemented",
+          "arc": "ARC-881"
+        },
+        {
+          "title": "Achievements & Badges",
+          "desc": "Collectible achievements tied to gameplay milestones.",
+          "effort": "3-4 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Post-Game Analysis",
+          "desc": "Show players where mistakes were made after a game ends.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-882"
+        },
+        {
+          "title": "Move Hints / Coach Mode",
+          "desc": "Optional AI hints during gameplay.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-883"
+        }
+      ]
+    },
+    {
+      "id": "tier3",
+      "label": "Card & Board Games",
+      "effort": "4-7 days each",
+      "color": "#a855f7",
+      "gradient": "linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05))",
+      "icon": "♠️",
+      "features": [
+        {
+          "title": "Hearts / Spades",
+          "desc": "4-player games, complex but well-documented rules.",
+          "effort": "5-7 days each",
+          "status": "not_started"
+        },
+        {
+          "title": "Backgammon",
+          "desc": "Dice-based, unique mechanics.",
+          "effort": "5-7 days",
+          "status": "implemented",
+          "arc": "ARC-885"
+        },
+        {
+          "title": "Pachisi",
+          "desc": "Simple rules, popular globally. Using original name \"Pachisi\" to avoid Ludo trademark.",
+          "effort": "4-5 days",
+          "status": "implemented",
+          "arc": "ARC-886"
+        },
+        {
+          "title": "Go",
+          "desc": "The hardest game to implement well.",
+          "effort": "10-14 days",
+          "status": "implemented",
+          "arc": "ARC-887"
+        },
+        {
+          "title": "In-game Voice Chat",
+          "desc": "> **EXCLUDED FOR NOW** — Discord integration already works well. Revisit when the platform has a larger user base.",
+          "effort": "7-10 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Game Replays",
+          "desc": "Record and share game replays.",
+          "effort": "4-5 days",
+          "status": "implemented",
+          "arc": "ARC-888"
+        },
+        {
+          "title": "Spectator Mode with Live Reactions",
+          "desc": "Let viewers watch ongoing matches with real-time interaction.",
+          "effort": "3-4 days",
+          "status": "implemented",
+          "arc": "ARC-889"
+        },
+        {
+          "title": "AI-vs-AI Spectator Mode",
+          "desc": "Let two bots play each other at max difficulty.",
+          "effort": "1-2 days",
+          "status": "implemented",
+          "arc": "ARC-890"
+        },
+        {
+          "title": "Clans / Groups",
+          "desc": "Persistent groups for communities.",
+          "effort": "5-7 days",
+          "status": "implemented",
+          "arc": "ARC-891"
+        },
+        {
+          "title": "Community Game Nights",
+          "desc": "Scheduled events where players queue simultaneously for a featured game.",
+          "effort": "3-4 days",
+          "status": "implemented",
+          "arc": "ARC-892"
+        }
+      ]
+    },
+    {
+      "id": "tier4",
+      "label": "Community & Social",
+      "effort": "3-10 days each",
+      "color": "#f59e0b",
+      "gradient": "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))",
+      "icon": "👥",
+      "features": [
+        {
+          "title": "Chess Clock",
+          "desc": "Chess-style timers for any turn-based game.",
+          "effort": "3-4 days",
+          "status": "implemented",
+          "arc": "ARC-893"
+        },
+        {
+          "title": "Cross-Game Stats Dashboard",
+          "desc": "Single view of all your stats across every game.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-894"
+        },
+        {
+          "title": "Interactive Tutorials",
+          "desc": "Teach each game with a guided walkthrough before first play.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-895"
+        },
+        {
+          "title": "Colorblind Modes",
+          "desc": "Accessibility for board games with colored pieces.",
+          "effort": "1-2 days",
+          "status": "implemented",
+          "arc": "ARC-896"
+        },
+        {
+          "title": "Screen Reader Support",
+          "desc": "ARIA labels on all game boards.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-897"
+        },
+        {
+          "title": "Keyboard-Only Navigation",
+          "desc": "Full keyboard control for every game.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-898"
+        },
+        {
+          "title": "Daily Challenges",
+          "desc": "Daily rotating challenges to drive return visits.",
+          "effort": "2-3 days",
+          "status": "implemented"
+        },
+        {
+          "title": "Season System",
+          "desc": "Monthly/quarterly seasons with soft resets.",
+          "effort": "5-7 days",
+          "status": "implemented",
+          "arc": "ARC-899"
+        },
+        {
+          "title": "PWA Support",
+          "desc": "Installable as an app on mobile/desktop without app store.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-903"
+        },
+        {
+          "title": "Offline Mode",
+          "desc": "Play vs bot without internet connection.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-900"
+        },
+        {
+          "title": "Web Share API",
+          "desc": "One-tap sharing of game results to social media.",
+          "effort": "1 day",
+          "status": "not_started"
+        },
+        {
+          "title": "Push Notifications",
+          "desc": "\"It's your turn!\" when opponent makes a move.",
+          "effort": "3-4 days",
+          "status": "implemented"
+        },
+        {
+          "title": "Tournament System",
+          "desc": "Bracket generation and multi-round tournaments.",
+          "effort": "7-10 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Leaderboards",
+          "desc": "Global and per-game leaderboards.",
+          "effort": "3-4 days",
+          "status": "implemented"
+        },
+        {
+          "title": "Board Game Creator",
+          "desc": "> **DEFERRED** — highest-effort item in the roadmap and it serves creators, not players. Revisit when the platform has a large active community that demands user-generated content; until then, engineering capacity goes to player-facing reach (mobile port) and retention.",
+          "effort": "14-21 days",
+          "status": "not_started",
+          "arc": "ARC-901"
+        },
+        {
+          "title": "Mobile App Games",
+          "desc": "Port web game widgets to the Expo mobile app.",
+          "effort": "21-30 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Single-Player Games",
+          "desc": "Solo games that run entirely in the browser — no backend session, no sockets, no bots. Serves the Phase 2 solo funnel (cold traffic capture) and is the natural carrier for future offline play.",
+          "effort": "2-4 days each",
+          "status": "not_started"
+        }
+      ]
+    },
+    {
+      "id": "tier5",
+      "label": "Platform Polish",
+      "effort": "1-10 days each",
+      "color": "#ec4899",
+      "gradient": "linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05))",
+      "icon": "✨",
+      "features": [
+        {
+          "title": "Post-Game Analysis",
+          "desc": "Show players where mistakes were made after a game ends.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-882"
+        },
+        {
+          "title": "Monetization",
+          "desc": "Revenue without compromising the free, frictionless core.",
+          "effort": "5-7 days",
+          "status": "implemented"
+        }
+      ]
+    },
+    {
+      "id": "tier6",
+      "label": "Growth & SEO",
+      "effort": "2-5 days each",
+      "color": "#14b8a6",
+      "gradient": "linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05))",
+      "icon": "📈",
+      "features": [
+        {
+          "title": "Viral & Invite Loop Optimization",
+          "desc": "**One-Tap Share Sheet**: Native share sheet support on mobile/browser for instant WhatsApp/Telegram/Discord invite copying.",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "SEO & Crawler Optimizations",
+          "desc": "**Game-Specific Landing Pages**: Dedicated, crawlable index routes for Chess, Sea Battle, Cascade, Checkers, Critical, Glimworm, and Tic-Tac-Toe.",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Analytics & Funnel Instrumentation",
+          "desc": "**Privacy-First Funnel tracking**: Integrate Plausible or PostHog to map visitor conversion rates.",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Homepage & UX Refactoring",
+          "desc": "**Primary CTAs**: Elevate \"Play vs AI\" to co-primary status next to \"Create Private Room\" to capture cold traffic.",
+          "effort": "1-3 days",
+          "status": "not_started"
+        }
+      ]
+    },
+    {
+      "id": "tier7",
+      "label": "Growth Acceleration",
+      "effort": "1-5 days each",
+      "color": "#06b6d4",
+      "gradient": "linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))",
+      "icon": "🚀",
+      "features": [
+        {
+          "title": "Game Tiering",
+          "desc": "| Tier                             | Games                                 | Role                               |",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Funnel Measurement",
+          "desc": "Before promotion, make the funnel measurable. Answer: \"Where did this player come from?\"",
+          "effort": "2-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Sea Battle as Acquisition Spearhead",
+          "desc": "**Primary CTA — extremely simple:**",
+          "effort": "3-5 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Viral Loop — Challenge Flow",
+          "desc": "Turn every game result into an acquisition channel.",
+          "effort": "3-4 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Live Activity Social Proof",
+          "desc": "The platform needs to feel alive. Show real data only — don't fake activity.",
+          "effort": "2-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Reddit Strategy",
+          "desc": "**Don't spam links.** Reddit communities actively dislike low-effort self-promotion.",
+          "effort": "2-3 posts/week",
+          "status": "not_started"
+        },
+        {
+          "title": "TikTok / Reels / Shorts",
+          "desc": "Don't try to make polished advertising. Make 10-20 second clips.",
+          "effort": "2-3 videos/week",
+          "status": "not_started"
+        },
+        {
+          "title": "SEO Expansion — Targeted Search Pages",
+          "desc": "Create pages targeting actual search queries, not generic blog posts.",
+          "effort": "1 page every 2-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Discord Community",
+          "desc": "Don't make it another announcement channel. Create engagement:",
+          "effort": "1 day setup, ongoing moderation",
+          "status": "not_started"
+        },
+        {
+          "title": "LinkedIn Strategy",
+          "desc": "Don't expect LinkedIn to produce many players. Use it for:",
+          "effort": "2 posts/week",
+          "status": "not_started"
+        },
+        {
+          "title": "Simplified Homepage — \"30-Second Test\"",
+          "desc": "New user should arrive → understand → choose → play within 30 seconds.",
+          "effort": "2-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Technical Quality",
+          "desc": "Fix quality issues that destroy trust before driving traffic.",
+          "effort": "1-2 days",
+          "status": "not_started"
+        }
+      ]
+    },
+    {
+      "id": "tier8",
+      "label": "Retention & Habit Loops",
+      "effort": "2-7 days each",
+      "color": "#8b5cf6",
+      "gradient": "linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05))",
+      "icon": "🔁",
+      "features": [
+        {
+          "title": "Daily Challenges & Streak System",
+          "desc": "Daily curated puzzle per game with streak counters, freeze mechanics, and viral score sharing.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-930"
+        },
+        {
+          "title": "Asynchronous Turn-Based Play & Notification Engine",
+          "desc": "Eliminate the requirement for both players to be online simultaneously by enabling casual, multi-day turn-based games.",
+          "effort": "5-7 days",
+          "status": "implemented",
+          "arc": "ARC-931"
+        },
+        {
+          "title": "Dynamic Quest System & Seasonal Battle Pass",
+          "desc": "Give players clear short-term and long-term progression goals across every game session.",
+          "effort": "4-6 days",
+          "status": "implemented",
+          "arc": "ARC-932"
+        },
+        {
+          "title": "Social Leagues, Weekly Cups & Guild Ladders",
+          "desc": "Foster community accountability and friendly rivalry through weekly division ladders.",
+          "effort": "4-6 days",
+          "status": "implemented",
+          "arc": "ARC-933"
+        },
+        {
+          "title": "Smart Re-engagement & Winback Engine",
+          "desc": "Intelligent, non-intrusive re-engagement hooks to bring lapsed visitors back to Arcadeum Games.",
+          "effort": "2-4 days",
+          "status": "implemented",
+          "arc": "ARC-934"
+        }
+      ]
+    },
+    {
+      "id": "tier9",
+      "label": "Performance & Latency",
+      "effort": "2-5 days each",
+      "color": "#f43f5e",
+      "gradient": "linear-gradient(135deg, rgba(244,63,94,0.15), rgba(244,63,94,0.05))",
+      "icon": "⚡",
+      "features": [
+        {
+          "title": "Web Worker AI Engine Offloading",
+          "desc": "Move heavy computational bots (Chess Minimax, Checkers deep search, Sea Battle probability matrix) off the main thread.",
+          "effort": "3-4 days",
+          "status": "implemented",
+          "arc": "ARC-935"
+        },
+        {
+          "title": "Instant Room Boot & Asset Pre-caching",
+          "desc": "Achieve sub-100ms cold-start room loading times across all devices.",
+          "effort": "2-4 days",
+          "status": "implemented",
+          "arc": "ARC-936"
+        },
+        {
+          "title": "WebSocket State Delta & Binary Compression",
+          "desc": "Slash multiplayer network latency and bandwidth on mobile/cellular connections.",
+          "effort": "3-5 days",
+          "status": "implemented",
+          "arc": "ARC-937"
+        },
+        {
+          "title": "Core Web Vitals & Dynamic Code Splitting",
+          "desc": "Optimize Core Web Vitals metrics across all landing and game pages to maximize SEO rank and minimize bounce rate.",
+          "effort": "2-3 days",
+          "status": "implemented",
+          "arc": "ARC-938"
+        },
+        {
+          "title": "Platform Strengths to Protect",
+          "desc": "Before rolling out new growth initiatives, protect what already works:",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Search Engine and Growth Strategy",
+          "desc": "",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Domain Authority and Backlink Acceleration",
+          "desc": "Submit Arcadeum Games to verified game directories (BoardGameGeek platform listing, RAWG.io, IndieDB, itch.io)",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Content Depth and Pillar Strategy Guides",
+          "desc": "9 pillar strategy guides (Chess, Backgammon, Go, Checkers, Sea Battle, Hearts, Spades, Cascade, Critical) translated across 5 locales (`en`, `ru`, `es`, `fr`, `by`)",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Technical SEO and Core Web Vitals",
+          "desc": "Field CrUX LCP optimization: maintain Largest Contentful Paint under 2.5s across all mobile and desktop viewports",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Community and Retention",
+          "desc": "Activity feed: live match counter and platform events visible to logged-out visitors",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Original IP Games as Platform Moat",
+          "desc": "**Critical Ranked ELO mode**: Establish dedicated competitive rating and matchmaking for Critical",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "AI Coding Agents Automation Plan",
+          "desc": "Automated workflows executing in CI or scheduled runs:",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Summary of Completed vs. Outstanding Tasks",
+          "desc": "**Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls).",
+          "effort": "1-3 days",
+          "status": "not_started"
+        },
+        {
+          "title": "Remaining Priorities & Next Steps",
+          "desc": "1. **Dedicated Floating Spectator Reactions (3G polish)**: Standalone floating emoji reaction bubbles over live games for spectators.",
+          "effort": "1-3 days",
+          "status": "not_started"
+        }
+      ]
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Core UX",
+      "features": "Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms",
+      "days": "10",
+      "status": "100% Completed",
+      "color": "#22c55e"
+    },
+    {
+      "phase": 2,
+      "title": "Growth & SEO",
+      "features": "Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning",
+      "days": "12",
+      "status": "100% Completed",
+      "color": "#3b82f6"
+    },
+    {
+      "phase": 3,
+      "title": "Classic Games",
+      "features": "Chess Engine + Checkers Engine + Audio Cues + Chess Clock",
+      "days": "15",
+      "status": "100% Completed",
+      "color": "#6366f1"
+    },
+    {
+      "phase": 4,
+      "title": "Competitive",
+      "features": "Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization",
+      "days": "20",
+      "status": "100% Completed",
+      "color": "#a855f7"
+    },
+    {
+      "phase": 5,
+      "title": "Retention",
+      "features": "Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings",
+      "days": "15",
+      "status": "100% Completed",
+      "color": "#f59e0b"
+    },
+    {
+      "phase": 6,
+      "title": "Card & Board",
+      "features": "Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach",
+      "days": "25",
+      "status": "100% Completed",
+      "color": "#f97316"
+    },
+    {
+      "phase": 7,
+      "title": "Advanced Social",
+      "features": "Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode",
+      "days": "25",
+      "status": "100% Completed",
+      "color": "#ec4899"
+    },
+    {
+      "phase": 8,
+      "title": "Platform Growth",
+      "features": "PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port",
+      "days": "30",
+      "status": "PWA, Push, Share + Offline Completed (Mobile Partial)",
+      "color": "#14b8a6"
+    },
+    {
+      "phase": 9,
+      "title": "Creator Tools",
+      "features": "Visual Board Game Creator",
+      "days": "20",
+      "status": "Deferred (revisit with larger community)",
+      "color": "#06b6d4"
+    },
+    {
+      "phase": 10,
+      "title": "Single-Player",
+      "features": "Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)",
+      "days": "12",
+      "status": "100% Completed",
+      "color": "#8b5cf6"
+    },
+    {
+      "phase": 11,
+      "title": "Growth Acceleration",
+      "features": "30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality",
+      "days": "30",
+      "status": "Code Complete (marketing execution ongoing)",
+      "color": "#0ea5e9"
+    },
+    {
+      "phase": 12,
+      "title": "Player Retention Loops",
+      "features": "Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930-ARC-934)",
+      "days": "20",
+      "status": "100% Completed (Streaks, Winback & Challenges shipped)",
+      "color": "#d946ef"
+    },
+    {
+      "phase": 13,
+      "title": "High-Performance Engine",
+      "features": "Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935-ARC-938)",
+      "days": "15",
+      "status": "100% Completed (Workers, Skeletons & Delta Sync shipped)",
+      "color": "#f43f5e"
+    }
+  ],
+  "stats": [
+    {
+      "label": "Features",
+      "value": "79",
+      "icon": "📋"
+    },
+    {
+      "label": "Implemented",
+      "value": "45",
+      "icon": "✅"
+    },
+    {
+      "label": "In Progress",
+      "value": "0",
+      "icon": "⏳"
+    },
+    {
+      "label": "Planned",
+      "value": "34",
+      "icon": "🗺️"
+    }
+  ]
+}

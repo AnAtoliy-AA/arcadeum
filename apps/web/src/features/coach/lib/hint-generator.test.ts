@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { getChessHint, applyMove } from './hint-generator';
+import {
+  getChessHint,
+  applyMove,
+  getCheckersHint,
+  getBackgammonHint,
+} from './hint-generator';
 import { chessHintLabel } from '../ui/hint-label';
 import { parseFenPiecePlacement } from '@/features/analysis/lib/fen';
 import type {
@@ -211,5 +216,84 @@ describe('chessHintLabel', () => {
     });
     expect(label.key).toBe('games.chess_v1.coach.promote');
     expect(label.params.promotion).toBe('♕');
+  });
+});
+
+describe('getCheckersHint', () => {
+  it('returns best legal move for player', () => {
+    const board = Array(8)
+      .fill(null)
+      .map(() => Array(8).fill(null));
+    board[2][1] = { playerId: 'user-a', type: 'man' };
+    const state = {
+      phase: 'playing' as const,
+      options: {
+        mode: 'standard' as const,
+        forcedCaptures: true,
+        backwardCaptures: false,
+        theme: 'classic',
+      },
+      board,
+      currentTurnIndex: 0,
+      playerOrder: ['user-a', 'bot-b'],
+      players: [
+        {
+          playerId: 'user-a',
+          color: 'light' as const,
+          alive: true,
+          piecesRemaining: 1,
+        },
+        {
+          playerId: 'bot-b',
+          color: 'dark' as const,
+          alive: true,
+          piecesRemaining: 1,
+        },
+      ],
+      winnerId: null,
+      isDraw: false,
+    };
+    const hint = getCheckersHint(state, 'user-a');
+    expect(hint).not.toBeNull();
+    expect(hint?.from).toEqual({ row: 2, col: 1 });
+    expect(hint?.steps.length).toBeGreaterThan(0);
+  });
+});
+
+describe('getBackgammonHint', () => {
+  it('returns null when not in move phase or dice empty', () => {
+    const state = {
+      phase: 'roll' as const,
+      options: { mode: 'short' as const, theme: 'classic' },
+      points: [],
+      bar: {},
+      borneOff: {},
+      dice: [],
+      rolledDice: null,
+      currentTurnIndex: 0,
+      playerOrder: ['user-a', 'bot-b'],
+      players: [
+        {
+          playerId: 'user-a',
+          color: 'white' as const,
+          alive: true,
+          bar: 0,
+          borneOff: 0,
+          pipCount: 167,
+        },
+        {
+          playerId: 'bot-b',
+          color: 'black' as const,
+          alive: true,
+          bar: 0,
+          borneOff: 0,
+          pipCount: 167,
+        },
+      ],
+      winnerId: null,
+      winType: null,
+      isDraw: false,
+    };
+    expect(getBackgammonHint(state, 'user-a')).toBeNull();
   });
 });

@@ -1,53 +1,21 @@
-import { TIERS, PHASES, STATS } from './roadmap-data';
+import { readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-export type FeatureStatus = 'implemented' | 'partial' | 'not_started';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export type TierFeature = {
-  title: string;
-  desc: string;
-  effort: string;
-  status: FeatureStatus;
-  arc?: string;
-};
+const ROADMAP_PATH = path.resolve(__dirname, '../../../docs/ROADMAP.md');
+const OUT_PATH = path.resolve(
+  __dirname,
+  '../src/app/[locale]/(app)/roadmap/generated-roadmap.json',
+);
 
-export type Tier = {
-  id: string;
-  label: string;
-  effort: string;
-  color: string;
-  gradient: string;
-  icon: string;
-  features: TierFeature[];
-};
-
-export type Phase = {
-  phase: number;
-  title: string;
-  features: string;
-  days: string;
-  color: string;
-  status?: string;
-};
-
-export type RoadmapData = {
-  tiers: Tier[];
-  phases: Phase[];
-  stats: { label: string; value: string; icon: string }[];
-};
-
-const TIER_META: Record<
-  number,
-  {
-    label: string;
-    effort: string;
-    color: string;
-    gradient: string;
-    icon: string;
-  }
-> = {
+const TIER_META = {
   1: {
     label: 'Quick Wins',
-    effort: '1–3 days each',
+    effort: '1-3 days each',
     color: '#22c55e',
     gradient:
       'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))',
@@ -55,7 +23,7 @@ const TIER_META: Record<
   },
   2: {
     label: 'Core Additions',
-    effort: '2–7 days each',
+    effort: '2-7 days each',
     color: '#3b82f6',
     gradient:
       'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05))',
@@ -63,7 +31,7 @@ const TIER_META: Record<
   },
   3: {
     label: 'Card & Board Games',
-    effort: '4–7 days each',
+    effort: '4-7 days each',
     color: '#a855f7',
     gradient:
       'linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05))',
@@ -71,7 +39,7 @@ const TIER_META: Record<
   },
   4: {
     label: 'Community & Social',
-    effort: '3–10 days each',
+    effort: '3-10 days each',
     color: '#f59e0b',
     gradient:
       'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05))',
@@ -79,7 +47,7 @@ const TIER_META: Record<
   },
   5: {
     label: 'Platform Polish',
-    effort: '1–10 days each',
+    effort: '1-10 days each',
     color: '#ec4899',
     gradient:
       'linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05))',
@@ -87,7 +55,7 @@ const TIER_META: Record<
   },
   6: {
     label: 'Growth & SEO',
-    effort: '2–5 days each',
+    effort: '2-5 days each',
     color: '#14b8a6',
     gradient:
       'linear-gradient(135deg, rgba(20,184,166,0.15), rgba(20,184,166,0.05))',
@@ -95,7 +63,7 @@ const TIER_META: Record<
   },
   7: {
     label: 'Growth Acceleration',
-    effort: '1–5 days each',
+    effort: '1-5 days each',
     color: '#06b6d4',
     gradient:
       'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05))',
@@ -103,7 +71,7 @@ const TIER_META: Record<
   },
   8: {
     label: 'Retention & Habit Loops',
-    effort: '2–7 days each',
+    effort: '2-7 days each',
     color: '#8b5cf6',
     gradient:
       'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05))',
@@ -111,7 +79,7 @@ const TIER_META: Record<
   },
   9: {
     label: 'Performance & Latency',
-    effort: '2–5 days each',
+    effort: '2-5 days each',
     color: '#f43f5e',
     gradient:
       'linear-gradient(135deg, rgba(244,63,94,0.15), rgba(244,63,94,0.05))',
@@ -135,7 +103,7 @@ const PHASE_COLORS = [
   '#f43f5e',
 ];
 
-function normalizeStatus(raw: string): FeatureStatus {
+function normalizeStatus(raw) {
   const clean = raw.toLowerCase().replace(/[*_]/g, '').trim();
   if (clean.includes('implemented') || clean.includes('completed')) {
     return 'implemented';
@@ -146,14 +114,10 @@ function normalizeStatus(raw: string): FeatureStatus {
   return 'not_started';
 }
 
-export function parseRoadmapMarkdown(content: string): RoadmapData {
+function parseRoadmapMarkdown(content) {
   const lines = content.split('\n');
 
-  // 1. Parse Status Table (| Feature | ARC | Branch | Status |)
-  const ticketStatuses = new Map<
-    string,
-    { status: FeatureStatus; arc?: string }
-  >();
+  const ticketStatuses = new Map();
   const tableRowRegex =
     /^\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/;
 
@@ -172,7 +136,6 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
     const arc = arcRaw.trim() === '—' ? undefined : arcRaw.trim();
     const status = normalizeStatus(statusRaw);
 
-    // Key by simplified clean name and by title
     const normalizedKey = featureName
       .replace(/^[0-9]+[A-Z]?\.\s*/, '')
       .toLowerCase();
@@ -182,16 +145,14 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
     }
   }
 
-  // 2. Parse Tiers and Features (#### 1A. Title `ARC-XXX`)
-  const tiers: Tier[] = [];
+  const tiers = [];
   let currentTierIndex = 0;
-  let currentTier: Tier | null = null;
-  let currentFeature: TierFeature | null = null;
+  let currentTier = null;
+  let currentFeature = null;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
-    // Check for Tier header: ### TIER 1 — ... OR ## Tier 6 — ...
     const tierMatch = line.match(/^#{2,3}\s+TIER\s+(\d+)/i);
     if (tierMatch) {
       if (currentFeature && currentTier) {
@@ -222,7 +183,6 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
       continue;
     }
 
-    // Check for Feature header: #### 1A. Title `ARC-871` OR ### 6A. Title
     const featureMatch = line.match(
       /^#{3,4}\s+([0-9]+[A-Za-z]?\.)?\s*([^(^`]+)(?:`([^`]+)`)?/,
     );
@@ -240,14 +200,13 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
       currentFeature = {
         title: rawTitle,
         desc: '',
-        effort: '1–3 days',
+        effort: '1-3 days',
         status: statusInfo?.status ?? 'not_started',
         arc: rawArc || statusInfo?.arc,
       };
       continue;
     }
 
-    // Capture effort
     if (currentFeature && line.startsWith('**Effort:')) {
       const effortMatch = line.match(/\(([^)]+)\)/);
       if (effortMatch) {
@@ -256,7 +215,6 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
       continue;
     }
 
-    // Capture description bullet points or text
     if (
       currentFeature &&
       line.length > 0 &&
@@ -277,8 +235,7 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
     tiers.push(currentTier);
   }
 
-  // 3. Parse Phases Table (| Phase / Focus | Features & Ticket Scope | Est. Days | Status / Progress |)
-  const phases: Phase[] = [];
+  const phases = [];
   let phaseNum = 1;
   const phaseRowRegex =
     /^\|\s*\*\*Phase\s*(\d+)(?::\s*([^|*]+))?\*\*\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/i;
@@ -300,94 +257,6 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
     }
   }
 
-  // Fallback phases if table wasn't matched
-  const finalPhases =
-    phases.length > 0
-      ? phases
-      : [
-          {
-            phase: 1,
-            title: 'Core UX',
-            features:
-              'Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms',
-            days: '10',
-            status: '100% Completed',
-            color: '#22c55e',
-          },
-          {
-            phase: 2,
-            title: 'Growth & SEO',
-            features:
-              'Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics',
-            days: '12',
-            status: '100% Completed',
-            color: '#3b82f6',
-          },
-          {
-            phase: 3,
-            title: 'Classic Games',
-            features:
-              'Chess Engine + Checkers Engine + Audio Cues + Chess Clock',
-            days: '15',
-            status: '100% Completed',
-            color: '#6366f1',
-          },
-          {
-            phase: 4,
-            title: 'Competitive',
-            features:
-              'Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization',
-            days: '20',
-            status: '100% Completed',
-            color: '#a855f7',
-          },
-          {
-            phase: 5,
-            title: 'Retention',
-            features:
-              'Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings',
-            days: '15',
-            status: '100% Completed',
-            color: '#f59e0b',
-          },
-          {
-            phase: 6,
-            title: 'Card & Board',
-            features:
-              'Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach',
-            days: '25',
-            status: '100% Completed (code-audited)',
-            color: '#f97316',
-          },
-          {
-            phase: 7,
-            title: 'Advanced Social',
-            features:
-              'Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode',
-            days: '25',
-            status: '100% Completed (spectator UI reactions shipped)',
-            color: '#ec4899',
-          },
-          {
-            phase: 8,
-            title: 'Platform Growth',
-            features:
-              'PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port',
-            days: '30',
-            status: 'PWA, Push, Share + Offline Completed (Mobile Partial)',
-            color: '#14b8a6',
-          },
-          {
-            phase: 9,
-            title: 'Creator Tools',
-            features: 'Visual Board Game Creator',
-            days: '20',
-            status: 'Deferred (revisit with larger community)',
-            color: '#06b6d4',
-          },
-        ];
-
-  // Calculate aggregate stats
   const allFeatures = tiers.flatMap((t) => t.features);
   const totalFeatures = allFeatures.length;
   const implementedCount = allFeatures.filter(
@@ -407,15 +276,29 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
 
   return {
     tiers,
-    phases: finalPhases,
+    phases,
     stats,
   };
 }
 
-export async function getRoadmapData(): Promise<RoadmapData> {
-  return {
-    tiers: TIERS,
-    phases: PHASES,
-    stats: STATS,
-  };
+async function main() {
+  if (!existsSync(ROADMAP_PATH)) {
+    if (existsSync(OUT_PATH)) {
+      console.log(
+        `[generate-roadmap] ROADMAP_PATH not found, using existing ${OUT_PATH}`,
+      );
+      return;
+    }
+    console.error(`[generate-roadmap] File not found: ${ROADMAP_PATH}`);
+    process.exit(1);
+  }
+
+  const content = await readFile(ROADMAP_PATH, 'utf8');
+  const data = parseRoadmapMarkdown(content);
+  await writeFile(OUT_PATH, JSON.stringify(data, null, 2) + '\n', 'utf8');
+  console.log(
+    `[generate-roadmap] Successfully generated ${OUT_PATH} (${data.tiers.length} tiers, ${data.phases.length} phases, ${data.stats.length} stats)`,
+  );
 }
+
+void main();

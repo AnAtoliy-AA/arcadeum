@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { mapServerHint, type ServerHintMove } from './hint-result';
+import {
+  mapServerHint,
+  mapServerCheckersHint,
+  mapServerBackgammonHint,
+  type ServerHintMove,
+} from './hint-result';
 
 const VALID_MOVE: ServerHintMove = {
   from: { file: 'e', rank: 2 },
@@ -90,5 +95,61 @@ describe('mapServerHint', () => {
     expect(hint).not.toBeNull();
     expect(hint?.captured).toBeNull();
     expect(hint?.promotion).toBeNull();
+  });
+});
+
+describe('mapServerCheckersHint', () => {
+  it('maps valid checkers hint with steps', () => {
+    const hint = mapServerCheckersHint({
+      from: { row: 2, col: 1 },
+      to: { row: 3, col: 2 },
+      steps: [{ fromRow: 2, fromCol: 1, toRow: 3, toCol: 2 }],
+    });
+    expect(hint).toEqual({
+      gameType: 'checkers',
+      from: { row: 2, col: 1 },
+      to: { row: 3, col: 2 },
+      steps: [{ fromRow: 2, fromCol: 1, toRow: 3, toCol: 2 }],
+    });
+  });
+
+  it('returns null on invalid checkers payload', () => {
+    expect(mapServerCheckersHint(null)).toBeNull();
+    expect(mapServerCheckersHint({})).toBeNull();
+    expect(mapServerCheckersHint({ from: { row: 'invalid' } })).toBeNull();
+    expect(
+      mapServerCheckersHint({
+        from: { row: 1, col: 2 },
+        to: { row: 2, col: 3 },
+        steps: [],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('mapServerBackgammonHint', () => {
+  it('maps valid numeric and bar/off backgammon moves', () => {
+    expect(mapServerBackgammonHint({ from: 24, to: 20 })).toEqual({
+      gameType: 'backgammon',
+      from: 24,
+      to: 20,
+    });
+    expect(mapServerBackgammonHint({ from: 'bar', to: 20 })).toEqual({
+      gameType: 'backgammon',
+      from: 'bar',
+      to: 20,
+    });
+    expect(mapServerBackgammonHint({ from: 3, to: 'off' })).toEqual({
+      gameType: 'backgammon',
+      from: 3,
+      to: 'off',
+    });
+  });
+
+  it('returns null on invalid backgammon payload', () => {
+    expect(mapServerBackgammonHint(null)).toBeNull();
+    expect(mapServerBackgammonHint({})).toBeNull();
+    expect(mapServerBackgammonHint({ from: 'invalid', to: 20 })).toBeNull();
+    expect(mapServerBackgammonHint({ from: 10, to: 'invalid' })).toBeNull();
   });
 });

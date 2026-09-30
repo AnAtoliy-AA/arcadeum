@@ -26,6 +26,8 @@ import { handleEmote } from './games.gateway.emote';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
 import { handleRequestHint } from './games.gateway.hint';
 import { ChessBotService } from './engines/chess/chess-bot.service';
+import { CheckersBotService } from './checkers/checkers-bot.service';
+import { BackgammonBotService } from './backgammon/backgammon-bot.service';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -65,6 +67,8 @@ export class GamesGateway {
     private readonly matchmakingService: GameRoomsMatchmakingService,
     @Inject(GAME_GATEWAYS) private readonly gameHandlers: GameMessageHandler[],
     private readonly chessBotService?: ChessBotService,
+    @Optional() private readonly checkersBotService?: CheckersBotService,
+    @Optional() private readonly backgammonBotService?: BackgammonBotService,
     @Optional()
     @Inject(forwardRef(() => LiveStatsService))
     private readonly liveStatsService?: LiveStatsService,
@@ -447,7 +451,11 @@ export class GamesGateway {
       payload,
       this.sessionsService,
       this.gamesService,
-      this.chessBotService!,
+      {
+        chess: this.chessBotService,
+        checkers: this.checkersBotService,
+        backgammon: this.backgammonBotService,
+      },
     );
   }
   @SubscribeMessage('games.matchmaking.join')

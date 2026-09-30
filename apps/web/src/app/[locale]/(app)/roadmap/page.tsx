@@ -1,9 +1,8 @@
-
 import type { Metadata } from 'next';
 import { appConfig } from '@/shared/config/app-config';
-import { getRoadmapData } from './roadmap-parser';
+import { getRoadmapData, type RoadmapData } from './roadmap-parser';
 import RoadmapClient from './RoadmapClient';
-
+import { TIERS, PHASES, STATS } from './roadmap-data';
 
 export async function generateMetadata({
   params,
@@ -13,14 +12,23 @@ export async function generateMetadata({
   const { locale } = await params;
   const url = `${appConfig.siteUrl}/${locale}/roadmap`;
   return {
-    title: `Roadmap — ${appConfig.appName}`,
-    description: `Explore the ${appConfig.appName} platform expansion roadmap — new games, ranked play, matchmaking, and more coming soon.`,
-    openGraph: { title: `Roadmap — ${appConfig.appName}`, url },
+    title: `Roadmap - ${appConfig.appName}`,
+    description: `Explore the ${appConfig.appName} platform expansion roadmap: new games, ranked play, matchmaking, and more coming soon.`,
+    openGraph: { title: `Roadmap - ${appConfig.appName}`, url },
     alternates: { canonical: url },
   };
 }
 
 export default async function RoadmapPage() {
-  const roadmapData = await getRoadmapData();
+  let roadmapData: RoadmapData;
+  try {
+    roadmapData = await getRoadmapData();
+  } catch {
+    roadmapData = {
+      tiers: TIERS,
+      phases: PHASES,
+      stats: STATS,
+    };
+  }
   return <RoadmapClient initialData={roadmapData} />;
 }

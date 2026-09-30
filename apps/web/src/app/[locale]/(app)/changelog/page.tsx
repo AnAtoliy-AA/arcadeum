@@ -1,15 +1,21 @@
 import type { Metadata } from 'next';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+import { existsSync } from 'fs';
 import { appConfig } from '@/shared/config/app-config';
 import ChangelogClient from './ChangelogClient';
-
 
 export type ChangelogEntry = {
   version: string;
   date: string;
   sections: { type: string; items: string[] }[];
 };
+
+const CANDIDATE_PATHS = [
+  join(process.cwd(), '..', '..', 'CHANGELOG.md'),
+  join(process.cwd(), 'CHANGELOG.md'),
+  join(process.cwd(), '..', 'CHANGELOG.md'),
+];
 
 function parseChangelog(content: string): ChangelogEntry[] {
   const entries: ChangelogEntry[] = [];
@@ -56,17 +62,28 @@ export async function generateMetadata({
   const { locale } = await params;
   const url = `${appConfig.siteUrl}/${locale}/changelog`;
   return {
-    title: `Changelog — ${appConfig.appName}`,
+    title: `Changelog - ${appConfig.appName}`,
     description: 'View all changes, improvements, and fixes in Arcadeum.',
-    openGraph: { title: `Changelog — ${appConfig.appName}`, url },
+    openGraph: { title: `Changelog - ${appConfig.appName}`, url },
     alternates: { canonical: url },
   };
 }
 
-export default async function ChangelogPage() {
-  const file = join(process.cwd(), '..', '..', 'CHANGELOG.md');
-  const raw = await readFile(file, 'utf-8');
-  const entries = parseChangelog(raw);
+async function getChangelogEntries(): Promise<ChangelogEntry[]> {
+  for (const path of CANDIDATE_PATHS) {
+    if (existsSync(path)) {
+      try {
+        const raw = await readFile(path, 'utf-8');
+        return parseChangelog(raw);
+      } catch {
+        continue;
+      }
+    }
+  }
+  return [];
+}
 
+export default async function ChangelogPage() {
+  const entries = await getChangelogEntries();
   return <ChangelogClient entries={entries} />;
 }

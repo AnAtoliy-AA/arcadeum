@@ -8,6 +8,7 @@ import {
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Connection, FilterQuery, Model, Types } from 'mongoose';
 import {
+  TOURNAMENT_GAME_TYPES,
   Tournament,
   TournamentDocument,
   type TournamentGameType,
@@ -44,11 +45,11 @@ interface ListForAdminArgs {
   gameType?: TournamentGameType;
 }
 
-function sanitizeGameType(raw?: unknown): TournamentGameType | null {
-  if (raw === 'critical_v1') return 'critical_v1';
-  if (raw === 'sea_battle_v1') return 'sea_battle_v1';
-  if (raw === 'chess_v1') return 'chess_v1';
-  return null;
+function isTournamentGameType(raw: unknown): raw is TournamentGameType {
+  return (
+    typeof raw === 'string' &&
+    (TOURNAMENT_GAME_TYPES as readonly string[]).includes(raw)
+  );
 }
 
 @Injectable()
@@ -71,9 +72,8 @@ export class TournamentsService {
     const pageSize = typeof args.pageSize === 'number' ? args.pageSize : 25;
 
     const filter: FilterQuery<TournamentDocument> = {};
-    const safeAdminGameType = sanitizeGameType(args.gameType);
-    if (safeAdminGameType) {
-      filter.gameType = { $eq: safeAdminGameType };
+    if (isTournamentGameType(args.gameType)) {
+      filter.gameType = { $eq: args.gameType };
     }
     if (
       args.status &&
@@ -122,9 +122,8 @@ export class TournamentsService {
     const filterQuery: FilterQuery<TournamentDocument> = {
       status: { $ne: 'cancelled' },
     };
-    const safeGameType = sanitizeGameType(gameType);
-    if (safeGameType) {
-      filterQuery.gameType = { $eq: safeGameType };
+    if (isTournamentGameType(gameType)) {
+      filterQuery.gameType = { $eq: gameType };
     }
     const docs = await this.model
       .find(filterQuery)

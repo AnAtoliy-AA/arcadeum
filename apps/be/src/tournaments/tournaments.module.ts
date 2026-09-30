@@ -12,6 +12,8 @@ import { PublicTournamentsController } from './public-tournaments.controller';
 import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { TournamentsNotificationCron } from './tournaments.notification.cron';
+import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
+import { SeaBattleBlitzCron } from './sea-battle-blitz/sea-battle-blitz.cron';
 
 @Module({
   imports: [
@@ -30,7 +32,13 @@ import { TournamentsNotificationCron } from './tournaments.notification.cron';
     RolesGuard,
     TournamentsBootstrap,
     TournamentsNotificationCron,
+    SeaBattleBlitzService,
+    SeaBattleBlitzCron,
   ],
-  exports: [TournamentsService, TournamentsBracketsService],
+  exports: [
+    TournamentsService,
+    TournamentsBracketsService,
+    SeaBattleBlitzService,
+  ],
 })
 export class TournamentsModule {}

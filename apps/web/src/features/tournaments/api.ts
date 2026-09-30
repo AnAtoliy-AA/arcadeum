@@ -36,6 +36,7 @@ export interface PublicTournamentsResponse {
 export interface FetchPublicTournamentsOptions {
   locale?: string;
   accessToken?: string | null;
+  gameType?: TournamentGameType;
 }
 
 export function buildPublicTournamentsUrl(
@@ -43,6 +44,7 @@ export function buildPublicTournamentsUrl(
 ): string {
   const qs = new URLSearchParams();
   if (opts.locale) qs.set('locale', opts.locale);
+  if (opts.gameType) qs.set('gameType', opts.gameType);
   const s = qs.toString();
   return s ? `/tournaments?${s}` : '/tournaments';
 }
@@ -52,6 +54,27 @@ export async function fetchPublicTournaments(
 ): Promise<PublicTournamentsResponse> {
   return apiClient.get<PublicTournamentsResponse>(
     buildPublicTournamentsUrl(opts),
+    opts.accessToken ? { token: opts.accessToken } : undefined,
+  );
+}
+
+export interface SeaBattleBlitzCupResponse {
+  tournament: PublicTournamentItem | null;
+  bracket: TournamentBracketView | null;
+  countdownSeconds: number;
+}
+
+export async function fetchSeaBattleBlitzCup(
+  opts: FetchPublicTournamentsOptions,
+): Promise<SeaBattleBlitzCupResponse> {
+  const qs = new URLSearchParams();
+  if (opts.locale) qs.set('locale', opts.locale);
+  const s = qs.toString();
+  const url = s
+    ? `/tournaments/sea-battle/blitz-cup?${s}`
+    : '/tournaments/sea-battle/blitz-cup';
+  return apiClient.get<SeaBattleBlitzCupResponse>(
+    url,
     opts.accessToken ? { token: opts.accessToken } : undefined,
   );
 }

@@ -15,10 +15,7 @@ import {
   type TournamentStatus,
 } from './schemas/tournament.schema';
 import { escapeRegExp } from '../common/utils/escape-regexp';
-import {
-  deriveEffectiveWindow,
-  deriveEffectiveStatus,
-} from './lib/derive-effective-window';
+import { deriveEffectiveWindow } from './lib/derive-effective-window';
 import { canDelete, canTransition } from './lib/transition';
 import { TournamentWalletOps } from './lib/tournament-wallet-ops';
 import type {
@@ -27,45 +24,17 @@ import type {
   PublicTournamentItem,
   PublicTournamentsListResponse,
   RegistrationsListResponse,
-  TournamentContentMap,
-  TournamentLocaleContentItem,
 } from './interfaces/tournament.interface';
 import type { CreateTournamentDto } from './dto/create-tournament.dto';
 import type { UpdateTournamentDto } from './dto/update-tournament.dto';
 import type { AdminTournamentStatusFilter } from './dto/list-admin-tournaments.dto';
 import { WalletService } from '../wallet/wallet.service';
 
-interface PopulatedCreator {
-  _id: Types.ObjectId;
-  displayName?: string | null;
-}
-
-interface RegistrationLean {
-  userId: Types.ObjectId;
-  displayName?: string | null;
-  registeredAt: Date;
-  waitlist: boolean;
-}
-
-interface TournamentLean {
-  _id: Types.ObjectId;
-  status: TournamentStatus;
-  gameType: TournamentGameType;
-  scheduledAt: Date;
-  registrationOpensAt: Date | null;
-  registrationClosesAt: Date | null;
-  maxPlayers: number;
-  prizeDescription: string | null;
-  resultText: string | null;
-  entryFeeCoins: number;
-  prizePoolCoins: number;
-  winnerUserId: string | null;
-  content: TournamentContentMap;
-  registrations: RegistrationLean[];
-  createdBy: Types.ObjectId | PopulatedCreator;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import {
+  type TournamentLean,
+  toAdminItem,
+  toPublicItem,
+} from './lib/tournament-mappers';
 
 interface ListForAdminArgs {
   page?: number;
@@ -129,7 +98,7 @@ export class TournamentsService {
     ]);
 
     return {
-      items: docs.map((d) => this.toAdminItem(d)),
+      items: docs.map((d) => toAdminItem(d)),
       total,
       page,
       pageSize,
@@ -140,48 +109,23 @@ export class TournamentsService {
     locale: TournamentLocale,
     isAuthenticated: boolean,
     callerUserId?: string,
+    gameType?: TournamentGameType,
   ): Promise<PublicTournamentsListResponse> {
+    const filterQuery: FilterQuery<TournamentDocument> = {
+      status: { $ne: 'cancelled' },
+    };
+    if (gameType) {
+      filterQuery.gameType = gameType;
+    }
     const docs = await this.model
-      .find({ status: { $ne: 'cancelled' } })
+      .find(filterQuery)
       .sort({ scheduledAt: 1, _id: 1 })
       .limit(50)
       .lean<TournamentLean[]>();
     const now = new Date();
-    const items = docs.map((d): PublicTournamentItem => {
-      const localized: TournamentLocaleContentItem =
-        d.content[locale] ?? d.content.en;
-      const registeredCount = d.registrations.filter((r) => !r.waitlist).length;
-      const waitlistCount = d.registrations.length - registeredCount;
-      const userMatch =
-        isAuthenticated && callerUserId
-          ? d.registrations.find((r) => r.userId.toString() === callerUserId)
-          : undefined;
-      const out: PublicTournamentItem = {
-        id: d._id.toString(),
-        gameType: d.gameType,
-        scheduledAt: d.scheduledAt.toISOString(),
-        registrationOpensAt: d.registrationOpensAt?.toISOString() ?? null,
-        registrationClosesAt: d.registrationClosesAt?.toISOString() ?? null,
-        maxPlayers: d.maxPlayers,
-        prizeDescription: d.prizeDescription ?? null,
-        resultText: d.resultText ?? null,
-        status: d.status,
-        effectiveStatus: deriveEffectiveStatus({
-          status: d.status,
-          scheduledAt: d.scheduledAt,
-          registrationOpensAt: d.registrationOpensAt,
-          registrationClosesAt: d.registrationClosesAt,
-          now,
-        }),
-        registeredCount,
-        waitlistCount,
-        isRegistered: !!userMatch,
-        isWaitlisted: !!userMatch?.waitlist,
-        name: localized.name,
-      };
-      if (localized.description) out.description = localized.description;
-      return out;
-    });
+    const items = docs.map((d): PublicTournamentItem =>
+      toPublicItem(d, locale, isAuthenticated, callerUserId, now),
+    );
     return { items, total: items.length };
   }
 
@@ -308,7 +252,7 @@ export class TournamentsService {
     if (!doc) {
       throw new NotFoundException({ code: 'TOURNAMENT_NOT_FOUND' });
     }
-    return this.toAdminItem(doc);
+    return toAdminItem(doc);
   }
 
   async register(
@@ -449,43 +393,5 @@ export class TournamentsService {
       page,
       pageSize,
     };
-  }
-
-  private toAdminItem(d: TournamentLean): AdminTournamentItem {
-    const createdBy = this.extractCreator(d.createdBy);
-    const registeredCount = d.registrations.filter((r) => !r.waitlist).length;
-    const waitlistCount = d.registrations.length - registeredCount;
-    return {
-      id: d._id.toString(),
-      status: d.status,
-      gameType: d.gameType,
-      scheduledAt: d.scheduledAt.toISOString(),
-      registrationOpensAt: d.registrationOpensAt?.toISOString() ?? null,
-      registrationClosesAt: d.registrationClosesAt?.toISOString() ?? null,
-      maxPlayers: d.maxPlayers,
-      prizeDescription: d.prizeDescription ?? null,
-      resultText: d.resultText ?? null,
-      content: d.content,
-      registeredCount,
-      waitlistCount,
-      createdBy,
-      createdAt: d.createdAt.toISOString(),
-      updatedAt: d.updatedAt.toISOString(),
-    };
-  }
-
-  private extractCreator(
-    raw: Types.ObjectId | PopulatedCreator,
-  ): { id: string; displayName: string | null } | null {
-    if (raw instanceof Types.ObjectId) {
-      return { id: raw.toString(), displayName: null };
-    }
-    if (raw && typeof raw === 'object' && '_id' in raw) {
-      return {
-        id: raw._id.toString(),
-        displayName: raw.displayName ?? null,
-      };
-    }
-    return null;
   }
 }

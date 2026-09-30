@@ -10,6 +10,7 @@ import type { App } from 'supertest/types';
 import { AdminTournamentsController } from './admin-tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 import { TournamentsBracketsService } from './tournaments.brackets.service';
+import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
@@ -50,6 +51,10 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
     generateBracket: jest.Mock;
     reportResult: jest.Mock;
   };
+  let blitzService: {
+    isBlitzCupEnabled: jest.Mock;
+    setBlitzCupEnabled: jest.Mock;
+  };
 
   const tournamentId = new Types.ObjectId().toHexString();
   const winnerId = new Types.ObjectId().toHexString();
@@ -58,6 +63,8 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
     service.markComplete.mockReset();
     bracketsService.generateBracket.mockReset();
     bracketsService.reportResult.mockReset();
+    blitzService.isBlitzCupEnabled.mockReset();
+    blitzService.setBlitzCupEnabled.mockReset();
   });
 
   beforeAll(async () => {
@@ -71,6 +78,10 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
       generateBracket: jest.fn(),
       reportResult: jest.fn(),
     };
+    blitzService = {
+      isBlitzCupEnabled: jest.fn(),
+      setBlitzCupEnabled: jest.fn(),
+    };
 
     const moduleRef = await Test.createTestingModule({
       controllers: [AdminTournamentsController],
@@ -78,6 +89,7 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
         RolesGuard,
         { provide: TournamentsService, useValue: service },
         { provide: TournamentsBracketsService, useValue: bracketsService },
+        { provide: SeaBattleBlitzService, useValue: blitzService },
         { provide: getModelToken(User.name), useValue: userModel },
       ],
     })
@@ -147,6 +159,10 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
     generateBracket: jest.Mock;
     reportResult: jest.Mock;
   };
+  let blitzService: {
+    isBlitzCupEnabled: jest.Mock;
+    setBlitzCupEnabled: jest.Mock;
+  };
 
   const tournamentId = new Types.ObjectId().toHexString();
   const winnerId = new Types.ObjectId().toHexString();
@@ -154,6 +170,8 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
   beforeEach(() => {
     bracketsService.generateBracket.mockReset();
     bracketsService.reportResult.mockReset();
+    blitzService.isBlitzCupEnabled.mockReset();
+    blitzService.setBlitzCupEnabled.mockReset();
   });
 
   beforeAll(async () => {
@@ -166,6 +184,10 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
       generateBracket: jest.fn(),
       reportResult: jest.fn(),
     };
+    blitzService = {
+      isBlitzCupEnabled: jest.fn(),
+      setBlitzCupEnabled: jest.fn(),
+    };
 
     const moduleRef = await Test.createTestingModule({
       controllers: [AdminTournamentsController],
@@ -173,6 +195,7 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
         RolesGuard,
         { provide: TournamentsService, useValue: { markComplete: jest.fn() } },
         { provide: TournamentsBracketsService, useValue: bracketsService },
+        { provide: SeaBattleBlitzService, useValue: blitzService },
         { provide: getModelToken(User.name), useValue: userModel },
       ],
     })
@@ -256,5 +279,40 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
       .post(`/admin/tournaments/${tournamentId}/bracket/result`)
       .send({ round: 1, matchIndex: 0, winnerUserId: '' })
       .expect(400);
+  });
+
+  describe('GET sea-battle-blitz/status', () => {
+    it('returns blitz status', async () => {
+      blitzService.isBlitzCupEnabled.mockResolvedValue(true);
+      const res = await request(app.getHttpServer())
+        .get('/admin/tournaments/sea-battle-blitz/status')
+        .expect(200);
+      expect(res.body).toEqual({ enabled: true });
+    });
+  });
+
+  describe('POST sea-battle-blitz/toggle', () => {
+    it('toggles blitz status', async () => {
+      blitzService.setBlitzCupEnabled.mockResolvedValue({
+        ok: true,
+        enabled: false,
+      });
+      const res = await request(app.getHttpServer())
+        .post('/admin/tournaments/sea-battle-blitz/toggle')
+        .send({ enabled: false })
+        .expect(201);
+      expect(res.body).toEqual({ ok: true, enabled: false });
+      expect(blitzService.setBlitzCupEnabled).toHaveBeenCalledWith(
+        false,
+        mockAdminId,
+      );
+    });
+
+    it('rejects non-boolean enabled with 400', async () => {
+      await request(app.getHttpServer())
+        .post('/admin/tournaments/sea-battle-blitz/toggle')
+        .send({ enabled: 'invalid' })
+        .expect(400);
+    });
   });
 });

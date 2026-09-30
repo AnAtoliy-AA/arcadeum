@@ -10,16 +10,21 @@ import {
   updateTournament,
   transitionTournament,
   deleteTournament,
+  fetchSeaBattleBlitzStatus,
+  toggleSeaBattleBlitz,
   type AdminTournamentItem,
   type AdminTournamentsResponse,
   type ListAdminTournamentsArgs,
   type CreateTournamentBody,
   type UpdateTournamentBody,
   type TransitionBody,
+  type SeaBattleBlitzStatusResponse,
+  type ToggleSeaBattleBlitzResponse,
 } from './api';
 
 export const ADMIN_TOURNAMENTS_REFRESH_KEY = 'admin-tournaments';
 export const PUBLIC_TOURNAMENTS_REFRESH_KEY = 'public-tournaments';
+export const ADMIN_BLITZ_STATUS_REFRESH_KEY = 'admin-blitz-status';
 
 function refreshKeys(triggerRefresh: (k: string) => void): void {
   triggerRefresh(ADMIN_TOURNAMENTS_REFRESH_KEY);
@@ -86,5 +91,27 @@ export function useDeleteTournament() {
   return useMutation<void, { id: string }>({
     mutationFn: ({ id }) => deleteTournament(id, accessToken!),
     onSettled: () => refreshKeys(triggerRefresh),
+  });
+}
+
+export function useSeaBattleBlitzAdminStatus() {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  return useQuery<SeaBattleBlitzStatusResponse>({
+    queryKey: ['admin-sea-battle-blitz-status'],
+    queryFn: () => fetchSeaBattleBlitzStatus(accessToken!),
+    refreshKey: ADMIN_BLITZ_STATUS_REFRESH_KEY,
+    enabled: !!accessToken,
+  });
+}
+
+export function useToggleSeaBattleBlitz() {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
+  return useMutation<ToggleSeaBattleBlitzResponse, { enabled: boolean }>({
+    mutationFn: ({ enabled }) => toggleSeaBattleBlitz(enabled, accessToken!),
+    onSettled: () => {
+      triggerRefresh(ADMIN_BLITZ_STATUS_REFRESH_KEY);
+      refreshKeys(triggerRefresh);
+    },
   });
 }

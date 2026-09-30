@@ -37,7 +37,7 @@ export function SeaBattleBlitzBanner({
 
   const isPending = registerMutation.isPending || unregisterMutation.isPending;
 
-  if (!blitzData?.tournament) {
+  if (!blitzData?.tournament || blitzData.enabled === false) {
     return null;
   }
 
@@ -103,6 +103,15 @@ export function SeaBattleBlitzBanner({
           ) : (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-500/40 bg-slate-500/20 px-3 py-1 text-xs font-bold text-slate-300">
               Upcoming Cup
+            </span>
+          )}
+
+          {tournament.isRegistered && (
+            <span
+              data-testid="blitz-cup-registered-badge"
+              className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300"
+            >
+              Registered
             </span>
           )}
         </div>

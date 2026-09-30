@@ -6,6 +6,10 @@ import {
   type TournamentDocument,
   type TournamentLocale,
 } from '../schemas/tournament.schema';
+import {
+  TournamentSetting,
+  type TournamentSettingDocument,
+} from '../schemas/tournament-setting.schema';
 import { TournamentsBracketsService } from '../tournaments.brackets.service';
 import { TournamentsService } from '../tournaments.service';
 import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
@@ -19,6 +23,7 @@ import type { SeaBattleBlitzCupResponse } from './sea-battle-blitz.types';
 const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
 const TEN_MINUTES_MS = 10 * 60 * 1000;
 const DEFAULT_SYSTEM_USER_ID = new Types.ObjectId('000000000000000000000001');
+const BLITZ_SETTING_KEY = 'sea_battle_weekly_blitz';
 
 export function computeNextBlitzCupDate(now: Date = new Date()): Date {
   const target = new Date(now);
@@ -39,6 +44,8 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
   constructor(
     @InjectModel(Tournament.name)
     private readonly model: Model<TournamentDocument>,
+    @InjectModel(TournamentSetting.name)
+    private readonly settingModel: Model<TournamentSettingDocument>,
     private readonly bracketsService: TournamentsBracketsService,
     private readonly tournamentsService: TournamentsService,
     private readonly dispatcher: NotificationDispatcher,
@@ -54,7 +61,42 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
     }
   }
 
+  async isBlitzCupEnabled(): Promise<boolean> {
+    const doc = await this.settingModel
+      .findOne({ key: BLITZ_SETTING_KEY })
+      .exec();
+    return doc ? doc.enabled : true;
+  }
+
+  async setBlitzCupEnabled(
+    enabled: boolean,
+    updatedBy?: string,
+  ): Promise<{ ok: boolean; enabled: boolean }> {
+    await this.settingModel.findOneAndUpdate(
+      { key: BLITZ_SETTING_KEY },
+      {
+        $set: {
+          enabled,
+          updatedBy:
+            updatedBy && Types.ObjectId.isValid(updatedBy)
+              ? new Types.ObjectId(updatedBy)
+              : null,
+        },
+      },
+      { upsert: true, new: true },
+    );
+    this.logger.log(
+      `Sea Battle Blitz Cup scheduling toggled: enabled=${enabled}`,
+    );
+    return { ok: true, enabled };
+  }
+
   async ensureUpcomingBlitzCup(): Promise<TournamentDocument | null> {
+    const isEnabled = await this.isBlitzCupEnabled();
+    if (!isEnabled) {
+      return null;
+    }
+
     const existing = await this.model
       .findOne({
         gameType: 'sea_battle_v1',
@@ -125,6 +167,11 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
   }
 
   async startBlitzCupIfDue(): Promise<void> {
+    const isEnabled = await this.isBlitzCupEnabled();
+    if (!isEnabled) {
+      return;
+    }
+
     const now = new Date();
     const activeCups = await this.model
       .find({
@@ -184,6 +231,7 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
     isAuthenticated: boolean,
     callerUserId?: string,
   ): Promise<SeaBattleBlitzCupResponse> {
+    const isEnabled = await this.isBlitzCupEnabled();
     const doc = await this.model
       .findOne({
         gameType: 'sea_battle_v1',
@@ -199,6 +247,7 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
         tournament: null,
         bracket: null,
         countdownSeconds: 0,
+        enabled: isEnabled,
       };
     }
 
@@ -252,6 +301,7 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
       tournament: item,
       bracket: bracketRes?.bracket ?? null,
       countdownSeconds,
+      enabled: isEnabled,
     };
   }
 

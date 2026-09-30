@@ -30,6 +30,8 @@ import type {
   AdminTournamentsListResponse,
   RegistrationsListResponse,
 } from './interfaces/tournament.interface';
+import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
+import { ToggleBlitzCupDto } from './dto/toggle-blitz.dto';
 
 interface RequestWithUser {
   user?: AuthenticatedUser;
@@ -42,7 +44,22 @@ export class AdminTournamentsController {
   constructor(
     private readonly service: TournamentsService,
     private readonly bracketsService: TournamentsBracketsService,
+    private readonly blitzService: SeaBattleBlitzService,
   ) {}
+
+  @Get('sea-battle-blitz/status')
+  async getBlitzStatus(): Promise<{ enabled: boolean }> {
+    const enabled = await this.blitzService.isBlitzCupEnabled();
+    return { enabled };
+  }
+
+  @Post('sea-battle-blitz/toggle')
+  async toggleBlitz(
+    @Body() dto: ToggleBlitzCupDto,
+    @Req() req: RequestWithUser,
+  ): Promise<{ ok: boolean; enabled: boolean }> {
+    return this.blitzService.setBlitzCupEnabled(dto.enabled, req.user?.userId);
+  }
 
   @Get()
   list(

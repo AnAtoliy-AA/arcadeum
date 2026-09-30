@@ -146,4 +146,12 @@ describe('SeaBattleBlitzBanner', () => {
 
     expect(screen.getByTestId('blitz-status-live')).toBeDefined();
   });
+
+  it('returns null when enabled is false', () => {
+    const data = makeBlitzData();
+    data.enabled = false;
+    const { container } = render(<SeaBattleBlitzBanner initialData={data} />);
+
+    expect(container.firstChild).toBeNull();
+  });
 });

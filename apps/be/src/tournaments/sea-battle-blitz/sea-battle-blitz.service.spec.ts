@@ -6,6 +6,7 @@ import {
   computeNextBlitzCupDate,
 } from './sea-battle-blitz.service';
 import { Tournament } from '../schemas/tournament.schema';
+import { TournamentSetting } from '../schemas/tournament-setting.schema';
 import { TournamentsBracketsService } from '../tournaments.brackets.service';
 import { TournamentsService } from '../tournaments.service';
 import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
@@ -18,6 +19,10 @@ describe('SeaBattleBlitzService', () => {
     findOne: jest.Mock;
     find: jest.Mock;
     create: jest.Mock;
+  };
+  let settingModel: {
+    findOne: jest.Mock;
+    findOneAndUpdate: jest.Mock;
   };
   let bracketsService: {
     generateBracket: jest.Mock;
@@ -37,6 +42,12 @@ describe('SeaBattleBlitzService', () => {
       find: jest.fn(),
       create: jest.fn(),
     };
+    settingModel = {
+      findOne: jest.fn().mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      }),
+      findOneAndUpdate: jest.fn().mockResolvedValue({ enabled: true }),
+    };
     bracketsService = {
       generateBracket: jest.fn(),
       getPublicBracket: jest.fn(),
@@ -53,6 +64,10 @@ describe('SeaBattleBlitzService', () => {
       providers: [
         SeaBattleBlitzService,
         { provide: getModelToken(Tournament.name), useValue: model },
+        {
+          provide: getModelToken(TournamentSetting.name),
+          useValue: settingModel,
+        },
         { provide: TournamentsBracketsService, useValue: bracketsService },
         { provide: TournamentsService, useValue: tournamentsService },
         { provide: NotificationDispatcher, useValue: dispatcher },
@@ -88,7 +103,45 @@ describe('SeaBattleBlitzService', () => {
     });
   });
 
+  describe('isBlitzCupEnabled and setBlitzCupEnabled', () => {
+    it('defaults to true when setting is absent', async () => {
+      settingModel.findOne.mockReturnValue({
+        exec: jest.fn().mockResolvedValue(null),
+      });
+      const enabled = await service.isBlitzCupEnabled();
+      expect(enabled).toBe(true);
+    });
+
+    it('returns stored setting value', async () => {
+      settingModel.findOne.mockReturnValue({
+        exec: jest.fn().mockResolvedValue({ enabled: false }),
+      });
+      const enabled = await service.isBlitzCupEnabled();
+      expect(enabled).toBe(false);
+    });
+
+    it('updates setting via setBlitzCupEnabled', async () => {
+      const res = await service.setBlitzCupEnabled(false, oid().toString());
+      expect(res).toEqual({ ok: true, enabled: false });
+      expect(settingModel.findOneAndUpdate).toHaveBeenCalledWith(
+        { key: 'sea_battle_weekly_blitz' },
+        expect.anything(),
+        { upsert: true, new: true },
+      );
+    });
+  });
+
   describe('ensureUpcomingBlitzCup', () => {
+    it('returns null and does not query or create if disabled', async () => {
+      settingModel.findOne.mockReturnValue({
+        exec: jest.fn().mockResolvedValue({ enabled: false }),
+      });
+      const res = await service.ensureUpcomingBlitzCup();
+      expect(res).toBeNull();
+      expect(model.findOne).not.toHaveBeenCalled();
+      expect(model.create).not.toHaveBeenCalled();
+    });
+
     it('returns existing tournament if active one already exists', async () => {
       const existingDoc = { _id: oid(), status: 'registration_open' };
       model.findOne.mockReturnValue({

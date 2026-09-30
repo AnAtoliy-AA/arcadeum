@@ -7,4 +7,5 @@ export interface SeaBattleBlitzCupResponse {
   tournament: PublicTournamentItem | null;
   bracket: TournamentBracketView | null;
   countdownSeconds: number;
+  enabled: boolean;
 }

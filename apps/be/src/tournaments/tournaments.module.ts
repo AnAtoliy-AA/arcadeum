@@ -5,6 +5,10 @@ import { WalletModule } from '../wallet/wallet.module';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { Tournament, TournamentSchema } from './schemas/tournament.schema';
+import {
+  TournamentSetting,
+  TournamentSettingSchema,
+} from './schemas/tournament-setting.schema';
 import { TournamentsService } from './tournaments.service';
 import { TournamentsBracketsService } from './tournaments.brackets.service';
 import { AdminTournamentsController } from './admin-tournaments.controller';
@@ -22,6 +26,7 @@ import { SeaBattleBlitzCron } from './sea-battle-blitz/sea-battle-blitz.cron';
     MongooseModule.forFeature([
       { name: Tournament.name, schema: TournamentSchema },
       { name: User.name, schema: UserSchema },
+      { name: TournamentSetting.name, schema: TournamentSettingSchema },
     ]),
     NotificationsModule,
   ],

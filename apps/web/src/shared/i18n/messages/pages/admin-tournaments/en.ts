@@ -1,5 +1,13 @@
 export const adminTournamentsEn = {
   title: 'Tournaments',
+  blitzCup: {
+    title: 'Weekly Sea Battle Blitz Cup',
+    description:
+      'Automated Saturday 18:00 UTC single-elimination tournament scheduler',
+    statusActive: 'Active (Scheduled weekly)',
+    statusPaused: 'Paused (Scheduling disabled)',
+    toggleLabel: 'Toggle automated Sea Battle Blitz Cup',
+  },
   actions: {
     new: '+ New',
     edit: 'Edit',

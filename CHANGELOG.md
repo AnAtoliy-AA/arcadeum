@@ -7,48 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- automated weekly scheduled Sea Battle Blitz Cups with single-elimination bracket generation and countdown hero banner (ARC-966)
+
 ## [1.30.35] - 2026-09-30
 
 ### Added
+
 - support checkers and backgammon coach hints on gateway (ARC-883) (ARC-883)
 
 ### Fixed
+
 - unignore docs/ROADMAP.md in vercelignore and add generator fallback (ARC-883) (ARC-883)
 - bundle changelog data at build time to prevent runtime ENOENT (ARC-883) (ARC-883)
 - unify roadmap source of truth from docs/ROADMAP.md and eliminate runtime I/O (ARC-883) (ARC-883)
 
 ### Refactored
+
 - restore direct CHANGELOG.md parsing and remove generated JSON (ARC-883) (ARC-883)
 - introduce BoardPosition type for row and col coordinates (ARC-883) (ARC-883)
-
 
 ## [1.30.34] - 2026-09-29
 
 ### Improved
+
 - optimize chess puzzles lcp with ssg and dynamic imports (ARC-roadmap-single-doc)
 
 ### Documentation
-- unify platform roadmap and consolidate improvements (ARC-roadmap-single-doc)
 
+- unify platform roadmap and consolidate improvements (ARC-roadmap-single-doc)
 
 ## [1.30.33] - 2026-09-29
 
 ### Added
-- order badges by level in shop and inventory (ARC-shop-badge-order-by-level)
 
+- order badges by level in shop and inventory (ARC-shop-badge-order-by-level)
 
 ## [1.30.32] - 2026-09-28
 
 ### Added
-- unify board field with shared checkerboard and fix puzzle playability
 
+- unify board field with shared checkerboard and fix puzzle playability
 
 ## [1.30.31] - 2026-09-28
 
 ### Fixed
+
 - resolve logout stale auth state test fixtures and assertions
 - clear stale auth identity on logout
-
 
 ## [1.30.30] - 2026-09-28
 

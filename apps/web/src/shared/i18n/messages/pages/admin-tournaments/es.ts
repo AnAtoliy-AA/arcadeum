@@ -1,5 +1,19 @@
 export const adminTournamentsEs = {
   title: 'Torneos',
+  blitzCup: {
+    title: 'Copa Semanal Blitz de Batalla Naval',
+    description:
+      'Programador automático de torneos los sábados a las 18:00 UTC',
+    statusActive: 'Activo (Programado semanalmente)',
+    statusPaused: 'Pausado (Programación desactivada)',
+    toggleLabel: 'Alternar Copa Semanal Blitz de Batalla Naval',
+    prizePoolLabel: 'Fondo de Premios (Monedas)',
+    prizeDescriptionLabel: 'Descripción del premio',
+    editPrizes: 'Configurar Premios',
+    savePrizes: 'Guardar Premios',
+    cancel: 'Cancelar',
+    prizesSaved: 'Premios guardados',
+  },
   actions: {
     new: '+ Nuevo',
     edit: 'Editar',

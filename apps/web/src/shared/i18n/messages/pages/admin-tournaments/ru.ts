@@ -1,5 +1,19 @@
 export const adminTournamentsRu = {
   title: 'Турниры',
+  blitzCup: {
+    title: 'Еженедельный Блиц-Кубок Морского Боя',
+    description:
+      'Автоматический планировщик турниров на выбывание по субботам в 18:00 UTC',
+    statusActive: 'Активен (Планируется еженедельно)',
+    statusPaused: 'Приостановлен (Планирование отключено)',
+    toggleLabel: 'Переключить автоматический Блиц-Кубок Морского Боя',
+    prizePoolLabel: 'Призовой фонд (Монеты)',
+    prizeDescriptionLabel: 'Описание приза',
+    editPrizes: 'Настроить призы',
+    savePrizes: 'Сохранить призы',
+    cancel: 'Отмена',
+    prizesSaved: 'Призы сохранены',
+  },
   actions: {
     new: '+ Создать',
     edit: 'Изменить',

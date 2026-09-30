@@ -20,12 +20,26 @@ import { AdminTournamentsFilters } from '@/features/admin-tournaments/ui/AdminTo
 import { AdminTournamentsTable } from '@/features/admin-tournaments/ui/AdminTournamentsTable';
 import { AdminTournamentForm } from '@/features/admin-tournaments/ui/AdminTournamentForm';
 import { MarkCompleteDialog } from '@/features/admin-tournaments/ui/MarkCompleteDialog';
+import { AdminSeaBattleBlitzControl } from '@/features/admin-tournaments/ui/AdminSeaBattleBlitzControl';
 import { nextStatuses } from '@/features/admin-tournaments/lib/transitions';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { ADMIN_TOURNAMENTS_REFRESH_KEY } from '@/features/admin-tournaments/hooks';
 
 interface TournamentsI18n {
   title: string;
+  blitzCup?: {
+    title: string;
+    description: string;
+    statusActive: string;
+    statusPaused: string;
+    toggleLabel: string;
+    prizePoolLabel: string;
+    prizeDescriptionLabel: string;
+    editPrizes: string;
+    savePrizes: string;
+    cancel: string;
+    prizesSaved: string;
+  };
   actions: {
     new: string;
     edit: string;
@@ -267,6 +281,8 @@ export default function AdminTournamentsClient() {
       <Container size="lg">
         <div className="flex flex-col items-stretch gap-3">
           <PageTitle size="lg">{t.title}</PageTitle>
+
+          <AdminSeaBattleBlitzControl labels={t?.blitzCup} />
 
           <AdminTournamentsFilters
             q={q}

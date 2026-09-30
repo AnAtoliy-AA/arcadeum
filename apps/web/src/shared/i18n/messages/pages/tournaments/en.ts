@@ -79,6 +79,26 @@ export const tournamentsEn = {
       notEnoughPlayers: 'Not enough players to generate a bracket.',
     },
   },
+  blitzBanner: {
+    ariaLabel: 'Sea Battle Weekly Blitz Cup',
+    kicker: 'Weekly Naval Championship',
+    statusLive: 'Live Cup In Progress',
+    statusOpen: 'Registration Open',
+    statusClosed: 'Registration Closed',
+    statusUpcoming: 'Upcoming Cup',
+    statusRegistered: 'Registered',
+    formatDetails: '{count} Captains • Single Elimination',
+    captainsReady: 'Captains Ready',
+    startsIn: 'Starts In',
+    battleStatus: 'Battle Status',
+    playingNow: 'PLAYING NOW',
+    signInNotice: 'Sign in to enter the Blitz Cup',
+    leaveCup: 'Leave Blitz Cup',
+    registerCup: 'Register for Blitz Cup',
+    tournamentFull: 'Tournament Full',
+    viewBracket: 'View Bracket',
+    allTournaments: 'All Tournaments',
+  },
 };
 
 export type TournamentsI18n = typeof tournamentsEn;

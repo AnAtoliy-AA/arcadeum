@@ -154,4 +154,22 @@ describe('SeaBattleBlitzBanner', () => {
 
     expect(container.firstChild).toBeNull();
   });
+
+  it('renders custom localized labels when provided', () => {
+    const data = makeBlitzData();
+    render(
+      <SeaBattleBlitzBanner
+        initialData={data}
+        labels={{
+          kicker: 'Naval Clash',
+          statusOpen: 'Slots Available',
+          allTournaments: 'Explore All',
+        }}
+      />,
+    );
+
+    expect(screen.getByText('Naval Clash')).toBeDefined();
+    expect(screen.getByText('Slots Available')).toBeDefined();
+    expect(screen.getByText('Explore All')).toBeDefined();
+  });
 });

@@ -13,16 +13,67 @@ import {
 } from '../hooks';
 import type { SeaBattleBlitzCupResponse } from '../api';
 
+export interface SeaBattleBlitzBannerLabels {
+  ariaLabel: string;
+  kicker: string;
+  statusLive: string;
+  statusOpen: string;
+  statusClosed: string;
+  statusUpcoming: string;
+  statusRegistered: string;
+  formatDetails: string;
+  captainsReady: string;
+  startsIn: string;
+  battleStatus: string;
+  playingNow: string;
+  signInNotice: string;
+  leaveCup: string;
+  registerCup: string;
+  tournamentFull: string;
+  viewBracket: string;
+  allTournaments: string;
+}
+
+export const DEFAULT_BLITZ_BANNER_LABELS: SeaBattleBlitzBannerLabels = {
+  ariaLabel: 'Sea Battle Weekly Blitz Cup',
+  kicker: 'Weekly Naval Championship',
+  statusLive: 'Live Cup In Progress',
+  statusOpen: 'Registration Open',
+  statusClosed: 'Registration Closed',
+  statusUpcoming: 'Upcoming Cup',
+  statusRegistered: 'Registered',
+  formatDetails: '{count} Captains • Single Elimination',
+  captainsReady: 'Captains Ready',
+  startsIn: 'Starts In',
+  battleStatus: 'Battle Status',
+  playingNow: 'PLAYING NOW',
+  signInNotice: 'Sign in to enter the Blitz Cup',
+  leaveCup: 'Leave Blitz Cup',
+  registerCup: 'Register for Blitz Cup',
+  tournamentFull: 'Tournament Full',
+  viewBracket: 'View Bracket',
+  allTournaments: 'All Tournaments',
+};
+
 export interface SeaBattleBlitzBannerProps {
   initialData?: SeaBattleBlitzCupResponse | null;
+  labels?: Partial<SeaBattleBlitzBannerLabels>;
   className?: string;
 }
 
 export function SeaBattleBlitzBanner({
   initialData,
+  labels,
   className,
 }: SeaBattleBlitzBannerProps) {
-  const { locale } = useLanguage();
+  const { locale, messages } = useLanguage();
+  const tournamentsMessages = messages?.pages?.tournaments as
+    { blitzBanner?: Partial<SeaBattleBlitzBannerLabels> } | undefined;
+  const t: SeaBattleBlitzBannerLabels = {
+    ...DEFAULT_BLITZ_BANNER_LABELS,
+    ...(tournamentsMessages?.blitzBanner ?? {}),
+    ...(labels ?? {}),
+  };
   const session = useSessionStore((s) => s.snapshot);
   const isAuthenticated =
     !!session.accessToken &&
@@ -60,7 +111,7 @@ export function SeaBattleBlitzBanner({
   return (
     <section
       data-testid="sea-battle-blitz-banner"
-      aria-label="Sea Battle Weekly Blitz Cup"
+      aria-label={t.ariaLabel}
       className={cx(
         'relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-slate-900/80 p-5 backdrop-blur-md md:p-6 mb-8 shadow-xl shadow-cyan-950/20',
         className,
@@ -72,7 +123,7 @@ export function SeaBattleBlitzBanner({
             🏆
           </span>
           <span className="text-xs uppercase tracking-widest font-black text-cyan-400">
-            Weekly Naval Championship
+            {t.kicker}
           </span>
         </div>
 
@@ -83,7 +134,7 @@ export function SeaBattleBlitzBanner({
               className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 animate-pulse"
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              Live Cup In Progress
+              {t.statusLive}
             </span>
           ) : tournament.effectiveStatus === 'registration_open' ? (
             <span
@@ -91,18 +142,18 @@ export function SeaBattleBlitzBanner({
               className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/40 bg-cyan-500/20 px-3 py-1 text-xs font-bold text-cyan-300"
             >
               <span className="h-2 w-2 rounded-full bg-cyan-400" />
-              Registration Open
+              {t.statusOpen}
             </span>
           ) : tournament.effectiveStatus === 'registration_closed' ? (
             <span
               data-testid="blitz-status-closed"
               className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-300"
             >
-              Registration Closed
+              {t.statusClosed}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-500/40 bg-slate-500/20 px-3 py-1 text-xs font-bold text-slate-300">
-              Upcoming Cup
+              {t.statusUpcoming}
             </span>
           )}
 
@@ -111,7 +162,7 @@ export function SeaBattleBlitzBanner({
               data-testid="blitz-cup-registered-badge"
               className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300"
             >
-              Registered
+              {t.statusRegistered}
             </span>
           )}
         </div>
@@ -140,13 +191,18 @@ export function SeaBattleBlitzBanner({
             </span>
             <span className="flex items-center gap-1.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20 px-2.5 py-1 text-cyan-300">
               <span>⚓</span>
-              <span>16 Captains • Single Elimination</span>
+              <span>
+                {t.formatDetails.replace(
+                  '{count}',
+                  String(tournament.maxPlayers),
+                )}
+              </span>
             </span>
           </div>
 
           <div className="space-y-1.5 max-w-md">
             <div className="flex items-center justify-between text-xs font-medium text-[var(--colorForegroundMuted)]">
-              <span>Captains Ready</span>
+              <span>{t.captainsReady}</span>
               <span
                 data-testid="blitz-cup-captains-count"
                 className="font-bold text-cyan-300"
@@ -165,11 +221,11 @@ export function SeaBattleBlitzBanner({
 
         <div className="flex flex-col items-center justify-center rounded-xl border border-cyan-500/20 bg-cyan-950/30 p-4 text-center">
           <span className="text-xs uppercase tracking-wider text-cyan-400 font-bold mb-2">
-            {isLive ? 'Battle Status' : 'Starts In'}
+            {isLive ? t.battleStatus : t.startsIn}
           </span>
           {isLive ? (
             <span className="text-lg font-black tracking-wider text-emerald-400">
-              PLAYING NOW
+              {t.playingNow}
             </span>
           ) : (
             <CountdownClock
@@ -188,7 +244,7 @@ export function SeaBattleBlitzBanner({
               data-testid="blitz-cup-signin-notice"
               className="text-xs text-[var(--colorForegroundMuted)]"
             >
-              Sign in to enter the Blitz Cup
+              {t.signInNotice}
             </span>
           ) : tournament.isRegistered ? (
             <Button
@@ -198,7 +254,7 @@ export function SeaBattleBlitzBanner({
               disabled={isPending}
               data-testid="blitz-cup-unregister-button"
             >
-              Leave Blitz Cup
+              {t.leaveCup}
             </Button>
           ) : canRegister ? (
             <Button
@@ -208,11 +264,11 @@ export function SeaBattleBlitzBanner({
               disabled={isPending}
               data-testid="blitz-cup-register-button"
             >
-              Register for Blitz Cup
+              {t.registerCup}
             </Button>
           ) : isFull ? (
             <span className="text-xs text-amber-400 font-medium">
-              Tournament Full
+              {t.tournamentFull}
             </span>
           ) : null}
         </div>
@@ -224,7 +280,7 @@ export function SeaBattleBlitzBanner({
               size="sm"
               data-testid="blitz-cup-view-bracket"
             >
-              View Bracket
+              {t.viewBracket}
             </Button>
           </Link>
           <Link href={`/${locale}/tournaments`}>
@@ -233,7 +289,7 @@ export function SeaBattleBlitzBanner({
               size="sm"
               data-testid="blitz-cup-all-tournaments"
             >
-              All Tournaments
+              {t.allTournaments}
             </Button>
           </Link>
         </div>

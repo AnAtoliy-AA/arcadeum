@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.35] - 2026-09-30
+
+### Added
+- support checkers and backgammon coach hints on gateway (ARC-883) (ARC-883)
+
+### Fixed
+- unignore docs/ROADMAP.md in vercelignore and add generator fallback (ARC-883) (ARC-883)
+- bundle changelog data at build time to prevent runtime ENOENT (ARC-883) (ARC-883)
+- unify roadmap source of truth from docs/ROADMAP.md and eliminate runtime I/O (ARC-883) (ARC-883)
+
+### Refactored
+- restore direct CHANGELOG.md parsing and remove generated JSON (ARC-883) (ARC-883)
+- introduce BoardPosition type for row and col coordinates (ARC-883) (ARC-883)
+
+
 ## [1.30.34] - 2026-09-29
 
 ### Improved

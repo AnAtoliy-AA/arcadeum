@@ -7,9 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.30.36] - 2026-09-30
 
-- automated weekly scheduled Sea Battle Blitz Cups with single-elimination bracket generation and countdown hero banner (ARC-966)
+### Added
+- configurable blitz cup default prizes by admin (ARC-966) (ARC-966)
+- localize sea battle blitz cup banner across all languages (ARC-966) (ARC-966)
+- allow admin to toggle sea battle blitz cup scheduling (ARC-966) (ARC-966)
+- automate weekly sea battle blitz cups and landing banner (ARC-966) (ARC-966)
+
+### Fixed
+- sanitize gameType filter with $eq operator to resolve CodeQL alert (ARC-966) (ARC-966)
+
+### Refactored
+- validate gameType with TOURNAMENT_GAME_TYPES type guard (ARC-966) (ARC-966)
+
 
 ## [1.30.35] - 2026-09-30
 

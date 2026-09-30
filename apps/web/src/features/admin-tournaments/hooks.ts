@@ -20,6 +20,7 @@ import {
   type TransitionBody,
   type SeaBattleBlitzStatusResponse,
   type ToggleSeaBattleBlitzResponse,
+  type UpdateSeaBattleBlitzConfigBody,
 } from './api';
 
 export const ADMIN_TOURNAMENTS_REFRESH_KEY = 'admin-tournaments';
@@ -109,6 +110,21 @@ export function useToggleSeaBattleBlitz() {
   const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
   return useMutation<ToggleSeaBattleBlitzResponse, { enabled: boolean }>({
     mutationFn: ({ enabled }) => toggleSeaBattleBlitz(enabled, accessToken!),
+    onSettled: () => {
+      triggerRefresh(ADMIN_BLITZ_STATUS_REFRESH_KEY);
+      refreshKeys(triggerRefresh);
+    },
+  });
+}
+
+export function useUpdateSeaBattleBlitzConfig() {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  const triggerRefresh = useRefreshStore((s) => s.triggerRefresh);
+  return useMutation<
+    ToggleSeaBattleBlitzResponse,
+    UpdateSeaBattleBlitzConfigBody
+  >({
+    mutationFn: (body) => toggleSeaBattleBlitz(body, accessToken!),
     onSettled: () => {
       triggerRefresh(ADMIN_BLITZ_STATUS_REFRESH_KEY);
       refreshKeys(triggerRefresh);

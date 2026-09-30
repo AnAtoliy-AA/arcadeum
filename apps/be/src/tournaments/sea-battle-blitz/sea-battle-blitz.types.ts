@@ -9,3 +9,9 @@ export interface SeaBattleBlitzCupResponse {
   countdownSeconds: number;
   enabled: boolean;
 }
+
+export interface SeaBattleBlitzCupConfig {
+  enabled: boolean;
+  prizePoolCoins: number;
+  prizeDescription: string;
+}

@@ -1,6 +1,24 @@
-import { IsBoolean } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class ToggleBlitzCupDto {
+  @IsOptional()
   @IsBoolean()
-  enabled!: boolean;
+  enabled?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  prizePoolCoins?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  prizeDescription?: string;
 }

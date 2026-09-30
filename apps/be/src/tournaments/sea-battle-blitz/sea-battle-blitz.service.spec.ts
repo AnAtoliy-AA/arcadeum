@@ -41,12 +41,17 @@ describe('SeaBattleBlitzService', () => {
       findOne: jest.fn(),
       find: jest.fn(),
       create: jest.fn(),
+      updateMany: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
     };
     settingModel = {
       findOne: jest.fn().mockReturnValue({
         exec: jest.fn().mockResolvedValue(null),
       }),
-      findOneAndUpdate: jest.fn().mockResolvedValue({ enabled: true }),
+      findOneAndUpdate: jest.fn().mockResolvedValue({
+        enabled: true,
+        prizePoolCoins: 500,
+        prizeDescription: '500 Coins + Admiral Trophy',
+      }),
     };
     bracketsService = {
       generateBracket: jest.fn(),
@@ -103,30 +108,70 @@ describe('SeaBattleBlitzService', () => {
     });
   });
 
-  describe('isBlitzCupEnabled and setBlitzCupEnabled', () => {
-    it('defaults to true when setting is absent', async () => {
+  describe('getBlitzCupConfig and updateBlitzCupConfig', () => {
+    it('defaults to 500 coins and enabled when setting is absent', async () => {
       settingModel.findOne.mockReturnValue({
         exec: jest.fn().mockResolvedValue(null),
       });
-      const enabled = await service.isBlitzCupEnabled();
-      expect(enabled).toBe(true);
+      const config = await service.getBlitzCupConfig();
+      expect(config).toEqual({
+        enabled: true,
+        prizePoolCoins: 500,
+        prizeDescription: '500 Coins + Admiral Trophy',
+      });
+      const isEnabled = await service.isBlitzCupEnabled();
+      expect(isEnabled).toBe(true);
     });
 
     it('returns stored setting value', async () => {
       settingModel.findOne.mockReturnValue({
-        exec: jest.fn().mockResolvedValue({ enabled: false }),
+        exec: jest.fn().mockResolvedValue({
+          enabled: false,
+          prizePoolCoins: 1200,
+          prizeDescription: '1200 Coins + Golden Fleet',
+        }),
       });
-      const enabled = await service.isBlitzCupEnabled();
-      expect(enabled).toBe(false);
+      const config = await service.getBlitzCupConfig();
+      expect(config).toEqual({
+        enabled: false,
+        prizePoolCoins: 1200,
+        prizeDescription: '1200 Coins + Golden Fleet',
+      });
+      const isEnabled = await service.isBlitzCupEnabled();
+      expect(isEnabled).toBe(false);
     });
 
-    it('updates setting via setBlitzCupEnabled', async () => {
-      const res = await service.setBlitzCupEnabled(false, oid().toString());
-      expect(res).toEqual({ ok: true, enabled: false });
+    it('updates setting via updateBlitzCupConfig', async () => {
+      const res = await service.updateBlitzCupConfig(
+        {
+          enabled: false,
+          prizePoolCoins: 1000,
+          prizeDescription: '1000 Coins + Golden Trophy',
+        },
+        oid().toString(),
+      );
+      expect(res).toEqual({
+        ok: true,
+        enabled: true,
+        prizePoolCoins: 500,
+        prizeDescription: '500 Coins + Admiral Trophy',
+      });
       expect(settingModel.findOneAndUpdate).toHaveBeenCalledWith(
         { key: 'sea_battle_weekly_blitz' },
         expect.anything(),
         { upsert: true, new: true },
+      );
+      expect(model.updateMany).toHaveBeenCalledWith(
+        {
+          gameType: 'sea_battle_v1',
+          status: { $in: ['scheduled', 'registration_open'] },
+        },
+        {
+          $set: {
+            prizePoolCoins: 1000,
+            prizeDescription: '1000 Coins + Golden Trophy',
+          },
+        },
       );
     });
   });

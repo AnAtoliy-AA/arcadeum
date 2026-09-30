@@ -178,11 +178,21 @@ export async function markTournamentComplete(
 
 export interface SeaBattleBlitzStatusResponse {
   enabled: boolean;
+  prizePoolCoins: number;
+  prizeDescription: string;
 }
 
 export interface ToggleSeaBattleBlitzResponse {
   ok: boolean;
   enabled: boolean;
+  prizePoolCoins: number;
+  prizeDescription: string;
+}
+
+export interface UpdateSeaBattleBlitzConfigBody {
+  enabled?: boolean;
+  prizePoolCoins?: number;
+  prizeDescription?: string;
 }
 
 export async function fetchSeaBattleBlitzStatus(
@@ -195,12 +205,13 @@ export async function fetchSeaBattleBlitzStatus(
 }
 
 export async function toggleSeaBattleBlitz(
-  enabled: boolean,
+  body: boolean | UpdateSeaBattleBlitzConfigBody,
   accessToken: string,
 ): Promise<ToggleSeaBattleBlitzResponse> {
+  const payload = typeof body === 'boolean' ? { enabled: body } : body;
   return apiClient.post<ToggleSeaBattleBlitzResponse>(
     '/admin/tournaments/sea-battle-blitz/toggle',
-    { enabled },
+    payload,
     { token: accessToken },
   );
 }

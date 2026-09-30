@@ -282,28 +282,51 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
   });
 
   describe('GET sea-battle-blitz/status', () => {
-    it('returns blitz status', async () => {
-      blitzService.isBlitzCupEnabled.mockResolvedValue(true);
+    it('returns blitz status and prize config', async () => {
+      blitzService.getBlitzCupConfig = jest.fn().mockResolvedValue({
+        enabled: true,
+        prizePoolCoins: 500,
+        prizeDescription: '500 Coins + Admiral Trophy',
+      });
       const res = await request(app.getHttpServer())
         .get('/admin/tournaments/sea-battle-blitz/status')
         .expect(200);
-      expect(res.body).toEqual({ enabled: true });
+      expect(res.body).toEqual({
+        enabled: true,
+        prizePoolCoins: 500,
+        prizeDescription: '500 Coins + Admiral Trophy',
+      });
     });
   });
 
   describe('POST sea-battle-blitz/toggle', () => {
-    it('toggles blitz status', async () => {
-      blitzService.setBlitzCupEnabled.mockResolvedValue({
+    it('toggles blitz status and updates prizes', async () => {
+      blitzService.updateBlitzCupConfig = jest.fn().mockResolvedValue({
         ok: true,
         enabled: false,
+        prizePoolCoins: 1000,
+        prizeDescription: '1000 Coins + Golden Fleet',
       });
       const res = await request(app.getHttpServer())
         .post('/admin/tournaments/sea-battle-blitz/toggle')
-        .send({ enabled: false })
+        .send({
+          enabled: false,
+          prizePoolCoins: 1000,
+          prizeDescription: '1000 Coins + Golden Fleet',
+        })
         .expect(201);
-      expect(res.body).toEqual({ ok: true, enabled: false });
-      expect(blitzService.setBlitzCupEnabled).toHaveBeenCalledWith(
-        false,
+      expect(res.body).toEqual({
+        ok: true,
+        enabled: false,
+        prizePoolCoins: 1000,
+        prizeDescription: '1000 Coins + Golden Fleet',
+      });
+      expect(blitzService.updateBlitzCupConfig).toHaveBeenCalledWith(
+        {
+          enabled: false,
+          prizePoolCoins: 1000,
+          prizeDescription: '1000 Coins + Golden Fleet',
+        },
         mockAdminId,
       );
     });

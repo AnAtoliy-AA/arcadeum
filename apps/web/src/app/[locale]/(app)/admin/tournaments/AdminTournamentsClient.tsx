@@ -33,6 +33,12 @@ interface TournamentsI18n {
     statusActive: string;
     statusPaused: string;
     toggleLabel: string;
+    prizePoolLabel: string;
+    prizeDescriptionLabel: string;
+    editPrizes: string;
+    savePrizes: string;
+    cancel: string;
+    prizesSaved: string;
   };
   actions: {
     new: string;

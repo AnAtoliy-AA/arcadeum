@@ -6,6 +6,12 @@ export const adminTournamentsFr = {
     statusActive: 'Actif (Planifié chaque semaine)',
     statusPaused: 'En pause (Planification désactivée)',
     toggleLabel: 'Basculer la Coupe Blitz Bataille Navale',
+    prizePoolLabel: 'Cagnotte (Pièces)',
+    prizeDescriptionLabel: 'Description du prix',
+    editPrizes: 'Configurer les Prix',
+    savePrizes: 'Enregistrer les Prix',
+    cancel: 'Annuler',
+    prizesSaved: 'Prix enregistrés',
   },
   actions: {
     new: '+ Nouveau',

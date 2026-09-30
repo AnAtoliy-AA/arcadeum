@@ -18,7 +18,10 @@ import type {
   PublicTournamentItem,
   TournamentLocaleContentItem,
 } from '../interfaces/tournament.interface';
-import type { SeaBattleBlitzCupResponse } from './sea-battle-blitz.types';
+import type {
+  SeaBattleBlitzCupConfig,
+  SeaBattleBlitzCupResponse,
+} from './sea-battle-blitz.types';
 
 const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
 const TEN_MINUTES_MS = 10 * 60 * 1000;
@@ -61,39 +64,103 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
     }
   }
 
-  async isBlitzCupEnabled(): Promise<boolean> {
+  async getBlitzCupConfig(): Promise<SeaBattleBlitzCupConfig> {
     const doc = await this.settingModel
       .findOne({ key: BLITZ_SETTING_KEY })
       .exec();
-    return doc ? doc.enabled : true;
+    return {
+      enabled: doc ? doc.enabled : true,
+      prizePoolCoins:
+        doc && typeof doc.prizePoolCoins === 'number'
+          ? doc.prizePoolCoins
+          : 500,
+      prizeDescription:
+        doc && typeof doc.prizeDescription === 'string'
+          ? doc.prizeDescription
+          : '500 Coins + Admiral Trophy',
+    };
+  }
+
+  async isBlitzCupEnabled(): Promise<boolean> {
+    const config = await this.getBlitzCupConfig();
+    return config.enabled;
+  }
+
+  async updateBlitzCupConfig(
+    dto: {
+      enabled?: boolean;
+      prizePoolCoins?: number;
+      prizeDescription?: string;
+    },
+    updatedBy?: string,
+  ): Promise<{ ok: boolean } & SeaBattleBlitzCupConfig> {
+    const updateFields: Record<string, unknown> = {};
+    if (typeof dto.enabled === 'boolean') {
+      updateFields.enabled = dto.enabled;
+    }
+    if (typeof dto.prizePoolCoins === 'number') {
+      updateFields.prizePoolCoins = dto.prizePoolCoins;
+    }
+    if (typeof dto.prizeDescription === 'string') {
+      updateFields.prizeDescription = dto.prizeDescription.trim();
+    }
+    if (updatedBy && Types.ObjectId.isValid(updatedBy)) {
+      updateFields.updatedBy = new Types.ObjectId(updatedBy);
+    }
+
+    const doc = await this.settingModel.findOneAndUpdate(
+      { key: BLITZ_SETTING_KEY },
+      { $set: updateFields },
+      { upsert: true, new: true },
+    );
+
+    const config: SeaBattleBlitzCupConfig = {
+      enabled: doc.enabled,
+      prizePoolCoins:
+        typeof doc.prizePoolCoins === 'number' ? doc.prizePoolCoins : 500,
+      prizeDescription:
+        typeof doc.prizeDescription === 'string'
+          ? doc.prizeDescription
+          : '500 Coins + Admiral Trophy',
+    };
+
+    if (
+      typeof dto.prizePoolCoins === 'number' ||
+      typeof dto.prizeDescription === 'string'
+    ) {
+      const activeTournamentUpdate: Record<string, unknown> = {};
+      if (typeof dto.prizePoolCoins === 'number') {
+        activeTournamentUpdate.prizePoolCoins = dto.prizePoolCoins;
+      }
+      if (typeof dto.prizeDescription === 'string') {
+        activeTournamentUpdate.prizeDescription = dto.prizeDescription.trim();
+      }
+      await this.model.updateMany(
+        {
+          gameType: 'sea_battle_v1',
+          status: { $in: ['scheduled', 'registration_open'] },
+        },
+        { $set: activeTournamentUpdate },
+      );
+    }
+
+    this.logger.log(
+      `Sea Battle Blitz Cup config updated: enabled=${config.enabled}, prizePoolCoins=${config.prizePoolCoins}, prizeDescription=${config.prizeDescription}`,
+    );
+
+    return { ok: true, ...config };
   }
 
   async setBlitzCupEnabled(
     enabled: boolean,
     updatedBy?: string,
-  ): Promise<{ ok: boolean; enabled: boolean }> {
-    await this.settingModel.findOneAndUpdate(
-      { key: BLITZ_SETTING_KEY },
-      {
-        $set: {
-          enabled,
-          updatedBy:
-            updatedBy && Types.ObjectId.isValid(updatedBy)
-              ? new Types.ObjectId(updatedBy)
-              : null,
-        },
-      },
-      { upsert: true, new: true },
-    );
-    this.logger.log(
-      `Sea Battle Blitz Cup scheduling toggled: enabled=${enabled}`,
-    );
-    return { ok: true, enabled };
+  ): Promise<{ ok: boolean } & SeaBattleBlitzCupConfig> {
+    return this.updateBlitzCupConfig({ enabled }, updatedBy);
   }
 
   async ensureUpcomingBlitzCup(): Promise<TournamentDocument | null> {
-    const isEnabled = await this.isBlitzCupEnabled();
-    if (!isEnabled) {
+    const config = await this.getBlitzCupConfig();
+    if (!config.enabled) {
       return null;
     }
 
@@ -124,10 +191,10 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
       registrationOpensAt,
       registrationClosesAt,
       maxPlayers: 16,
-      prizeDescription: '500 Coins + Admiral Trophy',
+      prizeDescription: config.prizeDescription,
       resultText: null,
       entryFeeCoins: 0,
-      prizePoolCoins: 500,
+      prizePoolCoins: config.prizePoolCoins,
       winnerUserId: null,
       content: {
         en: {

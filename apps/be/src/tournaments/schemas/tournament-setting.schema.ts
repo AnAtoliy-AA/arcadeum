@@ -9,6 +9,12 @@ export class TournamentSetting {
   @Prop({ type: Boolean, default: true })
   enabled!: boolean;
 
+  @Prop({ type: Number, default: 500 })
+  prizePoolCoins?: number;
+
+  @Prop({ type: String, default: '500 Coins + Admiral Trophy' })
+  prizeDescription?: string;
+
   @Prop({ type: Types.ObjectId, ref: 'User', default: null })
   updatedBy?: Types.ObjectId | null;
 }

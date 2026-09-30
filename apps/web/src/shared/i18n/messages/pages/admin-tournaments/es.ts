@@ -7,6 +7,12 @@ export const adminTournamentsEs = {
     statusActive: 'Activo (Programado semanalmente)',
     statusPaused: 'Pausado (Programación desactivada)',
     toggleLabel: 'Alternar Copa Semanal Blitz de Batalla Naval',
+    prizePoolLabel: 'Fondo de Premios (Monedas)',
+    prizeDescriptionLabel: 'Descripción del premio',
+    editPrizes: 'Configurar Premios',
+    savePrizes: 'Guardar Premios',
+    cancel: 'Cancelar',
+    prizesSaved: 'Premios guardados',
   },
   actions: {
     new: '+ Nuevo',

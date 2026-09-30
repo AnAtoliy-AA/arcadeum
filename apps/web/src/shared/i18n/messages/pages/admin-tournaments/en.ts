@@ -7,6 +7,12 @@ export const adminTournamentsEn = {
     statusActive: 'Active (Scheduled weekly)',
     statusPaused: 'Paused (Scheduling disabled)',
     toggleLabel: 'Toggle automated Sea Battle Blitz Cup',
+    prizePoolLabel: 'Prize Pool (Coins)',
+    prizeDescriptionLabel: 'Prize Description',
+    editPrizes: 'Configure Prizes',
+    savePrizes: 'Save Prizes',
+    cancel: 'Cancel',
+    prizesSaved: 'Prizes saved',
   },
   actions: {
     new: '+ New',

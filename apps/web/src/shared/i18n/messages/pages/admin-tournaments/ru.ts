@@ -7,6 +7,12 @@ export const adminTournamentsRu = {
     statusActive: 'Активен (Планируется еженедельно)',
     statusPaused: 'Приостановлен (Планирование отключено)',
     toggleLabel: 'Переключить автоматический Блиц-Кубок Морского Боя',
+    prizePoolLabel: 'Призовой фонд (Монеты)',
+    prizeDescriptionLabel: 'Описание приза',
+    editPrizes: 'Настроить призы',
+    savePrizes: 'Сохранить призы',
+    cancel: 'Отмена',
+    prizesSaved: 'Призы сохранены',
   },
   actions: {
     new: '+ Создать',

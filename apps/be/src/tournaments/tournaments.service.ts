@@ -44,6 +44,13 @@ interface ListForAdminArgs {
   gameType?: TournamentGameType;
 }
 
+function sanitizeGameType(raw?: unknown): TournamentGameType | null {
+  if (raw === 'critical_v1') return 'critical_v1';
+  if (raw === 'sea_battle_v1') return 'sea_battle_v1';
+  if (raw === 'chess_v1') return 'chess_v1';
+  return null;
+}
+
 @Injectable()
 export class TournamentsService {
   private readonly walletOps: TournamentWalletOps;
@@ -64,8 +71,9 @@ export class TournamentsService {
     const pageSize = typeof args.pageSize === 'number' ? args.pageSize : 25;
 
     const filter: FilterQuery<TournamentDocument> = {};
-    if (args.gameType && typeof args.gameType === 'string') {
-      filter.gameType = args.gameType;
+    const safeAdminGameType = sanitizeGameType(args.gameType);
+    if (safeAdminGameType) {
+      filter.gameType = { $eq: safeAdminGameType };
     }
     if (
       args.status &&
@@ -114,8 +122,9 @@ export class TournamentsService {
     const filterQuery: FilterQuery<TournamentDocument> = {
       status: { $ne: 'cancelled' },
     };
-    if (gameType) {
-      filterQuery.gameType = gameType;
+    const safeGameType = sanitizeGameType(gameType);
+    if (safeGameType) {
+      filterQuery.gameType = { $eq: safeGameType };
     }
     const docs = await this.model
       .find(filterQuery)

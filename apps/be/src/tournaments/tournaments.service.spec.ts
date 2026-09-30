@@ -155,7 +155,7 @@ describe('TournamentsService — core', () => {
       });
       expect(model.find).toHaveBeenCalledWith({
         status: 'scheduled',
-        gameType: 'sea_battle_v1',
+        gameType: { $eq: 'sea_battle_v1' },
         'content.en.name': { $regex: 'a\\.b', $options: 'i' },
       });
     });
@@ -192,6 +192,20 @@ describe('TournamentsService — core', () => {
       model.find.mockReturnValue(buildFindChain([doc]));
       const result = await service.listPublic('en', true, userOid.toString());
       expect(result.items[0]?.isRegistered).toBe(true);
+    });
+
+    it('safely filters by gameType using $eq and ignores invalid types', async () => {
+      model.find.mockReturnValue(buildFindChain([buildDoc()]));
+      await service.listPublic('en', false, undefined, 'sea_battle_v1');
+      expect(model.find).toHaveBeenCalledWith({
+        status: { $ne: 'cancelled' },
+        gameType: { $eq: 'sea_battle_v1' },
+      });
+
+      await service.listPublic('en', false, undefined, 'malicious' as never);
+      expect(model.find).toHaveBeenCalledWith({
+        status: { $ne: 'cancelled' },
+      });
     });
   });
 

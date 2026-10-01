@@ -5,6 +5,7 @@ export const dailyRewardsEn = {
   claim: 'Claim {n} coins',
   gemBonusSuffix: ' + {n} 💎',
   claimed: 'Come back tomorrow',
+  signInToClaim: 'Sign in to claim',
   nextResetIn: 'Resets in {time}',
   streakLabel: 'Streak: {n} / 7',
   dayLabel: 'Day {n}',

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.41] - 2026-10-01
+
+### Added
+- add cluster monitoring, graceful reload, and event loop watchdog (ARC-968) (ARC-968)
+
+
 ## [1.30.40] - 2026-10-01
 
 ### Added

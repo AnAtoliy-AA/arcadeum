@@ -38,6 +38,52 @@ test.describe('Cat Dash Flagship Gameplay', () => {
       },
     });
 
+    const baseTrack = Array.from({ length: 60 }, (_, i) => ({
+      id: i,
+      type:
+        i === 0 || i === 59 ? 'normal' : i % 5 === 0 ? 'obstacle' : 'normal',
+    }));
+
+    const initialSessionState = {
+      trackType: 'linear',
+      theme: 'cyberpunk',
+      columns: 10,
+      trackLength: 60,
+      currentPlayerIndex: 0,
+      turnNumber: 1,
+      track: baseTrack,
+      gameOver: false,
+      players: [
+        {
+          playerId: userId,
+          catId: 'neon',
+          position: 8,
+          powerTokens: 3,
+          shielded: false,
+          abilitiesUsed: [],
+          isReady: true,
+          hasBonus: false,
+        },
+        {
+          playerId: oppId,
+          catId: 'whiskers',
+          position: 4,
+          powerTokens: 3,
+          abilitiesUsed: [],
+          isReady: true,
+          hasBonus: false,
+        },
+      ],
+      logs: [
+        {
+          id: 'log-1',
+          type: 'system',
+          message: 'Race started!',
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    };
+
     await mockGameSocket(page, roomId, userId, {
       gameId: 'cat_dash_v1',
       roomJoinedPayload: {
@@ -51,51 +97,80 @@ test.describe('Cat Dash Flagship Gameplay', () => {
         session: {
           id: 'sess-catdash-1',
           status: 'active',
-          state: {
-            trackType: 'linear',
-            theme: 'cyberpunk',
-            columns: 10,
-            trackLength: 60,
-            currentPlayerIndex: 0,
-            turnNumber: 1,
-            track: Array.from({ length: 60 }, (_, i) => ({
-              id: i,
-              type:
-                i === 0 || i === 59
-                  ? 'normal'
-                  : i % 5 === 0
-                    ? 'obstacle'
-                    : 'normal',
-            })),
-            gameOver: false,
-            players: [
-              {
-                playerId: userId,
-                catId: 'neon',
-                position: 8,
-                powerTokens: 3,
-                abilitiesUsed: [],
-                isReady: true,
-                hasBonus: false,
+          state: initialSessionState,
+        },
+      },
+      handlers: {
+        'catDash.session.catnap': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId,
+            session: {
+              id: 'sess-catdash-1',
+              status: 'active',
+              state: {
+                ...initialSessionState,
+                players: [
+                  {
+                    ...initialSessionState.players[0],
+                    powerTokens: 4,
+                    shielded: true,
+                  },
+                  initialSessionState.players[1],
+                ],
               },
-              {
-                playerId: oppId,
-                catId: 'whiskers',
-                position: 4,
-                powerTokens: 3,
-                abilitiesUsed: [],
-                isReady: true,
-                hasBonus: false,
+            },
+          },
+        },
+        'catDash.session.pounce': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId,
+            session: {
+              id: 'sess-catdash-1',
+              status: 'active',
+              state: {
+                ...initialSessionState,
+                players: [
+                  {
+                    ...initialSessionState.players[0],
+                    position: 10,
+                    powerTokens: 3,
+                    shielded: true,
+                  },
+                  initialSessionState.players[1],
+                ],
               },
-            ],
-            logs: [
-              {
-                id: 'log-1',
-                type: 'system',
-                message: 'Race started!',
-                createdAt: new Date().toISOString(),
+            },
+          },
+        },
+        'catDash.session.deployTrap': {
+          responseEvent: 'games.session.snapshot',
+          responseData: {
+            roomId,
+            session: {
+              id: 'sess-catdash-1',
+              status: 'active',
+              state: {
+                ...initialSessionState,
+                traps: [
+                  {
+                    spaceId: 10,
+                    placedBy: userId,
+                    createdAt: Date.now(),
+                  },
+                ],
+                players: [
+                  {
+                    ...initialSessionState.players[0],
+                    position: 10,
+                    powerTokens: 2,
+                    shielded: true,
+                  },
+                  initialSessionState.players[1],
+                ],
               },
-            ],
+            },
           },
         },
       },
@@ -129,12 +204,18 @@ test.describe('Cat Dash Flagship Gameplay', () => {
 
     const catnapBtn = page.getByTestId('action-btn-catnap');
     await expect(catnapBtn).toBeVisible();
+    await catnapBtn.click();
+
+    const shieldBuff = page.getByTestId('buff-shield');
+    await expect(shieldBuff).toBeVisible();
 
     const pounceBtn = page.getByTestId('action-btn-pounce');
     await expect(pounceBtn).toBeVisible();
+    await pounceBtn.click();
 
     const trapBtn = page.getByTestId('action-btn-deploy-trap');
     await expect(trapBtn).toBeVisible();
+    await trapBtn.click();
 
     const abilityBar = page.getByTestId('tactical-ability-bar');
     await expect(abilityBar).toBeVisible();
@@ -149,6 +230,11 @@ test.describe('Cat Dash Flagship Gameplay', () => {
     await rollBtn.click();
 
     const rollingState = page.getByTestId('dice-overlay-rolling-state');
+    await expect(rollingState).toBeVisible();
+    await expect(rollingState).not.toBeVisible();
+    await expect(rollBtn).toBeVisible();
+
+    await page.keyboard.press('Space');
     await expect(rollingState).toBeVisible();
     await expect(rollingState).not.toBeVisible();
     await expect(rollBtn).toBeVisible();

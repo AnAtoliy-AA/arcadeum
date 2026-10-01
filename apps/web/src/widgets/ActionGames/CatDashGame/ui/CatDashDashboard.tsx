@@ -342,7 +342,9 @@ export const CatDashDashboard = memo(function CatDashDashboard({
 
                   {isCurrentTurn && (
                     <div className="flex flex-col items-center justify-center flex-shrink-0 px-2 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30 text-[10px] font-extrabold uppercase animate-pulse">
-                      Turn
+                      {t(
+                        'games.cat_dash_v1.dashboard.turnBadge' as TranslationKey,
+                      )}
                     </div>
                   )}
                 </button>
@@ -374,7 +376,9 @@ export const CatDashDashboard = memo(function CatDashDashboard({
             </div>
           ) : (
             <span className="text-xs text-slate-500 italic py-2">
-              Race in progress...
+              {t(
+                'games.cat_dash_v1.dashboard.raceInProgress' as TranslationKey,
+              )}
             </span>
           )}
         </div>

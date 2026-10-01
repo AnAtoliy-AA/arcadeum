@@ -132,6 +132,7 @@ export const ruMessages = {
       addBot: 'Добавить бота',
       waitingForPlayers: 'Ожидание игроков…',
       minPlayers: 'Минимум 2 игрока',
+      meetRacers: 'Познакомьтесь с 6 гонщиками (Досье и статы)',
     },
     tutorial: {
       s1: {
@@ -175,6 +176,7 @@ export const ruMessages = {
       lost: 'Вы проиграли.',
       draw: 'Ничья.',
       you: 'Вы',
+      winnerIs: '{{name}} побеждает!',
       messages: {
         won: 'Ваш котик первым пересёк финишную черту! Готовы к новой гонке?',
         lost: 'Другой кот выиграл гонку. Хотите реванш?',
@@ -242,6 +244,19 @@ export const ruMessages = {
       pressSpace: 'Нажмите ПРОБЕЛ для броска',
       distanceToFinish: '{{count}} кл. до финиша',
       inspectRoster: 'Досье гонщиков',
+      rolling: 'Бросаем кубик...',
+      used: 'Использовано',
+      turnBadge: 'Ход',
+      raceInProgress: 'Гонка продолжается...',
+    },
+    board: {
+      start: 'Старт',
+      finish: 'Финиш',
+      obstacle: 'Препятствие',
+      bonus: 'Бонус',
+      trap: 'Ловушка',
+      startUpper: 'СТАРТ',
+      finishUpper: 'ФИНИШ',
     },
   },
 };

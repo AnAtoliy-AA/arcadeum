@@ -136,6 +136,7 @@ export const enMessages = {
       addBot: 'Add bot',
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',
+      meetRacers: 'Meet the 6 Racers (Dossier & Stats)',
     },
     tutorial: {
       s1: {
@@ -179,6 +180,7 @@ export const enMessages = {
       lost: 'You lost.',
       draw: 'Draw.',
       you: 'You',
+      winnerIs: '{{name}} wins!',
       messages: {
         won: 'Your cat crossed the finish line first! Ready for another race?',
         lost: 'Another cat won the race. Want a rematch?',
@@ -246,6 +248,19 @@ export const enMessages = {
       pressSpace: 'Press SPACE to roll',
       distanceToFinish: '{{count}} spaces to finish',
       inspectRoster: 'Racers Dossier',
+      rolling: 'Rolling...',
+      used: 'Used',
+      turnBadge: 'Turn',
+      raceInProgress: 'Race in progress...',
+    },
+    board: {
+      start: 'Start',
+      finish: 'Finish',
+      obstacle: 'Obstacle',
+      bonus: 'Bonus',
+      trap: 'Trap',
+      startUpper: 'START',
+      finishUpper: 'FINISH',
     },
   },
 };

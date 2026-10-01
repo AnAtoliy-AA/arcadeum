@@ -1,7 +1,10 @@
 'use client';
 
 import { memo, useMemo, useState } from 'react';
-import { useTranslation } from '@/shared/i18n/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
 import {
   LobbyOptionSection,
@@ -142,7 +145,9 @@ export const CatDashLobby = memo(function CatDashLobby({
           data-testid="lobby-racers-btn"
         >
           <span>🏎️</span>
-          <span>Meet the 6 Racers (Dossier & Stats)</span>
+          <span>
+            {t('games.cat_dash_v1.lobby.meetRacers' as TranslationKey)}
+          </span>
         </button>
       </div>
     </div>

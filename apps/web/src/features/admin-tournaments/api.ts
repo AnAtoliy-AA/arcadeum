@@ -1,11 +1,7 @@
 import { apiClient } from '@/shared/lib/api-client';
 
 export type TournamentStatus =
-  | 'scheduled'
-  | 'registration_open'
-  | 'live'
-  | 'completed'
-  | 'cancelled';
+  'scheduled' | 'registration_open' | 'live' | 'completed' | 'cancelled';
 export type TournamentGameType = 'critical_v1' | 'sea_battle_v1';
 export type TournamentLocale = 'en' | 'ru' | 'es' | 'fr' | 'by';
 export type AdminTournamentStatusFilter = 'all' | TournamentStatus;
@@ -176,6 +172,46 @@ export async function markTournamentComplete(
   return apiClient.post<AdminTournamentItem>(
     `/admin/tournaments/${encodeURIComponent(id)}/complete`,
     body,
+    { token: accessToken },
+  );
+}
+
+export interface SeaBattleBlitzStatusResponse {
+  enabled: boolean;
+  prizePoolCoins: number;
+  prizeDescription: string;
+}
+
+export interface ToggleSeaBattleBlitzResponse {
+  ok: boolean;
+  enabled: boolean;
+  prizePoolCoins: number;
+  prizeDescription: string;
+}
+
+export interface UpdateSeaBattleBlitzConfigBody {
+  enabled?: boolean;
+  prizePoolCoins?: number;
+  prizeDescription?: string;
+}
+
+export async function fetchSeaBattleBlitzStatus(
+  accessToken: string,
+): Promise<SeaBattleBlitzStatusResponse> {
+  return apiClient.get<SeaBattleBlitzStatusResponse>(
+    '/admin/tournaments/sea-battle-blitz/status',
+    { token: accessToken },
+  );
+}
+
+export async function toggleSeaBattleBlitz(
+  body: boolean | UpdateSeaBattleBlitzConfigBody,
+  accessToken: string,
+): Promise<ToggleSeaBattleBlitzResponse> {
+  const payload = typeof body === 'boolean' ? { enabled: body } : body;
+  return apiClient.post<ToggleSeaBattleBlitzResponse>(
+    '/admin/tournaments/sea-battle-blitz/toggle',
+    payload,
     { token: accessToken },
   );
 }

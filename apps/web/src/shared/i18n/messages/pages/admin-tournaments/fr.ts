@@ -1,5 +1,18 @@
 export const adminTournamentsFr = {
   title: 'Tournois',
+  blitzCup: {
+    title: 'Coupe Hebdomadaire Blitz Bataille Navale',
+    description: 'Planificateur automatique de tournois le samedi à 18:00 UTC',
+    statusActive: 'Actif (Planifié chaque semaine)',
+    statusPaused: 'En pause (Planification désactivée)',
+    toggleLabel: 'Basculer la Coupe Blitz Bataille Navale',
+    prizePoolLabel: 'Cagnotte (Pièces)',
+    prizeDescriptionLabel: 'Description du prix',
+    editPrizes: 'Configurer les Prix',
+    savePrizes: 'Enregistrer les Prix',
+    cancel: 'Annuler',
+    prizesSaved: 'Prix enregistrés',
+  },
   actions: {
     new: '+ Nouveau',
     edit: 'Modifier',

@@ -12,12 +12,6 @@ import {
 } from '@/widgets/BoardGames/ChessGame/types';
 import type { ChessHint } from '@/features/coach/lib/hint-generator';
 
-/**
- * Wire format of a hint move emitted by the backend in
- * `games.session.hint_result` (see apps/be games.gateway.hint.ts). Values are
- * unknown-typed because they arrive over the socket and must be validated
- * before they can be trusted as strict client types.
- */
 export interface ServerHintMove {
   from?: { file?: unknown; rank?: unknown } | null;
   to?: { file?: unknown; rank?: unknown } | null;
@@ -27,9 +21,53 @@ export interface ServerHintMove {
   isCastle?: unknown;
 }
 
+export interface CheckersHintStep {
+  fromRow: number;
+  fromCol: number;
+  toRow: number;
+  toCol: number;
+  capturedRow?: number;
+  capturedCol?: number;
+}
+
+export interface CheckersHint {
+  gameType?: 'checkers';
+  from: { row: number; col: number };
+  to: { row: number; col: number };
+  steps: CheckersHintStep[];
+}
+
+export interface BackgammonHint {
+  gameType?: 'backgammon';
+  from: number | 'bar';
+  to: number | 'off';
+}
+
+export interface ServerCheckersHintMove {
+  gameType?: 'checkers';
+  from?: { row?: unknown; col?: unknown } | null;
+  to?: { row?: unknown; col?: unknown } | null;
+  steps?: Array<{
+    fromRow?: unknown;
+    fromCol?: unknown;
+    toRow?: unknown;
+    toCol?: unknown;
+    capturedRow?: unknown;
+    capturedCol?: unknown;
+  }> | null;
+}
+
+export interface ServerBackgammonHintMove {
+  gameType?: 'backgammon';
+  from?: unknown;
+  to?: unknown;
+}
+
 export interface ServerHintResult {
   ok?: boolean;
-  move?: ServerHintMove | null;
+  gameType?: 'chess' | 'checkers' | 'backgammon';
+  move?:
+    ServerHintMove | ServerCheckersHintMove | ServerBackgammonHintMove | null;
 }
 
 function isFile(value: unknown): value is File {
@@ -70,24 +108,16 @@ function parsePiece(piece: ServerHintMove['piece']): ChessPiece | null {
   return { type: piece.type, color: piece.color };
 }
 
-/**
- * Maps a server-side hint move into the internal `ChessHint` shape used by
- * CoachControls/ChessBoardPanel. Returns null when the payload is malformed —
- * callers then fall back to the local hint computation.
- *
- * `score` defaults to 0: the server does not send an evaluation and the UI
- * doesn't display one.
- */
-export function mapServerHint(
-  move: ServerHintMove | null | undefined,
-): ChessHint | null {
-  const from = parsePosition(move?.from);
-  const to = parsePosition(move?.to);
-  const piece = parsePiece(move?.piece);
+export function mapServerHint(move: unknown): ChessHint | null {
+  if (!move || typeof move !== 'object') return null;
+  const m = move as Record<string, unknown>;
+  const from = parsePosition(m.from as ServerHintMove['from']);
+  const to = parsePosition(m.to as ServerHintMove['to']);
+  const piece = parsePiece(m.piece as ServerHintMove['piece']);
   if (!from || !to || !piece) return null;
 
-  const captured = parsePiece(move?.captured);
-  const rawPromotion = move?.promotion;
+  const captured = parsePiece(m.captured as ServerHintMove['captured']);
+  const rawPromotion = m.promotion;
   const promotion = isPieceType(rawPromotion) ? rawPromotion : null;
 
   const fromCol = FILES.indexOf(from.file);
@@ -100,4 +130,65 @@ export function mapServerHint(
       : null;
 
   return { from, to, piece, captured, promotion, isCastle, score: 0 };
+}
+
+export function mapServerCheckersHint(move: unknown): CheckersHint | null {
+  if (!move || typeof move !== 'object') return null;
+  const m = move as Record<string, unknown>;
+  const from = m.from as Record<string, unknown> | undefined;
+  const to = m.to as Record<string, unknown> | undefined;
+  const steps = m.steps as Array<Record<string, unknown>> | undefined;
+  if (!from || !to || !Array.isArray(steps) || steps.length === 0) return null;
+  if (
+    typeof from.row !== 'number' ||
+    typeof from.col !== 'number' ||
+    typeof to.row !== 'number' ||
+    typeof to.col !== 'number'
+  ) {
+    return null;
+  }
+  const parsedSteps: CheckersHintStep[] = [];
+  for (const step of steps) {
+    if (
+      typeof step.fromRow !== 'number' ||
+      typeof step.fromCol !== 'number' ||
+      typeof step.toRow !== 'number' ||
+      typeof step.toCol !== 'number'
+    ) {
+      return null;
+    }
+    parsedSteps.push({
+      fromRow: step.fromRow,
+      fromCol: step.fromCol,
+      toRow: step.toRow,
+      toCol: step.toCol,
+      capturedRow:
+        typeof step.capturedRow === 'number' ? step.capturedRow : undefined,
+      capturedCol:
+        typeof step.capturedCol === 'number' ? step.capturedCol : undefined,
+    });
+  }
+  return {
+    gameType: 'checkers',
+    from: { row: from.row, col: from.col },
+    to: { row: to.row, col: to.col },
+    steps: parsedSteps,
+  };
+}
+
+export function mapServerBackgammonHint(move: unknown): BackgammonHint | null {
+  if (!move || typeof move !== 'object') return null;
+  const m = move as Record<string, unknown>;
+  const from = m.from;
+  const to = m.to;
+  const validFrom =
+    from === 'bar' || (typeof from === 'number' && Number.isInteger(from));
+  const validTo =
+    to === 'off' || (typeof to === 'number' && Number.isInteger(to));
+  if (!validFrom || !validTo) return null;
+  return {
+    gameType: 'backgammon',
+    from: from as number | 'bar',
+    to: to as number | 'off',
+  };
 }

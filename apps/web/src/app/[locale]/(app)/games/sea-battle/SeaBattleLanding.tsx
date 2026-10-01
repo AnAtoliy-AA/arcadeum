@@ -6,6 +6,7 @@ import {
 import type { Locale } from '@/shared/i18n';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import { SeaBattleLandingBoard } from './SeaBattleLandingBoard';
+import { SeaBattleBlitzBanner } from '@/features/tournaments/ui/SeaBattleBlitzBanner';
 
 type SeaBattleMessages = SeaBattleGamesMessages['sea_battle_v1'];
 type Landing = SeaBattleMessages['landing'];
@@ -338,6 +339,7 @@ export default function SeaBattleLanding({
           />
         ),
       }}
+      topSection={<SeaBattleBlitzBanner />}
       specifications={specifications}
       comparison={comparison}
       highlights={{

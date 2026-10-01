@@ -8,6 +8,11 @@ import {
   type PieceType,
 } from '@/widgets/BoardGames/ChessGame/types';
 import { evaluateBoard } from '@/features/analysis/lib/position-evaluator';
+import { CheckersBot } from '@arcadeum/games-core/games/checkers/checkers-bot';
+import type { CheckersState } from '@arcadeum/games-core/games/checkers/checkers.types';
+import { BackgammonBot } from '@arcadeum/games-core/games/backgammon/backgammon-bot';
+import type { BackgammonState } from '@arcadeum/games-core/games/backgammon/backgammon.types';
+import type { CheckersHint, BackgammonHint } from './hint-result';
 
 /**
  * Coach-mode chess hint generator (client-side).
@@ -165,4 +170,72 @@ export function getChessHint(
   }
 
   return best;
+}
+
+export interface CheckersHintInputState {
+  phase: string;
+  options?: {
+    mode?: string;
+    forcedCaptures?: boolean;
+    backwardCaptures?: boolean;
+  };
+  board: unknown[][];
+  currentTurnIndex: number;
+  playerOrder: string[];
+  players: Array<{
+    playerId: string;
+    color: string;
+    alive: boolean;
+  }>;
+}
+
+export function getCheckersHint(
+  state: CheckersHintInputState,
+  userId: string,
+): CheckersHint | null {
+  const bot = new CheckersBot();
+  const mode: 'american' | 'international' | 'russian' =
+    state.options?.mode === 'international' || state.options?.mode === 'russian'
+      ? state.options.mode
+      : 'american';
+  const hintState = {
+    ...state,
+    options: {
+      theme: 'classic',
+      forcedCaptures: state.options?.forcedCaptures ?? true,
+      backwardCaptures: state.options?.backwardCaptures ?? false,
+      mode,
+      botDifficulty: 'expert' as const,
+    },
+  } as unknown as CheckersState;
+  const move = bot.pickMove(hintState, userId);
+  if (!move || !move.steps || move.steps.length === 0) return null;
+  const first = move.steps[0];
+  const last = move.steps[move.steps.length - 1];
+  return {
+    gameType: 'checkers',
+    from: { row: first.fromRow, col: first.fromCol },
+    to: { row: last.toRow, col: last.toCol },
+    steps: move.steps,
+  };
+}
+
+export function getBackgammonHint(
+  state: BackgammonState,
+  userId: string,
+): BackgammonHint | null {
+  if (state.phase !== 'move' || !state.dice || state.dice.length === 0)
+    return null;
+  const bot = new BackgammonBot();
+  const hintState = {
+    ...state,
+    options: { ...state.options, aiDifficulty: 'expert' as const },
+  };
+  const move = bot.pickMove(hintState, userId);
+  if (!move) return null;
+  return {
+    gameType: 'backgammon',
+    from: move.from,
+    to: move.to,
+  };
 }

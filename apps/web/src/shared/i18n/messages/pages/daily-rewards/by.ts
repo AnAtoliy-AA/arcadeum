@@ -5,6 +5,7 @@ export const dailyRewardsBy = {
   claim: 'Забраць {n} манет',
   gemBonusSuffix: ' + {n} 💎',
   claimed: 'Вяртайцеся заўтра',
+  signInToClaim: 'Увайдзіце, каб забраць',
   nextResetIn: 'Абновіцца праз {time}',
   streakLabel: 'Серыя: {n} / 7',
   dayLabel: 'Дзень {n}',

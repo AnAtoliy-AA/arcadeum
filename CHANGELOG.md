@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.40] - 2026-10-01
+
+### Added
+- polish cat dash tactical audio, complete i18n, and cleanup dead code (ARC-967) (ARC-967)
+
+### Improved
+- optimize games catalog rendering and eliminate blocking svg filters (ARC-967) (ARC-967)
+
+
 ## [1.30.39] - 2026-10-01
 
 ### Fixed

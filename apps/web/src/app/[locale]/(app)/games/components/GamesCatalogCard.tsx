@@ -25,7 +25,7 @@ export function GamesCatalogCard({
 
   return (
     <div
-      className={`group box-border relative flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-[var(--primary)]/50 text-inherit ${
+      className={`group box-border relative flex flex-col justify-between rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:border-[var(--primary)]/50 text-inherit [content-visibility:auto] [contain-intrinsic-size:auto_400px] ${
         isDisabled ? 'opacity-70 pointer-events-none' : ''
       }`}
     >

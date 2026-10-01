@@ -1,6 +1,10 @@
 'use client';
 
 import { memo, useMemo } from 'react';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import { useCatDashTheme } from '../lib/CatDashThemeContext';
 import type { CatDashClientState } from '../types';
 import { RealisticCat } from './RealisticCat';
@@ -24,6 +28,7 @@ export const CatDashBoard = memo(function CatDashBoard({
   resolveName = (id) => id ?? '',
   highlightedCells = [],
 }: BoardProps) {
+  const { t } = useTranslation();
   const { tokens, variant } = useCatDashTheme();
 
   const total = snapshot.track.length;
@@ -284,7 +289,7 @@ export const CatDashBoard = memo(function CatDashBoard({
                   fill="#22c55e"
                   filter="url(#glow)"
                 >
-                  START
+                  {t('games.cat_dash_v1.board.startUpper' as TranslationKey)}
                 </text>
               )}
               {snapshot.trackType !== 'linear' && isFinish && (
@@ -297,7 +302,8 @@ export const CatDashBoard = memo(function CatDashBoard({
                   fill="#f59e0b"
                   filter="url(#glow)"
                 >
-                  🏁 FINISH
+                  🏁{' '}
+                  {t('games.cat_dash_v1.board.finishUpper' as TranslationKey)}
                 </text>
               )}
 
@@ -407,23 +413,33 @@ export const CatDashBoard = memo(function CatDashBoard({
       <div className="flex flex-row items-stretch gap-4 justify-center flex-wrap pt-1 text-slate-400">
         <div className="flex flex-row gap-1.5 items-center">
           <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_6px_#22c55e]" />
-          <span className="text-xs font-semibold">Start</span>
+          <span className="text-xs font-semibold">
+            {t('games.cat_dash_v1.board.start' as TranslationKey)}
+          </span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
           <div className="w-2.5 h-2.5 bg-amber-500 rounded-full shadow-[0_0_6px_#f59e0b]" />
-          <span className="text-xs font-semibold">Finish</span>
+          <span className="text-xs font-semibold">
+            {t('games.cat_dash_v1.board.finish' as TranslationKey)}
+          </span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
           <span className="text-sm">⚡</span>
-          <span className="text-xs font-semibold">Obstacle</span>
+          <span className="text-xs font-semibold">
+            {t('games.cat_dash_v1.board.obstacle' as TranslationKey)}
+          </span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
           <span className="text-sm">⭐</span>
-          <span className="text-xs font-semibold">Bonus</span>
+          <span className="text-xs font-semibold">
+            {t('games.cat_dash_v1.board.bonus' as TranslationKey)}
+          </span>
         </div>
         <div className="flex flex-row gap-1.5 items-center">
           <span className="text-sm">🪤</span>
-          <span className="text-xs font-semibold">Trap</span>
+          <span className="text-xs font-semibold">
+            {t('games.cat_dash_v1.board.trap' as TranslationKey)}
+          </span>
         </div>
       </div>
     </div>

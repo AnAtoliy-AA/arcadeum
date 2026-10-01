@@ -131,6 +131,7 @@ export const byMessages = {
       addBot: 'Дадаць бота',
       waitingForPlayers: 'Чаканне гульцоў…',
       minPlayers: 'Мінімум 2 гульца',
+      meetRacers: 'Пазнаёмцеся з 6 гоншчыкамі (Дасье і статы)',
     },
     tutorial: {
       s1: {
@@ -173,6 +174,7 @@ export const byMessages = {
       lost: 'Вы прайгралі.',
       draw: 'Нічыя.',
       you: 'Вы',
+      winnerIs: '{{name}} перамагае!',
       messages: {
         won: 'Ваш кот першым перасёк фініш! Яшчэ адна гонка?',
         lost: 'Іншы кот выйграў. Рэванш?',
@@ -240,6 +242,19 @@ export const byMessages = {
       pressSpace: 'Націсніце ПРАБЕЛ для кідка',
       distanceToFinish: '{{count}} кл. да фінішу',
       inspectRoster: 'Дасье гоншчыкаў',
+      rolling: 'Кідаем кубік...',
+      used: 'Выкарыстана',
+      turnBadge: 'Ход',
+      raceInProgress: 'Гонка трывае...',
+    },
+    board: {
+      start: 'Старт',
+      finish: 'Фініш',
+      obstacle: 'Перашкода',
+      bonus: 'Бонус',
+      trap: 'Пастка',
+      startUpper: 'СТАРТ',
+      finishUpper: 'ФІНІШ',
     },
   },
 };

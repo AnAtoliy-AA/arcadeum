@@ -14,18 +14,7 @@ export function GlimwormRealArena() {
           <stop offset="60%" stopColor="#6b21a8" stopOpacity="0.08" />
           <stop offset="100%" stopColor="#05010a" stopOpacity="0" />
         </radialGradient>
-        <filter id="gw-neon-green" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="3.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <filter id="gw-neon-pink" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="3.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <filter id="gw-neon-cyan" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="3.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
+
       </defs>
 
       <rect width="360" height="220" fill="#06010a" />
@@ -70,41 +59,11 @@ export function GlimwormRealArena() {
       ))}
 
       {/* Glowing Food / Energy Orbs */}
-      <circle
-        cx="95"
-        cy="55"
-        r="4"
-        fill="#facc15"
-        filter="url(#gw-neon-pink)"
-      />
-      <circle
-        cx="265"
-        cy="65"
-        r="4"
-        fill="#38bdf8"
-        filter="url(#gw-neon-cyan)"
-      />
-      <circle
-        cx="175"
-        cy="110"
-        r="5"
-        fill="#f43f5e"
-        filter="url(#gw-neon-pink)"
-      />
-      <circle
-        cx="120"
-        cy="165"
-        r="4"
-        fill="#4ade80"
-        filter="url(#gw-neon-green)"
-      />
-      <circle
-        cx="280"
-        cy="145"
-        r="4.5"
-        fill="#facc15"
-        filter="url(#gw-neon-pink)"
-      />
+      <circle cx="95" cy="55" r="4" fill="#facc15" />
+      <circle cx="265" cy="65" r="4" fill="#38bdf8" />
+      <circle cx="175" cy="110" r="5" fill="#f43f5e" />
+      <circle cx="120" cy="165" r="4" fill="#4ade80" />
+      <circle cx="280" cy="145" r="4.5" fill="#facc15" />
 
       {/* Cyan Snake Trail */}
       <path
@@ -113,16 +72,9 @@ export function GlimwormRealArena() {
         stroke="#06b6d4"
         strokeWidth="6"
         strokeLinecap="round"
-        filter="url(#gw-neon-cyan)"
         opacity="0.9"
       />
-      <circle
-        cx="270"
-        cy="100"
-        r="7.5"
-        fill="#22d3ee"
-        filter="url(#gw-neon-cyan)"
-      />
+      <circle cx="270" cy="100" r="7.5" fill="#22d3ee" />
       <circle cx="272" cy="98" r="2" fill="#ffffff" />
 
       {/* Pink Snake Trail */}
@@ -132,16 +84,9 @@ export function GlimwormRealArena() {
         stroke="#ec4899"
         strokeWidth="6"
         strokeLinecap="round"
-        filter="url(#gw-neon-pink)"
         opacity="0.9"
       />
-      <circle
-        cx="305"
-        cy="155"
-        r="7.5"
-        fill="#f472b6"
-        filter="url(#gw-neon-pink)"
-      />
+      <circle cx="305" cy="155" r="7.5" fill="#f472b6" />
       <circle cx="307" cy="153" r="2" fill="#ffffff" />
 
       {/* Green Snake Trail */}
@@ -151,16 +96,9 @@ export function GlimwormRealArena() {
         stroke="#22c55e"
         strokeWidth="7"
         strokeLinecap="round"
-        filter="url(#gw-neon-green)"
         opacity="0.95"
       />
-      <circle
-        cx="310"
-        cy="80"
-        r="8.5"
-        fill="#4ade80"
-        filter="url(#gw-neon-green)"
-      />
+      <circle cx="310" cy="80" r="8.5" fill="#4ade80" />
       <circle cx="313" cy="78" r="2.5" fill="#ffffff" />
 
       {/* Floating Badges */}

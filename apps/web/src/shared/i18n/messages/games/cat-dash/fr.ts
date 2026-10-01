@@ -140,6 +140,7 @@ export const frMessages = {
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente de joueurs…',
       minPlayers: 'Minimum 2 joueurs',
+      meetRacers: 'Découvrir les 6 pilotes (Dossier et stats)',
     },
     tutorial: {
       s1: {
@@ -184,6 +185,7 @@ export const frMessages = {
       lost: 'Vous avez perdu.',
       draw: 'Match nul.',
       you: 'Vous',
+      winnerIs: '{{name}} gagne !',
       messages: {
         won: 'Votre chat a franchi la ligne en premier! Encore une course?',
         lost: 'Un autre chat a gagné. Revanche?',
@@ -252,6 +254,19 @@ export const frMessages = {
       pressSpace: 'Appuyez sur ESPACE pour lancer',
       distanceToFinish: '{{count}} cases jusqu’à l’arrivée',
       inspectRoster: 'Dossier des pilotes',
+      rolling: 'Lancement du dé...',
+      used: 'Utilisé',
+      turnBadge: 'Tour',
+      raceInProgress: 'Course en cours...',
+    },
+    board: {
+      start: 'Départ',
+      finish: 'Arrivée',
+      obstacle: 'Obstacle',
+      bonus: 'Bonus',
+      trap: 'Piège',
+      startUpper: 'DÉPART',
+      finishUpper: 'ARRIVÉE',
     },
   },
 };

@@ -101,7 +101,7 @@ export function GamesCatalogClient({
 
   return (
     <div className="box-border flex flex-col gap-8">
-      <div className="box-border flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md shadow-lg">
+      <div className="box-border flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] shadow-lg">
         {CATEGORIES.map((cat) => {
           const isSelected = selectedCategory === cat.key;
           const count = categoryCounts[cat.key] ?? 0;
@@ -150,7 +150,7 @@ export function GamesCatalogClient({
         </div>
       )}
 
-      <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md shadow-xl">
+      <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="box-border flex flex-col gap-1 text-center sm:text-left">
           <h2 className="box-border m-0 text-base sm:text-lg font-bold text-[var(--foreground)]">
             Looking for live multiplayer action?

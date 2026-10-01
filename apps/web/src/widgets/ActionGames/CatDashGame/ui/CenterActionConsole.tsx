@@ -128,7 +128,7 @@ export const CenterActionConsole = memo(function CenterActionConsole({
                 🎲
               </div>
               <span className="text-sm font-black text-purple-200 uppercase tracking-widest animate-pulse">
-                Rolling...
+                {t('games.cat_dash_v1.dashboard.rolling' as TranslationKey)}
               </span>
             </div>
           ) : (
@@ -303,7 +303,9 @@ export const CenterActionConsole = memo(function CenterActionConsole({
                           : 'bg-slate-800 text-slate-500 border-slate-700'
                     }`}
                   >
-                    {isUsed ? 'Used' : `${ability.cost} ⚡`}
+                    {isUsed
+                      ? t('games.cat_dash_v1.dashboard.used' as TranslationKey)
+                      : `${ability.cost} ⚡`}
                   </span>
                 </div>
                 <span className="text-[11px] text-slate-400 leading-tight">

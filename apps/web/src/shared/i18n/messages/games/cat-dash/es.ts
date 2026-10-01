@@ -137,6 +137,7 @@ export const esMessages = {
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando jugadores…',
       minPlayers: 'Mínimo 2 jugadores',
+      meetRacers: 'Conoce a los 6 corredores (Expediente y estadísticas)',
     },
     tutorial: {
       s1: {
@@ -180,6 +181,7 @@ export const esMessages = {
       lost: 'Perdiste.',
       draw: 'Empate.',
       you: 'Tú',
+      winnerIs: '¡{{name}} gana!',
       messages: {
         won: '¡Tu gato cruzó la meta primero! ¿Otra carrera?',
         lost: 'Otro gato ganó. ¿Revancha?',
@@ -246,6 +248,19 @@ export const esMessages = {
       pressSpace: 'Presiona ESPACIO para lanzar',
       distanceToFinish: '{{count}} casillas a la meta',
       inspectRoster: 'Expediente de pilotos',
+      rolling: 'Tirando dados...',
+      used: 'Usado',
+      turnBadge: 'Turno',
+      raceInProgress: 'Carrera en progreso...',
+    },
+    board: {
+      start: 'Salida',
+      finish: 'Meta',
+      obstacle: 'Obstáculo',
+      bonus: 'Bonus',
+      trap: 'Trampa',
+      startUpper: 'SALIDA',
+      finishUpper: 'META',
     },
   },
 };

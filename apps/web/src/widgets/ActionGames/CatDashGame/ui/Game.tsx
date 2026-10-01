@@ -102,17 +102,17 @@ function CatDashGameImpl({
   );
 
   const handleCatnap = useCallback(() => {
-    play('confirm');
+    play('success');
     catnap();
   }, [catnap, play]);
 
   const handlePounce = useCallback(() => {
-    play('confirm');
+    play('move');
     pounce();
   }, [pounce, play]);
 
   const handleDeployTrap = useCallback(() => {
-    play('confirm');
+    play('place');
     deployTrap();
   }, [deployTrap, play]);
 
@@ -232,7 +232,9 @@ function CatDashGameImpl({
                 showGlow={true}
               />
               <span className="text-lg font-extrabold text-emerald-400">
-                {resolveDisplayNameBound(snapshot.winner)} wins!
+                {t('games.cat_dash_v1.gameOver.winnerIs' as TranslationKey, {
+                  name: resolveDisplayNameBound(snapshot.winner),
+                })}
               </span>
             </div>
           )}

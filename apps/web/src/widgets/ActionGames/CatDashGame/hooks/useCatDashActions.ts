@@ -58,6 +58,31 @@ export function useCatDashActions(options: UseCatDashActionsOptions) {
     [roomId, userId, onActionStart],
   );
 
+  const catnap = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('catnap');
+    gameSocket.emit('catDash.session.catnap', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const pounce = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('pounce');
+    gameSocket.emit('catDash.session.pounce', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const deployTrap = useCallback(
+    (spaceId?: number) => {
+      if (!userId) return;
+      onActionStart?.('deployTrap');
+      gameSocket.emit('catDash.session.deployTrap', {
+        roomId,
+        userId,
+        spaceId,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
+
   const forfeit = useCallback(() => {
     if (!userId) return;
     onActionStart?.('forfeit');
@@ -70,6 +95,9 @@ export function useCatDashActions(options: UseCatDashActionsOptions) {
     activateAbility,
     useAbility: activateAbility,
     choosePath,
+    catnap,
+    pounce,
+    deployTrap,
     forfeit,
   };
 }

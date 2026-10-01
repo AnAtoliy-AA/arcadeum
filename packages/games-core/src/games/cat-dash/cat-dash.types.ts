@@ -61,4 +61,7 @@ export type CatDashAction =
   | { type: 'ROLL_DICE'; playerId: string }
   | { type: 'MOVE'; playerId: string; spaces: number }
   | { type: 'USE_ABILITY'; playerId: string; abilityId: string }
-  | { type: 'CHOOSE_PATH'; playerId: string; pathIndex: number };
+  | { type: 'CHOOSE_PATH'; playerId: string; pathIndex: number }
+  | { type: 'CATNAP'; playerId: string }
+  | { type: 'POUNCE'; playerId: string }
+  | { type: 'DEPLOY_TRAP'; playerId: string; spaceId?: number };

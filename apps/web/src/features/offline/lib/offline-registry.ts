@@ -472,6 +472,12 @@ export const OFFLINE_GAMES: Record<string, OfflineGameEntry> = {
         action: 'choosePath',
         mapPayload: (p) => ({ pathIndex: p.pathIndex }),
       },
+      catnap: { action: 'catnap' },
+      pounce: { action: 'pounce' },
+      deploytrap: {
+        action: 'deployTrap',
+        mapPayload: (p) => ({ spaceId: p.spaceId }),
+      },
       forfeit: { action: 'forfeit' },
     },
     botDecide() {

@@ -58,6 +58,18 @@ export class CatDashService extends BaseGameService {
     return this.runAction(userId, roomId, 'choosePath', { pathIndex });
   }
 
+  async catnap(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'catnap', {});
+  }
+
+  async pounce(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'pounce', {});
+  }
+
+  async deployTrap(userId: string, roomId: string, spaceId?: number) {
+    return this.runAction(userId, roomId, 'deployTrap', { spaceId });
+  }
+
   protected resolveOptions(raw: unknown): {
     trackType: string;
     theme: string;

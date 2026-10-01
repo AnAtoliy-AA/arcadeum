@@ -55,6 +55,40 @@ export class CatDashGateway extends BaseGameGateway {
           );
         },
       ),
+      'catDash.session.catnap': this.wrapHandler(
+        'catnap',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.catnap(userId, roomId);
+          client.emit(
+            'catDash.session.catnapped',
+            maybeEncrypt({ roomId, userId }),
+          );
+        },
+      ),
+      'catDash.session.pounce': this.wrapHandler(
+        'pounce',
+        async (client, _payload, roomId, userId) => {
+          await this.gameService.pounce(userId, roomId);
+          client.emit(
+            'catDash.session.pounced',
+            maybeEncrypt({ roomId, userId }),
+          );
+        },
+      ),
+      'catDash.session.deployTrap': this.wrapHandler(
+        'deploy trap',
+        async (client, payload, roomId, userId) => {
+          await this.gameService.deployTrap(
+            userId,
+            roomId,
+            typeof payload?.spaceId === 'number' ? payload.spaceId : undefined,
+          );
+          client.emit(
+            'catDash.session.trapDeployed',
+            maybeEncrypt({ roomId, userId, spaceId: payload?.spaceId }),
+          );
+        },
+      ),
     };
   }
 }

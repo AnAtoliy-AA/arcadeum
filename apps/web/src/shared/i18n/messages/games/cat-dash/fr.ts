@@ -197,6 +197,16 @@ export const frMessages = {
       rematch: 'Revanche',
       leave: 'Quitter',
       forfeit: 'Abandonner',
+      catnap: 'Sieste',
+      pounce: 'Bondir',
+      deployTrap: 'Piège à herbe',
+      rollTitle: 'Lancer et foncer',
+      catnapDesc:
+        'Reposez-vous pour gagner +1 Énergie et un Bouclier protecteur',
+      pounceDesc:
+        'Bondissez de 2 cases avec une agilité féline (Coûte 1 Énergie)',
+      deployTrapDesc:
+        'Posez un piège devant pour ralentir vos rivaux (Coûte 1 Énergie)',
     },
     chat: {
       rolled: '{{name}} a lancé {{roll}} et avancé de {{move}} cases.',
@@ -232,6 +242,16 @@ export const frMessages = {
       yourTurnToRoll: 'À vous de lancer!',
       waitingForPlayer: 'En attente du lancer de {{name}}...',
       recentEvents: 'Flux de la course',
+      commandDeck: 'Console de course',
+      tacticalDeck: 'Actions tactiques',
+      activeBuffs: 'Modificateurs actifs',
+      shieldActive: 'Bouclier actif',
+      speedPrimed: '+3 Vitesse prête',
+      apexPrimed: 'Précision Apex (4)',
+      powerTokensCount: '{{count}}/3 Énergie',
+      pressSpace: 'Appuyez sur ESPACE pour lancer',
+      distanceToFinish: '{{count}} cases jusqu’à l’arrivée',
+      inspectRoster: 'Dossier des pilotes',
     },
   },
 };

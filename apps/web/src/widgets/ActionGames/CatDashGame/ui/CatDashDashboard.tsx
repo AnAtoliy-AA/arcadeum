@@ -1,13 +1,15 @@
 'use client';
 
 import { memo, useMemo, useEffect, useCallback, useState } from 'react';
-import { DiceRollOverlay } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/i18n/useTranslation';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import type { CatDashClientState, CatDashPlayer, CatId } from '../types';
 import { RealisticCat } from './RealisticCat';
 import { CAT_PROFILES } from './catData';
 import { RacerBioModal } from './RacerBioModal';
-import { TacticalAbilityBar } from './TacticalAbilityBar';
+import { CenterActionConsole } from './CenterActionConsole';
 
 interface CatDashDashboardProps {
   snapshot: CatDashClientState;
@@ -16,9 +18,12 @@ interface CatDashDashboardProps {
   isGameOver: boolean;
   isRolling: boolean;
   onRollDice: () => void;
+  onCatnap?: () => void;
+  onPounce?: () => void;
+  onDeployTrap?: () => void;
+  onUseAbility?: (abilityId: string) => void;
   resolveName: (id?: string | null) => string;
   onInspectCat?: (catId: CatId) => void;
-  onUseAbility?: (abilityId: string) => void;
 }
 
 export const CatDashDashboard = memo(function CatDashDashboard({
@@ -28,9 +33,12 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   isGameOver,
   isRolling,
   onRollDice,
+  onCatnap = () => {},
+  onPounce = () => {},
+  onDeployTrap = () => {},
+  onUseAbility = () => {},
   resolveName,
   onInspectCat,
-  onUseAbility,
 }: CatDashDashboardProps) {
   const { t } = useTranslation();
   const [inspectedCatId, setInspectedCatId] = useState<CatId | null>(null);
@@ -105,13 +113,15 @@ export const CatDashDashboard = memo(function CatDashDashboard({
         <div className="flex flex-row items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
           <div className="flex items-center gap-1.5">
             <span className="text-base">🚩</span>
-            <span>{t('games.cat_dash_v1.dashboard.raceProgress')}</span>
+            <span>
+              {t('games.cat_dash_v1.dashboard.raceProgress' as TranslationKey)}
+            </span>
           </div>
           {leadMargin > 0 && leader && (
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-extrabold normal-case">
               <span>👑</span>
               <span>
-                {t('games.cat_dash_v1.dashboard.leadsBy', {
+                {t('games.cat_dash_v1.dashboard.leadsBy' as TranslationKey, {
                   name: resolveName(leader.playerId),
                   count: leadMargin,
                 })}
@@ -119,7 +129,9 @@ export const CatDashDashboard = memo(function CatDashDashboard({
             </div>
           )}
           <div className="flex items-center gap-1.5 text-slate-400">
-            <span>{t('games.cat_dash_v1.dashboard.finishLine')}</span>
+            <span>
+              {t('games.cat_dash_v1.dashboard.finishLine' as TranslationKey)}
+            </span>
             <span className="text-base">🏁</span>
           </div>
         </div>
@@ -215,58 +227,28 @@ export const CatDashDashboard = memo(function CatDashDashboard({
         </svg>
       </div>
 
-      {myPlayer && onUseAbility && (
-        <TacticalAbilityBar
-          catId={myPlayer.catId}
-          powerTokens={myPlayer.powerTokens}
-          abilitiesUsed={myPlayer.abilitiesUsed}
-          speedBoostPending={myPlayer.speedBoostPending}
-          shielded={myPlayer.shielded}
-          myTurn={myTurn}
-          isGameOver={isGameOver}
-          isRolling={isRolling}
-          onUseAbility={onUseAbility}
-        />
-      )}
+      <CenterActionConsole
+        myTurn={myTurn}
+        isGameOver={isGameOver}
+        isRolling={isRolling}
+        onRollDice={onRollDice}
+        onCatnap={onCatnap}
+        onPounce={onPounce}
+        onDeployTrap={onDeployTrap}
+        onUseAbility={onUseAbility}
+        myPlayer={myPlayer}
+        currentPlayer={currentPlayer}
+        resolveName={resolveName}
+        lastRollValue={lastRollValue}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
-        <div className="md:col-span-1 flex flex-col items-center justify-center">
-          <DiceRollOverlay
-            canRoll={myTurn && !isGameOver}
-            isRolling={isRolling}
-            onRoll={onRollDice}
-            rollLabel={t('games.cat_dash_v1.dashboard.rollNow')}
-            subtitle={
-              myTurn && !isGameOver
-                ? t('games.cat_dash_v1.dashboard.yourTurnToRoll')
-                : currentPlayer
-                  ? t('games.cat_dash_v1.dashboard.waitingForPlayer', {
-                      name: resolveName(currentPlayer.playerId),
-                    })
-                  : undefined
-            }
-            values={!myTurn && lastRollValue ? [lastRollValue] : undefined}
-            lastValues={lastRollValue ? [lastRollValue] : undefined}
-            resultLabel={
-              lastRollValue
-                ? t('games.cat_dash_v1.dashboard.rolledMoved', {
-                    roll: lastRollValue,
-                    move: lastRollValue,
-                  })
-                : undefined
-            }
-            size="xl"
-            variant="neon"
-            className="w-full h-full min-h-[200px]"
-          />
-        </div>
-
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
         <div className="md:col-span-2 flex flex-col gap-2.5 p-4 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl">
           <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
             <div className="flex items-center gap-2">
               <span className="text-lg">🏎️</span>
               <span className="text-sm font-extrabold tracking-wide uppercase text-slate-200">
-                {t('games.cat_dash_v1.dashboard.leaderboard')}
+                {t('games.cat_dash_v1.dashboard.leaderboard' as TranslationKey)}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -277,11 +259,17 @@ export const CatDashDashboard = memo(function CatDashDashboard({
                 data-testid="inspect-racers-btn"
               >
                 <span>🔍</span>
-                <span>Racers Dossier</span>
+                <span>
+                  {t(
+                    'games.cat_dash_v1.dashboard.inspectRoster' as TranslationKey,
+                  )}
+                </span>
               </button>
               <span className="text-xs font-semibold text-slate-400">
                 {snapshot.players.length}{' '}
-                {t('games.cat_dash_v1.landing.highlights.players.title')}
+                {t(
+                  'games.cat_dash_v1.landing.highlights.players.title' as TranslationKey,
+                )}
               </span>
             </div>
           </div>
@@ -333,7 +321,9 @@ export const CatDashDashboard = memo(function CatDashDashboard({
                       </span>
                       {isMe && (
                         <span className="px-1.5 py-0.2 rounded-md bg-purple-500/30 text-purple-300 border border-purple-400/40 text-[10px] font-bold">
-                          {t('games.cat_dash_v1.gameOver.you')}
+                          {t(
+                            'games.cat_dash_v1.gameOver.you' as TranslationKey,
+                          )}
                         </span>
                       )}
                     </div>
@@ -360,27 +350,35 @@ export const CatDashDashboard = memo(function CatDashDashboard({
             })}
           </div>
         </div>
-      </div>
 
-      {recentLogs.length > 0 && (
-        <div className="flex flex-col gap-1.5 p-3 rounded-2xl bg-slate-950/40 border border-white/5">
-          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 px-1">
+        <div className="md:col-span-1 flex flex-col gap-2.5 p-4 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl">
+          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-white/10 pb-2">
             <span>⚡</span>
-            <span>{t('games.cat_dash_v1.dashboard.recentEvents')}</span>
+            <span>
+              {t('games.cat_dash_v1.dashboard.recentEvents' as TranslationKey)}
+            </span>
           </div>
-          <div className="flex flex-col gap-1">
-            {recentLogs.map((log) => (
-              <div
-                key={log.id}
-                className="flex items-center gap-2 text-xs text-slate-300 px-2 py-1 rounded-lg bg-slate-900/50"
-              >
-                <span className="text-slate-500">🐾</span>
-                <span className="truncate">{log.message}</span>
-              </div>
-            ))}
-          </div>
+          {recentLogs.length > 0 ? (
+            <div className="flex flex-col gap-1.5">
+              {recentLogs.map((log) => (
+                <div
+                  key={log.id}
+                  className="flex items-start gap-2 text-xs text-slate-300 px-2.5 py-1.5 rounded-xl bg-slate-950/50 border border-white/5"
+                >
+                  <span className="text-slate-500 mt-0.5">🐾</span>
+                  <span className="leading-snug break-words">
+                    {log.message}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <span className="text-xs text-slate-500 italic py-2">
+              Race in progress...
+            </span>
+          )}
         </div>
-      )}
+      </div>
 
       {!onInspectCat && inspectedCatId && (
         <RacerBioModal

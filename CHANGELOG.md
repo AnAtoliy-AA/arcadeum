@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.37] - 2026-10-01
+
+### Added
+- rework cat dash with center roll console and tactical actions (ARC-967) (ARC-967)
+
+
 ## [1.30.36] - 2026-09-30
 
 ### Added

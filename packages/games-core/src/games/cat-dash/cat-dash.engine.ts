@@ -24,9 +24,17 @@ import {
   validateUseAbility,
   validateChoosePath,
   validateForfeit,
+  validateCatnap,
+  validatePounce,
+  validateDeployTrap,
 } from './cat-dash.validators';
 import { executeRollDiceHelper } from './cat-dash.roll-handler';
 import { executeUseAbilityHelper } from './cat-dash.ability-handler';
+import {
+  executeCatnapHelper,
+  executePounceHelper,
+  executeDeployTrapHelper,
+} from './cat-dash.action-handler';
 
 export class CatDashEngine extends BaseGameEngine<CatDashState> {
   private readonly logger = createLogger('CatDashEngine');
@@ -107,6 +115,12 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
         return validateRollDice(state, player);
       case 'useAbility':
         return validateUseAbility(state, player, p?.abilityId as string);
+      case 'catnap':
+        return validateCatnap(state, player);
+      case 'pounce':
+        return validatePounce(state, player);
+      case 'deployTrap':
+        return validateDeployTrap(state, player, p?.spaceId as number | undefined);
       case 'choosePath':
         return validateChoosePath(state, player, p?.pathIndex as number);
       case 'forfeit':
@@ -135,6 +149,16 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
         return this.executeRollDice(newState, player);
       case 'useAbility':
         return this.executeUseAbility(newState, player, p?.abilityId as string);
+      case 'catnap':
+        return this.executeCatnap(newState, player);
+      case 'pounce':
+        return this.executePounce(newState, player);
+      case 'deployTrap':
+        return this.executeDeployTrap(
+          newState,
+          player,
+          p?.spaceId as number | undefined,
+        );
       case 'choosePath':
         return this.executeChoosePath(newState, player, p?.pathIndex as number);
       case 'forfeit':
@@ -149,6 +173,59 @@ export class CatDashEngine extends BaseGameEngine<CatDashState> {
       default:
         return this.errorResult('Unknown action');
     }
+  }
+
+  private executeCatnap(
+    state: CatDashState,
+    player: CatDashPlayer,
+  ): GameActionResult<CatDashState> {
+    const { state: updatedState, logs } = executeCatnapHelper(
+      state,
+      player,
+      (type, msg, opts) => this.createLogEntry(type, msg, opts),
+    );
+
+    for (const log of logs) {
+      this.addLog(updatedState, log);
+    }
+
+    return this.successResult(updatedState, logs);
+  }
+
+  private executePounce(
+    state: CatDashState,
+    player: CatDashPlayer,
+  ): GameActionResult<CatDashState> {
+    const { state: updatedState, logs } = executePounceHelper(
+      state,
+      player,
+      (type, msg, opts) => this.createLogEntry(type, msg, opts),
+    );
+
+    for (const log of logs) {
+      this.addLog(updatedState, log);
+    }
+
+    return this.successResult(updatedState, logs);
+  }
+
+  private executeDeployTrap(
+    state: CatDashState,
+    player: CatDashPlayer,
+    spaceId?: number,
+  ): GameActionResult<CatDashState> {
+    const { state: updatedState, logs } = executeDeployTrapHelper(
+      state,
+      player,
+      spaceId,
+      (type, msg, opts) => this.createLogEntry(type, msg, opts),
+    );
+
+    for (const log of logs) {
+      this.addLog(updatedState, log);
+    }
+
+    return this.successResult(updatedState, logs);
   }
 
   private executeRollDice(

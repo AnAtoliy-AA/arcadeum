@@ -192,6 +192,15 @@ export const enMessages = {
       rematch: 'Rematch',
       leave: 'Leave',
       forfeit: 'Forfeit',
+      catnap: 'Catnap',
+      pounce: 'Pounce',
+      deployTrap: 'Catnip Trap',
+      rollTitle: 'Roll and Dash',
+      catnapDesc: 'Rest to gain +1 Power Token and a protective Energy Shield',
+      pounceDesc:
+        'Leap 2 spaces ahead with feline agility (Costs 1 Power Token)',
+      deployTrapDesc:
+        'Plant a Catnip Snare ahead to slow down rivals (Costs 1 Power Token)',
     },
     chat: {
       rolled: '{{name}} rolled {{roll}} and moved {{move}} spaces.',
@@ -227,6 +236,16 @@ export const enMessages = {
       yourTurnToRoll: 'Your turn to roll!',
       waitingForPlayer: 'Waiting for {{name}} to roll...',
       recentEvents: 'Live Race Feed',
+      commandDeck: 'Race Command Console',
+      tacticalDeck: 'Tactical Actions',
+      activeBuffs: 'Active Modifiers',
+      shieldActive: 'Shield Active',
+      speedPrimed: '+3 Speed Primed',
+      apexPrimed: 'Apex Precision (4)',
+      powerTokensCount: '{{count}}/3 Power',
+      pressSpace: 'Press SPACE to roll',
+      distanceToFinish: '{{count}} spaces to finish',
+      inspectRoster: 'Racers Dossier',
     },
   },
 };

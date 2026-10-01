@@ -7,6 +7,7 @@ import { CatDashDashboard } from '../ui/CatDashDashboard';
 import { RealisticCat } from '../ui/RealisticCat';
 import { RacerBioModal } from '../ui/RacerBioModal';
 import { TacticalAbilityBar } from '../ui/TacticalAbilityBar';
+import { CenterActionConsole } from '../ui/CenterActionConsole';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState, CatId } from '../types';
 
@@ -317,3 +318,43 @@ describe('TacticalAbilityBar', () => {
   });
 });
 
+describe('CenterActionConsole', () => {
+  it('renders centered roll button and handles tactical actions', () => {
+    const handleRoll = vi.fn();
+    const handleCatnap = vi.fn();
+    const handlePounce = vi.fn();
+    const handleDeployTrap = vi.fn();
+
+    renderWithTheme(
+      <CenterActionConsole
+        myTurn={true}
+        isGameOver={false}
+        isRolling={false}
+        onRollDice={handleRoll}
+        onCatnap={handleCatnap}
+        onPounce={handlePounce}
+        onDeployTrap={handleDeployTrap}
+        onUseAbility={vi.fn()}
+        myPlayer={mockSnapshot.players[0]}
+        currentPlayer={mockSnapshot.players[0]}
+        resolveName={(id) => id ?? ''}
+        lastRollValue={4}
+      />,
+    );
+
+    expect(screen.getByTestId('center-action-console')).toBeInTheDocument();
+    expect(screen.getByTestId('dice-overlay-roll-button')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('action-btn-catnap'));
+    expect(handleCatnap).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('action-btn-pounce'));
+    expect(handlePounce).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('action-btn-deploy-trap'));
+    expect(handleDeployTrap).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('dice-overlay-roll-button'));
+    expect(handleRoll).toHaveBeenCalledTimes(1);
+  });
+});

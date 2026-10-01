@@ -69,7 +69,14 @@ function CatDashGameImpl({
       initialSession,
     });
 
-  const { startSession, rollDice, activateAbility } = useCatDashActions({
+  const {
+    startSession,
+    rollDice,
+    activateAbility,
+    catnap,
+    pounce,
+    deployTrap,
+  } = useCatDashActions({
     roomId,
     userId: currentUserId,
   });
@@ -93,6 +100,21 @@ function CatDashGameImpl({
     },
     [activateAbility, play],
   );
+
+  const handleCatnap = useCallback(() => {
+    play('confirm');
+    catnap();
+  }, [catnap, play]);
+
+  const handlePounce = useCallback(() => {
+    play('confirm');
+    pounce();
+  }, [pounce, play]);
+
+  const handleDeployTrap = useCallback(() => {
+    play('confirm');
+    deployTrap();
+  }, [deployTrap, play]);
 
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
@@ -221,6 +243,9 @@ function CatDashGameImpl({
             isGameOver={isGameOver}
             isRolling={isRolling}
             onRollDice={handleRollDice}
+            onCatnap={handleCatnap}
+            onPounce={handlePounce}
+            onDeployTrap={handleDeployTrap}
             resolveName={resolveDisplayNameBound}
             onInspectCat={setInspectedCatId}
             onUseAbility={handleUseAbility}

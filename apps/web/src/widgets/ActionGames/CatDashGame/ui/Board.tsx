@@ -190,15 +190,69 @@ export const CatDashBoard = memo(function CatDashBoard({
                 </text>
               )}
 
+              {snapshot.traps?.some((t) => t.spaceId === space.id) && (
+                <g
+                  transform={`translate(${pos.x}, ${pos.y - spaceRadius - 2})`}
+                >
+                  <circle
+                    r={8}
+                    fill="#4c1d95"
+                    stroke="#a855f7"
+                    strokeWidth={1.5}
+                    className="animate-pulse"
+                  />
+                  <text
+                    y={3}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={9}
+                    className="select-none"
+                  >
+                    🪤
+                  </text>
+                </g>
+              )}
+
               {isOccupied &&
                 playersHere.map((p, idx) => {
                   const size = 38;
                   const offsetX = (idx - (playersHere.length - 1) / 2) * 12;
+                  const isCurrentTurn =
+                    snapshot.players[snapshot.currentPlayerIndex]?.playerId ===
+                    p.playerId;
+                  const isLead =
+                    p.position > 0 &&
+                    p.position ===
+                      Math.max(...snapshot.players.map((pl) => pl.position));
+
                   return (
                     <g
                       key={p.playerId}
                       transform={`translate(${pos.x - size / 2 + offsetX}, ${pos.y - size / 2})`}
                     >
+                      {isLead && (
+                        <text
+                          x={size / 2}
+                          y={-4}
+                          textAnchor="middle"
+                          fontSize={12}
+                          className="select-none filter drop-shadow"
+                        >
+                          👑
+                        </text>
+                      )}
+                      {isCurrentTurn && (
+                        <circle
+                          cx={size / 2}
+                          cy={size / 2}
+                          r={size / 2 + 5}
+                          fill="none"
+                          stroke="#a855f7"
+                          strokeWidth={2}
+                          className="animate-ping"
+                          opacity={0.6}
+                        />
+                      )}
                       {p.shielded && (
                         <circle
                           cx={size / 2}
@@ -366,6 +420,10 @@ export const CatDashBoard = memo(function CatDashBoard({
         <div className="flex flex-row gap-1.5 items-center">
           <span className="text-sm">⭐</span>
           <span className="text-xs font-semibold">Bonus</span>
+        </div>
+        <div className="flex flex-row gap-1.5 items-center">
+          <span className="text-sm">🪤</span>
+          <span className="text-xs font-semibold">Trap</span>
         </div>
       </div>
     </div>

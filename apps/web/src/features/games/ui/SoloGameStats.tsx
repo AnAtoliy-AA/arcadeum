@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { soloActiveTimer } from '@/features/games/lib/soloActiveTimer';
 
 export function formatDuration(durationMs: number): string {
   const totalSeconds = Math.floor(durationMs / 1000);
@@ -8,65 +9,53 @@ export function formatDuration(durationMs: number): string {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
+function subscribeSoloTimer(listener: () => void): () => void {
+  return soloActiveTimer.subscribe(listener);
+}
+
+/**
+ * Elapsed active-play time for a solo game. Delegates accounting to the shared
+ * `soloActiveTimer` so the HUD and the recorded/leaderboard duration are the
+ * same number: pause, hidden tab, blocking overlays and time away from the
+ * page are all excluded.
+ */
 export function useSoloTimer(
   isRunning: boolean,
   startedAt: number,
   isPaused: boolean = false,
 ): { elapsedMs: number; formatted: string } {
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const hiddenAtRef = useRef<number | null>(null);
-  const pausedAtRef = useRef<number | null>(null);
-  const pausedMsRef = useRef(0);
+  const getSnapshot = useCallback(
+    () => soloActiveTimer.getSnapshotFor(startedAt),
+    [startedAt],
+  );
+  const elapsedMs = useSyncExternalStore(
+    subscribeSoloTimer,
+    getSnapshot,
+    getSnapshot,
+  );
 
   useEffect(() => {
-    pausedMsRef.current = 0;
-    pausedAtRef.current = null;
-    hiddenAtRef.current = null;
-  }, [startedAt]);
-
-  useEffect(() => {
-    if (isPaused) {
-      if (pausedAtRef.current === null) {
-        pausedAtRef.current = Date.now();
-      }
-    } else if (pausedAtRef.current !== null) {
-      pausedMsRef.current += Date.now() - pausedAtRef.current;
-      pausedAtRef.current = null;
-    }
+    soloActiveTimer.setPaused(isPaused);
   }, [isPaused]);
 
   useEffect(() => {
     if (!isRunning) return undefined;
-
-    const tick = () => {
-      if (isPaused) return;
-      const hiddenBonus = hiddenAtRef.current
-        ? Date.now() - hiddenAtRef.current
-        : 0;
-      const elapsed =
-        Date.now() - startedAt - pausedMsRef.current - hiddenBonus;
-      setElapsedMs(Math.max(0, elapsed));
-    };
-    tick();
-    const interval = setInterval(tick, 1000);
-
-    const handleVisibility = () => {
-      if (document.hidden) {
-        hiddenAtRef.current = Date.now();
-      } else if (hiddenAtRef.current !== null) {
-        pausedMsRef.current += Date.now() - hiddenAtRef.current;
-        hiddenAtRef.current = null;
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [isRunning, startedAt, isPaused]);
+    soloActiveTimer.start(startedAt);
+    return () => soloActiveTimer.stop();
+  }, [isRunning, startedAt]);
 
   return { elapsedMs, formatted: formatDuration(elapsedMs) };
+}
+
+/**
+ * Freezes the shared solo timer while a non-gameplay overlay (rules modal) is
+ * open, so overlay time never lands in the HUD or the leaderboard duration.
+ */
+export function useSoloTimerBlocked(blocked: boolean): void {
+  useEffect(() => {
+    soloActiveTimer.setBlocked(blocked);
+    return () => soloActiveTimer.setBlocked(false);
+  }, [blocked]);
 }
 
 export function StatCard({

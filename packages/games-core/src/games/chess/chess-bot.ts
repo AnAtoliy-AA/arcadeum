@@ -131,71 +131,17 @@ export class ChessBot {
     return this.currentPersonality?.evaluationModifiers ?? null;
   }
 
-  findBestMove(state: ChessState): ChessMove | null {
+  private ensureSearchTables(): void {
     if (!this.killers.length) {
       this.killers = Array.from({ length: 20 }, (): ChessMove[] => []);
       this.history = Array.from({ length: 8 }, (): number[] => [
         0, 0, 0, 0, 0, 0, 0, 0,
       ]);
     }
+  }
 
-    const personality = this.currentPersonality;
-    const difficulty = state.botDifficulty ?? this.currentDifficulty;
-    const cfg = DIFFICULTY[difficulty];
-    const legalMoves = getLegalMoves(state, state.currentTurnColor);
-    if (legalMoves.length === 0) return null;
-    if (legalMoves.length === 1) return legalMoves[0];
-
-    if (personality) {
-      const fen = toFen(state);
-      const openingMove = getOpeningMove(
-        personality.id,
-        state.currentTurnColor,
-        fen,
-      );
-      if (openingMove) {
-        const match = legalMoves.find(
-          (m) =>
-            `${m.from.file}${m.from.rank}${m.to.file}${m.to.rank}` ===
-            openingMove,
-        );
-        if (match) return match;
-      }
-    }
-
-    const ordered = this.orderMoves(state, legalMoves, null, 0);
-    let bestScore = -INFINITY;
-    let bestMoves: ChessMove[] = [];
-
-    for (const move of ordered) {
-      const newState = applyBotMove(state, move);
-      const score = -this.alphaBeta(
-        newState,
-        cfg.maxDepth - 1,
-        -INFINITY,
-        INFINITY,
-        cfg,
-        1,
-      );
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestMoves = [move];
-      } else if (score === bestScore) {
-        bestMoves.push(move);
-      }
-    }
-
-    if (cfg.noiseCentipawns > 0 && bestMoves.length > 1) {
-      const noisy = bestMoves.map((m) => ({
-        move: m,
-        score: bestScore + (Math.random() - 0.5) * cfg.noiseCentipawns,
-      }));
-      noisy.sort((a, b) => b.score - a.score);
-      return noisy[0].move;
-    }
-
-    return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  findBestMove(state: ChessState, maxTimeMs = 400): ChessMove | null {
+    return this.findBestMoveWithTimeBudget(state, maxTimeMs, Date.now());
   }
 
   protected findBestMoveWithTimeBudget(
@@ -203,6 +149,7 @@ export class ChessBot {
     timeBudgetMs: number,
     startTime: number,
   ): ChessMove | null {
+    this.ensureSearchTables();
     const personality = this.currentPersonality;
     const difficulty = state.botDifficulty ?? this.currentDifficulty;
     const cfg = DIFFICULTY[difficulty];

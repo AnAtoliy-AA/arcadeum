@@ -35,7 +35,7 @@ export class SoloScoresService {
   async getLeaderboard(
     gameId: string,
     difficulty: string,
-    _sortBy: 'score' | 'durationMs' = 'score',
+    sortBy: 'score' | 'durationMs' = 'score',
     order: 'asc' | 'desc' = 'desc',
     limit = 20,
     offset = 0,
@@ -57,6 +57,15 @@ export class SoloScoresService {
     total: number;
   }> {
     const sortDirection = order === 'asc' ? 1 : -1;
+    const byDuration = sortBy === 'durationMs';
+    // Rank by the requested metric, use the other one only as a tiebreaker in
+    // its "better" direction (higher score, faster time).
+    const recordSort: Record<string, 1 | -1> = byDuration
+      ? { durationMs: sortDirection, score: -1 }
+      : { score: sortDirection, durationMs: 1 };
+    const rankingSort: Record<string, 1 | -1> = byDuration
+      ? { bestDurationMs: sortDirection, bestScore: -1 }
+      : { bestScore: sortDirection, bestDurationMs: 1 };
 
     const matchStage: Record<string, unknown> = {
       gameId,
@@ -72,10 +81,7 @@ export class SoloScoresService {
         $match: matchStage,
       },
       {
-        $sort: {
-          score: sortDirection,
-          durationMs: 1,
-        },
+        $sort: recordSort,
       },
       {
         $group: {
@@ -87,10 +93,7 @@ export class SoloScoresService {
         },
       },
       {
-        $sort: {
-          bestScore: sortDirection,
-          bestDurationMs: 1,
-        },
+        $sort: rankingSort,
       },
       {
         $facet: {

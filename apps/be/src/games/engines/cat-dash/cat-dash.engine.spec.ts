@@ -248,9 +248,51 @@ describe('CatDashEngine', () => {
       const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
       expect(rollRes.success).toBe(true);
       const s1 = rollRes.state as CatDashState;
-      // Landing at 4 behind 5 gives drafting boost to 5, which then bumps rival at 5 to 4!
       expect(s1.players[0].position).toBe(5);
       expect(s1.players[1].position).toBe(4);
+    });
+
+    it('allows player to take a catnap, gaining power token and shield', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].powerTokens = 1;
+      state.players[0].shielded = false;
+
+      const res = engine.executeAction(state, 'catnap', ctx('p1'));
+      expect(res.success).toBe(true);
+      const s1 = res.state as CatDashState;
+      expect(s1.players[0].powerTokens).toBe(2);
+      expect(s1.players[0].shielded).toBe(true);
+      expect(s1.currentPlayerIndex).toBe(1);
+    });
+
+    it('executes pounce, spending power token and leaping 2 spaces', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 3;
+      state.players[0].powerTokens = 2;
+
+      const res = engine.executeAction(state, 'pounce', ctx('p1'));
+      expect(res.success).toBe(true);
+      const s1 = res.state as CatDashState;
+      expect(s1.players[0].position).toBe(5);
+      expect(s1.players[0].powerTokens).toBe(1);
+      expect(s1.currentPlayerIndex).toBe(1);
+    });
+
+    it('deploys a trap ahead and consumes a token', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 4;
+      state.players[0].powerTokens = 3;
+
+      const res = engine.executeAction(state, 'deployTrap', ctx('p1'), {
+        spaceId: 7,
+      });
+      expect(res.success).toBe(true);
+      const s1 = res.state as CatDashState;
+      expect(s1.players[0].powerTokens).toBe(2);
+      expect(s1.traps?.some((t) => t.spaceId === 7 && t.ownerId === 'p1')).toBe(
+        true,
+      );
+      expect(s1.currentPlayerIndex).toBe(1);
     });
   });
 });

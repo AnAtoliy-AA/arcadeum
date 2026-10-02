@@ -136,6 +136,7 @@ export const enMessages = {
       addBot: 'Add bot',
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',
+      meetRacers: 'Meet the 6 Racers (Dossier & Stats)',
     },
     tutorial: {
       s1: {
@@ -179,6 +180,7 @@ export const enMessages = {
       lost: 'You lost.',
       draw: 'Draw.',
       you: 'You',
+      winnerIs: '{{name}} wins!',
       messages: {
         won: 'Your cat crossed the finish line first! Ready for another race?',
         lost: 'Another cat won the race. Want a rematch?',
@@ -192,6 +194,15 @@ export const enMessages = {
       rematch: 'Rematch',
       leave: 'Leave',
       forfeit: 'Forfeit',
+      catnap: 'Catnap',
+      pounce: 'Pounce',
+      deployTrap: 'Catnip Trap',
+      rollTitle: 'Roll and Dash',
+      catnapDesc: 'Rest to gain +1 Power Token and a protective Energy Shield',
+      pounceDesc:
+        'Leap 2 spaces ahead with feline agility (Costs 1 Power Token)',
+      deployTrapDesc:
+        'Plant a Catnip Snare ahead to slow down rivals (Costs 1 Power Token)',
     },
     chat: {
       rolled: '{{name}} rolled {{roll}} and moved {{move}} spaces.',
@@ -227,6 +238,29 @@ export const enMessages = {
       yourTurnToRoll: 'Your turn to roll!',
       waitingForPlayer: 'Waiting for {{name}} to roll...',
       recentEvents: 'Live Race Feed',
+      commandDeck: 'Race Command Console',
+      tacticalDeck: 'Tactical Actions',
+      activeBuffs: 'Active Modifiers',
+      shieldActive: 'Shield Active',
+      speedPrimed: '+3 Speed Primed',
+      apexPrimed: 'Apex Precision (4)',
+      powerTokensCount: '{{count}}/3 Power',
+      pressSpace: 'Press SPACE to roll',
+      distanceToFinish: '{{count}} spaces to finish',
+      inspectRoster: 'Racers Dossier',
+      rolling: 'Rolling...',
+      used: 'Used',
+      turnBadge: 'Turn',
+      raceInProgress: 'Race in progress...',
+    },
+    board: {
+      start: 'Start',
+      finish: 'Finish',
+      obstacle: 'Obstacle',
+      bonus: 'Bonus',
+      trap: 'Trap',
+      startUpper: 'START',
+      finishUpper: 'FINISH',
     },
   },
 };

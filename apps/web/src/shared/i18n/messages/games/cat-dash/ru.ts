@@ -132,6 +132,7 @@ export const ruMessages = {
       addBot: 'Добавить бота',
       waitingForPlayers: 'Ожидание игроков…',
       minPlayers: 'Минимум 2 игрока',
+      meetRacers: 'Познакомьтесь с 6 гонщиками (Досье и статы)',
     },
     tutorial: {
       s1: {
@@ -175,6 +176,7 @@ export const ruMessages = {
       lost: 'Вы проиграли.',
       draw: 'Ничья.',
       you: 'Вы',
+      winnerIs: '{{name}} побеждает!',
       messages: {
         won: 'Ваш котик первым пересёк финишную черту! Готовы к новой гонке?',
         lost: 'Другой кот выиграл гонку. Хотите реванш?',
@@ -188,6 +190,15 @@ export const ruMessages = {
       rematch: 'Реванш',
       leave: 'Выйти',
       forfeit: 'Сдаться',
+      catnap: 'Вздремнуть',
+      pounce: 'Прыжок',
+      deployTrap: 'Ловушка с мятой',
+      rollTitle: 'Бросок и рывок',
+      catnapDesc: 'Отдохните, чтобы получить +1 Энергию и Энергощит',
+      pounceDesc:
+        'Прыгните на 2 клетки вперёд с кошачьей ловкостью (Стоит 1 Энергию)',
+      deployTrapDesc:
+        'Установите ловушку впереди, чтобы замедлить соперников (Стоит 1 Энергию)',
     },
     chat: {
       rolled: '{{name}} бросил {{roll}} и прошёл {{move}} шагов.',
@@ -223,6 +234,29 @@ export const ruMessages = {
       yourTurnToRoll: 'Ваш ход: бросайте кубик!',
       waitingForPlayer: 'Ожидание хода: {{name}}...',
       recentEvents: 'События гонки',
+      commandDeck: 'Командный мостик гонки',
+      tacticalDeck: 'Тактические действия',
+      activeBuffs: 'Активные модификаторы',
+      shieldActive: 'Щит активен',
+      speedPrimed: '+3 к скорости готово',
+      apexPrimed: 'Точный бросок (4)',
+      powerTokensCount: '{{count}}/3 Энергия',
+      pressSpace: 'Нажмите ПРОБЕЛ для броска',
+      distanceToFinish: '{{count}} кл. до финиша',
+      inspectRoster: 'Досье гонщиков',
+      rolling: 'Бросаем кубик...',
+      used: 'Использовано',
+      turnBadge: 'Ход',
+      raceInProgress: 'Гонка продолжается...',
+    },
+    board: {
+      start: 'Старт',
+      finish: 'Финиш',
+      obstacle: 'Препятствие',
+      bonus: 'Бонус',
+      trap: 'Ловушка',
+      startUpper: 'СТАРТ',
+      finishUpper: 'ФИНИШ',
     },
   },
 };

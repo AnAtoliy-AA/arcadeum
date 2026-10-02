@@ -173,7 +173,16 @@ export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
   ],
   // Action
   glimworm_v1: ['click', 'hit', 'notification', 'tick', 'win', 'lose'],
-  cat_dash_v1: ['roll', 'move', 'capture', 'success', 'win', 'lose'],
+  cat_dash_v1: [
+    'roll',
+    'move',
+    'capture',
+    'place',
+    'confirm',
+    'success',
+    'win',
+    'lose',
+  ],
 };
 
 export function getSoundEntry(

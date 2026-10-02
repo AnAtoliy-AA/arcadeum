@@ -77,6 +77,11 @@ export interface CatDashLogEntry {
   targetId?: string | null;
 }
 
+export interface TrackTrap {
+  spaceId: number;
+  ownerId: string;
+}
+
 export interface CatDashClientState {
   trackType: TrackType;
   theme: Theme;
@@ -86,6 +91,7 @@ export interface CatDashClientState {
   currentPlayerIndex: number;
   turnNumber: number;
   track: TrackSpace[];
+  traps?: TrackTrap[];
   winner?: string;
   gameOver: boolean;
   logs: CatDashLogEntry[];

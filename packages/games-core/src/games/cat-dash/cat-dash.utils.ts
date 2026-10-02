@@ -118,9 +118,11 @@ export function getAvailableActions(
     return [];
   }
 
-  const actions: string[] = ['rollDice'];
+  const actions: string[] = ['rollDice', 'catnap'];
 
   if (currentPlayer.powerTokens > 0) {
+    actions.push('pounce');
+    actions.push('deployTrap');
     const availableAbilities = getAvailableAbilities(
       currentPlayer.catId,
       currentPlayer.abilitiesUsed,

@@ -14,14 +14,7 @@ export function TicTacToeRealBoard() {
           <stop offset="60%" stopColor="#0891b2" stopOpacity="0.06" />
           <stop offset="100%" stopColor="#030712" stopOpacity="0" />
         </radialGradient>
-        <filter id="ttt-neon-x" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <filter id="ttt-neon-o" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
+
       </defs>
 
       <rect width="360" height="220" fill="#030712" />
@@ -86,11 +79,10 @@ export function TicTacToeRealBoard() {
           fill="none"
           stroke="#10b981"
           strokeWidth="4.5"
-          filter="url(#ttt-neon-o)"
         />
 
         {/* Cell 0,1: X */}
-        <g transform="translate(85 28)" filter="url(#ttt-neon-x)">
+        <g transform="translate(85 28)">
           <line
             x1="-15"
             y1="-15"
@@ -112,7 +104,7 @@ export function TicTacToeRealBoard() {
         </g>
 
         {/* Cell 0,2: X */}
-        <g transform="translate(142 28)" filter="url(#ttt-neon-x)">
+        <g transform="translate(142 28)">
           <line
             x1="-15"
             y1="-15"
@@ -134,7 +126,7 @@ export function TicTacToeRealBoard() {
         </g>
 
         {/* Cell 1,0: X */}
-        <g transform="translate(28 85)" filter="url(#ttt-neon-x)">
+        <g transform="translate(28 85)">
           <line
             x1="-15"
             y1="-15"
@@ -163,7 +155,6 @@ export function TicTacToeRealBoard() {
           fill="none"
           stroke="#34d399"
           strokeWidth="5"
-          filter="url(#ttt-neon-o)"
         />
 
         {/* Cell 1,2: O */}
@@ -174,11 +165,10 @@ export function TicTacToeRealBoard() {
           fill="none"
           stroke="#10b981"
           strokeWidth="4.5"
-          filter="url(#ttt-neon-o)"
         />
 
         {/* Cell 2,0: X */}
-        <g transform="translate(28 142)" filter="url(#ttt-neon-x)">
+        <g transform="translate(28 142)">
           <line
             x1="-15"
             y1="-15"
@@ -200,7 +190,7 @@ export function TicTacToeRealBoard() {
         </g>
 
         {/* Cell 2,1: X */}
-        <g transform="translate(85 142)" filter="url(#ttt-neon-x)">
+        <g transform="translate(85 142)">
           <line
             x1="-15"
             y1="-15"
@@ -229,7 +219,6 @@ export function TicTacToeRealBoard() {
           fill="none"
           stroke="#34d399"
           strokeWidth="5"
-          filter="url(#ttt-neon-o)"
         />
 
         {/* Diagonal 3-in-a-row Winning Strike Line */}
@@ -241,7 +230,6 @@ export function TicTacToeRealBoard() {
           stroke="#fef08a"
           strokeWidth="4"
           strokeLinecap="round"
-          filter="url(#ttt-neon-o)"
         />
       </g>
 

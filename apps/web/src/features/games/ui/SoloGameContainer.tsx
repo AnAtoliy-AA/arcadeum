@@ -30,7 +30,12 @@ import {
   type SoloControlPanelProps,
 } from './SoloControlPanel';
 import { SoloLeaderboardPanel } from './solo-leaderboard/SoloLeaderboardPanel';
-import { formatDuration, useSoloTimer, StatCard } from './SoloGameStats';
+import {
+  formatDuration,
+  useSoloTimer,
+  useSoloTimerBlocked,
+  StatCard,
+} from './SoloGameStats';
 import {
   SoloActionButton,
   type SoloActionButtonProps,
@@ -146,6 +151,9 @@ export function SoloGameContainer({
   const [showThemePicker, setShowThemePicker] = useState(false);
   const defaultPause = useSoloPause(isRunning, finishedAt);
   const resolvedPause = pause ?? defaultPause;
+  // Reading the rules is not active play: freeze the shared timer while the
+  // overlay is open so HUD and recorded durations stay in sync.
+  useSoloTimerBlocked(showRules);
 
   const [isDismissed, setIsDismissed] = useState(false);
   const handleCloseModal = useCallback(() => {

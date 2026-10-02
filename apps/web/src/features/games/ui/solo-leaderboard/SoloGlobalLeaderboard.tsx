@@ -97,6 +97,13 @@ export function SoloGlobalLeaderboard({
   );
 
   const totalPages = Math.ceil(total / limit);
+  const byDuration = sortBy === 'durationMs';
+  // Games that do not track a score (Minesweeper, Sudoku) would show a
+  // meaningless 0 column next to the real metric.
+  const hasScores = entries.some((entry) => entry.score > 0);
+  const scoreValue = (score: number) =>
+    hasScores ? score.toLocaleString() : '-';
+  const timeValue = (durationMs: number) => formatDuration(durationMs);
 
   return (
     <div className="space-y-3">
@@ -155,7 +162,7 @@ export function SoloGlobalLeaderboard({
             <span>#</span>
             <span>{t('games.soloLeaderboard.player')}</span>
             <span className="text-right">
-              {sortBy === 'durationMs'
+              {byDuration
                 ? t('games.soloLeaderboard.time')
                 : t('games.soloLeaderboard.score')}
             </span>
@@ -163,7 +170,9 @@ export function SoloGlobalLeaderboard({
               {t('games.soloLeaderboard.moves')}
             </span>
             <span className="text-right">
-              {t('games.soloLeaderboard.time')}
+              {byDuration
+                ? t('games.soloLeaderboard.score')
+                : t('games.soloLeaderboard.time')}
             </span>
           </div>
 
@@ -218,15 +227,17 @@ export function SoloGlobalLeaderboard({
                   </div>
 
                   <span className="text-right font-mono text-xs sm:text-sm font-black tabular-nums text-[var(--color)]">
-                    {sortBy === 'durationMs'
-                      ? formatDuration(entry.score)
-                      : entry.score.toLocaleString()}
+                    {byDuration
+                      ? timeValue(entry.durationMs)
+                      : scoreValue(entry.score)}
                   </span>
                   <span className="text-right font-mono text-xs tabular-nums text-[var(--textSecondary)]">
                     {entry.moves}
                   </span>
                   <span className="text-right font-mono text-xs tabular-nums text-[var(--textSecondary)]">
-                    {formatDuration(entry.durationMs)}
+                    {byDuration
+                      ? scoreValue(entry.score)
+                      : timeValue(entry.durationMs)}
                   </span>
                 </div>
               );

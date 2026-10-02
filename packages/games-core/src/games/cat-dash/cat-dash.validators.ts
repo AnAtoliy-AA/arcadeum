@@ -67,3 +67,41 @@ export function validateForfeit(
   if (state.gameOver) return false;
   return state.players.some((p) => p.playerId === player.playerId);
 }
+
+export function validateCatnap(
+  state: CatDashState,
+  player: CatDashPlayer,
+): boolean {
+  if (state.gameOver) return false;
+  return state.players[state.currentPlayerIndex]?.playerId === player.playerId;
+}
+
+export function validatePounce(
+  state: CatDashState,
+  player: CatDashPlayer,
+): boolean {
+  if (state.gameOver) return false;
+  if (state.players[state.currentPlayerIndex]?.playerId !== player.playerId) {
+    return false;
+  }
+  return player.powerTokens >= 1;
+}
+
+export function validateDeployTrap(
+  state: CatDashState,
+  player: CatDashPlayer,
+  spaceId?: number,
+): boolean {
+  if (state.gameOver) return false;
+  if (state.players[state.currentPlayerIndex]?.playerId !== player.playerId) {
+    return false;
+  }
+  if (player.powerTokens < 1) return false;
+  if (
+    typeof spaceId === 'number' &&
+    (spaceId < 0 || spaceId >= state.track.length)
+  ) {
+    return false;
+  }
+  return true;
+}

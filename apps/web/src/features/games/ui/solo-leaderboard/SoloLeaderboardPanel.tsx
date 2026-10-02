@@ -93,7 +93,7 @@ export function SoloLeaderboardPanel({
               difficulty={difficulty}
               sortBy={sortBy}
               order={order}
-              currentUserId={snapshot.accessToken?.slice(0, 16)}
+              currentUserId={snapshot.userId ?? undefined}
             />
           )}
         </div>

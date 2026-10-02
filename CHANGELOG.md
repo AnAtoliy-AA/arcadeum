@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.41] - 2026-10-01
+
+### Added
+- add cluster monitoring, graceful reload, and event loop watchdog (ARC-968) (ARC-968)
+
+
+## [1.30.40] - 2026-10-01
+
+### Added
+- polish cat dash tactical audio, complete i18n, and cleanup dead code (ARC-967) (ARC-967)
+
+### Improved
+- optimize games catalog rendering and eliminate blocking svg filters (ARC-967) (ARC-967)
+
+
+## [1.30.39] - 2026-10-01
+
+### Fixed
+- count only active play time in solo timers (ARC-974) (ARC-974)
+
+
+## [1.30.38] - 2026-10-01
+
+### Fixed
+- fetch chip status client-side so claim cta renders again (ARC-621) (ARC-621)
+
+
+## [1.30.37] - 2026-10-01
+
+### Added
+- rework cat dash with center roll console and tactical actions (ARC-967) (ARC-967)
+
+
 ## [1.30.36] - 2026-09-30
 
 ### Added

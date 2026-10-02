@@ -6,13 +6,13 @@ import { CatDashRulesModal } from '../ui/RulesModal';
 import { CatDashDashboard } from '../ui/CatDashDashboard';
 import { RealisticCat } from '../ui/RealisticCat';
 import { RacerBioModal } from '../ui/RacerBioModal';
-import { TacticalAbilityBar } from '../ui/TacticalAbilityBar';
+import { CenterActionConsole } from '../ui/CenterActionConsole';
 import { CatDashThemeProvider } from '../lib/CatDashThemeContext';
 import type { CatDashClientState, CatId } from '../types';
 
 vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
-    t: (key: string) => {
+    t: (key: string, params?: Record<string, string | number>) => {
       const map: Record<string, string> = {
         'games.cat_dash_v1.rules.title': 'Cat Dash - Rules',
         'games.cat_dash_v1.rules.objectiveTitle': 'Objective',
@@ -30,6 +30,11 @@ vi.mock('@/shared/i18n/useTranslation', () => ({
         'games.cat_dash_v1.rules.cats': 'Each cat has unique abilities.',
         'games.cat_dash_v1.rules.trackTypesTitle': 'Track Types',
         'games.cat_dash_v1.rules.trackTypes': 'Linear or branching tracks.',
+        'games.cat_dash_v1.dashboard.yourTurnToRoll':
+          'Your turn: roll the dice!',
+        'games.cat_dash_v1.dashboard.waitingForPlayer': params?.name
+          ? `${params.name} is rolling...`
+          : 'Waiting for player to roll...',
       };
       return map[key] ?? key;
     },
@@ -275,45 +280,75 @@ describe('CatDashDashboard', () => {
   });
 });
 
-describe('TacticalAbilityBar', () => {
-  it('renders abilities and handles activation', () => {
-    const onUseAbility = vi.fn();
+describe('CenterActionConsole', () => {
+  it('renders centered roll button and handles tactical actions', () => {
+    const handleRoll = vi.fn();
+    const handleCatnap = vi.fn();
+    const handlePounce = vi.fn();
+    const handleDeployTrap = vi.fn();
+
     renderWithTheme(
-      <TacticalAbilityBar
-        catId="neon"
-        powerTokens={3}
+      <CenterActionConsole
         myTurn={true}
-        isRolling={false}
         isGameOver={false}
-        onUseAbility={onUseAbility}
+        isRolling={false}
+        onRollDice={handleRoll}
+        onCatnap={handleCatnap}
+        onPounce={handlePounce}
+        onDeployTrap={handleDeployTrap}
+        onUseAbility={vi.fn()}
+        myPlayer={mockSnapshot.players[0]}
+        currentPlayer={mockSnapshot.players[0]}
+        resolveName={(id) => id ?? ''}
+        lastRollValue={4}
       />,
     );
 
-    expect(screen.getByTestId('tactical-ability-bar')).toBeInTheDocument();
-    expect(screen.getByText('Digital Dash')).toBeInTheDocument();
-    expect(screen.getByText('Neon Shield')).toBeInTheDocument();
+    expect(screen.getByTestId('center-action-console')).toBeInTheDocument();
+    expect(screen.getByTestId('dice-overlay-roll-button')).toBeInTheDocument();
 
-    const shieldBtn = screen.getByTestId('ability-btn-neon_shield');
-    fireEvent.click(shieldBtn);
-    expect(onUseAbility).toHaveBeenCalledWith('neon_shield');
+    fireEvent.click(screen.getByTestId('action-btn-catnap'));
+    expect(handleCatnap).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('action-btn-pounce'));
+    expect(handlePounce).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('action-btn-deploy-trap'));
+    expect(handleDeployTrap).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('dice-overlay-roll-button'));
+    expect(handleRoll).toHaveBeenCalledTimes(1);
   });
 
-  it('shows active buff indicators', () => {
+  it('renders ability buttons and active buff indicators', () => {
+    const handleUseAbility = vi.fn();
+
     renderWithTheme(
-      <TacticalAbilityBar
-        catId="neon"
-        powerTokens={1}
-        shielded={true}
-        speedBoostPending={3}
+      <CenterActionConsole
         myTurn={true}
-        isRolling={false}
         isGameOver={false}
-        onUseAbility={vi.fn()}
+        isRolling={false}
+        onRollDice={vi.fn()}
+        onCatnap={vi.fn()}
+        onPounce={vi.fn()}
+        onDeployTrap={vi.fn()}
+        onUseAbility={handleUseAbility}
+        myPlayer={{
+          ...mockSnapshot.players[0],
+          shielded: true,
+          speedBoostPending: 3,
+        }}
+        currentPlayer={mockSnapshot.players[0]}
+        resolveName={(id) => id ?? ''}
+        lastRollValue={null}
       />,
     );
 
     expect(screen.getByTestId('buff-shield')).toBeInTheDocument();
     expect(screen.getByTestId('buff-speed-boost')).toBeInTheDocument();
+
+    const shieldAbilityBtn = screen.getByTestId('ability-btn-neon_shield');
+    fireEvent.click(shieldAbilityBtn);
+    expect(handleUseAbility).toHaveBeenCalledWith('neon_shield');
   });
 });
-

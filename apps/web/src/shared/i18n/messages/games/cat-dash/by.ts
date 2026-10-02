@@ -131,6 +131,7 @@ export const byMessages = {
       addBot: 'Дадаць бота',
       waitingForPlayers: 'Чаканне гульцоў…',
       minPlayers: 'Мінімум 2 гульца',
+      meetRacers: 'Пазнаёмцеся з 6 гоншчыкамі (Дасье і статы)',
     },
     tutorial: {
       s1: {
@@ -173,6 +174,7 @@ export const byMessages = {
       lost: 'Вы прайгралі.',
       draw: 'Нічыя.',
       you: 'Вы',
+      winnerIs: '{{name}} перамагае!',
       messages: {
         won: 'Ваш кот першым перасёк фініш! Яшчэ адна гонка?',
         lost: 'Іншы кот выйграў. Рэванш?',
@@ -186,6 +188,15 @@ export const byMessages = {
       rematch: 'Рэванш',
       leave: 'Выйсці',
       forfeit: 'Здацца',
+      catnap: 'Падрамаць',
+      pounce: 'Скачок',
+      deployTrap: 'Пастка з мятай',
+      rollTitle: 'Кідок і рывок',
+      catnapDesc: 'Адпачніце, каб атрымаць +1 Энергію і Энергашчыт',
+      pounceDesc:
+        'Скачыце на 2 клеткі наперад з кацінай спрытам (Каштуе 1 Энергію)',
+      deployTrapDesc:
+        'Пастаўце пастку наперадзе, каб запаволіць сапернікаў (Каштуе 1 Энергію)',
     },
     chat: {
       rolled: '{{name}} кінуў {{roll}} і прайшоў {{move}} крокаў.',
@@ -221,6 +232,29 @@ export const byMessages = {
       yourTurnToRoll: 'Ваш ход: кідайце кубік!',
       waitingForPlayer: 'Чаканне ходу: {{name}}...',
       recentEvents: 'Падзеі гонкі',
+      commandDeck: 'Камандны мосцік гонкі',
+      tacticalDeck: 'Тактычныя дзеянні',
+      activeBuffs: 'Актыўныя мадыфікатары',
+      shieldActive: 'Шчыт актыўны',
+      speedPrimed: '+3 да хуткасці гатова',
+      apexPrimed: 'Дакладны кідок (4)',
+      powerTokensCount: '{{count}}/3 Энергія',
+      pressSpace: 'Націсніце ПРАБЕЛ для кідка',
+      distanceToFinish: '{{count}} кл. да фінішу',
+      inspectRoster: 'Дасье гоншчыкаў',
+      rolling: 'Кідаем кубік...',
+      used: 'Выкарыстана',
+      turnBadge: 'Ход',
+      raceInProgress: 'Гонка трывае...',
+    },
+    board: {
+      start: 'Старт',
+      finish: 'Фініш',
+      obstacle: 'Перашкода',
+      bonus: 'Бонус',
+      trap: 'Пастка',
+      startUpper: 'СТАРТ',
+      finishUpper: 'ФІНІШ',
     },
   },
 };

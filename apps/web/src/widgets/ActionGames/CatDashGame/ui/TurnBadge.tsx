@@ -1,6 +1,10 @@
 'use client';
 
 import { memo, useMemo } from 'react';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import type { CatDashClientState } from '../types';
 import { RealisticCat } from './RealisticCat';
 
@@ -17,6 +21,7 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
   myTurn,
   resolveName,
 }: TurnBadgeProps) {
+  const { t } = useTranslation();
   const currentPlayer = useMemo(() => {
     if (!currentEntryId) return null;
     return snapshot.players.find((p) => p.playerId === currentEntryId);
@@ -35,8 +40,13 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
       <RealisticCat catId={currentPlayer.catId} size={40} showGlow={myTurn} />
       <span className="text-base sm:text-lg font-bold tracking-wide text-slate-100">
         {myTurn
-          ? '🎲 Your turn: roll the dice!'
-          : `⏳ ${resolveName(currentEntryId)} is rolling...`}
+          ? `🎲 ${t('games.cat_dash_v1.dashboard.yourTurnToRoll' as TranslationKey)}`
+          : `⏳ ${t(
+              'games.cat_dash_v1.dashboard.waitingForPlayer' as TranslationKey,
+              {
+                name: resolveName(currentEntryId),
+              },
+            )}`}
       </span>
     </div>
   );

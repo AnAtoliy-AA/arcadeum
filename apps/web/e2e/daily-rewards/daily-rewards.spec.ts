@@ -3,12 +3,14 @@
  *
  * Infrastructure note
  * -------------------
- * /wallet and / are Server Components. Server Components fetch
- * /daily-rewards/me from the Next.js Node process — page.route() only
- * intercepts requests originating from the browser, so it does NOT intercept
- * the SSR fetch. The interactive claim path also runs via a Server Action
- * (also Node-side), so we cannot drive a full end-to-end click flow against
- * a mocked BE.
+ * /wallet is a Server Component that fetches /daily-rewards/me from the
+ * Next.js Node process — page.route() only intercepts requests originating
+ * from the browser, so it does NOT intercept the SSR fetch. The interactive
+ * claim path also runs via a Server Action (also Node-side), so we cannot
+ * drive a full end-to-end click flow against a mocked BE.
+ *
+ * The / chip is a Client Component: it fetches /daily-rewards/me from the
+ * browser, so page.route() CAN intercept it if a richer mock is needed.
  *
  * What this spec covers, ordered from cheapest to richest:
  *
@@ -18,10 +20,12 @@
  *      markers. Skipped gracefully if the dev server / BE is unreachable.
  *   3. DOM markup assertions — once we can render /wallet, verify all 7
  *      stamps and the claim button are present and have stable test-ids.
+ *   4. Home chip — present (anon sign-in CTA or authenticated claim button)
+ *      or absent (BE unreachable / already claimed).
  *
  * What still requires a live backend (skip-annotated, lower in this file):
  *   - The full claim flow: click → success toast → balance bump → 409 on
- *     double-claim. The Server Action and SSR fetch both bypass Playwright.
+ *     double-claim. The Server Action bypasses Playwright.
  *
  * The skip block doubles as documentation for whoever turns on the seeded-DB
  * test infra (see also apps/web/e2e/admin-economy and e2e/wallet specs).
@@ -41,7 +45,7 @@ test.describe('/wallet — daily reward card route health', () => {
     expect(res.status()).toBeLessThan(500);
   });
 
-  test('GET / does not return 5xx (chip is a Suspense child, fallback is null)', async ({
+  test('GET / does not return 5xx (chip renders client-side after hydration)', async ({
     request,
   }) => {
     const res = await request.get('/');
@@ -142,12 +146,12 @@ test.describe('/wallet daily-reward card — DOM (mocked session)', () => {
 
 // ── Home page compact chip (mocked session, optional BE) ─────────────────────
 
-test.describe('/ daily-reward chip — DOM (mocked session)', () => {
+test.describe('/ — daily-reward chip (client-fetched, mocked session)', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page);
   });
 
-  test('chip is either present-and-claimable or absent (Suspense fallback)', async ({
+  test('chip is present with a claim-capable CTA or absent (fetch failed / claimed)', async ({
     page,
   }) => {
     const res = await page.request.get('/');
@@ -158,20 +162,24 @@ test.describe('/ daily-reward chip — DOM (mocked session)', () => {
 
     await navigateTo(page, '/');
 
-    // The chip uses <Suspense fallback={null}> AND its inner component
-    // returns null when canClaim is false. So either:
-    //   - It is visible with an enabled claim button (canClaim was true), OR
-    //   - It is absent from the DOM entirely.
-    // Both states are valid; this test guards against a regression where the
-    // chip renders in a broken, half-loaded state.
+    // The chip is a Client Component: it fetches /daily-rewards/me after
+    // hydration and renders either the authenticated claim button or the
+    // anonymous sign-in CTA (both share daily-reward-claim-btn). It is
+    // absent when the BE is unreachable or the reward was already claimed.
     const chip = page.getByTestId('daily-reward-chip');
-    const count = await chip.count();
-    if (count === 0) {
+    const chipVisible = await chip
+      .waitFor({ state: 'visible' })
+      .then(() => true)
+      .catch(() => false);
+
+    if (!chipVisible) {
       // Absent — chip correctly hid itself (already claimed OR BE unreachable).
       return;
     }
-    // Present — must have the claim button.
-    await expect(page.getByTestId('daily-reward-claim-btn').first()).toBeVisible();
+    // Present — must have a claim-capable CTA.
+    await expect(
+      page.getByTestId('daily-reward-claim-btn').first(),
+    ).toBeVisible();
   });
 });
 

@@ -8,7 +8,10 @@ export function GameFaqSection({
   if (!items || items.length === 0) return null;
 
   return (
-    <section id="faq" className="box-border flex flex-col gap-6 py-8">
+    <section
+      id="faq"
+      className="box-border flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_400px]"
+    >
       <div className="box-border flex flex-col gap-1">
         {kicker ? (
           <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">

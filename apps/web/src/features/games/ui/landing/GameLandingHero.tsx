@@ -2,15 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
 import { Badge, Button } from '@arcadeum/ui';
 import type { GameLandingHeroProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
-import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
-import { GameInviteModal } from './GameInviteModal';
 import { gamesApi } from '@/features/games/api';
+
+const AIvsAIViewer = dynamic(
+  () => import('@/features/games/ui/AIvsAIViewer').then((m) => m.AIvsAIViewer),
+  { ssr: false },
+);
+
+const GameInviteModal = dynamic(
+  () => import('./GameInviteModal').then((m) => m.GameInviteModal),
+  { ssr: false },
+);
 
 export function GameLandingHero({
   gameId,

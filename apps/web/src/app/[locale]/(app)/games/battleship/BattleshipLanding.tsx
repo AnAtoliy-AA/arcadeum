@@ -162,9 +162,21 @@ export default function BattleshipLanding({
 
   const rules = rulesT
     ? [
-        { key: 'objective', head: rulesT.headers.objective, body: rulesT.objective },
-        { key: 'gameplay', head: rulesT.headers.gameplay, body: rulesT.gameplay },
-        { key: 'placement', head: rulesT.headers.placement, body: rulesT.placement },
+        {
+          key: 'objective',
+          head: rulesT.headers.objective,
+          body: rulesT.objective,
+        },
+        {
+          key: 'gameplay',
+          head: rulesT.headers.gameplay,
+          body: rulesT.gameplay,
+        },
+        {
+          key: 'placement',
+          head: rulesT.headers.placement,
+          body: rulesT.placement,
+        },
         { key: 'battle', head: rulesT.headers.battle, body: rulesT.battle },
         { key: 'ships', head: rulesT.headers.ships, body: rulesT.ships },
       ]
@@ -197,8 +209,8 @@ export default function BattleshipLanding({
         subtitle: landing.hero.tagline,
         intro: landing.hero.intro,
         category: 'Strategy',
-        playersBadge: '2–4 Players',
-        durationBadge: '15–25 min',
+        playersBadge: '2-4 Players',
+        durationBadge: '15-25 min',
         difficultyBadge: 'Naval Combat',
         chips: landing.hero.chips,
         ctaQuickplayLabel: landing.hero.ctaQuickplay,

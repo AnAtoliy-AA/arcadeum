@@ -162,24 +162,65 @@ test.describe('2048 Puzzle Game', () => {
     await page.evaluate(() => {
       const board = document.querySelector('[data-testid="game-2048-board"]');
       if (!board) return;
-      const t1 = new Touch({
-        identifier: 1,
-        target: board,
-        clientX: 200,
-        clientY: 200,
-      });
-      board.dispatchEvent(
-        new TouchEvent('touchstart', { touches: [t1], bubbles: true }),
-      );
-      const t2 = new Touch({
-        identifier: 1,
-        target: board,
-        clientX: 100,
-        clientY: 200,
-      });
-      board.dispatchEvent(
-        new TouchEvent('touchmove', { touches: [t2], bubbles: true }),
-      );
+
+      const createTouchPoint = (x: number, y: number) => {
+        if (typeof Touch !== 'undefined') {
+          try {
+            return new Touch({
+              identifier: 1,
+              target: board,
+              clientX: x,
+              clientY: y,
+            });
+          } catch {
+            return {
+              identifier: 1,
+              target: board,
+              clientX: x,
+              clientY: y,
+            };
+          }
+        }
+        return {
+          identifier: 1,
+          target: board,
+          clientX: x,
+          clientY: y,
+        };
+      };
+
+      const dispatchTouch = (type: string, touch: unknown) => {
+        if (typeof TouchEvent !== 'undefined') {
+          try {
+            const event = new TouchEvent(type, {
+              touches: [touch as Touch],
+              bubbles: true,
+              cancelable: true,
+            });
+            board.dispatchEvent(event);
+            return;
+          } catch {
+            const event = new CustomEvent(type, {
+              bubbles: true,
+              cancelable: true,
+            });
+            Object.defineProperty(event, 'touches', { value: [touch] });
+            board.dispatchEvent(event);
+            return;
+          }
+        }
+        const event = new CustomEvent(type, {
+          bubbles: true,
+          cancelable: true,
+        });
+        Object.defineProperty(event, 'touches', { value: [touch] });
+        board.dispatchEvent(event);
+      };
+
+      const t1 = createTouchPoint(200, 200);
+      dispatchTouch('touchstart', t1);
+      const t2 = createTouchPoint(100, 200);
+      dispatchTouch('touchmove', t2);
     });
 
     await expect(page.getByTestId('game-2048-score')).toContainText('4');

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
@@ -141,6 +141,11 @@ export function ActiveGameView({
   const showResultModal = isGameOver && !modalDismissed && hasSeenActiveGame;
   useWebGameHaptics(isMyTurn);
   const { play } = useGameSound('critical_v1');
+  const prevMyTurnRef = useRef(isMyTurn);
+  useEffect(() => {
+    if (isMyTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = isMyTurn;
+  }, [isMyTurn, isGameOver, play]);
 
   // Record game result to local stats
   const criticalResult = useMemo(() => {

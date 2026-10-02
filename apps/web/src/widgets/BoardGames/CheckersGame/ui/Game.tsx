@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
@@ -99,6 +99,12 @@ function CheckersGameImpl({
   }, [coach.hint]);
 
   const { play } = useGameSound('checkers_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
 
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
@@ -312,16 +318,24 @@ function CheckersGameImpl({
             setOptimisticBoard(nextBoard);
             setSelectedPiece({ row, col });
           } else {
-            // End of chain: send full chain to server, show optimistic board
-            play('capture');
+            const isCrowned =
+              displayBoard[selectedPiece.row]?.[selectedPiece.col]?.type ===
+                'man' &&
+              ((playerColor === 'light' && row === 0) ||
+                (playerColor === 'dark' && row === displayBoard.length - 1));
+            play(isCrowned ? 'crown' : 'capture');
             setOptimisticBoard(nextBoard);
             setSelectedPiece(null);
             setPendingSteps([]);
             movePiece(newSteps);
           }
         } else {
-          // Simple move: send to server, show optimistic board
-          play('move');
+          const isCrowned =
+            displayBoard[selectedPiece.row]?.[selectedPiece.col]?.type ===
+              'man' &&
+            ((playerColor === 'light' && row === 0) ||
+              (playerColor === 'dark' && row === displayBoard.length - 1));
+          play(isCrowned ? 'crown' : 'move');
           const nextBoard = applyMoveToBoard(displayBoard, [moveStep]);
           setOptimisticBoard(nextBoard);
           setSelectedPiece(null);

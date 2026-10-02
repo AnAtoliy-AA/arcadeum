@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
@@ -80,6 +80,28 @@ function PachisiGameImpl({
   });
 
   const { play } = useGameSound('pachisi_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevFinishedCountRef = useRef(0);
+  useEffect(() => {
+    if (!snapshot?.tokens) return;
+    const finished = Object.values(snapshot.tokens).reduce(
+      (acc, tokens) => acc + tokens.filter((t) => t.progress === 56).length,
+      0,
+    );
+    if (
+      finished > prevFinishedCountRef.current &&
+      prevFinishedCountRef.current > 0
+    ) {
+      play('success');
+    }
+    prevFinishedCountRef.current = finished;
+  }, [snapshot?.tokens, play]);
 
   const handleRoll = useCallback(() => {
     play('roll');

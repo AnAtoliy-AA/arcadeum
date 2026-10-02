@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@arcadeum/ui';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { UndoButton } from '@/features/games/ui/UndoButton';
@@ -58,6 +58,23 @@ function GoGameImpl({
   });
 
   const { play } = useGameSound('go_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevCapturesRef = useRef<number>(0);
+  useEffect(() => {
+    if (!snapshot?.captures) return;
+    const total =
+      (snapshot.captures.black ?? 0) + (snapshot.captures.white ?? 0);
+    if (total > prevCapturesRef.current && prevCapturesRef.current > 0) {
+      play('capture');
+    }
+    prevCapturesRef.current = total;
+  }, [snapshot?.captures, play]);
 
   const [showResignDialog, setShowResignDialog] = useState(false);
   const [showTerritory, setShowTerritory] = useState(false);

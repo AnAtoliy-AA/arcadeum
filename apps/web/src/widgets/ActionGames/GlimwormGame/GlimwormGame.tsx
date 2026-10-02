@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGlimwormSocket } from './hooks/useGlimwormSocket';
 import { useGlimwormPixi } from './hooks/useGlimwormPixi';
 import { useGlimwormControls } from './hooks/useGlimwormControls';
@@ -57,6 +57,28 @@ export default function GlimwormGame(
   const isLobby = effectiveStatus === 'lobby';
   const isCountdown = effectiveStatus === 'countdown';
   const isEnded = effectiveStatus === 'ended';
+
+  const discreteEvents = useGlimwormStore((s) => s.discreteEvents);
+  const prevEventCountRef = useRef(0);
+  useEffect(() => {
+    if (discreteEvents.length > prevEventCountRef.current) {
+      const newEvents = discreteEvents.slice(prevEventCountRef.current);
+      for (const ev of newEvents) {
+        if (ev.type === 'worm_died') {
+          if (ev.wormId === currentUserId) play('lose');
+          else if (ev.killerId === currentUserId) play('hit');
+        } else if (ev.type === 'powerup_picked') {
+          play('notification');
+        } else if (ev.type === 'round_started') {
+          play('tick');
+        } else if (ev.type === 'round_ended') {
+          if (ev.winner === currentUserId) play('win');
+          else play('lose');
+        }
+      }
+    }
+    prevEventCountRef.current = discreteEvents.length;
+  }, [discreteEvents, currentUserId, play]);
 
   // Restart = drop back to lobby (host can change settings before next start).
   const handleRestart = useCallback(() => {

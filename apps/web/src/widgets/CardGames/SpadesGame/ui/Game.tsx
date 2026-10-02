@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
@@ -70,6 +70,25 @@ function SpadesGameImpl({
   useEffect(() => {
     if (!isLobby) clearPendingStart();
   }, [isLobby, clearPendingStart]);
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevTakenCountRef = useRef(0);
+  useEffect(() => {
+    if (!snapshot?.taken) return;
+    const count = Object.values(snapshot.taken).reduce(
+      (acc, arr) => acc + arr.length,
+      0,
+    );
+    if (count > prevTakenCountRef.current && prevTakenCountRef.current > 0) {
+      play('collect');
+    }
+    prevTakenCountRef.current = count;
+  }, [snapshot?.taken, play]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {

@@ -27,12 +27,67 @@ test.describe('2048 Puzzle Game', () => {
     await expect(board).toBeVisible();
   });
 
-  test('displays GameResultModal upon win or lose state in store', async ({
+  test('displays GameResultModal upon win with finish and continue buttons, and continues playing', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/2048/play');
 
-    await expect(page.getByTestId('game-2048-board')).toBeVisible();
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [1024, 1024, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 1024,
+          best: 1024,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 50,
+          startedAt: Date.now() - 30000,
+          finishedAt: null,
+          finished: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    await page.keyboard.press('ArrowLeft');
+
+    const resultModal = page.getByTestId('game-result-modal');
+    await expect(resultModal).toBeVisible();
+    await expect(resultModal).toHaveAttribute('data-tone', 'victory');
+
+    const finishButton = page.getByTestId('finish-button');
+    await expect(finishButton).toBeVisible();
+
+    const continueButton = page.getByTestId('continue-button');
+    await expect(continueButton).toBeVisible();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(resultModal).toBeVisible();
+
+    await continueButton.click();
+    await expect(resultModal).not.toBeVisible();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(resultModal).not.toBeVisible();
+  });
+
+  test('clicking finish button on win screen starts a new game', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
 
     await page.evaluate(() => {
       const persistedState = {
@@ -64,12 +119,12 @@ test.describe('2048 Puzzle Game', () => {
 
     const resultModal = page.getByTestId('game-result-modal');
     await expect(resultModal).toBeVisible();
-    await expect(resultModal).toHaveAttribute('data-tone', 'victory');
 
-    const keepGoingButton = page.getByTestId('keep-going-button');
-    await expect(keepGoingButton).toBeVisible();
-    await keepGoingButton.click();
+    const finishButton = page.getByTestId('finish-button');
+    await expect(finishButton).toBeVisible();
+    await finishButton.click();
 
     await expect(resultModal).not.toBeVisible();
+    await expect(page.getByTestId('game-2048-score')).toContainText('0');
   });
 });

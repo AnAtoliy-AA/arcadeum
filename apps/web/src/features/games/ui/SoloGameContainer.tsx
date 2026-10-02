@@ -98,6 +98,7 @@ export interface SoloGameContainerProps {
     result: 'victory' | 'defeat' | null;
     gameName: string;
     rematchLabel: string;
+    rematchTestId?: string;
     theme?: string;
     stats: GameResultStats | null;
     messages: { title: string; message: string };
@@ -485,6 +486,7 @@ export function SoloGameContainer({
           gameName={modal.gameName}
           onRematch={handleNewGame}
           rematchLabel={modal.rematchLabel}
+          rematchTestId={modal.rematchTestId}
           secondaryAction={modal.secondaryAction}
           onClose={handleCloseModal}
           t={t}

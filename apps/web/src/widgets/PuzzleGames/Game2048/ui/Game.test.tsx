@@ -46,7 +46,7 @@ describe('Game2048 UI', () => {
     expect(useGame2048Store.getState().score).toBe(0);
   });
 
-  it('shows GameResultModal when game finishes as victory', () => {
+  it('shows GameResultModal when game finishes as victory with finish and continue buttons', () => {
     useGame2048Store.setState({
       finished: {
         won: true,
@@ -55,6 +55,8 @@ describe('Game2048 UI', () => {
         durationMs: 120000,
       },
       finishedAt: Date.now(),
+      status: 'won',
+      keepPlayingFlag: false,
     });
 
     render(<Game2048 />);
@@ -62,8 +64,32 @@ describe('Game2048 UI', () => {
     const modal = screen.getByTestId('game-result-modal');
     expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('data-tone', 'victory');
-    expect(screen.getByTestId('keep-going-button')).toBeInTheDocument();
-    expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
+    expect(screen.getByTestId('continue-button')).toBeInTheDocument();
+    expect(screen.getByTestId('finish-button')).toBeInTheDocument();
+  });
+
+  it('resets board when finish button is clicked on win modal', () => {
+    useGame2048Store.setState({
+      finished: {
+        won: true,
+        score: 20480,
+        moves: 950,
+        durationMs: 120000,
+      },
+      finishedAt: Date.now(),
+      status: 'won',
+      keepPlayingFlag: false,
+    });
+
+    render(<Game2048 />);
+
+    const finishBtn = screen.getByTestId('finish-button');
+    expect(finishBtn).toBeInTheDocument();
+    fireEvent.click(finishBtn);
+
+    expect(useGame2048Store.getState().score).toBe(0);
+    expect(useGame2048Store.getState().finishedAt).toBeNull();
+    expect(useGame2048Store.getState().status).toBe('playing');
   });
 
   it('shows GameResultModal when game finishes as defeat', () => {
@@ -75,6 +101,7 @@ describe('Game2048 UI', () => {
         durationMs: 45000,
       },
       finishedAt: Date.now(),
+      status: 'lost',
     });
 
     render(<Game2048 />);
@@ -82,7 +109,7 @@ describe('Game2048 UI', () => {
     const modal = screen.getByTestId('game-result-modal');
     expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('data-tone', 'defeat');
-    expect(screen.queryByTestId('keep-going-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('continue-button')).not.toBeInTheDocument();
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
 
@@ -102,9 +129,9 @@ describe('Game2048 UI', () => {
 
     const { rerender } = render(<Game2048 />);
 
-    const keepGoingBtn = screen.getByTestId('keep-going-button');
-    expect(keepGoingBtn).toBeInTheDocument();
-    fireEvent.click(keepGoingBtn);
+    const continueBtn = screen.getByTestId('continue-button');
+    expect(continueBtn).toBeInTheDocument();
+    fireEvent.click(continueBtn);
 
     expect(useGame2048Store.getState().keepPlayingFlag).toBe(true);
     expect(useGame2048Store.getState().finishedAt).toBeNull();
@@ -122,5 +149,41 @@ describe('Game2048 UI', () => {
 
     rerender(<Game2048 />);
     expect(screen.queryByTestId('game-result-modal')).not.toBeInTheDocument();
+  });
+
+  it('blocks moves while win modal is displayed until continue is clicked', () => {
+    useGame2048Store.setState({
+      grid: [1024, 1024, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      score: 1024,
+      status: 'playing',
+      keepPlayingFlag: false,
+      finishedAt: null,
+      finished: null,
+    });
+
+    act(() => {
+      useGame2048Store.getState().move('left');
+    });
+
+    expect(useGame2048Store.getState().status).toBe('won');
+    expect(useGame2048Store.getState().finishedAt).not.toBeNull();
+    expect(useGame2048Store.getState().keepPlayingFlag).toBe(false);
+
+    const gridBefore = [...useGame2048Store.getState().grid];
+
+    act(() => {
+      useGame2048Store.getState().move('down');
+    });
+
+    expect(useGame2048Store.getState().grid).toEqual(gridBefore);
+    expect(useGame2048Store.getState().status).toBe('won');
+    expect(useGame2048Store.getState().finishedAt).not.toBeNull();
+
+    act(() => {
+      useGame2048Store.getState().continuePlaying();
+    });
+
+    expect(useGame2048Store.getState().keepPlayingFlag).toBe(true);
+    expect(useGame2048Store.getState().finishedAt).toBeNull();
   });
 });

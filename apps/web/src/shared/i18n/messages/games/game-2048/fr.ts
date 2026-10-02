@@ -26,6 +26,8 @@ export const frMessages = {
         'Plus aucun mouvement - toutes les cases sont pleines. À vous de rejouer !',
       playAgain: 'Rejouer',
       keepGoing: 'Continuer',
+      finish: 'Terminer',
+      continue: 'Continuer',
     },
     rules: {
       objective:

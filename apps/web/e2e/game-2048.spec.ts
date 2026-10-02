@@ -127,4 +127,61 @@ test.describe('2048 Puzzle Game', () => {
     await expect(resultModal).not.toBeVisible();
     await expect(page.getByTestId('game-2048-score')).toContainText('0');
   });
+
+  test('slides tiles via touch swipe on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await navigateTo(page, '/en/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 0,
+          best: 0,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 0,
+          startedAt: Date.now() - 30000,
+          finishedAt: null,
+          finished: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const board = document.querySelector('[data-testid="game-2048-board"]');
+      if (!board) return;
+      const t1 = new Touch({
+        identifier: 1,
+        target: board,
+        clientX: 200,
+        clientY: 200,
+      });
+      board.dispatchEvent(
+        new TouchEvent('touchstart', { touches: [t1], bubbles: true }),
+      );
+      const t2 = new Touch({
+        identifier: 1,
+        target: board,
+        clientX: 100,
+        clientY: 200,
+      });
+      board.dispatchEvent(
+        new TouchEvent('touchmove', { touches: [t2], bubbles: true }),
+      );
+    });
+
+    await expect(page.getByTestId('game-2048-score')).toContainText('4');
+  });
 });

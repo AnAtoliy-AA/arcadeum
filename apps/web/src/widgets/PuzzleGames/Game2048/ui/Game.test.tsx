@@ -186,4 +186,27 @@ describe('Game2048 UI', () => {
     expect(useGame2048Store.getState().keepPlayingFlag).toBe(true);
     expect(useGame2048Store.getState().finishedAt).toBeNull();
   });
+
+  it('triggers slide on touchmove without waiting for touchend', () => {
+    useGame2048Store.setState({
+      grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      score: 0,
+      moves: 0,
+    });
+
+    render(<Game2048 />);
+
+    const board = screen.getByTestId('game-2048-board');
+
+    fireEvent.touchStart(board, {
+      touches: [{ clientX: 100, clientY: 100 }],
+    });
+
+    fireEvent.touchMove(board, {
+      touches: [{ clientX: 50, clientY: 100 }],
+    });
+
+    expect(useGame2048Store.getState().moves).toBe(1);
+    expect(useGame2048Store.getState().score).toBe(4);
+  });
 });

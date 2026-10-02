@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.42] - 2026-10-02
+
+### Added
+- integrate full audio fx cues across all games (ARC-879) (ARC-879)
+
+
 ## [1.30.41] - 2026-10-01
 
 ### Added

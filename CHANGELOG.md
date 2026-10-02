@@ -7,53 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.42] - 2026-10-02
+
+### Added
+
+- integrate full audio fx cues across all games (ARC-879) (ARC-879)
+
 ## [1.30.41] - 2026-10-01
 
 ### Added
-- add cluster monitoring, graceful reload, and event loop watchdog (ARC-968) (ARC-968)
 
+- add cluster monitoring, graceful reload, and event loop watchdog (ARC-968) (ARC-968)
 
 ## [1.30.40] - 2026-10-01
 
 ### Added
+
 - polish cat dash tactical audio, complete i18n, and cleanup dead code (ARC-967) (ARC-967)
 
 ### Improved
-- optimize games catalog rendering and eliminate blocking svg filters (ARC-967) (ARC-967)
 
+- optimize games catalog rendering and eliminate blocking svg filters (ARC-967) (ARC-967)
 
 ## [1.30.39] - 2026-10-01
 
 ### Fixed
-- count only active play time in solo timers (ARC-974) (ARC-974)
 
+- count only active play time in solo timers (ARC-974) (ARC-974)
 
 ## [1.30.38] - 2026-10-01
 
 ### Fixed
-- fetch chip status client-side so claim cta renders again (ARC-621) (ARC-621)
 
+- fetch chip status client-side so claim cta renders again (ARC-621) (ARC-621)
 
 ## [1.30.37] - 2026-10-01
 
 ### Added
-- rework cat dash with center roll console and tactical actions (ARC-967) (ARC-967)
 
+- rework cat dash with center roll console and tactical actions (ARC-967) (ARC-967)
 
 ## [1.30.36] - 2026-09-30
 
 ### Added
+
 - configurable blitz cup default prizes by admin (ARC-966) (ARC-966)
 - localize sea battle blitz cup banner across all languages (ARC-966) (ARC-966)
 - allow admin to toggle sea battle blitz cup scheduling (ARC-966) (ARC-966)
 - automate weekly sea battle blitz cups and landing banner (ARC-966) (ARC-966)
 
 ### Fixed
+
 - sanitize gameType filter with $eq operator to resolve CodeQL alert (ARC-966) (ARC-966)
 
 ### Refactored
-- validate gameType with TOURNAMENT_GAME_TYPES type guard (ARC-966) (ARC-966)
 
+- validate gameType with TOURNAMENT_GAME_TYPES type guard (ARC-966) (ARC-966)
 
 ## [1.30.35] - 2026-09-30
 

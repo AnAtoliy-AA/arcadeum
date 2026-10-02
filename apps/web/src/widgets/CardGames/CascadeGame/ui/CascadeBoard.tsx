@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { Card } from './Card';
@@ -55,6 +55,12 @@ export function CascadeBoard({
   const toasts = useActionToasts(snapshot.topCard, theme.symbols);
   const { play } = useGameSound('cascade_v1');
 
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, play]);
+
   const cascadeOpen =
     snapshot.options.lastCardCallEnabled && !!snapshot.lastCardWindow;
   const atRiskIsMe =
@@ -86,8 +92,8 @@ export function CascadeBoard({
   const handleCardClick = useCallback(
     (card: CascadeCard) => {
       if (!myTurn || disabled) return;
-      // Unplayable card on your turn: shake it instead of a dead click.
       if (!playableIds.has(card.id)) {
+        play('error');
         setShakeId(card.id);
         window.setTimeout(() => setShakeId(null), 400);
         return;
@@ -105,6 +111,7 @@ export function CascadeBoard({
 
   const handlePickColor = (color: ActiveColor) => {
     if (!pendingWildCard) return;
+    play('play');
     const wild = myHand.find((c) => c.id === pendingWildCard);
     if (wild) flyToDiscard(wild.id, wild);
     onPlayCard(pendingWildCard, color);
@@ -195,7 +202,10 @@ export function CascadeBoard({
           <div className="flex flex-row items-stretch justify-center pt-1">
             <button
               type="button"
-              onClick={onCallCascade}
+              onClick={() => {
+                play('notification');
+                onCallCascade();
+              }}
               className={styles.callButton}
               aria-label={
                 atRiskIsMe
@@ -208,7 +218,6 @@ export function CascadeBoard({
           </div>
         ) : null}
 
-        {/* Center: draw deck + discard pile */}
         <div className={styles.piles}>
           <div className={styles.deck} style={{ width: 92, height: 138 }}>
             <span
@@ -223,7 +232,12 @@ export function CascadeBoard({
             />
             <button
               type="button"
-              onClick={() => drawEnabled && onDraw()}
+              onClick={() => {
+                if (drawEnabled) {
+                  play('draw');
+                  onDraw();
+                }
+              }}
               disabled={!drawEnabled}
               aria-label={t('games.cascade_v1.board.draw')}
               className={`${styles.drawButton} ${mustDraw ? styles.drawMust : ''}`}

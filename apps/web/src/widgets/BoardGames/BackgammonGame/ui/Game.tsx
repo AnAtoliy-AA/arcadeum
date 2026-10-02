@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
@@ -86,6 +86,12 @@ function BackgammonGameImpl({
 
   const { play } = useGameSound('backgammon_v1');
 
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
   const handleRoll = useCallback(() => {
     play('shake');
     play('roll');
@@ -95,7 +101,9 @@ function BackgammonGameImpl({
   const handleMove = useCallback(
     (...args: Parameters<typeof moveChecker>) => {
       const payload = args[0];
-      if (
+      if (payload && payload.to === 'off') {
+        play('success');
+      } else if (
         payload &&
         typeof payload.to === 'number' &&
         snapshot?.points[payload.to]?.count === 1 &&

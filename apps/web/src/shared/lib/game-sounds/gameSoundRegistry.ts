@@ -98,12 +98,10 @@ const ALL_SOUNDS: Record<string, GameSoundEntry> = {
 
 /** Per-game sound type composition */
 export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
-  // Solo puzzles
   solitaire_v1: ['card_flip', 'card_place', 'click', 'win', 'lose'],
   minesweeper_v1: ['click', 'reveal', 'flag', 'explode', 'win', 'lose'],
   sudoku_v1: ['click', 'place_digit', 'toggle', 'win'],
   game_2048_v1: ['slide_tile', 'merge', 'click', 'win', 'lose'],
-  // Card games
   hearts_v1: [
     'deal',
     'play',
@@ -114,6 +112,7 @@ export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
     'lose',
   ],
   spades_v1: [
+    'click',
     'deal',
     'play',
     'shuffle',
@@ -133,8 +132,17 @@ export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
     'win',
     'lose',
   ],
-  critical_v1: ['deal', 'play', 'hit', 'notification', 'error', 'win', 'lose'],
-  // Board games
+  critical_v1: [
+    'deal',
+    'draw',
+    'select',
+    'play',
+    'hit',
+    'notification',
+    'error',
+    'win',
+    'lose',
+  ],
   chess_v1: [
     'chess_move',
     'chess_capture',
@@ -147,20 +155,36 @@ export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
     'chess_notification',
     'chess_error',
   ],
+  chess_puzzles_v1: [
+    'chess_move',
+    'chess_capture',
+    'success',
+    'error',
+    'notification',
+  ],
   checkers_v1: ['move', 'capture', 'select_piece', 'crown', 'win', 'lose'],
   backgammon_v1: [
     'roll',
     'shake',
     'move',
     'capture',
+    'success',
     'notification',
     'win',
     'lose',
   ],
   go_v1: ['place', 'capture', 'click', 'notification'],
-  pachisi_v1: ['roll', 'shake', 'move', 'capture', 'success', 'win', 'lose'],
-  tic_tac_toe_v1: ['place', 'click', 'win', 'lose'],
-  // Strategy
+  pachisi_v1: [
+    'click',
+    'roll',
+    'shake',
+    'move',
+    'capture',
+    'success',
+    'win',
+    'lose',
+  ],
+  tic_tac_toe_v1: ['place', 'click', 'notification', 'win', 'lose'],
   sea_battle_v1: [
     'hit',
     'miss',
@@ -171,7 +195,6 @@ export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
     'win',
     'lose',
   ],
-  // Action
   glimworm_v1: ['click', 'hit', 'notification', 'tick', 'win', 'lose'],
   cat_dash_v1: [
     'roll',

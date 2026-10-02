@@ -147,7 +147,10 @@ export function GameThemesShowcase({
       : undefined;
 
   return (
-    <section id="themes" className="box-border flex flex-col gap-6 py-8">
+    <section
+      id="themes"
+      className="box-border flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_500px]"
+    >
       <div className="box-border flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="box-border flex flex-col gap-1">
           {kicker ? (

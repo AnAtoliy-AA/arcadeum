@@ -73,14 +73,31 @@ function HeartsGameImpl({
     if (!isLobby) clearPendingStart();
   }, [isLobby, clearPendingStart]);
 
-  // Clear in-flight pass selections whenever the phase changes (e.g. all
-  // passes resolved and the hand moved to the playing phase).
   useEffect(() => {
     if (snapshot?.phase !== prevPhaseRef.current) {
       prevPhaseRef.current = snapshot?.phase;
       setSelectedPassCards([]);
     }
   }, [snapshot?.phase]);
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevTakenCountRef = useRef(0);
+  useEffect(() => {
+    if (!snapshot?.taken) return;
+    const count = Object.values(snapshot.taken).reduce(
+      (acc, arr) => acc + arr.length,
+      0,
+    );
+    if (count > prevTakenCountRef.current && prevTakenCountRef.current > 0) {
+      play('collect');
+    }
+    prevTakenCountRef.current = count;
+  }, [snapshot?.taken, play]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {

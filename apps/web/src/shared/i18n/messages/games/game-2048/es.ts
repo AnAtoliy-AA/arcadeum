@@ -26,6 +26,8 @@ export const esMessages = {
         'No quedan movimientos - todas las casillas están llenas. ¡Otra vez!',
       playAgain: 'Jugar de nuevo',
       keepGoing: 'Seguir jugando',
+      finish: 'Finalizar',
+      continue: 'Continuar',
     },
     rules: {
       objective:

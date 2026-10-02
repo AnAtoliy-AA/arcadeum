@@ -18,6 +18,7 @@ import {
 } from '@/shared/i18n/useTranslation';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
+import { getSoloRules, getRulesIcon } from './soloRulesHelper';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
@@ -49,8 +50,10 @@ export {
   useSoloPause,
   SoloControlPanel,
   SoloActionButton,
+  type SoloPauseState,
+  type SoloControlPanelProps,
+  type SoloActionButtonProps,
 };
-export type { SoloPauseState, SoloControlPanelProps, SoloActionButtonProps };
 
 const SoloFullscreenContext = createContext<boolean>(false);
 
@@ -98,6 +101,7 @@ export interface SoloGameContainerProps {
     result: 'victory' | 'defeat' | null;
     gameName: string;
     rematchLabel: string;
+    rematchTestId?: string;
     theme?: string;
     stats: GameResultStats | null;
     messages: { title: string; message: string };
@@ -174,32 +178,8 @@ export function SoloGameContainer({
     t(theme.nameKey as TranslationKey) ||
     theme.id.charAt(0).toUpperCase() + theme.id.slice(1).replace(/-/g, ' ');
 
-  const rules = [
-    {
-      badge: '🎯',
-      title: t('games.soloControls.objective') || 'Objective',
-      body: t(`games.${gameId}.rules.objective` as TranslationKey) || '',
-    },
-    {
-      badge: '🎮',
-      title: t('games.soloControls.howToPlay') || 'How to Play',
-      body: t(`games.${gameId}.rules.gameplay` as TranslationKey) || '',
-    },
-    {
-      badge: '🏆',
-      title: t('games.soloControls.scoring') || 'Scoring',
-      body: t(`games.${gameId}.rules.scoring` as TranslationKey) || '',
-    },
-  ].filter((r) => Boolean(r.body));
-
-  const rulesIcon =
-    modal.gameName === '2048'
-      ? '🔢'
-      : modal.gameName === 'Minesweeper'
-        ? '💣'
-        : modal.gameName === 'Solitaire'
-          ? '🃏'
-          : '🧩';
+  const rules = getSoloRules(gameId, t);
+  const rulesIcon = getRulesIcon(modal.gameName);
 
   const renderedHud =
     hud ??
@@ -485,6 +465,7 @@ export function SoloGameContainer({
           gameName={modal.gameName}
           onRematch={handleNewGame}
           rematchLabel={modal.rematchLabel}
+          rematchTestId={modal.rematchTestId}
           secondaryAction={modal.secondaryAction}
           onClose={handleCloseModal}
           t={t}

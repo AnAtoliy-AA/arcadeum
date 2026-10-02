@@ -54,7 +54,7 @@ function Game2048Table() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (pause.isPaused) return;
+      if (pause.isPaused || !isRunning) return;
       const keyMap: Record<string, Direction> = {
         ArrowUp: 'up',
         ArrowDown: 'down',
@@ -82,7 +82,7 @@ function Game2048Table() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [move, pause.isPaused, undo]);
+  }, [isRunning, move, pause.isPaused, undo]);
 
   const maxTile = useMemo(() => Math.max(0, ...grid), [grid]);
 
@@ -109,7 +109,7 @@ function Game2048Table() {
 
   const handleMove = useCallback(
     (direction: Direction) => {
-      if (pause.isPaused) return;
+      if (pause.isPaused || !isRunning) return;
       const prevScore = useGame2048Store.getState().score;
       move(direction);
       const newScore = useGame2048Store.getState().score;
@@ -119,7 +119,7 @@ function Game2048Table() {
         play('slide_tile');
       }
     },
-    [move, pause.isPaused, play],
+    [isRunning, move, pause.isPaused, play],
   );
 
   const statsItems = [
@@ -174,27 +174,38 @@ function Game2048Table() {
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,
         gameName: '2048',
-        rematchLabel: t('games.game_2048_v1.result.playAgain'),
+        rematchLabel:
+          finished?.won && status !== 'lost' && !keepPlayingFlag
+            ? t('games.game_2048_v1.result.finish')
+            : t('games.game_2048_v1.result.playAgain'),
+        rematchTestId:
+          finished?.won && status !== 'lost' && !keepPlayingFlag
+            ? 'finish-button'
+            : 'rematch-button',
         theme: themeId,
         stats,
         messages: {
           title: t(
-            finished?.won
-              ? 'games.game_2048_v1.result.wonTitle'
-              : 'games.game_2048_v1.result.lostTitle',
+            status === 'lost'
+              ? 'games.game_2048_v1.result.lostTitle'
+              : finished?.won
+                ? 'games.game_2048_v1.result.wonTitle'
+                : 'games.game_2048_v1.result.lostTitle',
           ),
           message: t(
-            finished?.won
-              ? 'games.game_2048_v1.result.wonBody'
-              : 'games.game_2048_v1.result.lostBody',
+            status === 'lost'
+              ? 'games.game_2048_v1.result.lostBody'
+              : finished?.won
+                ? 'games.game_2048_v1.result.wonBody'
+                : 'games.game_2048_v1.result.lostBody',
           ),
         },
         secondaryAction:
           finished?.won && status !== 'lost' && !keepPlayingFlag
             ? {
-                label: t('games.game_2048_v1.result.keepGoing'),
+                label: t('games.game_2048_v1.result.continue'),
                 onClick: continuePlaying,
-                testId: 'keep-going-button',
+                testId: 'continue-button',
               }
             : undefined,
         onClose: status === 'won' ? continuePlaying : undefined,

@@ -26,6 +26,8 @@ export const ruMessages = {
         'Ходов больше нет - все клетки заполнены. Перетасуйте и попробуйте снова!',
       playAgain: 'Играть снова',
       keepGoing: 'Продолжить',
+      finish: 'Завершить',
+      continue: 'Продолжить',
     },
     rules: {
       objective:

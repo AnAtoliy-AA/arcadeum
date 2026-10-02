@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Select } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
@@ -73,6 +73,14 @@ function MinesweeperTable() {
   const [flagMode, setFlagMode] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
   const { play } = useGameSound('minesweeper_v1');
+
+  const prevStatusRef = useRef(game.status);
+  useEffect(() => {
+    if (game.status === 'lost' && prevStatusRef.current !== 'lost') {
+      play('explode');
+    }
+    prevStatusRef.current = game.status;
+  }, [game.status, play]);
 
   const isRunning = startedAt !== null && finishedAt === null;
   const isGameOver = game.status === 'won' || game.status === 'lost';

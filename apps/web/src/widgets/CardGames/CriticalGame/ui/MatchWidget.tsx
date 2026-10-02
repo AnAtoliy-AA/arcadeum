@@ -20,6 +20,7 @@ import { NarrowViewportProvider } from '../lib/useNarrowViewport';
 import { withViewTransition } from '../lib/viewTransition';
 import { readHandToggle, writeHandToggle } from '../lib/handToggleStorage';
 import { useUrlHashState } from '@/shared/hooks/useUrlHashState';
+import { useGameSound } from '@/shared/lib/game-sounds';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
 import type { UseAutoplayReturn } from '../hooks/useAutoplay';
 import type {
@@ -258,24 +259,25 @@ export function MatchWidget({
     label: comboLabel,
   };
 
+  const { play } = useGameSound('critical_v1');
+
   const handleToggleSelect = useCallback(
     (uid: string) => {
+      play('select');
       setSelectedUids((prev) =>
         prev.includes(uid) ? prev.filter((x) => x !== uid) : [...prev, uid],
       );
     },
-    [setSelectedUids],
+    [setSelectedUids, play],
   );
 
   const handleDrawAndEnd = useCallback(() => {
     if (!isMyTurn || isGameOver) return;
-    // §4.2 — wrap in a view transition so the new card animates into
-    // the hand instead of popping in. Falls through synchronously when
-    // the browser lacks startViewTransition.
+    play('draw');
     withViewTransition(() => {
       actions.drawCard();
     });
-  }, [actions, isMyTurn, isGameOver]);
+  }, [actions, isMyTurn, isGameOver, play]);
 
   const canPlay = useMemo(() => {
     if (!isMyTurn || isGameOver || !canAct) return false;

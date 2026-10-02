@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.44] - 2026-10-02
+
+### Fixed
+- handle stockfish stdin EPIPE on destroy and point nest-cli entryFile to src/main (ARC-969) (ARC-969)
+
+### Improved
+- optimize landing page LCP and TBT for Lighthouse audit (ARC-969) (ARC-969)
+
+
 ## [1.30.43] - 2026-10-02
 
 ### Added

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.43] - 2026-10-02
+
+### Added
+- show win screen at 2048 with finish and continue buttons (ARC-969) (ARC-969)
+
+### Fixed
+- allow local dev origins 3500 and 3000 in CORS to fix rooms fetch (ARC-969) (ARC-969)
+
+### Improved
+- server-render catalog cards to eliminate client bundle overhead and fix TBT (ARC-969) (ARC-969)
+- optimize mobile swipe responsiveness and tile animations (ARC-969) (ARC-969)
+
+
 ## [1.30.42] - 2026-10-02
 
 ### Added

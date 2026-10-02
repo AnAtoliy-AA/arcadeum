@@ -51,9 +51,10 @@ export const useGame2048Store = create<Game2048StoreState>()(
       move: (direction) => {
         const state = get();
         if (state.status === 'lost') return;
+        if (state.status === 'won' && !state.keepPlayingFlag) return;
+        if (state.finishedAt !== null) return;
 
-        const effectiveKeepPlaying =
-          state.status === 'won' ? true : state.keepPlayingFlag;
+        const effectiveKeepPlaying = state.keepPlayingFlag;
 
         const next = move(
           {
@@ -118,9 +119,6 @@ export const useGame2048Store = create<Game2048StoreState>()(
               patch.finishedAt = result.finishedAt;
               patch.finished = result.finished;
             }
-          } else if (state.status === 'won' && next.status !== 'lost') {
-            patch.finished = null;
-            patch.finishedAt = null;
           }
 
           return patch;

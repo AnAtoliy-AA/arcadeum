@@ -26,6 +26,8 @@ export const byMessages = {
         'Ходаў больш няма - усе клеткі запоўнены. Ператасуйце і паспрабуйце зноў!',
       playAgain: 'Гуляць зноў',
       keepGoing: 'Працягнуць',
+      finish: 'Завяршыць',
+      continue: 'Працягнуць',
     },
     rules: {
       objective:

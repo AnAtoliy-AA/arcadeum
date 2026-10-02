@@ -10,6 +10,7 @@ import { featuredGames } from '../../home/data/games';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { Container, PageLayout } from '@arcadeum/ui';
 import { GamesCatalogClient, type CatalogGameItem } from './GamesCatalogClient';
+import { GamesCatalogCard } from './components/GamesCatalogCard';
 import { OFFLINE_GAME_SLUGS } from '@/features/offline/lib/offline-capable';
 
 export const dynamic = 'force-static';
@@ -171,7 +172,23 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
               offlineBadgeLabel={
                 messages.pwa?.offlineGame?.chip ?? 'Offline play'
               }
-            />
+            >
+              {catalogGames.map((game) => (
+                <div
+                  key={game.id}
+                  data-category={game.category}
+                  className="contents"
+                >
+                  <GamesCatalogCard
+                    game={game}
+                    locale={locale}
+                    offlineBadgeLabel={
+                      messages.pwa?.offlineGame?.chip ?? 'Offline play'
+                    }
+                  />
+                </div>
+              ))}
+            </GamesCatalogClient>
           </div>
         </Container>
       </div>

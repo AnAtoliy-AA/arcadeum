@@ -26,6 +26,8 @@ export const enMessages = {
         'No moves left - every square is full. Shuffle up and try again!',
       playAgain: 'Play again',
       keepGoing: 'Keep going',
+      finish: 'Finish',
+      continue: 'Continue',
     },
     rules: {
       objective:

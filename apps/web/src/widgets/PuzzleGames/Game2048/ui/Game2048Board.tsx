@@ -12,7 +12,7 @@ interface Game2048BoardProps {
   onMove: (direction: Direction) => void;
 }
 
-const SWIPE_THRESHOLD = 24;
+const SWIPE_THRESHOLD = 20;
 
 const TILE_STYLE_MAP: Record<number, string> = {
   2: 'bg-[#eee4da] text-[#776e65] shadow-sm text-2xl sm:text-3xl',
@@ -51,28 +51,60 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
   const theme = useGame2048Theme();
   const isFullscreen = useSoloFullscreen();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
 
   const handleTouchStart = (event: React.TouchEvent) => {
     const touch = event.touches[0];
     touchStart.current = { x: touch.clientX, y: touch.clientY };
+    swiped.current = false;
   };
 
-  const handleTouchEnd = (event: React.TouchEvent) => {
+  const handleTouchMove = (event: React.TouchEvent) => {
     const start = touchStart.current;
-    if (!start) return;
-    touchStart.current = null;
+    if (!start || swiped.current) return;
 
-    const touch = event.changedTouches[0];
+    const touch = event.touches[0];
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
-    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD)
-      return;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
 
-    if (Math.abs(dx) > Math.abs(dy)) {
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+    swiped.current = true;
+    if (absX > absY) {
       onMove(dx > 0 ? 'right' : 'left');
     } else {
       onMove(dy > 0 ? 'down' : 'up');
     }
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    const start = touchStart.current;
+    const hadSwiped = swiped.current;
+    touchStart.current = null;
+    swiped.current = false;
+
+    if (!start || hadSwiped) return;
+
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+    if (absX > absY) {
+      onMove(dx > 0 ? 'right' : 'left');
+    } else {
+      onMove(dy > 0 ? 'down' : 'up');
+    }
+  };
+
+  const handleTouchCancel = () => {
+    touchStart.current = null;
+    swiped.current = false;
   };
 
   return (
@@ -80,13 +112,15 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
       data-testid="game-2048-board"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border-2 border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-all duration-200 overflow-hidden',
+        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border-2 border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-colors duration-200 overflow-hidden',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100dvh-12rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))]',
       )}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
     >
       <div
         role="grid"
@@ -104,7 +138,7 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
                   aria-label={value !== 0 ? String(value) : undefined}
                   data-testid={`tile-${index}`}
                   className={cx(
-                    'flex select-none items-center justify-center rounded-2xl font-black transition-all duration-150',
+                    'flex select-none items-center justify-center rounded-2xl font-black transition-colors duration-100 transform-gpu',
                     getTileClasses(value),
                     isFullscreen && 'md:text-4xl',
                   )}

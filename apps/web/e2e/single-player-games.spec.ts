@@ -323,9 +323,9 @@ test.describe('Single Player Puzzle Games', () => {
     const winModal = page.getByTestId('game-result-modal');
     await expect(winModal).toBeVisible();
 
-    const keepGoingBtn = page.getByTestId('keep-going-button');
-    await expect(keepGoingBtn).toBeVisible();
-    await keepGoingBtn.click();
+    const continueBtn = page.getByTestId('continue-button');
+    await expect(continueBtn).toBeVisible();
+    await continueBtn.click();
 
     await expect(winModal).not.toBeVisible();
 

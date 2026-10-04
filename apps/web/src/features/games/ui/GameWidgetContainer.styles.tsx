@@ -16,13 +16,17 @@ export function useWidgetFullscreen(): boolean {
 
 export { WidgetFullscreenContext };
 
-interface ActiveEmote {
+import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
+
+export interface ActiveEmote {
   key: string;
   userId: string;
   emoteId: string;
+  laneIndex?: number;
+  ts?: number;
 }
 
-interface ActiveEmotesContextValue {
+export interface ActiveEmotesContextValue {
   emotes: ActiveEmote[];
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
   resolveEquipped?: (id?: string | null) => {
@@ -33,6 +37,8 @@ interface ActiveEmotesContextValue {
     equippedAuraId: string | null;
     equippedBannerId: string | null;
   } | null;
+  isSpectating?: boolean;
+  onEmote?: (emoteId: EmoteId) => void;
 }
 
 const ActiveEmotesContext = createContext<ActiveEmotesContextValue>({

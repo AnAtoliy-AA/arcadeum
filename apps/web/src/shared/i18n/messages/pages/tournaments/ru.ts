@@ -99,5 +99,33 @@ export const tournamentsRu: TournamentsI18n = {
     tournamentFull: 'Мест нет',
     viewBracket: 'Открыть сетку',
     allTournaments: 'Все турниры',
+    openModal: 'Сетка и состав флота',
+    modalTitle: 'Блиц-Кубок Морского Боя',
+    tabBracket: 'Турнирная сетка',
+    tabRoster: 'Список капитанов',
+    tabIntel: 'Правила и регламент',
+    bracketPendingTitle: 'Жеребьёвка начнётся скоро',
+    bracketPendingDesc:
+      'Турнирная сетка сформируется автоматически сразу после завершения регистрации. Битва начнётся в назначенное время.',
+    rosterTitle: 'Зарегистрированные командиры',
+    rosterSubtitle: '{count} из {max} боевых позиций занято',
+    rosterWaitlist: 'Лист ожидания',
+    rosterYou: 'Ваш флагман',
+    rosterEmpty: 'Пока нет записавшихся капитанов. Станьте первым!',
+    captainSeed: 'Номер #{seed}',
+    intelFormat: 'Формат кубка',
+    intelFormatDesc:
+      'Морской бой на выбывание (Single Elimination). Побеждайте в раундах, чтобы выйти в финал.',
+    intelFleet: 'Развёртывание флота',
+    intelFleetDesc:
+      'Классическое поле 10x10 и 5 кораблей: Авианосец, Линкор, Крейсер, Подлодка, Эсминец.',
+    intelClock: 'Контроль времени',
+    intelClockDesc:
+      'Быстрый таймер хода 30 секунд с автоматическим режимом залпа.',
+    intelRewards: 'Награды победителям',
+    intelRewardsDesc:
+      'Победитель кубка получает 500 монет, почётный трофей Адмирала и место на вершине таблицы лидеров.',
+    fullPageView: 'Страница турнира',
+    closeModal: 'Закрыть',
   },
 };

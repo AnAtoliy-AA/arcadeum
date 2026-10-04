@@ -1,5 +1,6 @@
 import { test as base } from '@playwright/test';
 import { checkNoBackendErrors } from './backend';
+import { LIVE_INFO_FIXTURE } from './live-stats';
 import { handleRoute } from './network';
 
 // Chunk-load suppression notes:
@@ -414,7 +415,7 @@ export const test = base.extend({
     });
 
     await page.route('**/games/live-info', async (route) => {
-      await handleRoute(route, { online: 0, playing: 0 });
+      await handleRoute(route, LIVE_INFO_FIXTURE);
     });
 
     await page.route('**/announcements/active', async (route) => {

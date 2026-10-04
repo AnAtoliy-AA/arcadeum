@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.30.51] - 2026-10-04
 
+### Added
 - add puzzle rush global leaderboard, daily streak multipliers, and tactical share card (ARC-973) (ARC-973)
+
 
 ## [1.30.50] - 2026-10-04
 

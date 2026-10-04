@@ -96,6 +96,8 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
     name: g.name,
     url: g.landingHref,
     description: g.description,
+    itemType: 'VideoGame',
+    image: `${appConfig.siteUrl}/${locale}/games/${g.id.replace(/_v\d+$/, '')}/opengraph-image`,
   }));
 
   const collectionPage = buildCollectionPageJsonLd({

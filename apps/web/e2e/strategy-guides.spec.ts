@@ -67,8 +67,18 @@ test.describe('Strategy Guides & SEO Cluster', () => {
     const ctaCard = page.locator('a[href*="/games/chess"]').first();
     await expect(ctaCard).toBeVisible();
 
-    const jsonLd = page.locator('script[type="application/ld+json"]');
-    await expect(jsonLd.first()).toBeAttached();
+    const jsonLd = page.locator('#json-ld-blog-post-chess-opening-traps-en');
+    await expect(jsonLd).toBeAttached();
+    const ldText = await jsonLd.textContent();
+    expect(ldText).toContain('BlogPosting');
+    expect(ldText).toContain('chess-opening-traps#article');
+    expect(ldText).toContain('chess-opening-traps/opengraph-image');
+
+    const ogImage = page.locator('meta[property="og:image"]');
+    await expect(ogImage).toHaveAttribute(
+      'content',
+      /chess-opening-traps\/opengraph-image/,
+    );
   });
 
   test('localized strategy guide article renders in Russian', async ({

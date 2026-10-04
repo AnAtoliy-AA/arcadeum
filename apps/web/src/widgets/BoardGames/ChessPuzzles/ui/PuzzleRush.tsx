@@ -5,10 +5,12 @@ import dynamic from 'next/dynamic';
 import { PuzzleControls } from './PuzzleControls';
 import { PuzzleRushMenu, type RushMode } from './PuzzleRushMenu';
 import { PuzzleRushGameOver } from './PuzzleRushGameOver';
+import { PuzzleRushLeaderboard } from './PuzzleRushLeaderboard';
 import {
   useRushHighScores,
   saveRushHighScore,
 } from '../lib/puzzle-rush-storage';
+import { submitPuzzleRushRun } from '@/features/chess/lib/puzzle-rush-api';
 
 const PuzzleBoard = dynamic(
   () => import('./PuzzleBoard').then((mod) => mod.PuzzleBoard),
@@ -35,7 +37,7 @@ import {
 import { useChessSounds } from '@/widgets/BoardGames/ChessGame/hooks/useChessSounds';
 import type { PuzzlePhase } from '../hooks/usePuzzleState';
 
-type RushPhase = 'menu' | 'playing' | 'gameover';
+type RushPhase = 'menu' | 'playing' | 'gameover' | 'leaderboard';
 
 interface PuzzleRushProps {
   mode?: RushMode;
@@ -67,6 +69,8 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
     null,
   );
   const [isCheck, setIsCheck] = useState(false);
+  const [globalRank, setGlobalRank] = useState<number | undefined>(undefined);
+  const [isNewPb, setIsNewPb] = useState(false);
   const highScores = useRushHighScores();
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -142,8 +146,18 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
       setTotalTime(timeElapsed);
 
       saveRushHighScore(mode, finalScore);
+      void submitPuzzleRushRun({
+        mode,
+        score: finalScore,
+        bestStreak,
+        totalTimeSeconds: timeElapsed,
+        rating,
+      }).then((res) => {
+        setGlobalRank(res.rank);
+        setIsNewPb(res.isNewBest);
+      });
     },
-    [mode, stopTimer, clearActionTimer],
+    [mode, bestStreak, rating, stopTimer, clearActionTimer],
   );
 
   const handleStart = useCallback(
@@ -370,7 +384,22 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
   }, [endGame, score]);
 
   if (phase === 'menu') {
-    return <PuzzleRushMenu highScores={highScores} onStart={handleStart} />;
+    return (
+      <PuzzleRushMenu
+        highScores={highScores}
+        onStart={handleStart}
+        onOpenLeaderboard={() => setPhase('leaderboard')}
+      />
+    );
+  }
+
+  if (phase === 'leaderboard') {
+    return (
+      <PuzzleRushLeaderboard
+        initialMode={mode}
+        onBack={() => setPhase('menu')}
+      />
+    );
   }
 
   if (phase === 'gameover') {
@@ -380,7 +409,11 @@ export function PuzzleRush({ mode: initialMode }: PuzzleRushProps) {
         bestStreak={bestStreak}
         totalTime={totalTime}
         rating={rating}
+        mode={mode}
+        rank={globalRank}
+        isNewBest={isNewPb}
         onPlayAgain={() => setPhase('menu')}
+        onOpenLeaderboard={() => setPhase('leaderboard')}
       />
     );
   }

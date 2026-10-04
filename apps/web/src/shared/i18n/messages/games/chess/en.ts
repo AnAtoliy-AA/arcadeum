@@ -413,6 +413,11 @@ export const enMessages = {
       score: 'Score',
       bestStreak: 'Best Streak',
       time: 'Time',
+      leaderboardTitle: 'Leaderboard',
+      viewLeaderboard: 'View Leaderboard',
+      newPersonalBest: 'New Personal Best!',
+      shareScore: 'Share Brag Card',
+      dailyModeTitle: 'Daily Tactical',
     },
     tournament: {
       title: 'Chess Tournaments',

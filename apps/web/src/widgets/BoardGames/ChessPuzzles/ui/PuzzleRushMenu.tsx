@@ -1,20 +1,42 @@
 'use client';
 
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { DailyStreakManager } from '@/shared/lib/daily-streak';
 
 export type RushMode = 'survival' | 'timed';
 
 interface PuzzleRushMenuProps {
   highScores: Record<RushMode, number>;
   onStart: (mode: RushMode) => void;
+  onOpenLeaderboard?: () => void;
 }
 
-export function PuzzleRushMenu({ highScores, onStart }: PuzzleRushMenuProps) {
+export function PuzzleRushMenu({
+  highScores,
+  onStart,
+  onOpenLeaderboard,
+}: PuzzleRushMenuProps) {
   const { t } = useTranslation();
+  const streakState = DailyStreakManager.getStreakState();
+  const multiplier = DailyStreakManager.calculateXpMultiplier(
+    streakState.currentStreak,
+  );
 
   return (
     <div className="flex flex-col items-center gap-6 p-8 max-w-md mx-auto">
       <div className="text-center">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          {streakState.currentStreak > 0 && (
+            <span
+              data-testid="puzzle-rush-streak-indicator"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold"
+            >
+              <span>🔥</span> {streakState.currentStreak} Day Streak (
+              {multiplier}
+              x)
+            </span>
+          )}
+        </div>
         <h2 className="text-2xl font-black text-[var(--color)] mb-2">
           {t('games.chess_v1.puzzleRush.title')}
         </h2>
@@ -59,6 +81,16 @@ export function PuzzleRushMenu({ highScores, onStart }: PuzzleRushMenuProps) {
         >
           {t('games.chess_v1.puzzleRush.timed')}
         </button>
+        {onOpenLeaderboard && (
+          <button
+            type="button"
+            onClick={onOpenLeaderboard}
+            data-testid="puzzle-rush-leaderboard-btn"
+            className="w-full py-3 px-6 rounded-xl bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--color)] text-sm font-bold cursor-pointer hover:bg-[var(--backgroundHover)] transition-all flex items-center justify-center gap-2"
+          >
+            <span>🏆</span> {t('games.chess_v1.puzzleRush.viewLeaderboard')}
+          </button>
+        )}
       </div>
     </div>
   );

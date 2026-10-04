@@ -7,70 +7,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add puzzle rush global leaderboard, daily streak multipliers, and tactical share card (ARC-973) (ARC-973)
+
 ## [1.30.50] - 2026-10-04
 
 ### Added
-- add sea battle blitz cups interactive bracket modal and roster (ARC-972) (ARC-972)
 
+- add sea battle blitz cups interactive bracket modal and roster (ARC-972) (ARC-972)
 
 ## [1.30.49] - 2026-10-04
 
 ### Added
-- add ranked elo 1v1 matchmaking hub, tier ladder, and leaderboard (ARC-971) (ARC-971)
 
+- add ranked elo 1v1 matchmaking hub, tier ladder, and leaderboard (ARC-971) (ARC-971)
 
 ## [1.30.48] - 2026-10-04
 
 ### Added
+
 - enrich blog and catalog schema with dynamic opengraph images and item types (ARC-970) (ARC-970)
 - optimize schema canonical urls, deduplicate breadcrumbs, and boost pillar sitemaps (ARC-970) (ARC-970)
 
 ### Fixed
-- restore entryFile to main in nest-cli (ARC-970) (ARC-970)
 
+- restore entryFile to main in nest-cli (ARC-970) (ARC-970)
 
 ## [1.30.47] - 2026-10-04
 
 ### Added
-- cross-link strategy guides on chess and spades landing pages (ARC-952) (ARC-952)
 
+- cross-link strategy guides on chess and spades landing pages (ARC-952) (ARC-952)
 
 ## [1.30.46] - 2026-10-04
 
 ### Fixed
-- keep online players counter accurate and live
 
+- keep online players counter accurate and live
 
 ## [1.30.45] - 2026-10-04
 
 ### Added
+
 - add floating live spectator reactions and quick action dock (ARC-889) (ARC-889)
 
 ### Fixed
-- restore entryFile and start:prod to dist/src/main (ARC-889) (ARC-889)
 
+- restore entryFile and start:prod to dist/src/main (ARC-889) (ARC-889)
 
 ## [1.30.44] - 2026-10-02
 
 ### Fixed
+
 - handle stockfish stdin EPIPE on destroy and point nest-cli entryFile to src/main (ARC-969) (ARC-969)
 
 ### Improved
-- optimize landing page LCP and TBT for Lighthouse audit (ARC-969) (ARC-969)
 
+- optimize landing page LCP and TBT for Lighthouse audit (ARC-969) (ARC-969)
 
 ## [1.30.43] - 2026-10-02
 
 ### Added
+
 - show win screen at 2048 with finish and continue buttons (ARC-969) (ARC-969)
 
 ### Fixed
+
 - allow local dev origins 3500 and 3000 in CORS to fix rooms fetch (ARC-969) (ARC-969)
 
 ### Improved
+
 - server-render catalog cards to eliminate client bundle overhead and fix TBT (ARC-969) (ARC-969)
 - optimize mobile swipe responsiveness and tile animations (ARC-969) (ARC-969)
-
 
 ## [1.30.42] - 2026-10-02
 

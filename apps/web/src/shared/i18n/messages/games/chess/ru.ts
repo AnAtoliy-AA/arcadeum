@@ -415,6 +415,11 @@ export const ruMessages = {
       score: 'Счёт',
       bestStreak: 'Лучшая серия',
       time: 'Время',
+      leaderboardTitle: 'Таблица лидеров',
+      viewLeaderboard: 'Таблица лидеров',
+      newPersonalBest: 'Новый личный рекорд!',
+      shareScore: 'Поделиться результатом',
+      dailyModeTitle: 'Ежедневная тактика',
     },
     tournament: {
       title: 'Шахматные турниры',

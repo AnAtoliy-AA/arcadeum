@@ -418,6 +418,11 @@ export const frMessages = {
       score: 'Score',
       bestStreak: 'Meilleure série',
       time: 'Temps',
+      leaderboardTitle: 'Classement',
+      viewLeaderboard: 'Voir le classement',
+      newPersonalBest: 'Nouveau record personnel !',
+      shareScore: 'Partager le résultat',
+      dailyModeTitle: 'Tactique quotidienne',
     },
     tournament: {
       title: "Tournois d'échecs",

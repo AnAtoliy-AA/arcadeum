@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.50] - 2026-10-04
+
+### Added
+- add sea battle blitz cups interactive bracket modal and roster (ARC-972) (ARC-972)
+
+
 ## [1.30.49] - 2026-10-04
 
 ### Added

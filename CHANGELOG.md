@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.45] - 2026-10-04
+
+### Added
+- add floating live spectator reactions and quick action dock (ARC-889) (ARC-889)
+
+### Fixed
+- restore entryFile and start:prod to dist/src/main (ARC-889) (ARC-889)
+
+
 ## [1.30.44] - 2026-10-02
 
 ### Fixed

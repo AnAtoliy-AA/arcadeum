@@ -130,4 +130,68 @@ export const landing = {
     games: 'Jeux',
     critical: 'Critical',
   },
+  ranked: {
+    kicker: 'Compétitif 1v1',
+    title: 'Classement ELO et Arène de Duel Critical',
+    subtitle:
+      'Affrontez des rivaux en duels 1 contre 1. Déjouez les pièges, prédisez l’emplacement des bombes et progressez à travers 6 paliers compétitifs.',
+    ctaQueue: 'Lancer un duel classé 1v1',
+    ctaQueued: 'Recherche d’un adversaire classé...',
+    cancelQueue: 'Annuler la recherche',
+    yourRating: 'Votre classement Critical',
+    season: 'Saison',
+    peakElo: 'ELO max',
+    rankedGames: 'Parties classées',
+    winRate: 'Taux de victoire',
+    unranked: 'Non classé',
+    baselineHint: 'Palier initial de 1200 ELO',
+    ladderTitle: 'Échelle compétitive',
+    ladderSubtitle: 'Franchissez six paliers de compétence',
+    leaderboardTitle: 'Meilleurs duellistes de la saison',
+    leaderboardSubtitle: 'Joueurs les mieux classés de Critical cette saison',
+    leaderboardEmpty:
+      'Aucune partie classée enregistrée cette saison. Soyez le premier !',
+    rulesTitle: 'Règles du duel classé 1v1',
+    rule1Title: 'Duel 1v1 sans concession',
+    rule1Body:
+      'Format en tête-à-tête à 2 joueurs avec 1 bombe Critical fatale dans la pioche.',
+    rule2Title: 'Réinsertion secrète de la bombe',
+    rule2Body:
+      'Après désamorçage, replacez secrètement la bombe à la position voulue.',
+    rule3Title: 'Points ELO en jeu',
+    rule3Body:
+      'Les points sont calculés en direct selon la formule ELO selon la force adverse.',
+    tiers: {
+      master: {
+        name: 'Maître',
+        min: '2000+ ELO',
+        desc: 'Maîtrise absolue du désamorçage et contrôle de la pioche',
+      },
+      diamond: {
+        name: 'Diamant',
+        min: '1800-1999 ELO',
+        desc: 'Comptage de cartes parfait et bluff psychologique',
+      },
+      platinum: {
+        name: 'Platine',
+        min: '1600-1799 ELO',
+        desc: 'Attaques en chaîne et exécution de combos',
+      },
+      gold: {
+        name: 'Or',
+        min: '1400-1599 ELO',
+        desc: 'Anticipation des bombes et privation de ressources',
+      },
+      silver: {
+        name: 'Argent',
+        min: '1200-1399 ELO',
+        desc: 'Palier de départ pour les nouveaux duellistes',
+      },
+      bronze: {
+        name: 'Bronze',
+        min: '0-1199 ELO',
+        desc: 'Survie tactique et bases du désamorçage',
+      },
+    },
+  },
 };

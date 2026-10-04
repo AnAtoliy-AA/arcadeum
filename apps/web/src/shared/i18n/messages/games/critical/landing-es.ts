@@ -129,4 +129,69 @@ export const landing = {
     games: 'Juegos',
     critical: 'Critical',
   },
+  ranked: {
+    kicker: 'Competitivo 1v1',
+    title: 'Clasificatoria ELO y Arena de Duelos Critical',
+    subtitle:
+      'Compite en intensos duelos 1 contra 1. Supera a tu rival, predice la colocación de la bomba y escala a través de 6 niveles clasificatorios.',
+    ctaQueue: 'Buscar partida clasificada 1v1',
+    ctaQueued: 'Buscando oponente clasificado...',
+    cancelQueue: 'Cancelar búsqueda',
+    yourRating: 'Tu rango en Critical',
+    season: 'Temporada',
+    peakElo: 'ELO máximo',
+    rankedGames: 'Partidas clasificadas',
+    winRate: 'Tasa de victoria',
+    unranked: 'Sin clasificar',
+    baselineHint: 'Nivel inicial de 1200 ELO',
+    ladderTitle: 'Escalafón competitivo',
+    ladderSubtitle: 'Avanza a través de seis niveles de habilidad',
+    leaderboardTitle: 'Mejores duelistas de la temporada',
+    leaderboardSubtitle:
+      'Jugadores con mayor puntuación en Critical esta temporada',
+    leaderboardEmpty:
+      'Aún no hay partidas clasificadas esta temporada. ¡Sé el primero!',
+    rulesTitle: 'Reglas del duelo clasificado 1v1',
+    rule1Title: 'Duelo 1v1 directo',
+    rule1Body:
+      'Formato cara a cara entre 2 jugadores con 1 bomba Critical letal en el mazo.',
+    rule2Title: 'Reinserción secreta de la bomba',
+    rule2Body:
+      'Al desactivar, elige en secreto el índice exacto para tender una trampa a tu rival.',
+    rule3Title: 'Puntos ELO en juego',
+    rule3Body:
+      'Los puntos se calculan dinámicamente con el algoritmo ELO según el nivel del rival.',
+    tiers: {
+      master: {
+        name: 'Maestro',
+        min: '2000+ ELO',
+        desc: 'Dominio absoluto de desactivación y control del mazo',
+      },
+      diamond: {
+        name: 'Diamante',
+        min: '1800-1999 ELO',
+        desc: 'Conteo de cartas impecable y juego psicológico',
+      },
+      platinum: {
+        name: 'Platino',
+        min: '1600-1799 ELO',
+        desc: 'Cadenas de turnos agresivas y ejecución de combos',
+      },
+      gold: {
+        name: 'Oro',
+        min: '1400-1599 ELO',
+        desc: 'Predicción consistente de bombas y negación de recursos',
+      },
+      silver: {
+        name: 'Plata',
+        min: '1200-1399 ELO',
+        desc: 'Nivel base inicial para nuevos duelistas competitivos',
+      },
+      bronze: {
+        name: 'Bronce',
+        min: '0-1199 ELO',
+        desc: 'Recuperación táctica y fundamentos de supervivencia',
+      },
+    },
+  },
 };

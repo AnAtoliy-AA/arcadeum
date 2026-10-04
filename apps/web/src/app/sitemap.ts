@@ -158,6 +158,18 @@ const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
   .filter((k) => !GAME_LANDING_KEYS.includes(k))
   .filter((k) => !NOINDEX_KEYS.has(k));
 
+const PILLAR_STRATEGY_SLUGS: ReadonlySet<string> = new Set([
+  'chess-opening-traps',
+  'how-to-win-chess-endgames',
+  'how-to-win-spades',
+  'how-to-win-hearts-advanced',
+  'backgammon-pip-count-guide',
+  'how-to-win-checkers',
+  'how-to-solve-sudoku-advanced',
+  'sea-battle-advanced',
+  'go-life-death-problems',
+]);
+
 const PAGE_CHANGE_FREQ: Partial<
   Record<RouteKey, MetadataRoute.Sitemap[number]['changeFrequency']>
 > = {
@@ -329,11 +341,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }
       }
 
+      const isPillar = PILLAR_STRATEGY_SLUGS.has(slug);
       entries.push({
         url: `${appConfig.siteUrl}${r.blogPost(slug)}`,
         lastModified: new Date(post.updatedAt ?? post.publishedAt),
-        changeFrequency: 'monthly',
-        priority: 0.6,
+        changeFrequency: isPillar ? 'weekly' : 'monthly',
+        priority: isPillar ? 0.8 : 0.6,
         alternates: { languages: postLanguages },
       });
     }

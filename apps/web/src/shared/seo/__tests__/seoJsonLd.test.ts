@@ -62,6 +62,7 @@ describe('SEO JSON-LD builders', () => {
     expect(mainEntity[0]['@type']).toBe('Question');
     expect(mainEntity[0]['name']).toBe('Is Chess free?');
   });
+
   it('builds full landing schemas with VideoGame, SoftwareApplication, HowTo, and FAQPage', () => {
     const schemas = buildGameLandingJsonLd({
       gameId: 'backgammon_v1',
@@ -87,5 +88,14 @@ describe('SEO JSON-LD builders', () => {
     expect(types).toContain('BreadcrumbList');
     expect(types).toContain('HowTo');
     expect(types).toContain('FAQPage');
+
+    const breadcrumbs = schemas.filter((s) => s['@type'] === 'BreadcrumbList');
+    expect(breadcrumbs).toHaveLength(1);
+
+    const videoGame = schemas.find((s) => s['@type'] === 'VideoGame');
+    expect(videoGame?.['url']).toContain('/en/games/backgammon');
+    expect(videoGame?.['url']).not.toContain('backgammon_v1');
+    expect(videoGame?.['@id']).toContain('/en/games/backgammon#game');
+    expect(videoGame?.['inLanguage']).toBe('en-US');
   });
 });

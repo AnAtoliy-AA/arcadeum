@@ -122,7 +122,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       featureList: [
         'Stockfish 19 Engine with SFNNv16 NNUE',
         'Standard & Chess960 (Fischer Random)',
-        '20 AI Bot Personalities (250–3200 Elo)',
+        '20 AI Bot Personalities (250-3200 Elo)',
         'Bullet, Blitz, Rapid, and Daily Correspondence',
         'Puzzle Rush & Tactical Training',
         'Interactive Analysis Board with Engine Evaluation',
@@ -137,6 +137,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         games: messages.navigation?.gamesTab ?? 'Games',
         game: gameName,
       },
+      pageUrl: chessPageUrl,
     }),
     buildHowToJsonLd({
       name: `How to Play Chess on ${appConfig.appName}`,
@@ -168,6 +169,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
             question: (f as { question: string; answer: string }).question,
             answer: (f as { question: string; answer: string }).answer,
           })),
+          includeBreadcrumb: false,
         })
       : []),
   ];

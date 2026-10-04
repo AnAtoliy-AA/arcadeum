@@ -11,8 +11,10 @@ describe('GamesGateway anonymous socket connection', () => {
   let gateway: GamesGateway;
   let mockRealtime: {
     trackSocket: jest.Mock;
+    refreshSocket: jest.Mock;
     lobbyChannel: jest.Mock;
     registerServer: jest.Mock;
+    getConnectedUsersCount: jest.Mock;
   };
   let mockJwt: { verifyAsync: jest.Mock };
   let mockConfig: { get: jest.Mock };
@@ -20,6 +22,7 @@ describe('GamesGateway anonymous socket connection', () => {
   beforeEach(() => {
     mockRealtime = {
       trackSocket: jest.fn().mockResolvedValue(undefined),
+      refreshSocket: jest.fn().mockResolvedValue(undefined),
       lobbyChannel: jest.fn().mockReturnValue('games:lobby'),
       registerServer: jest.fn(),
       getConnectedUsersCount: jest.fn().mockResolvedValue(0),
@@ -45,7 +48,7 @@ describe('GamesGateway anonymous socket connection', () => {
   function createMockSocket(
     auth?: Record<string, unknown>,
     query?: Record<string, unknown>,
-  ): Socket {
+  ): Socket & { conn: { on: jest.Mock } } {
     return {
       id: 'socket-123',
       handshake: {
@@ -56,7 +59,8 @@ describe('GamesGateway anonymous socket connection', () => {
       join: jest.fn().mockResolvedValue(undefined),
       emit: jest.fn(),
       on: jest.fn(),
-    } as unknown as Socket;
+      conn: { on: jest.fn() },
+    } as unknown as Socket & { conn: { on: jest.Mock } };
   }
 
   it('extracts anonId from handshake auth', async () => {
@@ -92,5 +96,38 @@ describe('GamesGateway anonymous socket connection', () => {
       'guest_socket-123',
       'socket-123',
     );
+  });
+
+  function heartbeatListener(conn: { on: jest.Mock }): () => void {
+    const calls = conn.on.mock.calls as unknown[][];
+    const entry = calls.find((call) => call[0] === 'heartbeat');
+    if (!entry) {
+      throw new Error('heartbeat listener was not registered');
+    }
+    return entry[1] as () => void;
+  }
+
+  it('refreshes presence when engine.io reports a heartbeat', async () => {
+    const socket = createMockSocket({ anonId: 'anon_abc123' });
+    await gateway.handleConnection(socket);
+
+    heartbeatListener(socket.conn)();
+
+    expect(mockRealtime.refreshSocket).toHaveBeenCalledTimes(1);
+    expect(mockRealtime.refreshSocket).toHaveBeenCalledWith(
+      'socket-123',
+      'anon_abc123',
+    );
+  });
+
+  it('throttles presence refreshes between heartbeats', async () => {
+    const socket = createMockSocket({ anonId: 'anon_abc123' });
+    await gateway.handleConnection(socket);
+
+    const heartbeat = heartbeatListener(socket.conn);
+    heartbeat();
+    heartbeat();
+
+    expect(mockRealtime.refreshSocket).toHaveBeenCalledTimes(1);
   });
 });

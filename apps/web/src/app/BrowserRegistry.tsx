@@ -3,7 +3,13 @@
 import { ReactNode, useEffect } from 'react';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { useSocketConnection } from '@/shared/hooks/useSocketConnection';
-import { disconnectSockets } from '@/shared/lib/socket';
+import { getOrCreateAnonymousId } from '@/shared/lib/api-client';
+import {
+  connectSockets,
+  connectSocketsAnonymous,
+  disconnectSockets,
+  getGamesSocket,
+} from '@/shared/lib/socket';
 
 interface BrowserRegistryProps {
   children: ReactNode;
@@ -25,7 +31,9 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
     if (navigator.serviceWorker.controller) return;
     navigator.serviceWorker.getRegistration('/').then((reg) => {
       if (reg) return;
-      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {});
+      navigator.serviceWorker
+        .register('/sw.js', { scope: '/' })
+        .catch(() => {});
     });
   }, []);
 
@@ -36,6 +44,31 @@ export default function BrowserRegistry({ children }: BrowserRegistryProps) {
     window.addEventListener('pagehide', handlePageHide);
     return () => {
       window.removeEventListener('pagehide', handlePageHide);
+    };
+  }, []);
+
+  useEffect(() => {
+    const reconnectSockets = () => {
+      if (document.visibilityState !== 'visible') return;
+      const gamesSock = getGamesSocket();
+      if (gamesSock.connected || gamesSock.io?._readyState === 'opening') {
+        return;
+      }
+      const { accessToken } = useSessionStore.getState().snapshot;
+      if (accessToken) {
+        connectSockets(accessToken);
+        return;
+      }
+      void getOrCreateAnonymousId().then((anonId) => {
+        if (!anonId || getGamesSocket().connected) return;
+        connectSocketsAnonymous(anonId);
+      });
+    };
+    window.addEventListener('pageshow', reconnectSockets);
+    document.addEventListener('visibilitychange', reconnectSockets);
+    return () => {
+      window.removeEventListener('pageshow', reconnectSockets);
+      document.removeEventListener('visibilitychange', reconnectSockets);
     };
   }, []);
 

@@ -11,10 +11,9 @@ import {
   emitActionExecuted as emitActionExecutedFn,
 } from './games.session-emitters';
 import { PeakTracker, type PeakData } from './games.realtime.peaks';
+import { OnlinePresence } from './games.presence';
 
 const REMATCH_INVITATION_TIMEOUT_SECONDS = 30;
-const ONLINE_USERS_KEY = 'arcadeum:online:users';
-const ONLINE_TTL_MS = 90_000;
 
 @Injectable()
 export class GamesRealtimeService implements OnModuleDestroy {
@@ -26,7 +25,7 @@ export class GamesRealtimeService implements OnModuleDestroy {
     return this.server;
   }
 
-  private readonly userIdToSockets = new Map<string, Set<string>>();
+  private readonly presence = new OnlinePresence(() => this.redis);
 
   private redis: Redis | null = null;
   private readonly peakTracker: PeakTracker;
@@ -69,77 +68,19 @@ export class GamesRealtimeService implements OnModuleDestroy {
   }
 
   async trackSocket(userId: string, socketId: string): Promise<void> {
-    if (this.redis) {
-      try {
-        const now = Date.now();
-        await this.redis.zadd(ONLINE_USERS_KEY, now, userId);
-        return;
-      } catch (err) {
-        this.logger.warn(
-          `Redis trackSocket failed, falling back to memory: ${err}`,
-        );
-      }
-    }
-
-    let sockets = this.userIdToSockets.get(userId);
-    if (!sockets) {
-      sockets = new Set();
-      this.userIdToSockets.set(userId, sockets);
-    }
-    sockets.add(socketId);
+    await this.presence.track(userId, socketId);
   }
 
-  async refreshSocket(_socketId: string, userId: string): Promise<void> {
-    if (!this.redis || !userId) return;
-    try {
-      await this.redis.zadd(ONLINE_USERS_KEY, Date.now(), userId);
-    } catch {
-      // best-effort
-    }
+  async refreshSocket(socketId: string, userId: string): Promise<void> {
+    await this.presence.refresh(socketId, userId);
   }
 
   async untrackSocket(userId: string, socketId: string): Promise<void> {
-    if (this.redis) {
-      try {
-        await this.redis.zrem(ONLINE_USERS_KEY, userId);
-        return;
-      } catch (err) {
-        this.logger.warn(
-          `Redis untrackSocket failed, falling back to memory: ${err}`,
-        );
-      }
-    }
-
-    const sockets = this.userIdToSockets.get(userId);
-    if (sockets) {
-      sockets.delete(socketId);
-      if (sockets.size === 0) {
-        this.userIdToSockets.delete(userId);
-      }
-    }
+    await this.presence.untrack(userId, socketId);
   }
 
   async getConnectedUsersCount(): Promise<number> {
-    let count: number;
-    if (this.redis) {
-      try {
-        const staleThreshold = Date.now() - ONLINE_TTL_MS;
-        const stale = await this.redis.zrangebyscore(
-          ONLINE_USERS_KEY,
-          '-inf',
-          String(staleThreshold),
-        );
-        if (stale.length > 0) {
-          await this.redis.zrem(ONLINE_USERS_KEY, ...stale);
-        }
-        count = await this.redis.zcard(ONLINE_USERS_KEY);
-        void this.peakTracker.trackPeakOnline(count);
-        return count;
-      } catch {
-        // fall through to in-memory
-      }
-    }
-    count = this.userIdToSockets.size;
+    const count = await this.presence.count();
     void this.peakTracker.trackPeakOnline(count);
     return count;
   }
@@ -162,6 +103,15 @@ export class GamesRealtimeService implements OnModuleDestroy {
 
   lobbyChannel(): string {
     return 'games-lobby';
+  }
+
+  emitToLobby(event: string, payload: unknown): void {
+    if (!this.server) {
+      return;
+    }
+    this.server
+      .to(this.lobbyChannel())
+      .emit(event, maybeEncrypt(payload as Record<string, unknown>));
   }
 
   emitRoomUpdate(room: GameRoomSummary): void {
@@ -451,7 +401,7 @@ export class GamesRealtimeService implements OnModuleDestroy {
       return false;
     }
 
-    const trackedIds = this.userIdToSockets.get(userId);
+    const trackedIds = this.presence.getSockets(userId);
     if (trackedIds && trackedIds.size > 0) {
       const sockets = await this.server
         .in(this.roomChannel(roomId))
@@ -479,7 +429,7 @@ export class GamesRealtimeService implements OnModuleDestroy {
 
   emitToUser(userId: string, event: string, payload: unknown): void {
     if (!this.server) return;
-    const socketIds = this.userIdToSockets.get(userId);
+    const socketIds = this.presence.getSockets(userId);
     if (socketIds) {
       for (const socketId of socketIds) {
         this.server

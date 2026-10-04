@@ -340,11 +340,7 @@ export class LiveStatsService {
   }
 
   broadcastLiveStats(stats: LiveStatsResponse): void {
-    this.realtimeService.emitToRoom(
-      this.realtimeService.lobbyChannel(),
-      'games.live_stats',
-      stats,
-    );
+    this.realtimeService.emitToLobby('games.live_stats', stats);
   }
 
   private lastBroadcastAt = 0;

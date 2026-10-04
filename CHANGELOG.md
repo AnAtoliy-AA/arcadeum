@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.47] - 2026-10-04
+
+### Added
+- cross-link strategy guides on chess and spades landing pages (ARC-952) (ARC-952)
+
+
 ## [1.30.46] - 2026-10-04
 
 ### Fixed

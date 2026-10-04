@@ -414,6 +414,11 @@ export const byMessages = {
       score: 'Лік',
       bestStreak: 'Лепшая серыя',
       time: 'Час',
+      leaderboardTitle: 'Табліца лідараў',
+      viewLeaderboard: 'Табліца лідараў',
+      newPersonalBest: 'Новы асабісты рэкорд!',
+      shareScore: 'Падзяліцца вынікам',
+      dailyModeTitle: 'Штодзённая тактыка',
     },
     tournament: {
       title: 'Шахматныя турніры',

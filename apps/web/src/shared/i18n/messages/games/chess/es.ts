@@ -417,6 +417,11 @@ export const esMessages = {
       score: 'Puntuación',
       bestStreak: 'Mejor racha',
       time: 'Tiempo',
+      leaderboardTitle: 'Clasificación',
+      viewLeaderboard: 'Ver clasificación',
+      newPersonalBest: '¡Nuevo récord personal!',
+      shareScore: 'Compartir resultado',
+      dailyModeTitle: 'Táctica diaria',
     },
     tournament: {
       title: 'Torneos de ajedrez',

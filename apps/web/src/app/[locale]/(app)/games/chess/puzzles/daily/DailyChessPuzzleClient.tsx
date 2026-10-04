@@ -13,6 +13,7 @@ import {
 import type { ChessPuzzle } from '@/features/chess/lib/puzzle-api';
 import { savePersonalBest } from '@/features/chess/lib/daily-leaderboard';
 import { DailyLeaderboardModal } from '@/widgets/BoardGames/ChessPuzzles/ui/DailyLeaderboardModal';
+import { TacticalScoreShareModal } from '@/widgets/BoardGames/ChessPuzzles/ui/TacticalScoreShareModal';
 
 interface DailyChessPuzzleClientProps {
   locale: string;
@@ -74,8 +75,8 @@ export function DailyChessPuzzleClient({
     moves: string[];
     timeMs: number;
   } | null>(null);
-  const [copied, setCopied] = useState(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const handleSolved = useCallback(
     (info: { puzzle: ChessPuzzle; moves: string[]; timeMs: number }) => {
@@ -115,17 +116,8 @@ export function DailyChessPuzzleClient({
   }, [todayStr]);
 
   const handleShare = useCallback(() => {
-    const movesCount = solvedInfo?.moves.length ?? 1;
-    const timeSec = solvedInfo ? Math.round(solvedInfo.timeMs / 1000) : 0;
-    const shareText = `🧩 Arcadeum Daily Chess Puzzle (${selectedDate})\nSolved in ${timeSec}s (${movesCount} moves)!\n🔥 Current streak: ${streakState.currentStreak} day${streakState.currentStreak === 1 ? '' : 's'}\nhttps://arcadeum.games/${locale}/games/chess/puzzles/daily`;
-
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(shareText).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
-      });
-    }
-  }, [solvedInfo, selectedDate, streakState.currentStreak, locale]);
+    setShareModalOpen(true);
+  }, []);
 
   return (
     <main className="flex flex-col items-center min-h-screen py-6">
@@ -230,7 +222,7 @@ export function DailyChessPuzzleClient({
                 onClick={handleShare}
                 data-testid="share-puzzle-button"
               >
-                {copied ? 'Copied to Clipboard! ✓' : 'Share Result 📋'}
+                Share Result 📋
               </Button>
               <Link href={`/${locale}/games/chess/puzzles`}>
                 <Button variant="secondary" size="sm">
@@ -255,6 +247,22 @@ export function DailyChessPuzzleClient({
           dateStr={selectedDate}
           puzzleId={solvedInfo?.puzzle.puzzleId || `daily-${selectedDate}`}
           lastSolveTimeMs={solvedInfo?.timeMs}
+        />
+
+        <TacticalScoreShareModal
+          open={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          gameMode="daily"
+          score={streakState.currentStreak}
+          bestStreak={streakState.longestStreak}
+          totalTimeSeconds={
+            solvedInfo ? Math.round(solvedInfo.timeMs / 1000) : 0
+          }
+          rating={solvedInfo?.puzzle.rating ?? 1500}
+          streakMultiplier={DailyStreakManager.calculateXpMultiplier(
+            streakState.currentStreak,
+          )}
+          locale={locale}
         />
       </div>
     </main>

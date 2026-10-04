@@ -7,17 +7,29 @@ import {
   ChessPuzzleUser,
   type ChessPuzzleUserDocument,
 } from './chess-puzzle-user.schema';
+import {
+  ChessPuzzleRush,
+  type ChessPuzzleRushDocument,
+} from './chess-puzzle-rush.schema';
+import type { SubmitRushScoreDto } from './dto/submit-rush-score.dto';
 import { ChessStockfishService } from '../engine/chess-stockfish.service';
 
-/** Strip MongoDB operator prefixes from user-supplied strings (CodeQL fix). */
 function sanitize(str: string): string {
   return str.replace(/[$.]/g, '_');
 }
 
-/** Clamp a number to a safe range. */
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
+
+import {
+  type RushLeaderboardEntry,
+  type SubmitRushRunResult,
+} from './chess-puzzle-rush.types';
+import {
+  executeSubmitRushRun,
+  executeGetRushLeaderboard,
+} from './chess-puzzle-rush.helpers';
 
 @Injectable()
 export class ChessPuzzlesService {
@@ -28,6 +40,8 @@ export class ChessPuzzlesService {
     private readonly puzzleModel: Model<ChessPuzzleDocument>,
     @InjectModel(ChessPuzzleUser.name, OCI_CONNECTION)
     private readonly puzzleUserModel: Model<ChessPuzzleUserDocument>,
+    @InjectModel(ChessPuzzleRush.name, OCI_CONNECTION)
+    private readonly puzzleRushModel: Model<ChessPuzzleRushDocument>,
     private readonly stockfishService: ChessStockfishService,
   ) {}
 
@@ -309,5 +323,19 @@ export class ChessPuzzlesService {
       })
       .exec();
     return { deleted: (result.deletedCount ?? 0) > 0 };
+  }
+
+  async submitRushRun(
+    user: { id?: string; username?: string; avatar?: string } | undefined,
+    dto: SubmitRushScoreDto,
+  ): Promise<SubmitRushRunResult> {
+    return executeSubmitRushRun(this.puzzleRushModel, user, dto);
+  }
+
+  async getRushLeaderboard(
+    mode: 'survival' | 'timed' = 'survival',
+    limit = 20,
+  ): Promise<RushLeaderboardEntry[]> {
+    return executeGetRushLeaderboard(this.puzzleRushModel, mode, limit);
   }
 }

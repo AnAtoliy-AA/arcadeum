@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.46] - 2026-10-04
+
+### Fixed
+- keep online players counter accurate and live
+
+
 ## [1.30.45] - 2026-10-04
 
 ### Added

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useTrackSoloGameStarted } from '@/shared/analytics/useTrackSoloGameStarted';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
@@ -14,9 +14,13 @@ import {
 import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { SolitaireThemeProvider } from '../lib/SolitaireThemeContext';
+import { isAllCardsOpen } from '../lib/engine';
 import { useSolitaireStore } from '../store/solitaireStore';
 import type { MoveSource, MoveTarget } from '../types';
 import { SolitaireBoard } from './SolitaireBoard';
+
+const AUTO_PLACE_STEP_MS = 80;
+const AUTO_PLACE_MAX_STEPS = 5000;
 
 export default function SolitaireGame() {
   useTrackSoloGameStarted('solitaire_v1');
@@ -37,6 +41,7 @@ function SolitaireTable() {
   const finishedAt = useSolitaireStore((state) => state.finishedAt);
   const draw = useSolitaireStore((state) => state.draw);
   const move = useSolitaireStore((state) => state.move);
+  const autoPlaceStep = useSolitaireStore((state) => state.autoPlaceStep);
   const newGame = useSolitaireStore((state) => state.newGame);
   const undo = useSolitaireStore((state) => state.undo);
   const canUndo = useSolitaireStore(
@@ -45,9 +50,49 @@ function SolitaireTable() {
 
   const { play } = useGameSound('solitaire_v1');
   const [selection, setSelection] = useState<MoveSource | null>(null);
+  const [autoPlacing, setAutoPlacing] = useState(false);
   const isRunning = finishedAt === null;
   const pause = useSoloPause(isRunning, finishedAt);
   const timer = useSoloTimer(isRunning, startedAt, pause.isPaused);
+
+  const canAutoPlace = isAllCardsOpen(game) && finishedAt === null;
+
+  useEffect(() => {
+    if (!autoPlacing || pause.isPaused) return;
+    let steps = 0;
+    const intervalId = window.setInterval(() => {
+      steps += 1;
+      if (steps > AUTO_PLACE_MAX_STEPS) {
+        setAutoPlacing(false);
+        return;
+      }
+      const step = autoPlaceStep();
+      if (step === null) {
+        setAutoPlacing(false);
+        return;
+      }
+      play(step === 'move' ? 'card_place' : 'card_flip');
+    }, AUTO_PLACE_STEP_MS);
+    return () => window.clearInterval(intervalId);
+  }, [autoPlacing, pause.isPaused, autoPlaceStep, play]);
+
+  const handleNewGame = useCallback(() => {
+    setAutoPlacing(false);
+    setSelection(null);
+    newGame();
+  }, [newGame]);
+
+  const handleToggleAutoPlace = useCallback(() => {
+    setAutoPlacing((running) => {
+      if (running) return false;
+      return !pause.isPaused;
+    });
+  }, [pause.isPaused]);
+
+  const handleUndo = useCallback(() => {
+    setAutoPlacing(false);
+    undo();
+  }, [undo]);
 
   const handleDraw = useCallback(() => {
     if (pause.isPaused) return;
@@ -106,8 +151,17 @@ function SolitaireTable() {
           {t('games.table.analytics.view') || 'Results'}
         </SoloActionButton>
       )}
+      {(canAutoPlace || autoPlacing) && (
+        <SoloActionButton
+          onClick={handleToggleAutoPlace}
+          dataTestId="solitaire-auto-place-button"
+          icon="⚡"
+        >
+          {t('games.solitaire_v1.hud.autoPlace')}
+        </SoloActionButton>
+      )}
       <SoloActionButton
-        onClick={newGame}
+        onClick={handleNewGame}
         dataTestId="solitaire-new-game-button"
         icon="🔄"
       >
@@ -128,10 +182,10 @@ function SolitaireTable() {
       isRunning={isRunning}
       startedAt={startedAt}
       finishedAt={finishedAt}
-      onNewGame={newGame}
+      onNewGame={handleNewGame}
       statsItems={statsItems}
       actions={actions}
-      undo={{ onUndo: undo, canUndo }}
+      undo={{ onUndo: handleUndo, canUndo }}
       loadingMessage="games.solitaire_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,

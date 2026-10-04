@@ -12,6 +12,7 @@ import {
   draw as drawFromStock,
   evaluateOutcome,
   isValidMove,
+  nextAutoPlaceAction,
 } from '../lib/engine';
 import type { MoveSource, MoveTarget, SolitaireState } from '../types';
 
@@ -24,6 +25,8 @@ export interface FinishedGameInfo {
   durationMs: number;
 }
 
+export type AutoPlaceStepResult = 'move' | 'draw' | null;
+
 interface SolitaireStoreState {
   game: SolitaireState;
   startedAt: number;
@@ -33,13 +36,37 @@ interface SolitaireStoreState {
   usedUndo: boolean;
   draw: () => void;
   move: (source: MoveSource, target: MoveTarget) => void;
+  autoPlaceStep: () => AutoPlaceStepResult;
   undo: () => void;
   newGame: () => void;
 }
 
+function commitGame(
+  state: SolitaireStoreState,
+  game: SolitaireState,
+): Partial<SolitaireStoreState> {
+  const outcome = evaluateOutcome(game);
+  const result = finishIfOver({
+    gameId: SOLITAIRE_GAME_ID,
+    sessionPrefix: 'sol',
+    difficulty: 'default',
+    isOver: outcome.won || outcome.stuck,
+    won: outcome.won,
+    score: outcome.won ? game.score : 0,
+    moves: game.moves,
+    startedAt: state.startedAt,
+    usedUndo: state.usedUndo,
+  });
+  return {
+    history: [...state.history, state.game],
+    game,
+    ...(result ?? {}),
+  };
+}
+
 export const useSolitaireStore = create<SolitaireStoreState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       game: deal(),
       startedAt: Date.now(),
       finishedAt: null,
@@ -52,48 +79,36 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
           if (state.finishedAt !== null) return state;
           const game = drawFromStock(state.game);
           if (game === state.game) return state;
-          const outcome = evaluateOutcome(game);
-          const result = finishIfOver({
-            gameId: SOLITAIRE_GAME_ID,
-            sessionPrefix: 'sol',
-            difficulty: 'default',
-            isOver: outcome.won || outcome.stuck,
-            won: outcome.won,
-            score: outcome.won ? game.score : 0,
-            moves: game.moves,
-            startedAt: state.startedAt,
-            usedUndo: state.usedUndo,
-          });
-          return {
-            history: [...state.history, state.game],
-            game,
-            ...(result ?? {}),
-          };
+          return commitGame(state, game);
         }),
 
       move: (source, target) =>
         set((state) => {
           if (state.finishedAt !== null) return state;
           if (!isValidMove(state.game, source, target)) return state;
-          const game = applyMove(state.game, source, target);
-          const outcome = evaluateOutcome(game);
-          const result = finishIfOver({
-            gameId: SOLITAIRE_GAME_ID,
-            sessionPrefix: 'sol',
-            difficulty: 'default',
-            isOver: outcome.won || outcome.stuck,
-            won: outcome.won,
-            score: outcome.won ? game.score : 0,
-            moves: game.moves,
-            startedAt: state.startedAt,
-            usedUndo: state.usedUndo,
-          });
-          return {
-            history: [...state.history, state.game],
-            game,
-            ...(result ?? {}),
-          };
+          return commitGame(state, applyMove(state.game, source, target));
         }),
+
+      autoPlaceStep: () => {
+        const state = get();
+        if (state.finishedAt !== null) return null;
+        const action = nextAutoPlaceAction(state.game);
+        if (!action) return null;
+        if (action.kind === 'draw') {
+          const game = drawFromStock(state.game);
+          if (game === state.game) return null;
+          set(commitGame(state, game));
+          return 'draw';
+        }
+        if (!isValidMove(state.game, action.source, action.target)) return null;
+        set(
+          commitGame(
+            state,
+            applyMove(state.game, action.source, action.target),
+          ),
+        );
+        return 'move';
+      },
 
       undo: () =>
         set((state) => {

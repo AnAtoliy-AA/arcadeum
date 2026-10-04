@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import SolitaireGame from './Game';
 import { useSolitaireStore } from '../store/solitaireStore';
+import { SUITS, type Card, type SolitaireState, type Suit } from '../types';
 
 vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
@@ -107,5 +108,98 @@ describe('SolitaireGame UI', () => {
     const timerCard = screen.getByTestId('solitaire-timer');
     expect(timerCard).toBeInTheDocument();
     expect(timerCard).not.toHaveTextContent('00:00');
+  });
+});
+
+function altRun(first: Suit, second: Suit): Card[] {
+  return Array.from({ length: 13 }, (_, index) => {
+    const suit = index % 2 === 0 ? first : second;
+    const rank = 13 - index;
+    return { id: `${suit}-${rank}`, suit, rank, faceUp: true };
+  });
+}
+
+function allOpenState(): SolitaireState {
+  return {
+    stock: [],
+    waste: [],
+    foundations: SUITS.map(() => []),
+    tableau: [
+      altRun('spades', 'hearts'),
+      altRun('hearts', 'spades'),
+      altRun('diamonds', 'clubs'),
+      altRun('clubs', 'diamonds'),
+      [],
+      [],
+      [],
+    ],
+    moves: 0,
+    score: 0,
+  };
+}
+
+describe('SolitaireGame auto-place', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('hides the auto-place button while cards are still face down', () => {
+    render(<SolitaireGame />);
+    expect(screen.queryByTestId('solitaire-auto-place-button')).toBeNull();
+  });
+
+  it('finishes the game when all cards are open and the button is clicked', () => {
+    useSolitaireStore.setState({
+      game: allOpenState(),
+      startedAt: Date.now(),
+      finishedAt: null,
+      finished: null,
+      history: [],
+      usedUndo: false,
+    });
+
+    render(<SolitaireGame />);
+
+    fireEvent.click(screen.getByTestId('solitaire-auto-place-button'));
+    act(() => {
+      vi.advanceTimersByTime(60_000);
+    });
+
+    expect(useSolitaireStore.getState().finished?.won).toBe(true);
+    expect(useSolitaireStore.getState().game.foundations.flat()).toHaveLength(
+      52,
+    );
+    expect(screen.queryByTestId('solitaire-auto-place-button')).toBeNull();
+  });
+
+  it('stops auto-placing when the button is clicked again', () => {
+    useSolitaireStore.setState({
+      game: allOpenState(),
+      startedAt: Date.now(),
+      finishedAt: null,
+      finished: null,
+      history: [],
+      usedUndo: false,
+    });
+
+    render(<SolitaireGame />);
+
+    const button = screen.getByTestId('solitaire-auto-place-button');
+    fireEvent.click(button);
+    act(() => {
+      vi.advanceTimersByTime(160);
+    });
+    const movesAfterFirstSteps = useSolitaireStore.getState().game.moves;
+    expect(movesAfterFirstSteps).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByTestId('solitaire-auto-place-button'));
+    act(() => {
+      vi.advanceTimersByTime(5_000);
+    });
+    expect(useSolitaireStore.getState().game.moves).toBe(movesAfterFirstSteps);
   });
 });

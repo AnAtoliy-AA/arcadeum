@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.49] - 2026-10-04
+
+### Added
+- add ranked elo 1v1 matchmaking hub, tier ladder, and leaderboard (ARC-971) (ARC-971)
+
+
 ## [1.30.48] - 2026-10-04
 
 ### Added

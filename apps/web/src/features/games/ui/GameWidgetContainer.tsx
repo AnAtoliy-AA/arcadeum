@@ -196,15 +196,7 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   return (
     <>
       <WidgetFullscreenContext.Provider value={isFullscreen}>
-        <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            minHeight: 0,
-          }}
-        >
+        <div className="relative flex flex-col flex-1 min-h-0">
           <Container
             className="game-widget-container"
             style={

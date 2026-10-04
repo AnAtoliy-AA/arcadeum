@@ -132,14 +132,13 @@ export default async function LocaleLayout({
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
+      '@id': `${appConfig.siteUrl}/#website`,
       name: appConfig.appName,
       url: localeUrl,
       inLanguage,
       description: localizedDescription,
       potentialAction: {
         '@type': 'SearchAction',
-        // Client-side filtered games list — no separate search page needed.
-        // Google uses this for sitelinks searchbox in the SERP.
         target: `${appConfig.siteUrl}${routes.games}?q={search_term_string}`,
         'query-input': 'required name=search_term_string',
       },
@@ -147,6 +146,7 @@ export default async function LocaleLayout({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
+      '@id': `${localeUrl}#software`,
       name: appConfig.appName,
       url: localeUrl,
       inLanguage,

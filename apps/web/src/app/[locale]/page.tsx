@@ -35,7 +35,7 @@ export default async function HomeRoute({
     videoJsonLd = buildVideoObjectJsonLd({
       locale: safeLocale,
       youtubeId: videoId,
-      name: seoHome?.title ?? `${appConfig.appName} — Platform overview`,
+      name: seoHome?.title ?? `${appConfig.appName} - Platform overview`,
       description: seoHome?.description ?? appConfig.seoDescription,
       uploadDate: appConfig.videoUploadDate,
     });

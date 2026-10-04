@@ -139,6 +139,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         games: messages.navigation?.gamesTab ?? 'Games',
         game: gameName,
       },
+      pageUrl: chessPageUrl,
     }),
     buildHowToJsonLd({
       name: `How to Play Chess on ${appConfig.appName}`,
@@ -170,6 +171,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
             question: (f as { question: string; answer: string }).question,
             answer: (f as { question: string; answer: string }).answer,
           })),
+          includeBreadcrumb: false,
         })
       : []),
   ];

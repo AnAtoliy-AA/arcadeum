@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.48] - 2026-10-04
+
+### Added
+- enrich blog and catalog schema with dynamic opengraph images and item types (ARC-970) (ARC-970)
+- optimize schema canonical urls, deduplicate breadcrumbs, and boost pillar sitemaps (ARC-970) (ARC-970)
+
+### Fixed
+- restore entryFile to main in nest-cli (ARC-970) (ARC-970)
+
+
 ## [1.30.47] - 2026-10-04
 
 ### Added

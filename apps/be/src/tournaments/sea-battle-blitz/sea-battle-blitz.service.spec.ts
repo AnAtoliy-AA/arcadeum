@@ -301,7 +301,13 @@ describe('SeaBattleBlitzService', () => {
         resultText: null,
         entryFeeCoins: 0,
         prizePoolCoins: 500,
-        registrations: [],
+        registrations: [
+          {
+            userId: oid(),
+            displayName: 'Admiral Nemo',
+            waitlist: false,
+          },
+        ],
         content: {
           en: { name: 'Sea Battle Cup', description: 'Naval cup' },
         },
@@ -328,6 +334,9 @@ describe('SeaBattleBlitzService', () => {
       expect(res.tournament?.name).toBe('Sea Battle Cup');
       expect(res.bracket).not.toBeNull();
       expect(res.countdownSeconds).toBeGreaterThan(0);
+      expect(res.captains).toHaveLength(1);
+      expect(res.captains[0].displayName).toBe('Admiral Nemo');
+      expect(res.captains[0].seed).toBe(1);
     });
   });
 

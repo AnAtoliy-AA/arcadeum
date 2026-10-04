@@ -172,4 +172,28 @@ describe('SeaBattleBlitzBanner', () => {
     expect(screen.getByText('Slots Available')).toBeDefined();
     expect(screen.getByText('Explore All')).toBeDefined();
   });
+
+  it('renders captains preview when captains are available', () => {
+    const data = makeBlitzData();
+    data.captains = [
+      { userId: 'u1', displayName: 'Captain Nemo', seed: 1, waitlist: false },
+      { userId: 'u2', displayName: 'Captain Hook', seed: 2, waitlist: false },
+    ];
+    render(<SeaBattleBlitzBanner initialData={data} />);
+
+    expect(screen.getByTestId('blitz-cup-captains-preview')).toBeDefined();
+    expect(screen.getByTestId('blitz-cup-captains-preview-btn')).toBeDefined();
+  });
+
+  it('opens blitz modal when View Bracket button is clicked', () => {
+    const data = makeBlitzData();
+    render(<SeaBattleBlitzBanner initialData={data} />);
+
+    expect(screen.queryByTestId('sea-battle-blitz-modal')).toBeNull();
+
+    const viewBracketBtn = screen.getByTestId('blitz-cup-view-bracket');
+    fireEvent.click(viewBracketBtn);
+
+    expect(screen.getByTestId('sea-battle-blitz-modal')).toBeDefined();
+  });
 });

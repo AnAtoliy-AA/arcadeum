@@ -99,5 +99,34 @@ export const tournamentsFr: TournamentsI18n = {
     tournamentFull: 'Tournoi Complet',
     viewBracket: 'Voir le Tableau',
     allTournaments: 'Tous les Tournois',
+    openModal: 'Inspecter Tableau et Capitaines',
+    modalTitle: 'Coupe Blitz Bataille Navale',
+    tabBracket: 'Tableau du Tournoi',
+    tabRoster: 'Liste des Capitaines',
+    tabIntel: 'Règles et Infos',
+    bracketPendingTitle: 'Tirage du Tableau Bientôt',
+    bracketPendingDesc:
+      'Le tableau du tournoi sera généré automatiquement dès la clôture des inscriptions. La bataille débutera à l heure prévue.',
+    rosterTitle: 'Commandants Inscrits',
+    rosterSubtitle: '{count} sur {max} postes occupés',
+    rosterWaitlist: 'Liste d attente',
+    rosterYou: 'Votre Poste de Combat',
+    rosterEmpty:
+      'Aucun capitaine inscrit pour le moment. Soyez le premier à vous déployer !',
+    captainSeed: 'Tête de série #{seed}',
+    intelFormat: 'Format du Tournoi',
+    intelFormatDesc:
+      'Combat naval à élimination directe. Gagnez pour progresser dans le tableau jusqu à la grande finale.',
+    intelFleet: 'Déploiement de Flotte',
+    intelFleetDesc:
+      'Grille navale classique 10x10 avec 5 navires (Porte-avions, Cuirassé, Croiseur, Sous-marin, Destroyer).',
+    intelClock: 'Chrono de Tour',
+    intelClockDesc:
+      'Chrono rapide de 30 secondes par tour avec mode salve automatique.',
+    intelRewards: 'Récompenses du Championnat',
+    intelRewardsDesc:
+      'Le vainqueur du tournoi reçoit 500 pièces, le prestigieux Trophée d Amiral et une place au sommet du classement.',
+    fullPageView: 'Ouvrir la Page du Tournoi',
+    closeModal: 'Fermer',
   },
 };

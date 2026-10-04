@@ -99,5 +99,34 @@ export const tournamentsEs: TournamentsI18n = {
     tournamentFull: 'Torneo Completo',
     viewBracket: 'Ver Cuadro',
     allTournaments: 'Todos los Torneos',
+    openModal: 'Inspeccionar Cuadro y Capitanes',
+    modalTitle: 'Copa Blitz de Batalla Naval',
+    tabBracket: 'Cuadro del Torneo',
+    tabRoster: 'Lista de Capitanes',
+    tabIntel: 'Reglas e Información',
+    bracketPendingTitle: 'Sorteo del Cuadro Próximamente',
+    bracketPendingDesc:
+      'El cuadro del torneo se generará automáticamente en cuanto cierre la inscripción. El combate comenzará a la hora programada.',
+    rosterTitle: 'Comandantes Registrados',
+    rosterSubtitle: '{count} de {max} posiciones ocupadas',
+    rosterWaitlist: 'Lista de espera',
+    rosterYou: 'Tu Puesto de Mando',
+    rosterEmpty:
+      'Aún no hay capitanes inscritos. Sé el primero en desplegarte!',
+    captainSeed: 'Puesto #{seed}',
+    intelFormat: 'Formato del Torneo',
+    intelFormatDesc:
+      'Combate naval por eliminación directa. Vence a tu rival para avanzar hacia la gran final.',
+    intelFleet: 'Despliegue de Flota',
+    intelFleetDesc:
+      'Tablero clásico de 10x10 con 5 barcos (Portaaviones, Acorazado, Crucero, Submarino, Destructor).',
+    intelClock: 'Reloj de Turno',
+    intelClockDesc:
+      'Reloj rápido de 30 segundos por turno con disparo en ráfaga automático.',
+    intelRewards: 'Recompensas del Campeonato',
+    intelRewardsDesc:
+      'El ganador del torneo recibe 500 monedas, el Trofeo de Almirante y un lugar destacado en la clasificación.',
+    fullPageView: 'Abrir Página del Torneo',
+    closeModal: 'Cerrar',
   },
 };

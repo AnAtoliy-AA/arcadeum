@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.52] - 2026-10-05
+
+### Added
+- add auto-place button to finish all-open games (ARC-975) (ARC-975)
+
+
 ## [1.30.51] - 2026-10-04
 
 ### Added

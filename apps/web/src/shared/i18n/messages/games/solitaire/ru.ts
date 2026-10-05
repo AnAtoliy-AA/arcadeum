@@ -18,6 +18,7 @@ export const ruMessages = {
       moves: 'Ходы',
       time: 'Время',
       newGame: 'Новая игра',
+      autoPlace: 'Автоставка',
     },
     result: {
       wonTitle: 'Победа!',

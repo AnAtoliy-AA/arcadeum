@@ -18,6 +18,7 @@ export const enMessages = {
       moves: 'Moves',
       time: 'Time',
       newGame: 'New game',
+      autoPlace: 'Auto-place',
     },
     result: {
       wonTitle: 'You win!',

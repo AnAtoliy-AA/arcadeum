@@ -18,6 +18,7 @@ export const esMessages = {
       moves: 'Movimientos',
       time: 'Tiempo',
       newGame: 'Nueva partida',
+      autoPlace: 'Auto-colocar',
     },
     result: {
       wonTitle: '¡Has ganado!',

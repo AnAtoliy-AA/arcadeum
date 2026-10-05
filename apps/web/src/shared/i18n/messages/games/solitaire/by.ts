@@ -18,6 +18,7 @@ export const byMessages = {
       moves: 'Хады',
       time: 'Час',
       newGame: 'Новая гульня',
+      autoPlace: 'Аўтастаноўка',
     },
     result: {
       wonTitle: 'Перамога!',

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.53] - 2026-10-06
+
+### Fixed
+- stop workflow errors that fail runs even when all jobs pass
+
+
 ## [1.30.52] - 2026-10-05
 
 ### Added

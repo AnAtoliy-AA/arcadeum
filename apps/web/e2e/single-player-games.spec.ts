@@ -16,7 +16,7 @@ test.describe('Single Player Puzzle Games', () => {
     const cells = board.getByRole('gridcell');
     await expect(cells).toHaveCount(81);
 
-    const notesBtn = page.getByRole('button', { name: /Notes/i });
+    const notesBtn = page.getByTestId('sudoku-toggle-notes-button');
     await expect(notesBtn).toBeVisible();
     await notesBtn.click();
     await expect(notesBtn).toHaveAttribute('aria-pressed', 'true');
@@ -221,7 +221,9 @@ test.describe('Single Player Puzzle Games', () => {
     const newGameBtn = page.getByTestId('solitaire-new-game-button');
     await expect(newGameBtn).toBeVisible();
 
-    const drawBtn = page.getByRole('button', { name: /Draw/i });
+    const drawBtn = page.getByRole('button', {
+      name: /draw a card|recycle/i,
+    });
     await expect(drawBtn).toBeVisible();
     await drawBtn.click();
 

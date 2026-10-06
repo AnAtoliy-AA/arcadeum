@@ -21,6 +21,13 @@ export const ruMessages = {
       flagModeHint:
         'Включите, чтобы ставить флажки касанием - удобно на сенсорных экранах',
       difficulty: 'Сложность',
+      safeCells: 'Безопасных клеток осталось',
+      personalBest: 'Личный рекорд',
+      personalBestNf: 'Рекорд без флагов',
+      flaglessMode: 'Без флагов',
+      flaglessModeHint:
+        'Скоростной режим без флагов - блокирует установку флагов для чистого спидрана',
+      quickResetHint: 'Быстрый перезапуск (R)',
     },
     difficulty: {
       beginner: 'Новичок (9×9 · 10 мин)',

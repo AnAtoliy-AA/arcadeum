@@ -16,6 +16,7 @@ export const ruMessages = {
       time: 'Время',
       newGame: 'Новая игра',
       movesLabel: 'Ходы',
+      undosAvailable: 'Ходов назад',
     },
     result: {
       wonTitle: '2048!',
@@ -28,6 +29,11 @@ export const ruMessages = {
       keepGoing: 'Продолжить',
       finish: 'Завершить',
       continue: 'Продолжить',
+    },
+    milestone: {
+      title: 'Рубеж взят!',
+      body: 'Вы создали легендарную плитку {{tile}}.',
+      keepGoing: 'Продолжить',
     },
     rules: {
       objective:

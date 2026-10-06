@@ -53,65 +53,66 @@
 
 ## ARC Ticket Reference
 
-| Feature                  | ARC     | Branch                                       | Status          |
-| ------------------------ | ------- | -------------------------------------------- | --------------- |
-| 1A. Stat Tracking        | ARC-871 | `ARC-871-stat-tracking`                      | **Implemented** |
-| 1B. Emotes               | ARC-872 | `ARC-872-emotes`                             | **Implemented** |
-| 1C. House Rules          | ARC-873 | `ARC-873-house-rules`                        | **Implemented** |
-| 1D. Dark Mode            | —       | —                                            | **Implemented** |
-| 1E. Undo/Take-Back       | ARC-874 | `ARC-874-undo-takeback`                      | **Implemented** |
-| 1F. Password Rooms       | ARC-875 | `ARC-875-password-rooms`                     | **Implemented** |
-| 2A. Matchmaking Queue    | ARC-876 | `ARC-876-matchmaking`                        | **Implemented** |
-| 2B. Chess Engine         | ARC-877 | `ARC-877-chess-engine`                       | **Implemented** |
-| 2C. Checkers Engine      | ARC-878 | `ARC-878-checkers-engine`                    | **Implemented** |
-| 2D. Audio Cues           | ARC-879 | `ARC-879-audio-cues`                         | **Implemented** |
-| 2E. AI Difficulty        | ARC-880 | `ARC-880-ai-difficulty`                      | **Implemented** |
-| 2F. Ranked/ELO           | ARC-881 | `ARC-881-ranked-elo`                         | **Implemented** |
-| 2G. Achievements         | —       | —                                            | **Implemented** |
-| 2H. Post-Game Analysis   | ARC-882 | `ARC-882-post-game-analysis`                 | **Implemented** |
-| 2I. Coach Mode           | ARC-883 | `ARC-883-coach-mode`                         | **Implemented** |
-| 3A. Hearts/Spades        | ARC-884 | `ARC-884-hearts-spades`                      | **Implemented** |
-| 3B. Backgammon           | ARC-885 | `ARC-885-backgammon`                         | **Implemented** |
-| 3C. Pachisi              | ARC-886 | `ARC-886-pachisi`                            | **Implemented** |
-| 3D. Go                   | ARC-887 | `ARC-887-go`                                 | **Implemented** |
-| 3F. Game Replays         | ARC-888 | `ARC-888-game-replays`                       | **Implemented** |
-| 3G. Spectator Mode       | ARC-889 | `ARC-889-spectator-mode`                     | **Implemented** |
-| 3H. AI-vs-AI             | ARC-890 | `ARC-890-ai-vs-ai`                           | **Implemented** |
-| 3I. Clans                | ARC-891 | `ARC-891-clans`                              | **Implemented** |
-| 3J. Game Nights          | ARC-892 | `ARC-892-game-nights`                        | **Implemented** |
-| 4A. Chess Clock          | ARC-893 | `ARC-893-chess-clock`                        | **Implemented** |
-| 4B. Stats Dashboard      | ARC-894 | `ARC-894-stats-dashboard`                    | **Implemented** |
-| 4C. Tutorials            | ARC-895 | `ARC-895-tutorials`                          | **Implemented** |
-| 4D. Colorblind           | ARC-896 | `ARC-896-colorblind`                         | **Implemented** |
-| 4E. Screen Reader        | ARC-897 | `ARC-897-screen-reader`                      | **Implemented** |
-| 4F. Keyboard Nav         | ARC-898 | `ARC-898-keyboard-nav`                       | **Implemented** |
-| 4G. Daily Challenges     | —       | —                                            | **Implemented** |
-| 4H. Season System        | ARC-899 | `ARC-899-season-system`                      | **Implemented** |
-| 4I. PWA Support          | ARC-903 | `ARC-903-pwa-support`                        | **Implemented** |
-| 4J. Offline Mode         | ARC-900 | `ARC-900-offline-mode`                       | **Implemented** |
-| 4K. Web Share            | —       | —                                            | **Implemented** |
-| 4L. Push Notifications   | —       | —                                            | **Implemented** |
-| 4M. Tournaments          | —       | —                                            | **Implemented** |
-| 4N. Leaderboards         | —       | —                                            | **Implemented** |
-| 4O. Board Game Creator   | ARC-901 | `ARC-901-board-game-creator`                 | **Deferred**    |
-| 4P. Mobile Games         | ARC-902 | `ARC-902-mobile-games`                       | Partial         |
-| 4Q. Single-Player        | ARC-924 | `ARC-924-single-player`                      | **Implemented** |
-| 5B. Monetization         | —       | —                                            | **Implemented** |
-| 8A. Daily Habit System   | ARC-930 | `ARC-930-daily-habit`                        | **Implemented** |
-| 8B. Async Turn-Based     | ARC-931 | `ARC-931-async-turn-based`                   | **Implemented** |
-| 8C. Quest & Battle Pass  | ARC-932 | `ARC-932-quests-battlepass`                  | **Implemented** |
-| 8D. Social Leagues       | ARC-933 | `ARC-933-social-leagues`                     | **Implemented** |
-| 8E. Winback Triggers     | ARC-934 | `ARC-934-winback-triggers`                   | **Implemented** |
-| 9A. Web Worker AI        | ARC-935 | `ARC-935-web-worker-ai`                      | **Implemented** |
-| 9B. Instant Room Boot    | ARC-936 | `ARC-936-instant-room-boot`                  | **Implemented** |
-| 9C. State Delta Sync     | ARC-937 | `ARC-937-state-delta-sync`                   | **Implemented** |
-| 9D. Core Web Vitals      | ARC-938 | `ARC-938-core-web-vitals`                    | **Implemented** |
-| Sea Battle Blitz Cups    | ARC-966 | `ARC-966-sea-battle-blitz-cups`              | **Implemented** |
-| Critical Ranked ELO      | ARC-971 | `feat/ARC-971-critical-ranked-elo`           | **Implemented** |
-| Sea Battle Blitz Cups UI | ARC-972 | `feat/ARC-972-sea-battle-blitz-cups-ui`      | **Implemented** |
-| Tactical Puzzle Rush     | ARC-973 | `feat/ARC-973-tactical-puzzle-rush-streak`   | **Implemented** |
-| Solitaire Auto-Place     | ARC-975 | `feat/ARC-975-solitaire-auto-place`          | **Implemented** |
-| Player Profile Showcase  | ARC-976 | `feat/ARC-976-player-profile-match-showcase` | **Implemented** |
+| Feature                  | ARC     | Branch                                           | Status          |
+| ------------------------ | ------- | ------------------------------------------------ | --------------- |
+| 1A. Stat Tracking        | ARC-871 | `ARC-871-stat-tracking`                          | **Implemented** |
+| 1B. Emotes               | ARC-872 | `ARC-872-emotes`                                 | **Implemented** |
+| 1C. House Rules          | ARC-873 | `ARC-873-house-rules`                            | **Implemented** |
+| 1D. Dark Mode            | —       | —                                                | **Implemented** |
+| 1E. Undo/Take-Back       | ARC-874 | `ARC-874-undo-takeback`                          | **Implemented** |
+| 1F. Password Rooms       | ARC-875 | `ARC-875-password-rooms`                         | **Implemented** |
+| 2A. Matchmaking Queue    | ARC-876 | `ARC-876-matchmaking`                            | **Implemented** |
+| 2B. Chess Engine         | ARC-877 | `ARC-877-chess-engine`                           | **Implemented** |
+| 2C. Checkers Engine      | ARC-878 | `ARC-878-checkers-engine`                        | **Implemented** |
+| 2D. Audio Cues           | ARC-879 | `ARC-879-audio-cues`                             | **Implemented** |
+| 2E. AI Difficulty        | ARC-880 | `ARC-880-ai-difficulty`                          | **Implemented** |
+| 2F. Ranked/ELO           | ARC-881 | `ARC-881-ranked-elo`                             | **Implemented** |
+| 2G. Achievements         | —       | —                                                | **Implemented** |
+| 2H. Post-Game Analysis   | ARC-882 | `ARC-882-post-game-analysis`                     | **Implemented** |
+| 2I. Coach Mode           | ARC-883 | `ARC-883-coach-mode`                             | **Implemented** |
+| 3A. Hearts/Spades        | ARC-884 | `ARC-884-hearts-spades`                          | **Implemented** |
+| 3B. Backgammon           | ARC-885 | `ARC-885-backgammon`                             | **Implemented** |
+| 3C. Pachisi              | ARC-886 | `ARC-886-pachisi`                                | **Implemented** |
+| 3D. Go                   | ARC-887 | `ARC-887-go`                                     | **Implemented** |
+| 3F. Game Replays         | ARC-888 | `ARC-888-game-replays`                           | **Implemented** |
+| 3G. Spectator Mode       | ARC-889 | `ARC-889-spectator-mode`                         | **Implemented** |
+| 3H. AI-vs-AI             | ARC-890 | `ARC-890-ai-vs-ai`                               | **Implemented** |
+| 3I. Clans                | ARC-891 | `ARC-891-clans`                                  | **Implemented** |
+| 3J. Game Nights          | ARC-892 | `ARC-892-game-nights`                            | **Implemented** |
+| 4A. Chess Clock          | ARC-893 | `ARC-893-chess-clock`                            | **Implemented** |
+| 4B. Stats Dashboard      | ARC-894 | `ARC-894-stats-dashboard`                        | **Implemented** |
+| 4C. Tutorials            | ARC-895 | `ARC-895-tutorials`                              | **Implemented** |
+| 4D. Colorblind           | ARC-896 | `ARC-896-colorblind`                             | **Implemented** |
+| 4E. Screen Reader        | ARC-897 | `ARC-897-screen-reader`                          | **Implemented** |
+| 4F. Keyboard Nav         | ARC-898 | `ARC-898-keyboard-nav`                           | **Implemented** |
+| 4G. Daily Challenges     | —       | —                                                | **Implemented** |
+| 4H. Season System        | ARC-899 | `ARC-899-season-system`                          | **Implemented** |
+| 4I. PWA Support          | ARC-903 | `ARC-903-pwa-support`                            | **Implemented** |
+| 4J. Offline Mode         | ARC-900 | `ARC-900-offline-mode`                           | **Implemented** |
+| 4K. Web Share            | —       | —                                                | **Implemented** |
+| 4L. Push Notifications   | —       | —                                                | **Implemented** |
+| 4M. Tournaments          | —       | —                                                | **Implemented** |
+| 4N. Leaderboards         | —       | —                                                | **Implemented** |
+| 4O. Board Game Creator   | ARC-901 | `ARC-901-board-game-creator`                     | **Deferred**    |
+| 4P. Mobile Games         | ARC-902 | `ARC-902-mobile-games`                           | Partial         |
+| 4Q. Single-Player        | ARC-924 | `ARC-924-single-player`                          | **Implemented** |
+| 5B. Monetization         | —       | —                                                | **Implemented** |
+| 8A. Daily Habit System   | ARC-930 | `ARC-930-daily-habit`                            | **Implemented** |
+| 8B. Async Turn-Based     | ARC-931 | `ARC-931-async-turn-based`                       | **Implemented** |
+| 8C. Quest & Battle Pass  | ARC-932 | `ARC-932-quests-battlepass`                      | **Implemented** |
+| 8D. Social Leagues       | ARC-933 | `ARC-933-social-leagues`                         | **Implemented** |
+| 8E. Winback Triggers     | ARC-934 | `ARC-934-winback-triggers`                       | **Implemented** |
+| 9A. Web Worker AI        | ARC-935 | `ARC-935-web-worker-ai`                          | **Implemented** |
+| 9B. Instant Room Boot    | ARC-936 | `ARC-936-instant-room-boot`                      | **Implemented** |
+| 9C. State Delta Sync     | ARC-937 | `ARC-937-state-delta-sync`                       | **Implemented** |
+| 9D. Core Web Vitals      | ARC-938 | `ARC-938-core-web-vitals`                        | **Implemented** |
+| Sea Battle Blitz Cups    | ARC-966 | `ARC-966-sea-battle-blitz-cups`                  | **Implemented** |
+| Critical Ranked ELO      | ARC-971 | `feat/ARC-971-critical-ranked-elo`               | **Implemented** |
+| Sea Battle Blitz Cups UI | ARC-972 | `feat/ARC-972-sea-battle-blitz-cups-ui`          | **Implemented** |
+| Tactical Puzzle Rush     | ARC-973 | `feat/ARC-973-tactical-puzzle-rush-streak`       | **Implemented** |
+| Solitaire Auto-Place     | ARC-975 | `feat/ARC-975-solitaire-auto-place`              | **Implemented** |
+| Player Profile Showcase  | ARC-976 | `feat/ARC-976-player-profile-match-showcase`     | **Implemented** |
+| Solo Games Assistants    | ARC-977 | `feat/ARC-977-solo-games-intelligent-assistants` | **Implemented** |
 
 ---
 
@@ -1830,7 +1831,7 @@ The platform core infrastructure is highly mature. Phases 1-13 are complete or a
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), Dedicated Floating Spectator Reactions (ARC-889 - floating reaction bubbles and quick action dock), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls), Sea Battle Weekly Blitz Cups (ARC-966 - automated scheduled bracket tournaments, SeaBattleBlitzService & Cron, SeaBattleBlitzBanner on landing page), Strategy Guides & SEO Cluster (ARC-952 - 9 pillar strategy guides across 5 locales, bidirectional internal cross-linking, schema markup, and hreflang validation), Critical Ranked ELO Mode (ARC-971 - dedicated competitive 1v1 matchmaking queue, 6-tier rating ladder, seasonal leaderboard showcase, and in-game ranked status indicators), Sea Battle Weekly Blitz Cups UI (ARC-972 - in-place interactive tournament bracket viewer, countdown, captains fleet roster, and tactical rules modal on Sea Battle landing page), Tactical Puzzle Rush & Daily Streak Expansion (ARC-973 - global puzzle rush leaderboard, run scoring and ranking engine, streak bonus multipliers, and shareable tactical brag card), Solitaire Auto-Place (ARC-975 - instant smart auto-place for revealed tableaus), Interactive Player Profile & Match Showcase (ARC-976 - public match history feed, head-to-head rival records, win rate trends, and shareable achievement badges).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), Dedicated Floating Spectator Reactions (ARC-889 - floating reaction bubbles and quick action dock), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls), Sea Battle Weekly Blitz Cups (ARC-966 - automated scheduled bracket tournaments, SeaBattleBlitzService & Cron, SeaBattleBlitzBanner on landing page), Strategy Guides & SEO Cluster (ARC-952 - 9 pillar strategy guides across 5 locales, bidirectional internal cross-linking, schema markup, and hreflang validation), Critical Ranked ELO Mode (ARC-971 - dedicated competitive 1v1 matchmaking queue, 6-tier rating ladder, seasonal leaderboard showcase, and in-game ranked status indicators), Sea Battle Weekly Blitz Cups UI (ARC-972 - in-place interactive tournament bracket viewer, countdown, captains fleet roster, and tactical rules modal on Sea Battle landing page), Tactical Puzzle Rush & Daily Streak Expansion (ARC-973 - global puzzle rush leaderboard, run scoring and ranking engine, streak bonus multipliers, and shareable tactical brag card), Solitaire Auto-Place (ARC-975 - instant smart auto-place for revealed tableaus), Interactive Player Profile & Match Showcase (ARC-976 - public match history feed, head-to-head rival records, win rate trends, and shareable achievement badges), Solo Games Intelligent Assistants & QoL (ARC-977 - Solitaire Klondike Draw 3 mode, smart hint engine, and fanned waste; Sudoku digit-first speed mode, candidate auto-fill, error highlighting, and smart hints; Minesweeper personal bests, flagless NF speedrun mode, tactile chord feedback, remaining safe cells HUD, and quick R restart; 2048 pointer swipe engine, milestone celebration toasts, and undo allowance counter).
 - **Phase 6 Tier (Growth & Marketing) - Completed**: Funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all 18 games, QR code and share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
 - **Phase 11 (Growth Acceleration) - Code Complete, Marketing Execution Ongoing**: Funnel tracking, Sea Battle spearhead, viral challenge flow, and live activity social proof.
 - **Phase 12 (Player Retention Loops) - Completed**: Daily challenge rotation, streaks, habit multipliers, winback triggers, and seasonal quest progression shipped.
@@ -1839,6 +1840,6 @@ The platform core infrastructure is highly mature. Phases 1-13 are complete or a
 ### Remaining Priorities & Next Steps
 
 1. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
-2. **Solo Games Intelligent Assistants**: Interactive pencil marks for Sudoku, first-click safety guarantee and chord reveals for Minesweeper, undo stack and swipe animations for 2048.
+2. **Additional Social Features**: In-game club leaderboards and community challenge events.
 
 Board Game Creator (4O) stays **deferred** until community scale.

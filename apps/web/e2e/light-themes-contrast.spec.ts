@@ -91,9 +91,7 @@ test.describe('Light Themes Contrast and Usability', () => {
       const newGameBtn = page.getByTestId('sudoku-new-game-button');
       await expect(newGameBtn).toBeVisible();
 
-      const notesBtn = page.getByRole('button', {
-        name: /notes/i,
-      });
+      const notesBtn = page.getByTestId('sudoku-toggle-notes-button');
       await expect(notesBtn).toBeVisible();
     }
   });

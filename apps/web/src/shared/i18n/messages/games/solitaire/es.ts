@@ -19,6 +19,21 @@ export const esMessages = {
       time: 'Tiempo',
       newGame: 'Nueva partida',
       autoPlace: 'Auto-colocar',
+      draw1: 'Robar 1',
+      draw3: 'Robar 3',
+      switchToDraw1: 'Cambiar a modo robar 1 carta',
+      switchToDraw3: 'Cambiar a modo robar 3 cartas',
+      hint: 'Pista',
+      hintHint: 'Sugerir un movimiento legal óptimo',
+      applyHint: 'Mover',
+      dismissHint: 'Cerrar',
+    },
+    hint: {
+      wasteToFoundation: 'Mueve la carta del descarte a la base',
+      tableauToFoundation: 'Mueve la carta de la columna a la base',
+      wasteToTableau: 'Mueve la carta del descarte a una columna',
+      tableauToTableau:
+        'Mueve cartas entre columnas para descubrir una carta oculta',
     },
     result: {
       wonTitle: '¡Has ganado!',

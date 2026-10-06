@@ -6,12 +6,15 @@ import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
 import { useSudokuTheme } from '../lib/SudokuThemeContext';
 import type { SudokuTheme } from '../lib/theme';
 import { colOf, findConflicts, isGiven, rowOf } from '../types';
-import type { SudokuState } from '../types';
+import type { SudokuHint, SudokuState } from '../types';
 
 interface SudokuBoardProps {
   game: SudokuState;
   selected: number | null;
   notesMode: boolean;
+  activeDigit?: number | null;
+  activeHint?: SudokuHint | null;
+  highlightErrors?: boolean;
   onSelect: (index: number | null) => void;
 }
 
@@ -36,16 +39,25 @@ export function SudokuBoard({
   game,
   selected,
   notesMode,
+  activeDigit,
+  activeHint,
+  highlightErrors = true,
   onSelect,
 }: SudokuBoardProps) {
   const theme = useSudokuTheme();
   const isFullscreen = useSoloFullscreen();
   const conflicts = new Set(
-    Array.from({ length: 81 }, (_, i) => i).flatMap((i) =>
-      findConflicts(game.cells, i),
-    ),
+    highlightErrors
+      ? Array.from({ length: 81 }, (_, i) => i).flatMap((i) =>
+          findConflicts(game.cells, i),
+        )
+      : [],
   );
   const selectedValue = selected === null ? 0 : game.cells[selected];
+  const highlightValue =
+    activeDigit !== null && activeDigit !== undefined && activeDigit > 0
+      ? activeDigit
+      : selectedValue;
 
   return (
     <div
@@ -66,6 +78,10 @@ export function SudokuBoard({
             const row = rowOf(index);
             const col = colOf(index);
             const isSelected = selected === index;
+            const isHintTarget = activeHint?.index === index;
+            const isHintRelated =
+              !isHintTarget &&
+              Boolean(activeHint?.relatedIndices.includes(index));
             const isPeer =
               !isSelected &&
               selected !== null &&
@@ -73,7 +89,7 @@ export function SudokuBoard({
                 colOf(selected) === col ||
                 boxIdOf(selected) === boxIdOf(index));
             const isSameNumber =
-              value !== 0 && selectedValue !== 0 && value === selectedValue;
+              value !== 0 && highlightValue !== 0 && value === highlightValue;
             const hasConflict = conflicts.has(index);
             const given = isGiven(game, index);
 
@@ -83,6 +99,7 @@ export function SudokuBoard({
                 type="button"
                 role="gridcell"
                 aria-selected={isSelected}
+                data-testid={`sudoku-cell-${index}`}
                 onClick={() => onSelect(index)}
                 className={cx(
                   'relative flex items-center justify-center font-mono transition-colors select-none',
@@ -92,13 +109,17 @@ export function SudokuBoard({
                   row % 3 === 2 && row !== 8
                     ? 'border-b-2 border-b-[var(--sdk-line-thick)]'
                     : 'border-b border-b-[var(--sdk-line-thin)]',
-                  isSelected
-                    ? 'z-10 bg-[var(--sdk-selected)] ring-2 ring-[var(--primary)] shadow-[0_0_12px_var(--primary)] ring-inset font-black'
-                    : isSameNumber
-                      ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)] ring-1 ring-[var(--primary)]/40 ring-inset'
-                      : isPeer
-                        ? 'bg-[var(--sdk-peer)]'
-                        : 'bg-[var(--sdk-cell-bg)] hover:bg-white/15',
+                  isHintTarget
+                    ? 'z-20 bg-amber-500/30 ring-2 ring-amber-400 shadow-[0_0_16px_rgba(251,191,36,0.6)] ring-inset font-black animate-pulse'
+                    : isHintRelated
+                      ? 'bg-amber-400/15'
+                      : isSelected
+                        ? 'z-10 bg-[var(--sdk-selected)] ring-2 ring-[var(--primary)] shadow-[0_0_12px_var(--primary)] ring-inset font-black'
+                        : isSameNumber
+                          ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)] ring-1 ring-cyan-400/40 ring-inset font-bold'
+                          : isPeer
+                            ? 'bg-[var(--sdk-peer)]'
+                            : 'bg-[var(--sdk-cell-bg)] hover:bg-white/15',
                   hasConflict &&
                     'bg-rose-950/80 text-rose-400 ring-1 ring-rose-500/60 ring-inset',
                 )}
@@ -118,7 +139,10 @@ export function SudokuBoard({
                     {value}
                   </span>
                 ) : (
-                  <NotesGrid notes={game.notes[index]} />
+                  <NotesGrid
+                    notes={game.notes[index]}
+                    highlightDigit={highlightValue}
+                  />
                 )}
                 {notesMode && isSelected && (
                   <span
@@ -143,7 +167,13 @@ function boxIdOf(index: number): number {
   return boxRow * 3 + boxCol;
 }
 
-function NotesGrid({ notes }: { notes: number[] }) {
+function NotesGrid({
+  notes,
+  highlightDigit,
+}: {
+  notes: number[];
+  highlightDigit?: number | null;
+}) {
   if (notes.length === 0) return null;
   return (
     <span className="grid h-full w-full grid-cols-3 grid-rows-3 p-[1px]">
@@ -153,7 +183,9 @@ function NotesGrid({ notes }: { notes: number[] }) {
           className={cx(
             'flex items-center justify-center font-mono text-[9px] leading-none sm:text-[10px]',
             notes.includes(digit)
-              ? 'text-[var(--sdk-note)] font-medium'
+              ? digit === highlightDigit
+                ? 'text-cyan-300 font-black scale-125'
+                : 'text-[var(--sdk-note)] font-medium'
               : 'text-transparent',
           )}
         >

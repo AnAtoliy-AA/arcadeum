@@ -21,6 +21,13 @@ export const esMessages = {
       flagModeHint:
         'Actívalo para poner banderas con un toque - ideal en pantallas táctiles',
       difficulty: 'Dificultad',
+      safeCells: 'Casillas seguras restantes',
+      personalBest: 'Mejor marca',
+      personalBestNf: 'Récord sin banderas',
+      flaglessMode: 'Modo NF',
+      flaglessModeHint:
+        'Modo sin banderas - Desactiva banderas para velocidad pura',
+      quickResetHint: 'Reinicio rápido (R)',
     },
     difficulty: {
       beginner: 'Principiante (9×9 · 10 minas)',

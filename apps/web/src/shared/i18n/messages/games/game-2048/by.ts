@@ -16,6 +16,7 @@ export const byMessages = {
       time: 'Час',
       newGame: 'Новая гульня',
       movesLabel: 'Ходы',
+      undosAvailable: 'Хадоў назад',
     },
     result: {
       wonTitle: '2048!',
@@ -28,6 +29,11 @@ export const byMessages = {
       keepGoing: 'Працягнуць',
       finish: 'Завяршыць',
       continue: 'Працягнуць',
+    },
+    milestone: {
+      title: 'Рубеж дасягнуты!',
+      body: 'Вы стварылі легендарную плітку {{tile}}.',
+      keepGoing: 'Працягнуць',
     },
     rules: {
       objective:

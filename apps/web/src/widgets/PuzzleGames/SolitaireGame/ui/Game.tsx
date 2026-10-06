@@ -18,6 +18,7 @@ import { isAllCardsOpen } from '../lib/engine';
 import { useSolitaireStore } from '../store/solitaireStore';
 import type { MoveSource, MoveTarget } from '../types';
 import { SolitaireBoard } from './SolitaireBoard';
+import { SolitaireHintCallout } from './SolitaireHintCallout';
 
 const AUTO_PLACE_STEP_MS = 80;
 const AUTO_PLACE_MAX_STEPS = 5000;
@@ -39,11 +40,16 @@ function SolitaireTable() {
   const finished = useSolitaireStore((state) => state.finished);
   const startedAt = useSolitaireStore((state) => state.startedAt);
   const finishedAt = useSolitaireStore((state) => state.finishedAt);
+  const activeHint = useSolitaireStore((state) => state.activeHint);
   const draw = useSolitaireStore((state) => state.draw);
   const move = useSolitaireStore((state) => state.move);
   const autoPlaceStep = useSolitaireStore((state) => state.autoPlaceStep);
   const newGame = useSolitaireStore((state) => state.newGame);
   const undo = useSolitaireStore((state) => state.undo);
+  const setDrawMode = useSolitaireStore((state) => state.setDrawMode);
+  const requestHint = useSolitaireStore((state) => state.requestHint);
+  const clearHint = useSolitaireStore((state) => state.clearHint);
+  const applyHint = useSolitaireStore((state) => state.applyHint);
   const canUndo = useSolitaireStore(
     (state) => state.history.length > 0 && state.finishedAt === null,
   );
@@ -142,6 +148,43 @@ function SolitaireTable() {
 
   const actions = (
     <div className="flex items-center gap-1 sm:gap-1.5">
+      <button
+        type="button"
+        onClick={() =>
+          setDrawMode(game.drawMode === 'draw1' ? 'draw3' : 'draw1')
+        }
+        data-testid="solitaire-draw-mode-button"
+        title={t(
+          game.drawMode === 'draw1'
+            ? 'games.solitaire_v1.hud.switchToDraw3'
+            : 'games.solitaire_v1.hud.switchToDraw1',
+        )}
+        className="flex items-center gap-1 rounded-xl border border-white/15 bg-white/10 px-2 sm:px-2.5 py-1 text-xs font-bold text-[var(--color)] hover:bg-white/20 active:scale-95 transition-all shadow-sm"
+      >
+        <span>🎴</span>
+        <span className="hidden sm:inline">
+          {game.drawMode === 'draw1'
+            ? t('games.solitaire_v1.hud.draw1')
+            : t('games.solitaire_v1.hud.draw3')}
+        </span>
+        <span className="sm:hidden font-mono font-bold">
+          {game.drawMode === 'draw1' ? '1' : '3'}
+        </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={requestHint}
+        data-testid="solitaire-hint-button"
+        title={t('games.solitaire_v1.hud.hintHint')}
+        className="flex items-center gap-1 rounded-xl border border-amber-400/40 bg-amber-400/15 px-2 sm:px-2.5 py-1 text-xs font-bold text-amber-200 hover:bg-amber-400/25 active:scale-95 transition-all shadow-sm"
+      >
+        <span>💡</span>
+        <span className="hidden sm:inline">
+          {t('games.solitaire_v1.hud.hint')}
+        </span>
+      </button>
+
       {finished !== null && (
         <SoloActionButton
           variant="results"
@@ -207,13 +250,21 @@ function SolitaireTable() {
         },
       }}
     >
-      <SolitaireBoard
-        game={game}
-        selection={selection}
-        onSelect={pause.isPaused ? () => undefined : setSelection}
-        onDraw={handleDraw}
-        onMove={handleMove}
-      />
+      <div className="flex w-full flex-col gap-3">
+        <SolitaireHintCallout
+          hint={activeHint}
+          onApply={applyHint}
+          onDismiss={clearHint}
+        />
+        <SolitaireBoard
+          game={game}
+          selection={selection}
+          activeHint={activeHint}
+          onSelect={pause.isPaused ? () => undefined : setSelection}
+          onDraw={handleDraw}
+          onMove={handleMove}
+        />
+      </div>
     </SoloGameContainer>
   );
 }

@@ -5,6 +5,7 @@ import {
   deal,
   draw,
   evaluateOutcome,
+  findHint,
   getSourceCards,
   hasAvailableMoves,
   isWon,
@@ -346,5 +347,58 @@ describe('win & stuck detection', () => {
   it('treats a drawable stock as an available move', () => {
     const state = deal(seededRng(18));
     expect(hasAvailableMoves(state)).toBe(true);
+  });
+});
+
+describe('drawMode draw3', () => {
+  it('draws up to three cards into waste per draw action', () => {
+    const state = deal(seededRng(5), 'draw3');
+    expect(state.stock).toHaveLength(24);
+    expect(state.waste).toHaveLength(0);
+
+    const step1 = draw(state);
+    expect(step1.stock).toHaveLength(21);
+    expect(step1.waste).toHaveLength(3);
+    expect(step1.waste.every((c) => c.faceUp)).toBe(true);
+
+    const step2 = draw(step1);
+    expect(step2.stock).toHaveLength(18);
+    expect(step2.waste).toHaveLength(6);
+  });
+});
+
+describe('findHint', () => {
+  it('identifies waste to foundation moves', () => {
+    const state = deal(seededRng(1));
+    state.waste = [{ id: 's1', suit: 'spades', rank: 1, faceUp: true }];
+    const hint = findHint(state);
+    expect(hint).not.toBeNull();
+    expect(hint?.source).toEqual({ kind: 'waste' });
+    expect(hint?.target).toEqual({ kind: 'foundation', foundationIndex: 0 });
+  });
+
+  it('identifies tableau run moves that reveal cards', () => {
+    const state = deal(seededRng(2));
+    state.waste = [];
+    state.tableau = [
+      [
+        { id: 'h2', suit: 'hearts', rank: 2, faceUp: false },
+        { id: 'c5', suit: 'clubs', rank: 5, faceUp: true },
+      ],
+      [{ id: 'd6', suit: 'diamonds', rank: 6, faceUp: true }],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ];
+    const hint = findHint(state);
+    expect(hint).not.toBeNull();
+    expect(hint?.source).toEqual({
+      kind: 'tableau',
+      pileIndex: 0,
+      cardIndex: 1,
+    });
+    expect(hint?.target).toEqual({ kind: 'tableau', pileIndex: 1 });
   });
 });

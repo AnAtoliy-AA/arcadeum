@@ -221,7 +221,9 @@ test.describe('Single Player Puzzle Games', () => {
     const newGameBtn = page.getByTestId('solitaire-new-game-button');
     await expect(newGameBtn).toBeVisible();
 
-    const drawBtn = page.getByRole('button', { name: /Draw/i });
+    const drawBtn = page.getByRole('button', {
+      name: /draw a card|recycle/i,
+    });
     await expect(drawBtn).toBeVisible();
     await drawBtn.click();
 

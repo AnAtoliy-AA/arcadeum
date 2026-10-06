@@ -142,6 +142,7 @@ export function SolitaireBoard({
 
   return (
     <div
+      data-testid="solitaire-board"
       style={boardVars(theme)}
       className="relative w-full rounded-2xl sm:rounded-3xl border-2 border-[var(--sol-table-border)] bg-[var(--sol-table-bg)] p-2 sm:p-4 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-colors duration-200 overflow-hidden"
     >

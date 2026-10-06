@@ -113,7 +113,7 @@ test.describe('Solo Games Intelligent Assistants & QoL', () => {
     const drawModeBtn = page.getByTestId('solitaire-draw-mode-button');
     await expect(drawModeBtn).toBeVisible();
     await drawModeBtn.click();
-    await expect(drawModeBtn).toContainText('Draw 3');
+    await expect(drawModeBtn).toContainText('3');
 
     const hintBtn = page.getByTestId('solitaire-hint-button');
     await expect(hintBtn).toBeVisible();

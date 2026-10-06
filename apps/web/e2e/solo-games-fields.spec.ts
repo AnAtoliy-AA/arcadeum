@@ -71,7 +71,9 @@ test.describe('Solo Games Fields Premium UI/UX', () => {
   }) => {
     await navigateTo(page, '/en/games/solitaire/play');
 
-    const drawBtn = page.getByRole('button', { name: /draw|recycle/i });
+    const drawBtn = page.getByRole('button', {
+      name: /draw a card|recycle/i,
+    });
     await expect(drawBtn).toBeVisible();
 
     const foundations = page.getByRole('button', { name: /Foundation/i });

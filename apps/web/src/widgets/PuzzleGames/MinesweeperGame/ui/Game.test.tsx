@@ -96,4 +96,32 @@ describe('MinesweeperGame UI', () => {
     expect(modal).toHaveAttribute('data-tone', 'defeat');
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
+
+  it('displays safe cells counter and personal best badge', () => {
+    useMinesweeperStore.setState({
+      personalBests: {
+        beginner: 42,
+        intermediate: null,
+        expert: null,
+      },
+    });
+
+    render(<MinesweeperGame />);
+
+    expect(screen.getByTestId('minesweeper-safe-left')).toBeInTheDocument();
+    expect(screen.getByTestId('minesweeper-personal-best')).toHaveTextContent(
+      '42s',
+    );
+  });
+
+  it('triggers quick restart on pressing R key', () => {
+    render(<MinesweeperGame />);
+
+    const cells = screen.getAllByRole('gridcell');
+    fireEvent.click(cells[0]);
+    expect(useMinesweeperStore.getState().startedAt).not.toBeNull();
+
+    fireEvent.keyDown(window, { key: 'r' });
+    expect(useMinesweeperStore.getState().startedAt).toBeNull();
+  });
 });

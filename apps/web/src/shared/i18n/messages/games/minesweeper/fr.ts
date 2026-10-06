@@ -21,6 +21,9 @@ export const frMessages = {
       flagModeHint:
         'Activez-le pour planter des drapeaux d’un simple toucher - idéal sur écran tactile',
       difficulty: 'Difficulté',
+      safeCells: 'Cases sûres restantes',
+      personalBest: 'Meilleur score',
+      quickResetHint: 'Redémarrage rapide (R)',
     },
     difficulty: {
       beginner: 'Débutant (9×9 · 10 mines)',

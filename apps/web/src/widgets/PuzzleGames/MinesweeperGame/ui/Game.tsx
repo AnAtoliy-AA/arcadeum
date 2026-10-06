@@ -74,6 +74,28 @@ function MinesweeperTable() {
   const [isPressing, setIsPressing] = useState(false);
   const { play } = useGameSound('minesweeper_v1');
 
+  const personalBests = useMinesweeperStore((state) => state.personalBests);
+  const currentPb = personalBests?.[game.difficulty] ?? null;
+  const totalSafe = game.width * game.height - game.mineCount;
+  const remainingSafe = Math.max(0, totalSafe - game.revealedCount);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'r' || event.key === 'R') {
+        if (
+          event.target instanceof HTMLInputElement ||
+          event.target instanceof HTMLTextAreaElement
+        ) {
+          return;
+        }
+        event.preventDefault();
+        newGame();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [newGame]);
+
   const prevStatusRef = useRef(game.status);
   useEffect(() => {
     if (game.status === 'lost' && prevStatusRef.current !== 'lost') {
@@ -138,13 +160,25 @@ function MinesweeperTable() {
           label: t('games.minesweeper_v1.hud.mines'),
           value: game.mineCount,
         },
+        ...(currentPb !== null
+          ? [
+              {
+                id: 'pb',
+                label: t('games.minesweeper_v1.hud.personalBest'),
+                value: `${currentPb}s`,
+              },
+            ]
+          : []),
       ],
     };
-  }, [finished, game.difficulty, game.mineCount, t]);
+  }, [finished, game.difficulty, game.mineCount, currentPb, t]);
 
   const hud = (
-    <div className="flex items-center gap-2 sm:gap-3 px-1 select-none">
-      <div className="flex items-center rounded-lg border-2 border-slate-700/80 bg-black/90 px-2.5 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10">
+    <div className="flex items-center gap-1.5 sm:gap-2.5 px-1 select-none flex-wrap justify-center">
+      <div
+        className="flex items-center rounded-lg border-2 border-slate-700/80 bg-black/90 px-2 sm:px-2.5 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
+        title={t('games.minesweeper_v1.hud.mines')}
+      >
         <span
           data-testid="minesweeper-mines-left"
           className="font-mono text-sm sm:text-base font-black tracking-widest text-red-500 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]"
@@ -157,13 +191,17 @@ function MinesweeperTable() {
         type="button"
         onClick={newGame}
         aria-label={t('games.minesweeper_v1.hud.newGame')}
+        title={t('games.minesweeper_v1.hud.quickResetHint')}
         data-testid="minesweeper-face-button"
         className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border-2 border-amber-300 bg-gradient-to-b from-amber-300 via-amber-400 to-amber-500 text-base sm:text-lg shadow-md shadow-amber-500/30 transition-transform active:scale-90"
       >
         {faceIcon}
       </button>
 
-      <div className="flex items-center rounded-lg border-2 border-slate-700/80 bg-black/90 px-2.5 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10">
+      <div
+        className="flex items-center rounded-lg border-2 border-slate-700/80 bg-black/90 px-2 sm:px-2.5 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
+        title={t('games.minesweeper_v1.hud.time')}
+      >
         <span
           data-testid="minesweeper-timer"
           className="font-mono text-sm sm:text-base font-black tracking-widest text-red-500 tabular-nums drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]"
@@ -171,6 +209,32 @@ function MinesweeperTable() {
           {formatDigits(elapsedSeconds)}
         </span>
       </div>
+
+      <div
+        className="flex items-center gap-1 rounded-lg border-2 border-slate-700/80 bg-black/90 px-2 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
+        title={t('games.minesweeper_v1.hud.safeCells')}
+      >
+        <span
+          data-testid="minesweeper-safe-left"
+          className="font-mono text-xs sm:text-sm font-bold text-emerald-400 tabular-nums"
+        >
+          🛡️ {remainingSafe}
+        </span>
+      </div>
+
+      {currentPb !== null && (
+        <div
+          className="flex items-center gap-1 rounded-lg border-2 border-slate-700/80 bg-black/90 px-2 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
+          title={t('games.minesweeper_v1.hud.personalBest')}
+        >
+          <span
+            data-testid="minesweeper-personal-best"
+            className="font-mono text-xs sm:text-sm font-bold text-amber-400 tabular-nums"
+          >
+            ⚡ {currentPb}s
+          </span>
+        </div>
+      )}
     </div>
   );
 

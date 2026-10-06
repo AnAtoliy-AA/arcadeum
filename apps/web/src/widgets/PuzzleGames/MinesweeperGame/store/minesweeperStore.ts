@@ -23,6 +23,7 @@ interface MinesweeperStoreState {
   finished: FinishedGameInfo | null;
   history: MinesweeperState[];
   usedUndo: boolean;
+  personalBests: Record<Difficulty, number | null>;
   reveal: (index: number) => void;
   flag: (index: number) => void;
   undo: () => void;
@@ -39,6 +40,11 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
       finished: null,
       history: [],
       usedUndo: false,
+      personalBests: {
+        beginner: null,
+        intermediate: null,
+        expert: null,
+      },
 
       reveal: (index) =>
         set((state) => {
@@ -67,10 +73,25 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
                 startedAt === null ? null : Math.round(info.durationMs / 1000),
             }),
           );
+          const durationSeconds =
+            startedAt === null
+              ? null
+              : Math.round((Date.now() - effectiveStartedAt) / 1000);
+          let personalBests = state.personalBests;
+          if (game.status === 'won' && durationSeconds !== null) {
+            const currentPb = personalBests[game.difficulty];
+            if (currentPb === null || durationSeconds < currentPb) {
+              personalBests = {
+                ...personalBests,
+                [game.difficulty]: durationSeconds,
+              };
+            }
+          }
           return {
             history: [...state.history, state.game],
             game,
             startedAt,
+            personalBests,
             ...(result ?? {}),
           };
         }),
@@ -122,6 +143,7 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
         finished: state.finished,
         history: state.history,
         usedUndo: state.usedUndo,
+        personalBests: state.personalBests,
       }),
     },
   ),

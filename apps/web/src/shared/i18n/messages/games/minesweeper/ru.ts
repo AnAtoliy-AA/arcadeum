@@ -21,6 +21,9 @@ export const ruMessages = {
       flagModeHint:
         'Включите, чтобы ставить флажки касанием - удобно на сенсорных экранах',
       difficulty: 'Сложность',
+      safeCells: 'Безопасных клеток осталось',
+      personalBest: 'Личный рекорд',
+      quickResetHint: 'Быстрый перезапуск (R)',
     },
     difficulty: {
       beginner: 'Новичок (9×9 · 10 мин)',

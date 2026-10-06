@@ -20,6 +20,9 @@ export const enMessages = {
       flagMode: 'Flag mode',
       flagModeHint: 'Toggle to plant flags with taps - ideal on touch screens',
       difficulty: 'Difficulty',
+      safeCells: 'Safe squares left',
+      personalBest: 'Personal best',
+      quickResetHint: 'Quick restart (R)',
     },
     difficulty: {
       beginner: 'Beginner (9×9 · 10 mines)',

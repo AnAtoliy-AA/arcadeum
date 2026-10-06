@@ -7,9 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.30.55] - 2026-10-06
 
-- add solo games intelligent assistants, Klondike draw 3 mode, smart hints, tactile chords, flagless speedruns, and touch swipes (ARC-977) (ARC-977)
+### Added
+- add direct pointer swipe gestures, undo move counter, and e2e test suite (ARC-977) (ARC-977)
+- add tactile chord feedback, flagless speedrun mode, and robust e2e selectors (ARC-977) (ARC-977)
+- add digit-first speed mode and board-wide number highlighting (ARC-977) (ARC-977)
+- add Klondike draw 3 mode, smart hint engine, and fanned waste (ARC-977) (ARC-977)
+- add tile merge animations, milestone celebrations, and touch polish (ARC-977) (ARC-977)
+- add personal best tracking, remaining safe cells counter, and quick reset (ARC-977) (ARC-977)
+- add intelligent candidate auto-fill, conflict highlighting, and smart hints (ARC-977) (ARC-977)
+
+### Fixed
+- resolve e2e strict mode locator collisions and add board testid (ARC-977) (ARC-977)
+
+### Documentation
+- sync generated-roadmap.json with ARC-977 (ARC-977) (ARC-977
+ARC-977)
+- update ARC-977 solo games assistants status and changelog (ARC-977) (ARC-977
+ARC-977)
+
 
 ## [1.30.54] - 2026-10-06
 

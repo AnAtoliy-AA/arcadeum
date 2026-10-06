@@ -11,10 +11,17 @@ import {
   deal,
   draw as drawFromStock,
   evaluateOutcome,
+  findHint,
   isValidMove,
   nextAutoPlaceAction,
 } from '../lib/engine';
-import type { MoveSource, MoveTarget, SolitaireState } from '../types';
+import type {
+  DrawMode,
+  MoveSource,
+  MoveTarget,
+  SolitaireHint,
+  SolitaireState,
+} from '../types';
 
 export const SOLITAIRE_GAME_ID = 'solitaire_v1';
 
@@ -34,11 +41,16 @@ interface SolitaireStoreState {
   finished: FinishedGameInfo | null;
   history: SolitaireState[];
   usedUndo: boolean;
+  activeHint: SolitaireHint | null;
   draw: () => void;
   move: (source: MoveSource, target: MoveTarget) => void;
   autoPlaceStep: () => AutoPlaceStepResult;
   undo: () => void;
   newGame: () => void;
+  setDrawMode: (mode: DrawMode) => void;
+  requestHint: () => void;
+  clearHint: () => void;
+  applyHint: () => void;
 }
 
 function commitGame(
@@ -73,20 +85,27 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
       finished: null,
       history: [],
       usedUndo: false,
+      activeHint: null,
 
       draw: () =>
         set((state) => {
           if (state.finishedAt !== null) return state;
           const game = drawFromStock(state.game);
           if (game === state.game) return state;
-          return commitGame(state, game);
+          return {
+            ...commitGame(state, game),
+            activeHint: null,
+          };
         }),
 
       move: (source, target) =>
         set((state) => {
           if (state.finishedAt !== null) return state;
           if (!isValidMove(state.game, source, target)) return state;
-          return commitGame(state, applyMove(state.game, source, target));
+          return {
+            ...commitGame(state, applyMove(state.game, source, target)),
+            activeHint: null,
+          };
         }),
 
       autoPlaceStep: () => {
@@ -97,34 +116,69 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
         if (action.kind === 'draw') {
           const game = drawFromStock(state.game);
           if (game === state.game) return null;
-          set(commitGame(state, game));
+          set({
+            ...commitGame(state, game),
+            activeHint: null,
+          });
           return 'draw';
         }
         if (!isValidMove(state.game, action.source, action.target)) return null;
-        set(
-          commitGame(
+        set({
+          ...commitGame(
             state,
             applyMove(state.game, action.source, action.target),
           ),
-        );
+          activeHint: null,
+        });
         return 'move';
       },
 
       undo: () =>
         set((state) => {
           const update = undoReducer(state.history, state.finishedAt);
-          return update ?? state;
+          return update ? { ...update, activeHint: null } : state;
         }),
 
       newGame: () =>
-        set({
-          game: deal(),
+        set((state) => ({
+          game: deal(undefined, state.game.drawMode),
           startedAt: Date.now(),
           finishedAt: null,
           finished: null,
           history: [],
           usedUndo: false,
-        }),
+          activeHint: null,
+        })),
+
+      setDrawMode: (mode) =>
+        set((state) => ({
+          game: { ...state.game, drawMode: mode },
+          activeHint: null,
+        })),
+
+      requestHint: () => {
+        const state = get();
+        if (state.finishedAt !== null) return;
+        const hint = findHint(state.game);
+        set({ activeHint: hint });
+      },
+
+      clearHint: () => set({ activeHint: null }),
+
+      applyHint: () => {
+        const state = get();
+        if (state.activeHint === null || state.finishedAt !== null) return;
+        const { source, target } = state.activeHint;
+        if (!isValidMove(state.game, source, target)) {
+          set({ activeHint: null });
+          return;
+        }
+        const updated = commitGame(
+          state,
+          applyMove(state.game, source, target),
+        );
+        set({ ...updated, activeHint: null });
+      },
     }),
     {
       name: 'arcadeum_solitaire_game_v1',

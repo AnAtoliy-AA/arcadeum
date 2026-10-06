@@ -19,6 +19,21 @@ export const frMessages = {
       time: 'Temps',
       newGame: 'Nouvelle partie',
       autoPlace: 'Placement auto',
+      draw1: 'Tirer 1',
+      draw3: 'Tirer 3',
+      switchToDraw1: 'Passer au tirage par 1 carte',
+      switchToDraw3: 'Passer au tirage par 3 cartes',
+      hint: 'Indice',
+      hintHint: 'Suggérer un coup légal optimal',
+      applyHint: 'Appliquer',
+      dismissHint: 'Fermer',
+    },
+    hint: {
+      wasteToFoundation: 'Déplacez la carte du talon vers la fondation',
+      tableauToFoundation: 'Déplacez la carte de la colonne vers la fondation',
+      wasteToTableau: 'Déplacez la carte du talon vers une colonne',
+      tableauToTableau:
+        'Déplacez des cartes entre colonnes pour révéler une carte cachée',
     },
     result: {
       wonTitle: 'Gagné !',

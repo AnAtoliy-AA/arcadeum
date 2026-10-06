@@ -19,6 +19,21 @@ export const enMessages = {
       time: 'Time',
       newGame: 'New game',
       autoPlace: 'Auto-place',
+      draw1: 'Draw 1',
+      draw3: 'Draw 3',
+      switchToDraw1: 'Switch to Draw 1 card mode',
+      switchToDraw3: 'Switch to Draw 3 cards mode',
+      hint: 'Hint',
+      hintHint: 'Suggest a smart legal move',
+      applyHint: 'Apply move',
+      dismissHint: 'Dismiss',
+    },
+    hint: {
+      wasteToFoundation: 'Move card from waste to foundation',
+      tableauToFoundation: 'Move card from tableau to foundation',
+      wasteToTableau: 'Move card from waste to tableau column',
+      tableauToTableau:
+        'Move card run between tableau columns to reveal hidden cards',
     },
     result: {
       wonTitle: 'You win!',

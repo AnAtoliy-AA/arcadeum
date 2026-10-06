@@ -38,7 +38,7 @@ jobs:
           filters: |
             be-or-tg:
               - 'apps/be/**'
-      - 'apps/tg-bot/**'
+              - 'apps/tg-bot/**'
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'

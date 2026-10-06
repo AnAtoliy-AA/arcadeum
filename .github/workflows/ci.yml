@@ -154,12 +154,15 @@ jobs:
   web-e2e:
     name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
-    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
+    # develop PRs run the chromium-only 6-shard job below. The matrix must stay
+    # non-empty for every event that reaches this job: an empty matrix vector
+    # fails strategy evaluation and marks the whole run as failed.
+    if: "${{ (github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version'))) && (github.event_name != 'pull_request' || github.base_ref != 'develop') }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        project: ${{ fromJSON(github.event_name == 'pull_request' && github.base_ref == 'develop' && '[]' || '["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]') }}
+        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
         shard: [1, 2, 3]
     services:
       mongodb:

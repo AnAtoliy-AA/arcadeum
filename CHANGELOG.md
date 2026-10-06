@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.30.54] - 2026-10-06
 
-- add interactive player profile and match showcase (ARC-976)
+### Added
+- add interactive player profile and match showcase (ARC-976) (ARC-976)
+
+### Fixed
+- fix e2e page mock interception and safe pending friend states (ARC-976) (ARC-976)
+
 
 ## [1.30.53] - 2026-10-06
 

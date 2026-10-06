@@ -23,12 +23,13 @@ function seededRng(seed: number): () => number {
 }
 
 function card(state: SolitaireState, suit: string, rank: number) {
-  const found = [
+  const all = [
     ...state.stock,
     ...state.waste,
     ...state.foundations.flat(),
     ...state.tableau.flat(),
-  ].find((c) => c.suit === suit && c.rank === rank);
+  ];
+  const found = all.find((c) => c.suit === suit && c.rank === rank);
   if (!found) throw new Error(`card ${suit}-${rank} not found`);
   return found;
 }

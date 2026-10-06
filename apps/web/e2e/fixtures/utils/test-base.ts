@@ -359,7 +359,7 @@ export const test = base.extend({
     });
 
     await page.route('**/friends/pending', async (route) => {
-      await handleRoute(route, { count: 0 });
+      await handleRoute(route, { count: 0, incoming: [], outgoing: [] });
     });
 
     await page.route('**/notifications/preferences', async (route) => {

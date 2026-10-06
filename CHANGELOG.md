@@ -7,23 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add interactive player profile and match showcase (ARC-976)
+
 ## [1.30.53] - 2026-10-06
 
 ### Fixed
-- stop workflow errors that fail runs even when all jobs pass
 
+- stop workflow errors that fail runs even when all jobs pass
 
 ## [1.30.52] - 2026-10-05
 
 ### Added
-- add auto-place button to finish all-open games (ARC-975) (ARC-975)
 
+- add auto-place button to finish all-open games (ARC-975) (ARC-975)
 
 ## [1.30.51] - 2026-10-04
 
 ### Added
-- add puzzle rush global leaderboard, daily streak multipliers, and tactical share card (ARC-973) (ARC-973)
 
+- add puzzle rush global leaderboard, daily streak multipliers, and tactical share card (ARC-973) (ARC-973)
 
 ## [1.30.50] - 2026-10-04
 

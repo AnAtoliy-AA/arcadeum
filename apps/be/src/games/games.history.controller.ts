@@ -58,6 +58,43 @@ export class GamesHistoryController {
     return result;
   }
 
+  @Get('history/user/:userId')
+  async listHistoryForUser(
+    @Param('userId') userId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ): Promise<{
+    entries: Awaited<ReturnType<GamesService['listHistoryForUser']>>['entries'];
+    total: number;
+    page: number;
+    limit: number;
+    hasMore: boolean;
+  }> {
+    const pageNum = page ? parseInt(page, 10) : 0;
+    const limitNum = limit ? Math.min(parseInt(limit, 10), 20) : 10;
+
+    return this.gamesService.listHistoryForUser(userId, {
+      page: pageNum,
+      limit: limitNum,
+      status: 'completed',
+    });
+  }
+
+  @Get('stats/user/:userId')
+  async getUserStats(@Param('userId') userId: string) {
+    return this.gamesService.getPlayerStats(userId);
+  }
+
+  @Get('stats/user/:userId/trends')
+  async getUserTrends(
+    @Param('userId') userId: string,
+    @Query('gameId') gameId?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const limitNum = limit ? parseInt(limit, 10) : 10;
+    return this.gamesService.getTrends(userId, gameId || undefined, limitNum);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('history/:roomId')
   async getHistoryEntry(

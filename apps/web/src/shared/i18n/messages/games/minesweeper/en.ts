@@ -22,6 +22,10 @@ export const enMessages = {
       difficulty: 'Difficulty',
       safeCells: 'Safe squares left',
       personalBest: 'Personal best',
+      personalBestNf: 'NF Personal best',
+      flaglessMode: 'NF Mode',
+      flaglessModeHint:
+        'Flagless speedrun mode - Disables flagging for pure speed',
       quickResetHint: 'Quick restart (R)',
     },
     difficulty: {

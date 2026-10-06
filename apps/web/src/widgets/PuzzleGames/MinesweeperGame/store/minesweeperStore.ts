@@ -24,11 +24,15 @@ interface MinesweeperStoreState {
   history: MinesweeperState[];
   usedUndo: boolean;
   personalBests: Record<Difficulty, number | null>;
+  personalBestsNf: Record<Difficulty, number | null>;
+  flaglessMode: boolean;
   reveal: (index: number) => void;
   flag: (index: number) => void;
   undo: () => void;
   changeDifficulty: (difficulty: Difficulty) => void;
   newGame: () => void;
+  toggleFlaglessMode: () => void;
+  setFlaglessMode: (enabled: boolean) => void;
 }
 
 export const useMinesweeperStore = create<MinesweeperStoreState>()(
@@ -40,7 +44,13 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
       finished: null,
       history: [],
       usedUndo: false,
+      flaglessMode: false,
       personalBests: {
+        beginner: null,
+        intermediate: null,
+        expert: null,
+      },
+      personalBestsNf: {
         beginner: null,
         intermediate: null,
         expert: null,
@@ -78,6 +88,7 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
               ? null
               : Math.round((Date.now() - effectiveStartedAt) / 1000);
           let personalBests = state.personalBests;
+          let personalBestsNf = state.personalBestsNf;
           if (game.status === 'won' && durationSeconds !== null) {
             const currentPb = personalBests[game.difficulty];
             if (currentPb === null || durationSeconds < currentPb) {
@@ -86,19 +97,29 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
                 [game.difficulty]: durationSeconds,
               };
             }
+            if (state.flaglessMode) {
+              const currentPbNf = personalBestsNf[game.difficulty];
+              if (currentPbNf === null || durationSeconds < currentPbNf) {
+                personalBestsNf = {
+                  ...personalBestsNf,
+                  [game.difficulty]: durationSeconds,
+                };
+              }
+            }
           }
           return {
             history: [...state.history, state.game],
             game,
             startedAt,
             personalBests,
+            personalBestsNf,
             ...(result ?? {}),
           };
         }),
 
       flag: (index) =>
         set((state) => {
-          if (state.finishedAt !== null) return state;
+          if (state.finishedAt !== null || state.flaglessMode) return state;
           const game = toggleFlag(state.game, index);
           if (game === state.game) return state;
           return {
@@ -112,6 +133,11 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
           const update = undoReducer(state.history, state.finishedAt);
           return update ?? state;
         }),
+
+      toggleFlaglessMode: () =>
+        set((state) => ({ flaglessMode: !state.flaglessMode })),
+
+      setFlaglessMode: (enabled) => set({ flaglessMode: enabled }),
 
       changeDifficulty: (difficulty) =>
         set({
@@ -143,7 +169,9 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
         finished: state.finished,
         history: state.history,
         usedUndo: state.usedUndo,
+        flaglessMode: state.flaglessMode,
         personalBests: state.personalBests,
+        personalBestsNf: state.personalBestsNf,
       }),
     },
   ),

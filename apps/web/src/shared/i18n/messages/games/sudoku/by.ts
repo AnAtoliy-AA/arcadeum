@@ -26,7 +26,7 @@ export const byMessages = {
       erase: 'Сцерці',
       placeDigit: 'Паставіць лічбу {{digit}}',
       noteDigit: 'Нататка {{digit}}',
-      autoNotes: 'Аўтанататкі',
+      autoNotes: 'Кандыдаты',
       autoNotesHint: 'Запоўніць усе магчымыя кандыдаты ў пустых клетках',
       hint: 'Падказка',
       hintHint: 'Атрымаць лагічную падказку для наступнага ходу',

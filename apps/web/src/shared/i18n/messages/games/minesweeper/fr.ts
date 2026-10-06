@@ -23,6 +23,10 @@ export const frMessages = {
       difficulty: 'Difficulté',
       safeCells: 'Cases sûres restantes',
       personalBest: 'Meilleur score',
+      personalBestNf: 'Record sans drapeaux',
+      flaglessMode: 'Mode NF',
+      flaglessModeHint:
+        'Mode sans drapeaux - Desactive les drapeaux pour la vitesse pure',
       quickResetHint: 'Redémarrage rapide (R)',
     },
     difficulty: {

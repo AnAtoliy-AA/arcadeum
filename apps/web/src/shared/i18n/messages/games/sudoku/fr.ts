@@ -26,7 +26,7 @@ export const frMessages = {
       erase: 'Effacer',
       placeDigit: 'Placer le chiffre {{digit}}',
       noteDigit: 'Note {{digit}}',
-      autoNotes: 'Notes auto',
+      autoNotes: 'Candidats',
       autoNotesHint: 'Remplir tous les candidats valides dans les cases vides',
       hint: 'Indice',
       hintHint: 'Obtenir un indice logique pour le prochain coup',

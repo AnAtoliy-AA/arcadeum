@@ -26,7 +26,7 @@ export const ruMessages = {
       erase: 'Стереть',
       placeDigit: 'Поставить цифру {{digit}}',
       noteDigit: 'Заметка {{digit}}',
-      autoNotes: 'Автозаметки',
+      autoNotes: 'Кандидаты',
       autoNotesHint: 'Заполнить все возможные кандидаты в пустых клетках',
       hint: 'Подсказка',
       hintHint: 'Получить логическую подсказку для следующего хода',

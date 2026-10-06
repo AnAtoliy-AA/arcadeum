@@ -26,7 +26,7 @@ export const esMessages = {
       erase: 'Borrar',
       placeDigit: 'Poner el dígito {{digit}}',
       noteDigit: 'Nota {{digit}}',
-      autoNotes: 'Notas automáticas',
+      autoNotes: 'Candidatos',
       autoNotesHint:
         'Rellenar todos los candidatos válidos en las casillas vacías',
       hint: 'Pista',

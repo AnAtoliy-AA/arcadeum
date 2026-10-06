@@ -16,7 +16,7 @@ test.describe('Single Player Puzzle Games', () => {
     const cells = board.getByRole('gridcell');
     await expect(cells).toHaveCount(81);
 
-    const notesBtn = page.getByRole('button', { name: /Notes/i });
+    const notesBtn = page.getByTestId('sudoku-toggle-notes-button');
     await expect(notesBtn).toBeVisible();
     await notesBtn.click();
     await expect(notesBtn).toHaveAttribute('aria-pressed', 'true');

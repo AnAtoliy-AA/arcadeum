@@ -21,7 +21,7 @@ test.describe('Solo Games Fields Premium UI/UX', () => {
     await expect(digit1).toBeVisible();
     await expect(digit1).toBeEnabled();
 
-    const notesBtn = page.getByRole('button', { name: /Notes/i });
+    const notesBtn = page.getByTestId('sudoku-toggle-notes-button');
     await expect(notesBtn).toBeVisible();
     await expect(notesBtn).toBeEnabled();
 

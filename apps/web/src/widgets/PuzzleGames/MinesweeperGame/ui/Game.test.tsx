@@ -124,4 +124,21 @@ describe('MinesweeperGame UI', () => {
     fireEvent.keyDown(window, { key: 'r' });
     expect(useMinesweeperStore.getState().startedAt).toBeNull();
   });
+
+  it('toggles flagless NF mode and ignores flag actions', () => {
+    render(<MinesweeperGame />);
+
+    const nfBtn = screen.getByTestId('minesweeper-flagless-button');
+    expect(nfBtn).toBeInTheDocument();
+    expect(useMinesweeperStore.getState().flaglessMode).toBe(false);
+
+    fireEvent.click(nfBtn);
+    expect(useMinesweeperStore.getState().flaglessMode).toBe(true);
+
+    useMinesweeperStore.getState().flag(0);
+    expect(useMinesweeperStore.getState().game.cells[0]?.state).toBe('hidden');
+
+    fireEvent.click(nfBtn);
+    expect(useMinesweeperStore.getState().flaglessMode).toBe(false);
+  });
 });

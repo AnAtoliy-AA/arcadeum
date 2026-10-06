@@ -23,6 +23,10 @@ export const byMessages = {
       difficulty: 'Складанасць',
       safeCells: 'Бяспечных клетак засталося',
       personalBest: 'Асабісты рэкорд',
+      personalBestNf: 'Рэкорд без сцягоў',
+      flaglessMode: 'Без сцягоў',
+      flaglessModeHint:
+        'Хуткасны рэжым без сцягоў - блакуе сцягі для чыстага спідрана',
       quickResetHint: 'Хуткі перазапуск (R)',
     },
     difficulty: {

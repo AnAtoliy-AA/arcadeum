@@ -23,6 +23,10 @@ export const esMessages = {
       difficulty: 'Dificultad',
       safeCells: 'Casillas seguras restantes',
       personalBest: 'Mejor marca',
+      personalBestNf: 'Récord sin banderas',
+      flaglessMode: 'Modo NF',
+      flaglessModeHint:
+        'Modo sin banderas - Desactiva banderas para velocidad pura',
       quickResetHint: 'Reinicio rápido (R)',
     },
     difficulty: {

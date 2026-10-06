@@ -75,7 +75,13 @@ function MinesweeperTable() {
   const { play } = useGameSound('minesweeper_v1');
 
   const personalBests = useMinesweeperStore((state) => state.personalBests);
+  const personalBestsNf = useMinesweeperStore((state) => state.personalBestsNf);
+  const flaglessMode = useMinesweeperStore((state) => state.flaglessMode);
+  const toggleFlaglessMode = useMinesweeperStore(
+    (state) => state.toggleFlaglessMode,
+  );
   const currentPb = personalBests?.[game.difficulty] ?? null;
+  const currentPbNf = personalBestsNf?.[game.difficulty] ?? null;
   const totalSafe = game.width * game.height - game.mineCount;
   const remainingSafe = Math.max(0, totalSafe - game.revealedCount);
 
@@ -222,19 +228,33 @@ function MinesweeperTable() {
         </span>
       </div>
 
-      {currentPb !== null && (
-        <div
-          className="flex items-center gap-1 rounded-lg border-2 border-slate-700/80 bg-black/90 px-2 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
-          title={t('games.minesweeper_v1.hud.personalBest')}
-        >
-          <span
-            data-testid="minesweeper-personal-best"
-            className="font-mono text-xs sm:text-sm font-bold text-amber-400 tabular-nums"
-          >
-            ⚡ {currentPb}s
-          </span>
-        </div>
-      )}
+      {flaglessMode
+        ? currentPbNf !== null && (
+            <div
+              className="flex items-center gap-1 rounded-lg border-2 border-cyan-700/80 bg-black/90 px-2 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-cyan-400/20"
+              title={t('games.minesweeper_v1.hud.personalBestNf')}
+            >
+              <span
+                data-testid="minesweeper-personal-best-nf"
+                className="font-mono text-xs sm:text-sm font-bold text-cyan-300 tabular-nums"
+              >
+                ⚡ NF {currentPbNf}s
+              </span>
+            </div>
+          )
+        : currentPb !== null && (
+            <div
+              className="flex items-center gap-1 rounded-lg border-2 border-slate-700/80 bg-black/90 px-2 py-0.5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
+              title={t('games.minesweeper_v1.hud.personalBest')}
+            >
+              <span
+                data-testid="minesweeper-personal-best"
+                className="font-mono text-xs sm:text-sm font-bold text-amber-400 tabular-nums"
+              >
+                ⚡ {currentPb}s
+              </span>
+            </div>
+          )}
     </div>
   );
 
@@ -264,14 +284,33 @@ function MinesweeperTable() {
       <Button
         variant="secondary"
         size="sm"
+        onClick={toggleFlaglessMode}
+        aria-pressed={flaglessMode}
+        title={t('games.minesweeper_v1.hud.flaglessModeHint')}
+        data-testid="minesweeper-flagless-button"
+        className={cx(
+          'whitespace-nowrap px-2.5 h-8 text-xs font-semibold rounded-lg transition-colors',
+          flaglessMode
+            ? 'border-cyan-500/50 bg-cyan-500/25 text-cyan-300 font-bold hover:bg-cyan-500/35 ring-1 ring-cyan-400/40'
+            : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--primary)]/50',
+        )}
+      >
+        ⚡ {t('games.minesweeper_v1.hud.flaglessMode')}
+      </Button>
+
+      <Button
+        variant="secondary"
+        size="sm"
         onClick={() => setFlagMode((mode) => !mode)}
         aria-pressed={flagMode}
+        disabled={flaglessMode}
         title={t('games.minesweeper_v1.hud.flagModeHint')}
         className={cx(
           'whitespace-nowrap px-2.5 h-8 text-xs font-semibold rounded-lg transition-colors',
           flagMode
             ? 'border-rose-500/50 bg-rose-500/20 text-rose-400 font-bold hover:bg-rose-500/30 ring-1 ring-rose-500/30'
             : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[var(--color)] hover:border-[var(--primary)]/50',
+          flaglessMode && 'opacity-40 cursor-not-allowed',
         )}
       >
         🚩 {t('games.minesweeper_v1.hud.flagMode')}

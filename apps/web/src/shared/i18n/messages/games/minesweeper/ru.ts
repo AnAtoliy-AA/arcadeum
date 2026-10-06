@@ -23,6 +23,10 @@ export const ruMessages = {
       difficulty: 'Сложность',
       safeCells: 'Безопасных клеток осталось',
       personalBest: 'Личный рекорд',
+      personalBestNf: 'Рекорд без флагов',
+      flaglessMode: 'Без флагов',
+      flaglessModeHint:
+        'Скоростной режим без флагов - блокирует установку флагов для чистого спидрана',
       quickResetHint: 'Быстрый перезапуск (R)',
     },
     difficulty: {

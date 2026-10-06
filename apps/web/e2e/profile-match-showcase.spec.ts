@@ -36,6 +36,10 @@ test.describe('Profile Match Showcase & Head to Head', () => {
       await handleRoute(route, []);
     });
 
+    await page.route('**/friends/pending', async (route) => {
+      await handleRoute(route, { incoming: [], outgoing: [] });
+    });
+
     await page.route(`**/achievements/user/${targetUserId}`, async (route) => {
       await handleRoute(route, [
         {
@@ -154,7 +158,7 @@ test.describe('Profile Match Showcase & Head to Head', () => {
   }) => {
     await navigateTo(page, `/profile/${targetUserId}`);
 
-    await expect(page.getByText('Grand Master')).toBeVisible();
+    await expect(page.getByText('Grand Master').first()).toBeVisible();
     await expect(page.getByText('@grandmaster')).toBeVisible();
 
     const shareBtn = page.getByTestId('profile-share-button');

@@ -78,11 +78,11 @@ export default function ProfilePageContent() {
   const [headToHead, setHeadToHead] = useState<HeadToHeadResponse | null>(null);
 
   const isOwnProfile = snapshot.userId === userId;
-  const isAlreadyFriend = myFriends.some((f) => f.userId === userId);
-  const hasPendingIncoming = myPending.incoming.some(
+  const isAlreadyFriend = (myFriends ?? []).some((f) => f.userId === userId);
+  const hasPendingIncoming = (myPending?.incoming ?? []).some(
     (r) => r.userId === userId,
   );
-  const hasPendingOutgoing = myPending.outgoing.some(
+  const hasPendingOutgoing = (myPending?.outgoing ?? []).some(
     (r) => r.userId === userId,
   );
 
@@ -98,7 +98,7 @@ export default function ProfilePageContent() {
         ]);
         if (cancelled) return;
         setProfile(profileData);
-        setFriends(friendsData);
+        setFriends(Array.isArray(friendsData) ? friendsData : []);
 
         if (snapshot.accessToken) {
           const [myFriendsData, myPendingData] = await Promise.all([
@@ -106,8 +106,14 @@ export default function ProfilePageContent() {
             getPendingRequests(snapshot.accessToken),
           ]);
           if (!cancelled) {
-            setMyFriends(myFriendsData);
-            setMyPending(myPendingData);
+            setMyFriends(Array.isArray(myFriendsData) ? myFriendsData : []);
+            setMyPending(
+              myPendingData &&
+                Array.isArray(myPendingData.incoming) &&
+                Array.isArray(myPendingData.outgoing)
+                ? myPendingData
+                : { incoming: [], outgoing: [] },
+            );
           }
         }
 

@@ -26,6 +26,18 @@ export const frMessages = {
       erase: 'Effacer',
       placeDigit: 'Placer le chiffre {{digit}}',
       noteDigit: 'Note {{digit}}',
+      autoNotes: 'Notes auto',
+      autoNotesHint: 'Remplir tous les candidats valides dans les cases vides',
+      hint: 'Indice',
+      hintHint: 'Obtenir un indice logique pour le prochain coup',
+      applyHint: 'Appliquer l’indice',
+      dismissHint: 'Fermer',
+      highlightErrors: 'Mettre en évidence les erreurs',
+      hintNakedSingle:
+        'Candidat unique : {{digit}} est le seul chiffre valide pour cette case.',
+      hintHiddenSingle:
+        'Candidat caché : {{digit}} ne peut aller qu’ici dans son groupe.',
+      hintDirect: 'Placement direct : {{digit}} va dans cette case.',
     },
     result: {
       wonTitle: 'Résolu !',

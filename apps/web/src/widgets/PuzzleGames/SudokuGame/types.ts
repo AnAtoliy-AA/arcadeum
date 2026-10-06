@@ -75,3 +75,12 @@ export function findConflicts(cells: number[], index: number): number[] {
   }
   return conflicts;
 }
+
+export type HintType = 'naked_single' | 'hidden_single' | 'direct_placement';
+
+export interface SudokuHint {
+  type: HintType;
+  index: number;
+  digit: number;
+  relatedIndices: number[];
+}

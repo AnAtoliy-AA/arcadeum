@@ -26,6 +26,18 @@ export const byMessages = {
       erase: 'Сцерці',
       placeDigit: 'Паставіць лічбу {{digit}}',
       noteDigit: 'Нататка {{digit}}',
+      autoNotes: 'Аўтанататкі',
+      autoNotesHint: 'Запоўніць усе магчымыя кандыдаты ў пустых клетках',
+      hint: 'Падказка',
+      hintHint: 'Атрымаць лагічную падказку для наступнага ходу',
+      applyHint: 'Ужыць падказку',
+      dismissHint: 'Закрыць',
+      highlightErrors: 'Падсвятленне памылак',
+      hintNakedSingle:
+        'Адзіночка: {{digit}} - адзіны магчымы лік для гэтай клеткі.',
+      hintHiddenSingle:
+        'Схаваная адзіночка: {{digit}} можа стаяць толькі тут у сваёй групе.',
+      hintDirect: 'Простая падказка: {{digit}} падыходзіць у гэтую клетку.',
     },
     result: {
       wonTitle: 'Вырашана!',

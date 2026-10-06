@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  autoFillNotes,
   countSolutions,
+  findHint,
   generatePuzzle,
   generateSolvedGrid,
   isValidPlacement,
@@ -8,13 +10,7 @@ import {
   setCellValue,
   toggleNote,
 } from './engine';
-import {
-  boxTopLeft,
-  colOf,
-  findConflicts,
-  isGiven,
-  rowOf,
-} from '../types';
+import { boxTopLeft, colOf, findConflicts, isGiven, rowOf } from '../types';
 
 /** Deterministic RNG for reproducible boards. */
 function seededRng(seed: number): () => number {
@@ -105,8 +101,7 @@ describe('generatePuzzle', () => {
   it('hard puzzles have fewer clues than easy ones', () => {
     const easy = generatePuzzle('easy', seededRng(21));
     const hard = generatePuzzle('hard', seededRng(21));
-    const cluesOf = (puzzle: number[]) =>
-      puzzle.filter((v) => v !== 0).length;
+    const cluesOf = (puzzle: number[]) => puzzle.filter((v) => v !== 0).length;
     expect(cluesOf(hard.givens)).toBeLessThan(cluesOf(easy.givens));
   });
 });
@@ -146,8 +141,7 @@ describe('setCellValue', () => {
     const game = newGame('easy', seededRng(44));
     const emptyIndex = game.cells.findIndex((cell) => cell === 0);
     if (emptyIndex < 0) throw new Error('no empty cell in generated puzzle');
-    const wrongDigit =
-      game.solution[emptyIndex] === 1 ? 2 : 1;
+    const wrongDigit = game.solution[emptyIndex] === 1 ? 2 : 1;
 
     const next = setCellValue(game, emptyIndex, wrongDigit);
     expect(next.cells[emptyIndex]).toBe(0);
@@ -232,5 +226,48 @@ describe('findConflicts', () => {
 
   it('returns nothing for empty cells', () => {
     expect(findConflicts(Array<number>(81).fill(0), 40)).toEqual([]);
+  });
+});
+
+describe('autoFillNotes', () => {
+  it('fills empty cells with all valid placement candidates', () => {
+    const game = newGame('easy', seededRng(60));
+    const filled = autoFillNotes(game);
+    for (let i = 0; i < 81; i += 1) {
+      if (game.cells[i] !== 0) {
+        expect(filled.notes[i]).toEqual([]);
+      } else {
+        expect(filled.notes[i].length).toBeGreaterThan(0);
+        for (const candidate of filled.notes[i]) {
+          expect(isValidPlacement(game.cells, i, candidate)).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('no-ops if game is won', () => {
+    const game = newGame('easy', seededRng(61));
+    const won = { ...game, status: 'won' as const };
+    expect(autoFillNotes(won)).toBe(won);
+  });
+});
+
+describe('findHint', () => {
+  it('finds a logical or direct hint for an in-progress game', () => {
+    const game = newGame('easy', seededRng(62));
+    const hint = findHint(game);
+    expect(hint).not.toBeNull();
+    if (!hint) return;
+    expect(hint.digit).toBe(game.solution[hint.index]);
+    expect(game.cells[hint.index]).toBe(0);
+    expect(['naked_single', 'hidden_single', 'direct_placement']).toContain(
+      hint.type,
+    );
+  });
+
+  it('returns null when game is won', () => {
+    const game = newGame('easy', seededRng(63));
+    const won = { ...game, status: 'won' as const };
+    expect(findHint(won)).toBeNull();
   });
 });

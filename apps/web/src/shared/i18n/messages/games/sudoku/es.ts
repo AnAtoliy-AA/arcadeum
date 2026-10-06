@@ -26,6 +26,19 @@ export const esMessages = {
       erase: 'Borrar',
       placeDigit: 'Poner el dígito {{digit}}',
       noteDigit: 'Nota {{digit}}',
+      autoNotes: 'Notas automáticas',
+      autoNotesHint:
+        'Rellenar todos los candidatos válidos en las casillas vacías',
+      hint: 'Pista',
+      hintHint: 'Obtener una pista lógica para el siguiente movimiento',
+      applyHint: 'Aplicar pista',
+      dismissHint: 'Cerrar',
+      highlightErrors: 'Resaltar errores',
+      hintNakedSingle:
+        'Único desnudo: {{digit}} es el único número válido para esta casilla.',
+      hintHiddenSingle:
+        'Único oculto: {{digit}} solo puede ir aquí en su grupo.',
+      hintDirect: 'Colocación directa: {{digit}} va en esta casilla.',
     },
     result: {
       wonTitle: '¡Resuelto!',

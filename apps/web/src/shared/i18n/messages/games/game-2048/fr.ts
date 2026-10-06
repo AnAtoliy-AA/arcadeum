@@ -29,6 +29,11 @@ export const frMessages = {
       finish: 'Terminer',
       continue: 'Continuer',
     },
+    milestone: {
+      title: 'Étape franchie !',
+      body: 'Vous avez forgé la tuile légendaire {{tile}} !',
+      keepGoing: 'Continuer',
+    },
     rules: {
       objective:
         'Glissez les tuiles sur la grille 4×4 et fusionnez les nombres égaux jusqu’à créer la tuile 2048.',

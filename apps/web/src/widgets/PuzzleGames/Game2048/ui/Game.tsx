@@ -17,6 +17,7 @@ import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
 import { useGame2048Store } from '../store/game2048Store';
 import type { Direction } from '../types';
 import { Game2048Board } from './Game2048Board';
+import { Game2048MilestoneToast } from './Game2048MilestoneToast';
 
 export default function Game2048() {
   useTrackSoloGameStarted('game_2048_v1');
@@ -46,6 +47,8 @@ function Game2048Table() {
   const canUndo = useGame2048Store(
     (state) => state.history.length > 0 && state.finishedAt === null,
   );
+  const activeMilestone = useGame2048Store((state) => state.activeMilestone);
+  const dismissMilestone = useGame2048Store((state) => state.dismissMilestone);
 
   const isRunning = finishedAt === null;
   const pause = useSoloPause(isRunning, finishedAt);
@@ -211,7 +214,13 @@ function Game2048Table() {
         onClose: status === 'won' ? continuePlaying : undefined,
       }}
     >
-      <Game2048Board grid={grid} onMove={handleMove} />
+      <div className="flex w-full flex-col items-center gap-3">
+        <Game2048MilestoneToast
+          milestone={activeMilestone}
+          onDismiss={dismissMilestone}
+        />
+        <Game2048Board grid={grid} onMove={handleMove} />
+      </div>
 
       <div className="flex flex-col items-center gap-3">
         <div className="flex flex-col items-center gap-1 sm:hidden select-none">

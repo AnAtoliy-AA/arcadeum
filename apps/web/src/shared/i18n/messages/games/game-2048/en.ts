@@ -29,6 +29,11 @@ export const enMessages = {
       finish: 'Finish',
       continue: 'Continue',
     },
+    milestone: {
+      title: 'Milestone Reached!',
+      body: 'You forged the legendary {{tile}} tile.',
+      keepGoing: 'Keep Going',
+    },
     rules: {
       objective:
         'Slide tiles across the 4×4 grid and merge equal numbers until you create the 2048 tile.',

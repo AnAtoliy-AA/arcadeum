@@ -209,4 +209,18 @@ describe('Game2048 UI', () => {
     expect(useGame2048Store.getState().moves).toBe(1);
     expect(useGame2048Store.getState().score).toBe(4);
   });
+
+  it('renders milestone celebration toast and dismisses it', () => {
+    useGame2048Store.setState({
+      activeMilestone: 1024,
+      reachedMilestones: [1024],
+    });
+
+    render(<Game2048 />);
+
+    expect(screen.getByTestId('game-2048-milestone-toast')).toBeInTheDocument();
+    const dismissBtn = screen.getByTestId('game-2048-milestone-dismiss');
+    fireEvent.click(dismissBtn);
+    expect(useGame2048Store.getState().activeMilestone).toBeNull();
+  });
 });

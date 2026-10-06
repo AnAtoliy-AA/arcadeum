@@ -138,7 +138,10 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
                   aria-label={value !== 0 ? String(value) : undefined}
                   data-testid={`tile-${index}`}
                   className={cx(
-                    'flex select-none items-center justify-center rounded-2xl font-black transition-colors duration-100 transform-gpu',
+                    'flex select-none items-center justify-center rounded-2xl font-black transform-gpu',
+                    value !== 0
+                      ? 'transition-all duration-150 active:scale-95 animate-in zoom-in-90'
+                      : 'transition-colors duration-100',
                     getTileClasses(value),
                     isFullscreen && 'md:text-4xl',
                   )}

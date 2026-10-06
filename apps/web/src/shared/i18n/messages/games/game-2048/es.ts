@@ -29,6 +29,11 @@ export const esMessages = {
       finish: 'Finalizar',
       continue: 'Continuar',
     },
+    milestone: {
+      title: '¡Hito alcanzado!',
+      body: '¡Has forjado la legendaria ficha {{tile}}!',
+      keepGoing: 'Continuar jugando',
+    },
     rules: {
       objective:
         'Desliza las fichas por la cuadrícula 4×4 y fusiona números iguales hasta crear la ficha 2048.',

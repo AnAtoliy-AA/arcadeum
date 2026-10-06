@@ -17,7 +17,7 @@ import { useSoloTheme } from '@/features/games/store/soloThemeStore';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { SudokuThemeProvider } from '../lib/SudokuThemeContext';
 import { useSudokuStore } from '../store/sudokuStore';
-import type { Difficulty } from '../types';
+import { isGiven, type Difficulty } from '../types';
 import { SudokuBoard } from './SudokuBoard';
 import { SudokuHintCallout } from './SudokuHintCallout';
 import { SudokuKeypad } from './SudokuKeypad';
@@ -62,6 +62,10 @@ function SudokuTable() {
   const toggleHighlightErrors = useSudokuStore(
     (state) => state.toggleHighlightErrors,
   );
+  const inputMode = useSudokuStore((state) => state.inputMode);
+  const activeDigit = useSudokuStore((state) => state.activeDigit);
+  const toggleInputMode = useSudokuStore((state) => state.toggleInputMode);
+  const setActiveDigit = useSudokuStore((state) => state.setActiveDigit);
 
   const [selected, setSelected] = useState<number | null>(null);
   const [notesMode, setNotesMode] = useState(false);
@@ -98,6 +102,50 @@ function SudokuTable() {
       else setCell(selected, digit);
     },
     [selected, pause.isPaused, notesMode, note, setCell, play],
+  );
+
+  const handleKeypadDigit = useCallback(
+    (digit: number) => {
+      if (pause.isPaused) return;
+      if (inputMode === 'digit_first') {
+        setActiveDigit(activeDigit === digit ? null : digit);
+        play('click');
+        return;
+      }
+      applyDigit(digit);
+    },
+    [pause.isPaused, inputMode, activeDigit, setActiveDigit, play, applyDigit],
+  );
+
+  const handleCellSelect = useCallback(
+    (index: number | null) => {
+      if (pause.isPaused) return;
+      if (index === null) {
+        setSelected(null);
+        return;
+      }
+      setSelected(index);
+      if (inputMode === 'digit_first' && activeDigit !== null) {
+        if (!isGiven(game, index)) {
+          play('place_digit');
+          if (notesMode) note(index, activeDigit);
+          else {
+            const currentVal = game.cells[index];
+            setCell(index, currentVal === activeDigit ? 0 : activeDigit);
+          }
+        }
+      }
+    },
+    [
+      pause.isPaused,
+      inputMode,
+      activeDigit,
+      game,
+      notesMode,
+      note,
+      setCell,
+      play,
+    ],
   );
 
   const erase = useCallback(() => {
@@ -285,9 +333,18 @@ function SudokuTable() {
             game={game}
             selected={selected}
             notesMode={notesMode}
+            activeDigit={
+              inputMode === 'digit_first'
+                ? activeDigit
+                : selected !== null &&
+                    game.cells[selected] >= 1 &&
+                    game.cells[selected] <= 9
+                  ? game.cells[selected]
+                  : null
+            }
             activeHint={activeHint}
             highlightErrors={highlightErrors}
-            onSelect={setSelected}
+            onSelect={handleCellSelect}
           />
         </div>
 
@@ -296,12 +353,15 @@ function SudokuTable() {
           notesMode={notesMode}
           digitCounts={digitCounts}
           highlightErrors={highlightErrors}
-          onApplyDigit={applyDigit}
+          inputMode={inputMode}
+          activeDigit={activeDigit}
+          onApplyDigit={handleKeypadDigit}
           onToggleNotes={() => setNotesMode((mode) => !mode)}
           onErase={erase}
           onAutoNotes={autoFillNotes}
           onRequestHint={requestHint}
           onToggleHighlightErrors={toggleHighlightErrors}
+          onToggleInputMode={toggleInputMode}
         />
       </div>
     </SoloGameContainer>

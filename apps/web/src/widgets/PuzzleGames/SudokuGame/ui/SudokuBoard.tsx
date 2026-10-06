@@ -12,6 +12,7 @@ interface SudokuBoardProps {
   game: SudokuState;
   selected: number | null;
   notesMode: boolean;
+  activeDigit?: number | null;
   activeHint?: SudokuHint | null;
   highlightErrors?: boolean;
   onSelect: (index: number | null) => void;
@@ -38,6 +39,7 @@ export function SudokuBoard({
   game,
   selected,
   notesMode,
+  activeDigit,
   activeHint,
   highlightErrors = true,
   onSelect,
@@ -52,6 +54,10 @@ export function SudokuBoard({
       : [],
   );
   const selectedValue = selected === null ? 0 : game.cells[selected];
+  const highlightValue =
+    activeDigit !== null && activeDigit !== undefined && activeDigit > 0
+      ? activeDigit
+      : selectedValue;
 
   return (
     <div
@@ -83,7 +89,7 @@ export function SudokuBoard({
                 colOf(selected) === col ||
                 boxIdOf(selected) === boxIdOf(index));
             const isSameNumber =
-              value !== 0 && selectedValue !== 0 && value === selectedValue;
+              value !== 0 && highlightValue !== 0 && value === highlightValue;
             const hasConflict = conflicts.has(index);
             const given = isGiven(game, index);
 
@@ -110,7 +116,7 @@ export function SudokuBoard({
                       : isSelected
                         ? 'z-10 bg-[var(--sdk-selected)] ring-2 ring-[var(--primary)] shadow-[0_0_12px_var(--primary)] ring-inset font-black'
                         : isSameNumber
-                          ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)] ring-1 ring-[var(--primary)]/40 ring-inset'
+                          ? 'bg-[var(--sdk-same)] text-[var(--sdk-player-val)] ring-1 ring-cyan-400/40 ring-inset font-bold'
                           : isPeer
                             ? 'bg-[var(--sdk-peer)]'
                             : 'bg-[var(--sdk-cell-bg)] hover:bg-white/15',
@@ -133,7 +139,10 @@ export function SudokuBoard({
                     {value}
                   </span>
                 ) : (
-                  <NotesGrid notes={game.notes[index]} />
+                  <NotesGrid
+                    notes={game.notes[index]}
+                    highlightDigit={highlightValue}
+                  />
                 )}
                 {notesMode && isSelected && (
                   <span
@@ -158,7 +167,13 @@ function boxIdOf(index: number): number {
   return boxRow * 3 + boxCol;
 }
 
-function NotesGrid({ notes }: { notes: number[] }) {
+function NotesGrid({
+  notes,
+  highlightDigit,
+}: {
+  notes: number[];
+  highlightDigit?: number | null;
+}) {
   if (notes.length === 0) return null;
   return (
     <span className="grid h-full w-full grid-cols-3 grid-rows-3 p-[1px]">
@@ -168,7 +183,9 @@ function NotesGrid({ notes }: { notes: number[] }) {
           className={cx(
             'flex items-center justify-center font-mono text-[9px] leading-none sm:text-[10px]',
             notes.includes(digit)
-              ? 'text-[var(--sdk-note)] font-medium'
+              ? digit === highlightDigit
+                ? 'text-cyan-300 font-black scale-125'
+                : 'text-[var(--sdk-note)] font-medium'
               : 'text-transparent',
           )}
         >

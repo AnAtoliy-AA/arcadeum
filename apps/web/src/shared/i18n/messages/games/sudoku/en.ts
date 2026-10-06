@@ -33,6 +33,10 @@ export const enMessages = {
       applyHint: 'Apply hint',
       dismissHint: 'Dismiss',
       highlightErrors: 'Highlight errors',
+      cellFirst: 'Cell-First',
+      digitFirst: 'Digit-First',
+      switchToCellFirst: 'Switch to Cell-First mode',
+      switchToDigitFirst: 'Switch to Digit-First speed mode',
       hintNakedSingle:
         'Naked single: {{digit}} is the only valid number for this cell.',
       hintHiddenSingle:

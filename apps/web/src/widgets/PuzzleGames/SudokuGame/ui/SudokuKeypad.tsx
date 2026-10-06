@@ -3,6 +3,7 @@
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
+import type { SudokuInputMode } from '../types';
 
 const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -11,12 +12,15 @@ interface SudokuKeypadProps {
   notesMode: boolean;
   digitCounts: Record<number, number>;
   highlightErrors: boolean;
+  inputMode: SudokuInputMode;
+  activeDigit: number | null;
   onApplyDigit: (digit: number) => void;
   onToggleNotes: () => void;
   onErase: () => void;
   onAutoNotes: () => void;
   onRequestHint: () => void;
   onToggleHighlightErrors: () => void;
+  onToggleInputMode: () => void;
 }
 
 export function SudokuKeypad({
@@ -24,12 +28,15 @@ export function SudokuKeypad({
   notesMode,
   digitCounts,
   highlightErrors,
+  inputMode,
+  activeDigit,
   onApplyDigit,
   onToggleNotes,
   onErase,
   onAutoNotes,
   onRequestHint,
   onToggleHighlightErrors,
+  onToggleInputMode,
 }: SudokuKeypadProps) {
   const { t } = useTranslation();
   const isFullscreen = useSoloFullscreen();
@@ -48,13 +55,17 @@ export function SudokuKeypad({
           const count = digitCounts[digit] ?? 0;
           const remaining = Math.max(9 - count, 0);
           const isCompleted = remaining === 0;
+          const isSelectedDigit =
+            inputMode === 'digit_first' && activeDigit === digit;
+          const isDisabled =
+            isCompleted || (inputMode === 'cell_first' && selected === null);
 
           return (
             <button
               key={digit}
               type="button"
               onClick={() => onApplyDigit(digit)}
-              disabled={selected === null || isCompleted}
+              disabled={isDisabled}
               aria-label={
                 notesMode
                   ? t('games.sudoku_v1.controls.noteDigit', { digit })
@@ -65,9 +76,11 @@ export function SudokuKeypad({
                 'flex flex-col items-center justify-center rounded-xl border py-1.5 sm:py-2 font-mono transition-all shadow-sm select-none',
                 isCompleted
                   ? 'border-dashed border-white/10 bg-black/20 opacity-25 cursor-not-allowed'
-                  : notesMode
-                    ? 'border-[var(--primary)] bg-[var(--primary)]/25 text-[var(--color)] shadow-inner hover:bg-[var(--primary)]/35 active:scale-95 ring-1 ring-[var(--primary)]/50'
-                    : 'border-white/15 bg-white/10 text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/20 active:scale-95 hover:shadow-md',
+                  : isSelectedDigit
+                    ? 'border-cyan-400 bg-cyan-500/30 text-cyan-200 ring-2 ring-cyan-400 shadow-md font-black'
+                    : notesMode
+                      ? 'border-[var(--primary)] bg-[var(--primary)]/25 text-[var(--color)] shadow-inner hover:bg-[var(--primary)]/35 active:scale-95 ring-1 ring-[var(--primary)]/50'
+                      : 'border-white/15 bg-white/10 text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/20 active:scale-95 hover:shadow-md',
                 'disabled:opacity-60 disabled:cursor-not-allowed',
               )}
             >
@@ -87,7 +100,7 @@ export function SudokuKeypad({
         })}
       </div>
 
-      <div className="grid w-full grid-cols-2 sm:grid-cols-5 gap-1.5 sm:gap-2 select-none">
+      <div className="grid w-full grid-cols-2 sm:grid-cols-6 gap-1.5 sm:gap-2 select-none">
         <button
           type="button"
           onClick={onToggleNotes}
@@ -98,7 +111,7 @@ export function SudokuKeypad({
             'flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-1.5 sm:py-2 text-xs font-bold transition-all shadow-sm',
             notesMode
               ? 'border-[var(--primary)] bg-[var(--primary)]/30 text-[var(--color)] shadow-md shadow-[var(--primary)]/20 ring-1 ring-[var(--primary)]'
-              : 'border-white/15 bg-white/10 text-[var(--color)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/20 active:scale-95',
+              : 'border-white/15 bg-white/10 text-[var(--color)] hover:bg-white/15',
           )}
         >
           <span>✎</span>
@@ -109,8 +122,35 @@ export function SudokuKeypad({
 
         <button
           type="button"
+          onClick={onToggleInputMode}
+          title={
+            inputMode === 'digit_first'
+              ? t('games.sudoku_v1.controls.switchToCellFirst')
+              : t('games.sudoku_v1.controls.switchToDigitFirst')
+          }
+          data-testid="sudoku-input-mode-button"
+          className={cx(
+            'flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-1.5 sm:py-2 text-xs font-bold transition-all shadow-sm',
+            inputMode === 'digit_first'
+              ? 'border-cyan-500/50 bg-cyan-500/25 text-cyan-300 ring-1 ring-cyan-400/40'
+              : 'border-white/15 bg-white/10 text-[var(--color)] hover:bg-white/15',
+          )}
+        >
+          <span>🎯</span>
+          <span className="truncate">
+            {inputMode === 'digit_first'
+              ? t('games.sudoku_v1.controls.digitFirst')
+              : t('games.sudoku_v1.controls.cellFirst')}
+          </span>
+        </button>
+
+        <button
+          type="button"
           onClick={onErase}
-          disabled={selected === null}
+          disabled={
+            selected === null &&
+            (inputMode === 'cell_first' || activeDigit === null)
+          }
           title={t('games.sudoku_v1.controls.erase')}
           data-testid="sudoku-erase-button"
           className="flex items-center justify-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-2.5 py-1.5 sm:py-2 text-xs font-bold text-[var(--color)] shadow-sm transition-all hover:border-rose-500/60 hover:bg-rose-500/20 hover:text-rose-400 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
@@ -151,7 +191,7 @@ export function SudokuKeypad({
           aria-pressed={highlightErrors}
           data-testid="sudoku-toggle-errors-button"
           className={cx(
-            'col-span-2 sm:col-span-1 flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-1.5 sm:py-2 text-xs font-bold transition-all shadow-sm',
+            'flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-1.5 sm:py-2 text-xs font-bold transition-all shadow-sm',
             highlightErrors
               ? 'border-emerald-500/50 bg-emerald-500/20 text-emerald-300'
               : 'border-white/15 bg-white/10 text-white/50 hover:bg-white/15',

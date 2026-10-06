@@ -33,6 +33,10 @@ export const byMessages = {
       applyHint: 'Ужыць падказку',
       dismissHint: 'Закрыць',
       highlightErrors: 'Падсвятленне памылак',
+      cellFirst: 'Клетка-лічба',
+      digitFirst: 'Хуткі ўвод',
+      switchToCellFirst: 'Пераключыць на выбар клеткі',
+      switchToDigitFirst: 'Пераключыць на рэжым хуткай расстаноўкі лічбы',
       hintNakedSingle:
         'Адзіночка: {{digit}} - адзіны магчымы лік для гэтай клеткі.',
       hintHiddenSingle:

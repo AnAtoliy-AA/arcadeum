@@ -33,6 +33,10 @@ export const frMessages = {
       applyHint: 'Appliquer l’indice',
       dismissHint: 'Fermer',
       highlightErrors: 'Mettre en évidence les erreurs',
+      cellFirst: 'Case d’abord',
+      digitFirst: 'Chiffre d’abord',
+      switchToCellFirst: 'Passer en mode case d’abord',
+      switchToDigitFirst: 'Passer en mode rapide par chiffre',
       hintNakedSingle:
         'Candidat unique : {{digit}} est le seul chiffre valide pour cette case.',
       hintHiddenSingle:

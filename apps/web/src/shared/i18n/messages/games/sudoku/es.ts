@@ -34,6 +34,10 @@ export const esMessages = {
       applyHint: 'Aplicar pista',
       dismissHint: 'Cerrar',
       highlightErrors: 'Resaltar errores',
+      cellFirst: 'Casilla primero',
+      digitFirst: 'Dígito primero',
+      switchToCellFirst: 'Cambiar a modo casilla primero',
+      switchToDigitFirst: 'Cambiar a modo rápido por dígito',
       hintNakedSingle:
         'Único desnudo: {{digit}} es el único número válido para esta casilla.',
       hintHiddenSingle:

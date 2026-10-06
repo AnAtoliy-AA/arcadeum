@@ -84,3 +84,5 @@ export interface SudokuHint {
   digit: number;
   relatedIndices: number[];
 }
+
+export type SudokuInputMode = 'cell_first' | 'digit_first';

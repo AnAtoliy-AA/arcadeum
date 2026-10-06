@@ -13,7 +13,12 @@ import {
   setCellValue,
   toggleNote,
 } from '../lib/engine';
-import type { Difficulty, SudokuHint, SudokuState } from '../types';
+import type {
+  Difficulty,
+  SudokuHint,
+  SudokuInputMode,
+  SudokuState,
+} from '../types';
 
 export const SUDOKU_GAME_ID = 'sudoku_v1';
 
@@ -31,6 +36,8 @@ interface SudokuStoreState {
   usedUndo: boolean;
   activeHint: SudokuHint | null;
   highlightErrors: boolean;
+  inputMode: SudokuInputMode;
+  activeDigit: number | null;
   setCell: (index: number, value: number) => void;
   note: (index: number, digit: number) => void;
   undo: () => void;
@@ -41,6 +48,9 @@ interface SudokuStoreState {
   applyHint: () => void;
   autoFillNotes: () => void;
   toggleHighlightErrors: () => void;
+  setInputMode: (mode: SudokuInputMode) => void;
+  toggleInputMode: () => void;
+  setActiveDigit: (digit: number | null) => void;
 }
 
 export const useSudokuStore = create<SudokuStoreState>()(
@@ -54,6 +64,8 @@ export const useSudokuStore = create<SudokuStoreState>()(
       usedUndo: false,
       activeHint: null,
       highlightErrors: true,
+      inputMode: 'cell_first',
+      activeDigit: null,
 
       setCell: (index, value) =>
         set((state) => {
@@ -180,6 +192,16 @@ export const useSudokuStore = create<SudokuStoreState>()(
         set((state) => ({
           highlightErrors: !state.highlightErrors,
         })),
+
+      setInputMode: (inputMode) => set({ inputMode }),
+
+      toggleInputMode: () =>
+        set((state) => ({
+          inputMode:
+            state.inputMode === 'cell_first' ? 'digit_first' : 'cell_first',
+        })),
+
+      setActiveDigit: (activeDigit) => set({ activeDigit }),
     }),
     {
       name: 'arcadeum_sudoku_game_v1',

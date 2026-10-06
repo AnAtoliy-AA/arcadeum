@@ -16,6 +16,7 @@ export const esMessages = {
       time: 'Tiempo',
       newGame: 'Nueva partida',
       movesLabel: 'Movimientos',
+      undosAvailable: 'Deshacer',
     },
     result: {
       wonTitle: '¡2048!',

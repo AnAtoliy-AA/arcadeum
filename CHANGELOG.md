@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- add solo games intelligent assistants, QoL tools, and animations across Sudoku, Minesweeper, and 2048 (ARC-977) (ARC-977)
+- add solo games intelligent assistants, Klondike draw 3 mode, smart hints, tactile chords, flagless speedruns, and touch swipes (ARC-977) (ARC-977)
 
 ## [1.30.54] - 2026-10-06
 

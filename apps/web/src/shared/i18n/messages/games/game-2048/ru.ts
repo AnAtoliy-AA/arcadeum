@@ -16,6 +16,7 @@ export const ruMessages = {
       time: 'Время',
       newGame: 'Новая игра',
       movesLabel: 'Ходы',
+      undosAvailable: 'Ходов назад',
     },
     result: {
       wonTitle: '2048!',

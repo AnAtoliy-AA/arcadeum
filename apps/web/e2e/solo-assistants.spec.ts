@@ -101,4 +101,56 @@ test.describe('Solo Games Intelligent Assistants & QoL', () => {
 
     await expect(toast).not.toBeVisible();
   });
+
+  test('Solitaire draw mode toggle and smart hint engine operate correctly', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/solitaire/play');
+
+    const board = page.getByTestId('solitaire-board');
+    await expect(board).toBeVisible();
+
+    const drawModeBtn = page.getByTestId('solitaire-draw-mode-button');
+    await expect(drawModeBtn).toBeVisible();
+    await drawModeBtn.click();
+    await expect(drawModeBtn).toContainText('Draw 3');
+
+    const hintBtn = page.getByTestId('solitaire-hint-button');
+    await expect(hintBtn).toBeVisible();
+    await hintBtn.click();
+
+    const hintCallout = page.getByTestId('solitaire-hint-callout');
+    await expect(hintCallout).toBeVisible();
+  });
+
+  test('Sudoku digit-first mode toggle operates seamlessly', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/sudoku/play');
+
+    const board = page.getByRole('grid', { name: 'Sudoku' });
+    await expect(board).toBeVisible();
+
+    const modeBtn = page.getByTestId('sudoku-input-mode-button');
+    await expect(modeBtn).toBeVisible();
+    await modeBtn.click();
+
+    const digitPad1 = page.getByTestId('sudoku-digit-1');
+    await expect(digitPad1).toBeVisible();
+    await digitPad1.click();
+  });
+
+  test('Minesweeper flagless NF mode toggles correctly', async ({ page }) => {
+    await navigateTo(page, '/en/games/minesweeper/play');
+
+    const board = page.getByRole('grid');
+    await expect(board).toBeVisible();
+
+    const nfBtn = page.getByTestId('minesweeper-flagless-button');
+    await expect(nfBtn).toBeVisible();
+    await expect(nfBtn).toHaveAttribute('aria-pressed', 'false');
+
+    await nfBtn.click();
+    await expect(nfBtn).toHaveAttribute('aria-pressed', 'true');
+  });
 });

@@ -16,6 +16,7 @@ export const frMessages = {
       time: 'Temps',
       newGame: 'Nouvelle partie',
       movesLabel: 'Coups',
+      undosAvailable: 'Annulations',
     },
     result: {
       wonTitle: '2048 !',

@@ -43,6 +43,7 @@ function Game2048Table() {
   const move = useGame2048Store((state) => state.move);
   const continuePlaying = useGame2048Store((state) => state.continuePlaying);
   const newGame = useGame2048Store((state) => state.newGame);
+  const history = useGame2048Store((state) => state.history);
   const undo = useGame2048Store((state) => state.undo);
   const canUndo = useGame2048Store(
     (state) => state.history.length > 0 && state.finishedAt === null,
@@ -147,6 +148,17 @@ function Game2048Table() {
       icon: '⏱️',
       dataTestId: 'game-2048-timer',
     },
+    ...(history.length > 0
+      ? [
+          {
+            id: 'undos',
+            label: t('games.game_2048_v1.hud.undosAvailable'),
+            value: history.length,
+            icon: '↩️',
+            dataTestId: 'game-2048-undos-counter',
+          },
+        ]
+      : []),
   ];
 
   const actions = (

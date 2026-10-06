@@ -16,6 +16,7 @@ export const byMessages = {
       time: 'Час',
       newGame: 'Новая гульня',
       movesLabel: 'Ходы',
+      undosAvailable: 'Хадоў назад',
     },
     result: {
       wonTitle: '2048!',

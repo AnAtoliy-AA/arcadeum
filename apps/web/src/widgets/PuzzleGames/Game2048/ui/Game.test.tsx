@@ -223,4 +223,37 @@ describe('Game2048 UI', () => {
     fireEvent.click(dismissBtn);
     expect(useGame2048Store.getState().activeMilestone).toBeNull();
   });
+
+  it('displays undos counter when history is present and supports pointer drag swipe', () => {
+    useGame2048Store.setState({
+      grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      history: [
+        {
+          grid: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 0,
+          moves: 0,
+        },
+      ],
+    });
+
+    render(<Game2048 />);
+
+    const undosCounter = screen.getByTestId('game-2048-undos-counter');
+    expect(undosCounter).toBeInTheDocument();
+    expect(undosCounter).toHaveTextContent('1');
+
+    const board = screen.getByTestId('game-2048-board');
+    fireEvent.pointerDown(board, {
+      pointerType: 'mouse',
+      clientX: 100,
+      clientY: 100,
+    });
+    fireEvent.pointerUp(board, {
+      pointerType: 'mouse',
+      clientX: 50,
+      clientY: 100,
+    });
+
+    expect(useGame2048Store.getState().moves).toBe(1);
+  });
 });

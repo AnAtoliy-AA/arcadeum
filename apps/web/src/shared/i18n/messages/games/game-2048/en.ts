@@ -16,6 +16,7 @@ export const enMessages = {
       time: 'Time',
       newGame: 'New game',
       movesLabel: 'Moves',
+      undosAvailable: 'Undos',
     },
     result: {
       wonTitle: '2048!',

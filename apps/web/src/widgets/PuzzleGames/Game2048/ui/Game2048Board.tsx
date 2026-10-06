@@ -51,6 +51,7 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
   const theme = useGame2048Theme();
   const isFullscreen = useSoloFullscreen();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
   const swiped = useRef(false);
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -107,6 +108,35 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
     swiped.current = false;
   };
 
+  const handlePointerDown = (event: React.PointerEvent) => {
+    if (event.pointerType === 'mouse') {
+      pointerStart.current = { x: event.clientX, y: event.clientY };
+    }
+  };
+
+  const handlePointerUp = (event: React.PointerEvent) => {
+    const start = pointerStart.current;
+    pointerStart.current = null;
+    if (!start) return;
+
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+    if (absX > absY) {
+      onMove(dx > 0 ? 'right' : 'left');
+    } else {
+      onMove(dy > 0 ? 'down' : 'up');
+    }
+  };
+
+  const handlePointerCancel = () => {
+    pointerStart.current = null;
+  };
+
   return (
     <div
       data-testid="game-2048-board"
@@ -121,6 +151,9 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onTouchCancel={handleTouchCancel}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
     >
       <div
         role="grid"

@@ -15,10 +15,14 @@ import {
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { ClansService } from './clans.service';
+import { ClanLeaderboardsService } from './clan-leaderboards.service';
+import { CommunityChallengesService } from './community-challenges.service';
 import { CreateClanDto } from './dto/create-clan.dto';
 import { UpdateClanDto } from './dto/update-clan.dto';
 import { JoinClanDto } from './dto/join-clan.dto';
 import { SetMemberRoleDto } from './dto/set-member-role.dto';
+import { ClanLeaderboardQueryDto } from './dto/clan-leaderboard-query.dto';
+import { ContributeChallengeDto } from './dto/contribute-challenge.dto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
 interface RequestWithUser {
@@ -28,7 +32,11 @@ interface RequestWithUser {
 @Controller('clans')
 @UseGuards(JwtAuthGuard)
 export class ClansController {
-  constructor(private readonly clansService: ClansService) {}
+  constructor(
+    private readonly clansService: ClansService,
+    private readonly clanLeaderboardsService: ClanLeaderboardsService,
+    private readonly communityChallengesService: CommunityChallengesService,
+  ) {}
 
   @Post()
   createClan(@Req() req: RequestWithUser, @Body() dto: CreateClanDto) {
@@ -38,6 +46,35 @@ export class ClansController {
   @Get('me')
   getMyClan(@Req() req: RequestWithUser) {
     return this.clansService.getUserClan(req.user.userId);
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get('leaderboard')
+  getLeaderboard(@Query() query: ClanLeaderboardQueryDto) {
+    return this.clanLeaderboardsService.getClanLeaderboard(
+      query.sortBy,
+      query.limit,
+      query.offset,
+    );
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get('challenges')
+  getChallenges() {
+    return this.communityChallengesService.getActiveChallenges();
+  }
+
+  @Post('challenges/:id/contribute')
+  contributeChallenge(
+    @Param('id') id: string,
+    @Body() dto: ContributeChallengeDto,
+  ) {
+    return this.communityChallengesService.contributeToChallenge(
+      id,
+      dto.amount,
+    );
   }
 
   @UseInterceptors(CacheInterceptor)
@@ -58,6 +95,16 @@ export class ClansController {
   @Get('invite/:code')
   getClanByInviteCode(@Param('code') code: string) {
     return this.clansService.getClanByInviteCode(code);
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get(':id/mvps')
+  getClanMvps(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.clanLeaderboardsService.getClanMvpMembers(
+      id,
+      limit ? parseInt(limit, 10) : 10,
+    );
   }
 
   @UseInterceptors(CacheInterceptor)

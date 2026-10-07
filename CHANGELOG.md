@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add global clan leaderboard rankings, weekly MVP member showcase, and cooperative platform community challenge events (ARC-978) (ARC-978)
+
 ## [1.30.55] - 2026-10-06
 
 ### Added
+
 - add direct pointer swipe gestures, undo move counter, and e2e test suite (ARC-977) (ARC-977)
 - add tactile chord feedback, flagless speedrun mode, and robust e2e selectors (ARC-977) (ARC-977)
 - add digit-first speed mode and board-wide number highlighting (ARC-977) (ARC-977)
@@ -19,14 +24,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add intelligent candidate auto-fill, conflict highlighting, and smart hints (ARC-977) (ARC-977)
 
 ### Fixed
+
 - resolve e2e strict mode locator collisions and add board testid (ARC-977) (ARC-977)
 
 ### Documentation
-- sync generated-roadmap.json with ARC-977 (ARC-977) (ARC-977
-ARC-977)
-- update ARC-977 solo games assistants status and changelog (ARC-977) (ARC-977
-ARC-977)
 
+- sync generated-roadmap.json with ARC-977 (ARC-977) (ARC-977
+  ARC-977)
+- update ARC-977 solo games assistants status and changelog (ARC-977) (ARC-977
+  ARC-977)
 
 ## [1.30.54] - 2026-10-06
 

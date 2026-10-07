@@ -1,5 +1,13 @@
 import { create } from 'zustand';
-import type { Clan, ClanMember } from '../model/types';
+import type {
+  Clan,
+  ClanMember,
+  ClanTab,
+  ClanLeaderboardEntry,
+  ClanLeaderboardSort,
+  ClanMvpEntry,
+  CommunityChallenge,
+} from '../model/types';
 import { clansApi } from '../api';
 
 interface ClansState {
@@ -9,14 +17,33 @@ interface ClansState {
   popularClans: Clan[];
   selectedClan: Clan | null;
   selectedClanMembers: ClanMember[];
+  activeTab: ClanTab;
+  leaderboardEntries: ClanLeaderboardEntry[];
+  leaderboardTotal: number;
+  leaderboardSort: ClanLeaderboardSort;
+  communityChallenges: CommunityChallenge[];
+  clanMvps: ClanMvpEntry[];
   loading: boolean;
   error: string | null;
 
+  setActiveTab: (tab: ClanTab) => void;
+  setLeaderboardSort: (sort: ClanLeaderboardSort) => void;
   fetchMyClan: (token: string) => Promise<void>;
   fetchClanById: (clanId: string, token: string) => Promise<void>;
   fetchClanMembers: (clanId: string, token: string) => Promise<void>;
   fetchPopularClans: (token?: string) => Promise<void>;
   searchClans: (query: string, token?: string) => Promise<void>;
+  fetchLeaderboard: (
+    sort?: ClanLeaderboardSort,
+    token?: string,
+  ) => Promise<void>;
+  fetchCommunityChallenges: (token?: string) => Promise<void>;
+  fetchClanMvps: (clanId: string, token?: string) => Promise<void>;
+  contributeToChallenge: (
+    challengeId: string,
+    amount?: number,
+    token?: string,
+  ) => Promise<void>;
   createClan: (
     data: {
       name: string;
@@ -35,15 +62,25 @@ interface ClansState {
   reset: () => void;
 }
 
-export const useClansStore = create<ClansState>((set, _get) => ({
+export const useClansStore = create<ClansState>((set, get) => ({
   myClan: null,
   myClanMembers: [],
   searchResults: [],
   popularClans: [],
   selectedClan: null,
   selectedClanMembers: [],
+  activeTab: 'overview',
+  leaderboardEntries: [],
+  leaderboardTotal: 0,
+  leaderboardSort: 'wins',
+  communityChallenges: [],
+  clanMvps: [],
   loading: false,
   error: null,
+
+  setActiveTab: (activeTab) => set({ activeTab }),
+
+  setLeaderboardSort: (leaderboardSort) => set({ leaderboardSort }),
 
   fetchMyClan: async (token) => {
     set({ loading: true, error: null });
@@ -53,6 +90,7 @@ export const useClansStore = create<ClansState>((set, _get) => ({
       if (clan) {
         const members = await clansApi.getClanMembers(clan.id, { token });
         set({ myClanMembers: members });
+        get().fetchClanMvps(clan.id, token);
       }
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
@@ -103,6 +141,64 @@ export const useClansStore = create<ClansState>((set, _get) => ({
     }
   },
 
+  fetchLeaderboard: async (sort, token) => {
+    const currentSort = sort ?? get().leaderboardSort;
+    try {
+      const res = await clansApi.getLeaderboard(
+        { sortBy: currentSort, limit: 25 },
+        token ? { token } : undefined,
+      );
+      set({
+        leaderboardEntries: res.entries,
+        leaderboardTotal: res.total,
+        leaderboardSort: currentSort,
+      });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchCommunityChallenges: async (token) => {
+    try {
+      const challenges = await clansApi.getCommunityChallenges(
+        token ? { token } : undefined,
+      );
+      set({ communityChallenges: challenges });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchClanMvps: async (clanId, token) => {
+    try {
+      const mvps = await clansApi.getClanMvps(
+        clanId,
+        10,
+        token ? { token } : undefined,
+      );
+      set({ clanMvps: mvps });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  contributeToChallenge: async (challengeId, amount = 1, token) => {
+    try {
+      const updated = await clansApi.contributeToChallenge(
+        challengeId,
+        amount,
+        token ? { token } : undefined,
+      );
+      set((state) => ({
+        communityChallenges: state.communityChallenges.map((c) =>
+          c.id === updated.id ? updated : c,
+        ),
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
   createClan: async (data, token) => {
     set({ loading: true, error: null });
     try {
@@ -131,7 +227,12 @@ export const useClansStore = create<ClansState>((set, _get) => ({
     set({ loading: true, error: null });
     try {
       await clansApi.leaveClan(clanId, { token });
-      set({ myClan: null, myClanMembers: [], loading: false });
+      set({
+        myClan: null,
+        myClanMembers: [],
+        clanMvps: [],
+        loading: false,
+      });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
       throw err;
@@ -139,8 +240,6 @@ export const useClansStore = create<ClansState>((set, _get) => ({
   },
 
   removeMember: async (clanId, token) => {
-    // This is a placeholder - actual implementation would need a target userId
-    // The real removeMember is called from ClansPageContent with userId
     void clanId;
     void token;
   },
@@ -176,6 +275,12 @@ export const useClansStore = create<ClansState>((set, _get) => ({
       popularClans: [],
       selectedClan: null,
       selectedClanMembers: [],
+      activeTab: 'overview',
+      leaderboardEntries: [],
+      leaderboardTotal: 0,
+      leaderboardSort: 'wins',
+      communityChallenges: [],
+      clanMvps: [],
       loading: false,
       error: null,
     }),

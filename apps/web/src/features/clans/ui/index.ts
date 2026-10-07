@@ -3,3 +3,7 @@ export { JoinClanModal } from './JoinClanModal';
 export { ClanCard } from './ClanCard';
 export { ClanMembers } from './ClanMembers';
 export { InviteModal } from './InviteModal';
+export { ClanLeaderboardTable } from './ClanLeaderboardTable';
+export { CommunityChallengeCard } from './CommunityChallengeCard';
+export { CommunityChallengesList } from './CommunityChallengesList';
+export { ClanMvpBoard } from './ClanMvpBoard';

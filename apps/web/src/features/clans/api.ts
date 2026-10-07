@@ -116,4 +116,54 @@ export const clansApi = {
       options,
     );
   },
+
+  getLeaderboard: async (
+    params?: {
+      sortBy?: string;
+      limit?: number;
+      offset?: number;
+    },
+    options?: ApiClientOptions,
+  ) => {
+    const query = new URLSearchParams();
+    if (params?.sortBy) query.set('sortBy', params.sortBy);
+    if (params?.limit !== undefined) query.set('limit', String(params.limit));
+    if (params?.offset !== undefined)
+      query.set('offset', String(params.offset));
+    const qs = query.toString();
+    return apiClient.get<import('./model/types').ClanLeaderboardResponse>(
+      `/clans/leaderboard${qs ? `?${qs}` : ''}`,
+      options,
+    );
+  },
+
+  getClanMvps: async (
+    clanId: string,
+    limit = 10,
+    options?: ApiClientOptions,
+  ) => {
+    return apiClient.get<import('./model/types').ClanMvpEntry[]>(
+      `/clans/${clanId}/mvps?limit=${limit}`,
+      options,
+    );
+  },
+
+  getCommunityChallenges: async (options?: ApiClientOptions) => {
+    return apiClient.get<import('./model/types').CommunityChallenge[]>(
+      '/clans/challenges',
+      options,
+    );
+  },
+
+  contributeToChallenge: async (
+    challengeId: string,
+    amount = 1,
+    options?: ApiClientOptions,
+  ) => {
+    return apiClient.post<import('./model/types').CommunityChallenge>(
+      `/clans/challenges/${challengeId}/contribute`,
+      { amount },
+      options,
+    );
+  },
 };

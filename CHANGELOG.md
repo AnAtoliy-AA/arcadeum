@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.30.56] - 2026-10-07
 
-- add global clan leaderboard rankings, weekly MVP member showcase, and cooperative platform community challenge events (ARC-978) (ARC-978)
+### Added
+- add clan leaderboards, mvp showcase, and community challenges (ARC-978) (ARC-978)
+
+### Documentation
+- sync generated-roadmap.json with ARC-978 (ARC-978) (ARC-978
+ARC-978)
+
 
 ## [1.30.55] - 2026-10-06
 

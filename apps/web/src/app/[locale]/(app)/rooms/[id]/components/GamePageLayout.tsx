@@ -236,7 +236,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       <style>{roomStyles}</style>
       <div
         ref={gameContainerRef}
-        className="games-room-container flex flex-col flex-1 min-h-0 gap-4 max-[800px]:gap-2"
+        className="games-room-container flex flex-col flex-1 min-h-0 max-[1150px]:min-h-[auto] gap-4 max-[800px]:gap-2"
       >
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}

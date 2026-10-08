@@ -75,5 +75,37 @@ export interface CommunityChallenge {
   status: 'active' | 'completed' | 'upcoming';
 }
 
-export type ClanTab = 'overview' | 'leaderboard' | 'challenges';
+export interface ClanWarLogEntry {
+  id: string;
+  playerClanId: string;
+  playerName: string;
+  opponentClanId: string;
+  opponentName: string;
+  gameId: string;
+  winnerClanId: string;
+  timestamp: string;
+}
+
+export type ClanWarStatus = 'pending' | 'active' | 'completed' | 'declined';
+
+export interface ClanWar {
+  id: string;
+  initiatorClanId: string;
+  initiatorClanName: string;
+  initiatorClanTag: string;
+  initiatorScore: number;
+  targetClanId: string;
+  targetClanName: string;
+  targetClanTag: string;
+  targetClanScore: number;
+  targetScore: number;
+  gameId: string;
+  status: ClanWarStatus;
+  winnerClanId: string | null;
+  expiresAt: string;
+  createdAt: string;
+  matchLogs: ClanWarLogEntry[];
+}
+
+export type ClanTab = 'overview' | 'leaderboard' | 'challenges' | 'wars';
 export type ClanLeaderboardSort = 'wins' | 'members' | 'winRate';

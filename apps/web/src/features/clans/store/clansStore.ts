@@ -23,11 +23,36 @@ interface ClansState {
   leaderboardSort: ClanLeaderboardSort;
   communityChallenges: CommunityChallenge[];
   clanMvps: ClanMvpEntry[];
+  clanWars: import('../model/types').ClanWar[];
+  activeWar: import('../model/types').ClanWar | null;
+  warHistory: import('../model/types').ClanWar[];
   loading: boolean;
   error: string | null;
 
   setActiveTab: (tab: ClanTab) => void;
   setLeaderboardSort: (sort: ClanLeaderboardSort) => void;
+  fetchActiveWars: (clanId?: string, token?: string) => Promise<void>;
+  fetchWarById: (warId: string, token?: string) => Promise<void>;
+  declareWar: (
+    targetClanId: string,
+    params?: { gameId?: string; targetScore?: number },
+    token?: string,
+  ) => Promise<import('../model/types').ClanWar | null>;
+  respondToWar: (
+    warId: string,
+    accept: boolean,
+    token: string,
+  ) => Promise<void>;
+  recordWarVictory: (
+    warId: string,
+    winningClanId: string,
+    winnerName: string,
+    loserClanId: string,
+    loserName: string,
+    gameId?: string,
+    token?: string,
+  ) => Promise<void>;
+  fetchWarHistory: (clanId: string, token?: string) => Promise<void>;
   fetchMyClan: (token: string) => Promise<void>;
   fetchClanById: (clanId: string, token: string) => Promise<void>;
   fetchClanMembers: (clanId: string, token: string) => Promise<void>;
@@ -75,6 +100,9 @@ export const useClansStore = create<ClansState>((set, get) => ({
   leaderboardSort: 'wins',
   communityChallenges: [],
   clanMvps: [],
+  clanWars: [],
+  activeWar: null,
+  warHistory: [],
   loading: false,
   error: null,
 
@@ -199,6 +227,104 @@ export const useClansStore = create<ClansState>((set, get) => ({
     }
   },
 
+  fetchActiveWars: async (clanId, token) => {
+    try {
+      const wars = await clansApi.getActiveClanWars(
+        clanId,
+        token ? { token } : undefined,
+      );
+      set({ clanWars: wars });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchWarById: async (warId, token) => {
+    try {
+      const war = await clansApi.getClanWarById(
+        warId,
+        token ? { token } : undefined,
+      );
+      set({ activeWar: war });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  declareWar: async (targetClanId, params, token) => {
+    const myClan = get().myClan;
+    if (!myClan || !token) return null;
+    try {
+      const created = await clansApi.declareClanWar(
+        myClan.id,
+        targetClanId,
+        params,
+        { token },
+      );
+      set((state) => ({ clanWars: [created, ...state.clanWars] }));
+      return created;
+    } catch (err) {
+      set({ error: (err as Error).message });
+      return null;
+    }
+  },
+
+  respondToWar: async (warId, accept, token) => {
+    const myClan = get().myClan;
+    if (!myClan || !token) return;
+    try {
+      const updated = await clansApi.respondClanWar(myClan.id, warId, accept, {
+        token,
+      });
+      set((state) => ({
+        clanWars: state.clanWars.map((w) =>
+          w.id === updated.id ? updated : w,
+        ),
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  recordWarVictory: async (
+    warId,
+    winningClanId,
+    winnerName,
+    loserClanId,
+    loserName,
+    gameId,
+    token,
+  ) => {
+    try {
+      const updated = await clansApi.recordClanWarMatch(
+        warId,
+        { winningClanId, winnerName, loserClanId, loserName, gameId },
+        token ? { token } : undefined,
+      );
+      set((state) => ({
+        clanWars: state.clanWars.map((w) =>
+          w.id === updated.id ? updated : w,
+        ),
+        activeWar:
+          state.activeWar?.id === updated.id ? updated : state.activeWar,
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchWarHistory: async (clanId, token) => {
+    try {
+      const history = await clansApi.getClanWarHistory(
+        clanId,
+        token ? { token } : undefined,
+      );
+      set({ warHistory: history });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
   createClan: async (data, token) => {
     set({ loading: true, error: null });
     try {
@@ -281,6 +407,9 @@ export const useClansStore = create<ClansState>((set, get) => ({
       leaderboardSort: 'wins',
       communityChallenges: [],
       clanMvps: [],
+      clanWars: [],
+      activeWar: null,
+      warHistory: [],
       loading: false,
       error: null,
     }),

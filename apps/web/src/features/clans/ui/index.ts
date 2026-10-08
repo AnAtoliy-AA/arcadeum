@@ -7,3 +7,6 @@ export { ClanLeaderboardTable } from './ClanLeaderboardTable';
 export { CommunityChallengeCard } from './CommunityChallengeCard';
 export { CommunityChallengesList } from './CommunityChallengesList';
 export { ClanMvpBoard } from './ClanMvpBoard';
+export { ClanWarCard } from './ClanWarCard';
+export { DeclareWarModal } from './DeclareWarModal';
+export { ClanWarsHub } from './ClanWarsHub';

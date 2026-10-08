@@ -166,4 +166,83 @@ export const clansApi = {
       options,
     );
   },
+
+  getActiveClanWars: async (
+    clanId?: string,
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar[]> => {
+    const qs = clanId ? `?clanId=${encodeURIComponent(clanId)}` : '';
+    return apiClient.get<import('./model/types').ClanWar[]>(
+      `/clans/wars/active${qs}`,
+      options,
+    );
+  },
+
+  getClanWarById: async (
+    warId: string,
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar> => {
+    return apiClient.get<import('./model/types').ClanWar>(
+      `/clans/wars/${warId}`,
+      options,
+    );
+  },
+
+  declareClanWar: async (
+    clanId: string,
+    targetClanId: string,
+    params?: { gameId?: string; targetScore?: number },
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar> => {
+    return apiClient.post<import('./model/types').ClanWar>(
+      `/clans/wars/challenge?clanId=${encodeURIComponent(clanId)}`,
+      {
+        targetClanId,
+        gameId: params?.gameId,
+        targetScore: params?.targetScore,
+      },
+      options,
+    );
+  },
+
+  respondClanWar: async (
+    clanId: string,
+    warId: string,
+    accept: boolean,
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar> => {
+    return apiClient.post<import('./model/types').ClanWar>(
+      `/clans/wars/${warId}/respond?clanId=${encodeURIComponent(clanId)}`,
+      { accept },
+      options,
+    );
+  },
+
+  recordClanWarMatch: async (
+    warId: string,
+    matchData: {
+      winningClanId: string;
+      winnerName: string;
+      loserClanId: string;
+      loserName: string;
+      gameId?: string;
+    },
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar> => {
+    return apiClient.post<import('./model/types').ClanWar>(
+      `/clans/wars/${warId}/record-match`,
+      matchData,
+      options,
+    );
+  },
+
+  getClanWarHistory: async (
+    clanId: string,
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar[]> => {
+    return apiClient.get<import('./model/types').ClanWar[]>(
+      `/clans/${clanId}/wars`,
+      options,
+    );
+  },
 };

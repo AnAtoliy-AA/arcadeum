@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.57] - 2026-10-08
+
+### Fixed
+- keep hand cards clear of the fixed mobile hand bar (ARC-000) (ARC-000)
+
+
 ## [1.30.56] - 2026-10-07
 
 ### Added

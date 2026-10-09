@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.30.59] - 2026-10-09
 
-- add clan wars hub, inter-clan challenges, and match victory reporting (ARC-979) (ARC-979)
+### Added
+- add clan wars hub, matchup cards, and challenge modal (ARC-979) (ARC-979)
+- add clan wars service, schema, and endpoints (ARC-979) (ARC-979)
+
+### Documentation
+- update roadmap and changelog for clan wars (ARC-979) (ARC-979)
+
 
 ## [1.30.58] - 2026-10-08
 

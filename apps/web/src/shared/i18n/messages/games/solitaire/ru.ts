@@ -18,6 +18,22 @@ export const ruMessages = {
       moves: 'Ходы',
       time: 'Время',
       newGame: 'Новая игра',
+      autoPlace: 'Автоставка',
+      draw1: 'По 1 карте',
+      draw3: 'По 3 карты',
+      switchToDraw1: 'Переключить на раздачу по 1 карте',
+      switchToDraw3: 'Переключить на раздачу по 3 карты',
+      hint: 'Подсказка',
+      hintHint: 'Показать лучший ход',
+      applyHint: 'Применить',
+      dismissHint: 'Закрыть',
+    },
+    hint: {
+      wasteToFoundation: 'Переместите карту из сброса в дом',
+      tableauToFoundation: 'Переместите карту из столбца в дом',
+      wasteToTableau: 'Переместите карту из сброса в столбец',
+      tableauToTableau:
+        'Переместите ряд карт в другой столбец, чтобы открыть закрытую карту',
     },
     result: {
       wonTitle: 'Победа!',

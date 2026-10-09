@@ -17,6 +17,7 @@ import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
 import { useGame2048Store } from '../store/game2048Store';
 import type { Direction } from '../types';
 import { Game2048Board } from './Game2048Board';
+import { Game2048MilestoneToast } from './Game2048MilestoneToast';
 
 export default function Game2048() {
   useTrackSoloGameStarted('game_2048_v1');
@@ -42,10 +43,13 @@ function Game2048Table() {
   const move = useGame2048Store((state) => state.move);
   const continuePlaying = useGame2048Store((state) => state.continuePlaying);
   const newGame = useGame2048Store((state) => state.newGame);
+  const history = useGame2048Store((state) => state.history);
   const undo = useGame2048Store((state) => state.undo);
   const canUndo = useGame2048Store(
     (state) => state.history.length > 0 && state.finishedAt === null,
   );
+  const activeMilestone = useGame2048Store((state) => state.activeMilestone);
+  const dismissMilestone = useGame2048Store((state) => state.dismissMilestone);
 
   const isRunning = finishedAt === null;
   const pause = useSoloPause(isRunning, finishedAt);
@@ -144,6 +148,17 @@ function Game2048Table() {
       icon: '⏱️',
       dataTestId: 'game-2048-timer',
     },
+    ...(history.length > 0
+      ? [
+          {
+            id: 'undos',
+            label: t('games.game_2048_v1.hud.undosAvailable'),
+            value: history.length,
+            icon: '↩️',
+            dataTestId: 'game-2048-undos-counter',
+          },
+        ]
+      : []),
   ];
 
   const actions = (
@@ -211,7 +226,13 @@ function Game2048Table() {
         onClose: status === 'won' ? continuePlaying : undefined,
       }}
     >
-      <Game2048Board grid={grid} onMove={handleMove} />
+      <div className="flex w-full flex-col items-center gap-3">
+        <Game2048MilestoneToast
+          milestone={activeMilestone}
+          onDismiss={dismissMilestone}
+        />
+        <Game2048Board grid={grid} onMove={handleMove} />
+      </div>
 
       <div className="flex flex-col items-center gap-3">
         <div className="flex flex-col items-center gap-1 sm:hidden select-none">

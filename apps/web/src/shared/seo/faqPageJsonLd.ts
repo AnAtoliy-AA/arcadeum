@@ -9,6 +9,7 @@ interface BuildFaqPageJsonLdInput {
   pageName: string;
   pageUrl: string;
   faqs: FaqItem[];
+  includeBreadcrumb?: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ export function buildFaqPageJsonLd({
   pageName,
   pageUrl,
   faqs,
+  includeBreadcrumb = true,
 }: BuildFaqPageJsonLdInput): Record<string, unknown>[] {
   if (faqs.length === 0) return [];
 
@@ -27,10 +29,11 @@ export function buildFaqPageJsonLd({
     ? pageUrl
     : `${appConfig.siteUrl}${pageUrl}`;
 
-  return [
+  const schemas: Record<string, unknown>[] = [
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
+      url: fullPageUrl,
       mainEntity: faqs.map((faq) => ({
         '@type': 'Question',
         name: faq.question,
@@ -40,7 +43,10 @@ export function buildFaqPageJsonLd({
         },
       })),
     },
-    {
+  ];
+
+  if (includeBreadcrumb) {
+    schemas.push({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
@@ -63,6 +69,8 @@ export function buildFaqPageJsonLd({
           item: fullPageUrl,
         },
       ],
-    },
-  ];
+    });
+  }
+
+  return schemas;
 }

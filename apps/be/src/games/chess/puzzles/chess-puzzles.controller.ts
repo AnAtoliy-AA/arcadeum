@@ -12,6 +12,7 @@ import {
 import { JwtAuthGuard } from '../../../auth/jwt/jwt.guard';
 import { ChessPuzzlesService } from './chess-puzzles.service';
 import { CreateCustomPuzzleDto } from './dto/create-custom-puzzle.dto';
+import { SubmitRushScoreDto } from './dto/submit-rush-score.dto';
 
 @Controller('chess/puzzles')
 export class ChessPuzzlesController {
@@ -128,5 +129,25 @@ export class ChessPuzzlesController {
     @Request() req: { user: { id: string } },
   ) {
     return this.puzzlesService.deleteCustomPuzzle(req.user.id, puzzleId);
+  }
+
+  @Post('rush/run')
+  async submitRushRun(
+    @Body() body: SubmitRushScoreDto,
+    @Request()
+    req?: { user?: { id?: string; username?: string; avatar?: string } },
+  ) {
+    return this.puzzlesService.submitRushRun(req?.user, body);
+  }
+
+  @Get('rush/leaderboard')
+  async getRushLeaderboard(
+    @Query('mode') mode?: 'survival' | 'timed',
+    @Query('limit') limit?: string,
+  ) {
+    return this.puzzlesService.getRushLeaderboard(
+      mode ?? 'survival',
+      limit ? parseInt(limit, 10) : 20,
+    );
   }
 }

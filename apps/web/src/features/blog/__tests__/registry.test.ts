@@ -76,4 +76,45 @@ describe('blog registry', () => {
       expect(post?.body.length).toBeGreaterThan(0);
     }
   });
+
+  it('provides complete 5-locale coverage and CTAs for all 9 pillar strategy guides', async () => {
+    const pillarSlugs = [
+      'chess-opening-traps',
+      'how-to-win-chess-endgames',
+      'how-to-win-spades',
+      'how-to-win-hearts-advanced',
+      'backgammon-pip-count-guide',
+      'how-to-win-checkers',
+      'how-to-solve-sudoku-advanced',
+      'sea-battle-advanced',
+      'go-life-death-problems',
+    ];
+
+    for (const slug of pillarSlugs) {
+      for (const locale of SUPPORTED_LOCALES) {
+        const post = await getPost(slug, locale);
+        expect(post).toBeDefined();
+        expect(post?.locale).toBe(locale);
+        expect(post?.title.length).toBeGreaterThan(5);
+        expect(post?.excerpt.length).toBeGreaterThan(10);
+        expect(post?.body.length).toBeGreaterThan(2);
+
+        const hasCta = post?.body.some((b) => b.type === 'cta');
+        expect(hasCta).toBe(true);
+      }
+    }
+  });
+
+  it('surfaces strategy guides for Chess and Spades tags', async () => {
+    const chessPosts = await getPostsByTag('en', ['Chess']);
+    expect(chessPosts.length).toBeGreaterThanOrEqual(2);
+    const chessSlugs = chessPosts.map((p) => p.slug);
+    expect(chessSlugs).toContain('chess-opening-traps');
+    expect(chessSlugs).toContain('how-to-win-chess-endgames');
+
+    const spadesPosts = await getPostsByTag('en', ['Spades']);
+    expect(spadesPosts.length).toBeGreaterThanOrEqual(1);
+    const spadesSlugs = spadesPosts.map((p) => p.slug);
+    expect(spadesSlugs).toContain('how-to-win-spades');
+  });
 });

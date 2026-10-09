@@ -1,13 +1,19 @@
 'use client';
 
-import { useCallback, useRef, type CSSProperties } from 'react';
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import { useSoloFullscreen } from '@/features/games/ui/SoloGameContainer';
 import { useMinesweeperTheme } from '../lib/MinesweeperThemeContext';
 import type { MinesweeperTheme } from '../lib/theme';
-import type { Cell, MinesweeperState } from '../types';
+import { neighbors, type Cell, type MinesweeperState } from '../types';
 
 type Translate = (key: TranslationKey) => string;
 
@@ -61,8 +67,27 @@ export function MinesweeperBoard({
   const { t } = useTranslation();
   const theme = useMinesweeperTheme();
   const isFullscreen = useSoloFullscreen();
+  const [hoveredChordIndex, setHoveredChordIndex] = useState<number | null>(
+    null,
+  );
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suppressClick = useRef(false);
+
+  const chordTargets = useMemo(() => {
+    if (hoveredChordIndex === null) return null;
+    const cell = game.cells[hoveredChordIndex];
+    if (!cell || cell.state !== 'revealed' || cell.adjacent === 0) return null;
+    const nList = neighbors(game, hoveredChordIndex);
+    const flagCount = nList.filter(
+      (n) => game.cells[n]?.state === 'flagged',
+    ).length;
+    if (flagCount !== cell.adjacent) return null;
+    const set = new Set<number>();
+    for (const n of nList) {
+      if (game.cells[n]?.state === 'hidden') set.add(n);
+    }
+    return set.size > 0 ? set : null;
+  }, [game, hoveredChordIndex]);
 
   const clearPressTimer = useCallback(() => {
     if (longPressTimer.current !== null) {
@@ -135,11 +160,15 @@ export function MinesweeperBoard({
                       isBeginner={game.width <= 9}
                       isCompact={game.width > 16}
                       isFullscreen={isFullscreen}
+                      isChordTarget={chordTargets?.has(index) ?? false}
                       lost={game.status === 'lost'}
                       onReveal={() => handleCellClick(index)}
                       onFlag={() => handleContextMenu(index)}
                       onPressStart={() => startPress(index)}
                       onPressEnd={endPress}
+                      onHoverChord={(active) =>
+                        setHoveredChordIndex(active ? index : null)
+                      }
                     />
                   );
                 })}
@@ -156,21 +185,25 @@ function MineCell({
   isBeginner,
   isCompact,
   isFullscreen,
+  isChordTarget,
   lost,
   onReveal,
   onFlag,
   onPressStart,
   onPressEnd,
+  onHoverChord,
 }: {
   cell: Cell;
   isBeginner?: boolean;
   isCompact?: boolean;
   isFullscreen?: boolean;
+  isChordTarget?: boolean;
   lost: boolean;
   onReveal: () => void;
   onFlag: () => void;
   onPressStart: () => void;
   onPressEnd: () => void;
+  onHoverChord?: (active: boolean) => void;
 }) {
   const { t } = useTranslation();
   const revealed = cell.state === 'revealed';
@@ -195,7 +228,9 @@ function MineCell({
               : 'h-6 w-6 min-w-[24px] sm:h-7 sm:w-7 sm:min-w-[28px] md:h-7.5 md:w-7.5 md:min-w-[30px] lg:h-8 lg:w-8 lg:min-w-[32px] rounded-lg text-xs sm:text-sm',
         revealed
           ? 'cursor-default border border-black/50 border-t-black/70 border-l-black/70 border-b-white/10 border-r-white/10 bg-black/60 text-[var(--color)] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]'
-          : 'cursor-pointer border border-white/20 border-t-white/40 border-l-white/30 border-b-black/40 border-r-black/40 bg-gradient-to-b from-white/20 via-white/10 to-black/25 text-[var(--color)] shadow-[0_2px_4px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.3)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95 active:shadow-inner active:brightness-90',
+          : isChordTarget
+            ? 'cursor-pointer border border-cyan-400 bg-cyan-500/25 text-cyan-200 ring-2 ring-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.5)] brightness-125 scale-[1.04] z-10'
+            : 'cursor-pointer border border-white/20 border-t-white/40 border-l-white/30 border-b-black/40 border-r-black/40 bg-gradient-to-b from-white/20 via-white/10 to-black/25 text-[var(--color)] shadow-[0_2px_4px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.3)] hover:border-[var(--ms-flag-color)] hover:bg-[var(--ms-cell-hidden-hover)] active:scale-95 active:shadow-inner active:brightness-90',
         showMine &&
           lost &&
           'border-red-500 bg-red-600/30 text-red-400 shadow-[0_0_12px_rgba(239,68,68,0.5)]',
@@ -204,6 +239,12 @@ function MineCell({
       onContextMenu={(event) => {
         event.preventDefault();
         onFlag();
+      }}
+      onMouseEnter={() => {
+        if (revealed && cell.adjacent > 0) onHoverChord?.(true);
+      }}
+      onMouseLeave={() => {
+        if (revealed && cell.adjacent > 0) onHoverChord?.(false);
       }}
       onPointerDown={onPressStart}
       onPointerUp={onPressEnd}

@@ -16,6 +16,7 @@ export const esMessages = {
       time: 'Tiempo',
       newGame: 'Nueva partida',
       movesLabel: 'Movimientos',
+      undosAvailable: 'Deshacer',
     },
     result: {
       wonTitle: '¡2048!',
@@ -28,6 +29,11 @@ export const esMessages = {
       keepGoing: 'Seguir jugando',
       finish: 'Finalizar',
       continue: 'Continuar',
+    },
+    milestone: {
+      title: '¡Hito alcanzado!',
+      body: '¡Has forjado la legendaria ficha {{tile}}!',
+      keepGoing: 'Continuar jugando',
     },
     rules: {
       objective:

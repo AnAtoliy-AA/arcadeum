@@ -2,9 +2,11 @@ import {
   SUITS,
   type Card,
   type CardColor,
+  type DrawMode,
   type GameOutcome,
   type MoveSource,
   type MoveTarget,
+  type SolitaireHint,
   type SolitaireState,
 } from '../types';
 
@@ -43,7 +45,10 @@ export function createDeck(rng?: () => number): Card[] {
   return shuffle(cards, rng);
 }
 
-export function deal(rng?: () => number): SolitaireState {
+export function deal(
+  rng?: () => number,
+  drawMode: DrawMode = 'draw1',
+): SolitaireState {
   const deck = createDeck(rng);
   const tableau: Card[][] = [];
   let cursor = 0;
@@ -63,6 +68,7 @@ export function deal(rng?: () => number): SolitaireState {
     tableau,
     moves: 0,
     score: 0,
+    drawMode,
   };
 }
 
@@ -71,9 +77,7 @@ export function cardLabel(card: Card): string {
 }
 
 export function cardColor(card: Card): CardColor {
-  return card.suit === 'hearts' || card.suit === 'diamonds'
-    ? 'red'
-    : 'black';
+  return card.suit === 'hearts' || card.suit === 'diamonds' ? 'red' : 'black';
 }
 
 function topCard(pile: Card[]): Card | undefined {
@@ -94,7 +98,11 @@ export function foundationSuit(index: number): (typeof SUITS)[number] {
   return SUITS[index] ?? 'spades';
 }
 
-function canDropOnFoundation(card: Card, foundationIndex: number, foundations: Card[][]): boolean {
+function canDropOnFoundation(
+  card: Card,
+  foundationIndex: number,
+  foundations: Card[][],
+): boolean {
   if (card.suit !== foundationSuit(foundationIndex)) return false;
   const pile = foundations[foundationIndex];
   if (!pile) return false;
@@ -106,7 +114,10 @@ function canDropOnFoundation(card: Card, foundationIndex: number, foundations: C
  * descending run starting at `cardIndex`; for waste/foundation it is just the
  * top card.
  */
-export function getSourceCards(state: SolitaireState, source: MoveSource): Card[] {
+export function getSourceCards(
+  state: SolitaireState,
+  source: MoveSource,
+): Card[] {
   switch (source.kind) {
     case 'waste': {
       const top = topCard(state.waste);
@@ -151,7 +162,10 @@ export function isValidMove(
   return canDropOnTableau(lead, state.tableau[target.pileIndex]);
 }
 
-function removeSourceCards(state: SolitaireState, source: MoveSource): {
+function removeSourceCards(
+  state: SolitaireState,
+  source: MoveSource,
+): {
   next: SolitaireState;
   moved: Card[];
 } {
@@ -182,10 +196,7 @@ function flipNewlyExposed(state: SolitaireState): number {
     const top = topCard(pile);
     if (top && !top.faceUp) {
       flips += 1;
-      return [
-        ...pile.slice(0, -1),
-        { ...top, faceUp: true },
-      ];
+      return [...pile.slice(0, -1), { ...top, faceUp: true }];
     }
     return pile;
   });
@@ -235,12 +246,16 @@ export function applyMove(
   return next;
 }
 
-/** Draws one card from stock to waste; recycles the waste when stock empties. */
 export function draw(state: SolitaireState): SolitaireState {
   if (state.stock.length > 0) {
+    const drawCount = state.drawMode === 'draw3' ? 3 : 1;
     const next = { ...state, stock: [...state.stock], waste: [...state.waste] };
-    const card = next.stock.pop();
-    if (card) next.waste.push({ ...card, faceUp: true });
+    const drawn: Card[] = [];
+    for (let i = 0; i < drawCount && next.stock.length > 0; i += 1) {
+      const card = next.stock.pop();
+      if (card) drawn.push({ ...card, faceUp: true });
+    }
+    next.waste.push(...drawn);
     return next;
   }
   if (state.waste.length === 0) return state;
@@ -292,4 +307,123 @@ export function hasAvailableMoves(state: SolitaireState): boolean {
 export function evaluateOutcome(state: SolitaireState): GameOutcome {
   const won = isWon(state);
   return { won, stuck: !won && !hasAvailableMoves(state) };
+}
+
+export function isAllCardsOpen(state: SolitaireState): boolean {
+  if (state.stock.length > 0) return false;
+  return state.tableau.every((pile) => pile.every((card) => card.faceUp));
+}
+
+export type AutoPlaceAction =
+  { kind: 'move'; source: MoveSource; target: MoveTarget } | { kind: 'draw' };
+
+export function nextAutoPlaceAction(
+  state: SolitaireState,
+): AutoPlaceAction | null {
+  if (isWon(state)) return null;
+
+  const sources: MoveSource[] = [{ kind: 'waste' }];
+  state.tableau.forEach((pile, pileIndex) => {
+    if (pile.length > 0) {
+      sources.push({ kind: 'tableau', pileIndex, cardIndex: pile.length - 1 });
+    }
+  });
+
+  for (
+    let foundationIndex = 0;
+    foundationIndex < state.foundations.length;
+    foundationIndex += 1
+  ) {
+    const target: MoveTarget = { kind: 'foundation', foundationIndex };
+    for (const source of sources) {
+      if (isValidMove(state, source, target))
+        return { kind: 'move', source, target };
+    }
+  }
+
+  if (state.stock.length > 0 || state.waste.length > 0) return { kind: 'draw' };
+  return null;
+}
+
+export function findHint(state: SolitaireState): SolitaireHint | null {
+  if (isWon(state)) return null;
+
+  if (state.waste.length > 0) {
+    const topWaste = state.waste[state.waste.length - 1];
+    for (let f = 0; f < state.foundations.length; f += 1) {
+      if (canDropOnFoundation(topWaste, f, state.foundations)) {
+        return {
+          source: { kind: 'waste' },
+          target: { kind: 'foundation', foundationIndex: f },
+          descriptionKey: 'games.solitaire_v1.hint.wasteToFoundation',
+        };
+      }
+    }
+  }
+
+  for (let p = 0; p < state.tableau.length; p += 1) {
+    const pile = state.tableau[p];
+    if (pile.length > 0) {
+      const card = pile[pile.length - 1];
+      if (card.faceUp) {
+        for (let f = 0; f < state.foundations.length; f += 1) {
+          if (canDropOnFoundation(card, f, state.foundations)) {
+            return {
+              source: {
+                kind: 'tableau',
+                pileIndex: p,
+                cardIndex: pile.length - 1,
+              },
+              target: { kind: 'foundation', foundationIndex: f },
+              descriptionKey: 'games.solitaire_v1.hint.tableauToFoundation',
+            };
+          }
+        }
+      }
+    }
+  }
+
+  for (let srcPile = 0; srcPile < state.tableau.length; srcPile += 1) {
+    const pile = state.tableau[srcPile];
+    const firstFaceUpIndex = pile.findIndex((c) => c.faceUp);
+    if (firstFaceUpIndex !== -1) {
+      for (let cIdx = firstFaceUpIndex; cIdx < pile.length; cIdx += 1) {
+        const card = pile[cIdx];
+        const exposesCard = cIdx > 0 && !pile[cIdx - 1].faceUp;
+        for (let destPile = 0; destPile < state.tableau.length; destPile += 1) {
+          if (srcPile === destPile) continue;
+          const targetPile = state.tableau[destPile];
+          if (canDropOnTableau(card, targetPile)) {
+            if (targetPile.length === 0 && cIdx === 0) continue;
+            if (exposesCard || targetPile.length > 0) {
+              return {
+                source: {
+                  kind: 'tableau',
+                  pileIndex: srcPile,
+                  cardIndex: cIdx,
+                },
+                target: { kind: 'tableau', pileIndex: destPile },
+                descriptionKey: 'games.solitaire_v1.hint.tableauToTableau',
+              };
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (state.waste.length > 0) {
+    const topWaste = state.waste[state.waste.length - 1];
+    for (let destPile = 0; destPile < state.tableau.length; destPile += 1) {
+      if (canDropOnTableau(topWaste, state.tableau[destPile])) {
+        return {
+          source: { kind: 'waste' },
+          target: { kind: 'tableau', pileIndex: destPile },
+          descriptionKey: 'games.solitaire_v1.hint.wasteToTableau',
+        };
+      }
+    }
+  }
+
+  return null;
 }

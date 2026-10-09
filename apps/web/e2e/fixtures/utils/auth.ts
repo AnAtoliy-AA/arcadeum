@@ -141,8 +141,19 @@ export async function mockSession(
     });
   });
 
-  // Mock profile
   await page.route('**/profile/**', async (route) => {
+    const req = route.request();
+    const url = req.url();
+    if (
+      req.isNavigationRequest() ||
+      req.resourceType() === 'document' ||
+      url.includes('/_next/') ||
+      req.headers()['rsc'] === '1' ||
+      req.headers()['next-router-state-tree']
+    ) {
+      await route.continue();
+      return;
+    }
     await handleRoute(route, {
       profile: {
         userId: MOCK_OBJECT_ID,

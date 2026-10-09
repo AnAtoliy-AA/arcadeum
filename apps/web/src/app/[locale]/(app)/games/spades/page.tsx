@@ -6,6 +6,8 @@ import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import SpadesLanding from './SpadesLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -141,6 +143,16 @@ export default async function SpadesLandingRoute({ params }: PageProps) {
             { name?: string; description?: string } | undefined
           >
         }
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={await getPostsByTag(locale, [
+          'Spades',
+          'Пики',
+          'Пікі',
+          'Piques',
+        ])}
+        gameName={landing?.hero?.title ?? gameName}
       />
     </>
   );

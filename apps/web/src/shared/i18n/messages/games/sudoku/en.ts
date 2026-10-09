@@ -26,6 +26,22 @@ export const enMessages = {
       erase: 'Erase',
       placeDigit: 'Place digit {{digit}}',
       noteDigit: 'Toggle note {{digit}}',
+      autoNotes: 'Candidates',
+      autoNotesHint: 'Fill all valid candidate numbers across empty cells',
+      hint: 'Hint',
+      hintHint: 'Get a logical hint for the next move',
+      applyHint: 'Apply hint',
+      dismissHint: 'Dismiss',
+      highlightErrors: 'Highlight errors',
+      cellFirst: 'Cell-First',
+      digitFirst: 'Digit-First',
+      switchToCellFirst: 'Switch to Cell-First mode',
+      switchToDigitFirst: 'Switch to Digit-First speed mode',
+      hintNakedSingle:
+        'Naked single: {{digit}} is the only valid number for this cell.',
+      hintHiddenSingle:
+        'Hidden single: {{digit}} can only go here in its group.',
+      hintDirect: 'Direct placement: {{digit}} belongs in this cell.',
     },
     result: {
       wonTitle: 'Solved!',

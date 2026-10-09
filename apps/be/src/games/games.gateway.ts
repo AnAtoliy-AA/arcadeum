@@ -36,6 +36,7 @@ import {
   handleSetOption,
 } from './games.gateway.room';
 import { registerChatHandlers } from './games.gateway.chat-handlers';
+import { registerPresenceRefresh } from './games.gateway.presence';
 // prettier-ignore
 import { isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
@@ -46,6 +47,7 @@ import {
   handleMatchmakingJoin,
   handleMatchmakingLeave,
 } from './games.gateway.matchmaking';
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -166,16 +168,7 @@ export class GamesGateway {
       client.emit('games.live_stats', { onlineUsers: count });
     });
 
-    client.on('ping', () => {
-      const uid = (client.data as Record<string, unknown>)?.userId as
-        string | undefined;
-      const aid = (client.data as Record<string, unknown>)?.anonId as
-        string | undefined;
-      void this.realtime.refreshSocket(
-        client.id,
-        uid || aid || `guest_${client.id}`,
-      );
-    });
+    registerPresenceRefresh(client, this.realtime);
 
     this.liveStatsService?.scheduleBroadcast();
   }

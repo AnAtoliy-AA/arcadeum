@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { buildFaqPageJsonLd } from '@/shared/seo/faqPageJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import ChessLanding from './ChessLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -122,7 +124,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       featureList: [
         'Stockfish 19 Engine with SFNNv16 NNUE',
         'Standard & Chess960 (Fischer Random)',
-        '20 AI Bot Personalities (250–3200 Elo)',
+        '20 AI Bot Personalities (250-3200 Elo)',
         'Bullet, Blitz, Rapid, and Daily Correspondence',
         'Puzzle Rush & Tactical Training',
         'Interactive Analysis Board with Engine Evaluation',
@@ -137,6 +139,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         games: messages.navigation?.gamesTab ?? 'Games',
         game: gameName,
       },
+      pageUrl: chessPageUrl,
     }),
     buildHowToJsonLd({
       name: `How to Play Chess on ${appConfig.appName}`,
@@ -168,6 +171,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
             question: (f as { question: string; answer: string }).question,
             answer: (f as { question: string; answer: string }).answer,
           })),
+          includeBreadcrumb: false,
         })
       : []),
   ];
@@ -201,6 +205,17 @@ export default async function ChessLandingRoute({ params }: PageProps) {
           rush: routes.chessPuzzleRush,
           coordinates: routes.chessCoordinates,
         }}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={await getPostsByTag(locale, [
+          'Chess',
+          'Шахматы',
+          'Шахматы',
+          'Échecs',
+          'Ajedrez',
+        ])}
+        gameName={landing?.hero?.title ?? gameName}
       />
     </>
   );

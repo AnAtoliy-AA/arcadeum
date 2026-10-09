@@ -6,8 +6,19 @@ import {
   finishIfOver,
   undoReducer,
 } from '@/features/games/lib/solo-game-store';
-import { newGame, setCellValue, toggleNote } from '../lib/engine';
-import type { Difficulty, SudokuState } from '../types';
+import {
+  autoFillNotes,
+  findHint,
+  newGame,
+  setCellValue,
+  toggleNote,
+} from '../lib/engine';
+import type {
+  Difficulty,
+  SudokuHint,
+  SudokuInputMode,
+  SudokuState,
+} from '../types';
 
 export const SUDOKU_GAME_ID = 'sudoku_v1';
 
@@ -23,11 +34,23 @@ interface SudokuStoreState {
   finished: FinishedGameInfo | null;
   history: SudokuState[];
   usedUndo: boolean;
+  activeHint: SudokuHint | null;
+  highlightErrors: boolean;
+  inputMode: SudokuInputMode;
+  activeDigit: number | null;
   setCell: (index: number, value: number) => void;
   note: (index: number, digit: number) => void;
   undo: () => void;
   changeDifficulty: (difficulty: Difficulty) => void;
   newGame: () => void;
+  requestHint: () => void;
+  clearHint: () => void;
+  applyHint: () => void;
+  autoFillNotes: () => void;
+  toggleHighlightErrors: () => void;
+  setInputMode: (mode: SudokuInputMode) => void;
+  toggleInputMode: () => void;
+  setActiveDigit: (digit: number | null) => void;
 }
 
 export const useSudokuStore = create<SudokuStoreState>()(
@@ -39,6 +62,10 @@ export const useSudokuStore = create<SudokuStoreState>()(
       finished: null,
       history: [],
       usedUndo: false,
+      activeHint: null,
+      highlightErrors: true,
+      inputMode: 'cell_first',
+      activeDigit: null,
 
       setCell: (index, value) =>
         set((state) => {
@@ -65,6 +92,7 @@ export const useSudokuStore = create<SudokuStoreState>()(
           return {
             history: [...state.history, state.game],
             game,
+            activeHint: null,
             ...(result ?? {}),
           };
         }),
@@ -83,7 +111,7 @@ export const useSudokuStore = create<SudokuStoreState>()(
       undo: () =>
         set((state) => {
           const update = undoReducer(state.history, state.finishedAt);
-          return update ?? state;
+          return update ? { ...update, activeHint: null } : state;
         }),
 
       changeDifficulty: (difficulty) =>
@@ -94,6 +122,7 @@ export const useSudokuStore = create<SudokuStoreState>()(
           finished: null,
           history: [],
           usedUndo: false,
+          activeHint: null,
         }),
 
       newGame: () =>
@@ -104,7 +133,75 @@ export const useSudokuStore = create<SudokuStoreState>()(
           finished: null,
           history: [],
           usedUndo: false,
+          activeHint: null,
         })),
+
+      requestHint: () =>
+        set((state) => ({
+          activeHint: findHint(state.game),
+        })),
+
+      clearHint: () =>
+        set({
+          activeHint: null,
+        }),
+
+      applyHint: () =>
+        set((state) => {
+          if (!state.activeHint || state.finishedAt !== null) return state;
+          const { index, digit } = state.activeHint;
+          const game = setCellValue(state.game, index, digit);
+          if (game === state.game) return { ...state, activeHint: null };
+          const result = finishIfOver<FinishedGameInfo>(
+            {
+              gameId: SUDOKU_GAME_ID,
+              sessionPrefix: 'sudoku',
+              difficulty: game.difficulty,
+              isOver: game.status === 'won',
+              won: true,
+              score: 0,
+              moves: 0,
+              startedAt: state.startedAt,
+              usedUndo: state.usedUndo,
+            },
+            (info) => ({
+              mistakes: game.mistakes,
+              durationMs: info.durationMs,
+            }),
+          );
+          return {
+            history: [...state.history, state.game],
+            game,
+            activeHint: null,
+            ...(result ?? {}),
+          };
+        }),
+
+      autoFillNotes: () =>
+        set((state) => {
+          if (state.finishedAt !== null) return state;
+          const game = autoFillNotes(state.game);
+          if (game === state.game) return state;
+          return {
+            history: [...state.history, state.game],
+            game,
+          };
+        }),
+
+      toggleHighlightErrors: () =>
+        set((state) => ({
+          highlightErrors: !state.highlightErrors,
+        })),
+
+      setInputMode: (inputMode) => set({ inputMode }),
+
+      toggleInputMode: () =>
+        set((state) => ({
+          inputMode:
+            state.inputMode === 'cell_first' ? 'digit_first' : 'cell_first',
+        })),
+
+      setActiveDigit: (activeDigit) => set({ activeDigit }),
     }),
     {
       name: 'arcadeum_sudoku_game_v1',

@@ -53,10 +53,16 @@ test.describe('Interactive Tutorials & Academy', () => {
 
     const puzzle2Tab = page.getByRole('button', { name: 'Puzzle 2' });
     await expect(puzzle2Tab).toBeVisible();
-    await puzzle2Tab.click();
 
-    await expect(
-      page.getByText('Academy Challenge 2: Defend the Center Trap'),
-    ).toBeVisible();
+    // The academy section hydrates as its own lazy chunk, so an early click
+    // can land before React has attached the tab handlers. Retry the click
+    // until the selected challenge actually renders.
+    const challenge2Title = page.getByText(
+      'Academy Challenge 2: Defend the Center Trap',
+    );
+    await expect(async () => {
+      await puzzle2Tab.click();
+      await expect(challenge2Title).toBeVisible();
+    }).toPass();
   });
 });

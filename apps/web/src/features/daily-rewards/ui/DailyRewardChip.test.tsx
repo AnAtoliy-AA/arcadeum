@@ -216,13 +216,11 @@ describe('DailyRewardChip', () => {
       expect(screen.getByTestId('daily-reward-success')).toHaveTextContent(
         'You claimed 35 coins!',
       );
+      expect(screen.getByTestId('daily-reward-chip')).toBeInTheDocument();
+      expect(screen.getByTestId('daily-reward-claim-btn')).toBeDisabled();
+      expect(screen.getByTestId('daily-reward-claim-btn')).toHaveTextContent(
+        'Come back tomorrow',
+      );
     });
-    // Chip stays mounted so the success message remains visible; the button
-    // is now the disabled "Come back tomorrow" state.
-    expect(screen.getByTestId('daily-reward-chip')).toBeInTheDocument();
-    expect(screen.getByTestId('daily-reward-claim-btn')).toBeDisabled();
-    expect(screen.getByTestId('daily-reward-claim-btn')).toHaveTextContent(
-      'Come back tomorrow',
-    );
   });
 });

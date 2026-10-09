@@ -26,6 +26,22 @@ export const byMessages = {
       erase: 'Сцерці',
       placeDigit: 'Паставіць лічбу {{digit}}',
       noteDigit: 'Нататка {{digit}}',
+      autoNotes: 'Кандыдаты',
+      autoNotesHint: 'Запоўніць усе магчымыя кандыдаты ў пустых клетках',
+      hint: 'Падказка',
+      hintHint: 'Атрымаць лагічную падказку для наступнага ходу',
+      applyHint: 'Ужыць падказку',
+      dismissHint: 'Закрыць',
+      highlightErrors: 'Падсвятленне памылак',
+      cellFirst: 'Клетка-лічба',
+      digitFirst: 'Хуткі ўвод',
+      switchToCellFirst: 'Пераключыць на выбар клеткі',
+      switchToDigitFirst: 'Пераключыць на рэжым хуткай расстаноўкі лічбы',
+      hintNakedSingle:
+        'Адзіночка: {{digit}} - адзіны магчымы лік для гэтай клеткі.',
+      hintHiddenSingle:
+        'Схаваная адзіночка: {{digit}} можа стаяць толькі тут у сваёй групе.',
+      hintDirect: 'Простая падказка: {{digit}} падыходзіць у гэтую клетку.',
     },
     result: {
       wonTitle: 'Вырашана!',

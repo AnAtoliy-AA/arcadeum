@@ -3,7 +3,10 @@ import { test } from './fixtures/test-utils';
 
 interface SchemaRecord {
   '@type'?: string | string[];
+  '@id'?: string;
   name?: string;
+  url?: string;
+  inLanguage?: string;
   aggregateRating?: {
     '@type'?: string;
     ratingValue?: string;
@@ -46,6 +49,8 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
 
       const videoGame = schemas.find((s) => s['@type'] === 'VideoGame');
       expect(videoGame).toBeDefined();
+      expect(videoGame?.url).toContain(`/games/${game.slug}`);
+      expect(videoGame?.url).not.toContain('_v1');
       expect(videoGame?.aggregateRating?.['@type']).toBe('AggregateRating');
       expect(videoGame?.aggregateRating?.ratingValue).toBeTruthy();
 
@@ -53,11 +58,17 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
         (s) => s['@type'] === 'SoftwareApplication',
       );
       expect(softwareApp).toBeDefined();
+      expect(softwareApp?.url).toContain(`/games/${game.slug}`);
       expect(softwareApp?.aggregateRating?.['@type']).toBe('AggregateRating');
+
+      const breadcrumbLists = schemas.filter(
+        (s) => s['@type'] === 'BreadcrumbList',
+      );
+      expect(breadcrumbLists.length).toBeLessThanOrEqual(1);
     });
   }
 
-  test('sitemap includes all games with updated lastmod', async ({
+  test('sitemap includes all games and strategy guides', async ({
     request,
   }) => {
     const res = await request.get('/sitemap.xml');
@@ -83,6 +94,18 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
 
     for (const slug of expectedSlugs) {
       expect(text).toContain(`/games/${slug}`);
+    }
+
+    const expectedGuides = [
+      'chess-opening-traps',
+      'how-to-win-chess-endgames',
+      'how-to-win-spades',
+      'how-to-win-hearts-advanced',
+      'backgammon-pip-count-guide',
+    ];
+
+    for (const guide of expectedGuides) {
+      expect(text).toContain(`/blog/${guide}`);
     }
   });
 });

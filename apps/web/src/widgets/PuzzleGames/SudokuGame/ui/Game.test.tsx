@@ -71,4 +71,22 @@ describe('SudokuGame UI', () => {
     expect(modal).toHaveAttribute('data-tone', 'victory');
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
+
+  it('toggles digit-first input mode when clicking the mode toggle button', () => {
+    render(<SudokuGame />);
+
+    const modeBtn = screen.getByTestId('sudoku-input-mode-button');
+    expect(modeBtn).toBeInTheDocument();
+
+    expect(useSudokuStore.getState().inputMode).toBe('cell_first');
+    fireEvent.click(modeBtn);
+    expect(useSudokuStore.getState().inputMode).toBe('digit_first');
+
+    const digit1 = screen.getByTestId('sudoku-digit-1');
+    fireEvent.click(digit1);
+    expect(useSudokuStore.getState().activeDigit).toBe(1);
+
+    fireEvent.click(modeBtn);
+    expect(useSudokuStore.getState().inputMode).toBe('cell_first');
+  });
 });

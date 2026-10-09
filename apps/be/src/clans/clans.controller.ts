@@ -15,10 +15,18 @@ import {
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { ClansService } from './clans.service';
+import { ClanLeaderboardsService } from './clan-leaderboards.service';
+import { CommunityChallengesService } from './community-challenges.service';
+import { ClanWarsService } from './clan-wars.service';
 import { CreateClanDto } from './dto/create-clan.dto';
 import { UpdateClanDto } from './dto/update-clan.dto';
 import { JoinClanDto } from './dto/join-clan.dto';
 import { SetMemberRoleDto } from './dto/set-member-role.dto';
+import { ClanLeaderboardQueryDto } from './dto/clan-leaderboard-query.dto';
+import { ContributeChallengeDto } from './dto/contribute-challenge.dto';
+import { CreateClanWarDto } from './dto/create-clan-war.dto';
+import { RespondClanWarDto } from './dto/respond-clan-war.dto';
+import { RecordClanWarMatchDto } from './dto/record-clan-war-match.dto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
 interface RequestWithUser {
@@ -28,7 +36,12 @@ interface RequestWithUser {
 @Controller('clans')
 @UseGuards(JwtAuthGuard)
 export class ClansController {
-  constructor(private readonly clansService: ClansService) {}
+  constructor(
+    private readonly clansService: ClansService,
+    private readonly clanLeaderboardsService: ClanLeaderboardsService,
+    private readonly communityChallengesService: CommunityChallengesService,
+    private readonly clanWarsService: ClanWarsService,
+  ) {}
 
   @Post()
   createClan(@Req() req: RequestWithUser, @Body() dto: CreateClanDto) {
@@ -38,6 +51,83 @@ export class ClansController {
   @Get('me')
   getMyClan(@Req() req: RequestWithUser) {
     return this.clansService.getUserClan(req.user.userId);
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get('leaderboard')
+  getLeaderboard(@Query() query: ClanLeaderboardQueryDto) {
+    return this.clanLeaderboardsService.getClanLeaderboard(
+      query.sortBy,
+      query.limit,
+      query.offset,
+    );
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get('challenges')
+  getChallenges() {
+    return this.communityChallengesService.getActiveChallenges();
+  }
+
+  @Post('challenges/:id/contribute')
+  contributeChallenge(
+    @Param('id') id: string,
+    @Body() dto: ContributeChallengeDto,
+  ) {
+    return this.communityChallengesService.contributeToChallenge(
+      id,
+      dto.amount,
+    );
+  }
+
+  @Get('wars/active')
+  getActiveWars(@Query('clanId') clanId?: string) {
+    return this.clanWarsService.getActiveWars(clanId);
+  }
+
+  @Get('wars/:id')
+  getWarById(@Param('id') id: string) {
+    return this.clanWarsService.getWarById(id);
+  }
+
+  @Post('wars/challenge')
+  declareWarChallenge(
+    @Req() req: RequestWithUser,
+    @Body() dto: CreateClanWarDto,
+    @Query('clanId') clanId: string,
+  ) {
+    return this.clanWarsService.createWarChallenge(
+      req.user.userId,
+      clanId,
+      dto,
+    );
+  }
+
+  @Post('wars/:id/respond')
+  respondToWar(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Query('clanId') clanId: string,
+    @Body() dto: RespondClanWarDto,
+  ) {
+    return this.clanWarsService.respondToWarChallenge(
+      req.user.userId,
+      clanId,
+      id,
+      dto.accept,
+    );
+  }
+
+  @Post('wars/:id/record-match')
+  recordWarMatch(@Param('id') id: string, @Body() dto: RecordClanWarMatchDto) {
+    return this.clanWarsService.recordWarMatch(id, dto);
+  }
+
+  @Get(':id/wars')
+  getClanWarHistory(@Param('id') id: string) {
+    return this.clanWarsService.getClanWarHistory(id);
   }
 
   @UseInterceptors(CacheInterceptor)
@@ -58,6 +148,16 @@ export class ClansController {
   @Get('invite/:code')
   getClanByInviteCode(@Param('code') code: string) {
     return this.clansService.getClanByInviteCode(code);
+  }
+
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(30000)
+  @Get(':id/mvps')
+  getClanMvps(@Param('id') id: string, @Query('limit') limit?: string) {
+    return this.clanLeaderboardsService.getClanMvpMembers(
+      id,
+      limit ? parseInt(limit, 10) : 10,
+    );
   }
 
   @UseInterceptors(CacheInterceptor)

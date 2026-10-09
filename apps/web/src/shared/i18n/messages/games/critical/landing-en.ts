@@ -2,7 +2,7 @@ export const landing = {
   meta: {
     title: 'Critical - Free Exploding Card Game Online | Play in Browser',
     description:
-      'Play Critical online for free - a fast-paced strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks, no download.',
+      'Play Critical online for free - a fast-paced strategic card game where you draw, defuse, and survive the explosion. 2-5 players, AI bots, themed decks, no download.',
     ogTitle: 'Critical Online - Free Exploding Card Game',
     ogDescription:
       'Draw, defuse, survive. The last player standing wins. Play Critical free in your browser with friends or AI.',
@@ -20,7 +20,7 @@ export const landing = {
     ctaQuickplayError: 'Couldn’t start a game - try again',
     ctaPlayHuman: 'Find a human opponent',
     ctaGroupLabel: 'Critical quick start',
-    eyebrow: 'Free · 2–5 players · No signup',
+    eyebrow: 'Free · 2-5 players · No signup',
     chips: [
       'Browser-based',
       'AI bots available',
@@ -59,7 +59,7 @@ export const landing = {
     paragraphs: [
       'Critical is a modern take on the exploding-deck genre popularised by Exploding Kittens. Players take turns drawing cards from a shared deck that contains one or more unstable “Critical” cards. Draw one and you’re out - unless you can play a Defuse to neutralise it.',
       'Between draws, players play Action cards to skip turns, force opponents to draw, peek at the deck, or steal cards using two-of-a-kind and three-of-a-kind combos. Every decision is a small bet: spend a Defuse early to control the deck, or hoard it for the round that ends in flames.',
-      'On Arcadeum, Critical runs entirely in your browser - no download, no signup wall. You can spin up a private room and share a link, join an open public game, or fill the empty seats with AI bots and play solo. Matches typically last 10–15 minutes per round, which makes it a great fit for a coffee break or a between-meetings session with friends.',
+      'On Arcadeum, Critical runs entirely in your browser - no download, no signup wall. You can spin up a private room and share a link, join an open public game, or fill the empty seats with AI bots and play solo. Matches typically last 10-15 minutes per round, which makes it a great fit for a coffee break or a between-meetings session with friends.',
     ],
   },
   finalCta: {
@@ -125,5 +125,69 @@ export const landing = {
     home: 'Home',
     games: 'Games',
     critical: 'Critical',
+  },
+  ranked: {
+    kicker: 'Competitive 1v1',
+    title: 'Critical Ranked ELO & Duel Arena',
+    subtitle:
+      'Step into high-stakes 1v1 mind games. Outwit your opponent, predict defusal placements, and fight for seasonal glory across 6 competitive rating tiers.',
+    ctaQueue: 'Queue Ranked 1v1 Showdown',
+    ctaQueued: 'Searching for ranked opponent...',
+    cancelQueue: 'Cancel Queue',
+    yourRating: 'Your Critical Rating',
+    season: 'Season',
+    peakElo: 'Peak ELO',
+    rankedGames: 'Ranked Matches',
+    winRate: 'Win Rate',
+    unranked: 'Unranked',
+    baselineHint: '1200 starting baseline',
+    ladderTitle: 'Competitive Tier Ladder',
+    ladderSubtitle: 'Progress through six competitive skill brackets',
+    leaderboardTitle: 'Season Top Competitors',
+    leaderboardSubtitle: 'Top rated Critical duelists this season',
+    leaderboardEmpty:
+      'No ranked duelists recorded yet this season. Be the first!',
+    rulesTitle: 'Ranked 1v1 Duel Rules',
+    rule1Title: 'High-Stakes 1v1 Duel',
+    rule1Body:
+      'Strict head-to-head format with 2 players and 1 fatal Critical Bomb in the deck.',
+    rule2Title: 'Secret Bomb Re-Insertion',
+    rule2Body:
+      'When defusing, secretly pick the exact draw index to ambush your opponent.',
+    rule3Title: 'Dynamic ELO Stakes',
+    rule3Body:
+      'Rating changes are calculated live via the ELO algorithm based on opponent strength.',
+    tiers: {
+      master: {
+        name: 'Master',
+        min: '2000+ ELO',
+        desc: 'Apex defusal mastery and deck control',
+      },
+      diamond: {
+        name: 'Diamond',
+        min: '1800-1999 ELO',
+        desc: 'Flawless card counting and bluffing',
+      },
+      platinum: {
+        name: 'Platinum',
+        min: '1600-1799 ELO',
+        desc: 'Aggressive turn chains and combo execution',
+      },
+      gold: {
+        name: 'Gold',
+        min: '1400-1599 ELO',
+        desc: 'Consistent bomb prediction and resource denial',
+      },
+      silver: {
+        name: 'Silver',
+        min: '1200-1399 ELO',
+        desc: 'Starting baseline tier for new competitive duelists',
+      },
+      bronze: {
+        name: 'Bronze',
+        min: '0-1199 ELO',
+        desc: 'Tactical recovery and fundamental defusal play',
+      },
+    },
   },
 };

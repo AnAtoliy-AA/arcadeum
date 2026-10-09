@@ -7,6 +7,7 @@ import {
   rowOf,
   DIFFICULTY_CLUES,
   type Difficulty,
+  type SudokuHint,
   type SudokuState,
 } from '../types';
 
@@ -142,7 +143,10 @@ export function generatePuzzle(
 }
 
 /** Creates a fresh game state with the given clues locked in. */
-export function newGame(difficulty: Difficulty, rng?: () => number): SudokuState {
+export function newGame(
+  difficulty: Difficulty,
+  rng?: () => number,
+): SudokuState {
   const random = rng ?? (() => Math.random());
   const { givens, solution } = generatePuzzle(difficulty, random);
   return {
@@ -172,7 +176,9 @@ export function setCellValue(
   if (state.cells[index] === value) return state;
 
   if (value === EMPTY_VALUE) {
-    const cells = state.cells.map((cell, i) => (i === index ? EMPTY_VALUE : cell));
+    const cells = state.cells.map((cell, i) =>
+      i === index ? EMPTY_VALUE : cell,
+    );
     return { ...state, cells };
   }
 
@@ -196,8 +202,9 @@ export function setCellValue(
     }
   }
 
-  const won =
-    cells.every((cell, i) => cell === state.solution[i]) ? 'won' : 'playing';
+  const won = cells.every((cell, i) => cell === state.solution[i])
+    ? 'won'
+    : 'playing';
   return { ...state, cells, notes, status: won };
 }
 
@@ -219,4 +226,96 @@ export function toggleNote(
       : [...cellNotes, digit].sort((a, b) => a - b);
   });
   return { ...state, notes };
+}
+
+function getCellPeers(index: number): number[] {
+  const peers = new Set<number>();
+  const r = rowOf(index);
+  const c = colOf(index);
+  const top = boxTopLeft(index);
+  for (let i = 0; i < 9; i += 1) {
+    peers.add(r * 9 + i);
+    peers.add(i * 9 + c);
+  }
+  for (let dy = 0; dy < 3; dy += 1) {
+    for (let dx = 0; dx < 3; dx += 1) {
+      peers.add(top + dy * 9 + dx);
+    }
+  }
+  peers.delete(index);
+  return Array.from(peers);
+}
+
+export function autoFillNotes(state: SudokuState): SudokuState {
+  if (state.status !== 'playing') return state;
+  const notes = state.cells.map((val, index) => {
+    if (val !== EMPTY_VALUE) return [];
+    return DIGITS.filter((d) => isValidPlacement(state.cells, index, d));
+  });
+  return { ...state, notes };
+}
+
+export function findHint(state: SudokuState): SudokuHint | null {
+  if (state.status !== 'playing') return null;
+
+  for (let index = 0; index < 81; index += 1) {
+    if (state.cells[index] !== EMPTY_VALUE) continue;
+    const candidates = DIGITS.filter((d) =>
+      isValidPlacement(state.cells, index, d),
+    );
+    if (candidates.length === 1) {
+      return {
+        type: 'naked_single',
+        index,
+        digit: candidates[0],
+        relatedIndices: getCellPeers(index),
+      };
+    }
+  }
+
+  for (let u = 0; u < 9; u += 1) {
+    const rowCells = Array.from({ length: 9 }, (_, c) => u * 9 + c);
+    const colCells = Array.from({ length: 9 }, (_, r) => r * 9 + u);
+    const topRow = Math.floor(u / 3) * 3;
+    const topCol = (u % 3) * 3;
+    const boxCells: number[] = [];
+    for (let dr = 0; dr < 3; dr += 1) {
+      for (let dc = 0; dc < 3; dc += 1) {
+        boxCells.push((topRow + dr) * 9 + topCol + dc);
+      }
+    }
+
+    const units = [rowCells, colCells, boxCells];
+    for (const unit of units) {
+      for (const digit of DIGITS) {
+        if (unit.some((idx) => state.cells[idx] === digit)) continue;
+        const validCells = unit.filter(
+          (idx) =>
+            state.cells[idx] === EMPTY_VALUE &&
+            isValidPlacement(state.cells, idx, digit),
+        );
+        if (validCells.length === 1) {
+          return {
+            type: 'hidden_single',
+            index: validCells[0],
+            digit,
+            relatedIndices: unit,
+          };
+        }
+      }
+    }
+  }
+
+  for (let index = 0; index < 81; index += 1) {
+    if (state.cells[index] === EMPTY_VALUE) {
+      return {
+        type: 'direct_placement',
+        index,
+        digit: state.solution[index],
+        relatedIndices: [],
+      };
+    }
+  }
+
+  return null;
 }

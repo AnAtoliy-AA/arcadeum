@@ -27,10 +27,13 @@ interface Game2048StoreState {
   finished: FinishedGameInfo | null;
   history: Array<{ grid: number[]; score: number; moves: number }>;
   usedUndo: boolean;
+  reachedMilestones: number[];
+  activeMilestone: number | null;
   move: (direction: Direction) => void;
   undo: () => void;
   continuePlaying: () => void;
   newGame: () => void;
+  dismissMilestone: () => void;
 }
 
 export const useGame2048Store = create<Game2048StoreState>()(
@@ -47,6 +50,8 @@ export const useGame2048Store = create<Game2048StoreState>()(
       finished: null,
       history: [],
       usedUndo: false,
+      reachedMilestones: [],
+      activeMilestone: null,
 
       move: (direction) => {
         const state = get();
@@ -121,6 +126,19 @@ export const useGame2048Store = create<Game2048StoreState>()(
             }
           }
 
+          const maxTile = Math.max(0, ...next.grid);
+          const milestoneTargets = [1024, 2048, 4096];
+          let activeMilestone = current.activeMilestone;
+          let reachedMilestones = current.reachedMilestones;
+          for (const m of milestoneTargets) {
+            if (maxTile >= m && !reachedMilestones.includes(m)) {
+              reachedMilestones = [...reachedMilestones, m];
+              activeMilestone = m;
+            }
+          }
+          patch.reachedMilestones = reachedMilestones;
+          patch.activeMilestone = activeMilestone;
+
           return patch;
         });
       },
@@ -137,6 +155,7 @@ export const useGame2048Store = create<Game2048StoreState>()(
             moves: previousState.moves,
             status: 'playing',
             usedUndo: true,
+            activeMilestone: null,
           };
         }),
 
@@ -158,6 +177,13 @@ export const useGame2048Store = create<Game2048StoreState>()(
           finished: null,
           history: [],
           usedUndo: false,
+          reachedMilestones: [],
+          activeMilestone: null,
+        }),
+
+      dismissMilestone: () =>
+        set({
+          activeMilestone: null,
         }),
     }),
     {
@@ -175,6 +201,7 @@ export const useGame2048Store = create<Game2048StoreState>()(
         finished: state.finished,
         history: state.history,
         usedUndo: state.usedUndo,
+        reachedMilestones: state.reachedMilestones,
       }),
     },
   ),

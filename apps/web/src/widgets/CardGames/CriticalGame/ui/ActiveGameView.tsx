@@ -114,14 +114,18 @@ export function ActiveGameView({
     () => CRITICAL_VARIANTS.find((v) => v.id === cardVariant),
     [cardVariant],
   );
+  const isRanked = room.gameOptions?.ranked === true;
   const headerTitle = variantMeta
     ? `${t('games.critical_v1.name')} · ${t(variantMeta.name as TranslationKey)}`
     : t('games.critical_v1.name');
+  const headerSubtitle = isRanked
+    ? room.name
+      ? `${room.name} • ⚔️ ${t('games.rooms.ranked')}`
+      : `⚔️ ${t('games.rooms.ranked')}`
+    : room.name;
   const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex] ?? null;
 
-  // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
-
   const [wasAlreadyOverOnMount] = useState(() => isGameOver === true);
   const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
 
@@ -129,10 +133,7 @@ export function ActiveGameView({
     setHasSeenActiveGame(true);
   }
 
-  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
-
-  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   if (isGameOver !== prevIsGameOver) {
     setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
@@ -320,7 +321,7 @@ export function ActiveGameView({
         headerProps={{
           variantEmoji: variantMeta?.emoji ?? '🎴',
           title: headerTitle,
-          subtitle: room.name,
+          subtitle: headerSubtitle,
           extraActions: <UndoButton disabled={isGameOver} />,
           turn: { onClockUserId: turnPlayerId, isMyTurn, isGameOver },
         }}

@@ -18,6 +18,22 @@ export const byMessages = {
       moves: 'Хады',
       time: 'Час',
       newGame: 'Новая гульня',
+      autoPlace: 'Аўтастаноўка',
+      draw1: 'Па 1 карце',
+      draw3: 'Па 3 карты',
+      switchToDraw1: 'Пераключыць на раздачу па 1 карце',
+      switchToDraw3: 'Пераключыць на раздачу па 3 карты',
+      hint: 'Падказка',
+      hintHint: 'Паказаць лепшы ход',
+      applyHint: 'Ужыць',
+      dismissHint: 'Закрыць',
+    },
+    hint: {
+      wasteToFoundation: 'Перамясціце карту са скіду ў дом',
+      tableauToFoundation: 'Перамясціце карту са слупка ў дом',
+      wasteToTableau: 'Перамясціце карту са скіду ў слупок',
+      tableauToTableau:
+        'Перамясціце шэраг карт у іншы слупок, каб адкрыць закрытую карту',
     },
     result: {
       wonTitle: 'Перамога!',

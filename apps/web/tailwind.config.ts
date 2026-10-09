@@ -143,6 +143,78 @@ export default {
           },
           '100%': { transform: 'translate(-50%, -50%) scale(0)', opacity: '0' },
         },
+        'spectator-float': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(50px) scale(0.6) rotate(-4deg)',
+          },
+          '12%': {
+            opacity: '1',
+            transform: 'translateY(15px) scale(1.15) rotate(3deg)',
+          },
+          '25%': {
+            opacity: '1',
+            transform: 'translateY(0px) scale(1) rotate(0deg)',
+          },
+          '70%': {
+            opacity: '0.95',
+            transform: 'translateY(-100px) scale(0.95) rotate(-2deg)',
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translateY(-180px) scale(0.7) rotate(4deg)',
+          },
+        },
+        floatingBubbleFloat: {
+          '0%': {
+            opacity: '0',
+            transform:
+              'translateY(140px) translateX(10px) scale(0.4) rotate(-8deg)',
+          },
+          '10%': {
+            opacity: '1',
+            transform:
+              'translateY(70px) translateX(-15px) scale(1.2) rotate(5deg)',
+          },
+          '20%': {
+            opacity: '1',
+            transform:
+              'translateY(20px) translateX(8px) scale(0.95) rotate(-3deg)',
+          },
+          '30%': {
+            transform: 'translateY(0) translateX(0) scale(1) rotate(0deg)',
+          },
+          '65%': {
+            opacity: '1',
+            transform: 'translateY(0) translateX(0) scale(1) rotate(0deg)',
+          },
+          '100%': {
+            opacity: '0',
+            transform:
+              'translateY(-140px) translateX(-5px) scale(0.6) rotate(4deg)',
+          },
+        },
+        floatingLabelPop: {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(10px) scale(0.5)',
+          },
+          '15%': {
+            opacity: '1',
+            transform: 'translateY(-2px) scale(1.15)',
+          },
+          '30%': {
+            transform: 'translateY(0) scale(1)',
+          },
+          '70%': {
+            opacity: '1',
+            transform: 'translateY(0) scale(1)',
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translateY(-20px) scale(0.8)',
+          },
+        },
       },
       animation: {
         'hero-float-3d': 'hero-float-3d 6s ease-in-out infinite',
@@ -151,6 +223,7 @@ export default {
         'pulse-ring': 'pulse-animation 2s infinite',
         shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',
         'capture-remove': 'capture-remove 0.4s ease-out forwards',
+        'spectator-float': 'spectator-float 2.4s ease-out forwards',
       },
     },
   },

@@ -19,6 +19,7 @@ import type {
   TournamentLocaleContentItem,
 } from '../interfaces/tournament.interface';
 import type {
+  SeaBattleBlitzCaptain,
   SeaBattleBlitzCupConfig,
   SeaBattleBlitzCupResponse,
 } from './sea-battle-blitz.types';
@@ -315,6 +316,7 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
         bracket: null,
         countdownSeconds: 0,
         enabled: isEnabled,
+        captains: [],
       };
     }
 
@@ -357,6 +359,15 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
       description: localized.description,
     };
 
+    const captains: SeaBattleBlitzCaptain[] = (doc.registrations ?? []).map(
+      (reg, index) => ({
+        userId: reg.userId.toString(),
+        displayName: reg.displayName ?? null,
+        seed: index + 1,
+        waitlist: !!reg.waitlist,
+      }),
+    );
+
     const bracketRes = doc.bracket
       ? await this.bracketsService.getPublicBracket(doc._id.toString())
       : null;
@@ -369,6 +380,7 @@ export class SeaBattleBlitzService implements OnApplicationBootstrap {
       bracket: bracketRes?.bracket ?? null,
       countdownSeconds,
       enabled: isEnabled,
+      captains,
     };
   }
 

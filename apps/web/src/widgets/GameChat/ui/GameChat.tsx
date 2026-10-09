@@ -110,7 +110,7 @@ export function GameChat({
   isHost,
   onDeleteMessage,
   signInPlaceholder = 'Sign in to chat',
-  isSpectating = false,
+  isSpectating: _isSpectating = false,
 }: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
@@ -348,7 +348,7 @@ export function GameChat({
 
       <Foot>
         <ChatQuickBar
-          onEmote={isSpectating ? undefined : onEmote}
+          onEmote={onEmote}
           onQuickPhrase={(p) => setDraft((d) => (d ? `${d} ${p}` : p))}
           canSend={canSend}
         />

@@ -1,5 +1,6 @@
 import { appConfig } from '@/shared/config/app-config';
 import { buildRoutes } from '@/shared/config/routes';
+import { SCHEMA_LANGUAGE_MAP } from './schemaLanguageMap';
 import type { Locale } from '@/shared/i18n';
 
 interface BuildVideoGameJsonLdInput {
@@ -23,6 +24,7 @@ interface BuildVideoGameJsonLdInput {
   };
   featureList?: string[];
   screenshot?: string;
+  pageUrl?: string;
 }
 
 export function buildVideoGameJsonLd({
@@ -37,9 +39,11 @@ export function buildVideoGameJsonLd({
   screenshot,
   locale,
   breadcrumb,
+  pageUrl: customPageUrl,
 }: BuildVideoGameJsonLdInput): Record<string, unknown>[] {
   const routes = buildRoutes(locale);
-  const pageUrl = `${appConfig.siteUrl}${routes.gameDetail(gameId)}`;
+  const pageUrl =
+    customPageUrl ?? `${appConfig.siteUrl}${routes.gameDetail(gameId)}`;
   const image =
     screenshot ??
     `${appConfig.siteUrl}/${locale}/games/${gameId.replace(/_v\d+$/, '')}/opengraph-image`;
@@ -48,13 +52,14 @@ export function buildVideoGameJsonLd({
     {
       '@context': 'https://schema.org',
       '@type': 'VideoGame',
+      '@id': `${pageUrl}#game`,
       name: gameName,
       alternateName,
       description,
       url: pageUrl,
       image,
       genre,
-      inLanguage: locale,
+      inLanguage: SCHEMA_LANGUAGE_MAP[locale] ?? locale,
       gamePlatform: ['Web Browser', 'Desktop', 'Mobile'],
       operatingSystem: 'Any',
       applicationCategory: 'GameApplication',
@@ -91,11 +96,13 @@ export function buildVideoGameJsonLd({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
+      '@id': `${pageUrl}#software`,
       name: gameName,
       alternateName,
       description,
       url: pageUrl,
       image,
+      inLanguage: SCHEMA_LANGUAGE_MAP[locale] ?? locale,
       applicationCategory: 'GameApplication',
       operatingSystem: 'Any',
       offers: {

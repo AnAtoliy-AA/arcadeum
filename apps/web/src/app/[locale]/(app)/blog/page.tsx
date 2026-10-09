@@ -53,6 +53,8 @@ export default async function BlogPage({
       name: p.title,
       url: `${appConfig.siteUrl}${p.href}`,
       description: p.excerpt,
+      itemType: 'BlogPosting',
+      image: `${appConfig.siteUrl}/${locale}/blog/${p.slug}/opengraph-image`,
     })),
   });
 

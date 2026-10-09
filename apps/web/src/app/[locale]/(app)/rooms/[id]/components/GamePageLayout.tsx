@@ -16,6 +16,10 @@ import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import { useEmotes } from '@/features/games/hooks/useEmotes';
 import { useGameRoomChat } from '@/features/games/hooks/useGameRoomChat';
 import { gameSocket } from '@/shared/lib/socket';
+import {
+  SpectatorReactions,
+  SpectatorFloatingReactions,
+} from '@/features/spectator';
 import { ActiveEmotesProvider } from '@/features/games/ui/GameWidgetContainer';
 import type { GameRoomSummary, GameSessionSummary } from '@/shared/types/games';
 
@@ -232,7 +236,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       <style>{roomStyles}</style>
       <div
         ref={gameContainerRef}
-        className="games-room-container flex flex-col flex-1 min-h-0 gap-4 max-[800px]:gap-2"
+        className="games-room-container flex flex-col flex-1 min-h-0 max-[1150px]:min-h-[auto] gap-4 max-[800px]:gap-2"
       >
         {/* Drops out of fullscreen shortly after the game finishes so the
             player returns to the normal page chrome (header, rematch, nav). */}
@@ -287,9 +291,18 @@ export function GamePageLayout(props: GamePageLayoutProps) {
               emotes: activeEmotes,
               resolveDisplayName,
               resolveEquipped,
+              isSpectating,
+              onEmote: sendEmote,
             }}
           >
-            {children({ isFullscreen, toggleFullscreen })}
+            <div className="relative flex flex-col flex-1 min-h-0 min-w-0">
+              {children({ isFullscreen, toggleFullscreen })}
+              <SpectatorFloatingReactions
+                emotes={activeEmotes}
+                resolveDisplayName={resolveDisplayName}
+              />
+              {isSpectating && <SpectatorReactions onEmote={sendEmote} />}
+            </div>
           </ActiveEmotesProvider>
 
           <ChatPanel visible={showChat} data-testid="game-chat-area">

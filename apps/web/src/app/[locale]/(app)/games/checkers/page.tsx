@@ -154,6 +154,7 @@ export default async function CheckersLandingRoute({ params }: PageProps) {
           'Шашки',
           'Шашкі',
           'Dames',
+          'Damas',
         ])}
         gameName={landing?.hero?.title}
       />

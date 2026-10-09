@@ -38,7 +38,7 @@ jobs:
           filters: |
             be-or-tg:
               - 'apps/be/**'
-      - 'apps/tg-bot/**'
+              - 'apps/tg-bot/**'
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
@@ -87,6 +87,9 @@ jobs:
             git reset --hard "origin/$BRANCH"
 
             pnpm install --frozen-lockfile
+
+            echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
+            npx playwright install chromium
 
             cd apps/web
             pnpm build
@@ -139,6 +142,9 @@ jobs:
             git reset --hard "origin/$BRANCH"
 
             pnpm install --frozen-lockfile
+
+            echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
+            npx playwright install chromium
 
             echo "==> Building games-core + BE..."
             pnpm --filter @arcadeum/games-core build && pnpm --filter be build

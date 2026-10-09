@@ -99,5 +99,32 @@ export const tournamentsBy: TournamentsI18n = {
     tournamentFull: 'Месцаў няма',
     viewBracket: 'Адкрыць сетку',
     allTournaments: 'Усе турніры',
+    openModal: 'Сетка і склад флоту',
+    modalTitle: 'Бліц-Кубак Марскога Бою',
+    tabBracket: 'Турнірная сетка',
+    tabRoster: 'Спіс капітанаў',
+    tabIntel: 'Правілы і рэгламент',
+    bracketPendingTitle: 'Жарабяванне пачнецца хутка',
+    bracketPendingDesc:
+      'Турнірная сетка сфарміруецца аўтаматычна адразу пасля завяршэння рэгістрацыі. Бітва пачнецца ў прызначаны час.',
+    rosterTitle: 'Зарэгістраваныя камандзіры',
+    rosterSubtitle: '{count} з {max} баявых пазіцый занята',
+    rosterWaitlist: 'Ліст чакання',
+    rosterYou: 'Ваш флагман',
+    rosterEmpty: 'Пакуль няма запісаных капітанаў. Будзьце першым!',
+    captainSeed: 'Нумар #{seed}',
+    intelFormat: 'Фармат кубка',
+    intelFormatDesc:
+      'Марскі бой на выбыванне (Single Elimination). Перамагайце ў раўндах, каб выйсці ў фінал.',
+    intelFleet: 'Разгортванне флоту',
+    intelFleetDesc:
+      'Класічнае поле 10x10 і 5 караблёў: Авіяносец, Лінкор, Крэйсер, Падлодка, Эсмінец.',
+    intelClock: 'Кантроль часу',
+    intelClockDesc: 'Хуткі таймер ходу 30 секунд з аўтаматычным рэжымам залпу.',
+    intelRewards: 'Узнагароды пераможцам',
+    intelRewardsDesc:
+      'Пераможца кубка атрымлівае 500 манет, ганаровы трафей Адмірала і месца на вяршыні табліцы лідараў.',
+    fullPageView: 'Старонка турніру',
+    closeModal: 'Закрыць',
   },
 };

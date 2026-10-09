@@ -5,6 +5,10 @@ import {
   ChessPuzzleUser,
   ChessPuzzleUserSchema,
 } from './chess-puzzle-user.schema';
+import {
+  ChessPuzzleRush,
+  ChessPuzzleRushSchema,
+} from './chess-puzzle-rush.schema';
 import { ChessPuzzlesService } from './chess-puzzles.service';
 import { ChessPuzzlesController } from './chess-puzzles.controller';
 import { ChessPuzzleDuelGateway } from './chess-puzzle-duel.gateway';
@@ -17,6 +21,7 @@ import { ChessStockfishModule } from '../engine/chess-stockfish.module';
       [
         { name: ChessPuzzle.name, schema: ChessPuzzleSchema },
         { name: ChessPuzzleUser.name, schema: ChessPuzzleUserSchema },
+        { name: ChessPuzzleRush.name, schema: ChessPuzzleRushSchema },
       ],
       OCI_CONNECTION,
     ),

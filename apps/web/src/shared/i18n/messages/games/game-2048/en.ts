@@ -16,6 +16,7 @@ export const enMessages = {
       time: 'Time',
       newGame: 'New game',
       movesLabel: 'Moves',
+      undosAvailable: 'Undos',
     },
     result: {
       wonTitle: '2048!',
@@ -28,6 +29,11 @@ export const enMessages = {
       keepGoing: 'Keep going',
       finish: 'Finish',
       continue: 'Continue',
+    },
+    milestone: {
+      title: 'Milestone Reached!',
+      body: 'You forged the legendary {{tile}} tile.',
+      keepGoing: 'Keep Going',
     },
     rules: {
       objective:

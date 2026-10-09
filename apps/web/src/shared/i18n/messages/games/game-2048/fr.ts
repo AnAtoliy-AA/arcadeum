@@ -16,6 +16,7 @@ export const frMessages = {
       time: 'Temps',
       newGame: 'Nouvelle partie',
       movesLabel: 'Coups',
+      undosAvailable: 'Annulations',
     },
     result: {
       wonTitle: '2048 !',
@@ -28,6 +29,11 @@ export const frMessages = {
       keepGoing: 'Continuer',
       finish: 'Terminer',
       continue: 'Continuer',
+    },
+    milestone: {
+      title: 'Étape franchie !',
+      body: 'Vous avez forgé la tuile légendaire {{tile}} !',
+      keepGoing: 'Continuer',
     },
     rules: {
       objective:

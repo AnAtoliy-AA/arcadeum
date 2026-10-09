@@ -26,6 +26,22 @@ export const ruMessages = {
       erase: 'Стереть',
       placeDigit: 'Поставить цифру {{digit}}',
       noteDigit: 'Заметка {{digit}}',
+      autoNotes: 'Кандидаты',
+      autoNotesHint: 'Заполнить все возможные кандидаты в пустых клетках',
+      hint: 'Подсказка',
+      hintHint: 'Получить логическую подсказку для следующего хода',
+      applyHint: 'Применить подсказку',
+      dismissHint: 'Закрыть',
+      highlightErrors: 'Подсветка ошибок',
+      cellFirst: 'Клетка-цифра',
+      digitFirst: 'Быстрый ввод',
+      switchToCellFirst: 'Переключить на выбор клетки',
+      switchToDigitFirst: 'Переключить на режим быстрой расстановки цифры',
+      hintNakedSingle:
+        'Одиночка: {{digit}} - единственное возможное число для этой клетки.',
+      hintHiddenSingle:
+        'Скрытая одиночка: {{digit}} может стоять только здесь в своей группе.',
+      hintDirect: 'Прямая подсказка: {{digit}} подходит в эту клетку.',
     },
     result: {
       wonTitle: 'Решено!',

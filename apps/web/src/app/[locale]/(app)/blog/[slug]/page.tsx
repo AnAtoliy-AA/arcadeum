@@ -59,6 +59,8 @@ export async function generateMetadata({
   languages['x-default'] =
     `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE).blogPost(slug)}`;
 
+  const ogImageUrl = `${appConfig.siteUrl}/${locale}/blog/${slug}/opengraph-image`;
+
   return {
     title: post.title,
     description: post.excerpt,
@@ -75,11 +77,20 @@ export async function generateMetadata({
       modifiedTime: post.updatedAt ?? post.publishedAt,
       authors: [post.author],
       tags: post.tags,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
+      images: [ogImageUrl],
     },
   };
 }
@@ -113,6 +124,8 @@ export default async function BlogPostRoute({ params }: PageProps) {
     return total;
   }, 0);
 
+  const ogImageUrl = `${appConfig.siteUrl}/${locale}/blog/${slug}/opengraph-image`;
+
   const postJsonLd = buildBlogPostJsonLd({
     locale,
     pageUrl,
@@ -124,6 +137,7 @@ export default async function BlogPostRoute({ params }: PageProps) {
     tags: post.tags,
     readingTimeMinutes: post.readingTimeMinutes,
     wordCount,
+    image: ogImageUrl,
   });
 
   const blogIndexLabel = messages.seo?.blog?.title ?? 'Blog';

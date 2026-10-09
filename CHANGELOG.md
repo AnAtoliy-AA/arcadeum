@@ -7,27 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add clan wars hub, inter-clan challenges, and match victory reporting (ARC-979) (ARC-979)
+
 ## [1.30.58] - 2026-10-08
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.30.57] - 2026-10-08
 
 ### Fixed
-- keep hand cards clear of the fixed mobile hand bar (ARC-000) (ARC-000)
 
+- keep hand cards clear of the fixed mobile hand bar (ARC-000) (ARC-000)
 
 ## [1.30.56] - 2026-10-07
 
 ### Added
+
 - add clan leaderboards, mvp showcase, and community challenges (ARC-978) (ARC-978)
 
 ### Documentation
-- sync generated-roadmap.json with ARC-978 (ARC-978) (ARC-978
-ARC-978)
 
+- sync generated-roadmap.json with ARC-978 (ARC-978) (ARC-978
+  ARC-978)
 
 ## [1.30.55] - 2026-10-06
 

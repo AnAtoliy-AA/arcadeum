@@ -12,6 +12,7 @@ import { InviteModal } from '@/features/clans/ui/InviteModal';
 import { ClanLeaderboardTable } from '@/features/clans/ui/ClanLeaderboardTable';
 import { CommunityChallengesList } from '@/features/clans/ui/CommunityChallengesList';
 import { ClanMvpBoard } from '@/features/clans/ui/ClanMvpBoard';
+import { ClanWarsHub } from '@/features/clans/ui/ClanWarsHub';
 import { Button, CosmeticSprite } from '@arcadeum/ui';
 import { useClanSocket } from '@/features/clans/hooks/useClanSocket';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
@@ -22,6 +23,7 @@ interface ClansTranslations {
   tabOverview?: string;
   tabLeaderboard?: string;
   tabChallenges?: string;
+  tabWars?: string;
   createClan?: string;
   joinClan?: string;
   leaveClan?: string;
@@ -76,12 +78,15 @@ export default function ClansPageContent({
   const setLeaderboardSort = useClansStore((s) => s.setLeaderboardSort);
   const communityChallenges = useClansStore((s) => s.communityChallenges);
   const clanMvps = useClansStore((s) => s.clanMvps);
+  const clanWars = useClansStore((s) => s.clanWars);
   const fetchMyClan = useClansStore((s) => s.fetchMyClan);
   const fetchPopularClans = useClansStore((s) => s.fetchPopularClans);
   const fetchLeaderboard = useClansStore((s) => s.fetchLeaderboard);
   const fetchCommunityChallenges = useClansStore(
     (s) => s.fetchCommunityChallenges,
   );
+  const fetchActiveWars = useClansStore((s) => s.fetchActiveWars);
+  const recordWarVictory = useClansStore((s) => s.recordWarVictory);
   const contributeToChallenge = useClansStore((s) => s.contributeToChallenge);
   const leaveClan = useClansStore((s) => s.leaveClan);
 
@@ -97,10 +102,12 @@ export default function ClansPageContent({
       fetchPopularClans(token);
       fetchLeaderboard(leaderboardSort, token);
       fetchCommunityChallenges(token);
+      fetchActiveWars(undefined, token);
     } else {
       fetchPopularClans();
       fetchLeaderboard(leaderboardSort);
       fetchCommunityChallenges();
+      fetchActiveWars();
     }
   }, [
     token,
@@ -108,6 +115,7 @@ export default function ClansPageContent({
     fetchPopularClans,
     fetchLeaderboard,
     fetchCommunityChallenges,
+    fetchActiveWars,
     leaderboardSort,
   ]);
 
@@ -155,6 +163,23 @@ export default function ClansPageContent({
       await contributeToChallenge(challengeId, 1, token);
     },
     [contributeToChallenge, token],
+  );
+
+  const handleRecordWarVictory = useCallback(
+    async (warId: string, winningClanId: string) => {
+      if (!snapshot.userId) return;
+      const winnerName = snapshot.username ?? 'Champion';
+      await recordWarVictory(
+        warId,
+        winningClanId,
+        winnerName,
+        'rival-clan',
+        'Contender',
+        'sea-battle',
+        token,
+      );
+    },
+    [snapshot.userId, snapshot.username, recordWarVictory, token],
   );
 
   return (
@@ -239,6 +264,20 @@ export default function ClansPageContent({
           }`}
         >
           {tt.tabChallenges ?? 'Community Challenges'}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'wars'}
+          data-testid="tab-wars"
+          onClick={() => setActiveTab('wars')}
+          className={`px-4 py-2 text-sm font-semibold transition-colors border-b-2 -mb-2.5 ${
+            activeTab === 'wars'
+              ? 'border-[var(--primary)] text-[var(--primary)]'
+              : 'border-transparent text-[var(--foreground)]/60 hover:text-[var(--foreground)]'
+          }`}
+        >
+          {tt.tabWars ?? 'Clan Wars'}
         </button>
       </div>
 
@@ -347,6 +386,18 @@ export default function ClansPageContent({
           <CommunityChallengesList
             challenges={communityChallenges}
             onContribute={handleContribute}
+            labels={tt}
+          />
+        </section>
+      )}
+
+      {activeTab === 'wars' && (
+        <section>
+          <ClanWarsHub
+            wars={clanWars}
+            myClan={myClan}
+            popularClans={popularClans}
+            onRecordVictory={handleRecordWarVictory}
             labels={tt}
           />
         </section>

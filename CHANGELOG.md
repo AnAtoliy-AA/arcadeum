@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.60] - 2026-10-10
+
+### Fixed
+- fix empty room name validation on mobile safari (ARC-922) (ARC-922)
+
+
 ## [1.30.59] - 2026-10-09
 
 ### Added

@@ -190,7 +190,7 @@ export function PlatformComparisonTable({
                               : 'text-[var(--foreground)] opacity-80',
                           )}
                         >
-                          {val ?? '—'}
+                          {val ?? '-'}
                         </span>
                       )}
                     </td>

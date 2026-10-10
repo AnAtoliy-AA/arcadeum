@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-checkers',
   locale: 'fr',
-  title: 'Comment jouer aux Dames en ligne — règles, dames, stratégie',
+  title: 'Comment jouer aux Dames en ligne - règles, dames, stratégie',
   excerpt:
     "Guide complet pour débutants : règles officielles, prises forcées, sauts multiples, dames et les habitudes qui séparent un joueur occasionnel d'un gagnant régulier.",
   publishedAt: '2026-06-09',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Les Dames — connues mondialement sous le nom de Draughts — sont l'un des jeux de société stratégiques les plus anciens. Deux adversaires placent chacun douze pions sur un plateau 8×8 et se déplacent en diagonale vers l'avant. Les prises sont obligatoires, les sauts multiples sont imposés, et le premier à éliminer toutes les pièces adverses gagne. Les règles s'expliquent en une minute, mais la profondeur stratégique surprend la plupart des débutants. Ce guide couvre les règles officielles, les dames et les habitudes qui font gagner.",
+      text: "Les Dames - connues mondialement sous le nom de Draughts - sont l'un des jeux de société stratégiques les plus anciens. Deux adversaires placent chacun douze pions sur un plateau 8×8 et se déplacent en diagonale vers l'avant. Les prises sont obligatoires, les sauts multiples sont imposés, et le premier à éliminer toutes les pièces adverses gagne. Les règles s'expliquent en une minute, mais la profondeur stratégique surprend la plupart des débutants. Ce guide couvre les règles officielles, les dames et les habitudes qui font gagner.",
     },
     {
       type: 'heading',
@@ -23,7 +23,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Les Dames se jouent sur les cases noires d'un plateau standard 8×8. Chaque joueur place douze pions sur les trois rangées les plus proches de son côté, occupant toutes les cases noires. Les cases noires commencent. Les colonnes sont étiquetées a–h et les rangées 1–8. Les pions se déplacent toujours en diagonale sur les cases noires — les cases blanches ne sont jamais utilisées.",
+      text: "Les Dames se jouent sur les cases noires d'un plateau standard 8×8. Chaque joueur place douze pions sur les trois rangées les plus proches de son côté, occupant toutes les cases noires. Les cases noires commencent. Les colonnes sont étiquetées a–h et les rangées 1–8. Les pions se déplacent toujours en diagonale sur les cases noires - les cases blanches ne sont jamais utilisées.",
     },
     {
       type: 'heading',
@@ -33,7 +33,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Les pièces normales (pions) se déplacent en diagonale vers l'avant d'une case vers une case vide adjacente. Les pions ne se déplacent que dans la direction de l'adversaire — pas de mouvement latéral ni vers l'arrière pour un pion ordinaire. À chaque tour, un joueur déplace exactement une pièce. Si une prise est disponible, elle doit être effectuée — passer une prise n'est pas autorisé selon les règles standards.",
+      text: "Les pièces normales (pions) se déplacent en diagonale vers l'avant d'une case vers une case vide adjacente. Les pions ne se déplacent que dans la direction de l'adversaire - pas de mouvement latéral ni vers l'arrière pour un pion ordinaire. À chaque tour, un joueur déplace exactement une pièce. Si une prise est disponible, elle doit être effectuée - passer une prise n'est pas autorisé selon les règles standards.",
     },
     {
       type: 'heading',
@@ -43,7 +43,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Une prise a lieu lorsque votre pièce est en diagonale adjacente à une pièce adverse et que la case au-delà (dans la même direction) est vide. Votre pièce saute par-dessus la pièce adverse, l'éliminant du plateau. Si après l'atterrissage une autre prise est disponible, le saut doit continuer — c'est un saut multiple. Le tour ne se termine que lorsqu'aucune prise supplémentaire n'est disponible.",
+      text: "Une prise a lieu lorsque votre pièce est en diagonale adjacente à une pièce adverse et que la case au-delà (dans la même direction) est vide. Votre pièce saute par-dessus la pièce adverse, l'éliminant du plateau. Si après l'atterrissage une autre prise est disponible, le saut doit continuer - c'est un saut multiple. Le tour ne se termine que lorsqu'aucune prise supplémentaire n'est disponible.",
     },
     {
       type: 'paragraph',
@@ -52,12 +52,12 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Dames — promotion et pouvoir',
+      text: 'Dames - promotion et pouvoir',
       id: 'kings',
     },
     {
       type: 'paragraph',
-      text: "Lorsqu'une pièce atteint la rangée lointaine (la rangée arrière de l'adversaire), elle est promue dame. Une dame peut se déplacer et capturer à la fois vers l'avant et vers l'arrière en diagonale — un avantage considérable. Dans les règles américaines standard, une dame ne peut pas sauter par-dessus une autre dame (les règles de tournoi l'autorisaient — vérifiez avant de jouer).",
+      text: "Lorsqu'une pièce atteint la rangée lointaine (la rangée arrière de l'adversaire), elle est promue dame. Une dame peut se déplacer et capturer à la fois vers l'avant et vers l'arrière en diagonale - un avantage considérable. Dans les règles américaines standard, une dame ne peut pas sauter par-dessus une autre dame (les règles de tournoi l'autorisaient - vérifiez avant de jouer).",
     },
     {
       type: 'heading',
@@ -72,7 +72,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Stratégie centrale — cinq habitudes qui font gagner',
+      text: 'Stratégie centrale - cinq habitudes qui font gagner',
       id: 'strategy',
     },
     {
@@ -113,14 +113,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/checkers',
-      text: 'Jouez aux Dames en ligne — gratuit, dans votre navigateur',
+      text: 'Jouez aux Dames en ligne - gratuit, dans votre navigateur',
       description:
         'Ouvrez une salle de Dames, partagez le lien avec des amis ou remplissez avec des bots IA. Plusieurs ensembles de règles disponibles.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'En résumé — quatre habitudes qui font gagner',
+      text: 'En résumé - quatre habitudes qui font gagner',
       id: 'tldr',
     },
     {
@@ -134,7 +134,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Les Dames récompensent la patience, la conscience positionnelle et la discipline d'éviter les risques inutiles. Les règles sont assez anciennes pour qu'il n'y ait pas de stratégies cachées — mais les habitudes ci-dessus sont assez robustes pour qu'un joueur qui les applique toutes surpasse constamment un joueur qui n'en applique aucune.",
+      text: "Les Dames récompensent la patience, la conscience positionnelle et la discipline d'éviter les risques inutiles. Les règles sont assez anciennes pour qu'il n'y ait pas de stratégies cachées - mais les habitudes ci-dessus sont assez robustes pour qu'un joueur qui les applique toutes surpasse constamment un joueur qui n'en applique aucune.",
     },
   ],
   howTo: {

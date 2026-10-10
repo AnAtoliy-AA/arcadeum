@@ -202,7 +202,7 @@ export class GoEngine extends BaseGameEngine<GoState> {
 
     const capturedLabel =
       outcome.capturedStones.length > 0
-        ? ` — captured ${outcome.capturedStones.length}`
+        ? `: captured ${outcome.capturedStones.length}`
         : '';
     const gtpLabel = coordinateLabel(newState.boardSize, payload.row, payload.col);
     newState.logs.push(
@@ -286,7 +286,7 @@ export class GoEngine extends BaseGameEngine<GoState> {
       state.logs.push(
         this.createLogEntry(
           'system',
-          `Both players passed. Draw — ${scores.black} to ${scores.white}.`,
+          `Both players passed. Draw: ${scores.black} to ${scores.white}.`,
         ),
       );
       return;
@@ -301,7 +301,7 @@ export class GoEngine extends BaseGameEngine<GoState> {
     state.logs.push(
       this.createLogEntry(
         'system',
-        `Both players passed. Final score — Black ${scores.black}, White ${scores.white}.`,
+        `Both players passed. Final score: Black ${scores.black}, White ${scores.white}.`,
       ),
     );
   }

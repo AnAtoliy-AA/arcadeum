@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-sudoku',
   locale: 'fr',
-  title: 'Comment jouer au Sudoku en ligne — règles, techniques, stratégie',
+  title: 'Comment jouer au Sudoku en ligne - règles, techniques, stratégie',
   excerpt:
     'Guide complet du Sudoku : règles, balayage, annotations, techniques intermédiaires et avancées.',
   publishedAt: '2026-06-12',
@@ -63,7 +63,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/sudoku',
-      text: 'Jouez au Sudoku en ligne — gratuit',
+      text: 'Jouez au Sudoku en ligne - gratuit',
       description: 'Plusieurs niveaux de difficulté.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

@@ -201,7 +201,7 @@ export function AdminShopTable({
                         <span className="text-emerald-400 font-bold">✓</span>
                       ) : (
                         <span className="text-[var(--colorTextSecondary,#71717a)]">
-                          —
+                          -
                         </span>
                       )}
                     </td>

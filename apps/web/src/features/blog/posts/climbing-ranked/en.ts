@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'climbing-ranked',
   locale: 'en',
   title:
-    'How to Climb Ranked on Arcadeum — ELO Strategy, Tier System, and Grinding Tips',
+    'How to Climb Ranked on Arcadeum - ELO Strategy, Tier System, and Grinding Tips',
   excerpt:
     'A practical guide to climbing the Arcadeum ranked ladder: how ELO works, what each tier means, and the habits that separate Bronze from Diamond.',
   publishedAt: '2026-08-25',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Ranked is where Arcadeum gets real. You start at 1200 ELO in Bronze, and every win or loss moves you up or down the ladder. The system is designed to match you against players of similar strength — so climbing requires getting genuinely better, not just grinding. Here's how the system works and what actually helps you climb.",
+      text: "Ranked is where Arcadeum gets real. You start at 1200 ELO in Bronze, and every win or loss moves you up or down the ladder. The system is designed to match you against players of similar strength - so climbing requires getting genuinely better, not just grinding. Here's how the system works and what actually helps you climb.",
     },
     {
       type: 'heading',
@@ -53,7 +53,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Bronze (1200-1399). The starting tier. Most games here are decided by basic mistakes — hanging pieces, missed captures, poor endgame.',
+        'Bronze (1200-1399). The starting tier. Most games here are decided by basic mistakes - hanging pieces, missed captures, poor endgame.',
         'Silver (1400-1599). Players know the rules well. Games are decided by tactics and opening knowledge.',
         'Gold (1600-1799). Solid fundamentals. The gap between Gold and Platinum is where most players plateau.',
         'Platinum (1800-1999). Strong tactical vision. Mistakes are rare and usually punished immediately.',
@@ -71,7 +71,7 @@ export const post: BlogPost = {
       type: 'list',
       items: [
         'Play fewer games, analyze more. Playing 20 games without review is less effective than playing 5 and analyzing each one. Look for the 2-3 moves where you lost the most advantage.',
-        'Specialize in one game. Spreading across all games keeps you a generalist. Pick one game and go deep — your ELO will climb faster.',
+        'Specialize in one game. Spreading across all games keeps you a generalist. Pick one game and go deep - your ELO will climb faster.',
         'Manage tilt. Losing 3 in a row means you should stop. Tilt causes sloppy play, which causes more losses, which causes more tilt.',
         'Study your tier. Watch replays of players 200-300 ELO above you. Notice what they do differently in positions you find difficult.',
         'Endgame study. At Bronze and Silver, games are often decided in the endgame. Learning basic endgames (opposition, key squares, basic checkmates) wins more games than memorizing openings.',
@@ -85,7 +85,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Every quarter, seasons reset. Your ELO soft-resets toward 1200 (the anchor rating), but your peak ELO is preserved on your profile. The first two weeks of a new season are chaotic — strong players are mixed with newer ones. This is actually a good time to climb: the matchmaking is less accurate, so you can gain ground quickly if you're underrated.",
+      text: "Every quarter, seasons reset. Your ELO soft-resets toward 1200 (the anchor rating), but your peak ELO is preserved on your profile. The first two weeks of a new season are chaotic - strong players are mixed with newer ones. This is actually a good time to climb: the matchmaking is less accurate, so you can gain ground quickly if you're underrated.",
     },
     {
       type: 'heading',
@@ -99,13 +99,13 @@ export const post: BlogPost = {
         'Silver to Gold. Usually caused by weak endgame or opening traps. Study basic endgames and learn 2-3 solid openings.',
         'Gold to Platinum. Usually caused by tactical blindness. Solve puzzles or analyze your losses for missed tactics.',
         'Platinum to Diamond. Usually caused by positional misunderstanding. Study pawn structures and piece coordination.',
-        'Diamond to Master. Usually caused by inconsistency. You already know everything — you just need to do it every game.',
+        'Diamond to Master. Usually caused by inconsistency. You already know everything - you just need to do it every game.',
       ],
     },
     {
       type: 'cta',
       href: '/games/chess',
-      text: 'Start climbing — play a ranked game',
+      text: 'Start climbing - play a ranked game',
       description:
         'Your ELO is tracked automatically. Check your profile after the game to see your new rating.',
     },
@@ -120,7 +120,7 @@ export const post: BlogPost = {
       items: [
         'Specialize in one game instead of playing all of them.',
         'Analyze your losses more than you play new games.',
-        'Stop after 3 losses in a row — tilt is real.',
+        'Stop after 3 losses in a row - tilt is real.',
         'Study endgames at Bronze/Silver, tactics at Gold/Platinum.',
       ],
     },

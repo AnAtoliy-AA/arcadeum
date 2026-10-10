@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-go',
   locale: 'en',
-  title: 'How to Play Go (Baduk, Weiqi) Online — Rules, Life & Death, Strategy',
+  title: 'How to Play Go (Baduk, Weiqi) Online - Rules, Life & Death, Strategy',
   excerpt:
     'A complete beginner-friendly guide to Go: board setup, liberties, capturing, ko, territory, and the strategic concepts that separate beginners from experienced players.',
   publishedAt: '2026-06-23',
@@ -23,7 +23,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Go is played on a 19x19 grid of intersections (9x9 and 13x13 are used for beginners). Black plays first and places one stone per turn on any empty intersection. Stones, once placed, do not move — they are only removed when captured. The game ends when both players pass consecutively.',
+      text: 'Go is played on a 19x19 grid of intersections (9x9 and 13x13 are used for beginners). Black plays first and places one stone per turn on any empty intersection. Stones, once placed, do not move: they are only removed when captured. The game ends when both players pass consecutively.',
     },
     {
       type: 'heading',
@@ -33,7 +33,31 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "A stone's liberties are the empty intersections directly adjacent to it (up, down, left, right — not diagonal). A group of connected stones shares liberties. When a stone or group has zero liberties (completely surrounded), it is captured and removed from the board. This is the fundamental mechanic of Go.",
+      text: "A stone's liberties are the empty intersections directly adjacent to it (up, down, left, right: not diagonal). A group of connected stones shares liberties. When a stone or group has zero liberties (completely surrounded), it is captured and removed from the board. This is the fundamental mechanic of Go.",
+    },
+    {
+      type: 'board-diagram',
+      id: 'schema-go-atari',
+      gameId: 'go',
+      title: 'Atari Situation (9×9)',
+      caption:
+        'White surrounds the Black stone at E5 on three sides (E6, D5, F5). With only one liberty remaining at E4 (marked ✕), Black is in atari and faces immediate capture.',
+      grid: [
+        '.........',
+        '.........',
+        '.........',
+        '....W....',
+        '...WBW...',
+        '....X....',
+        '.........',
+        '.........',
+        '.........',
+      ],
+      legend: [
+        { variant: 'black', label: 'Black stone (in atari)' },
+        { variant: 'white', label: 'Surrounding White stones' },
+        { variant: 'hit', label: 'Last liberty (atari point)' },
+      ],
     },
     {
       type: 'heading',
@@ -43,12 +67,12 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'The ko rule prevents infinite loops: if a capture creates a position that existed on the previous move, the opponent cannot immediately recapture — they must play elsewhere first. This prevents the game from cycling forever.',
+      text: 'The ko rule prevents infinite loops: if a capture creates a position that existed on the previous move, the opponent cannot immediately recapture: they must play elsewhere first. This prevents the game from cycling forever.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Life and death — two eyes',
+      text: 'Life and death: two eyes',
       id: 'life-death',
     },
     {
@@ -68,12 +92,12 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Opening strategy — corners, sides, centre',
+      text: 'Opening strategy: corners, sides, centre',
       id: 'opening',
     },
     {
       type: 'paragraph',
-      text: 'Go proverbs guide the opening: "Corners first, sides second, centre last." Corners are easiest to secure (fewer directions to defend). Sides are next. The centre is hardest to turn into territory. Common opening patterns (joseki) establish balanced positions in the corners. Aim to play on the third and fourth lines — third line is territory, fourth line is influence.',
+      text: 'Go proverbs guide the opening: "Corners first, sides second, centre last." Corners are easiest to secure (fewer directions to defend). Sides are next. The centre is hardest to turn into territory. Common opening patterns (joseki) establish balanced positions in the corners. Aim to play on the third and fourth lines: third line is territory, fourth line is influence.',
     },
     {
       type: 'heading',
@@ -84,9 +108,9 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Atari. A stone or group with exactly one liberty left — one move from capture. The opponent must respond or lose the stones.',
+        'Atari. A stone or group with exactly one liberty left: one move from capture. The opponent must respond or lose the stones.',
         'Ladders. A chasing pattern where the attacker keeps putting the opponent in atari. If the ladder works across the board, the defender cannot escape.',
-        'Nets. A containment pattern that traps stones without directly attacking them — the opponent cannot break out.',
+        'Nets. A containment pattern that traps stones without directly attacking them: the opponent cannot break out.',
         'Cutting and connecting. Cutting separates opponent groups (weaker individually). Connecting strengthens your own groups. "Cut early" is a common beginner tip.',
         'Sente and gote. Sente = a move your opponent must respond to (you keep the initiative). Gote = a move that does not demand a response (opponent gets initiative). Maximise sente moves.',
       ],
@@ -102,21 +126,21 @@ export const post: BlogPost = {
       items: [
         'Playing too much in the centre early. Centre stones rarely secure territory efficiently.',
         'Ignoring life and death. Playing tenuki (playing elsewhere) when your group is unsettled can lose the group.',
-        'Over-concentrating. Having too many stones in one area wastes potential — they could be securing territory elsewhere.',
+        'Over-concentrating. Having too many stones in one area wastes potential: they could be securing territory elsewhere.',
         'Filling your own eyes. Accidentally filling your own eye liberties can kill your group.',
       ],
     },
     {
       type: 'cta',
       href: '/games/go',
-      text: 'Play Go online — free, in your browser',
+      text: 'Play Go online - free, in your browser',
       description:
         'Challenge friends or AI bots on 9x9, 13x13, or full 19x19 boards. Multiple handicap options available.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR: the four habits that win games',
       id: 'tldr',
     },
     {
@@ -125,7 +149,7 @@ export const post: BlogPost = {
         'Secure corners first, then sides, then consider the centre.',
         'Always check life and death of your groups before playing elsewhere.',
         'Play on the third line for territory, fourth line for influence.',
-        'Keep the initiative (sente) — force your opponent to respond.',
+        'Keep the initiative (sente): force your opponent to respond.',
       ],
     },
     {

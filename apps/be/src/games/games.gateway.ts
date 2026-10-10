@@ -209,7 +209,7 @@ export class GamesGateway {
     if (isAuthenticated) {
       if (payloadUserId !== authUserId) {
         this.logger.warn(
-          `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+          `User ${authUserId} attempted to act as ${payloadUserId}: blocking`,
         );
         throw new WsException('Cannot perform actions as another user.');
       }
@@ -220,7 +220,7 @@ export class GamesGateway {
     // anonId from their handshake; identity-less sockets cannot act at all.
     if (!anonId || payloadUserId !== anonId) {
       this.logger.warn(
-        `Identity-less socket attempted to act as ${payloadUserId} — blocking`,
+        `Identity-less socket attempted to act as ${payloadUserId}: blocking`,
       );
       throw new WsException('Cannot perform actions as another user.');
     }

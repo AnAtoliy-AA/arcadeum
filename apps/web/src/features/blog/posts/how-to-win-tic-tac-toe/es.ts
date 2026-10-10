@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-win-tic-tac-toe',
   locale: 'es',
-  title: 'Cómo ganar en Tres en Raya — Estrategia, bifurcaciones y ventajas',
+  title: 'Cómo ganar en Tres en Raya - Estrategia, bifurcaciones y ventajas',
   excerpt:
     'Guía completa de estrategia para Tres en Raya: ventajas del primer jugador, defensa con O, creación de bifurcaciones y patrones ganadores.',
   publishedAt: '2026-06-30',
@@ -69,7 +69,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/tic-tac-toe',
-      text: 'Jugar a Tres en Raya online — Gratis en navegador',
+      text: 'Jugar a Tres en Raya online - Gratis en navegador',
       description:
         'Desafía a amigos o bots con diferentes niveles de dificultad sin registro.',
     },

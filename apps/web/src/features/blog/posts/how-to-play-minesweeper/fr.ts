@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-minesweeper',
   locale: 'fr',
-  title: 'Comment jouer au Démineur en ligne — règles, logique, stratégie',
+  title: 'Comment jouer au Démineur en ligne - règles, logique, stratégie',
   excerpt:
     'Guide complet du Démineur : grille, drapeaux, schémas de nombres, probabilités et logique pure.',
   publishedAt: '2026-06-05',
@@ -53,7 +53,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/minesweeper',
-      text: 'Jouez au Démineur en ligne — gratuit',
+      text: 'Jouez au Démineur en ligne - gratuit',
       description: 'Plusieurs tailles et niveaux de difficulté.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

@@ -37,7 +37,7 @@ import { RedisRateStateStore } from './redis-rate-state.store';
 
         if (backend === 'redis' && !redisUrl) {
           logger.warn(
-            'RATE_STATE_BACKEND=redis set but REDIS_URL missing — falling back to in-memory store',
+            'RATE_STATE_BACKEND=redis set but REDIS_URL missing: falling back to in-memory store',
           );
         }
 

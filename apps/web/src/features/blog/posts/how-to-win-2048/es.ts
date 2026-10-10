@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-2048',
   locale: 'es',
   title:
-    'Cómo ganar en 2048 online — estrategia, gestión de fichas, técnica de esquina',
+    'Cómo ganar en 2048 online - estrategia, gestión de fichas, técnica de esquina',
   excerpt:
     'Guía completa de estrategia para 2048: técnica de esquina, encadenamiento de fichas, disciplina de deslizamiento y los hábitos que alcanzan 2048 y más.',
   publishedAt: '2026-06-19',
@@ -79,13 +79,13 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/2048',
-      text: 'Juega a 2048 online — gratis, en tu navegador',
+      text: 'Juega a 2048 online - gratis, en tu navegador',
       description: '2048 clásico con animaciones suaves. Supera tu récord.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Resumen — cuatro hábitos que ganan',
+      text: 'Resumen - cuatro hábitos que ganan',
       id: 'tldr',
     },
     {

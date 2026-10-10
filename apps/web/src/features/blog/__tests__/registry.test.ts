@@ -117,4 +117,24 @@ describe('blog registry', () => {
     const spadesSlugs = spadesPosts.map((p) => p.slug);
     expect(spadesSlugs).toContain('how-to-win-spades');
   });
+
+  it('includes real game field schemas (board-diagram blocks) in sea-battle-best-strategies-and-placements', async () => {
+    for (const locale of SUPPORTED_LOCALES) {
+      const post = await getPost(
+        'sea-battle-best-strategies-and-placements',
+        locale,
+      );
+      expect(post).toBeDefined();
+      const diagrams = post?.body.filter((b) => b.type === 'board-diagram');
+      expect(diagrams?.length).toBeGreaterThanOrEqual(5);
+
+      const shoreline = diagrams?.find((d) =>
+        d.id?.startsWith('schema-shoreline'),
+      );
+      expect(shoreline).toBeDefined();
+      expect(shoreline?.gameId).toBe('sea-battle');
+      expect(shoreline?.grid.length).toBe(10);
+      expect(shoreline?.grid[0].length).toBe(10);
+    }
+  });
 });

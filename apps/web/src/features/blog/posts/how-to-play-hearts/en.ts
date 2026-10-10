@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-hearts',
   locale: 'en',
   title:
-    'How to Play Hearts Online — Rules, Queen of Spades, Shooting the Moon',
+    'How to Play Hearts Online - Rules, Queen of Spades, Shooting the Moon',
   excerpt:
     'A complete beginner-friendly guide to Hearts: trick-avoidance rules, passing strategy, Queen of Spades tactics, and how to shoot the moon without getting caught.',
   publishedAt: '2026-07-14',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Hearts is a classic trick-avoidance card game for four players. The goal is simple: avoid winning tricks that contain hearts (1 point each) and the Queen of Spades (13 points). The player with the lowest score when someone reaches 100 points wins. But beneath the simple objective lies a tense game of reading opponents, voiding suits, and deciding whether to shoot the moon — take all the points yourself to force 26 points onto every other player instead.',
+      text: 'Hearts is a classic trick-avoidance card game for four players. The goal is simple: avoid winning tricks that contain hearts (1 point each) and the Queen of Spades (13 points). The player with the lowest score when someone reaches 100 points wins. But beneath the simple objective lies a tense game of reading opponents, voiding suits, and deciding whether to shoot the moon - take all the points yourself to force 26 points onto every other player instead.',
     },
     {
       type: 'heading',
@@ -24,7 +24,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'A standard 52-card deck is dealt so that all 13 cards go to each of the four players. There is no trump suit. Players sit in fixed partnerships around the table (though Hearts is not a partnership game — everyone plays for themselves). The 2 of Clubs is dealt to the player who leads the first trick.',
+      text: 'A standard 52-card deck is dealt so that all 13 cards go to each of the four players. There is no trump suit. Players sit in fixed partnerships around the table (though Hearts is not a partnership game - everyone plays for themselves). The 2 of Clubs is dealt to the player who leads the first trick.',
     },
     {
       type: 'heading',
@@ -34,7 +34,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Before each hand, players pass three cards to another player. The passing direction rotates: left, right, across, then no pass (hold). Pass your highest cards in suits you want to void, but be careful — passing the Queen of Spades or high hearts is risky because you might get them back. A common tactic is to pass low cards in a suit you already have few of, creating a void you can use to dump hearts or the Queen later.',
+      text: 'Before each hand, players pass three cards to another player. The passing direction rotates: left, right, across, then no pass (hold). Pass your highest cards in suits you want to void, but be careful - passing the Queen of Spades or high hearts is risky because you might get them back. A common tactic is to pass low cards in a suit you already have few of, creating a void you can use to dump hearts or the Queen later.',
     },
     {
       type: 'heading',
@@ -44,7 +44,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'The player holding the 2 of Clubs leads the first trick. Players must follow suit if possible; if not, they may play any card. The highest card in the led suit wins the trick — there is no trump. Hearts cannot be led until they have been "broken" (played on a trick when a player could not follow suit). The trick winner leads the next trick.',
+      text: 'The player holding the 2 of Clubs leads the first trick. Players must follow suit if possible; if not, they may play any card. The highest card in the led suit wins the trick - there is no trump. Hearts cannot be led until they have been "broken" (played on a trick when a player could not follow suit). The trick winner leads the next trick.',
     },
     {
       type: 'heading',
@@ -64,7 +64,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'If you collect ALL 13 hearts AND the Queen of Spades in one hand (26 total points), you shoot the moon — instead of gaining 26 points yourself, every other player receives 26 points. This is high-risk, high-reward. If even one heart or the Queen escapes to another player, you take the full 26. Shooting the moon requires carefully timed high cards, strong voids, and confidence that opponents cannot block you by winning a single heart.',
+      text: 'If you collect ALL 13 hearts AND the Queen of Spades in one hand (26 total points), you shoot the moon - instead of gaining 26 points yourself, every other player receives 26 points. This is high-risk, high-reward. If even one heart or the Queen escapes to another player, you take the full 26. Shooting the moon requires carefully timed high cards, strong voids, and confidence that opponents cannot block you by winning a single heart.',
     },
     {
       type: 'heading',
@@ -100,28 +100,28 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/hearts',
-      text: 'Play Hearts online — free, in your browser',
+      text: 'Play Hearts online - free, in your browser',
       description:
         'Open a Hearts room, share the link with friends, or play against AI bots. Classic rules with passing and shooting the moon.',
     },
     {
       type: 'cta',
       href: '/blog/how-to-win-hearts-advanced',
-      text: 'Go deeper: Advanced Hearts — Reading Opponents and Moon-Shooting Tells',
+      text: 'Go deeper: Advanced Hearts - Reading Opponents and Moon-Shooting Tells',
       description:
         'Multi-hand planning, pip counting, and recognizing moon-shooting setups before it is too late.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR - the four habits that win games',
       id: 'tldr',
     },
     {
       type: 'list',
       items: [
-        'Void a suit early by passing — it gives you a way to dump high hearts and the Queen.',
-        'Track the Queen of Spades and every heart played — know where the points are.',
+        'Void a suit early by passing - it gives you a way to dump high hearts and the Queen.',
+        'Track the Queen of Spades and every heart played - know where the points are.',
         'Keep low cards and avoid leading hearts until you are ready to shoot the moon.',
         'Block moon-shooters by winning a single heart when they try to collect everything.',
       ],
@@ -135,12 +135,12 @@ export const post: BlogPost = {
     {
       question: 'What is the best card to pass in Hearts?',
       answer:
-        'Usually your highest card in the suit you have fewest of — this creates a void. The Queen of Spades is often good to pass unless you have enough spades to protect it (Ace, King, and three others is generally enough). Never pass the 2 of Clubs or you may be forced to lead trick one badly.',
+        'Usually your highest card in the suit you have fewest of - this creates a void. The Queen of Spades is often good to pass unless you have enough spades to protect it (Ace, King, and three others is generally enough). Never pass the 2 of Clubs or you may be forced to lead trick one badly.',
     },
     {
       question: 'Can I shoot the moon if I hold the Queen of Spades?',
       answer:
-        'Yes — in fact the Queen is required for a moon shot. You must collect ALL 13 hearts AND the Queen. If you hold the Queen but another player takes a single heart, the shot fails.',
+        'Yes - in fact the Queen is required for a moon shot. You must collect ALL 13 hearts AND the Queen. If you hold the Queen but another player takes a single heart, the shot fails.',
     },
     {
       question:
@@ -151,7 +151,7 @@ export const post: BlogPost = {
     {
       question: 'Is it always wrong to take tricks in Hearts?',
       answer:
-        'No — there are situations where taking a trick is correct: blocking a moon-shooter requires taking at least one heart, and sometimes strategic point-taking (accepting 3-4 hearts to stay in the mid-range) is better than desperate avoidance that leads to taking the Queen.',
+        'No - there are situations where taking a trick is correct: blocking a moon-shooter requires taking at least one heart, and sometimes strategic point-taking (accepting 3-4 hearts to stay in the mid-range) is better than desperate avoidance that leads to taking the Queen.',
     },
   ],
   howTo: {
@@ -164,7 +164,7 @@ export const post: BlogPost = {
       },
       {
         name: 'Track the Queen of Spades',
-        text: 'Always note whether the Queen has appeared. If not, avoid leading spades or playing high spades — the 13-point penalty is devastating.',
+        text: 'Always note whether the Queen has appeared. If not, avoid leading spades or playing high spades - the 13-point penalty is devastating.',
         url: '#scoring',
       },
       {

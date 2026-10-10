@@ -174,7 +174,7 @@ export function executeSmite(
 
   helpers.addLog(
     state,
-    helpers.createLogEntry('action', `SMITED them — must take 3 turns! ⚡`, {
+    helpers.createLogEntry('action', `SMITED them: must take 3 turns! ⚡`, {
       scope: 'all',
       senderId: playerId,
       targetId: targetPlayerId,

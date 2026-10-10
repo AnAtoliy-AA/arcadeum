@@ -32,7 +32,7 @@ export const loungeMessages = {
     errorTitle: "Can't reach the lounge",
     emptyTitle: 'No rooms yet',
     emptyDescription:
-      'Be the trailblazer—kick off the first lobby or tap refresh to check again in a few.',
+      'Be the trailblazer - kick off the first lobby or tap refresh to check again in a few.',
     filterEmptyTitle: 'No rooms match your filters',
     filterEmptyDescription:
       'Try a different status or participation filter, or clear them to see everything.',

@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-pachisi',
   locale: 'es',
-  title: 'Cómo jugar a Parchís (Ludo) online — reglas, capturas, estrategia',
+  title: 'Cómo jugar a Parchís (Ludo) online - reglas, capturas, estrategia',
   excerpt:
     'Guía completa: carrera de dados con capturas, casillas seguras y bloqueos tácticos.',
   publishedAt: '2026-07-07',
@@ -44,7 +44,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/pachisi',
-      text: 'Juega a Parchís online — gratis',
+      text: 'Juega a Parchís online - gratis',
       description: 'Carreras con amigos o IA.',
     },
     { type: 'heading', level: 2, text: 'Resumen', id: 'tldr' },

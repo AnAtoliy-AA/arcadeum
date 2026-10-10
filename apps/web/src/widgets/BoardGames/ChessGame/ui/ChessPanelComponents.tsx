@@ -181,7 +181,7 @@ export function GameInfoPanel({
   }, [liveEval, shouldFlip]);
 
   const evalLabel = useMemo(() => {
-    if (!displayEval) return analyzing ? '...' : '—';
+    if (!displayEval) return analyzing ? '...' : '-';
     if (displayEval.mate != null && displayEval.mate !== 0)
       return `M${Math.abs(displayEval.mate)}`;
     if (displayEval.cp != null) {

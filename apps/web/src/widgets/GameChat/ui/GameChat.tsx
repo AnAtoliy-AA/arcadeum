@@ -230,7 +230,7 @@ export function GameChat({
             title="Minimize"
             aria-label="Minimize chat"
           >
-            <span className="text-[14px]">—</span>
+            <span className="text-[14px]">−</span>
           </IconButton>
           {onClose ? (
             <IconButton

@@ -56,7 +56,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       'Dodge the detonations, weaponize your deck, and stay nine lives ahead.',
     summary:
       'Push your luck, avoid the exploding cats, and sabotage opponents with wild cards.',
-    overview: `Critical brings the beloved party-card chaos online with simultaneous turns, smart animations, and optional house rules. Our rules engine tracks every interaction so you can focus on bluffing, defusing, and taunting your friends in real time. Setup follows the official deck prep: make sure there is one fewer Exploding Cat than players, give every player a Defuse plus four additional cards, then shuffle the remaining Defuse cards and bombs back into the draw pile. On your turn you may play any number of cards (including combos), resolve their effects with optional Nope responses, and then draw to end your turn unless an Attack pushed the obligation to the next player. Card effects mirror the physical rules: Attack ends your turn and forces the next player to take two draws, Skip ends your turn without drawing, Favor takes a random card from an opponent, Shuffle randomizes the draw pile, See the Future reveals the top three cards, Nope cancels any action except Defuse or Exploding Cat resolution, Defuse prevents an explosion and lets you tuck the bomb back anywhere in the deck, and drawing an Exploding Cat without a Defuse eliminates you from the round. The five cat personalities—Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon, and Bearded Cat—gain power only when played as pairs or three-of-a-kind, which is why single copies stay inactive until you assemble a combo.`,
+    overview: `Critical brings the beloved party-card chaos online with simultaneous turns, smart animations, and optional house rules. Our rules engine tracks every interaction so you can focus on bluffing, defusing, and taunting your friends in real time. Setup follows the official deck prep: make sure there is one fewer Exploding Cat than players, give every player a Defuse plus four additional cards, then shuffle the remaining Defuse cards and bombs back into the draw pile. On your turn you may play any number of cards (including combos), resolve their effects with optional Nope responses, and then draw to end your turn unless an Attack pushed the obligation to the next player. Card effects mirror the physical rules: Attack ends your turn and forces the next player to take two draws, Skip ends your turn without drawing, Favor takes a random card from an opponent, Shuffle randomizes the draw pile, See the Future reveals the top three cards, Nope cancels any action except Defuse or Exploding Cat resolution, Defuse prevents an explosion and lets you tuck the bomb back anywhere in the deck, and drawing an Exploding Cat without a Defuse eliminates you from the round. The five cat personalities (Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon, and Bearded Cat) gain power only when played as pairs or three-of-a-kind, which is why single copies stay inactive until you assemble a combo.`,
     status: 'In prototype',
     players: '2-5 players',
     duration: '15 min',
@@ -67,7 +67,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       {
         title: 'Adaptive rule engine',
         description:
-          'Server-side state enforces defuse, skip, and attack chains instantly—even with simultaneous reactions.',
+          'Server-side state enforces defuse, skip, and attack chains instantly: even with simultaneous reactions.',
       },
       {
         title: 'Drama-friendly animations',
@@ -89,7 +89,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       {
         title: 'Take your turn',
         detail:
-          'Play as many cards as you like (including combos) in any order, respond with Nope cards to cancel opponents, and finish by drawing—unless an Attack passed extra draws to you.',
+          'Play as many cards as you like (including combos) in any order, respond with Nope cards to cancel opponents, and finish by drawing (unless an Attack passed extra draws to you).',
       },
       {
         title: 'Know every card',
@@ -99,7 +99,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       {
         title: 'Cat combos explained',
         detail:
-          'Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon, and Bearded Cat have power only when played as pairs or trios—pairs steal a random card, trios let you name and take a specific card. Because single cat cards lack standalone actions, the tabletop UI keeps them disabled until you assemble the required combo.',
+          'Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon, and Bearded Cat have power only when played as pairs or trios: pairs steal a random card, trios let you name and take a specific card. Because single cat cards lack standalone actions, the tabletop UI keeps them disabled until you assemble the required combo.',
       },
     ],
     comingSoon: [
@@ -118,7 +118,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     localizations: {
       es: {
         overview:
-          'Critical ofrece el caos del juego original con turnos simultáneos, animaciones inteligentes y reglas opcionales para tu grupo. La preparación sigue las reglas oficiales: usa un Exploding Cat menos que la cantidad de jugadores, reparte a cada persona un Defuse más cuatro cartas adicionales y vuelve a barajar los Defuse sobrantes y las bombas en el mazo. En tu turno puedes jugar tantas cartas como quieras (incluyendo combinaciones), resolver sus efectos mientras los demás pueden responder con Nope y, al final, robar una carta salvo que un Attack haya pasado la obligación al siguiente jugador. Cada carta conserva su efecto físico: Attack termina tu turno y obliga al siguiente jugador a robar dos cartas, Skip termina tu turno sin robar, Favor roba una carta al azar a otro jugador, Shuffle baraja el mazo, See the Future muestra las tres primeras cartas, Nope cancela cualquier acción excepto un Defuse o la resolución de un Exploding Cat, Defuse evita la explosión y te permite esconder la bomba en cualquier parte del mazo, y robar un Exploding Cat sin Defuse te elimina de la ronda. Las cinco personalidades felinas —Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon y Bearded Cat— solo tienen poder cuando se juegan en pareja o trío, por lo que las cartas individuales permanecen inactivas hasta que completes la combinación.',
+          'Critical ofrece el caos del juego original con turnos simultáneos, animaciones inteligentes y reglas opcionales para tu grupo. La preparación sigue las reglas oficiales: usa un Exploding Cat menos que la cantidad de jugadores, reparte a cada persona un Defuse más cuatro cartas adicionales y vuelve a barajar los Defuse sobrantes y las bombas en el mazo. En tu turno puedes jugar tantas cartas como quieras (incluyendo combinaciones), resolver sus efectos mientras los demás pueden responder con Nope y, al final, robar una carta salvo que un Attack haya pasado la obligación al siguiente jugador. Cada carta conserva su efecto físico: Attack termina tu turno y obliga al siguiente jugador a robar dos cartas, Skip termina tu turno sin robar, Favor roba una carta al azar a otro jugador, Shuffle baraja el mazo, See the Future muestra las tres primeras cartas, Nope cancela cualquier acción excepto un Defuse o la resolución de un Exploding Cat, Defuse evita la explosión y te permite esconder la bomba en cualquier parte del mazo, y robar un Exploding Cat sin Defuse te elimina de la ronda. Las cinco personalidades felinas (Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon y Bearded Cat) solo tienen poder cuando se juegan en pareja o trío, por lo que las cartas individuales permanecen inactivas hasta que completes la combinación.',
         howToPlay: [
           {
             title: 'Prepara el mazo',
@@ -144,7 +144,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       },
       fr: {
         overview:
-          'Critical transpose le chaos du jeu original avec des tours simultanés, des animations travaillées et des variantes maison facultatives. La mise en place respecte les règles officielles : utilisez une carte Exploding Cat de moins que le nombre de joueurs, donnez à chacun un Defuse ainsi que quatre cartes supplémentaires, puis mélangez les Defuse restants et les bombes dans la pioche. À votre tour, jouez autant de cartes que vous le souhaitez (y compris des combinaisons), appliquez leurs effets pendant que les adversaires peuvent répondre avec Nope, puis piochez pour terminer le tour, sauf si une carte Attack a reporté l’obligation sur le joueur suivant. Chaque carte conserve son effet physique : Attack termine votre tour et impose deux pioches au joueur suivant, Skip termine le tour sans pioche, Favor vous fait prendre une carte au hasard chez un adversaire, Shuffle mélange la pioche, See the Future révèle les trois prochaines cartes, Nope annule toute action sauf un Defuse ou la résolution d’un Exploding Cat, Defuse empêche l’explosion et vous permet de replacer la bombe où vous le souhaitez, et piocher un Exploding Cat sans Defuse vous élimine de la manche. Les cinq chats —Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon et Bearded Cat— ne gagnent du pouvoir qu’en paire ou en trio, d’où l’inactivité des cartes seules tant que la combinaison n’est pas réunie.',
+          'Critical transpose le chaos du jeu original avec des tours simultanés, des animations travaillées et des variantes maison facultatives. La mise en place respecte les règles officielles : utilisez une carte Exploding Cat de moins que le nombre de joueurs, donnez à chacun un Defuse ainsi que quatre cartes supplémentaires, puis mélangez les Defuse restants et les bombes dans la pioche. À votre tour, jouez autant de cartes que vous le souhaitez (y compris des combinaisons), appliquez leurs effets pendant que les adversaires peuvent répondre avec Nope, puis piochez pour terminer le tour, sauf si une carte Attack a reporté l’obligation sur le joueur suivant. Chaque carte conserve son effet physique : Attack termine votre tour et impose deux pioches au joueur suivant, Skip termine le tour sans pioche, Favor vous fait prendre une carte au hasard chez un adversaire, Shuffle mélange la pioche, See the Future révèle les trois prochaines cartes, Nope annule toute action sauf un Defuse ou la résolution d’un Exploding Cat, Defuse empêche l’explosion et vous permet de replacer la bombe où vous le souhaitez, et piocher un Exploding Cat sans Defuse vous élimine de la manche. Les cinq chats (Tacocat, Hairy Potato Cat, Rainbow Ralphing Cat, Cattermelon et Bearded Cat) ne gagnent du pouvoir qu’en paire ou en trio, d’où l’inactivité des cartes seules tant que la combinaison n’est pas réunie.',
         howToPlay: [
           {
             title: 'Préparez la pioche',
@@ -187,7 +187,8 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     highlights: [
       {
         title: 'Automatic hand evaluator',
-        description: 'Server ranks all possible hands instantly—no disputes.',
+        description:
+          'Server ranks all possible hands instantly with no disputes.',
       },
       {
         title: 'Real-time betting',
@@ -248,7 +249,8 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     highlights: [
       {
         title: 'Multiple variants',
-        description: 'Standard, Chess960, King of the Hill, Three-Check, Crazyhouse, Atomic.',
+        description:
+          'Standard, Chess960, King of the Hill, Three-Check, Crazyhouse, Atomic.',
       },
       {
         title: 'Time controls',
@@ -256,7 +258,8 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       },
       {
         title: 'Bot personalities',
-        description: '13 distinct bot personalities with different play styles.',
+        description:
+          '13 distinct bot personalities with different play styles.',
       },
     ],
     howToPlay: [
@@ -266,11 +269,13 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       },
       {
         title: 'Take turns',
-        detail: 'White moves first. Click a piece to see legal moves, then click a destination.',
+        detail:
+          'White moves first. Click a piece to see legal moves, then click a destination.',
       },
       {
         title: 'Check and checkmate',
-        detail: 'Put the king in check. If there is no escape, it is checkmate and you win.',
+        detail:
+          'Put the king in check. If there is no escape, it is checkmate and you win.',
       },
     ],
     comingSoon: [
@@ -320,7 +325,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       {
         title: 'Claim actions',
         detail:
-          'On your turn, take an action—income, foreign aid, tax, assassinate, or coup. Some require role claims.',
+          'On your turn, take an action: income, foreign aid, tax, assassinate, or coup. Some require role claims.',
       },
       {
         title: 'Bluff or believe',
@@ -353,7 +358,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
     summary:
       'Coordinate with friends in real time to stop global outbreaks before time runs out.',
     overview:
-      'Race the clock to deliver supplies worldwide. Our version emphasizes collaborative tools, shared dashboards, and a tactical timeline so everyone knows the plan—no matter the device.',
+      'Race the clock to deliver supplies worldwide. Our version emphasizes collaborative tools, shared dashboards, and a tactical timeline so everyone knows the plan, no matter the device.',
     status: 'Roadmap',
     players: '2-4 players',
     duration: '20 min',
@@ -395,7 +400,7 @@ export const gamesCatalog: GameCatalogueEntry[] = [
       {
         title: 'Manage the timer',
         detail:
-          'Every decision eats the timeline—communicate constantly to stay ahead of crises.',
+          'Every decision eats the timeline: communicate constantly to stay ahead of crises.',
       },
     ],
     comingSoon: [

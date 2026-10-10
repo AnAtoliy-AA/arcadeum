@@ -185,7 +185,7 @@ export function CoordinateTrainer() {
           </h2>
           <p className="text-sm text-[var(--textSecondary)] max-w-md">
             Learn chess board coordinates by heart. Know instantly where every
-            square is — essential for speed chess and communication.
+            square is: essential for speed chess and communication.
           </p>
         </div>
 

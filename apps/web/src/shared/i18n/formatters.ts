@@ -1,10 +1,10 @@
 /**
  * Locale-aware Intl formatters. Use these instead of bare
  * `Number.prototype.toLocaleString()` / `Date.prototype.toLocaleString()`
- * — those use the *browser's* locale, not the user-selected app locale,
+ * : those use the *browser's* locale, not the user-selected app locale,
  * so they render fr_FR digit grouping for an EN user (and vice versa).
  *
- * BCP-47 mapping mirrors `SCHEMA_LANGUAGE_MAP` in [locale]/layout.tsx —
+ * BCP-47 mapping mirrors `SCHEMA_LANGUAGE_MAP` in [locale]/layout.tsx -
  * keep them in sync.
  */
 import { DEFAULT_LOCALE, type Locale } from '@/shared/config/locale-slugs';

@@ -3,9 +3,9 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-win-chess-endgames',
   locale: 'en',
-  title: 'Chess Endgame Mastery — King-Pawn, Rook, and Queen Endings Explained',
+  title: 'Chess Endgame Mastery - King-Pawn, Rook, and Queen Endings Explained',
   excerpt:
-    'The endgame is where games are won or drawn. Master king-pawn opposition, the Philidor and Lucena positions, rook activity rules, and queen vs. rook — all with concrete examples.',
+    'The endgame is where games are won or drawn. Master king-pawn opposition, the Philidor and Lucena positions, rook activity rules, and queen vs. rook - all with concrete examples.',
   publishedAt: '2026-09-18',
   author: 'Arcadeum team',
   tags: ['Chess', 'Endgame', 'Strategy', 'Tactics', 'Advanced'],
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Most chess players spend their study time on openings. The players who actually improve fastest spend it on endgames. The endgame is the phase where precise knowledge converts a tiny advantage into a win — and where imprecision throws away what was won in the middlegame. This guide covers the core theoretical positions every improving player must know.',
+      text: 'Most chess players spend their study time on openings. The players who actually improve fastest spend it on endgames. The endgame is the phase where precise knowledge converts a tiny advantage into a win - and where imprecision throws away what was won in the middlegame. This guide covers the core theoretical positions every improving player must know.',
     },
     {
       type: 'stat-card',
@@ -27,7 +27,7 @@ export const post: BlogPost = {
         {
           value: '3',
           label: 'Key positions',
-          description: 'Philidor, Lucena, Opposition — the must-know trio',
+          description: 'Philidor, Lucena, Opposition - the must-know trio',
         },
         {
           value: '~80',
@@ -37,14 +37,14 @@ export const post: BlogPost = {
         {
           value: 'K+P',
           label: 'Most common endgame',
-          description: 'King and pawn vs. king — 40% of all endgames',
+          description: 'King and pawn vs. king - 40% of all endgames',
         },
       ],
     },
     {
       type: 'heading',
       level: 2,
-      text: 'King-pawn endings — opposition and the key square',
+      text: 'King-pawn endings - opposition and the key square',
       id: 'king-pawn',
     },
     {
@@ -54,12 +54,34 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 3,
-      text: 'Opposition — the decisive concept',
+      text: 'Opposition - the decisive concept',
       id: 'opposition',
     },
     {
       type: 'paragraph',
-      text: 'Two kings are in opposition when they face each other with exactly one square between them. The player who does NOT have the move has the opposition — and opposition is power. It means the enemy king must give way. In K+P vs. K endings, the stronger side wins by achieving the opposition on the key squares. Example: White king on e5, Black king on e7, White pawn on e4, White to move. White wins with Kd6! (taking the opposition on d-file), forcing Kd8 or Kf8, then Ke6 with the opposition taken — the pawn promotes.',
+      text: 'Two kings are in opposition when they face each other with exactly one square between them. The player who does NOT have the move has the opposition: and opposition is power. It means the enemy king must give way. In K+P vs. K endings, the stronger side wins by achieving the opposition on the key squares. Example: White king on e5, Black king on e7, White pawn on e4, White to move. White wins with Kd6! (taking the opposition on d-file), forcing Kd8 or Kf8, then Ke6 with the opposition taken: the pawn promotes.',
+    },
+    {
+      type: 'board-diagram',
+      id: 'schema-chess-opposition',
+      gameId: 'chess',
+      title: 'King & Pawn Opposition Endgame',
+      caption:
+        'White king on e5 and Black king on e7 in direct opposition. White outflanks with Kd6 to escort the pawn to promotion.',
+      grid: [
+        '........',
+        '....k...',
+        '........',
+        '....K...',
+        '....P...',
+        '........',
+        '........',
+        '........',
+      ],
+      legend: [
+        { variant: 'white', label: 'White (Attacker)' },
+        { variant: 'black', label: 'Black (Defender)' },
+      ],
     },
     {
       type: 'heading',
@@ -72,33 +94,33 @@ export const post: BlogPost = {
       items: [
         'Rook pawn (a or h pawn) with the king ahead: the pawn almost never wins. The defending king simply goes into the corner. The promoting square (a8 or h8) is the wrong color for the attacker, so the pawn just reaches the corner and stalemates.',
         "Wrong-color bishop: if you have a bishop that does not control the pawn's promotion square, the defender draws by keeping the king on that square color.",
-        'Pawn on 7th rank — stalemate danger: the attacker must be careful not to stalemate the defending king when the pawn reaches the 7th rank.',
+        'Pawn on 7th rank - stalemate danger: the attacker must be careful not to stalemate the defending king when the pawn reaches the 7th rank.',
       ],
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Rook endings — the most common practical endgame',
+      text: 'Rook endings - the most common practical endgame',
       id: 'rook-endings',
     },
     {
       type: 'paragraph',
-      text: "Rook endings occur in roughly a third of all games. The fundamental principle: rooks belong behind passed pawns (yours pushing, opponent's slowing). A rook on the 7th rank is enormously powerful — it attacks enemy pawns and restricts the opponent's king simultaneously.",
+      text: "Rook endings occur in roughly a third of all games. The fundamental principle: rooks belong behind passed pawns (yours pushing, opponent's slowing). A rook on the 7th rank is enormously powerful - it attacks enemy pawns and restricts the opponent's king simultaneously.",
     },
     {
       type: 'heading',
       level: 3,
-      text: 'The Philidor Position — the fortress draw',
+      text: 'The Philidor Position - the fortress draw',
       id: 'philidor',
     },
     {
       type: 'paragraph',
-      text: 'The Philidor position is the key drawing technique in R+P vs. R. The defending rook sits on the 6th rank (the "Philidor rank"), cutting off the attacking king. When the pawn advances to the 6th rank, the defending rook drops to the 1st rank for back-rank checks — the king cannot shelter because it walks into perpetual check. Key squares for Black to remember: rook starts on e6, pawn is on e5. When White pushes e6, Rook moves to e1 — now checks from behind are unstoppable.',
+      text: 'The Philidor position is the key drawing technique in R+P vs. R. The defending rook sits on the 6th rank (the "Philidor rank"), cutting off the attacking king. When the pawn advances to the 6th rank, the defending rook drops to the 1st rank for back-rank checks - the king cannot shelter because it walks into perpetual check. Key squares for Black to remember: rook starts on e6, pawn is on e5. When White pushes e6, Rook moves to e1 - now checks from behind are unstoppable.',
     },
     {
       type: 'heading',
       level: 3,
-      text: 'The Lucena Position — winning technique',
+      text: 'The Lucena Position - winning technique',
       id: 'lucena',
     },
     {
@@ -118,18 +140,18 @@ export const post: BlogPost = {
         "Cut off the enemy king by rank or file. A rook on the 4th rank (if the enemy king is on rows 1-3) restricts the king's mobility dramatically.",
         'Pawn breaks decide R+P endings. The player who creates a passed pawn first usually converts the advantage.',
         'Lucena wins, Philidor draws. If you reach a R+P vs. R position, immediately identify which theoretical position you are closest to.',
-        'Rook checks from behind the passer. The defending rook should harass the passed pawn from behind — the passer has to dodge checks or find shelter.',
+        'Rook checks from behind the passer. The defending rook should harass the passed pawn from behind - the passer has to dodge checks or find shelter.',
       ],
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Bishop endings — same color vs. opposite color',
+      text: 'Bishop endings - same color vs. opposite color',
       id: 'bishop-endings',
     },
     {
       type: 'paragraph',
-      text: 'Bishop vs. bishop endings split into two fundamentally different cases. Opposite-color bishop endings (each bishop on a different square color) are notoriously drawish — the stronger side often cannot create a passed pawn on a color the defender cannot touch. Same-color bishop endings (both bishops on the same square color) are more decisive: the attacker can triangulate and zugzwang the defender, and pawns on the color of the bishops become targets.',
+      text: 'Bishop vs. bishop endings split into two fundamentally different cases. Opposite-color bishop endings (each bishop on a different square color) are notoriously drawish - the stronger side often cannot create a passed pawn on a color the defender cannot touch. Same-color bishop endings (both bishops on the same square color) are more decisive: the attacker can triangulate and zugzwang the defender, and pawns on the color of the bishops become targets.',
     },
     {
       type: 'list',
@@ -142,12 +164,12 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Queen endings — stalemate traps and perpetual check',
+      text: 'Queen endings - stalemate traps and perpetual check',
       id: 'queen-endings',
     },
     {
       type: 'paragraph',
-      text: 'Queen endings are theoretically won for the stronger side in most cases — but they are notoriously difficult to convert because the weaker side can give perpetual checks or create stalemate traps. Key rule: never let the defending king run into a corner where it might become stalemated on your move.',
+      text: 'Queen endings are theoretically won for the stronger side in most cases - but they are notoriously difficult to convert because the weaker side can give perpetual checks or create stalemate traps. Key rule: never let the defending king run into a corner where it might become stalemated on your move.',
     },
     {
       type: 'list',
@@ -166,17 +188,17 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Activate the king immediately. When the queens come off, your king is no longer under mating attack — bring it to the center or to where the action is.',
-        'Calculate pawn races precisely. In king-vs-king-and-pawn races, count exact moves — one move difference changes win to draw or draw to loss.',
+        'Activate the king immediately. When the queens come off, your king is no longer under mating attack - bring it to the center or to where the action is.',
+        'Calculate pawn races precisely. In king-vs-king-and-pawn races, count exact moves - one move difference changes win to draw or draw to loss.',
         'Identify passed pawns before the endgame starts. Trade into an endgame where you have a passed pawn, or where the pawn structure favors your remaining pieces.',
         'Know when to trade into a theoretical position. If you know Philidor, you know when you are safe to trade rooks and accept a K+P ending.',
-        'Understand zugzwang. Many endgames are decided by who is forced to move — the player who must move loses. Build positions where any move by the opponent weakens something.',
+        'Understand zugzwang. Many endgames are decided by who is forced to move - the player who must move loses. Build positions where any move by the opponent weakens something.',
       ],
     },
     {
       type: 'cta',
       href: '/games/chess',
-      text: 'Practice endgames in real games — play Chess on Arcadeum',
+      text: 'Practice endgames in real games - play Chess on Arcadeum',
       description:
         'Try the techniques from this guide in live games. Review the endgame phase in your post-game analysis to see exactly where the position became won or drawn.',
     },
@@ -185,12 +207,12 @@ export const post: BlogPost = {
       href: '/blog/chess-opening-traps',
       text: 'Also read: 10 Chess Opening Traps Every Player Should Know',
       description:
-        "From Scholar's Mate to the Fried Liver Attack — with full move sequences.",
+        "From Scholar's Mate to the Fried Liver Attack - with full move sequences.",
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the endgame essentials',
+      text: 'TL;DR - the endgame essentials',
       id: 'tldr',
     },
     {
@@ -200,7 +222,7 @@ export const post: BlogPost = {
         'Rook endings: know Philidor (drawing technique) and Lucena (winning technique).',
         'Bishop endings: opposite-color bishops draw more often; same-color bishops favor the attacker.',
         'Activate your king immediately when pieces come off. An active king is worth a piece in simplified positions.',
-        "Avoid stalemate in queen endings — always check for the defender's traps.",
+        "Avoid stalemate in queen endings - always check for the defender's traps.",
       ],
     },
   ],
@@ -208,7 +230,7 @@ export const post: BlogPost = {
     {
       question: 'What is the most important endgame to study first?',
       answer:
-        'King and pawn vs. king — it is the most common and teaches the two core concepts (opposition, key squares) that appear in every other endgame type.',
+        'King and pawn vs. king - it is the most common and teaches the two core concepts (opposition, key squares) that appear in every other endgame type.',
     },
     {
       question: 'What is the Philidor position?',
@@ -218,12 +240,12 @@ export const post: BlogPost = {
     {
       question: 'Why do opposite-color bishops draw even with two extra pawns?',
       answer:
-        "The defending bishop cannot be touched by the attacking bishop, so it can permanently blockade the passed pawn. The attacker cannot triangulate or outmaneuver — the defender simply parks the bishop on the pawn's path and never moves.",
+        "The defending bishop cannot be touched by the attacking bishop, so it can permanently blockade the passed pawn. The attacker cannot triangulate or outmaneuver - the defender simply parks the bishop on the pawn's path and never moves.",
     },
     {
       question: 'How do I avoid stalemate in queen endings?',
       answer:
-        "Keep the defending king away from the edges and corners. Before pushing pawns or checking, visualize whether the opponent's king has legal moves. When it doesn't, that is stalemate — even if you are winning comfortably.",
+        "Keep the defending king away from the edges and corners. Before pushing pawns or checking, visualize whether the opponent's king has legal moves. When it doesn't, that is stalemate - even if you are winning comfortably.",
     },
   ],
   howTo: {

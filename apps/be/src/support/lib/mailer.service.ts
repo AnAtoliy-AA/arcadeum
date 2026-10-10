@@ -52,11 +52,11 @@ export class MailerService {
 
   async send(input: MailerSendInput): Promise<MailerSendResult> {
     if (isE2EMode()) {
-      this.logger.debug('E2E mode — skipping real email delivery');
+      this.logger.debug('E2E mode: skipping real email delivery');
       return { status: 'unconfigured' };
     }
     if (!this.transporter || !this.to || !this.from) {
-      this.logger.warn('SMTP not configured — skipping email delivery');
+      this.logger.warn('SMTP not configured: skipping email delivery');
       return { status: 'unconfigured' };
     }
 
@@ -88,11 +88,11 @@ export class MailerService {
    */
   async sendTo(input: MailerSendToInput): Promise<MailerSendResult> {
     if (isE2EMode()) {
-      this.logger.debug('E2E mode — skipping real email delivery');
+      this.logger.debug('E2E mode: skipping real email delivery');
       return { status: 'unconfigured' };
     }
     if (!this.transporter || !this.from) {
-      this.logger.warn('SMTP not configured — skipping email delivery');
+      this.logger.warn('SMTP not configured: skipping email delivery');
       return { status: 'unconfigured' };
     }
 

@@ -91,7 +91,7 @@ export const roomDetailMessages = {
       "We'll guide players through setup, turn flow, and scoring once the interactive tabletop is ready. For now, coordinate in chat, review the rules, and gather your crew while we finish the real-time experience.",
     waitingTitle: 'Waiting on more players?',
     waitingCopy:
-      "Keep this screen open—we'll auto-refresh the lobby when teammates join or the host starts the match.",
+      "Keep this screen open - we'll auto-refresh the lobby when teammates join or the host starts the match.",
     errors: {
       signInRequired: 'Sign in to load room details.',
       notFound: 'Room not found. The invite link may be incomplete.',

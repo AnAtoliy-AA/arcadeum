@@ -239,7 +239,7 @@ export function GlimwormHud(
             type="button"
             onClick={onRestart}
             aria-label="Restart round"
-            title="Restart — drop back to the lobby"
+            title="Restart - drop back to the lobby"
             style={{
               pointerEvents: 'auto',
               display: 'inline-flex',

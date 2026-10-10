@@ -34,7 +34,7 @@ export function AchievementShareButton({
     const url = `${window.location.origin}/${locale}/achievements/share?${params.toString()}`;
 
     const success = await shareLink({
-      title: `${name} — Arcadeum Games`,
+      title: `${name} | Arcadeum Games`,
       text: `I unlocked the "${name}" achievement (${rarity}) on Arcadeum Games!`,
       url,
       event: 'achievement.shared',

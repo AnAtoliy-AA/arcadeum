@@ -14,9 +14,9 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to deploy'
-        required: true
-        default: 'staging'
+        description: 'Branch override (leave empty to use the branch selected in the Run workflow dropdown)'
+        required: false
+        default: ''
 
 jobs:
   changes:
@@ -40,7 +40,7 @@ jobs:
   deploy-be-and-tg-bot:
     name: Deploy BE + TG Bot (Dev)
     needs: changes
-    if: needs.changes.outputs.be-or-tg == 'true'
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.be-or-tg == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -59,7 +59,7 @@ jobs:
 
             rm -f "$DEPLOY_DIR/.git/index.lock"
 
-            BRANCH="${{ github.event.inputs.branch || 'staging' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then

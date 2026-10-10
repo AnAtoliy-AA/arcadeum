@@ -7,15 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.62] - 2026-10-10
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.61] - 2026-10-10
+
+### Added
+
+- omit user email from admin api responses and management ui (ARC-980) (ARC-980)
+- mask sensitive user email and exclude encryption fields in admin queries (ARC-980) (ARC-980)
+- implement user data segregation and envelope encryption (ARC-980) (ARC-980)
+
+## [1.30.60] - 2026-10-10
+
+### Fixed
+
+- fix empty room name validation on mobile safari (ARC-922) (ARC-922)
+
 ## [1.30.59] - 2026-10-09
 
 ### Added
+
 - add clan wars hub, matchup cards, and challenge modal (ARC-979) (ARC-979)
 - add clan wars service, schema, and endpoints (ARC-979) (ARC-979)
 
 ### Documentation
-- update roadmap and changelog for clan wars (ARC-979) (ARC-979)
 
+- update roadmap and changelog for clan wars (ARC-979) (ARC-979)
 
 ## [1.30.58] - 2026-10-08
 

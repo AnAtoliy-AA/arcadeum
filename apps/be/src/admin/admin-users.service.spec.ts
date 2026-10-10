@@ -98,7 +98,7 @@ describe('AdminUsersService', () => {
 
       expect(userModel.find).toHaveBeenCalledWith({ deletedAt: null });
       expect(findChain.select).toHaveBeenCalledWith(
-        '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers',
+        '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers -emailEncrypted -emailBlindIndex',
       );
       expect(findChain.sort).toHaveBeenCalledWith({ createdAt: -1, _id: -1 });
       expect(findChain.skip).toHaveBeenCalledWith(0);
@@ -219,7 +219,7 @@ describe('AdminUsersService', () => {
 
       expect(item).toEqual({
         id: doc._id.toString(),
-        email: 'b@x.com',
+        email: 'b***@x.com',
         username: 'bob',
         displayName: null,
         role: 'admin',

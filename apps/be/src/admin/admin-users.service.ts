@@ -10,6 +10,7 @@ import { Model, Types } from 'mongoose';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import type { UserRole } from '../auth/lib/roles';
 import { escapeRegExp } from '../common/utils/escape-regexp';
+import { maskEmail } from '../common/utils/pii-mask.util';
 import type {
   AdminUserItem,
   AdminUsersResponse,
@@ -84,7 +85,7 @@ export class AdminUsersService {
       this.userModel
         .find(filter)
         .select(
-          '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers',
+          '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers -emailEncrypted -emailBlindIndex',
         )
         .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
@@ -358,7 +359,7 @@ export class AdminUsersService {
   private toAdminUserItem(doc: UserDocLean): AdminUserItem {
     return {
       id: doc._id.toString(),
-      email: doc.email,
+      email: maskEmail(doc.email),
       username: doc.username,
       displayName: doc.displayName ?? null,
       role: doc.role,

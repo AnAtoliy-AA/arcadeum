@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.61] - 2026-10-10
+
+### Added
+- omit user email from admin api responses and management ui (ARC-980) (ARC-980)
+- mask sensitive user email and exclude encryption fields in admin queries (ARC-980) (ARC-980)
+- implement user data segregation and envelope encryption (ARC-980) (ARC-980)
+
+
 ## [1.30.60] - 2026-10-10
 
 ### Fixed

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Container, PageLayout } from '@arcadeum/ui';
+import { Container, PageLayout, BoardDiagram } from '@arcadeum/ui';
 import type { BlogPost } from '@/features/blog/types';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { InteractiveGuideBoard } from '@/features/blog/ui/InteractiveGuideBoard';
@@ -368,6 +368,20 @@ export function BlogPostView({
                         solutionIndex={block.solutionIndex}
                         explanation={block.explanation}
                         playHref={block.playHref}
+                      />
+                    );
+                  case 'board-diagram':
+                    return (
+                      <BoardDiagram
+                        key={block.id ?? index}
+                        id={block.id}
+                        gameId={block.gameId}
+                        title={block.title}
+                        caption={block.caption}
+                        grid={block.grid}
+                        colLabels={block.colLabels}
+                        rowLabels={block.rowLabels}
+                        legend={block.legend}
                       />
                     );
                   default:

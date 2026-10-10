@@ -98,7 +98,7 @@ export function PostGameSuggestions({
 
     await shareLink({
       title: `Play ${gameName} on Arcadeum`,
-      text: `I just played ${gameName} on Arcadeum — free online board games with friends!`,
+      text: `I just played ${gameName} on Arcadeum - free online board games with friends!`,
       url: shareUrl,
       event: 'result.shared',
     });

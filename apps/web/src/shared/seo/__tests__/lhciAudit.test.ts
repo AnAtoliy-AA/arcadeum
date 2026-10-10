@@ -71,7 +71,7 @@ describe('Lighthouse & Core Web Vitals CI Auditor (Agent 7)', () => {
 
     const comment = buildComment(mockResults);
     expect(comment).toContain(
-      '## ✅ Lighthouse & Core Web Vitals Audit — All Pages Passing',
+      '## ✅ Lighthouse & Core Web Vitals Audit: All Pages Passing',
     );
     expect(comment).toContain('/en/games/chess');
     expect(comment).toContain('1.8 s');
@@ -102,7 +102,7 @@ describe('Lighthouse & Core Web Vitals CI Auditor (Agent 7)', () => {
 
     const comment = buildComment(mockResults);
     expect(comment).toContain(
-      '## ❌ Lighthouse & Core Web Vitals Audit — Issues Found',
+      '## ❌ Lighthouse & Core Web Vitals Audit: Issues Found',
     );
     expect(comment).toContain('**82** ❌');
     expect(comment).toContain('**3.4 s** ❌');

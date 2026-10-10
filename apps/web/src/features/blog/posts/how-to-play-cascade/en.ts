@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-cascade',
   locale: 'en',
-  title: 'How to Play Cascade Online — Rules, Action Chains, Strategy',
+  title: 'How to Play Cascade Online - Rules, Action Chains, Strategy',
   excerpt:
     'A complete beginner-friendly guide to Cascade: the UNO-style card shedding game with action chains, draw penalties, and combo strategy.',
   publishedAt: '2026-08-11',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Cascade is a fast-paced multiplayer card shedding game where the goal is to be the first to play all your cards. Think of it as UNO with strategic depth — you match cards by colour or number, play action cards to inflict draw penalties on opponents, and chain counter-attacks to redirect the burden. The rules are easy, but the combo strategy and hand management make every round tense.',
+      text: 'Cascade is a fast-paced multiplayer card shedding game where the goal is to be the first to play all your cards. Think of it as UNO with strategic depth - you match cards by colour or number, play action cards to inflict draw penalties on opponents, and chain counter-attacks to redirect the burden. The rules are easy, but the combo strategy and hand management make every round tense.',
     },
     {
       type: 'heading',
@@ -60,7 +60,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Track colours in hand. Aim for flexibility — if you have 4 colours, you can match almost anything. If you have 1-2 colours, you are vulnerable to blocks.',
+        'Track colours in hand. Aim for flexibility - if you have 4 colours, you can match almost anything. If you have 1-2 colours, you are vulnerable to blocks.',
         "Save Wilds for emergencies. Don't waste a Wild when you have a matching card. Hold it for when you are forced into an unfavourable colour.",
         'Count opponent cards. When an opponent is close to winning (1-2 cards left), shift the active colour to one they are weak in.',
         'Chain draw penalties. If an opponent plays +2, counter with your own +2 to redirect the draw burden. The player who cannot counter draws everything.',
@@ -79,26 +79,26 @@ export const post: BlogPost = {
         'Playing Wilds too early. You lose flexibility when you need it most.',
         "Ignoring the opponent's hand. If someone has 1 card, every move should try to block them.",
         'Not chaining penalties. Failing to counter a +2 or +4 means you absorb the full draw.',
-        'Forgetting the direction. In larger games, reverse cards change who plays next — track it.',
+        'Forgetting the direction. In larger games, reverse cards change who plays next - track it.',
       ],
     },
     {
       type: 'cta',
       href: '/games/cascade',
-      text: 'Play Cascade online — free, in your browser',
+      text: 'Play Cascade online - free, in your browser',
       description:
         'Open a Cascade room, share the link with friends, or play against AI. Fast rounds, strategic depth.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR - the four habits that win games',
       id: 'tldr',
     },
     {
       type: 'list',
       items: [
-        'Keep colour flexibility in your hand — diversify.',
+        'Keep colour flexibility in your hand - diversify.',
         'Save Wilds for emergencies, not convenience.',
         'Chain draw penalties (+2, +4) to redirect burden to opponents.',
         'Track opponent card counts and block the leader.',
@@ -148,7 +148,7 @@ export const post: BlogPost = {
     {
       question: 'What does a Reverse card do?',
       answer:
-        'Reverses the direction of play. In 2-player mode, it acts as a Skip — the other player loses their turn.',
+        'Reverses the direction of play. In 2-player mode, it acts as a Skip - the other player loses their turn.',
     },
   ],
 };

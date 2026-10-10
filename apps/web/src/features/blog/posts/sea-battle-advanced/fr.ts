@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'sea-battle-advanced',
   locale: 'fr',
   title:
-    'Bataille Navale Avancée — Psychologie de Placement, Chasse par Probabilité et Patterns de Fin',
+    'Bataille Navale Avancée - Psychologie de Placement, Chasse par Probabilité et Patterns de Fin',
   excerpt:
     'Schémas de placement de flotte optimaux, stratégies de chasse basées sur la probabilité et comptage de navires en fin de partie donnant un avantage systématique.',
   publishedAt: '2026-09-11',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "La Bataille Navale n'est pas du pur hasard. Deux joueurs avec les mêmes conditions de départ mais des stratégies différentes ont des taux de victoire radicalement différents. Le joueur qui place les bateaux de manière optimale et chasse les cibles algorithmiquement gagnera plus de parties — même s'il y a un élément d'aléatoire dans chaque partie individuelle.",
+      text: "La Bataille Navale n'est pas du pur hasard. Deux joueurs avec les mêmes conditions de départ mais des stratégies différentes ont des taux de victoire radicalement différents. Le joueur qui place les bateaux de manière optimale et chasse les cibles algorithmiquement gagnera plus de parties - même s'il y a un élément d'aléatoire dans chaque partie individuelle.",
     },
     {
       type: 'heading',
@@ -34,7 +34,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Carte de densité de probabilité — comment les joueurs intelligents chassent',
+      text: 'Carte de densité de probabilité - comment les joueurs intelligents chassent',
       id: 'probability-hunting',
     },
     {
@@ -49,7 +49,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/sea-battle',
-      text: 'Testez vos stratégies — jouez à la Bataille Navale sur Arcadeum',
+      text: 'Testez vos stratégies - jouez à la Bataille Navale sur Arcadeum',
       description: "Bataille Navale en temps réel contre des amis ou l'IA.",
     },
   ],
@@ -63,7 +63,7 @@ export const post: BlogPost = {
     {
       question: "Faut-il toujours tirer à côté d'un tir réussi ?",
       answer:
-        "Oui, immédiatement. Passez en mode destruction à tout tir réussi. La phase de destruction est plus efficace — la probabilité d'une case adjacente est de 25-50%, contre 10-20% en chasse aléatoire.",
+        "Oui, immédiatement. Passez en mode destruction à tout tir réussi. La phase de destruction est plus efficace - la probabilité d'une case adjacente est de 25-50%, contre 10-20% en chasse aléatoire.",
     },
   ],
 };

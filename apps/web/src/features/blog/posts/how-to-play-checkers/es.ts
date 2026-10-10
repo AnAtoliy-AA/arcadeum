@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-checkers',
   locale: 'es',
-  title: 'Cómo jugar a las Damas online — reglas, damas, estrategia',
+  title: 'Cómo jugar a las Damas online - reglas, damas, estrategia',
   excerpt:
     'Guía completa para principiantes: reglas oficiales, capturas forzadas, saltos múltiples, damas y los hábitos que separan a un jugador casual del que gana.',
   publishedAt: '2026-06-09',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Las Damas — conocidas internacionalmente como Draughts — son uno de los juegos de mesa estratégicos más antiguos. Dos rivales colocan doce fichas cada uno en un tablero de 8×8 y se turnan moviendo en diagonal hacia adelante. Las capturas son forzadas, los saltos múltiples son obligatorios, y el primero en eliminar todas las piezas enemigas gana. Las reglas se explican en un minuto, pero la profundidad estratégica sorprende a los principiantes. Esta guía cubre las reglas oficiales, las damas y los hábitos que ganan partidas.',
+      text: 'Las Damas - conocidas internacionalmente como Draughts - son uno de los juegos de mesa estratégicos más antiguos. Dos rivales colocan doce fichas cada uno en un tablero de 8×8 y se turnan moviendo en diagonal hacia adelante. Las capturas son forzadas, los saltos múltiples son obligatorios, y el primero en eliminar todas las piezas enemigas gana. Las reglas se explican en un minuto, pero la profundidad estratégica sorprende a los principiantes. Esta guía cubre las reglas oficiales, las damas y los hábitos que ganan partidas.',
     },
     {
       type: 'heading',
@@ -23,7 +23,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Las Damas se juegan en las casillas oscuras de un tablero de ajedrez estándar de 8×8. Cada jugador coloca doce fichas en las tres filas más cercanas a su lado, ocupando todas las casillas oscuras. Las casillas oscuras mueven primero. Las columnas se etiquetan a–h y las filas 1–8. Las fichas se mueven siempre en diagonal por casillas oscuras — las casillas claras no se usan.',
+      text: 'Las Damas se juegan en las casillas oscuras de un tablero de ajedrez estándar de 8×8. Cada jugador coloca doce fichas en las tres filas más cercanas a su lado, ocupando todas las casillas oscuras. Las casillas oscuras mueven primero. Las columnas se etiquetan a–h y las filas 1–8. Las fichas se mueven siempre en diagonal por casillas oscuras - las casillas claras no se usan.',
     },
     {
       type: 'heading',
@@ -33,7 +33,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Las piezas normales (fichas) se mueven en diagonal hacia adelante una casilla a una casilla adiacente vacía. Las fichas solo avanzan en dirección al rival — no hay movimientos laterales ni hacia atrás para las piezas normales. En cada turno, un jugador mueve exactamente una pieza. Si hay una captura disponible, debe tomarse — saltar una captura no está permitido en reglas estándar.',
+      text: 'Las piezas normales (fichas) se mueven en diagonal hacia adelante una casilla a una casilla adiacente vacía. Las fichas solo avanzan en dirección al rival - no hay movimientos laterales ni hacia atrás para las piezas normales. En cada turno, un jugador mueve exactamente una pieza. Si hay una captura disponible, debe tomarse - saltar una captura no está permitido en reglas estándar.',
     },
     {
       type: 'heading',
@@ -43,7 +43,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Una captura ocurre cuando tu pieza está en diagonal adyacente a una pieza del rival y la casilla más allá (en la misma dirección) está vacía. Tu pieza salta sobre la pieza rival, eliminándola del tablero. Si después de aterrizar hay otra captura disponible, el salto debe continuar — esto es un salto múltiple. El turno solo termina cuando no hay más capturas disponibles.',
+      text: 'Una captura ocurre cuando tu pieza está en diagonal adyacente a una pieza del rival y la casilla más allá (en la misma dirección) está vacía. Tu pieza salta sobre la pieza rival, eliminándola del tablero. Si después de aterrizar hay otra captura disponible, el salto debe continuar - esto es un salto múltiple. El turno solo termina cuando no hay más capturas disponibles.',
     },
     {
       type: 'paragraph',
@@ -52,12 +52,12 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Damas — promoción y poder',
+      text: 'Damas - promoción y poder',
       id: 'kings',
     },
     {
       type: 'paragraph',
-      text: 'Cuando una pieza llega a la fila lejana (la fila trasera del rival), se corona dama. Una dama puede moverse y capturar tanto hacia adelante como hacia atrás en diagonal — una enorme ventaja. En reglas americanas estándar, una dama no puede saltar sobre otra dama (esto varía según el conjunto de reglas). Verifica qué reglas se aplican antes de jugar.',
+      text: 'Cuando una pieza llega a la fila lejana (la fila trasera del rival), se corona dama. Una dama puede moverse y capturar tanto hacia adelante como hacia atrás en diagonal - una enorme ventaja. En reglas americanas estándar, una dama no puede saltar sobre otra dama (esto varía según el conjunto de reglas). Verifica qué reglas se aplican antes de jugar.',
     },
     {
       type: 'heading',
@@ -72,7 +72,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Estrategia central — cinco hábitos que ganan',
+      text: 'Estrategia central - cinco hábitos que ganan',
       id: 'strategy',
     },
     {
@@ -113,14 +113,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/checkers',
-      text: 'Juega a las Damas online — gratis, en tu navegador',
+      text: 'Juega a las Damas online - gratis, en tu navegador',
       description:
         'Abre una sala de Damas, comparte el enlace con amigos o llena con bots IA. Disponibles múltiples conjuntos de reglas.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Resumen — cuatro hábitos que ganan',
+      text: 'Resumen - cuatro hábitos que ganan',
       id: 'tldr',
     },
     {
@@ -134,7 +134,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Las Damas recompensan la paciencia, la conciencia posicional y la disciplina de evitar riesgos innecesarios. Las reglas son lo suficientemente antiguas como para que no haya estrategias ocultas — pero los hábitos anteriores son lo suficientemente robustos para que un jugador que los aplique todos supere consistentemente a uno que no aplique ninguno.',
+      text: 'Las Damas recompensan la paciencia, la conciencia posicional y la disciplina de evitar riesgos innecesarios. Las reglas son lo suficientemente antiguas como para que no haya estrategias ocultas - pero los hábitos anteriores son lo suficientemente robustos para que un jugador que los aplique todos supere consistentemente a uno que no aplique ninguno.',
     },
   ],
   howTo: {

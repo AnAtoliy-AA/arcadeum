@@ -106,7 +106,7 @@ export async function handleUndoResponse(
 
   if (userId === pending.requesterId) {
     logger.warn(
-      `User ${userId} attempted to accept their own undo request for room ${roomId} — blocking`,
+      `User ${userId} attempted to accept their own undo request for room ${roomId}: blocking`,
     );
     return;
   }
@@ -118,7 +118,7 @@ export async function handleUndoResponse(
     const used = undoUsageBySession.get(sessionId) ?? 0;
     if (used >= MAX_UNDOS_PER_SESSION) {
       logger.warn(
-        `Undo limit (${MAX_UNDOS_PER_SESSION}) reached for session ${sessionId} — denying`,
+        `Undo limit (${MAX_UNDOS_PER_SESSION}) reached for session ${sessionId}: denying`,
       );
     } else {
       try {

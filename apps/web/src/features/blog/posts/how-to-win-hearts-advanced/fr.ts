@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-hearts-advanced',
   locale: 'fr',
   title:
-    'Stratégie Avancée au Hearts — Lire les Adversaires et Signes de Tir à la Lune',
+    'Stratégie Avancée au Hearts - Lire les Adversaires et Signes de Tir à la Lune',
   excerpt:
     'Comment lire les échanges de cartes, reconnaître les tirs à la lune dès le 3e pli, planifier sur plusieurs mains et compter les cartes en fin de partie.',
   publishedAt: '2026-09-16',
@@ -25,10 +25,10 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        "On vous a passé des cartes hautes — l'échangeur est faible dans cette couleur. Si vous recevez la Dame de Pique, l'échangeur n'a soit pas de piques, soit il planifie un tir à la lune.",
-        "On vous a passé des cartes basses — l'échangeur a gardé ses cartes hautes. S'il vous passe 2, 3, 4 de trèfles, il a probablement gardé ses as et rois.",
-        "On vous a passé des cartes moyennes (7, 8, 9) — l'échangeur essaie de créer une chicane dans une couleur.",
-        "Règle de blocage : gagnez UN cœur. Vous n'avez pas besoin de battre le tireur — vous avez juste besoin d'un cœur pour que les 26 points restent chez lui.",
+        "On vous a passé des cartes hautes - l'échangeur est faible dans cette couleur. Si vous recevez la Dame de Pique, l'échangeur n'a soit pas de piques, soit il planifie un tir à la lune.",
+        "On vous a passé des cartes basses - l'échangeur a gardé ses cartes hautes. S'il vous passe 2, 3, 4 de trèfles, il a probablement gardé ses as et rois.",
+        "On vous a passé des cartes moyennes (7, 8, 9) - l'échangeur essaie de créer une chicane dans une couleur.",
+        "Règle de blocage : gagnez UN cœur. Vous n'avez pas besoin de battre le tireur - vous avez juste besoin d'un cœur pour que les 26 points restent chez lui.",
       ],
     },
     {
@@ -48,7 +48,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/hearts',
-      text: 'Appliquez la stratégie avancée au Hearts — jouez sur Arcadeum',
+      text: 'Appliquez la stratégie avancée au Hearts - jouez sur Arcadeum',
       description:
         'Hearts en temps réel pour quatre joueurs avec règles complètes incluant le tir à la lune.',
     },

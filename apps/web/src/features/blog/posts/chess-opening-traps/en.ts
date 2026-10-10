@@ -5,7 +5,7 @@ export const post: BlogPost = {
   locale: 'en',
   title: '10 Chess Opening Traps Every Player Should Know',
   excerpt:
-    "From the Scholar's Mate to the Fried Liver Attack — ten concrete opening traps with full move sequences, the ideas behind each, and how to avoid falling for them.",
+    "From the Scholar's Mate to the Fried Liver Attack - ten concrete opening traps with full move sequences, the ideas behind each, and how to avoid falling for them.",
   publishedAt: '2026-09-15',
   author: 'Arcadeum team',
   tags: ['Chess', 'Openings', 'Tactics', 'Strategy', 'Tutorial'],
@@ -13,12 +13,12 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Opening traps are positions where one side can win material or deliver checkmate if the opponent plays natural-looking but incorrect moves. They are not the foundation of good chess — a well-prepared opponent sidesteps them easily — but knowing them helps in two ways: you will not fall into them yourself, and you will recognise when opponents blunder into positions you know cold. Here are ten traps you should learn and understand.',
+      text: 'Opening traps are positions where one side can win material or deliver checkmate if the opponent plays natural-looking but incorrect moves. They are not the foundation of good chess - a well-prepared opponent sidesteps them easily - but knowing them helps in two ways: you will not fall into them yourself, and you will recognise when opponents blunder into positions you know cold. Here are ten traps you should learn and understand.',
     },
     {
       type: 'heading',
       level: 2,
-      text: "1. Scholar's Mate — the four-move checkmate",
+      text: "1. Scholar's Mate - the four-move checkmate",
       id: 'scholars-mate',
     },
     {
@@ -32,13 +32,35 @@ export const post: BlogPost = {
       result: '1-0',
     },
     {
+      type: 'board-diagram',
+      id: 'schema-scholars-mate',
+      gameId: 'chess',
+      title: "Scholar's Mate: 4-Move Checkmate on f7",
+      caption:
+        'White delivers checkmate on square f7 supported by Bishop on c4.',
+      grid: [
+        'r.bqkb.r',
+        'pppp.Qpp',
+        '..n..n..',
+        '....p...',
+        '..B.P...',
+        '........',
+        'PPPP.PPP',
+        'RNB.K.NR',
+      ],
+      legend: [
+        { variant: 'white', label: 'White Pieces' },
+        { variant: 'black', label: 'Black Pieces' },
+      ],
+    },
+    {
       type: 'paragraph',
-      text: "The refutation is simple: after 3.Qh5, Black plays 3...g6 (attacking the queen), then develops normally. The queen retreats and White has wasted two moves. Never fear Scholar's Mate — greet it with g6 and enjoy the free tempo.",
+      text: "The refutation is simple: after 3.Qh5, Black plays 3...g6 (attacking the queen), then develops normally. The queen retreats and White has wasted two moves. Never fear Scholar's Mate: greet it with g6 and enjoy the free tempo.",
     },
     {
       type: 'heading',
       level: 2,
-      text: "2. Légal's Trap — the queen sacrifice",
+      text: "2. Légal's Trap: the queen sacrifice",
       id: 'legal-trap',
     },
     {
@@ -66,18 +88,40 @@ export const post: BlogPost = {
       result: '1-0',
     },
     {
+      type: 'board-diagram',
+      id: 'schema-legal-trap',
+      gameId: 'chess',
+      title: "Légal's Mate: Smothered Knight Finish",
+      caption:
+        'Black blundered queen capture on d1; White checks with Bishop on f7 and checkmates with double knights on d5 and e5.',
+      grid: [
+        'r..q.bnr',
+        'ppp.kBpp',
+        '..np....',
+        '...NN...',
+        '....P...',
+        '........',
+        'PPPP.PPP',
+        'R.BbK..R',
+      ],
+      legend: [
+        { variant: 'white', label: 'White Pieces' },
+        { variant: 'black', label: 'Black Pieces' },
+      ],
+    },
+    {
       type: 'paragraph',
       text: 'After 8...Bg4, the pin looks threatening but is illusory. If Black takes the queen with 9...Bxd1, White plays Bxf7+, Nd5#. The correct defense is 9...Nxe5 or 9...dxe5, keeping the queen on the board.',
     },
     {
       type: 'heading',
       level: 2,
-      text: "3. Fool's Mate — the two-move checkmate",
+      text: "3. Fool's Mate - the two-move checkmate",
       id: 'fools-mate',
     },
     {
       type: 'paragraph',
-      text: 'The fastest possible checkmate. White must play two terrible moves for it to work — but it is worth knowing.',
+      text: 'The fastest possible checkmate. White must play two terrible moves for it to work - but it is worth knowing.',
     },
     {
       type: 'chess-notation',
@@ -87,7 +131,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Only relevant if White plays both f3 and g4 — moves that open the diagonal and weaken the king. In practice, White never plays these in that order, but it illustrates why weakening the king's diagonal is catastrophic.",
+      text: "Only relevant if White plays both f3 and g4 - moves that open the diagonal and weaken the king. In practice, White never plays these in that order, but it illustrates why weakening the king's diagonal is catastrophic.",
     },
     {
       type: 'heading',
@@ -119,7 +163,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'After 7.Nxf7, Black must take with 7...Kxf7 — the king is dragged to the center. White plays 8.Qf3+ forcing 8...Ke6, then 9.Nc3 with massive pressure. This is not a forced win, but it leads to a highly complex, dangerous position that most Black players are not prepared for. The best defense is 6...h6 on move 6, preventing Ng5 entirely.',
+      text: 'After 7.Nxf7, Black must take with 7...Kxf7 - the king is dragged to the center. White plays 8.Qf3+ forcing 8...Ke6, then 9.Nc3 with massive pressure. This is not a forced win, but it leads to a highly complex, dangerous position that most Black players are not prepared for. The best defense is 6...h6 on move 6, preventing Ng5 entirely.',
     },
     {
       type: 'heading',
@@ -209,7 +253,7 @@ export const post: BlogPost = {
     },
     {
       type: 'chess-notation',
-      title: 'Stafford Gambit — Queen Trap Line',
+      title: 'Stafford Gambit - Queen Trap Line',
       moves: [
         'e4',
         'e5',
@@ -317,7 +361,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Black sacrifices the knight with 4...Ng4 and pushes h5 — the "fishing pole" that hooks the h-pawn. If White grabs 5.hxg4?? hxg4 and then captures on e5, the storm arrives via Qh4, g3, and the rook lifts. The correct response to Ng4 is 5.d4 or 5.Nc3, not h3.',
+      text: 'Black sacrifices the knight with 4...Ng4 and pushes h5 - the "fishing pole" that hooks the h-pawn. If White grabs 5.hxg4?? hxg4 and then captures on e5, the storm arrives via Qh4, g3, and the rook lifts. The correct response to Ng4 is 5.d4 or 5.Nc3, not h3.',
     },
     {
       type: 'heading',
@@ -361,7 +405,7 @@ export const post: BlogPost = {
       items: [
         'Ask "why did they play that?" every single move. Unusual moves are often traps, not blunders.',
         'Be suspicious of pawn sacrifices. When your opponent offers a pawn in the opening with no obvious compensation, look for compensation that is not obvious.',
-        "Don't grab material without calculating. Capturing with the wrong piece — or in the wrong order — is how most traps spring.",
+        "Don't grab material without calculating. Capturing with the wrong piece - or in the wrong order - is how most traps spring.",
         "Know your openings' critical moments. Every main opening has two or three squares where mistakes are punished immediately (f7 in Italian, d5 in Budapest). Know them.",
         'When ahead in material, simplify. Traps thrive in complex positions where your calculations are stressed. Trade pieces and the complications disappear.',
       ],
@@ -369,14 +413,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/chess',
-      text: 'Test your trap knowledge — play Chess on Arcadeum',
+      text: 'Test your trap knowledge - play Chess on Arcadeum',
       description:
         'Practice these openings in real games. Use the post-game analysis to see exactly where the critical moments arose.',
     },
     {
       type: 'heading',
       level: 2,
-      text: "TL;DR — the trapper's checklist",
+      text: "TL;DR - the trapper's checklist",
       id: 'tldr',
     },
     {
@@ -386,7 +430,7 @@ export const post: BlogPost = {
         'Légal\'s Trap → don\'t take the "free" queen; play Nxe5 instead.',
         'Fried Liver → prevent with h6 on move 6 before Ng5.',
         'Stafford Gambit → answer Bc5 with Be3, not dxe4.',
-        'Always ask why before capturing — the most expensive pieces in chess are the ones you take for free.',
+        'Always ask why before capturing - the most expensive pieces in chess are the ones you take for free.',
       ],
     },
   ],
@@ -399,7 +443,7 @@ export const post: BlogPost = {
     {
       question: 'Which trap is easiest to learn first?',
       answer:
-        "Scholar's Mate — not because it wins games, but because knowing it and its refutation teaches you the concept of king safety and tempo simultaneously.",
+        "Scholar's Mate - not because it wins games, but because knowing it and its refutation teaches you the concept of king safety and tempo simultaneously.",
     },
     {
       question: 'What if my opponent avoids the trap?',
@@ -409,7 +453,7 @@ export const post: BlogPost = {
     {
       question: 'Is memorizing traps better than learning endgames?',
       answer:
-        'No. Endgame knowledge converts advantages; opening traps only work against mistakes. Invest most of your study time in tactics (puzzles) and endgames — traps are a small complement, not the main course.',
+        'No. Endgame knowledge converts advantages; opening traps only work against mistakes. Invest most of your study time in tactics (puzzles) and endgames - traps are a small complement, not the main course.',
     },
   ],
   howTo: {
@@ -417,7 +461,7 @@ export const post: BlogPost = {
     steps: [
       {
         name: 'Recognise the trap pattern',
-        text: 'Each trap has a signature: a sacrifice, an unusual retreat, or a pawn push. Learn the key move in each trap — that is the one to spot.',
+        text: 'Each trap has a signature: a sacrifice, an unusual retreat, or a pawn push. Learn the key move in each trap - that is the one to spot.',
         url: '#scholars-mate',
       },
       {
@@ -427,7 +471,7 @@ export const post: BlogPost = {
       },
       {
         name: 'Know the refutations',
-        text: 'Memorising the refutation for each trap is as important as knowing the trap itself — it teaches you what your opponent should have done.',
+        text: 'Memorising the refutation for each trap is as important as knowing the trap itself - it teaches you what your opponent should have done.',
         url: '#avoiding-traps',
       },
     ],

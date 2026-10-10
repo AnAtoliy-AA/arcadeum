@@ -44,7 +44,7 @@ export const en = {
   cancelPage: {
     title: 'Payment Cancelled',
     message:
-      "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here.",
+      "No worries! No charges were made to your account. You can always try again when you're ready - we'll be here.",
     tryAgain: 'Try Again',
     returnHome: 'Return Home',
   },

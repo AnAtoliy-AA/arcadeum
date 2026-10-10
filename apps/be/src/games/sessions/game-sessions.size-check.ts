@@ -17,7 +17,7 @@ export function enforceStateSizeLimit(
   const approxSize = Buffer.byteLength(JSON.stringify(session.state), 'utf-8');
   if (approxSize > STRIP_DOC_SIZE_BYTES) {
     logger.warn(
-      `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — stripping stateHistory and logs.`,
+      `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB: stripping stateHistory and logs.`,
     );
     const s = session.state;
     if (Array.isArray(s.stateHistory)) s.stateHistory = [];
@@ -27,7 +27,7 @@ export function enforceStateSizeLimit(
   }
   if (approxSize > WARN_DOC_SIZE_BYTES) {
     logger.warn(
-      `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB — approaching size limit.`,
+      `Session ${sessionId} state is ${Math.round(approxSize / 1024)}KB: approaching size limit.`,
     );
   }
   return false;

@@ -101,7 +101,7 @@ export class GameBotWatchdog {
           const staleMs = Date.now() - new Date(session.updatedAt).getTime();
           if (sockets.length === 0 && staleMs > 60_000) {
             this.logger.log(
-              `AI vs AI session ${session.id} completed — no watchers in room ${session.roomId}`,
+              `AI vs AI session ${session.id} completed: no watchers in room ${session.roomId}`,
             );
             await this.sessionsService.updateSessionState({
               sessionId: session.id,

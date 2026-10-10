@@ -142,7 +142,7 @@ export function ThreatStrip({
     fontVariantNumeric: 'tabular-nums',
   };
 
-  const oddsLabel = overloadOdds === null ? '—' : `${overloadOdds}%`;
+  const oddsLabel = overloadOdds === null ? '-' : `${overloadOdds}%`;
 
   return (
     <div

@@ -132,7 +132,7 @@ export class ChatGateway {
       messageDTO.senderId !== authUserId
     ) {
       this.logger.warn(
-        `User ${authUserId} attempted to send message as ${messageDTO.senderId} — blocking`,
+        `User ${authUserId} attempted to send message as ${messageDTO.senderId}: blocking`,
       );
     }
 
@@ -181,7 +181,7 @@ export class ChatGateway {
       chatDTO.currentUserId.trim() !== authUserId
     ) {
       this.logger.warn(
-        `User ${authUserId} attempted to join chat as ${chatDTO.currentUserId} — blocking`,
+        `User ${authUserId} attempted to join chat as ${chatDTO.currentUserId}: blocking`,
       );
       throw new WsException('Cannot join chat as another user.');
     }

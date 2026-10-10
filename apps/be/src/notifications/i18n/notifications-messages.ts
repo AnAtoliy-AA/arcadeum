@@ -35,7 +35,7 @@ const en: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Daily reward ready',
-      body: 'Your streak is waiting — claim it now.',
+      body: 'Your streak is waiting - claim it now.',
     },
     tournament_starting_soon: {
       title: '{{name}} starts in {{minutes}} min',
@@ -72,7 +72,7 @@ const ru: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Награда дня готова',
-      body: 'Не теряйте серию — заберите награду.',
+      body: 'Не теряйте серию - заберите награду.',
     },
     tournament_starting_soon: {
       title: '{{name}} начнётся через {{minutes}} мин',
@@ -109,7 +109,7 @@ const es: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Recompensa diaria lista',
-      body: 'Tu racha te espera — recógela ahora.',
+      body: 'Tu racha te espera - recógela ahora.',
     },
     tournament_starting_soon: {
       title: '{{name}} comienza en {{minutes}} min',
@@ -146,7 +146,7 @@ const fr: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Récompense quotidienne prête',
-      body: 'Ta série t\u2019attend — récupère-la maintenant.',
+      body: 'Ta série t\u2019attend - récupère-la maintenant.',
     },
     tournament_starting_soon: {
       title: '{{name}} commence dans {{minutes}} min',
@@ -183,7 +183,7 @@ const by: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Узнагарода дня гатовая',
-      body: 'Не губіце серыю — забярыце ўзнагароду.',
+      body: 'Не губіце серыю - забярыце ўзнагароду.',
     },
     tournament_starting_soon: {
       title: '{{name}} пачнецца праз {{minutes}} хв',

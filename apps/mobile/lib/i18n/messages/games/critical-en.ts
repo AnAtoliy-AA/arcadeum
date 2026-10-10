@@ -114,7 +114,8 @@ export const criticalMessagesEn = {
     blackout: 'Blackout',
   },
   cardDescriptions: {
-    explodingCat: "Draw it without a Defuse and boom—you're out of the round.",
+    explodingCat:
+      "Draw it without a Defuse and boom - you're out of the round.",
     defuse: 'Cancels a Critical card and lets you tuck it back into the deck.',
     attack: 'End your turn and make the next player draw two cards.',
     skip: 'Finish your turn immediately without drawing.',

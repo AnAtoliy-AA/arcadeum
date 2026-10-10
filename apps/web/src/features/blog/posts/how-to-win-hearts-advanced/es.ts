@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-hearts-advanced',
   locale: 'es',
   title:
-    'Estrategia Avanzada en Hearts — Leyendo Oponentes y Señales de Disparo a la Luna',
+    'Estrategia Avanzada en Hearts - Leyendo Oponentes y Señales de Disparo a la Luna',
   excerpt:
     'Cómo leer los pases de cartas, reconocer disparos a la luna en el truco 3, planificar a través de varias manos y contar cartas en el endgame.',
   publishedAt: '2026-09-16',
@@ -25,10 +25,10 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Te pasaron cartas altas — el que pasa es débil en ese palo. Si recibes la Reina de Picas en el pase, el que pasa o no tiene picas o está planeando un disparo a la luna.',
-        'Te pasaron cartas bajas — el que pasa guardó sus cartas altas. Si recibes 2, 3, 4 de tréboles, probablemente guardó sus ases y reyes.',
-        'Te pasaron cartas medias (7, 8, 9) — el que pasa intentó crear un void en algún palo.',
-        'Te pasaron la Reina de Picas — muy inusual. Casi siempre significa que el que pasa no tiene otras picas.',
+        'Te pasaron cartas altas - el que pasa es débil en ese palo. Si recibes la Reina de Picas en el pase, el que pasa o no tiene picas o está planeando un disparo a la luna.',
+        'Te pasaron cartas bajas - el que pasa guardó sus cartas altas. Si recibes 2, 3, 4 de tréboles, probablemente guardó sus ases y reyes.',
+        'Te pasaron cartas medias (7, 8, 9) - el que pasa intentó crear un void en algún palo.',
+        'Te pasaron la Reina de Picas - muy inusual. Casi siempre significa que el que pasa no tiene otras picas.',
       ],
     },
     {
@@ -43,13 +43,13 @@ export const post: BlogPost = {
         'Toman el primer corazón voluntariamente. Un jugador normal evita corazones. Un jugador que gana un corazón en el truco 2 o 3 sin señales de dolor está disparando.',
         'Lideran con carta alta en un palo no-picas. Liderar con As de Tréboles o As de Corazones significa que quieren controlar la secuencia de trucos.',
         'Tienen la Reina de Picas Y toman corazones. En un disparo lunar, la Reina es un activo, no una carga.',
-        'Regla de bloqueo: gana UN corazón. No necesitas derrotar al tirador — solo necesitas un corazón para que los 26 puntos se queden con él.',
+        'Regla de bloqueo: gana UN corazón. No necesitas derrotar al tirador - solo necesitas un corazón para que los 26 puntos se queden con él.',
       ],
     },
     {
       type: 'cta',
       href: '/games/hearts',
-      text: 'Aplica estrategia avanzada en Hearts — juega en Arcadeum',
+      text: 'Aplica estrategia avanzada en Hearts - juega en Arcadeum',
       description:
         'Hearts en tiempo real para cuatro jugadores con reglas completas incluyendo disparo a la luna.',
     },

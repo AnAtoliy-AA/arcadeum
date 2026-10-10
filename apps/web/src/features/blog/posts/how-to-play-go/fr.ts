@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-go',
   locale: 'fr',
   title:
-    'Comment jouer au Go (Baduk, Weiqi) en ligne — règles, vie et mort, stratégie',
+    'Comment jouer au Go (Baduk, Weiqi) en ligne - règles, vie et mort, stratégie',
   excerpt:
     'Guide complet du Go : setup, libertés, captures, ko, territoire et concepts stratégiques.',
   publishedAt: '2026-06-23',
@@ -26,7 +26,7 @@ export const post: BlogPost = {
     { type: 'heading', level: 2, text: 'Le plateau', id: 'basics' },
     {
       type: 'paragraph',
-      text: 'Joué sur grille 19x19 (9x9 et 13x13 pour débutants). Noir commence, une pierre par tour sur intersection vide. Les pierres ne bougent plus — seulement capturées.',
+      text: 'Joué sur grille 19x19 (9x9 et 13x13 pour débutants). Noir commence, une pierre par tour sur intersection vide. Les pierres ne bougent plus - seulement capturées.',
     },
     {
       type: 'heading',
@@ -46,7 +46,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Vie et mort — deux yeux',
+      text: 'Vie et mort - deux yeux',
       id: 'life-death',
     },
     {
@@ -67,7 +67,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Atari. Une seule liberté — un coup de la capture.',
+        'Atari. Une seule liberté - un coup de la capture.',
         'Échelles. Motif de poursuite.',
         'Filets. Piège sans attaque directe.',
         'Couper et connecter. Couper affaiblit, connecter renforce.',
@@ -87,7 +87,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/go',
-      text: 'Jouez au Go en ligne — gratuit',
+      text: 'Jouez au Go en ligne - gratuit',
       description: 'Grilles 9x9, 13x13, 19x19. Handicap disponible.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

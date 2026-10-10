@@ -219,7 +219,7 @@ export const POST_SLUGS = Object.keys(POST_MANIFEST);
 
 /**
  * Look up a single post by slug for a locale. Falls back to the default
- * locale if the requested locale is missing — better to serve the
+ * locale if the requested locale is missing: better to serve the
  * English version than 404 a real piece of content, but we still emit
  * an hreflang chain so Google knows which URL is the canonical one for
  * each language.
@@ -253,7 +253,7 @@ export async function getPosts(locale: Locale): Promise<BlogPost[]> {
 
 /**
  * Posts whose tag list intersects any of the supplied tags. Used by the
- * "Related articles" block on game landing pages — the landing page
+ * "Related articles" block on game landing pages: the landing page
  * passes the localized + canonical tag aliases for its game and we
  * surface every post that matches at least one of them. Case-insensitive
  * so locale-translated tags (e.g. `Bataille navale`) still match.

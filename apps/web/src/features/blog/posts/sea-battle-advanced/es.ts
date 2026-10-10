@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'sea-battle-advanced',
   locale: 'es',
   title:
-    'Batalla Naval Avanzada — Psicología de Colocación, Caza por Probabilidad y Patrones de Final',
+    'Batalla Naval Avanzada - Psicología de Colocación, Caza por Probabilidad y Patrones de Final',
   excerpt:
     'Esquemas óptimos de colocación de flota, estrategias de caza basadas en probabilidad y conteo de barcos en el endgame que dan ventaja sistemática en Batalla Naval.',
   publishedAt: '2026-09-11',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'La Batalla Naval no es pura suerte. Dos jugadores con las mismas condiciones de inicio pero estrategias diferentes tienen tasas de victoria radicalmente diferentes. El jugador que coloca los barcos de manera óptima y caza objetivos algorítmicamente ganará más partidas — incluso si hay un elemento de aleatoriedad en cada partida individual.',
+      text: 'La Batalla Naval no es pura suerte. Dos jugadores con las mismas condiciones de inicio pero estrategias diferentes tienen tasas de victoria radicalmente diferentes. El jugador que coloca los barcos de manera óptima y caza objetivos algorítmicamente ganará más partidas - incluso si hay un elemento de aleatoriedad en cada partida individual.',
     },
     {
       type: 'heading',
@@ -34,7 +34,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Mapa de densidad de probabilidad — cómo cazan los jugadores inteligentes',
+      text: 'Mapa de densidad de probabilidad - cómo cazan los jugadores inteligentes',
       id: 'probability-hunting',
     },
     {
@@ -49,7 +49,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/sea-battle',
-      text: 'Pon a prueba tus estrategias — juega Batalla Naval en Arcadeum',
+      text: 'Pon a prueba tus estrategias - juega Batalla Naval en Arcadeum',
       description: 'Batalla Naval en tiempo real contra amigos o IA.',
     },
   ],
@@ -62,7 +62,7 @@ export const post: BlogPost = {
     {
       question: '¿Hay que disparar siempre junto al impacto?',
       answer:
-        'Sí, inmediatamente. Cambia al modo destrucción con cualquier impacto. La fase de destrucción es más eficiente — la probabilidad de una casilla adyacente es del 25-50%, frente al 10-20% en la caza aleatoria.',
+        'Sí, inmediatamente. Cambia al modo destrucción con cualquier impacto. La fase de destrucción es más eficiente - la probabilidad de una casilla adyacente es del 25-50%, frente al 10-20% en la caza aleatoria.',
     },
   ],
 };

@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-solitaire',
   locale: 'fr',
   title:
-    'Comment jouer au Solitaire (Klondike) en ligne — règles, stratégie, conseils',
+    'Comment jouer au Solitaire (Klondike) en ligne - règles, stratégie, conseils',
   excerpt:
     'Guide complet du Solitaire Klondike : disposition, coups autorisés, stratégie de fondation et habitudes gagnantes.',
   publishedAt: '2026-07-28',
@@ -60,7 +60,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/solitaire',
-      text: 'Jouez au Solitaire en ligne — gratuit',
+      text: 'Jouez au Solitaire en ligne - gratuit',
       description: 'Klondike classique avec modes pioche-1 et pioche-3.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

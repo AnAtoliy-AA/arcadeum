@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-cascade',
   locale: 'es',
-  title: 'Cómo jugar a Cascade online — reglas, cadenas de acción, estrategia',
+  title: 'Cómo jugar a Cascade online - reglas, cadenas de acción, estrategia',
   excerpt:
     'Guía completa: juego de cartas tipo UNO con cadenas de penalización y estrategia de combos.',
   publishedAt: '2026-08-11',
@@ -58,7 +58,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/cascade',
-      text: 'Juega a Cascade online — gratis',
+      text: 'Juega a Cascade online - gratis',
       description: 'Rápidas rondas, profundidad estratégica.',
     },
     { type: 'heading', level: 2, text: 'Resumen', id: 'tldr' },

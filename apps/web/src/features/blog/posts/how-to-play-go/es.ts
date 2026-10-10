@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-go',
   locale: 'es',
   title:
-    'Cómo jugar a Go (Baduk, Weiqi) online — Reglas, vida y muerte, estrategia',
+    'Cómo jugar a Go (Baduk, Weiqi) online - Reglas, vida y muerte, estrategia',
   excerpt:
     'Guía completa para principiantes sobre Go: tablero, libertades, capturas, regla de ko, territorio y conceptos estratégicos clave.',
   publishedAt: '2026-06-23',
@@ -110,7 +110,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/go',
-      text: 'Jugar a Go online — Gratis en navegador',
+      text: 'Jugar a Go online - Gratis en navegador',
       description:
         'Juega contra amigos o IA en tableros de 9x9, 13x13 o 19x19 con opciones de handicap.',
     },

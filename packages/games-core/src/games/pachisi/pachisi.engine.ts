@@ -59,7 +59,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       maxPlayers: 4,
       version: '1.0.0',
       description:
-        'Classic cross-and-circle race game — roll a six, capture rivals, and bring all your tokens home',
+        'Classic cross-and-circle race game: roll a six, capture rivals, and bring all your tokens home',
       category: 'Board Game',
     };
   }

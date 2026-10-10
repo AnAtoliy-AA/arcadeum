@@ -121,7 +121,7 @@ export function CascadeLobby({
       case 'pure':
         return (
           t('games.create.cascadeModePureHint') ||
-          'No stacking — draw cards resolve immediately'
+          'No stacking: draw cards resolve immediately'
         );
       case 'speed':
         return (

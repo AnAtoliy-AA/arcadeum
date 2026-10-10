@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-solve-sudoku-advanced',
   locale: 'fr',
   title:
-    'Techniques Avancées de Sudoku — X-Wings, Swordfish, XY-Wings et Chaînes Forcées',
+    'Techniques Avancées de Sudoku - X-Wings, Swordfish, XY-Wings et Chaînes Forcées',
   excerpt:
     'Dépassé les paires nues et les singles cachés ? Ce guide couvre les techniques intermédiaires et avancées qui résolvent les puzzles de Sudoku les plus difficiles.',
   publishedAt: '2026-09-12',
@@ -19,7 +19,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'X-Wing — le premier pattern rectangulaire',
+      text: 'X-Wing - le premier pattern rectangulaire',
       id: 'x-wing',
     },
     {
@@ -29,7 +29,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Swordfish — le triple rectangle',
+      text: 'Swordfish - le triple rectangle',
       id: 'swordfish',
     },
     {
@@ -39,12 +39,12 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'XY-Wing — une chaîne de trois cellules',
+      text: 'XY-Wing - une chaîne de trois cellules',
       id: 'xy-wing',
     },
     {
       type: 'paragraph',
-      text: 'Un XY-Wing est une chaîne de trois cellules, chacune avec exactement deux candidats. La cellule pivot a les candidats XY. Deux cellules "pince" partagent un candidat avec le pivot : une a XZ, l\'autre YZ. Comme le pivot est X ou Y, une des pinces doit être Z — donc Z peut être éliminé de toute cellule qui voit les deux pinces.',
+      text: 'Un XY-Wing est une chaîne de trois cellules, chacune avec exactement deux candidats. La cellule pivot a les candidats XY. Deux cellules "pince" partagent un candidat avec le pivot : une a XZ, l\'autre YZ. Comme le pivot est X ou Y, une des pinces doit être Z - donc Z peut être éliminé de toute cellule qui voit les deux pinces.',
     },
     {
       type: 'heading',
@@ -67,7 +67,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/sudoku',
-      text: 'Appliquez ces techniques — jouez au Sudoku sur Arcadeum',
+      text: 'Appliquez ces techniques - jouez au Sudoku sur Arcadeum',
       description: "Plusieurs niveaux de difficulté du facile à l'expert.",
     },
   ],

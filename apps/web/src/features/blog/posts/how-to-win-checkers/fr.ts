@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-checkers',
   locale: 'fr',
   title:
-    "Comment Gagner aux Dames — Tactiques, Finales de Dames et Patterns d'Opposition",
+    "Comment Gagner aux Dames - Tactiques, Finales de Dames et Patterns d'Opposition",
   excerpt:
     "Les dames sont plus profondes qu'elles n'y paraissent. Apprenez les combinaisons de captures forcées, l'opposition des dames, les patterns de \"tir\" et la technique de finale.",
   publishedAt: '2026-09-13',
@@ -14,12 +14,12 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Les dames sont résolues au plus haut niveau — le jeu parfait des deux côtés mène toujours à nulle. Mais dans le jeu pratique entre humains, le jeu est extraordinairement riche. Les règles de capture obligatoire créent des opportunités combinatoires qui n'existent pas aux échecs.",
+      text: "Les dames sont résolues au plus haut niveau - le jeu parfait des deux côtés mène toujours à nulle. Mais dans le jeu pratique entre humains, le jeu est extraordinairement riche. Les règles de capture obligatoire créent des opportunités combinatoires qui n'existent pas aux échecs.",
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Tactiques de capture forcée — le "tir"',
+      text: 'Tactiques de capture forcée - le "tir"',
       id: 'shots',
     },
     {
@@ -29,13 +29,13 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Finales de dames — opposition et le triangle',
+      text: 'Finales de dames - opposition et le triangle',
       id: 'king-endgames',
     },
     {
       type: 'list',
       items: [
-        "Trois dames contre deux : la technique gagnante est la triangulation — bougez vos dames en triangle pour éviter de donner l'opposition à l'adversaire.",
+        "Trois dames contre deux : la technique gagnante est la triangulation - bougez vos dames en triangle pour éviter de donner l'opposition à l'adversaire.",
         "Deux dames contre une dans le double coin : c'est nulle avec le meilleur jeu du défenseur. La dame solitaire dans le double coin ne peut pas être chassée.",
         "Deux dames contre une en plein champ : victoire avec technique. Les dames aculent la solitaire vers le bord, puis la forcent à s'exposer.",
         'Ne maintenez jamais une dame dans un coin passivement. Une dame au centre contrôle plus de diagonales.',
@@ -44,7 +44,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/checkers',
-      text: 'Pratiquez les tactiques de dames — jouez sur Arcadeum',
+      text: 'Pratiquez les tactiques de dames - jouez sur Arcadeum',
       description:
         'Dames standard 8×8 avec règles complètes de capture obligatoire.',
     },
@@ -53,7 +53,7 @@ export const post: BlogPost = {
     {
       question: 'Les dames sont-elles un jeu résolu ?',
       answer:
-        "Oui — le jeu parfait des deux côtés mène toujours à nulle. Mais en pratique, entre humains, le jeu est plein d'erreurs qui créent de vraies opportunités de victoire.",
+        "Oui - le jeu parfait des deux côtés mène toujours à nulle. Mais en pratique, entre humains, le jeu est plein d'erreurs qui créent de vraies opportunités de victoire.",
     },
     {
       question: 'Combien de dames faut-il pour gagner ?',

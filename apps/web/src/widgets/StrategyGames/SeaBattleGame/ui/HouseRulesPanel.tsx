@@ -42,7 +42,7 @@ export function HouseRulesPanel({
               {
                 id: 'classic',
                 label: 'Classic',
-                desc: 'Turn-based — miss ends your turn',
+                desc: 'Turn-based - miss ends your turn',
               },
               {
                 id: 'salvo',
@@ -52,7 +52,7 @@ export function HouseRulesPanel({
               {
                 id: 'speed',
                 label: 'Speed',
-                desc: '30s per turn — think fast!',
+                desc: '30s per turn: think fast!',
               },
             ] as const
           ).map((mode) => {
@@ -169,7 +169,7 @@ export function HouseRulesPanel({
               })
             }
           />
-          {t('games.create.seaBattleSonar') || 'Sonar'} —{' '}
+          {t('games.create.seaBattleSonar') || 'Sonar'}:{' '}
           {t('games.create.seaBattleSonarHint') || 'Reveal ship locations'}
         </label>
         <label
@@ -192,7 +192,7 @@ export function HouseRulesPanel({
               })
             }
           />
-          {t('games.create.seaBattleRadar') || 'Radar'} —{' '}
+          {t('games.create.seaBattleRadar') || 'Radar'}:{' '}
           {t('games.create.seaBattleRadarHint') || 'Scan a row or column'}
         </label>
 
@@ -213,7 +213,7 @@ export function HouseRulesPanel({
               })
             }
           />
-          {t('games.create.seaBattleRevealAll') || 'Scan Wave'} —{' '}
+          {t('games.create.seaBattleRevealAll') || 'Scan Wave'}:{' '}
           {t('games.create.seaBattleRevealAllHint') ||
             'Reveal all ships briefly at battle start'}
         </label>
@@ -272,7 +272,7 @@ export function HouseRulesPanel({
             }
           />
           <span>
-            Enable ship powers — each ship type gets a unique ability with
+            Enable ship powers: each ship type gets a unique ability with
             cooldown (Scout, Barrage, Torpedo, etc.)
           </span>
         </label>

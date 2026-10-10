@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-sudoku',
   locale: 'es',
   title:
-    'Cómo jugar al Sudoku online — reglas, técnicas, estrategia de resolución',
+    'Cómo jugar al Sudoku online - reglas, técnicas, estrategia de resolución',
   excerpt:
     'Guía completa para principiantes: reglas, escaneo, marcas de lápiz y los pasos lógicos que resuelven cualquier rompecabezas sin adivinar.',
   publishedAt: '2026-06-12',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'El Sudoku es el rompecabezas numérico más popular del mundo. Una cuadrícula 9x9 se divide en nueve cajas 3x3, y algunas celdas están pre-rellenadas con dígitos del 1 al 9. Tu tarea: llenar cada celda vacía para que cada fila, columna y caja contenga todos los dígitos 1-9 exactamente una vez. Sin aritmética — puro reconocimiento de patrones.',
+      text: 'El Sudoku es el rompecabezas numérico más popular del mundo. Una cuadrícula 9x9 se divide en nueve cajas 3x3, y algunas celdas están pre-rellenadas con dígitos del 1 al 9. Tu tarea: llenar cada celda vacía para que cada fila, columna y caja contenga todos los dígitos 1-9 exactamente una vez. Sin aritmética - puro reconocimiento de patrones.',
     },
     {
       type: 'heading',
@@ -29,7 +29,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Escaneo — la base',
+      text: 'Escaneo - la base',
       id: 'scanning',
     },
     {
@@ -55,7 +55,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Parejas desnudas. Dos celdas con los mismos dos candidatos — esos dígitos quedan bloqueados.',
+        'Parejas desnudas. Dos celdas con los mismos dos candidatos - esos dígitos quedan bloqueados.',
         'Ternas desnudas. Tres celdas con los mismos tres candidatos.',
         'Parejas ocultas. Dos dígitos que solo aparecen en dos celdas de un grupo.',
         'Parejas señaladoras. Dos celdas en una caja con un candidato compartido en la misma fila o columna.',
@@ -70,23 +70,23 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Nunca adivines. El Sudoku es determinístico — cada puzzle tiene un camino lógico.',
+        'Nunca adivines. El Sudoku es determinístico - cada puzzle tiene un camino lógico.',
         'Trabaja sistemáticamente. Escanea cada dígito 1-9 por cada caja.',
         'Actualiza marcas después de cada colocación.',
-        'Busca celdas con menos candidatos — son las más fáciles.',
+        'Busca celdas con menos candidatos - son las más fáciles.',
       ],
     },
     {
       type: 'cta',
       href: '/games/sudoku',
-      text: 'Juega al Sudoku online — gratis, en tu navegador',
+      text: 'Juega al Sudoku online - gratis, en tu navegador',
       description:
         'Múltiples niveles de dificultad. Rastrea tu tiempo de resolución.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Resumen — cuatro hábitos que resuelven',
+      text: 'Resumen - cuatro hábitos que resuelven',
       id: 'tldr',
     },
     {
@@ -94,7 +94,7 @@ export const post: BlogPost = {
       items: [
         'Empieza con cross-hatching: coloca dígitos restringidos a una celda por caja.',
         'Usa marcas de lápiz y busca solos desnudos/ocultos.',
-        'Nunca adivines — re-escanea o busca parejas.',
+        'Nunca adivines - re-escanea o busca parejas.',
         'Trabaja dígito por dígito y actualiza marcas.',
       ],
     },

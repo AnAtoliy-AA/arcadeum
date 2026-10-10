@@ -98,7 +98,7 @@ describe('AdminUsersService', () => {
 
       expect(userModel.find).toHaveBeenCalledWith({ deletedAt: null });
       expect(findChain.select).toHaveBeenCalledWith(
-        '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers -emailEncrypted -emailBlindIndex',
+        '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers -emailEncrypted -emailBlindIndex -email',
       );
       expect(findChain.sort).toHaveBeenCalledWith({ createdAt: -1, _id: -1 });
       expect(findChain.skip).toHaveBeenCalledWith(0);
@@ -135,7 +135,7 @@ describe('AdminUsersService', () => {
       });
     });
 
-    it('applies q across username/email/displayName with case-insensitive regex', async () => {
+    it('applies q across username/displayName with case-insensitive regex', async () => {
       userModel.find.mockReturnValue(buildFindChain([]));
       userModel.countDocuments.mockResolvedValue(0);
 
@@ -149,7 +149,6 @@ describe('AdminUsersService', () => {
       expect(filter).toEqual({
         $or: [
           { username: { $regex: 'alice', $options: 'i' } },
-          { email: { $regex: 'alice', $options: 'i' } },
           { displayName: { $regex: 'alice', $options: 'i' } },
         ],
         deletedAt: null,
@@ -219,7 +218,6 @@ describe('AdminUsersService', () => {
 
       expect(item).toEqual({
         id: doc._id.toString(),
-        email: 'b***@x.com',
         username: 'bob',
         displayName: null,
         role: 'admin',
@@ -230,10 +228,25 @@ describe('AdminUsersService', () => {
         blockedReason: null,
         deletedAt: null,
       });
+      expect(Object.keys(item)).not.toContain('email');
       expect(Object.keys(item)).not.toContain('passwordHash');
       expect(Object.keys(item)).not.toContain('referralCode');
       expect(Object.keys(item)).not.toContain('usernameNormalized');
       expect(Object.keys(item)).not.toContain('blockedUsers');
+    });
+
+    it('does not expose user email in admin items', async () => {
+      const doc = buildUserDoc({
+        username: 'carol',
+        email: 'secret@domain.com',
+      });
+      userModel.find.mockReturnValue(buildFindChain([doc]));
+      userModel.countDocuments.mockResolvedValue(1);
+
+      const result = await service.list({});
+      expect(
+        (result.items[0] as unknown as { email?: string }).email,
+      ).toBeUndefined();
     });
   });
 

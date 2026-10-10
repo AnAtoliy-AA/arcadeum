@@ -5,7 +5,6 @@ export type AdminUserStatus = 'active' | 'blocked' | 'deleted';
 
 export interface AdminUserItem {
   id: string;
-  email: string;
   username: string;
   displayName: string | null;
   role: UserRole;

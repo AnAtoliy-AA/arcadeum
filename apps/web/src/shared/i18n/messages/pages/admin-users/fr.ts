@@ -1,7 +1,7 @@
 export const adminUsersFr = {
   title: 'Utilisateurs',
   search: {
-    placeholder: "Recherche par nom d'utilisateur, email ou nom",
+    placeholder: "Recherche par nom d'utilisateur ou nom",
   },
   filter: {
     role: { all: 'Tous les rôles', placeholder: 'Filtrer par rôle' },

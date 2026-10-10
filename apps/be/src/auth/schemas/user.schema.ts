@@ -20,6 +20,12 @@ export class User {
   @Prop({ required: true, unique: true, index: true })
   email!: string;
 
+  @Prop({ type: String })
+  emailEncrypted?: string;
+
+  @Prop({ type: String, sparse: true, index: true })
+  emailBlindIndex?: string;
+
   @Prop({ required: true })
   passwordHash!: string;
 

@@ -21,6 +21,7 @@ import {
   GoogleOAuthService,
   AppleOAuthService,
   DiscordOAuthService,
+  UserDataSegregationService,
 } from './services';
 import { LoginLockoutService } from './services/login-lockout.service';
 import { escapeRegExp } from '../common/utils/escape-regexp';
@@ -71,6 +72,7 @@ export class AuthService {
     private readonly moduleRef: ModuleRef,
     private readonly lockoutService: LoginLockoutService,
     private readonly geoLookup: GeoLookupService,
+    private readonly dataSegregation: UserDataSegregationService,
   ) {}
 
   private async grantStarterItems(userId: string): Promise<void> {
@@ -121,8 +123,11 @@ export class AuthService {
     const username = data.username.trim();
     const usernameNormalized = username.toLowerCase();
 
+    const emailBlindIndex = this.dataSegregation.computeEmailBlindIndex(email);
     const [existingEmail, existingUsername] = await Promise.all([
-      this.userModel.exists({ email }),
+      this.userModel.exists({
+        $or: [{ emailBlindIndex }, { email }],
+      }),
       this.userModel.exists({ usernameNormalized }),
     ]);
 
@@ -135,11 +140,21 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(data.password, BCRYPT_SALT_ROUNDS);
+    const { emailEncrypted } = this.dataSegregation.encryptEmail(email);
     const created = await this.userModel.create({
       email,
+      emailEncrypted,
+      emailBlindIndex,
       passwordHash,
       username,
       usernameNormalized,
+    });
+
+    await this.dataSegregation.provisionSegregatedUserData({
+      userId: (created as UserDocument).id as string,
+      email,
+      passwordHash,
+      username,
     });
 
     if (data.referralCode) {
@@ -188,7 +203,10 @@ export class AuthService {
     if (!normalized) {
       return { available: false };
     }
-    const exists = await this.userModel.exists({ email: normalized });
+    const blindIndex = this.dataSegregation.computeEmailBlindIndex(normalized);
+    const exists = await this.userModel.exists({
+      $or: [{ emailBlindIndex: blindIndex }, { email: normalized }],
+    });
     return { available: !exists };
   }
 
@@ -204,10 +222,29 @@ export class AuthService {
       );
     }
 
-    const userDoc = await this.userModel.findOne({ email });
+    const blindIndex = this.dataSegregation.computeEmailBlindIndex(email);
+    const userDoc = await this.userModel.findOne({
+      $or: [{ emailBlindIndex: blindIndex }, { email }],
+    });
     if (!userDoc) {
       await this.lockoutService.recordFailure(email);
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (!userDoc.emailBlindIndex || !userDoc.emailEncrypted) {
+      const encrypted = this.dataSegregation.encryptEmail(email);
+      userDoc.emailEncrypted = encrypted.emailEncrypted;
+      userDoc.emailBlindIndex = encrypted.emailBlindIndex;
+      await userDoc.save();
+      await this.dataSegregation.provisionSegregatedUserData({
+        userId: String(userDoc.id),
+        email,
+        passwordHash: userDoc.passwordHash,
+        username: userDoc.username,
+        displayName: userDoc.displayName,
+        role: userDoc.role,
+        countryCode: userDoc.countryCode,
+      });
     }
 
     const user = await ensureUserUsername(userDoc, this.userModel);
@@ -444,5 +481,17 @@ export class AuthService {
       displayName: u.displayName || u.username || u.email || 'Unknown',
       username: u.username || '',
     }));
+  }
+
+  async getUserProfile(userId: string) {
+    return this.dataSegregation.findProfileByUserId(userId);
+  }
+
+  async getUserWallet(userId: string) {
+    return this.dataSegregation.findWalletByUserId(userId);
+  }
+
+  async getUserAuth(userId: string) {
+    return this.dataSegregation.findAuthByUserId(userId);
   }
 }

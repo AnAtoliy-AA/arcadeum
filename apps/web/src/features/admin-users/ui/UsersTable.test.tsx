@@ -64,7 +64,6 @@ const baseProps = {
 
 const sampleItem: AdminUserItem = {
   id: 'u1',
-  email: 'a@x',
   username: 'alice',
   displayName: null,
   role: 'free',
@@ -144,7 +143,9 @@ describe('UsersTable', () => {
     renderWithProvider(
       <UsersTable {...baseProps} items={[sampleItem]} total={1} />,
     );
-    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('infinite-scroll-all-loaded'),
+    ).toBeInTheDocument();
     expect(screen.getByText('All 1 users loaded')).toBeInTheDocument();
   });
 });

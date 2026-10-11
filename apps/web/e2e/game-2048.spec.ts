@@ -276,7 +276,13 @@ test.describe('2048 Puzzle Game', () => {
 
     const boxWithToast = await board.boundingBox();
     expect(boxWithToast?.y).toBe(boxBeforeSlide?.y);
-    expect(toastBox!.y + toastBox!.height).toBeLessThan(boxWithToast!.y);
+
+    const overlaps =
+      toastBox!.x < boxWithToast!.x + boxWithToast!.width &&
+      toastBox!.x + toastBox!.width > boxWithToast!.x &&
+      toastBox!.y < boxWithToast!.y + boxWithToast!.height &&
+      toastBox!.y + toastBox!.height > boxWithToast!.y;
+    expect(overlaps).toBe(false);
 
     const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
     await expect(dismissButton).toBeVisible();

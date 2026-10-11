@@ -218,19 +218,19 @@ export default {
         'milestone-toast': {
           '0%': {
             opacity: '0',
-            transform: 'translate(-50%, -12px) scale(0.92)',
+            transform: 'scale(0.92)',
           },
           '10%': {
             opacity: '1',
-            transform: 'translate(-50%, 0) scale(1)',
+            transform: 'scale(1)',
           },
           '82%': {
             opacity: '1',
-            transform: 'translate(-50%, 0) scale(1)',
+            transform: 'scale(1)',
           },
           '100%': {
             opacity: '0',
-            transform: 'translate(-50%, -10px) scale(0.95)',
+            transform: 'scale(0.95)',
           },
         },
       },

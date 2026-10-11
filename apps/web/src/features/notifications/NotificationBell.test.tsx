@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { NotificationBell } from './NotificationBell';
 import { useNotificationsStore } from './notifications.store';
+import { useLiveStatsStore } from '@/features/live-stats';
 
 const socketListeners = vi.hoisted(
   () => new Map<string, (payload: unknown) => void>(),
@@ -104,5 +105,73 @@ describe('NotificationBell', () => {
     });
 
     expect(screen.getByTestId('notification-popover')).toBeDefined();
+  });
+
+  it('closes popover on outside click', async () => {
+    await act(async () => {
+      render(
+        <div>
+          <button data-testid="outside-button">Outside</button>
+          <NotificationBell />
+        </div>,
+      );
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('notification-bell'));
+    });
+    expect(screen.getByTestId('notification-popover')).toBeDefined();
+
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByTestId('outside-button'));
+    });
+    expect(screen.queryByTestId('notification-popover')).toBeNull();
+  });
+
+  it('closes popover on escape key', async () => {
+    await act(async () => {
+      render(<NotificationBell />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('notification-bell'));
+    });
+    expect(screen.getByTestId('notification-popover')).toBeDefined();
+
+    await act(async () => {
+      fireEvent.keyDown(document, { key: 'Escape' });
+    });
+    expect(screen.queryByTestId('notification-popover')).toBeNull();
+  });
+
+  it('closes popover when live stats popover opens', async () => {
+    await act(async () => {
+      render(<NotificationBell />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('notification-bell'));
+    });
+    expect(screen.getByTestId('notification-popover')).toBeDefined();
+
+    await act(async () => {
+      useLiveStatsStore.getState().setPopoverOpen(true);
+    });
+    expect(screen.queryByTestId('notification-popover')).toBeNull();
+  });
+
+  it('closes live stats popover when bell is opened', async () => {
+    useLiveStatsStore.getState().setPopoverOpen(true);
+
+    await act(async () => {
+      render(<NotificationBell />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('notification-bell'));
+    });
+
+    expect(screen.getByTestId('notification-popover')).toBeDefined();
+    expect(useLiveStatsStore.getState().isPopoverOpen).toBe(false);
   });
 });

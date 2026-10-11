@@ -118,4 +118,37 @@ test.describe('Live Platform Info & Online Users', () => {
     await clearAllBtn.click();
     await expect(page).toHaveURL(/^((?!status=).)*$/);
   });
+
+  test('should be fully visible without cutting off on mobile viewport and coordinate with mobile menu', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await navigateTo(page, '/');
+
+    const badge = page.getByTestId('header-live-pulse-badge');
+    await expect(badge).toBeVisible();
+
+    await badge.click();
+    const popover = page.getByTestId('live-activity-popover');
+    await expect(popover).toBeVisible();
+
+    const box = await popover.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) {
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(375);
+    }
+
+    const menuButton = page.getByTestId('mobile-menu-button');
+    await expect(menuButton).toBeVisible();
+    await menuButton.click();
+
+    await expect(popover).toBeHidden();
+    const mobileNav = page.getByTestId('mobile-nav');
+    await expect(mobileNav).toBeVisible();
+
+    await badge.click();
+    await expect(popover).toBeVisible();
+    await expect(mobileNav).toBeHidden();
+  });
 });

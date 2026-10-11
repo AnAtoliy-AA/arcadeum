@@ -145,7 +145,7 @@ export function Game2048MilestoneToast({
       data-testid="game-2048-milestone-toast"
       onAnimationEnd={onDismiss}
       className={cx(
-        'fixed z-[120] bottom-4 inset-x-4 mx-auto max-w-sm sm:bottom-auto sm:inset-x-auto sm:top-20 sm:right-6 sm:mx-0 flex items-center justify-between gap-2.5 rounded-2xl p-2.5 sm:p-3 backdrop-blur-2xl animate-milestone-toast pointer-events-auto select-none overflow-visible',
+        'fixed z-[120] bottom-4 inset-x-4 mx-auto w-auto max-w-[calc(100vw-2rem)] sm:w-max sm:max-w-md md:max-w-lg sm:bottom-auto sm:inset-x-auto sm:top-20 sm:right-6 sm:mx-0 flex items-center justify-between gap-3 sm:gap-4 rounded-2xl p-2.5 sm:p-3.5 backdrop-blur-2xl animate-milestone-toast pointer-events-auto select-none overflow-visible',
         tier.cardClass,
       )}
     >
@@ -172,7 +172,7 @@ export function Game2048MilestoneToast({
         </div>
       )}
 
-      <div className="flex items-center gap-2.5 min-w-0">
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <div className="relative shrink-0">
           {tier.haloClass && (
             <div
@@ -193,21 +193,21 @@ export function Game2048MilestoneToast({
           </span>
         </div>
 
-        <div className="flex flex-col min-w-0">
+        <div className="flex flex-col min-w-0 pr-1">
           <div className="flex items-center gap-1.5">
             <span
               className={cx(
-                'rounded-md border px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider',
+                'shrink-0 rounded-md border px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider',
                 tier.badgeClass,
               )}
             >
               {badge}
             </span>
-            <span className="text-xs sm:text-sm font-extrabold tracking-wide truncate">
+            <span className="text-xs sm:text-sm font-extrabold tracking-wide whitespace-nowrap">
               {title}
             </span>
           </div>
-          <span className="text-xs opacity-90 font-medium truncate">
+          <span className="text-xs opacity-90 font-medium whitespace-nowrap">
             {t('games.game_2048_v1.milestone.body', { tile: milestone })}
           </span>
         </div>
@@ -219,7 +219,7 @@ export function Game2048MilestoneToast({
         onClick={onDismiss}
         data-testid="game-2048-milestone-dismiss"
         className={cx(
-          'shrink-0 h-8 px-3 text-xs font-bold border-none active:scale-95 transition-transform',
+          'shrink-0 h-8 px-3 text-xs font-bold border-none active:scale-95 transition-transform whitespace-nowrap',
           tier.btnClass,
         )}
       >

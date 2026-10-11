@@ -2,6 +2,10 @@ name: Deploy to OCI (Prod)
 
 permissions: read-all
 
+concurrency:
+  group: deploy-oci-prod
+  cancel-in-progress: false
+
 on:
   push:
     branches: [main]
@@ -62,64 +66,6 @@ jobs:
             shorts-factory:
               - 'scripts/shorts-factory/**'
 
-  deploy-web:
-    name: Deploy Web (Next.js)
-    needs: changes
-    if: >-
-      (github.event_name == 'workflow_dispatch' &&
-       (inputs.component == 'all' || inputs.component == 'web')) ||
-      (github.event_name == 'push' && needs.changes.outputs.web == 'true')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.OCI_SSH_HOST }}
-          username: ${{ secrets.OCI_SSH_USER }}
-          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
-          port: ${{ secrets.OCI_SSH_PORT || 22 }}
-          script: |
-            set -euo pipefail
-            DEPLOY_DIR="/opt/arcadeum"
-            cd "$DEPLOY_DIR"
-
-            echo "==> Cleaning git state..."
-            rm -f "$DEPLOY_DIR/.git/index.lock"
-            git reset --hard HEAD 2>/dev/null || true
-            git gc --prune=now 2>/dev/null || true
-
-            BRANCH="${{ inputs.branch || github.ref_name }}"
-
-            for attempt in 1 2 3; do
-              if git fetch origin "$BRANCH"; then
-                break
-              fi
-              echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
-              rm -f "$DEPLOY_DIR/.git/index.lock"
-              git gc --prune=now 2>/dev/null || true
-              sleep 5
-            done
-            git reset --hard "origin/$BRANCH"
-
-            pnpm install --frozen-lockfile
-
-            echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
-            npx playwright install chromium
-
-            cd apps/web
-            pnpm build
-
-            # Copy static assets + public into standalone output
-            STANDALONE=".next/standalone/apps/web"
-            cp -r .next/static "$STANDALONE/.next/static"
-            cp -r public "$STANDALONE/public" 2>/dev/null || true
-
-            cd "$DEPLOY_DIR"
-            pm2 restart arcadeum-web
-
-            echo "==> Web deploy done (branch: $BRANCH)!"
-            pm2 list arcadeum-web
-
   deploy-tg-bot:
     name: Deploy TG Bot + Backend (pm2)
     needs: changes
@@ -138,6 +84,8 @@ jobs:
           port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
@@ -187,6 +135,67 @@ jobs:
 
             echo "==> Prod deploy done (branch: $BRANCH)!"
             pm2 list
+
+  deploy-web:
+    name: Deploy Web (Next.js)
+    needs: [changes, deploy-tg-bot]
+    if: >-
+      !failure() && !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        (inputs.component == 'all' || inputs.component == 'web')) ||
+       (github.event_name == 'push' && needs.changes.outputs.web == 'true'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            echo "==> Cleaning git state..."
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
+
+            BRANCH="${{ inputs.branch || github.ref_name }}"
+
+            for attempt in 1 2 3; do
+              if git fetch origin "$BRANCH"; then
+                break
+              fi
+              echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
+              rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
+              sleep 5
+            done
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+
+            echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
+            npx playwright install chromium
+
+            cd apps/web
+            pnpm build
+
+            # Copy static assets + public into standalone output
+            STANDALONE=".next/standalone/apps/web"
+            cp -r .next/static "$STANDALONE/.next/static"
+            cp -r public "$STANDALONE/public" 2>/dev/null || true
+
+            cd "$DEPLOY_DIR"
+            pm2 restart arcadeum-web
+
+            echo "==> Web deploy done (branch: $BRANCH)!"
+            pm2 list arcadeum-web
 
   deploy-be-reserve:
     name: Deploy Reserve Backend (Worker)
@@ -249,9 +258,14 @@ jobs:
                 "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/$SF_ASSET"
               mkdir -p /tmp/sf19-extract
               tar -xzf /tmp/sf19.tar.gz -C /tmp/sf19-extract
-              find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} "$SF_BIN" \;
-              chmod +x "$SF_BIN"
+              find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec sudo cp {} "$SF_BIN" \; 2>/dev/null || \
+                find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec cp {} "$SF_BIN" \;
+              sudo chmod +x "$SF_BIN" 2>/dev/null || chmod +x "$SF_BIN"
               rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
+              if [ ! -x "$SF_BIN" ]; then
+                echo "ERROR: Stockfish binary not found or not executable at $SF_BIN"
+                exit 1
+              fi
               echo "uci" | "$SF_BIN" 2>/dev/null | head -1
               echo "==> Stockfish 19 installed."
             else
@@ -272,11 +286,12 @@ jobs:
 
   deploy-task-bot:
     name: Deploy Task Bot
-    needs: changes
+    needs: [changes, deploy-web]
     if: >-
-      (github.event_name == 'workflow_dispatch' &&
-       (inputs.component == 'all' || inputs.component == 'task-bot')) ||
-      (github.event_name == 'push' && needs.changes.outputs.task-bot == 'true')
+      !failure() && !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        (inputs.component == 'all' || inputs.component == 'task-bot')) ||
+       (github.event_name == 'push' && needs.changes.outputs.task-bot == 'true'))
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -288,6 +303,8 @@ jobs:
           port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
             DEPLOY_DIR="/opt/arcadeum"
 
             echo "==> Cleaning git state..."
@@ -325,11 +342,12 @@ jobs:
 
   deploy-shorts-factory:
     name: Deploy Shorts Factory
-    needs: changes
+    needs: [changes, deploy-task-bot]
     if: >-
-      (github.event_name == 'workflow_dispatch' &&
-       (inputs.component == 'all' || inputs.component == 'shorts-factory')) ||
-      (github.event_name == 'push' && needs.changes.outputs.shorts-factory == 'true')
+      !failure() && !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        (inputs.component == 'all' || inputs.component == 'shorts-factory')) ||
+       (github.event_name == 'push' && needs.changes.outputs.shorts-factory == 'true'))
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to OCI via SSH
@@ -338,8 +356,11 @@ jobs:
           host: ${{ secrets.OCI_SSH_HOST }}
           username: ${{ secrets.OCI_SSH_USER }}
           key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -e
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
             cd /opt/arcadeum
 
             echo "==> Cleaning git state..."

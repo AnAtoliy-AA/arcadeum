@@ -225,4 +225,62 @@ test.describe('2048 Puzzle Game', () => {
 
     await expect(page.getByTestId('game-2048-score')).toContainText('4');
   });
+
+  test('1024 milestone popup does not shift game board position and dismisses cleanly', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    const initialBox = await board.boundingBox();
+    expect(initialBox).not.toBeNull();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [512, 512, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 1024,
+          best: 1024,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 40,
+          startedAt: Date.now() - 30000,
+          finishedAt: null,
+          finished: null,
+          reachedMilestones: [],
+          activeMilestone: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    const boxBeforeSlide = await board.boundingBox();
+    expect(boxBeforeSlide?.y).toBe(initialBox?.y);
+
+    await page.keyboard.press('ArrowLeft');
+
+    const toast = page.getByTestId('game-2048-milestone-toast');
+    await expect(toast).toBeVisible();
+
+    const boxWithToast = await board.boundingBox();
+    expect(boxWithToast?.y).toBe(boxBeforeSlide?.y);
+
+    const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
+    await expect(dismissButton).toBeVisible();
+    await dismissButton.click();
+
+    await expect(toast).not.toBeVisible();
+
+    const boxAfterDismiss = await board.boundingBox();
+    expect(boxAfterDismiss?.y).toBe(boxBeforeSlide?.y);
+  });
 });

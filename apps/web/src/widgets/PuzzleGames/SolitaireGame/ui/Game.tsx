@@ -199,6 +199,11 @@ function SolitaireTable() {
           onClick={handleToggleAutoPlace}
           dataTestId="solitaire-auto-place-button"
           icon="⚡"
+          className={
+            canAutoPlace && !autoPlacing
+              ? 'animate-pulse ring-2 ring-amber-400/60 shadow-lg shadow-amber-500/30'
+              : undefined
+          }
         >
           {t('games.solitaire_v1.hud.autoPlace')}
         </SoloActionButton>

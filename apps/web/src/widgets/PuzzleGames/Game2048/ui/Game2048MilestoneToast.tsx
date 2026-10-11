@@ -19,7 +19,8 @@ export function Game2048MilestoneToast({
   return (
     <div
       data-testid="game-2048-milestone-toast"
-      className="flex w-full items-center justify-between gap-3 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 p-3 shadow-xl backdrop-blur-xl ring-1 ring-amber-400/40 text-amber-100 animate-in fade-in slide-in-from-top-2 duration-300"
+      onAnimationEnd={onDismiss}
+      className="absolute top-2 left-1/2 -translate-x-1/2 z-30 flex w-[calc(100%-1rem)] max-w-sm items-center justify-between gap-2.5 rounded-2xl border-2 border-amber-400/80 bg-neutral-950/90 p-2.5 sm:p-3 shadow-2xl shadow-amber-500/20 backdrop-blur-xl ring-1 ring-amber-400/40 text-amber-100 animate-milestone-toast pointer-events-auto"
     >
       <div className="flex items-center gap-2.5 min-w-0">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-lg shadow-md shadow-amber-500/30">
@@ -40,7 +41,7 @@ export function Game2048MilestoneToast({
         variant="primary"
         onClick={onDismiss}
         data-testid="game-2048-milestone-dismiss"
-        className="shrink-0 h-8 px-3 text-xs font-bold bg-amber-400 hover:bg-amber-300 text-black border-none shadow-md shadow-amber-400/30"
+        className="shrink-0 h-8 px-3 text-xs font-bold bg-amber-400 hover:bg-amber-300 text-black border-none shadow-md shadow-amber-400/30 active:scale-95 transition-transform"
       >
         {t('games.game_2048_v1.milestone.keepGoing')}
       </Button>

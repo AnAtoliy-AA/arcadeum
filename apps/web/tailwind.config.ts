@@ -215,6 +215,24 @@ export default {
             transform: 'translateY(-20px) scale(0.8)',
           },
         },
+        'milestone-toast': {
+          '0%': {
+            opacity: '0',
+            transform: 'translate(-50%, -12px) scale(0.92)',
+          },
+          '10%': {
+            opacity: '1',
+            transform: 'translate(-50%, 0) scale(1)',
+          },
+          '82%': {
+            opacity: '1',
+            transform: 'translate(-50%, 0) scale(1)',
+          },
+          '100%': {
+            opacity: '0',
+            transform: 'translate(-50%, -10px) scale(0.95)',
+          },
+        },
       },
       animation: {
         'hero-float-3d': 'hero-float-3d 6s ease-in-out infinite',
@@ -224,6 +242,8 @@ export default {
         shimmer: 'arcadeum-shimmer 2s ease-in-out infinite',
         'capture-remove': 'capture-remove 0.4s ease-out forwards',
         'spectator-float': 'spectator-float 2.4s ease-out forwards',
+        'milestone-toast':
+          'milestone-toast 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
     },
   },

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.64] - 2026-10-11
+
+### Fixed
+- prevent concurrent oci deploys and fix stockfish installation (ARC-000) (ARC-000)
+
+
 ## [1.30.63] - 2026-10-10
 
 ### Added

@@ -8,6 +8,10 @@ import type { Direction } from '../types';
 
 export const GAME_2048_ID = 'game_2048_v1';
 
+export const GAME_2048_MILESTONE_TARGETS = [
+  512, 1024, 2048, 4096, 8192,
+] as const;
+
 export interface FinishedGameInfo {
   won: boolean;
   score: number;
@@ -34,6 +38,15 @@ interface Game2048StoreState {
   continuePlaying: () => void;
   newGame: () => void;
   dismissMilestone: () => void;
+}
+
+let milestoneTimer: ReturnType<typeof setTimeout> | null = null;
+
+function clearMilestoneTimer() {
+  if (milestoneTimer !== null) {
+    clearTimeout(milestoneTimer);
+    milestoneTimer = null;
+  }
 }
 
 export const useGame2048Store = create<Game2048StoreState>()(
@@ -127,10 +140,9 @@ export const useGame2048Store = create<Game2048StoreState>()(
           }
 
           const maxTile = Math.max(0, ...next.grid);
-          const milestoneTargets = [1024, 2048, 4096];
           let activeMilestone = current.activeMilestone;
           let reachedMilestones = current.reachedMilestones;
-          for (const m of milestoneTargets) {
+          for (const m of GAME_2048_MILESTONE_TARGETS) {
             if (maxTile >= m && !reachedMilestones.includes(m)) {
               reachedMilestones = [...reachedMilestones, m];
               activeMilestone = m;
@@ -139,11 +151,23 @@ export const useGame2048Store = create<Game2048StoreState>()(
           patch.reachedMilestones = reachedMilestones;
           patch.activeMilestone = activeMilestone;
 
+          if (
+            activeMilestone !== null &&
+            activeMilestone !== current.activeMilestone
+          ) {
+            clearMilestoneTimer();
+            milestoneTimer = setTimeout(() => {
+              milestoneTimer = null;
+              get().dismissMilestone();
+            }, 3500);
+          }
+
           return patch;
         });
       },
 
-      undo: () =>
+      undo: () => {
+        clearMilestoneTimer();
         set((state) => {
           if (state.history.length === 0 || state.finishedAt !== null)
             return state;
@@ -157,7 +181,8 @@ export const useGame2048Store = create<Game2048StoreState>()(
             usedUndo: true,
             activeMilestone: null,
           };
-        }),
+        });
+      },
 
       continuePlaying: () =>
         set((state) => {
@@ -165,7 +190,8 @@ export const useGame2048Store = create<Game2048StoreState>()(
           return { keepPlayingFlag: true, finished: null, finishedAt: null };
         }),
 
-      newGame: () =>
+      newGame: () => {
+        clearMilestoneTimer();
         set({
           grid: newGame().grid,
           score: 0,
@@ -179,12 +205,15 @@ export const useGame2048Store = create<Game2048StoreState>()(
           usedUndo: false,
           reachedMilestones: [],
           activeMilestone: null,
-        }),
+        });
+      },
 
-      dismissMilestone: () =>
+      dismissMilestone: () => {
+        clearMilestoneTimer();
         set({
           activeMilestone: null,
-        }),
+        });
+      },
     }),
     {
       name: 'arcadeum_game_2048_v1',

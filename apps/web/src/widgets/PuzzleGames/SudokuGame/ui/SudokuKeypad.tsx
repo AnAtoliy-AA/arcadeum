@@ -73,9 +73,9 @@ export function SudokuKeypad({
               }
               data-testid={`sudoku-digit-${digit}`}
               className={cx(
-                'flex flex-col items-center justify-center rounded-xl border py-1.5 sm:py-2 font-mono transition-all shadow-sm select-none',
+                'flex flex-col items-center justify-center rounded-xl border py-1.5 sm:py-2 font-mono transition-all shadow-sm select-none touch-manipulation',
                 isCompleted
-                  ? 'border-dashed border-white/10 bg-black/20 opacity-25 cursor-not-allowed'
+                  ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300/40 opacity-40 cursor-not-allowed'
                   : isSelectedDigit
                     ? 'border-cyan-400 bg-cyan-500/30 text-cyan-200 ring-2 ring-cyan-400 shadow-md font-black'
                     : notesMode
@@ -93,7 +93,7 @@ export function SudokuKeypad({
                 {digit}
               </span>
               <span className="text-[9px] sm:text-[10px] text-[var(--textSecondary)] font-semibold">
-                {remaining}
+                {isCompleted ? '✓' : remaining}
               </span>
             </button>
           );

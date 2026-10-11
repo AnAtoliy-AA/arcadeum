@@ -136,7 +136,7 @@ export function MinesweeperBoard({
   const gridColsClass = GRID_COLS_BY_WIDTH[game.width] ?? 'grid-cols-9';
 
   return (
-    <div className="flex w-full justify-center items-center overflow-x-auto p-1">
+    <div className="flex w-full justify-center items-center overflow-x-auto p-1 overscroll-contain">
       <div
         style={boardVars(theme)}
         className={cx(
@@ -214,7 +214,7 @@ function MineCell({
       type="button"
       role="gridcell"
       className={cx(
-        'flex aspect-square items-center justify-center font-mono font-extrabold transition-all select-none',
+        'flex aspect-square items-center justify-center font-mono font-extrabold transition-all select-none touch-manipulation',
         isBeginner
           ? isFullscreen
             ? 'h-9 w-9 min-w-[36px] sm:h-11 sm:w-11 sm:min-w-[44px] md:h-12 md:w-12 md:min-w-[48px] lg:h-13 lg:w-13 lg:min-w-[52px] xl:h-14 xl:w-14 xl:min-w-[56px] rounded-xl text-base sm:text-lg lg:text-xl'

@@ -270,7 +270,7 @@ test.describe('2048 Puzzle Game', () => {
 
     const toast = page.getByTestId('game-2048-milestone-toast');
     await expect(toast).toBeVisible();
-    await expect(toast).toContainText('Almost There');
+    await expect(toast).toContainText('Halfway');
 
     const toastBox = await toast.boundingBox();
     expect(toastBox).not.toBeNull();
@@ -333,8 +333,8 @@ test.describe('2048 Puzzle Game', () => {
 
     const toast = page.getByTestId('game-2048-milestone-toast');
     await expect(toast).toBeVisible();
-    await expect(toast).toContainText('Половина');
-    await expect(toast).toContainText('Половина пути к 2048!');
+    await expect(toast).toContainText('Разогрев');
+    await expect(toast).toContainText('Разогрев: 512!');
 
     const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
     await expect(dismissButton).toBeVisible();

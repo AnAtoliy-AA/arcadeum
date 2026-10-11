@@ -136,7 +136,7 @@ export const useGame2048Store = create<Game2048StoreState>()(
           }
 
           const maxTile = Math.max(0, ...next.grid);
-          const milestoneTargets = [1024, 2048, 4096];
+          const milestoneTargets = [512, 1024, 2048, 4096, 8192];
           let activeMilestone = current.activeMilestone;
           let reachedMilestones = current.reachedMilestones;
           for (const m of milestoneTargets) {

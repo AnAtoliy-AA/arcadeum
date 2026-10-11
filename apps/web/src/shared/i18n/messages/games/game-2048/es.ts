@@ -32,6 +32,11 @@ export const esMessages = {
     },
     milestone: {
       title: '¡Hito alcanzado!',
+      title_512: '¡A mitad de camino de 2048!',
+      title_1024: '¡Casi lo logras!',
+      title_2048: '¡Ficha de victoria: 2048!',
+      title_4096: '¡Mítico 4096!',
+      title_8192: '¡Divino 8192!',
       body: '¡Has forjado la legendaria ficha {{tile}}!',
       keepGoing: 'Continuar jugando',
     },

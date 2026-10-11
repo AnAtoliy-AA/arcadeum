@@ -115,9 +115,17 @@ function Game2048Table() {
     (direction: Direction) => {
       if (pause.isPaused || !isRunning) return;
       const prevScore = useGame2048Store.getState().score;
+      const prevMilestone = useGame2048Store.getState().activeMilestone;
       move(direction);
       const newScore = useGame2048Store.getState().score;
-      if (newScore > prevScore) {
+      const newMilestone = useGame2048Store.getState().activeMilestone;
+      if (newMilestone !== null && newMilestone !== prevMilestone) {
+        if (newMilestone >= 2048) {
+          play('win');
+        } else {
+          play('merge');
+        }
+      } else if (newScore > prevScore) {
         play('merge');
       } else {
         play('slide_tile');

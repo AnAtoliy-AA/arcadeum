@@ -32,6 +32,11 @@ export const enMessages = {
     },
     milestone: {
       title: 'Milestone Reached!',
+      title_512: 'Halfway to 2048!',
+      title_1024: 'Almost There!',
+      title_2048: 'Victory Tile: 2048!',
+      title_4096: 'Mythic 4096!',
+      title_8192: 'Godlike 8192!',
       body: 'You forged the legendary {{tile}} tile.',
       keepGoing: 'Keep Going',
     },

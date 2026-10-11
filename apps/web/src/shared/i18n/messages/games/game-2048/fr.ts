@@ -32,6 +32,11 @@ export const frMessages = {
     },
     milestone: {
       title: 'Étape franchie !',
+      title_512: 'À mi-chemin de 2048 !',
+      title_1024: 'Presque au but !',
+      title_2048: 'Tuile de victoire : 2048 !',
+      title_4096: 'Mythique 4096 !',
+      title_8192: 'Divin 8192 !',
       body: 'Vous avez forgé la tuile légendaire {{tile}} !',
       keepGoing: 'Continuer',
     },

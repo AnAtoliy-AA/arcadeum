@@ -240,6 +240,39 @@ describe('Game2048 UI', () => {
     expect(useGame2048Store.getState().activeMilestone).toBeNull();
   });
 
+  it('renders milestone celebration tiers with distinct badges for 512, 2048, 4096, and 8192', () => {
+    useGame2048Store.setState({
+      activeMilestone: 512,
+      reachedMilestones: [512],
+    });
+    const { unmount } = render(<Game2048 />);
+    expect(screen.getByText('HALFWAY')).toBeInTheDocument();
+    unmount();
+
+    useGame2048Store.setState({
+      activeMilestone: 2048,
+      reachedMilestones: [2048],
+    });
+    const { unmount: unmount2048 } = render(<Game2048 />);
+    expect(screen.getByText('LEGENDARY')).toBeInTheDocument();
+    unmount2048();
+
+    useGame2048Store.setState({
+      activeMilestone: 4096,
+      reachedMilestones: [4096],
+    });
+    const { unmount: unmount4096 } = render(<Game2048 />);
+    expect(screen.getByText('MYTHIC')).toBeInTheDocument();
+    unmount4096();
+
+    useGame2048Store.setState({
+      activeMilestone: 8192,
+      reachedMilestones: [8192],
+    });
+    render(<Game2048 />);
+    expect(screen.getByText('GODLIKE')).toBeInTheDocument();
+  });
+
   it('displays undos counter when history is present and supports pointer drag swipe', () => {
     useGame2048Store.setState({
       grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

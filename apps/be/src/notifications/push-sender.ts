@@ -97,7 +97,7 @@ export class PushSender {
     if (!this.warnedDisabled) {
       this.warnedDisabled = true;
       this.logger.warn(
-        'VAPID keys not configured — web push is disabled. Inbox + socket events still work.',
+        'VAPID keys not configured: web push is disabled. Inbox + socket events still work.',
       );
     }
   }

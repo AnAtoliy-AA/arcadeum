@@ -108,7 +108,7 @@ export class LeaderboardsSeederService implements OnModuleInit {
     const existing = await this.entryModel.countDocuments({ season }).exec();
     if (existing > 0) {
       this.logger.debug(
-        `Auto-seed skipped — season=${season} already has ${existing} entries.`,
+        `Auto-seed skipped: season=${season} already has ${existing} entries.`,
       );
       return null;
     }
@@ -177,7 +177,7 @@ export class LeaderboardsSeederService implements OnModuleInit {
     const tickerInputs = [
       {
         who: top4[0]?.username ?? 'Player',
-        what: 'won the Mythic streak challenge — +12 rating',
+        what: 'won the Mythic streak challenge: +12 rating',
         color: '#ec4899',
       },
       {
@@ -215,7 +215,7 @@ export class LeaderboardsSeederService implements OnModuleInit {
       tickerEventsInserted: tickers.length,
     };
     this.logger.log(
-      `Leaderboards seeded — season=${season} entries=${summary.entriesInserted}`,
+      `Leaderboards seeded: season=${season} entries=${summary.entriesInserted}`,
     );
     return summary;
   }

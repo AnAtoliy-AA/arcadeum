@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-critical',
   locale: 'en',
-  title: 'How to Play Critical Online — Rules, Bomb Defusal, Strategy',
+  title: 'How to Play Critical Online - Rules, Bomb Defusal, Strategy',
   excerpt:
     'A complete beginner-friendly guide to Critical: the Exploding Kittens-style card game where every draw could be your last. Learn bomb defusal, action cards, and deck-counting strategy.',
   publishedAt: '2026-08-04',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Critical is a fast-paced, high-stakes card game where every draw from the deck could be the fatal bomb that knocks you out. Inspired by the Exploding Kittens formula, players take turns drawing cards, playing action cards, and trying to survive longer than everyone else. The last player standing wins. The rules are simple, but the strategy — counting cards, timing defusals, and manipulating the deck — is what separates survivors from casualties.',
+      text: 'Critical is a fast-paced, high-stakes card game where every draw from the deck could be the fatal bomb that knocks you out. Inspired by the Exploding Kittens formula, players take turns drawing cards, playing action cards, and trying to survive longer than everyone else. The last player standing wins. The rules are simple, but the strategy - counting cards, timing defusals, and manipulating the deck - is what separates survivors from casualties.',
     },
     {
       type: 'heading',
@@ -23,7 +23,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Each player starts with a set number of cards (typically 7) dealt from the deck. The remaining cards form the draw pile. Some cards are Critical bombs — when you draw one, you are eliminated unless you play a Defuse card. The game continues until only one player remains.',
+      text: 'Each player starts with a set number of cards (typically 7) dealt from the deck. The remaining cards form the draw pile. Some cards are Critical bombs - when you draw one, you are eliminated unless you play a Defuse card. The game continues until only one player remains.',
     },
     {
       type: 'heading',
@@ -33,7 +33,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'On your turn, you may play zero or more action cards from your hand, then you MUST draw one card from the top of the deck. Playing cards does not end your turn — your turn ends only after you draw or play a Skip card. This distinction is critical: you can set up defenses before drawing.',
+      text: 'On your turn, you may play zero or more action cards from your hand, then you MUST draw one card from the top of the deck. Playing cards does not end your turn - your turn ends only after you draw or play a Skip card. This distinction is critical: you can set up defenses before drawing.',
     },
     {
       type: 'heading',
@@ -45,7 +45,7 @@ export const post: BlogPost = {
       type: 'list',
       items: [
         'Critical Bomb. When drawn, you are eliminated unless you play a Defuse. The bomb is removed from the game.',
-        'Defuse. Saves you from a bomb draw. You then re-insert the bomb anywhere into the deck — a powerful tactical decision.',
+        'Defuse. Saves you from a bomb draw. You then re-insert the bomb anywhere into the deck - a powerful tactical decision.',
         'Attack. Forces the next player to take two turns instead of one. Stackable.',
         'Skip. Ends your turn without drawing. Safe way to avoid the deck.',
         'Peek. Look at the top three cards of the deck and rearrange them.',
@@ -56,7 +56,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Deck counting — the core skill',
+      text: 'Deck counting - the core skill',
       id: 'counting',
     },
     {
@@ -72,9 +72,9 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Hold your Defuse. A Defuse is your lifeline. Never play it proactively — save it for when you actually draw a bomb.',
+        'Hold your Defuse. A Defuse is your lifeline. Never play it proactively - save it for when you actually draw a bomb.',
         'Use Attack cards to pressure opponents. When the deck is dangerous, force others to draw.',
-        'Re-insert bombs strategically. After defusing, place the bomb where the next player is most likely to draw it — typically near the top of a thinning deck.',
+        'Re-insert bombs strategically. After defusing, place the bomb where the next player is most likely to draw it - typically near the top of a thinning deck.',
         'Track what opponents play. If someone plays a Defuse, the deck has fewer safeties remaining.',
         'Play Peek before drawing. Check the top cards and rearrange to avoid or place bombs.',
       ],
@@ -97,20 +97,20 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/critical',
-      text: 'Play Critical online — free, in your browser',
+      text: 'Play Critical online - free, in your browser',
       description:
         'Open a Critical room, share the link with friends, or fill seats with AI bots. Fast rounds, high tension.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR - the four habits that win games',
       id: 'tldr',
     },
     {
       type: 'list',
       items: [
-        'Count bombs and defuses — know your draw risk every turn.',
+        'Count bombs and defuses - know your draw risk every turn.',
         'Hold your Defuse until you actually need it.',
         'Use Attack and Skip cards to avoid dangerous draws.',
         'Re-insert defused bombs near the top to trap the next player.',
@@ -118,7 +118,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Critical rewards card awareness and nerve. The player who tracks the deck and manipulates the odds will survive longest. Every card played tells a story — read it.',
+      text: 'Critical rewards card awareness and nerve. The player who tracks the deck and manipulates the odds will survive longest. Every card played tells a story - read it.',
     },
   ],
   howTo: {

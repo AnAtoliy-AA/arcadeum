@@ -31,7 +31,7 @@ export class CatDashBotService {
       state.players.some((p) => p.playerId && !p.playerId.startsWith('bot-'));
     if (!hasAliveHuman && !isAiVsAiSession(session)) {
       this.logger.log(
-        `No alive humans in room ${session.roomId} — completing session`,
+        `No alive humans in room ${session.roomId}: completing session`,
       );
       await this.catDashService.completeSession(session.id, session.roomId);
       return;

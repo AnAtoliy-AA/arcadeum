@@ -285,7 +285,7 @@ export async function getMockLeaderboard(
   const tickerEvents: TickerEvent[] = [
     {
       who: rows[0]?.name ?? 'Player',
-      what: 'won the Mythic streak challenge — +12 rating',
+      what: 'won the Mythic streak challenge - +12 rating',
       color: '#ec4899',
     },
     {

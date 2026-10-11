@@ -137,7 +137,7 @@ export class GamesHistoryFacade {
     } catch (err) {
       if (err instanceof NotFoundException) {
         this.logger.debug(
-          `Room ${roomId} not found in Atlas — skipping Atlas history write (quick-play room)`,
+          `Room ${roomId} not found in Atlas: skipping Atlas history write (quick-play room)`,
         );
       } else {
         throw err;

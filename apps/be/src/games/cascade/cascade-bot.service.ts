@@ -51,7 +51,7 @@ export class CascadeBotService extends CascadeBot {
     );
     if (!hasAliveHuman && !isAiVsAiSession(session)) {
       this.logger.log(
-        `No alive humans in room ${session.roomId} — completing session`,
+        `No alive humans in room ${session.roomId}: completing session`,
       );
       await this.cascadeService.completeSession(session.id, session.roomId);
       return;

@@ -88,7 +88,7 @@ export function OfflineDownloadsSection() {
             <Spinner size="sm" />
             <span>
               {dl?.swLoading ??
-                'Waiting for the app to fully load — downloads will be available shortly…'}
+                'Waiting for the app to fully load - downloads will be available shortly…'}
             </span>
           </div>
         )}

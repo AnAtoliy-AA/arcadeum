@@ -249,7 +249,7 @@ export function executeShipAbility(
     case 'silent_run': {
       // Immune to sonar for 1 turn — mark in specialWeaponUsage
       state.logs.push(
-        createLog('action', `🤫 Silent Run activated — immune to sonar!`, {
+        createLog('action', `🤫 Silent Run activated: immune to sonar!`, {
           senderId: player.playerId,
           kind: 'sb.ability-silent-run',
         }),

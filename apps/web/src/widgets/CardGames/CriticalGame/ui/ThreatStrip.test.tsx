@@ -29,13 +29,13 @@ describe('ThreatStrip', () => {
     expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('25%');
   });
 
-  it('renders em-dash when deck is fully hidden', () => {
+  it('renders hyphen when deck is fully hidden', () => {
     const deck: CriticalCard[] = [
       'hidden' as CriticalCard,
       'hidden' as CriticalCard,
     ];
     render(<ThreatStrip hand={['neutralizer']} deck={deck} />);
-    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('—');
+    expect(screen.getByTestId('threat-strip-odds')).toHaveTextContent('-');
   });
 
   it('escalates level to danger when odds are high', () => {

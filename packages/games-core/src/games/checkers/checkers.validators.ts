@@ -177,7 +177,7 @@ export function validateMovePiece(
       if (furtherCaptures.length > 0) {
         return {
           ok: false,
-          error: 'Multi-jump not complete — more captures available',
+          error: 'Multi-jump not complete: more captures available',
         };
       }
     }

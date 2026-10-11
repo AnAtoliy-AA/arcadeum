@@ -41,7 +41,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       maxPlayers: 2,
       version: '2.0.0',
       description:
-        'Checkers with American, International (10x10), and Russian variants — forced captures, flying kings, multi-jump, and bot AI',
+        'Checkers with American, International (10x10), and Russian variants: forced captures, flying kings, multi-jump, and bot AI',
       category: 'Board Game',
     };
   }
@@ -285,7 +285,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
         newState.isDraw = true;
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.logs.push(
-          this.createLogEntry('system', 'Draw — insufficient material.'),
+          this.createLogEntry('system', 'Draw: insufficient material.'),
         );
         return this.successResult(newState);
       }

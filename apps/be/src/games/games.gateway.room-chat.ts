@@ -24,7 +24,7 @@ function validateUserId(
   if (isAuthenticated) {
     if (payloadUserId !== authUserId) {
       logger.warn(
-        `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+        `User ${authUserId} attempted to act as ${payloadUserId}: blocking`,
       );
       throw new WsException('Cannot perform actions as another user.');
     }
@@ -34,7 +34,7 @@ function validateUserId(
   // Fail closed — identity-less sockets cannot send room chat at all.
   if (!anonId || payloadUserId !== anonId) {
     logger.warn(
-      `Identity-less socket attempted to chat as ${payloadUserId} — blocking`,
+      `Identity-less socket attempted to chat as ${payloadUserId}: blocking`,
     );
     throw new WsException('Cannot perform actions as another user.');
   }

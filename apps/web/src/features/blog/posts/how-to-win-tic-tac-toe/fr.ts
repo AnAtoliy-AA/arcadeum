@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-tic-tac-toe',
   locale: 'fr',
   title:
-    'Comment gagner au Tic Tac Toe — stratégie, fourches, premier et second joueur',
+    'Comment gagner au Tic Tac Toe - stratégie, fourches, premier et second joueur',
   excerpt:
     'Guide complet : avantage du premier joueur, défense, fourches et habitudes gagnantes.',
   publishedAt: '2026-06-30',
@@ -20,7 +20,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Le Tic Tac Toe est un jeu résolu — avec un jeu parfait, chaque partie est nulle. Mais en pratique, les adversaires font des erreurs. Celui qui comprend la stratégie les punit.',
+      text: 'Le Tic Tac Toe est un jeu résolu - avec un jeu parfait, chaque partie est nulle. Mais en pratique, les adversaires font des erreurs. Celui qui comprend la stratégie les punit.',
     },
     { type: 'heading', level: 2, text: 'Les règles', id: 'rules' },
     {
@@ -35,7 +35,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Ouvrez au centre — c'est la case la plus forte. Si l'adversaire prend un bord, X peut forcer la victoire. Si l'adversaire prend un coin, jouez le coin opposé. Jamais d'ouverture en bord — le second joueur a un avantage forcé.",
+      text: "Ouvrez au centre - c'est la case la plus forte. Si l'adversaire prend un bord, X peut forcer la victoire. Si l'adversaire prend un coin, jouez le coin opposé. Jamais d'ouverture en bord - le second joueur a un avantage forcé.",
     },
     {
       type: 'heading',
@@ -50,7 +50,7 @@ export const post: BlogPost = {
     { type: 'heading', level: 2, text: 'Fourches', id: 'forks' },
     {
       type: 'paragraph',
-      text: "Une fourche crée deux menaces simultanées. L'adversaire ne peut bloquer qu'une. Avant chaque mouvement, cherchez les fourches — les vôtres et celles de l'adversaire.",
+      text: "Une fourche crée deux menaces simultanées. L'adversaire ne peut bloquer qu'une. Avant chaque mouvement, cherchez les fourches - les vôtres et celles de l'adversaire.",
     },
     { type: 'heading', level: 2, text: 'Priorités', id: 'priority' },
     {
@@ -66,7 +66,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/tic-tac-toe',
-      text: 'Jouez au Tic Tac Toe — gratuit',
+      text: 'Jouez au Tic Tac Toe - gratuit',
       description: 'Défiez amis ou IA.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

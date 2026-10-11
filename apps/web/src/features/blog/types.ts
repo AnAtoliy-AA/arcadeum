@@ -42,6 +42,37 @@ export type BlogBlock =
       solutionIndex: number;
       explanation: string;
       playHref?: string;
+    }
+  | {
+      type: 'board-diagram';
+      id?: string;
+      gameId:
+        | 'sea-battle'
+        | 'chess'
+        | 'checkers'
+        | 'tic-tac-toe'
+        | 'go'
+        | 'sudoku'
+        | 'minesweeper';
+      title: string;
+      caption?: string;
+      grid: string[];
+      colLabels?: string[];
+      rowLabels?: string[];
+      legend?: Array<{
+        variant:
+          | 'ship'
+          | 'hit'
+          | 'miss'
+          | 'deadzone'
+          | 'white'
+          | 'black'
+          | 'highlight'
+          | 'flag'
+          | 'mine'
+          | 'safe';
+        label: string;
+      }>;
     };
 
 export interface BlogPost {
@@ -57,7 +88,7 @@ export interface BlogPost {
   updatedAt?: string;
   /** Display name of the author (used in BlogPosting JSON-LD). */
   author: string;
-  /** SEO tags — also rendered as visible chips on the post page. */
+  /** SEO tags: also rendered as visible chips on the post page. */
   tags: string[];
   /**
    * Reading time in minutes. Rendered on the post page and emitted as
@@ -68,7 +99,7 @@ export interface BlogPost {
   /**
    * Body of the post as structured blocks. Avoids HTML strings (no
    * XSS surface) and renders identically in Server Components. Internal
-   * links to game landings or other pages should use the `cta` block —
+   * links to game landings or other pages should use the `cta` block -
    * the renderer turns them into a styled call-to-action card so the
    * link signal lands on a real anchor with descriptive text.
    */
@@ -77,7 +108,7 @@ export interface BlogPost {
    * Optional HowTo schema payload. When present, the post emits a
    * Schema.org `HowTo` node next to `BlogPosting` so Google can show
    * step-by-step rich results in SERPs. The steps must mirror visible
-   * content on the page (Google's rich-result guideline) — by
+   * content on the page (Google's rich-result guideline) - by
    * convention these are the same items the article's TL;DR list
    * surfaces.
    */
@@ -89,7 +120,7 @@ export interface BlogPost {
     steps: Array<{
       name: string;
       text: string;
-      /** Optional `url` for the step — typically `#section-id` on the post. */
+      /** Optional `url` for the step: typically `#section-id` on the post. */
       url?: string;
     }>;
   };

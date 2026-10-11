@@ -79,7 +79,7 @@ export class GemConversionService {
         );
         if (debitPrior && creditPrior) {
           this.logger.log(
-            `Conversion ${conversionId} already completed — returning cached result`,
+            `Conversion ${conversionId} already completed: returning cached result`,
           );
           // Already done — fall through to balance fetch below
         } else {

@@ -306,7 +306,7 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
         ruleId: 'nil_bids',
         label: 'Nil bids',
         description:
-          'Bid Nil to risk ±100 points on taking zero tricks — partners cover you.',
+          'Bid Nil to risk ±100 points on taking zero tricks: partners cover you.',
       },
       {
         ruleId: 'sandbagging',

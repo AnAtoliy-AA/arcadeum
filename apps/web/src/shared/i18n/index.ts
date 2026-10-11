@@ -1,4 +1,4 @@
-// Barrel — re-export everything from focused modules.
+// Barrel: re-export everything from focused modules.
 // Consumer code should import from '@/shared/i18n', never from sub-paths.
 
 export { loadMessages } from './messages';

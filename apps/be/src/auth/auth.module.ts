@@ -4,6 +4,9 @@ import { AuthService } from './auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
+import { UserAuth, UserAuthSchema } from './schemas/user-auth.schema';
+import { UserProfile, UserProfileSchema } from './schemas/user-profile.schema';
+import { UserWallet, UserWalletSchema } from './schemas/user-wallet.schema';
 import { ReferralModule } from '../referrals/referral.module';
 import {
   RefreshToken,
@@ -32,6 +35,7 @@ import {
   SignupRewardService,
   LoginLockoutService,
   MagicLinkService,
+  UserDataSegregationService,
 } from './services';
 import { UserRoleResolver } from './lib/user-role-resolver.service';
 import { AuthThrottlerGuard } from './lib/auth-throttler.guard';
@@ -55,6 +59,9 @@ import { GeoModule } from '../common/geo/geo.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: UserAuth.name, schema: UserAuthSchema },
+      { name: UserProfile.name, schema: UserProfileSchema },
+      { name: UserWallet.name, schema: UserWalletSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
       { name: PasswordResetToken.name, schema: PasswordResetTokenSchema },
       { name: Friendship.name, schema: FriendshipSchema },
@@ -84,9 +91,10 @@ import { GeoModule } from '../common/geo/geo.module';
     SignupRewardService,
     LoginLockoutService,
     MagicLinkService,
+    UserDataSegregationService,
     UserRoleResolver,
     AuthThrottlerGuard,
   ],
-  exports: [AuthService, UserRoleResolver],
+  exports: [AuthService, UserRoleResolver, UserDataSegregationService],
 })
 export class AuthModule {}

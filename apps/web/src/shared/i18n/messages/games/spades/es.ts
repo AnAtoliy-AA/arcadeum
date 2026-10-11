@@ -89,7 +89,7 @@ export const esMessages = {
         rules: {
           question: '¿Cómo se gana en Espadas?',
           answer:
-            'Los equipos anotan puntos cumpliendo su apuesta combinada (10 puntos por baza apostada más uno por cada baza extra). El primer equipo en alcanzar la puntuación objetivo —normalmente 500— gana la partida.',
+            'Los equipos anotan puntos cumpliendo su apuesta combinada (10 puntos por baza apostada más uno por cada baza extra). El primer equipo en alcanzar la puntuación objetivo (normalmente 500) gana la partida.',
         },
         nil: {
           question: '¿Qué es una apuesta Nil?',

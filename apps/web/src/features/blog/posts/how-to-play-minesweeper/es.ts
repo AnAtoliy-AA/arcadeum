@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-minesweeper',
   locale: 'es',
   title:
-    'Cómo jugar al Buscaminas online — reglas, lógica, estrategia de victoria',
+    'Cómo jugar al Buscaminas online - reglas, lógica, estrategia de victoria',
   excerpt:
     'Guía completa al Buscaminas: reglas de la cuadrícula, marcado, patrones de números, probabilidad y los hábitos que ayudan a limpiar cada mina sin adivinar.',
   publishedAt: '2026-06-05',
@@ -55,7 +55,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Patrón 1-2-1. Tres casillas seguidas 1-2-1. Las minas están en las exteriores — la central es segura.',
+        'Patrón 1-2-1. Tres casillas seguidas 1-2-1. Las minas están en las exteriores - la central es segura.',
         '1-1 en pared. Dos unos compartiendo casillas en el borde. La casilla fuera del área compartida es segura.',
         'Resta. Si un "3" tiene tres banderas, todas las demás adyacentes son seguras.',
         'Referencia cruzada. Dos números adyacentes compartiendo casillas ocultas reducen ubicaciones de minas.',
@@ -80,7 +80,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Empieza por los bordes — menos minas en promedio.',
+        'Empieza por los bordes - menos minas en promedio.',
         'Solo marca cuando tengas certeza.',
         'Usa chord-click para acelerar.',
         'Trabaja varios clústeres simultáneamente.',
@@ -89,14 +89,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/minesweeper',
-      text: 'Juega al Buscaminas online — gratis, en tu navegador',
+      text: 'Juega al Buscaminas online - gratis, en tu navegador',
       description:
         'Buscaminas clásico con varios tamaños y niveles de dificultad.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Resumen — cuatro hábitos que ganan',
+      text: 'Resumen - cuatro hábitos que ganan',
       id: 'tldr',
     },
     {
@@ -118,12 +118,12 @@ export const post: BlogPost = {
     steps: [
       {
         name: 'Aprende patrones',
-        text: 'Domina 1-2-1 y la resta — resuelven la mayoría de posiciones iniciales.',
+        text: 'Domina 1-2-1 y la resta - resuelven la mayoría de posiciones iniciales.',
         url: '#patterns',
       },
       {
         name: 'Empieza por bordes',
-        text: 'Haz clic cerca de los bordes — más información por clic.',
+        text: 'Haz clic cerca de los bordes - más información por clic.',
         url: '#strategy',
       },
       {

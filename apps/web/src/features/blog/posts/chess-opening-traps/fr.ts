@@ -5,7 +5,7 @@ export const post: BlogPost = {
   locale: 'fr',
   title: "10 pièges d'ouverture aux échecs que tout joueur doit connaître",
   excerpt:
-    "Mat du berger, piège de Légal, Foie Frit, Gambit Stafford — séquences complètes avec explications sur comment les tendre et comment s'en défendre.",
+    "Mat du berger, piège de Légal, Foie Frit, Gambit Stafford - séquences complètes avec explications sur comment les tendre et comment s'en défendre.",
   publishedAt: '2026-09-19',
   author: 'Équipe Arcadeum',
   tags: ['Échecs', 'Ouverture', 'Tactique', 'Pièges', 'Débutant'],
@@ -18,27 +18,27 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: '1. Mat du berger — le mat le plus rapide aux échecs',
+      text: '1. Mat du berger - le mat le plus rapide aux échecs',
       id: 'scholars-mate',
     },
     {
       type: 'paragraph',
-      text: 'Le Mat du berger est accompli au 4e coup en attaquant la case f7 — le point le plus faible dans la position initiale des noirs, défendu uniquement par le roi. Séquence : 1.e4 e5 2.Dh5 Cc6 3.Fc4 Cf6?? 4.D:f7#. Les blancs donnent mat au 4e coup. La défense est simple : 2...Cc6 contrecarre la menace de la dame ; après 3.Fc4 les noirs doivent jouer 3...g6!, attaquant la dame. Ne jouez jamais 3...Cf6?? — cette erreur a coûté la partie à des millions de débutants.',
+      text: 'Le Mat du berger est accompli au 4e coup en attaquant la case f7 - le point le plus faible dans la position initiale des noirs, défendu uniquement par le roi. Séquence : 1.e4 e5 2.Dh5 Cc6 3.Fc4 Cf6?? 4.D:f7#. Les blancs donnent mat au 4e coup. La défense est simple : 2...Cc6 contrecarre la menace de la dame ; après 3.Fc4 les noirs doivent jouer 3...g6!, attaquant la dame. Ne jouez jamais 3...Cf6?? - cette erreur a coûté la partie à des millions de débutants.',
     },
     {
       type: 'heading',
       level: 2,
-      text: '2. Piège de Légal — le faux sacrifice de dame',
+      text: '2. Piège de Légal - le faux sacrifice de dame',
       id: 'legal-trap',
     },
     {
       type: 'paragraph',
-      text: "L'un des pièges les plus anciens aux échecs, inventé vers 1750. Position : 1.e4 e5 2.Cf3 d6 3.Fc4 Fg4 4.Cc3 g6? 5.C:e5! — les blancs sacrifient la dame. Si les noirs prennent la dame : 5...F:d1? 6.F:f7+ Re7 7.Cd5#. Mat ! Le piège fonctionne parce que les noirs voient une dame gratuite et la prennent sans vérifier les conséquences.",
+      text: "L'un des pièges les plus anciens aux échecs, inventé vers 1750. Position : 1.e4 e5 2.Cf3 d6 3.Fc4 Fg4 4.Cc3 g6? 5.C:e5! - les blancs sacrifient la dame. Si les noirs prennent la dame : 5...F:d1? 6.F:f7+ Re7 7.Cd5#. Mat ! Le piège fonctionne parce que les noirs voient une dame gratuite et la prennent sans vérifier les conséquences.",
     },
     {
       type: 'heading',
       level: 2,
-      text: "3. Foie Frit — l'attaque contre le roi",
+      text: "3. Foie Frit - l'attaque contre le roi",
       id: 'fried-liver',
     },
     {
@@ -63,7 +63,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/chess',
-      text: 'Pratiquez les pièges dans des parties réelles — jouez aux Échecs sur Arcadeum',
+      text: 'Pratiquez les pièges dans des parties réelles - jouez aux Échecs sur Arcadeum',
       description: 'Échecs en ligne avec analyse de parties après le jeu.',
     },
   ],
@@ -71,12 +71,12 @@ export const post: BlogPost = {
     {
       question: 'Quel est le piège le plus rapide aux échecs ?',
       answer:
-        "Le Mat du berger — mat au 4e coup avec les blancs. Cependant, contre un adversaire informé, il ne fonctionne pas : le simple 2...Cc6 ou 3...g6 neutralise l'attaque.",
+        "Le Mat du berger - mat au 4e coup avec les blancs. Cependant, contre un adversaire informé, il ne fonctionne pas : le simple 2...Cc6 ou 3...g6 neutralise l'attaque.",
     },
     {
       question: 'Vaut-il la peine de jouer des gambits au début ?',
       answer:
-        "Au niveau amateur, oui — les gambits donnent l'initiative et un jeu actif. À haut niveau, l'adversaire doit accepter le gambit correctement et égaliser. Étudiez la réfutation de vos gambits pour savoir ce qu'il faut craindre.",
+        "Au niveau amateur, oui - les gambits donnent l'initiative et un jeu actif. À haut niveau, l'adversaire doit accepter le gambit correctement et égaliser. Étudiez la réfutation de vos gambits pour savoir ce qu'il faut craindre.",
     },
   ],
 };

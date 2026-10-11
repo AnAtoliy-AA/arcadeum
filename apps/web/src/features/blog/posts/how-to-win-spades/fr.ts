@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-win-spades',
   locale: 'fr',
-  title: 'Comment gagner au Spades — Enchères, Nils, Sacs et Jeu en Équipe',
+  title: 'Comment gagner au Spades - Enchères, Nils, Sacs et Jeu en Équipe',
   excerpt:
     'Au-delà des bases : comment lire votre main, enchérir avec précision, exécuter des enchères nulles, éviter les pénalités de sacs et signaler à votre partenaire.',
   publishedAt: '2026-09-17',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Au Spades, la vraie compétence réside dans les enchères — avant qu'une carte ne soit jouée. Une équipe qui enchérit avec précision, évite l'accumulation de sacs et exécute des nils à haut risque, battra une équipe qui joue bien les cartes mais enchérit négligemment, presque à chaque fois.",
+      text: "Au Spades, la vraie compétence réside dans les enchères - avant qu'une carte ne soit jouée. Une équipe qui enchérit avec précision, évite l'accumulation de sacs et exécute des nils à haut risque, battra une équipe qui joue bien les cartes mais enchérit négligemment, presque à chaque fois.",
     },
     {
       type: 'heading',
@@ -28,36 +28,36 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Les sacs — la mort lente au Spades',
+      text: 'Les sacs - la mort lente au Spades',
       id: 'sandbagging',
     },
     {
       type: 'paragraph',
-      text: 'Chaque levée prise au-delà de votre enchère est un sac. Dix sacs coûtent 100 points. La technique du "canard" : quand vous avez déjà rempli votre contrat, perdez délibérément des levées que vous pourriez gagner. Principe : enchérissez avec précision, pas de façon conservatrice — les enchères basses créent plus de sacs que les enchères audacieuses.',
+      text: 'Chaque levée prise au-delà de votre enchère est un sac. Dix sacs coûtent 100 points. La technique du "canard" : quand vous avez déjà rempli votre contrat, perdez délibérément des levées que vous pourriez gagner. Principe : enchérissez avec précision, pas de façon conservatrice - les enchères basses créent plus de sacs que les enchères audacieuses.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Enchères nulles — risque maximum, récompense maximum',
+      text: 'Enchères nulles - risque maximum, récompense maximum',
       id: 'nil-bids',
     },
     {
       type: 'paragraph',
-      text: "Une enchère nulle signifie que vous prévoyez de gagner zéro levée. Succès : +100 points ; échec : -100 points. Quand aller nil : votre main n'a pas de cartes hautes dans aucune couleur — pas d'as, pas de roi.",
+      text: "Une enchère nulle signifie que vous prévoyez de gagner zéro levée. Succès : +100 points ; échec : -100 points. Quand aller nil : votre main n'a pas de cartes hautes dans aucune couleur - pas d'as, pas de roi.",
     },
     {
       type: 'list',
       items: [
         "N'allez jamais nil avec un as ou un roi en main.",
         'Faites le "canard" (perdez des levées délibérément) quand votre contrat est rempli.',
-        'Surveillez le compte de sacs constamment — 7 sacs est déjà une zone dangereuse.',
+        'Surveillez le compte de sacs constamment - 7 sacs est déjà une zone dangereuse.',
         'En fin de partie : si les adversaires sont proches de 100, enchérissez haut pour couler leur contrat.',
       ],
     },
     {
       type: 'cta',
       href: '/games/spades',
-      text: 'Appliquez ces stratégies — jouez au Spades sur Arcadeum',
+      text: 'Appliquez ces stratégies - jouez au Spades sur Arcadeum',
       description:
         'Spades à quatre avec comptage des sacs en direct et résumé post-partie.',
     },

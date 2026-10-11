@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-solitaire',
   locale: 'en',
-  title: 'How to Play Solitaire (Klondike) Online — Rules, Strategy, Win Tips',
+  title: 'How to Play Solitaire (Klondike) Online - Rules, Strategy, Win Tips',
   excerpt:
     'A complete guide to Klondike Solitaire: layout, allowed moves, foundation strategy, and the habits that turn unwinnable deals into wins.',
   publishedAt: '2026-07-28',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Klondike Solitaire is the world's most played patience game — a single-player card challenge where you sort 52 cards into four foundation piles by suit, ascending from Ace to King. The rules are easy to learn, but the strategy is what separates a casual player from someone who wins consistently. This guide covers the layout, allowed moves, and the thinking habits that raise your win rate.",
+      text: "Klondike Solitaire is the world's most played patience game - a single-player card challenge where you sort 52 cards into four foundation piles by suit, ascending from Ace to King. The rules are easy to learn, but the strategy is what separates a casual player from someone who wins consistently. This guide covers the layout, allowed moves, and the thinking habits that raise your win rate.",
     },
     {
       type: 'heading',
@@ -51,21 +51,21 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'A large percentage of Klondike deals are unwinnable — estimates range from 20% to 40% winnable depending on draw mode. Skilled play meaningfully raises your win rate above a random player, but recognizing when a deal is dead and restarting quickly is also part of efficient play.',
+      text: 'A large percentage of Klondike deals are unwinnable - estimates range from 20% to 40% winnable depending on draw mode. Skilled play meaningfully raises your win rate above a random player, but recognizing when a deal is dead and restarting quickly is also part of efficient play.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Strategy — the habits that raise your win rate',
+      text: 'Strategy - the habits that raise your win rate',
       id: 'strategy',
     },
     {
       type: 'list',
       items: [
-        'Always prefer the move that reveals a face-down card. Every face-down card you flip is information — and often opens new moves.',
+        'Always prefer the move that reveals a face-down card. Every face-down card you flip is information - and often opens new moves.',
         'Work on the deepest pile first. The column with the most face-down cards is your bottleneck. Prioritise uncovering it.',
         "Don't rush cards to foundations. Aces and twos are almost always safe to send up. But holding mid-rank cards (like a 5 or 6) in the tableau can be useful as a buffer for building sequences. Ask: does this card still help in the tableau before sending it up?",
-        "Choose the right King. When you have an empty column, don't just grab any King — pick the one whose colour best balances your hidden cards. A red King over a column with mostly black face-down cards gives the best odds of making future moves.",
+        "Choose the right King. When you have an empty column, don't just grab any King - pick the one whose colour best balances your hidden cards. A red King over a column with mostly black face-down cards gives the best odds of making future moves.",
         'In draw-3, remember the cycle. The stock cycles through the same cards. If you know a useful card is three flips away, plan your tableau moves to coincide with that flip.',
       ],
     },
@@ -78,7 +78,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Making every available move reflexively. Not every move is good — sometimes the best play is to hold.',
+        'Making every available move reflexively. Not every move is good - sometimes the best play is to hold.',
         'Burying needed ranks under Kings. Before placing a King on an empty column, check whether the cards beneath it are needed elsewhere.',
         'Ignoring face-down cards. If you have a choice between two moves that both look equal, pick the one that reveals a hidden card.',
         'Giving up too early. Some deals look dead but have a narrow winning line. Try a few more moves before restarting.',
@@ -87,14 +87,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/solitaire',
-      text: 'Play Solitaire online — free, in your browser',
+      text: 'Play Solitaire online - free, in your browser',
       description:
         'Classic Klondike Solitaire with draw-1 and draw-3 modes. Track your win rate and beat your best time.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR - the four habits that win games',
       id: 'tldr',
     },
     {
@@ -102,7 +102,7 @@ export const post: BlogPost = {
       items: [
         'Always prefer the move that reveals a face-down card.',
         'Work on the deepest (longest) pile first.',
-        "Don't rush mid-rank cards to foundations — hold them as buffer.",
+        "Don't rush mid-rank cards to foundations - hold them as buffer.",
         'Choose Kings that balance your hidden cards, not the first available King.',
       ],
     },
@@ -116,7 +116,7 @@ export const post: BlogPost = {
     steps: [
       {
         name: 'Reveal face-down cards',
-        text: 'Every move should prioritise flipping a face-down card. Hidden cards are your biggest obstacle — reveal them first.',
+        text: 'Every move should prioritise flipping a face-down card. Hidden cards are your biggest obstacle - reveal them first.',
         url: '#strategy',
       },
       {

@@ -156,7 +156,7 @@ describe('GameChat', () => {
         type: 'action',
         senderId: 'p1',
         targetId: 'p2',
-        message: 'attacked H10 — MISS!',
+        message: 'attacked H10: MISS!',
       }),
       makeLog({
         id: 'ss',

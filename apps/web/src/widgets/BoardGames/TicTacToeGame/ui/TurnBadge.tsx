@@ -32,7 +32,7 @@ export function TurnBadge({
       const shooter = currentShooterId
         ? (resolveName?.(currentShooterId) ?? currentShooterId)
         : '';
-      return team ? `${team.name}${shooter ? ` — ${shooter}` : ''}` : shooter;
+      return team ? `${team.name}${shooter ? ` - ${shooter}` : ''}` : shooter;
     }
     const player = players.find((p) => p.playerId === currentEntryId);
     return (

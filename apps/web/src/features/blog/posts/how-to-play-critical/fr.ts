@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-critical',
   locale: 'fr',
   title:
-    'Comment jouer à Critical en ligne — règles, désamorcer bombes, stratégie',
+    'Comment jouer à Critical en ligne - règles, désamorcer bombes, stratégie',
   excerpt:
     "Guide complet : jeu de cartes où chaque pioche peut être la dernière. Apprenez désamorcer, cartes d'action et comptage de pioche.",
   publishedAt: '2026-08-04',
@@ -19,12 +19,12 @@ export const post: BlogPost = {
     { type: 'heading', level: 2, text: 'Préparation', id: 'setup' },
     {
       type: 'paragraph',
-      text: 'Chaque joueur reçoit une main (7 cartes). Le reste forme la pioche. Certaines cartes sont des bombes Critical — piocher une bombe vous élimine sans Désamorcer.',
+      text: 'Chaque joueur reçoit une main (7 cartes). Le reste forme la pioche. Certaines cartes sont des bombes Critical - piocher une bombe vous élimine sans Désamorcer.',
     },
     { type: 'heading', level: 2, text: 'Déroulement des tours', id: 'turns' },
     {
       type: 'paragraph',
-      text: 'À votre tour, jouez zéro ou plusieurs cartes action, puis DEVEZ piocher une carte. Jouer des cartes ne termine pas votre tour — tour terminé après pioche ou Passer.',
+      text: 'À votre tour, jouez zéro ou plusieurs cartes action, puis DEVEZ piocher une carte. Jouer des cartes ne termine pas votre tour - tour terminé après pioche ou Passer.',
     },
     { type: 'heading', level: 2, text: 'Types de cartes', id: 'cards' },
     {
@@ -67,7 +67,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/critical',
-      text: 'Jouez à Critical en ligne — gratuit',
+      text: 'Jouez à Critical en ligne - gratuit',
       description: "Ouvrez une salle, partagez le lien ou jouez contre l'IA.",
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

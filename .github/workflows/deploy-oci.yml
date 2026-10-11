@@ -17,9 +17,21 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to deploy'
+        description: 'Branch override (leave empty to use the branch selected in the Run workflow dropdown)'
+        required: false
+        default: ''
+      component:
+        description: 'Component to deploy (be = BE cluster + TG bot + reserve worker)'
+        type: choice
         required: true
-        default: 'main'
+        default: be
+        options:
+          - be
+          - tg-bot
+          - web
+          - task-bot
+          - shorts-factory
+          - all
 
 jobs:
   changes:
@@ -53,7 +65,10 @@ jobs:
   deploy-web:
     name: Deploy Web (Next.js)
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'web')) ||
+      (github.event_name == 'push' && needs.changes.outputs.web == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -73,7 +88,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then
@@ -108,7 +123,10 @@ jobs:
   deploy-tg-bot:
     name: Deploy TG Bot + Backend (pm2)
     needs: changes
-    if: needs.changes.outputs.be-or-tg == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'be' || inputs.component == 'tg-bot')) ||
+      (github.event_name == 'push' && needs.changes.outputs.be-or-tg == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -128,7 +146,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then
@@ -173,7 +191,10 @@ jobs:
   deploy-be-reserve:
     name: Deploy Reserve Backend (Worker)
     needs: changes
-    if: needs.changes.outputs.be-or-tg == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'be' || inputs.component == 'tg-bot')) ||
+      (github.event_name == 'push' && needs.changes.outputs.be-or-tg == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -193,7 +214,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then
@@ -252,7 +273,10 @@ jobs:
   deploy-task-bot:
     name: Deploy Task Bot
     needs: changes
-    if: needs.changes.outputs.task-bot == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'task-bot')) ||
+      (github.event_name == 'push' && needs.changes.outputs.task-bot == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -273,7 +297,7 @@ jobs:
 
             cd "$DEPLOY_DIR/bots/task-bot"
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git -C "$DEPLOY_DIR" fetch origin "$BRANCH"; then
@@ -302,7 +326,10 @@ jobs:
   deploy-shorts-factory:
     name: Deploy Shorts Factory
     needs: changes
-    if: needs.changes.outputs.shorts-factory == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'shorts-factory')) ||
+      (github.event_name == 'push' && needs.changes.outputs.shorts-factory == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to OCI via SSH
@@ -320,7 +347,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             echo "==> Pulling latest code (branch: $BRANCH)..."
             for attempt in 1 2 3; do

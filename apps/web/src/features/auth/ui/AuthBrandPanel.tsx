@@ -218,7 +218,7 @@ function FeatureBullet({ title, detail }: { title: string; detail: string }) {
           {title}
         </Typography>{' '}
         <Typography variant="body" uiSize="md" className="text-secondary">
-          — {detail}
+          - {detail}
         </Typography>
       </Typography>
     </div>

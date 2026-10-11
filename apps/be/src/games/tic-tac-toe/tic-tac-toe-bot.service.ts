@@ -47,7 +47,7 @@ export class TicTacToeBotService extends TicTacToeBot {
     );
     if (!hasAliveHuman && !isAiVsAiSession(session)) {
       this.logger.log(
-        `No alive humans in room ${session.roomId} — completing session`,
+        `No alive humans in room ${session.roomId}: completing session`,
       );
       await this.ticTacToeService.completeSession(session.id, session.roomId);
       return;

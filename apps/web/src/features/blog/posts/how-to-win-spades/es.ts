@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-win-spades',
   locale: 'es',
-  title: 'Cómo ganar en Spades — Licitaciones, Niles, Bolsas y Juego en Equipo',
+  title: 'Cómo ganar en Spades - Licitaciones, Niles, Bolsas y Juego en Equipo',
   excerpt:
     'Más allá de los fundamentos: cómo leer tu mano, licitar con precisión, ejecutar licitaciones nulas, evitar penalizaciones por bolsas y señalizar a tu pareja.',
   publishedAt: '2026-09-17',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'En Spades, la habilidad real reside en la licitación — antes de que se juegue una carta. Un equipo que licita con precisión, evita la acumulación de bolsas y ejecuta niles de alto riesgo, vencerá a un equipo que juega bien las cartas pero licita descuidadamente, casi siempre.',
+      text: 'En Spades, la habilidad real reside en la licitación - antes de que se juegue una carta. Un equipo que licita con precisión, evita la acumulación de bolsas y ejecuta niles de alto riesgo, vencerá a un equipo que juega bien las cartas pero licita descuidadamente, casi siempre.',
     },
     {
       type: 'heading',
@@ -23,12 +23,12 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Cada licitación comienza con una evaluación honesta de tus 13 cartas. No cuentes victorias — cuenta bazas que esperas tomar. As de Espadas = 1 baza garantizada. Rey de Espadas = ~0.85 bazas. Void en un palo = +0.5 bazas extra. Singletones y dobles = potencial de ruff.',
+      text: 'Cada licitación comienza con una evaluación honesta de tus 13 cartas. No cuentes victorias - cuenta bazas que esperas tomar. As de Espadas = 1 baza garantizada. Rey de Espadas = ~0.85 bazas. Void en un palo = +0.5 bazas extra. Singletones y dobles = potencial de ruff.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Bolsas — la muerte lenta en Spades',
+      text: 'Bolsas - la muerte lenta en Spades',
       id: 'sandbagging',
     },
     {
@@ -38,7 +38,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Licitaciones nulas — el riesgo máximo, la recompensa máxima',
+      text: 'Licitaciones nulas - el riesgo máximo, la recompensa máxima',
       id: 'nil-bids',
     },
     {
@@ -50,14 +50,14 @@ export const post: BlogPost = {
       items: [
         'Nunca vayas nulo con un as o rey en la mano: una carta alta arruina el nulo.',
         'Haz "pato" (pierde bazas deliberadamente) cuando ya cumpliste tu licitación.',
-        'Vigila el conteo de bolsas constantemente — 7 bolsas ya es zona de peligro.',
+        'Vigila el conteo de bolsas constantemente - 7 bolsas ya es zona de peligro.',
         'Al final del juego: si los oponentes están cerca de 100, licita alto intentando hundir su contrato.',
       ],
     },
     {
       type: 'cta',
       href: '/games/spades',
-      text: 'Aplica estas estrategias — juega Spades en Arcadeum',
+      text: 'Aplica estas estrategias - juega Spades en Arcadeum',
       description:
         'Spades para cuatro jugadores con conteo de bolsas en vivo y resumen post-partida.',
     },

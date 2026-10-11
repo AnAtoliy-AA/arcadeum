@@ -46,7 +46,7 @@ export async function generateMetadata({
   const pageUrl = `${appConfig.siteUrl}${routes.blogPost(slug)}`;
 
   // hreflang alternates for every locale that has a translation of this
-  // specific slug. Locales without a translation are not listed — sending
+  // specific slug. Locales without a translation are not listed: sending
   // Google to a fallback English page under e.g. `/ru/blog/...` would
   // confuse the language-clustering signal.
   const languages: Record<string, string> = {};
@@ -150,7 +150,7 @@ export default async function BlogPostRoute({ params }: PageProps) {
     ],
   });
 
-  // FAQPage schema removed — restricted to government/healthcare authority
+  // FAQPage schema removed: restricted to government/healthcare authority
   // sites only (Google, Aug 2023). Blog FAQ content remains visible on-page.
 
   const jsonLdNodes: Record<string, unknown>[] = [postJsonLd, breadcrumbJsonLd];

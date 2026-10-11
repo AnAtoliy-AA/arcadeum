@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-chess-endgames',
   locale: 'fr',
   title:
-    'Maîtrise de la finale aux échecs — Roi-pion, tours et positions de Lucena',
+    'Maîtrise de la finale aux échecs - Roi-pion, tours et positions de Lucena',
   excerpt:
     "La finale est là où les parties sont gagnées ou nulles. Maîtrisez l'opposition roi-pion, les positions de Philidor et Lucena, les règles d'activité des tours et la dame contre tour.",
   publishedAt: '2026-09-18',
@@ -19,7 +19,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Finales roi-pion — opposition et la case clé',
+      text: 'Finales roi-pion - opposition et la case clé',
       id: 'king-pawn',
     },
     {
@@ -29,27 +29,27 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 3,
-      text: 'Opposition — le concept décisif',
+      text: 'Opposition - le concept décisif',
       id: 'opposition',
     },
     {
       type: 'paragraph',
-      text: "Deux rois sont en opposition quand ils se font face avec exactement une case entre eux. Le joueur qui n'a PAS le trait a l'opposition. Exemple : Roi blanc en e5, Roi noir en e7, Pion blanc en e4, Blancs à jouer. Les blancs gagnent avec Rd6! prenant l'opposition sur la colonne d, forçant Rd8 ou Rf8, puis Re6 avec l'opposition — le pion passe.",
+      text: "Deux rois sont en opposition quand ils se font face avec exactement une case entre eux. Le joueur qui n'a PAS le trait a l'opposition. Exemple : Roi blanc en e5, Roi noir en e7, Pion blanc en e4, Blancs à jouer. Les blancs gagnent avec Rd6! prenant l'opposition sur la colonne d, forçant Rd8 ou Rf8, puis Re6 avec l'opposition - le pion passe.",
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Position de Philidor — la forteresse nulle',
+      text: 'Position de Philidor - la forteresse nulle',
       id: 'philidor',
     },
     {
       type: 'paragraph',
-      text: 'La position de Philidor est la technique défensive clé en T+P contre T. La tour défensive occupe la 6e rangée ("rangée Philidor"), coupant le roi attaquant. Quand le pion avance à la 6e rangée, la tour défensive tombe à la 1e rangée pour donner des échecs perpétuels par derrière. Clé : tour commence en e6, pion en e5. Quand les blancs jouent e6, Tour va en e1 — les échecs par derrière sont inarrêtables.',
+      text: 'La position de Philidor est la technique défensive clé en T+P contre T. La tour défensive occupe la 6e rangée ("rangée Philidor"), coupant le roi attaquant. Quand le pion avance à la 6e rangée, la tour défensive tombe à la 1e rangée pour donner des échecs perpétuels par derrière. Clé : tour commence en e6, pion en e5. Quand les blancs jouent e6, Tour va en e1 - les échecs par derrière sont inarrêtables.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Position de Lucena — technique gagnante',
+      text: 'Position de Lucena - technique gagnante',
       id: 'lucena',
     },
     {
@@ -60,15 +60,15 @@ export const post: BlogPost = {
       type: 'list',
       items: [
         'Activez votre roi immédiatement quand les pièces majeures disparaissent.',
-        'Comptez précisément les courses de pions — un coup de différence change victoire en nulle.',
+        'Comptez précisément les courses de pions - un coup de différence change victoire en nulle.',
         'La tour active bat la tour passive. Une tour en file ouverte crée des menaces.',
-        'Connaissez Philidor (nulle) et Lucena (victoire) — identifiez quelle position vous est la plus proche.',
+        'Connaissez Philidor (nulle) et Lucena (victoire) - identifiez quelle position vous est la plus proche.',
       ],
     },
     {
       type: 'cta',
       href: '/games/chess',
-      text: 'Pratiquez les finales dans des parties réelles — jouez aux Échecs sur Arcadeum',
+      text: 'Pratiquez les finales dans des parties réelles - jouez aux Échecs sur Arcadeum',
       description:
         'Revoyez la phase de finale dans votre analyse post-partie pour voir exactement où la position est devenue gagnée ou nulle.',
     },

@@ -130,7 +130,7 @@ export class ChessBotService extends ChessBot {
     const hasHuman = state.players.some((p) => !p.isBot);
     if (!hasHuman && !isAiVsAiSession(freshSession)) {
       this.logger.log(
-        `No humans in room ${freshSession.roomId} — completing session`,
+        `No humans in room ${freshSession.roomId}: completing session`,
       );
       await this.chessService.completeSession(
         freshSession.id,

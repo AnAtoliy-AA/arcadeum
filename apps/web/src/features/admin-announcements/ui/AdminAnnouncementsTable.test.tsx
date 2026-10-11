@@ -114,11 +114,11 @@ describe('AdminAnnouncementsTable', () => {
     expect(screen.getByText(/X{50,}…/)).toBeInTheDocument();
   });
 
-  it('falls back to em-dash when createdBy.displayName missing', () => {
+  it('falls back to hyphen when createdBy.displayName missing', () => {
     renderTable({
       items: [item({ createdBy: { id: 'u1', displayName: null } })],
     });
-    expect(screen.getByText('—')).toBeInTheDocument();
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 
   it('fires onEdit/onDelete with item', () => {
@@ -134,9 +134,7 @@ describe('AdminAnnouncementsTable', () => {
   it('renders infinite scroll trigger when items < total', () => {
     const onLoadMore = vi.fn();
     renderTable({ items: [item()], total: 100, onLoadMore });
-    expect(
-      screen.getByTestId('infinite-scroll-trigger'),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('infinite-scroll-trigger')).toBeInTheDocument();
     const loadMoreBtn = screen.getByTestId('infinite-scroll-load-more');
     fireEvent.click(loadMoreBtn);
     expect(onLoadMore).toHaveBeenCalled();
@@ -144,7 +142,9 @@ describe('AdminAnnouncementsTable', () => {
 
   it('renders all loaded status when items >= total', () => {
     renderTable({ items: [item()], total: 1 });
-    expect(screen.getByTestId('infinite-scroll-all-loaded')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('infinite-scroll-all-loaded'),
+    ).toBeInTheDocument();
     expect(screen.getByText('All 1 announcements loaded')).toBeInTheDocument();
   });
 });

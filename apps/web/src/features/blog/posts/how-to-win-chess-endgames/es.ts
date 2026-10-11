@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-win-chess-endgames',
   locale: 'es',
-  title: 'Dominio del final de ajedrez — Rey-peón, torres y posición de Lucena',
+  title: 'Dominio del final de ajedrez - Rey-peón, torres y posición de Lucena',
   excerpt:
     'El final es donde se ganan o se empatan las partidas. Aprende la oposición del rey-peón, las posiciones de Philidor y Lucena, las reglas de actividad de la torre y la dama contra torre.',
   publishedAt: '2026-09-18',
@@ -18,7 +18,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Finales de rey-peón — oposición y la casilla clave',
+      text: 'Finales de rey-peón - oposición y la casilla clave',
       id: 'king-pawn',
     },
     {
@@ -28,27 +28,27 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 3,
-      text: 'Oposición — el concepto decisivo',
+      text: 'Oposición - el concepto decisivo',
       id: 'opposition',
     },
     {
       type: 'paragraph',
-      text: 'Dos reyes están en oposición cuando se enfrentan con exactamente una casilla entre ellos. El jugador que NO tiene el turno tiene la oposición. Ejemplo: Rey blanco en e5, Rey negro en e7, Peón blanco en e4, Blancas mueven. Las blancas ganan con Rd6! tomando oposición en la columna d, forzando Rd8 o Rf8, luego Re6 con oposición tomada — el peón corona.',
+      text: 'Dos reyes están en oposición cuando se enfrentan con exactamente una casilla entre ellos. El jugador que NO tiene el turno tiene la oposición. Ejemplo: Rey blanco en e5, Rey negro en e7, Peón blanco en e4, Blancas mueven. Las blancas ganan con Rd6! tomando oposición en la columna d, forzando Rd8 o Rf8, luego Re6 con oposición tomada - el peón corona.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Posición de Philidor — la fortaleza de tablas',
+      text: 'Posición de Philidor - la fortaleza de tablas',
       id: 'philidor',
     },
     {
       type: 'paragraph',
-      text: 'La posición de Philidor es la técnica defensiva clave en T+P contra T. La torre defensiva ocupa la 6ª fila ("rango Philidor"), cortando al rey atacante. Cuando el peón avanza a la 6ª fila, la torre defensiva cae a la 1ª fila para dar jaques perpetuos desde atrás. Clave: torre comienza en e6, peón en e5. Cuando las blancas juegan e6, Torre va a e1 — los jaques desde atrás son imparables.',
+      text: 'La posición de Philidor es la técnica defensiva clave en T+P contra T. La torre defensiva ocupa la 6ª fila ("rango Philidor"), cortando al rey atacante. Cuando el peón avanza a la 6ª fila, la torre defensiva cae a la 1ª fila para dar jaques perpetuos desde atrás. Clave: torre comienza en e6, peón en e5. Cuando las blancas juegan e6, Torre va a e1 - los jaques desde atrás son imparables.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Posición de Lucena — técnica ganadora',
+      text: 'Posición de Lucena - técnica ganadora',
       id: 'lucena',
     },
     {
@@ -59,7 +59,7 @@ export const post: BlogPost = {
       type: 'list',
       items: [
         'Activa tu rey inmediatamente cuando se simplifique la posición.',
-        'Cuenta con exactitud las carreras de peones — un movimiento de diferencia cambia victoria en tablas.',
+        'Cuenta con exactitud las carreras de peones - un movimiento de diferencia cambia victoria en tablas.',
         'La torre activa gana a la torre pasiva. Una torre en un archivo abierto crea amenazas.',
         'Conoce Philidor (tablas) y Lucena (victoria). Si llegas a T+P contra T, identifica cuál posición se acerca más.',
       ],
@@ -67,7 +67,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/chess',
-      text: 'Practica finales en partidas reales — juega Ajedrez en Arcadeum',
+      text: 'Practica finales en partidas reales - juega Ajedrez en Arcadeum',
       description:
         'Revisa la fase de final en tu análisis post-partida para ver exactamente dónde la posición se volvió ganada o tablas.',
     },

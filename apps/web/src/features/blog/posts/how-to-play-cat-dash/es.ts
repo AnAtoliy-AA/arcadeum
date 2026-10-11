@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-cat-dash',
   locale: 'es',
   title:
-    'Cómo jugar a Cat Dash online — carreras de dados, habilidades de gatos',
+    'Cómo jugar a Cat Dash online - carreras de dados, habilidades de gatos',
   excerpt:
     'Guía completa: juego de carreras con gatos, dados, habilidades, obstáculos y boosts estratégicos.',
   publishedAt: '2026-08-25',
@@ -50,7 +50,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/cat-dash',
-      text: 'Juega a Cat Dash online — gratis',
+      text: 'Juega a Cat Dash online - gratis',
       description: 'Carreras con amigos o IA.',
     },
     { type: 'heading', level: 2, text: 'Resumen', id: 'tldr' },

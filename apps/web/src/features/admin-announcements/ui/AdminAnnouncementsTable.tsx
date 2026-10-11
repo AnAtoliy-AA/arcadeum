@@ -184,7 +184,7 @@ export function AdminAnnouncementsTable({
                   )}
                 </div>
                 <span className="flex-1 text-xs text-[var(--colorTextSecondary,#a1a1aa)] truncate">
-                  {item.createdBy?.displayName ?? '—'}
+                  {item.createdBy?.displayName ?? '-'}
                 </span>
                 <div className="flex flex-row items-center justify-end flex-1 gap-1.5">
                   <Button

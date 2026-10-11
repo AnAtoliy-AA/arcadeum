@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-minesweeper',
   locale: 'en',
-  title: 'How to Play Minesweeper Online — Rules, Logic, Winning Strategy',
+  title: 'How to Play Minesweeper Online - Rules, Logic, Winning Strategy',
   excerpt:
     'A complete guide to Minesweeper: grid rules, flagging, number patterns, probability, and the habits that help you clear every mine without guessing.',
   publishedAt: '2026-06-05',
@@ -61,9 +61,32 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'board-diagram',
+      id: 'schema-minesweeper-121',
+      gameId: 'minesweeper',
+      title: 'Classic 1-2-1 Boundary Deduction',
+      caption:
+        'The central "2" requires both outer hidden squares (D1 and F1) to contain mines (🚩), proving the middle square (E1) is 100% safe to reveal (✓).',
+      grid: [
+        '...F?F...',
+        '...121...',
+        '...   ...',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+      ],
+      legend: [
+        { variant: 'flag', label: 'Deducted mine (flag)' },
+        { variant: 'safe', label: 'Guaranteed safe square' },
+      ],
+    },
+    {
       type: 'heading',
       level: 2,
-      text: 'When logic runs out — probability',
+      text: 'When logic runs out: probability',
       id: 'probability',
     },
     {
@@ -88,14 +111,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/minesweeper',
-      text: 'Play Minesweeper online — free, in your browser',
+      text: 'Play Minesweeper online - free, in your browser',
       description:
         'Classic Minesweeper with multiple grid sizes and difficulty levels. Test your logic skills.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR: the four habits that win games',
       id: 'tldr',
     },
     {
@@ -103,7 +126,7 @@ export const post: BlogPost = {
       items: [
         'Use number patterns (1-2-1, subtraction) to deduce mines without guessing.',
         'Start revealing from the edges where you get the most information.',
-        'Flag only confirmed mines — avoid over-flagging.',
+        'Flag only confirmed mines - avoid over-flagging.',
         'When guessing is unavoidable, pick the square with the lowest mine probability.',
       ],
     },

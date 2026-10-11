@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-critical',
   locale: 'es',
-  title: 'Cómo jugar a Critical online — reglas, desarmar bombas, estrategia',
+  title: 'Cómo jugar a Critical online - reglas, desarmar bombas, estrategia',
   excerpt:
     'Guía completa: juego de cartas estilo Exploding Kittens donde cada robo puede ser el último. Aprende desarmar, cartas de acción y conteo de mazo.',
   publishedAt: '2026-08-04',
@@ -18,7 +18,7 @@ export const post: BlogPost = {
     { type: 'heading', level: 2, text: 'Preparación', id: 'setup' },
     {
       type: 'paragraph',
-      text: 'Cada jugador recibe una mano inicial (normalmente 7 cartas). Las restantes forman el mazo. Algunas cartas son bombas Critical — al robarla, quedas eliminado a menos que juegues un Desarmar.',
+      text: 'Cada jugador recibe una mano inicial (normalmente 7 cartas). Las restantes forman el mazo. Algunas cartas son bombas Critical - al robarla, quedas eliminado a menos que juegues un Desarmar.',
     },
     {
       type: 'heading',
@@ -28,7 +28,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'En tu turno, puedes jugar cero o más cartas de acción, luego DEBES robar una carta del mazo. Jugar cartas no termina tu turno — termina solo después de robar o jugar un Saltar.',
+      text: 'En tu turno, puedes jugar cero o más cartas de acción, luego DEBES robar una carta del mazo. Jugar cartas no termina tu turno - termina solo después de robar o jugar un Saltar.',
     },
     { type: 'heading', level: 2, text: 'Tipos de cartas', id: 'cards' },
     {
@@ -71,10 +71,10 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/critical',
-      text: 'Juega a Critical online — gratis',
+      text: 'Juega a Critical online - gratis',
       description: 'Abre una sala, comparte el enlace o juega contra IA.',
     },
-    { type: 'heading', level: 2, text: 'Resumen — cuatro hábitos', id: 'tldr' },
+    { type: 'heading', level: 2, text: 'Resumen - cuatro hábitos', id: 'tldr' },
     {
       type: 'list',
       items: [

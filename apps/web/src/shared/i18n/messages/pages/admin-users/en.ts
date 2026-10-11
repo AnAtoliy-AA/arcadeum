@@ -1,6 +1,6 @@
 export const adminUsersEn = {
   title: 'Users',
-  search: { placeholder: 'Search by username, email, or display name' },
+  search: { placeholder: 'Search by username or display name' },
   filter: {
     role: { all: 'All roles', placeholder: 'Filter by role' },
     status: { all: 'All statuses', placeholder: 'Filter by status' },

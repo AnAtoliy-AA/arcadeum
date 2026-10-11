@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.65] - 2026-10-11
+
+### Fixed
+- coordinate header popovers and mobile live stats (ARC-000) (ARC-000)
+
+
 ## [1.30.64] - 2026-10-11
 
 ### Fixed

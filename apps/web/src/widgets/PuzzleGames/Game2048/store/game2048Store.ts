@@ -8,6 +8,10 @@ import type { Direction } from '../types';
 
 export const GAME_2048_ID = 'game_2048_v1';
 
+export const GAME_2048_MILESTONE_TARGETS = [
+  512, 1024, 2048, 4096, 8192,
+] as const;
+
 export interface FinishedGameInfo {
   won: boolean;
   score: number;
@@ -136,10 +140,9 @@ export const useGame2048Store = create<Game2048StoreState>()(
           }
 
           const maxTile = Math.max(0, ...next.grid);
-          const milestoneTargets = [512, 1024, 2048, 4096, 8192];
           let activeMilestone = current.activeMilestone;
           let reachedMilestones = current.reachedMilestones;
-          for (const m of milestoneTargets) {
+          for (const m of GAME_2048_MILESTONE_TARGETS) {
             if (maxTile >= m && !reachedMilestones.includes(m)) {
               reachedMilestones = [...reachedMilestones, m];
               activeMilestone = m;

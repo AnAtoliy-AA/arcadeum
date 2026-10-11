@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useEffect, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Typography } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -10,6 +10,7 @@ import {
 } from '@/shared/i18n/useTranslation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useNotificationSocket } from '@/shared/lib/socket';
+import { useLiveStatsStore } from '@/features/live-stats';
 import { useNotificationsStore } from './notifications.store';
 import type { NotificationDto } from './notifications.types';
 
@@ -52,6 +53,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
     (s) => s.onSocketUnreadCount,
   );
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (token) {
@@ -59,6 +61,41 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
       void fetchUnreadCount(token);
     }
   }, [token, initialize, fetchUnreadCount]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    return useLiveStatsStore.subscribe((state) => {
+      if (state.isPopoverOpen) {
+        setOpen(false);
+      }
+    });
+  }, []);
 
   const handleNewNotification = useCallback(
     (payload: unknown) => {
@@ -83,7 +120,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
   if (!token) return null;
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <Button
         variant="icon"
         size="md"
@@ -93,6 +130,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
           setOpen((o) => {
             const next = !o;
             if (next) {
+              useLiveStatsStore.getState().setPopoverOpen(false);
               void initialize(token);
               void loadInbox(token);
             }

@@ -29,7 +29,7 @@ RUN apk add --no-cache gcompat curl \
     && curl -L -o /tmp/sf19.tar.gz \
       "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz" \
     && tar -xzf /tmp/sf19.tar.gz -C /tmp/ \
-    && find /tmp -name "stockfish" -type f -executable -exec cp {} /usr/local/bin/stockfish \; \
+    && find /tmp -name "stockfish*" -type f -executable -exec cp {} /usr/local/bin/stockfish \; \
     && chmod +x /usr/local/bin/stockfish \
     && rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract /tmp/stockfish-* \
     && echo "uci" | stockfish 2>/dev/null | head -1

@@ -1,11 +1,85 @@
 'use client';
 
-import { Button } from '@arcadeum/ui';
-import { useTranslation } from '@/shared/i18n/useTranslation';
+import {
+  GameMilestoneToast,
+  type MilestoneTone,
+} from '@/features/games/ui/GameMilestoneToast';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 
 interface Game2048MilestoneToastProps {
   milestone: number | null;
   onDismiss: () => void;
+}
+
+interface MilestoneTier {
+  icon: string;
+  badgeKey: TranslationKey;
+  titleKey: TranslationKey;
+  tone: MilestoneTone;
+  sparkles: string[];
+}
+
+function getTierConfig(milestone: number): MilestoneTier {
+  if (milestone >= 8192) {
+    return {
+      icon: '🌌',
+      badgeKey: 'games.game_2048_v1.milestone.badge_8192' as TranslationKey,
+      titleKey: 'games.game_2048_v1.milestone.title_8192' as TranslationKey,
+      tone: 'cyan',
+      sparkles: ['✨', '🌌', '⚡', '🌟'],
+    };
+  }
+
+  if (milestone >= 4096) {
+    return {
+      icon: '💎',
+      badgeKey: 'games.game_2048_v1.milestone.badge_4096' as TranslationKey,
+      titleKey: 'games.game_2048_v1.milestone.title_4096' as TranslationKey,
+      tone: 'fuchsia',
+      sparkles: ['✨', '💎', '🌟'],
+    };
+  }
+
+  if (milestone >= 2048) {
+    return {
+      icon: '👑',
+      badgeKey: 'games.game_2048_v1.milestone.badge_2048' as TranslationKey,
+      titleKey: 'games.game_2048_v1.milestone.title_2048' as TranslationKey,
+      tone: 'yellow',
+      sparkles: ['✨', '👑', '🎉'],
+    };
+  }
+
+  if (milestone >= 1024) {
+    return {
+      icon: '🔥',
+      badgeKey: 'games.game_2048_v1.milestone.badge_1024' as TranslationKey,
+      titleKey: 'games.game_2048_v1.milestone.title_1024' as TranslationKey,
+      tone: 'orange',
+      sparkles: [],
+    };
+  }
+
+  if (milestone >= 512) {
+    return {
+      icon: '⚡',
+      badgeKey: 'games.game_2048_v1.milestone.badge_512' as TranslationKey,
+      titleKey: 'games.game_2048_v1.milestone.title_512' as TranslationKey,
+      tone: 'amber',
+      sparkles: [],
+    };
+  }
+
+  return {
+    icon: '⚡',
+    badgeKey: 'games.game_2048_v1.milestone.badge' as TranslationKey,
+    titleKey: 'games.game_2048_v1.milestone.title' as TranslationKey,
+    tone: 'amber',
+    sparkles: [],
+  };
 }
 
 export function Game2048MilestoneToast({
@@ -16,34 +90,23 @@ export function Game2048MilestoneToast({
 
   if (milestone === null) return null;
 
-  return (
-    <div
-      data-testid="game-2048-milestone-toast"
-      className="flex w-full items-center justify-between gap-3 rounded-2xl border-2 border-amber-400/60 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 p-3 shadow-xl backdrop-blur-xl ring-1 ring-amber-400/40 text-amber-100 animate-in fade-in slide-in-from-top-2 duration-300"
-    >
-      <div className="flex items-center gap-2.5 min-w-0">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-lg shadow-md shadow-amber-500/30">
-          🏆
-        </span>
-        <div className="flex flex-col min-w-0">
-          <span className="text-xs sm:text-sm font-extrabold text-amber-200 tracking-wide uppercase">
-            {t('games.game_2048_v1.milestone.title')}
-          </span>
-          <span className="text-xs text-amber-100/90 font-medium truncate">
-            {t('games.game_2048_v1.milestone.body', { tile: milestone })}
-          </span>
-        </div>
-      </div>
+  const tier = getTierConfig(milestone);
+  const title = t(tier.titleKey) || t('games.game_2048_v1.milestone.title');
+  const badge = t(tier.badgeKey) || t('games.game_2048_v1.milestone.badge');
 
-      <Button
-        size="sm"
-        variant="primary"
-        onClick={onDismiss}
-        data-testid="game-2048-milestone-dismiss"
-        className="shrink-0 h-8 px-3 text-xs font-bold bg-amber-400 hover:bg-amber-300 text-black border-none shadow-md shadow-amber-400/30"
-      >
-        {t('games.game_2048_v1.milestone.keepGoing')}
-      </Button>
-    </div>
+  return (
+    <GameMilestoneToast
+      isOpen
+      icon={tier.icon}
+      badge={badge}
+      title={title}
+      description={t('games.game_2048_v1.milestone.body', { tile: milestone })}
+      actionLabel={t('games.game_2048_v1.milestone.keepGoing')}
+      onDismiss={onDismiss}
+      tone={tier.tone}
+      sparkles={tier.sparkles}
+      dataTestId="game-2048-milestone-toast"
+      actionTestId="game-2048-milestone-dismiss"
+    />
   );
 }

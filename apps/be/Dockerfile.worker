@@ -31,7 +31,7 @@ RUN ARCH=$(uname -m) && \
       "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/$SF_ASSET" && \
     mkdir -p /tmp/sf19-extract && \
     tar -xzf /tmp/sf19.tar.gz -C /tmp/sf19-extract && \
-    find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} /usr/local/bin/stockfish \; && \
+    find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec cp {} /usr/local/bin/stockfish \; && \
     chmod +x /usr/local/bin/stockfish && \
     rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
 

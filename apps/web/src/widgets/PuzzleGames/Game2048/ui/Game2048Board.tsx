@@ -24,8 +24,10 @@ const TILE_STYLE_MAP: Record<number, string> = {
   128: 'bg-[#edcf72] text-[#f9f6f2] shadow-lg shadow-amber-500/30 ring-1 ring-amber-300/40 text-lg sm:text-xl',
   256: 'bg-[#edcc61] text-[#f9f6f2] shadow-lg shadow-amber-500/40 ring-2 ring-amber-300/50 text-lg sm:text-xl',
   512: 'bg-[#edc850] text-[#f9f6f2] shadow-xl shadow-amber-500/50 ring-2 ring-yellow-300/60 text-lg sm:text-xl',
-  1024: 'bg-[#edc53f] text-[#f9f6f2] shadow-xl shadow-amber-400/60 ring-2 ring-yellow-200/70 text-base sm:text-lg',
-  2048: 'bg-gradient-to-br from-[#edc22e] via-amber-400 to-yellow-300 text-white shadow-[0_0_24px_rgba(251,191,36,0.65)] ring-2 ring-yellow-200 animate-pulse text-base sm:text-lg',
+  1024: 'bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-500 text-white shadow-xl shadow-amber-500/50 ring-2 ring-amber-300/70 text-base sm:text-lg font-black',
+  2048: 'bg-gradient-to-br from-[#edc22e] via-amber-400 to-yellow-300 text-white shadow-[0_0_24px_rgba(251,191,36,0.65)] ring-2 ring-yellow-200 animate-pulse text-base sm:text-lg font-black',
+  4096: 'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.7)] ring-2 ring-purple-300 text-base sm:text-lg animate-pulse font-black',
+  8192: 'bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-400 text-white shadow-[0_0_24px_rgba(20,184,166,0.7)] ring-2 ring-cyan-200 text-sm sm:text-base animate-pulse font-black',
 };
 
 function getTileClasses(value: number): string {
@@ -176,7 +178,10 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
                       ? 'transition-all duration-150 active:scale-95 animate-in zoom-in-90'
                       : 'transition-colors duration-100',
                     getTileClasses(value),
-                    isFullscreen && 'md:text-4xl',
+                    isFullscreen &&
+                      (value >= 1024
+                        ? 'md:text-2xl lg:text-3xl'
+                        : 'md:text-4xl'),
                   )}
                 >
                   {value !== 0 && value}

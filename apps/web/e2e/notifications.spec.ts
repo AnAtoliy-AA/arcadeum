@@ -62,4 +62,83 @@ test.describe('Notifications smoke', () => {
     await expect(page.getByTestId('notification-popover')).toBeVisible();
     await expect(page.getByTestId('notification-row')).toBeVisible();
   });
+
+  test('notification popover disappears when clicking now online badge', async ({
+    page,
+  }) => {
+    if (getIsMobile(page)) return;
+    await page.route('**/notifications/unread-count', async (route) => {
+      await handleRoute(route, { count: 1 });
+    });
+    await page.route('**/notifications/preferences', async (route) => {
+      await handleRoute(route, {});
+    });
+    await page.route(/\/notifications(\?.*)?$/, async (route) => {
+      if (route.request().method() === 'GET') {
+        await handleRoute(route, [
+          {
+            id: 'notif-1',
+            category: 'daily_reward_ready',
+            titleKey: 'notifications.daily_reward_ready.title',
+            bodyKey: 'notifications.daily_reward_ready.body',
+            i18nParams: {},
+            url: '/games',
+            data: {},
+            read: false,
+            createdAt: new Date().toISOString(),
+          },
+        ]);
+        return;
+      }
+      await route.continue();
+    });
+
+    await mockSession(page);
+    await navigateTo(page, '/');
+
+    const bell = page.getByTestId('notification-bell');
+    await expect(bell).toBeVisible();
+    await bell.click();
+
+    const notifPopover = page.getByTestId('notification-popover');
+    await expect(notifPopover).toBeVisible();
+
+    const onlineBadge = page.getByTestId('header-live-pulse-badge');
+    await expect(onlineBadge).toBeVisible();
+    await onlineBadge.click();
+
+    await expect(notifPopover).toBeHidden();
+    const livePopover = page.getByTestId('live-activity-popover');
+    await expect(livePopover).toBeVisible();
+  });
+
+  test('notification popover disappears on outside click', async ({ page }) => {
+    if (getIsMobile(page)) return;
+    await page.route('**/notifications/unread-count', async (route) => {
+      await handleRoute(route, { count: 1 });
+    });
+    await page.route('**/notifications/preferences', async (route) => {
+      await handleRoute(route, {});
+    });
+    await page.route(/\/notifications(\?.*)?$/, async (route) => {
+      if (route.request().method() === 'GET') {
+        await handleRoute(route, []);
+        return;
+      }
+      await route.continue();
+    });
+
+    await mockSession(page);
+    await navigateTo(page, '/');
+
+    const bell = page.getByTestId('notification-bell');
+    await expect(bell).toBeVisible();
+    await bell.click();
+
+    const notifPopover = page.getByTestId('notification-popover');
+    await expect(notifPopover).toBeVisible();
+
+    await page.mouse.click(10, 10);
+    await expect(notifPopover).toBeHidden();
+  });
 });

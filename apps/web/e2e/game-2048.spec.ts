@@ -270,6 +270,7 @@ test.describe('2048 Puzzle Game', () => {
 
     const toast = page.getByTestId('game-2048-milestone-toast');
     await expect(toast).toBeVisible();
+    await expect(toast).toContainText('Almost There');
 
     const toastBox = await toast.boundingBox();
     expect(toastBox).not.toBeNull();
@@ -292,5 +293,52 @@ test.describe('2048 Puzzle Game', () => {
 
     const boxAfterDismiss = await board.boundingBox();
     expect(boxAfterDismiss?.y).toBe(boxBeforeSlide?.y);
+  });
+
+  test('displays translated milestone toast content in non-English locale', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/ru/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [256, 256, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 512,
+          best: 512,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 10,
+          startedAt: Date.now() - 5000,
+          finishedAt: null,
+          finished: null,
+          reachedMilestones: [],
+          activeMilestone: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    await page.keyboard.press('ArrowLeft');
+
+    const toast = page.getByTestId('game-2048-milestone-toast');
+    await expect(toast).toBeVisible();
+    await expect(toast).toContainText('Половина');
+    await expect(toast).toContainText('Половина пути к 2048!');
+
+    const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
+    await expect(dismissButton).toBeVisible();
+    await dismissButton.click();
+    await expect(toast).not.toBeVisible();
   });
 });

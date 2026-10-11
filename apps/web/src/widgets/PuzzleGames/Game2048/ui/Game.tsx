@@ -104,7 +104,7 @@ function Game2048Table() {
         },
         {
           id: 'max-tile',
-          label: 'Max Tile',
+          label: t('games.game_2048_v1.hud.maxTile'),
           value: maxTile,
         },
       ],

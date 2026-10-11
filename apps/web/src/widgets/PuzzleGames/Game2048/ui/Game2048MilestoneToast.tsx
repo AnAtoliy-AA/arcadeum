@@ -14,7 +14,7 @@ interface Game2048MilestoneToastProps {
 
 interface MilestoneTier {
   icon: string;
-  badge: string;
+  badgeKey: TranslationKey;
   titleKey: TranslationKey;
   cardClass: string;
   iconBgClass: string;
@@ -29,7 +29,7 @@ function getTierConfig(milestone: number): MilestoneTier {
   if (milestone >= 8192) {
     return {
       icon: '🌌',
-      badge: 'GODLIKE',
+      badgeKey: 'games.game_2048_v1.milestone.badge_8192' as TranslationKey,
       titleKey: 'games.game_2048_v1.milestone.title_8192' as TranslationKey,
       cardClass:
         'border-2 border-cyan-300 bg-neutral-950/95 shadow-[0_0_50px_rgba(6,182,212,0.65)] ring-2 ring-cyan-300/80 text-cyan-100',
@@ -48,7 +48,7 @@ function getTierConfig(milestone: number): MilestoneTier {
   if (milestone >= 4096) {
     return {
       icon: '💎',
-      badge: 'MYTHIC',
+      badgeKey: 'games.game_2048_v1.milestone.badge_4096' as TranslationKey,
       titleKey: 'games.game_2048_v1.milestone.title_4096' as TranslationKey,
       cardClass:
         'border-2 border-fuchsia-400 bg-neutral-950/95 shadow-[0_0_40px_rgba(217,70,239,0.55)] ring-2 ring-fuchsia-400/70 text-fuchsia-100',
@@ -66,7 +66,7 @@ function getTierConfig(milestone: number): MilestoneTier {
   if (milestone >= 2048) {
     return {
       icon: '👑',
-      badge: 'LEGENDARY',
+      badgeKey: 'games.game_2048_v1.milestone.badge_2048' as TranslationKey,
       titleKey: 'games.game_2048_v1.milestone.title_2048' as TranslationKey,
       cardClass:
         'border-2 border-yellow-300 bg-neutral-950/95 shadow-[0_0_35px_rgba(250,204,21,0.5)] ring-2 ring-yellow-400/70 text-yellow-100',
@@ -84,7 +84,7 @@ function getTierConfig(milestone: number): MilestoneTier {
   if (milestone >= 1024) {
     return {
       icon: '🔥',
-      badge: 'ALMOST THERE',
+      badgeKey: 'games.game_2048_v1.milestone.badge_1024' as TranslationKey,
       titleKey: 'games.game_2048_v1.milestone.title_1024' as TranslationKey,
       cardClass:
         'border-2 border-orange-400/80 bg-neutral-950/95 shadow-2xl shadow-orange-500/30 ring-1 ring-orange-400/50 text-orange-100',
@@ -97,10 +97,26 @@ function getTierConfig(milestone: number): MilestoneTier {
     };
   }
 
+  if (milestone >= 512) {
+    return {
+      icon: '⚡',
+      badgeKey: 'games.game_2048_v1.milestone.badge_512' as TranslationKey,
+      titleKey: 'games.game_2048_v1.milestone.title_512' as TranslationKey,
+      cardClass:
+        'border-2 border-amber-400/80 bg-neutral-950/95 shadow-2xl shadow-amber-500/25 ring-1 ring-amber-400/40 text-amber-100',
+      iconBgClass:
+        'bg-gradient-to-br from-amber-400 to-yellow-500 text-black shadow-md shadow-amber-500/30',
+      badgeClass: 'border-amber-400/40 bg-amber-500/15 text-amber-200',
+      btnClass:
+        'bg-amber-400 hover:bg-amber-300 text-black shadow-md shadow-amber-400/30',
+      sparkles: [],
+    };
+  }
+
   return {
     icon: '⚡',
-    badge: 'HALFWAY',
-    titleKey: 'games.game_2048_v1.milestone.title_512' as TranslationKey,
+    badgeKey: 'games.game_2048_v1.milestone.badge' as TranslationKey,
+    titleKey: 'games.game_2048_v1.milestone.title' as TranslationKey,
     cardClass:
       'border-2 border-amber-400/80 bg-neutral-950/95 shadow-2xl shadow-amber-500/25 ring-1 ring-amber-400/40 text-amber-100',
     iconBgClass:
@@ -122,6 +138,7 @@ export function Game2048MilestoneToast({
 
   const tier = getTierConfig(milestone);
   const title = t(tier.titleKey) || t('games.game_2048_v1.milestone.title');
+  const badge = t(tier.badgeKey) || t('games.game_2048_v1.milestone.badge');
 
   return (
     <div
@@ -184,7 +201,7 @@ export function Game2048MilestoneToast({
                 tier.badgeClass,
               )}
             >
-              {tier.badge}
+              {badge}
             </span>
             <span className="text-xs sm:text-sm font-extrabold tracking-wide truncate">
               {title}

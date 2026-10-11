@@ -20,7 +20,7 @@ export function Game2048MilestoneToast({
     <div
       data-testid="game-2048-milestone-toast"
       onAnimationEnd={onDismiss}
-      className="absolute top-2 left-1/2 -translate-x-1/2 z-30 flex w-[calc(100%-1rem)] max-w-sm items-center justify-between gap-2.5 rounded-2xl border-2 border-amber-400/80 bg-neutral-950/90 p-2.5 sm:p-3 shadow-2xl shadow-amber-500/20 backdrop-blur-xl ring-1 ring-amber-400/40 text-amber-100 animate-milestone-toast pointer-events-auto"
+      className="fixed top-20 sm:top-22 left-1/2 -translate-x-1/2 z-[120] flex w-[calc(100%-2rem)] max-w-sm items-center justify-between gap-2.5 rounded-2xl border-2 border-amber-400/80 bg-neutral-950/95 p-2.5 sm:p-3 shadow-2xl shadow-amber-500/25 backdrop-blur-2xl ring-1 ring-amber-400/40 text-amber-100 animate-milestone-toast pointer-events-auto"
     >
       <div className="flex items-center gap-2.5 min-w-0">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-lg shadow-md shadow-amber-500/30">

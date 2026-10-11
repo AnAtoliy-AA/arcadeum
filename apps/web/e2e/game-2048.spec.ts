@@ -271,8 +271,12 @@ test.describe('2048 Puzzle Game', () => {
     const toast = page.getByTestId('game-2048-milestone-toast');
     await expect(toast).toBeVisible();
 
+    const toastBox = await toast.boundingBox();
+    expect(toastBox).not.toBeNull();
+
     const boxWithToast = await board.boundingBox();
     expect(boxWithToast?.y).toBe(boxBeforeSlide?.y);
+    expect(toastBox!.y + toastBox!.height).toBeLessThan(boxWithToast!.y);
 
     const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
     await expect(dismissButton).toBeVisible();

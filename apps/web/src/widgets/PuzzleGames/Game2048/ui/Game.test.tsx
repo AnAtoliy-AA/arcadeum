@@ -220,7 +220,7 @@ describe('Game2048 UI', () => {
 
     const toast = screen.getByTestId('game-2048-milestone-toast');
     expect(toast).toBeInTheDocument();
-    expect(toast).toHaveClass('absolute');
+    expect(toast).toHaveClass('fixed');
     const dismissBtn = screen.getByTestId('game-2048-milestone-dismiss');
     fireEvent.click(dismissBtn);
     expect(useGame2048Store.getState().activeMilestone).toBeNull();

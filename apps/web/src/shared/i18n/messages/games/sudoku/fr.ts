@@ -50,6 +50,17 @@ export const frMessages = {
       flawlessBody: 'Résolution impeccable - pas une seule erreur.',
       playAgain: 'Rejouer',
     },
+    milestone: {
+      title: 'Étape franchie !',
+      title_50: 'À mi-chemin !',
+      title_75: 'Dernière ligne droite : 75% !',
+      badge: 'Étape',
+      badge_50: 'Mi-chemin',
+      badge_75: 'Dernière ligne droite',
+      body_50: 'Vous avez résolu 50% de la grille. Continuez !',
+      body_75: 'Il ne reste plus qu un quart à compléter !',
+      keepGoing: 'Continuer',
+    },
     rules: {
       objective:
         'Remplissez toute la grille 9×9 pour que chaque ligne, chaque colonne et chaque bloc 3×3 contiennent les chiffres de 1 à 9 exactement une fois.',

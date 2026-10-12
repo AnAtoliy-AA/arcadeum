@@ -19,6 +19,7 @@ import { useSolitaireStore } from '../store/solitaireStore';
 import type { MoveSource, MoveTarget } from '../types';
 import { SolitaireBoard } from './SolitaireBoard';
 import { SolitaireHintCallout } from './SolitaireHintCallout';
+import { SolitaireMilestoneToast } from './SolitaireMilestoneToast';
 
 const AUTO_PLACE_STEP_MS = 80;
 const AUTO_PLACE_MAX_STEPS = 5000;
@@ -50,6 +51,8 @@ function SolitaireTable() {
   const requestHint = useSolitaireStore((state) => state.requestHint);
   const clearHint = useSolitaireStore((state) => state.clearHint);
   const applyHint = useSolitaireStore((state) => state.applyHint);
+  const activeMilestone = useSolitaireStore((state) => state.activeMilestone);
+  const dismissMilestone = useSolitaireStore((state) => state.dismissMilestone);
   const canUndo = useSolitaireStore(
     (state) => state.history.length > 0 && state.finishedAt === null,
   );
@@ -256,6 +259,10 @@ function SolitaireTable() {
       }}
     >
       <div className="flex w-full flex-col gap-3">
+        <SolitaireMilestoneToast
+          milestone={activeMilestone}
+          onDismiss={dismissMilestone}
+        />
         <SolitaireHintCallout
           hint={activeHint}
           onApply={applyHint}

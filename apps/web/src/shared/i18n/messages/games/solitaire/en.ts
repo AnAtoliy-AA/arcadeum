@@ -42,6 +42,17 @@ export const enMessages = {
       lostBody: 'The board is stuck - shuffle up and try again!',
       playAgain: 'Play again',
     },
+    milestone: {
+      title: 'Milestone Reached!',
+      title_26: 'Halfway Home!',
+      title_39: 'Almost There: 39 Cards!',
+      badge: 'Milestone',
+      badge_26: 'Halfway',
+      badge_39: 'Almost There',
+      body_26: '26 cards placed on the foundations.',
+      body_39: 'Three quarters of the deck is home!',
+      keepGoing: 'Keep Going',
+    },
     rules: {
       objective:
         'Move all 52 cards onto the four foundations, building each suit in ascending order from Ace to King.',

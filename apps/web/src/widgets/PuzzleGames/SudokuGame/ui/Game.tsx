@@ -21,6 +21,7 @@ import { isGiven, type Difficulty } from '../types';
 import { SudokuBoard } from './SudokuBoard';
 import { SudokuHintCallout } from './SudokuHintCallout';
 import { SudokuKeypad } from './SudokuKeypad';
+import { SudokuMilestoneToast } from './SudokuMilestoneToast';
 
 const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
   { value: 'easy' },
@@ -66,6 +67,8 @@ function SudokuTable() {
   const activeDigit = useSudokuStore((state) => state.activeDigit);
   const toggleInputMode = useSudokuStore((state) => state.toggleInputMode);
   const setActiveDigit = useSudokuStore((state) => state.setActiveDigit);
+  const activeMilestone = useSudokuStore((state) => state.activeMilestone);
+  const dismissMilestone = useSudokuStore((state) => state.dismissMilestone);
 
   const [selected, setSelected] = useState<number | null>(null);
   const [notesMode, setNotesMode] = useState(false);
@@ -318,6 +321,10 @@ function SudokuTable() {
       }}
     >
       <div className="flex w-full flex-col items-center gap-2">
+        <SudokuMilestoneToast
+          milestone={activeMilestone}
+          onDismiss={dismissMilestone}
+        />
         <SudokuHintCallout
           hint={activeHint}
           onApply={applyHint}

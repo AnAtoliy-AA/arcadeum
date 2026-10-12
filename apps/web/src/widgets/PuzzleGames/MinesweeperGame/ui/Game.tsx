@@ -20,6 +20,7 @@ import { MinesweeperThemeProvider } from '../lib/MinesweeperThemeContext';
 import { useMinesweeperStore } from '../store/minesweeperStore';
 import type { Difficulty } from '../types';
 import { MinesweeperBoard } from './MinesweeperBoard';
+import { MinesweeperMilestoneToast } from './MinesweeperMilestoneToast';
 
 const DIFFICULTY_OPTIONS: Array<{ value: Difficulty }> = [
   { value: 'beginner' },
@@ -62,6 +63,10 @@ function MinesweeperTable() {
   );
   const newGame = useMinesweeperStore((state) => state.newGame);
   const undo = useMinesweeperStore((state) => state.undo);
+  const activeMilestone = useMinesweeperStore((state) => state.activeMilestone);
+  const dismissMilestone = useMinesweeperStore(
+    (state) => state.dismissMilestone,
+  );
   const canUndo = useMinesweeperStore(
     (state) =>
       state.history.length > 0 &&
@@ -373,13 +378,19 @@ function MinesweeperTable() {
         },
       }}
     >
-      <MinesweeperBoard
-        game={game}
-        flagMode={flagMode}
-        onReveal={handleReveal}
-        onFlag={handleFlag}
-        onPressingChange={setIsPressing}
-      />
+      <div className="relative flex w-full flex-col items-center">
+        <MinesweeperMilestoneToast
+          milestone={activeMilestone}
+          onDismiss={dismissMilestone}
+        />
+        <MinesweeperBoard
+          game={game}
+          flagMode={flagMode}
+          onReveal={handleReveal}
+          onFlag={handleFlag}
+          onPressingChange={setIsPressing}
+        />
+      </div>
     </SoloGameContainer>
   );
 }

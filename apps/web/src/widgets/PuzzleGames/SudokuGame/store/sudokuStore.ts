@@ -21,6 +21,30 @@ import type {
 } from '../types';
 
 export const SUDOKU_GAME_ID = 'sudoku_v1';
+export const SUDOKU_MILESTONE_TARGETS = [50, 75] as const;
+
+let milestoneTimer: ReturnType<typeof setTimeout> | null = null;
+
+function clearMilestoneTimer() {
+  if (milestoneTimer) {
+    clearTimeout(milestoneTimer);
+    milestoneTimer = null;
+  }
+}
+
+function calculateSudokuProgress(game: SudokuState): number {
+  let givensCount = 0;
+  let correctFilled = 0;
+  for (let i = 0; i < 81; i += 1) {
+    if (game.givens[i] !== 0) {
+      givensCount += 1;
+    } else if (game.cells[i] !== 0 && game.cells[i] === game.solution[i]) {
+      correctFilled += 1;
+    }
+  }
+  const totalToFill = 81 - givensCount;
+  return totalToFill > 0 ? (correctFilled / totalToFill) * 100 : 0;
+}
 
 export interface FinishedGameInfo {
   mistakes: number;
@@ -38,6 +62,9 @@ interface SudokuStoreState {
   highlightErrors: boolean;
   inputMode: SudokuInputMode;
   activeDigit: number | null;
+  activeMilestone: number | null;
+  reachedMilestones: number[];
+  dismissMilestone: () => void;
   setCell: (index: number, value: number) => void;
   note: (index: number, digit: number) => void;
   undo: () => void;
@@ -66,6 +93,8 @@ export const useSudokuStore = create<SudokuStoreState>()(
       highlightErrors: true,
       inputMode: 'cell_first',
       activeDigit: null,
+      activeMilestone: null,
+      reachedMilestones: [],
 
       setCell: (index, value) =>
         set((state) => {
@@ -89,10 +118,36 @@ export const useSudokuStore = create<SudokuStoreState>()(
               durationMs: info.durationMs,
             }),
           );
+
+          const progress = calculateSudokuProgress(game);
+          let activeMilestone = state.activeMilestone;
+          let reachedMilestones = state.reachedMilestones;
+          if (game.status !== 'won') {
+            for (const m of SUDOKU_MILESTONE_TARGETS) {
+              if (progress >= m && !reachedMilestones.includes(m)) {
+                reachedMilestones = [...reachedMilestones, m];
+                activeMilestone = m;
+              }
+            }
+          }
+
+          if (
+            activeMilestone !== null &&
+            activeMilestone !== state.activeMilestone
+          ) {
+            clearMilestoneTimer();
+            milestoneTimer = setTimeout(() => {
+              milestoneTimer = null;
+              useSudokuStore.getState().dismissMilestone();
+            }, 3500);
+          }
+
           return {
             history: [...state.history, state.game],
             game,
             activeHint: null,
+            activeMilestone,
+            reachedMilestones,
             ...(result ?? {}),
           };
         }),
@@ -110,11 +165,15 @@ export const useSudokuStore = create<SudokuStoreState>()(
 
       undo: () =>
         set((state) => {
+          clearMilestoneTimer();
           const update = undoReducer(state.history, state.finishedAt);
-          return update ? { ...update, activeHint: null } : state;
+          return update
+            ? { ...update, activeHint: null, activeMilestone: null }
+            : state;
         }),
 
-      changeDifficulty: (difficulty) =>
+      changeDifficulty: (difficulty) => {
+        clearMilestoneTimer();
         set({
           game: newGame(difficulty),
           startedAt: Date.now(),
@@ -123,9 +182,13 @@ export const useSudokuStore = create<SudokuStoreState>()(
           history: [],
           usedUndo: false,
           activeHint: null,
-        }),
+          activeMilestone: null,
+          reachedMilestones: [],
+        });
+      },
 
-      newGame: () =>
+      newGame: () => {
+        clearMilestoneTimer();
         set((state) => ({
           game: newGame(state.game.difficulty),
           startedAt: Date.now(),
@@ -134,7 +197,10 @@ export const useSudokuStore = create<SudokuStoreState>()(
           history: [],
           usedUndo: false,
           activeHint: null,
-        })),
+          activeMilestone: null,
+          reachedMilestones: [],
+        }));
+      },
 
       requestHint: () =>
         set((state) => ({
@@ -169,10 +235,36 @@ export const useSudokuStore = create<SudokuStoreState>()(
               durationMs: info.durationMs,
             }),
           );
+
+          const progress = calculateSudokuProgress(game);
+          let activeMilestone = state.activeMilestone;
+          let reachedMilestones = state.reachedMilestones;
+          if (game.status !== 'won') {
+            for (const m of SUDOKU_MILESTONE_TARGETS) {
+              if (progress >= m && !reachedMilestones.includes(m)) {
+                reachedMilestones = [...reachedMilestones, m];
+                activeMilestone = m;
+              }
+            }
+          }
+
+          if (
+            activeMilestone !== null &&
+            activeMilestone !== state.activeMilestone
+          ) {
+            clearMilestoneTimer();
+            milestoneTimer = setTimeout(() => {
+              milestoneTimer = null;
+              useSudokuStore.getState().dismissMilestone();
+            }, 3500);
+          }
+
           return {
             history: [...state.history, state.game],
             game,
             activeHint: null,
+            activeMilestone,
+            reachedMilestones,
             ...(result ?? {}),
           };
         }),
@@ -202,6 +294,11 @@ export const useSudokuStore = create<SudokuStoreState>()(
         })),
 
       setActiveDigit: (activeDigit) => set({ activeDigit }),
+
+      dismissMilestone: () => {
+        clearMilestoneTimer();
+        set({ activeMilestone: null });
+      },
     }),
     {
       name: 'arcadeum_sudoku_game_v1',
@@ -213,6 +310,7 @@ export const useSudokuStore = create<SudokuStoreState>()(
         finished: state.finished,
         history: state.history,
         usedUndo: state.usedUndo,
+        reachedMilestones: state.reachedMilestones,
       }),
     },
   ),

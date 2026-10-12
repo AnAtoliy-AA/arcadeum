@@ -42,6 +42,17 @@ export const esMessages = {
         'Ahí había una mina. Estudia los números y vuelve a intentarlo.',
       playAgain: 'Jugar de nuevo',
     },
+    milestone: {
+      title: '¡Hito alcanzado!',
+      title_50: '¡50% despejado!',
+      title_80: '¡Zona de peligro: 80% seguro!',
+      badge: 'Hito',
+      badge_50: 'Mitad',
+      badge_80: 'Zona de peligro',
+      body_50: 'La mitad del campo minado está despejada con éxito.',
+      body_80: '¡Solo queda el 20% de casillas seguras. Cuidado!',
+      keepGoing: 'Continuar',
+    },
     rules: {
       objective:
         'Revela todas las casillas que no escondan una mina. Descubre todas las casillas seguras para ganar.',

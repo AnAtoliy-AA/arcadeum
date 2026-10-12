@@ -51,6 +51,17 @@ export const esMessages = {
       flawlessBody: 'Resolución impecable - ni un solo error.',
       playAgain: 'Jugar de nuevo',
     },
+    milestone: {
+      title: '¡Hito alcanzado!',
+      title_50: '¡Mitad resuelta!',
+      title_75: '¡Recta final: 75%!',
+      badge: 'Hito',
+      badge_50: 'Mitad',
+      badge_75: 'Recta final',
+      body_50: 'Has resuelto el 50% del sudoku. ¡Continúa!',
+      body_75: '¡Solo queda un cuarto por resolver!',
+      keepGoing: 'Continuar',
+    },
     rules: {
       objective:
         'Rellena toda la cuadrícula 9×9 para que cada fila, cada columna y cada caja 3×3 contengan los dígitos del 1 al 9 exactamente una vez.',

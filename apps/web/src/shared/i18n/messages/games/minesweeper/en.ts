@@ -40,6 +40,17 @@ export const enMessages = {
       lostBody: 'That one was a mine. Study the numbers and try again.',
       playAgain: 'Play again',
     },
+    milestone: {
+      title: 'Milestone Reached!',
+      title_50: '50% Cleared!',
+      title_80: 'Danger Zone: 80% Safe!',
+      badge: 'Milestone',
+      badge_50: 'Halfway',
+      badge_80: 'Danger Zone',
+      body_50: 'Half of the minefield is safely uncovered.',
+      body_80: 'Only 20% of safe cells remain. Watch your step!',
+      keepGoing: 'Keep Going',
+    },
     rules: {
       objective:
         'Reveal every square that does not hide a mine. Uncover all safe cells to win.',

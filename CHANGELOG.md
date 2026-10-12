@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.67] - 2026-10-12
+
+### Added
+- add milestone celebration popups to Sudoku, Solitaire, and Minesweeper (ARC-000)
+
+### Fixed
+- stabilize solo milestones e2e tests for sudoku and solitaire (ARC-000)
+
+
 ## [1.30.66] - 2026-10-11
 
 ### Added

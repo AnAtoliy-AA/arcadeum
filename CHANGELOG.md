@@ -7,23 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.66] - 2026-10-11
+
+### Added
+
+- extract universal GameMilestoneToast component for all games (ARC-000)
+- add tiered milestone celebration flair for 512, 1024, 2048, 4096, and 8192 (ARC-000)
+- improve 2048 and solo games ui and fix popup positioning (ARC-000)
+
+### Fixed
+
+- allow dynamic milestone toast width without text clipping (ARC-000)
+- relabel 512 milestone to heating up and 1024 to halfway (ARC-000)
+- localize milestone toast badges and result stats (ARC-000)
+- position 2048 milestone toast in top-right on desktop and bottom on mobile (ARC-000)
+- position 2048 milestone toast at top of screen (ARC-000)
+
+### Refactored
+
+- export GAME_2048_MILESTONE_TARGETS constant in 2048 store (ARC-000)
+
 ## [1.30.65] - 2026-10-11
 
 ### Fixed
-- coordinate header popovers and mobile live stats (ARC-000) (ARC-000)
 
+- coordinate header popovers and mobile live stats (ARC-000) (ARC-000)
 
 ## [1.30.64] - 2026-10-11
 
 ### Fixed
-- prevent concurrent oci deploys and fix stockfish installation (ARC-000) (ARC-000)
 
+- prevent concurrent oci deploys and fix stockfish installation (ARC-000) (ARC-000)
 
 ## [1.30.63] - 2026-10-10
 
 ### Added
-- add interactive game field schemas and replace em dashes (ARC-981) (ARC-981)
 
+- add interactive game field schemas and replace em dashes (ARC-981) (ARC-981)
 
 ## [1.30.62] - 2026-10-10
 

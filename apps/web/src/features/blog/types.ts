@@ -37,9 +37,20 @@ export type BlogBlock =
       id: string;
       title: string;
       prompt: string;
-      gameId: 'chess' | 'tic-tac-toe' | 'checkers';
-      board: string[];
-      solutionIndex: number;
+      gameId:
+        | 'chess'
+        | 'tic-tac-toe'
+        | 'checkers'
+        | 'sea-battle'
+        | 'minesweeper'
+        | 'sudoku'
+        | 'go';
+      board?: string[];
+      grid?: string[];
+      colLabels?: string[];
+      rowLabels?: string[];
+      solutionIndex: number | number[];
+      solutionValue?: string;
       explanation: string;
       playHref?: string;
     }

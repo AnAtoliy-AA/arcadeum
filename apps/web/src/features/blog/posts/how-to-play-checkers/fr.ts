@@ -86,6 +86,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-checkers-jump-fr',
+      gameId: 'checkers',
+      title: 'Exercice pratique: exécuter la prise obligatoire',
+      prompt:
+        'Le pion blanc en c3 doit capturer le pion noir en d4. Trouvez la case d’atterrissage en e5 pour compléter le saut.',
+      grid: [
+        '........',
+        '........',
+        '........',
+        '....b...',
+        '...b....',
+        '..w.....',
+        '........',
+        '........',
+      ],
+      solutionIndex: 28,
+      solutionValue: 'w',
+      explanation:
+        'Atterrir en e5 saute par-dessus d4 et capture le pion adverse ! Aux Dames, les prises sont obligatoires.',
+      playHref: '/games/checkers',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Principes de finale',

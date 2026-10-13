@@ -52,6 +52,19 @@ export const post: BlogPost = {
       type: 'paragraph',
       text: "Une fourche crée deux menaces simultanées. L'adversaire ne peut bloquer qu'une. Avant chaque mouvement, cherchez les fourches - les vôtres et celles de l'adversaire.",
     },
+    {
+      type: 'interactive-puzzle',
+      id: 'fork-challenge-1-fr',
+      title: 'Trouvez la fourche imparable',
+      prompt:
+        'Vous jouez avec X. Trouvez la case gagnante qui crée deux menaces simultanées !',
+      gameId: 'tic-tac-toe',
+      board: ['X', '', '', '', 'O', '', '', '', 'X'],
+      solutionIndex: 2,
+      explanation:
+        'Jouer dans le coin supérieur droit (case 3) menace la ligne du haut et la colonne de droite. O ne peut bloquer qu’une ligne, assurant votre victoire.',
+      playHref: '/games/tic-tac-toe',
+    },
     { type: 'heading', level: 2, text: 'Priorités', id: 'priority' },
     {
       type: 'list',

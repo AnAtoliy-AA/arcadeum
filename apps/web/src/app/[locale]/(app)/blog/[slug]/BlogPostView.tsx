@@ -365,9 +365,14 @@ export function BlogPostView({
                         prompt={block.prompt}
                         gameId={block.gameId}
                         board={block.board}
+                        grid={block.grid}
+                        colLabels={block.colLabels}
+                        rowLabels={block.rowLabels}
                         solutionIndex={block.solutionIndex}
+                        solutionValue={block.solutionValue}
                         explanation={block.explanation}
                         playHref={block.playHref}
+                        locale={post.locale}
                       />
                     );
                   case 'board-diagram':

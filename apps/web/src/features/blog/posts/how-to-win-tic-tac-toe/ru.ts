@@ -67,6 +67,19 @@ export const post: BlogPost = {
       legend: [{ variant: 'highlight', label: 'Победная вилка' }],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'fork-challenge-1-ru',
+      title: 'Найдите неотразимую вилку',
+      prompt:
+        'Вы играете за X. Найдите победную клетку, создающую две угрозы выигрыша одновременно!',
+      gameId: 'tic-tac-toe',
+      board: ['X', '', '', '', 'O', '', '', '', 'X'],
+      solutionIndex: 2,
+      explanation:
+        'Ход в правый верхний угол (клетка 3) угрожает завершить как верхний ряд, так и правый столбец. O может закрыть только одну линию, гарантируя вашу победу!',
+      playHref: '/games/tic-tac-toe',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Чек-лист приоритетов',

@@ -194,6 +194,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-sea-battle-hunt-fr',
+      gameId: 'sea-battle',
+      title: 'Exercice pratique: achever le cuirassé endommagé',
+      prompt:
+        'Touche directe confirmée en C4 (H). Tirs dans l’eau en C3, B4 et C5. Trouvez la case voisine sur la ligne 4 pour retoucher.',
+      grid: [
+        '..........',
+        '..........',
+        '..M.......',
+        '.MH.......',
+        '..M.......',
+        '..........',
+      ],
+      colLabels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+      rowLabels: ['1', '2', '3', '4', '5', '6'],
+      solutionIndex: 33,
+      solutionValue: 'H',
+      explanation:
+        'Impact direct en D4 ! Les trois autres directions étant exclues, le navire s’étend obligatoirement vers l’est.',
+      playHref: '/games/sea-battle',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Jouer en ligne gratuitement avec un ami ou l’IA',

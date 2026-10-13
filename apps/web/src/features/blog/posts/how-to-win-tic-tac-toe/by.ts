@@ -42,6 +42,19 @@ export const post: BlogPost = {
       type: 'paragraph',
       text: 'Вілы ствараюць дзве пагрозы. Сапернік можа блакіраваць адну. Перад кожным ходам шукайце вілы.',
     },
+    {
+      type: 'interactive-puzzle',
+      id: 'fork-challenge-1-by',
+      title: 'Знайдзіце непераможныя вілы',
+      prompt:
+        'Вы гуляеце за X. Знайдзіце клетку, якая стварае дзве адначасовыя пагрозы выйгрышу!',
+      gameId: 'tic-tac-toe',
+      board: ['X', '', '', '', 'O', '', '', '', 'X'],
+      solutionIndex: 2,
+      explanation:
+        'Ход у правы верхні кут (клетка 3) пагражае завяршыць як верхні рад, так і правы слупок. O можа закрыць толькі адну лінію, што гарантуе вашу перамогу.',
+      playHref: '/games/tic-tac-toe',
+    },
     { type: 'heading', level: 2, text: 'Прыярытэты', id: 'priority' },
     {
       type: 'list',

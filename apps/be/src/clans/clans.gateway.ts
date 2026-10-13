@@ -129,4 +129,15 @@ export class ClansGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): void {
     this.server.to(targetUserId).emit('clan:invite', payload);
   }
+
+  emitClanWarUpdated(
+    initiatorClanId: string,
+    targetClanId: string,
+    war: unknown,
+  ): void {
+    if (this.server) {
+      this.server.to(`clan:${initiatorClanId}`).emit('clan:war-updated', war);
+      this.server.to(`clan:${targetClanId}`).emit('clan:war-updated', war);
+    }
+  }
 }

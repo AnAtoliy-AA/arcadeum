@@ -20,7 +20,7 @@ WORKDIR /app
 
 RUN apk add --no-cache dumb-init curl gcompat
 
-# Stockfish 19 — detect arch at build time
+# Stockfish 19 - detect arch at build time
 RUN ARCH=$(uname -m) && \
     case "$ARCH" in \
       x86_64)  SF_ASSET="stockfish-linux-x86-64-universal.tar.gz" ;; \

@@ -76,3 +76,4 @@ export * from './components/SegmentedControl/SegmentedControl';
 export * from './components/MultiSelectDropdown/MultiSelectDropdown';
 export * from './components/Checkerboard';
 export * from './components/BoardDiagram';
+export * from './components/PracticeDrillBoard';

@@ -84,6 +84,22 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-minesweeper-121-ru',
+      gameId: 'minesweeper',
+      title: 'Практическая задача: решение паттерна 1-2-1',
+      prompt:
+        'Мины установлены на D1 и F1. Какая центральная клетка гарантированно безопасна для клика?',
+      grid: ['...F.F...', '...121...', '.........'],
+      colLabels: ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И'],
+      rowLabels: ['1', '2', '3'],
+      solutionIndex: 4,
+      solutionValue: 'S',
+      explanation:
+        'Клетка Д1 (E1) на 100% безопасна! По правилу паттерна 1-2-1 обе мины лежат по краям, оставляя центр свободным.',
+      playHref: '/games/minesweeper',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Когда логики недостаточно',

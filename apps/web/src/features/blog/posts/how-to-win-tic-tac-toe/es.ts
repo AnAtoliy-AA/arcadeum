@@ -51,6 +51,19 @@ export const post: BlogPost = {
       text: 'Una bifurcación es una posición en la que creas dos amenazas simultáneas de victoria. El rival solo puede bloquear una de ellas, permitiéndote ganar en el siguiente turno. Puedes construir bifurcaciones ocupando esquinas opuestas o mediante disposiciones en forma de L. Antes de cada jugada, analiza el tablero para anticipar y bloquear las bifurcaciones del oponente.',
     },
     {
+      type: 'interactive-puzzle',
+      id: 'fork-challenge-1-es',
+      title: 'Encuentra la bifurcación ganadora',
+      prompt:
+        'Juegas con X. Encuentra la casilla ganadora que crea dos amenazas simultáneas de tres en línea.',
+      gameId: 'tic-tac-toe',
+      board: ['X', '', '', '', 'O', '', '', '', 'X'],
+      solutionIndex: 2,
+      explanation:
+        'Colocar en la esquina superior derecha (casilla 3) amenaza la fila superior y la columna derecha. O solo puede tapar una, asegurando tu victoria.',
+      playHref: '/games/tic-tac-toe',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Jerarquía de decisiones',

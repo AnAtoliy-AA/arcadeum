@@ -86,6 +86,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-checkers-jump-es',
+      gameId: 'checkers',
+      title: 'Ejercicio práctico: ejecutar la captura obligatoria',
+      prompt:
+        'La ficha blanca en c3 debe capturar a la negra en d4. Encuentra la casilla de aterrizaje en e5 para completar el salto.',
+      grid: [
+        '........',
+        '........',
+        '........',
+        '....b...',
+        '...b....',
+        '..w.....',
+        '........',
+        '........',
+      ],
+      solutionIndex: 28,
+      solutionValue: 'w',
+      explanation:
+        '¡Aterrizar en e5 salta por encima de d4 y captura la ficha enemiga! En Damas, las capturas son obligatorias.',
+      playHref: '/games/checkers',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Principios de final',

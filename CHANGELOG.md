@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.68] - 2026-10-14
+
+### Added
+- add interactive strategy guide practice drills across pillar guides (ARC-980) (ARC-980)
+
+
 ## [1.30.67] - 2026-10-12
 
 ### Added

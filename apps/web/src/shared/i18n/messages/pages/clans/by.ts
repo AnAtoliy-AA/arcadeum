@@ -96,4 +96,10 @@ export const clansBy = {
   status_completed: 'Скончаная',
   status_pending: 'Чакае',
   status_declined: 'Адхіленая',
+  rivalMatchHudTitle: 'Матч Кланвара',
+  firstToWins: 'Да {target} перамог',
+  yourClan: 'Ваш Клан',
+  liveBadge: 'LIVE',
+  leadBadge: 'Лідзіруе',
+  tiedBadge: 'Нічыя',
 };

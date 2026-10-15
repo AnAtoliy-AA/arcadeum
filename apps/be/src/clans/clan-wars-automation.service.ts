@@ -272,4 +272,57 @@ export class ClanWarsAutomationService {
     }
     return view;
   }
+
+  async getActiveWarForPlayers(
+    playerAId: string,
+    playerBId: string,
+    gameId?: string,
+  ): Promise<ClanWarView | null> {
+    if (
+      !Types.ObjectId.isValid(playerAId) ||
+      !Types.ObjectId.isValid(playerBId)
+    ) {
+      return null;
+    }
+    const aObj = new Types.ObjectId(playerAId);
+    const bObj = new Types.ObjectId(playerBId);
+
+    const [membershipA, membershipB] = await Promise.all([
+      this.clanMemberModel.findOne({ userId: aObj }).lean<ClanMember | null>(),
+      this.clanMemberModel.findOne({ userId: bObj }).lean<ClanMember | null>(),
+    ]);
+
+    if (!membershipA || !membershipB) {
+      return null;
+    }
+
+    const clanAId = membershipA.clanId;
+    const clanBId = membershipB.clanId;
+
+    if (clanAId.equals(clanBId)) {
+      return null;
+    }
+
+    const filter: Record<string, unknown> = {
+      $or: [
+        { initiatorClanId: clanAId, targetClanId: clanBId },
+        { initiatorClanId: clanBId, targetClanId: clanAId },
+      ],
+      status: 'active',
+    };
+
+    if (gameId && gameId !== 'all') {
+      filter.$and = [{ $or: [{ gameId: 'all' }, { gameId }] }];
+    }
+
+    const activeWar = await this.clanWarModel
+      .findOne(filter)
+      .lean<LeanClanWarDoc | null>();
+
+    if (!activeWar) {
+      return null;
+    }
+
+    return mapToClanWarView(activeWar);
+  }
 }

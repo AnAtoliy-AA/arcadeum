@@ -25,10 +25,30 @@ vi.mock('@/entities/session/model/useSessionTokens', () => ({
   useSessionTokens: () => ({ snapshot: { userId: 'user-1' } }),
 }));
 
+const mockUseActiveClanWarMatch = vi.fn(() => ({
+  activeWar: null,
+  isClanWarMatch: false,
+  myClan: null,
+}));
+
+vi.mock('@/features/clans', async () => {
+  const actual =
+    await vi.importActual<Record<string, unknown>>('@/features/clans');
+  return {
+    ...actual,
+    useActiveClanWarMatch: () => mockUseActiveClanWarMatch(),
+  };
+});
+
 describe('GamesControlPanel', () => {
   beforeEach(() => {
     act(() => {
       useGameRematchStore.getState().reset();
+    });
+    mockUseActiveClanWarMatch.mockReturnValue({
+      activeWar: null,
+      isClanWarMatch: false,
+      myClan: null,
     });
   });
 
@@ -45,5 +65,35 @@ describe('GamesControlPanel', () => {
   it('renders rematch button when isGameOver and onRematch are active', () => {
     render(<GamesControlPanel isGameOver={true} onRematch={() => {}} />);
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
+  });
+
+  it('renders ClanWarMatchHud when active clan war match is present', () => {
+    mockUseActiveClanWarMatch.mockReturnValue({
+      activeWar: {
+        id: 'war-panel-1',
+        initiatorClanId: 'clan-1',
+        initiatorClanName: 'Knights',
+        initiatorClanTag: 'KNG',
+        initiatorScore: 3,
+        targetClanId: 'clan-2',
+        targetClanName: 'Shadows',
+        targetClanTag: 'SHD',
+        targetClanScore: 2,
+        targetScore: 5,
+        gameId: 'all',
+        status: 'active',
+        winnerClanId: null,
+        expiresAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        matchLogs: [],
+      },
+      isClanWarMatch: true,
+      myClan: null,
+    });
+
+    render(<GamesControlPanel opponentUserId="opponent-user" gameId="chess" />);
+    expect(screen.getByTestId('clan-war-match-hud')).toBeInTheDocument();
+    expect(screen.getByText('[KNG]')).toBeInTheDocument();
+    expect(screen.getByText('[SHD]')).toBeInTheDocument();
   });
 });

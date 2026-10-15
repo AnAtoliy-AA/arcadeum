@@ -281,6 +281,7 @@ export function GamePageLayout(props: GamePageLayoutProps) {
           onRematch={onRematch ?? undefined}
           rematchLoading={rematchLoading}
           opponentUserId={opponentUserId}
+          gameId={room.gameId}
         />
 
         {!isAuthenticated && <GuestTermsNotice />}

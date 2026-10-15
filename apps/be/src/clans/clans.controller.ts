@@ -90,6 +90,19 @@ export class ClansController {
     return this.clanWarsService.getActiveWars(clanId);
   }
 
+  @Get('wars/active-match')
+  getActiveMatchWar(
+    @Query('playerA') playerA: string,
+    @Query('playerB') playerB: string,
+    @Query('gameId') gameId?: string,
+  ) {
+    return this.clanWarsAutomationService.getActiveWarForPlayers(
+      playerA,
+      playerB,
+      gameId,
+    );
+  }
+
   @Get('wars/:id')
   getWarById(@Param('id') id: string) {
     return this.clanWarsService.getWarById(id);

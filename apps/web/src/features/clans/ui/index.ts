@@ -10,3 +10,4 @@ export { ClanMvpBoard } from './ClanMvpBoard';
 export { ClanWarCard } from './ClanWarCard';
 export { DeclareWarModal } from './DeclareWarModal';
 export { ClanWarsHub } from './ClanWarsHub';
+export { ClanWarMatchHud } from './ClanWarMatchHud';

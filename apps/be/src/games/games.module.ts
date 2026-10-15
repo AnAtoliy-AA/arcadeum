@@ -142,6 +142,7 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
 import { GameRuleVisibilityModule } from '../admin/game-visibility/game-rule-visibility.module';
 import { XpModule } from '../xp/xp.module';
 import { FriendsModule } from '../friends/friends.module';
+import { ClansModule } from '../clans/clans.module';
 import { ActivityFeedModule } from './activity-feed/activity-feed.module';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
@@ -208,6 +209,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     NotificationsModule,
     XpModule,
     FriendsModule,
+    forwardRef(() => ClansModule),
     ActivityFeedModule,
     ChessStockfishModule,
     ChessPuzzlesModule,

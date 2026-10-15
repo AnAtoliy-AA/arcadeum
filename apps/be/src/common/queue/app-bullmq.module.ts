@@ -2,6 +2,7 @@ import { Module, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
 import Redis from 'ioredis';
+import { AppJobsProcessor } from './app-jobs.processor';
 
 @Module({
   imports: [
@@ -48,10 +49,16 @@ import Redis from 'ioredis';
         return { connection: client };
       },
     }),
-    BullModule.registerQueue({
-      name: 'app-jobs',
-    }),
+    BullModule.registerQueue(
+      {
+        name: 'app-jobs',
+      },
+      {
+        name: 'clan-wars',
+      },
+    ),
   ],
-  exports: [BullModule],
+  providers: [AppJobsProcessor],
+  exports: [BullModule, AppJobsProcessor],
 })
 export class AppBullMqModule {}

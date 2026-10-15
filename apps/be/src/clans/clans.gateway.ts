@@ -2,8 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -77,6 +80,26 @@ export class ClansGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.debug(
       `ClansGateway: socket ${client.id} disconnected (${userId})`,
     );
+  }
+
+  @SubscribeMessage('clans.join-room')
+  async handleJoinRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { clanId: string },
+  ): Promise<void> {
+    if (data?.clanId) {
+      await this.joinClanRoom(client, data.clanId);
+    }
+  }
+
+  @SubscribeMessage('clans.leave-room')
+  async handleLeaveRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { clanId: string },
+  ): Promise<void> {
+    if (data?.clanId) {
+      await this.leaveClanRoom(client, data.clanId);
+    }
   }
 
   async joinClanRoom(client: Socket, clanId: string): Promise<void> {

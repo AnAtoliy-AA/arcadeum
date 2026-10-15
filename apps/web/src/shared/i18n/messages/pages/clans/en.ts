@@ -93,4 +93,10 @@ export const clansEn = {
   status_completed: 'Resolved',
   status_pending: 'Pending',
   status_declined: 'Declined',
+  rivalMatchHudTitle: 'Clan War Match',
+  firstToWins: 'First to {target} wins',
+  yourClan: 'Your Clan',
+  liveBadge: 'LIVE',
+  leadBadge: 'Leading',
+  tiedBadge: 'Tied',
 };

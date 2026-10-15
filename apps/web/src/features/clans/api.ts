@@ -178,6 +178,20 @@ export const clansApi = {
     );
   },
 
+  getActiveMatchWar: async (
+    playerA: string,
+    playerB: string,
+    gameId?: string,
+    options?: ApiClientOptions,
+  ): Promise<import('./model/types').ClanWar | null> => {
+    const params = new URLSearchParams({ playerA, playerB });
+    if (gameId) params.set('gameId', gameId);
+    return apiClient.get<import('./model/types').ClanWar | null>(
+      `/clans/wars/active-match?${params.toString()}`,
+      options,
+    );
+  },
+
   getClanWarById: async (
     warId: string,
     options?: ApiClientOptions,

@@ -330,4 +330,70 @@ describe('ClanWarsAutomationService', () => {
       expect(mockClanWarModel.create).toHaveBeenCalled();
     });
   });
+
+  describe('getActiveWarForPlayers', () => {
+    it('returns null for invalid ObjectIds', async () => {
+      const res = await service.getActiveWarForPlayers('bad', 'worse');
+      expect(res).toBeNull();
+    });
+
+    it('returns null when players are not in rival clans', async () => {
+      const p1 = new Types.ObjectId().toString();
+      const p2 = new Types.ObjectId().toString();
+      mockClanMemberModel.findOne.mockReturnValue({
+        lean: jest.fn().mockResolvedValue(null),
+      });
+
+      const res = await service.getActiveWarForPlayers(p1, p2);
+      expect(res).toBeNull();
+    });
+
+    it('returns ClanWarView when active war exists between players clans', async () => {
+      const p1 = new Types.ObjectId();
+      const p2 = new Types.ObjectId();
+      const clanA = new Types.ObjectId();
+      const clanB = new Types.ObjectId();
+      const warId = new Types.ObjectId();
+
+      mockClanMemberModel.findOne
+        .mockReturnValueOnce({
+          lean: jest.fn().mockResolvedValue({ clanId: clanA }),
+        })
+        .mockReturnValueOnce({
+          lean: jest.fn().mockResolvedValue({ clanId: clanB }),
+        });
+
+      mockClanWarModel.findOne.mockReturnValue({
+        lean: jest.fn().mockResolvedValue({
+          _id: warId,
+          initiatorClanId: clanA,
+          initiatorClanName: 'Alpha',
+          initiatorClanTag: 'ALP',
+          initiatorScore: 2,
+          targetClanId: clanB,
+          targetClanName: 'Bravo',
+          targetClanTag: 'BRV',
+          targetClanScore: 1,
+          targetScore: 5,
+          gameId: 'all',
+          status: 'active',
+          winnerClanId: null,
+          expiresAt: new Date(),
+          createdAt: new Date(),
+          matchLogs: [],
+        }),
+      });
+
+      const res = await service.getActiveWarForPlayers(
+        p1.toString(),
+        p2.toString(),
+        'sea-battle',
+      );
+
+      expect(res).not.toBeNull();
+      expect(res?.id).toBe(warId.toString());
+      expect(res?.initiatorClanTag).toBe('ALP');
+      expect(res?.targetClanTag).toBe('BRV');
+    });
+  });
 });

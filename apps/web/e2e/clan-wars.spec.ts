@@ -3,8 +3,10 @@ import {
   test,
   navigateTo,
   mockSession,
+  mockGameSocket,
   handleRoute,
 } from './fixtures/test-utils';
+import { mockRoomInfo } from './fixtures/utils/room';
 
 test.describe('Clan Wars & Inter-Clan Tournaments', () => {
   test.beforeEach(async ({ page }) => {
@@ -274,5 +276,59 @@ test.describe('Clan Wars & Inter-Clan Tournaments', () => {
 
     const card = page.getByTestId('clan-war-card-war_alpha');
     await expect(card).toContainText('4');
+  });
+
+  test('displays rival match clan war HUD in active game room', async ({
+    page,
+  }) => {
+    const roomId = '507f191e810c19729de860ea';
+    const opponentId = '507f191e810c19729de860eb';
+
+    await page.route('**/clans/wars/active-match*', async (route) => {
+      await handleRoute(route, {
+        id: 'war_alpha',
+        initiatorClanId: 'clan_123',
+        initiatorClanName: 'Apex Titans',
+        initiatorClanTag: 'APEX',
+        initiatorScore: 3,
+        targetClanId: 'clan_456',
+        targetClanName: 'Shadow Phoenix',
+        targetClanTag: 'PHNX',
+        targetClanScore: 2,
+        targetScore: 5,
+        gameId: 'critical_v1',
+        status: 'active',
+        winnerClanId: null,
+        expiresAt: '2026-10-15T00:00:00.000Z',
+        createdAt: '2026-10-08T00:00:00.000Z',
+        matchLogs: [],
+      });
+    });
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'War Clash Room',
+        gameId: 'critical_v1',
+        status: 'in_progress',
+        hostId: 'test-user-id',
+        members: [
+          { id: 'test-user-id', displayName: 'ApexLeader', isHost: true },
+          { id: opponentId, displayName: 'PhoenixWarrior', isHost: false },
+        ],
+      },
+    });
+
+    await mockGameSocket(page, roomId, 'test-user-id');
+    await navigateTo(page, `/rooms/${roomId}`);
+
+    const warHud = page.getByTestId('clan-war-match-hud');
+    await expect(warHud).toBeVisible();
+    await expect(page.getByTestId('clan-war-hud-initiator-score')).toHaveText(
+      '3',
+    );
+    await expect(page.getByTestId('clan-war-hud-target-score')).toHaveText('2');
+    await expect(warHud).toContainText('[APEX]');
+    await expect(warHud).toContainText('[PHNX]');
   });
 });

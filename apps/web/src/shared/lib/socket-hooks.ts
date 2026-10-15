@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { maybeDecrypt, isSocketEncryptionEnabled } from './socket-encryption';
 import {
   getChatsSocket,
+  getClansSock,
   getFriendsSock,
   getGamesSocket,
   getLeaderboardsSocket,
@@ -85,6 +86,19 @@ export function useNotificationSocket(
 ): void {
   useEffect(() => {
     const s = getNotificationsSocket();
+    s.on(event, handler);
+    return () => {
+      s.off(event, handler);
+    };
+  }, [event, handler]);
+}
+
+export function useClansSocket(
+  event: string,
+  handler: SocketEventHandler,
+): void {
+  useEffect(() => {
+    const s = getClansSock();
     s.on(event, handler);
     return () => {
       s.off(event, handler);

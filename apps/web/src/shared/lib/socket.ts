@@ -492,4 +492,5 @@ export {
   useLeaderboardSocket,
   useFriendsSocket,
   useNotificationSocket,
+  useClansSocket,
 } from './socket-hooks';

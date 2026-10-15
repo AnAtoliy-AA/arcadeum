@@ -28,6 +28,7 @@ import { MoreOptionsMenu } from './MoreOptionsMenu';
 import { DesktopSecondaryControls } from './DesktopSecondaryControls';
 import { sendFriendRequestByUserId } from '@/shared/api/friends';
 import { getFriends } from '@/shared/api/friends';
+import { useActiveClanWarMatch, ClanWarMatchHud } from '@/features/clans';
 
 interface GamesControlPanelProps {
   roomId?: string;
@@ -48,6 +49,7 @@ interface GamesControlPanelProps {
   onRematch?: () => void;
   rematchLoading?: boolean;
   opponentUserId?: string;
+  gameId?: string;
 }
 
 export function GamesControlPanel(props: GamesControlPanelProps) {
@@ -71,6 +73,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     onRematch,
     rematchLoading,
     opponentUserId,
+    gameId,
   } = props;
 
   const { snapshot } = useSessionTokens();
@@ -80,6 +83,11 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   const [friendRequestSent, setFriendRequestSent] = useState(false);
   const [friendRequestLoading, setFriendRequestLoading] = useState(false);
   const [isAlreadyFriend, setIsAlreadyFriend] = useState(false);
+
+  const { activeWar, isClanWarMatch, myClan } = useActiveClanWarMatch(
+    opponentUserId,
+    gameId,
+  );
 
   const rematchStoreIsGameOver = useGameRematchStore((s) => s.isGameOver);
   const rematchStoreOnRematch = useGameRematchStore((s) => s.onRematch);
@@ -164,232 +172,239 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
   };
 
   return (
-    <div
-      className={cx(
-        'relative z-[10] flex flex-row items-center justify-between py-1.5 px-2 sm:py-2 sm:px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md gap-1.5 sm:gap-3',
-        className,
+    <div className="flex flex-col gap-2 w-full">
+      {isClanWarMatch && activeWar && (
+        <ClanWarMatchHud war={activeWar} myClan={myClan} />
       )}
-      data-testid="games-control-panel"
-    >
-      <div className="flex flex-row items-center gap-1 shrink-0">
-        {isSpectating && (
-          <div
-            className="flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-2 py-1 rounded-full items-center gap-1 mr-0.5"
-            aria-label="Spectating mode"
-            data-testid="spectating-indicator"
-          >
-            <span
-              role="status"
-              aria-live="polite"
-              data-testid="spectator-mode-pill"
-              className="flex items-center gap-1"
+      <div
+        className={cx(
+          'relative z-[10] flex flex-row items-center justify-between py-1.5 px-2 sm:py-2 sm:px-4 bg-[var(--glassBg)] rounded-2xl border border-[var(--glassBorderStrong)] backdrop-blur-md gap-1.5 sm:gap-3',
+          className,
+        )}
+        data-testid="games-control-panel"
+      >
+        <div className="flex flex-row items-center gap-1 shrink-0">
+          {isSpectating && (
+            <div
+              className="flex flex-row bg-[rgba(56,_189,_248,_0.15)] border-[rgba(56,_189,_248,_0.4)] border px-2 py-1 rounded-full items-center gap-1 mr-0.5"
+              aria-label="Spectating mode"
+              data-testid="spectating-indicator"
             >
-              <span className="text-[13px]">👁️</span>
-              <span className="text-[10px] font-extrabold text-[#0284c7] uppercase tracking-wider hidden sm:inline">
-                {t('games.table.controlPanel.spectating') || 'Spectating'}
+              <span
+                role="status"
+                aria-live="polite"
+                data-testid="spectator-mode-pill"
+                className="flex items-center gap-1"
+              >
+                <span className="text-[13px]">👁️</span>
+                <span className="text-[10px] font-extrabold text-[#0284c7] uppercase tracking-wider hidden sm:inline">
+                  {t('games.table.controlPanel.spectating') || 'Spectating'}
+                </span>
               </span>
-            </span>
-          </div>
-        )}
-
-        <Button
-          className="w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0"
-          variant="glass"
-          size="sm"
-          data-testid="fullscreen-button"
-          onClick={toggleFullscreen}
-          aria-label={
-            isFullscreen
-              ? t('games.table.controlPanel.exitFullscreen')
-              : t('games.table.controlPanel.enterFullscreen')
-          }
-          title={
-            isFullscreen
-              ? t('games.table.controlPanel.exitFullscreen')
-              : t('games.table.controlPanel.enterFullscreen')
-          }
-        >
-          {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
-        </Button>
-
-        <Button
-          className={cx(
-            'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
-            soundEnabled &&
-              '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+            </div>
           )}
-          variant="glass"
-          size="sm"
-          aria-pressed={soundEnabled}
-          onClick={() => setSoundEnabled(!soundEnabled)}
-          aria-label={t('settings.soundLabel')}
-          title={t('settings.soundLabel')}
-          data-testid="sound-toggle-button"
-        >
-          {soundEnabled ? (
-            <VolumeOnIcon size={14} />
-          ) : (
-            <VolumeOffIcon size={14} />
-          )}
-        </Button>
 
-        <Button
-          className={cx(
-            'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
-            isChatVisible &&
-              '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
-          )}
-          variant="glass"
-          size="sm"
-          onClick={handleToggleChat}
-          data-testid="toggle-chat-button"
-          aria-label={
-            isChatVisible
-              ? t('games.table.chat.hide')
-              : t('games.table.chat.show')
-          }
-          title={
-            isChatVisible
-              ? t('games.table.chat.hide')
-              : t('games.table.chat.show')
-          }
-        >
-          💬
-        </Button>
-      </div>
-
-      {showMoveControls && (
-        <MoveControls onMove={handleMove} onCenterView={handleCenterView} />
-      )}
-
-      <div className="flex flex-row items-center gap-1 sm:gap-2 ml-auto shrink-0">
-        {effectiveIsGameOver && effectiveOnRematch && (
           <Button
-            className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
-            variant="primary"
+            className="w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0"
+            variant="glass"
             size="sm"
-            onClick={effectiveOnRematch}
-            disabled={effectiveRematchLoading}
-            data-testid="rematch-button"
+            data-testid="fullscreen-button"
+            onClick={toggleFullscreen}
+            aria-label={
+              isFullscreen
+                ? t('games.table.controlPanel.exitFullscreen')
+                : t('games.table.controlPanel.enterFullscreen')
+            }
+            title={
+              isFullscreen
+                ? t('games.table.controlPanel.exitFullscreen')
+                : t('games.table.controlPanel.enterFullscreen')
+            }
           >
-            🔄
-            <span className="hidden sm:inline">
-              {' ' +
-                (effectiveRematchLoading
-                  ? t('games.table.rematch.loading' as TranslationKey) ||
-                    'Loading...'
-                  : t('games.table.rematch.button' as TranslationKey) ||
-                    'Play Again')}
-            </span>
+            {isFullscreen ? <MinimizeIcon /> : <MaximizeIcon />}
           </Button>
+
+          <Button
+            className={cx(
+              'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
+              soundEnabled &&
+                '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+            )}
+            variant="glass"
+            size="sm"
+            aria-pressed={soundEnabled}
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            aria-label={t('settings.soundLabel')}
+            title={t('settings.soundLabel')}
+            data-testid="sound-toggle-button"
+          >
+            {soundEnabled ? (
+              <VolumeOnIcon size={14} />
+            ) : (
+              <VolumeOffIcon size={14} />
+            )}
+          </Button>
+
+          <Button
+            className={cx(
+              'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
+              isChatVisible &&
+                '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
+            )}
+            variant="glass"
+            size="sm"
+            onClick={handleToggleChat}
+            data-testid="toggle-chat-button"
+            aria-label={
+              isChatVisible
+                ? t('games.table.chat.hide')
+                : t('games.table.chat.show')
+            }
+            title={
+              isChatVisible
+                ? t('games.table.chat.hide')
+                : t('games.table.chat.show')
+            }
+          >
+            💬
+          </Button>
+        </div>
+
+        {showMoveControls && (
+          <MoveControls onMove={handleMove} onCenterView={handleCenterView} />
         )}
 
-        {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
-
-        {opponentUserId &&
-          snapshot.userId &&
-          opponentUserId !== snapshot.userId &&
-          !isAlreadyFriend && (
+        <div className="flex flex-row items-center gap-1 sm:gap-2 ml-auto shrink-0">
+          {effectiveIsGameOver && effectiveOnRematch && (
             <Button
               className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
-              variant={friendRequestSent ? 'glass' : 'secondary'}
+              variant="primary"
               size="sm"
-              onClick={handleSendFriendRequest}
-              disabled={friendRequestLoading || friendRequestSent}
-              data-testid="add-friend-button"
+              onClick={effectiveOnRematch}
+              disabled={effectiveRematchLoading}
+              data-testid="rematch-button"
             >
-              {friendRequestSent ? '✓' : '👤+'}
+              🔄
               <span className="hidden sm:inline">
                 {' ' +
-                  (friendRequestSent
-                    ? t(
-                        'games.common.postGame.friendAdded' as TranslationKey,
-                      ) || 'Sent'
-                    : t('games.common.postGame.addFriend' as TranslationKey) ||
-                      'Add Friend')}
+                  (effectiveRematchLoading
+                    ? t('games.table.rematch.loading' as TranslationKey) ||
+                      'Loading...'
+                    : t('games.table.rematch.button' as TranslationKey) ||
+                      'Play Again')}
               </span>
             </Button>
           )}
 
-        <MoreOptionsMenu
-          musicEnabled={musicEnabled}
-          onToggleMusic={toggleMusic}
-          onShowRules={onShowRules}
-          onShowTutorial={onShowTutorial}
-        />
+          {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
 
-        <DesktopSecondaryControls
-          musicEnabled={musicEnabled}
-          onToggleMusic={toggleMusic}
-          onShowRules={onShowRules}
-          onShowTutorial={onShowTutorial}
-        />
+          {opponentUserId &&
+            snapshot.userId &&
+            opponentUserId !== snapshot.userId &&
+            !isAlreadyFriend && (
+              <Button
+                className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
+                variant={friendRequestSent ? 'glass' : 'secondary'}
+                size="sm"
+                onClick={handleSendFriendRequest}
+                disabled={friendRequestLoading || friendRequestSent}
+                data-testid="add-friend-button"
+              >
+                {friendRequestSent ? '✓' : '👤+'}
+                <span className="hidden sm:inline">
+                  {' ' +
+                    (friendRequestSent
+                      ? t(
+                          'games.common.postGame.friendAdded' as TranslationKey,
+                        ) || 'Sent'
+                      : t(
+                          'games.common.postGame.addFriend' as TranslationKey,
+                        ) || 'Add Friend')}
+                </span>
+              </Button>
+            )}
 
-        <Button
-          className="!px-2 sm:px-3"
-          variant="glass"
-          size="sm"
-          onClick={handleExitRoom}
-          aria-label={
-            t('games.table.controlPanel.exitRoom' as TranslationKey) || 'Exit'
-          }
-          title={
-            t('games.table.controlPanel.exitRoomTooltip' as TranslationKey) ||
-            'Go back to lobby but stay in the game'
-          }
-          data-testid="exit-room-button"
-        >
-          🏃
-          <span className="hidden sm:inline">
-            {' ' +
-              (t('games.table.controlPanel.exitRoom' as TranslationKey) ||
-                'Exit')}
-          </span>
-        </Button>
+          <MoreOptionsMenu
+            musicEnabled={musicEnabled}
+            onToggleMusic={toggleMusic}
+            onShowRules={onShowRules}
+            onShowTutorial={onShowTutorial}
+          />
 
-        {snapshot.userId && (
+          <DesktopSecondaryControls
+            musicEnabled={musicEnabled}
+            onToggleMusic={toggleMusic}
+            onShowRules={onShowRules}
+            onShowTutorial={onShowTutorial}
+          />
+
           <Button
             className="!px-2 sm:px-3"
-            variant="danger"
+            variant="glass"
             size="sm"
-            onClick={handleLeaveGame}
+            onClick={handleExitRoom}
             aria-label={
-              t('games.common.leaveRoom.button' as TranslationKey) ||
-              'Leave Room'
+              t('games.table.controlPanel.exitRoom' as TranslationKey) || 'Exit'
             }
             title={
-              t('games.table.controlPanel.leaveGameTooltip') ||
-              'Remove yourself from the game and return to lobby'
+              t('games.table.controlPanel.exitRoomTooltip' as TranslationKey) ||
+              'Go back to lobby but stay in the game'
             }
-            data-testid="leave-game-button"
+            data-testid="exit-room-button"
           >
-            🚪
+            🏃
             <span className="hidden sm:inline">
               {' ' +
-                (t('games.common.leaveRoom.button' as TranslationKey) ||
-                  'Leave')}
+                (t('games.table.controlPanel.exitRoom' as TranslationKey) ||
+                  'Exit')}
             </span>
           </Button>
-        )}
-      </div>
 
-      <ConfirmationModal
-        open={showLeaveConfirm}
-        onClose={() => setShowLeaveConfirm(false)}
-        onConfirm={handleConfirmLeave}
-        title={
-          t('games.common.leaveRoom.confirmTitle' as TranslationKey) ||
-          'Leave Room'
-        }
-        message={
-          t('games.common.leaveRoom.confirmMessage' as TranslationKey) ||
-          'Are you sure you want to leave this room?'
-        }
-        confirmLabel={
-          t('games.common.leaveRoom.confirmButton' as TranslationKey) || 'Leave'
-        }
-        cancelLabel={t('games.common.cancel' as TranslationKey) || 'Cancel'}
-      />
+          {snapshot.userId && (
+            <Button
+              className="!px-2 sm:px-3"
+              variant="danger"
+              size="sm"
+              onClick={handleLeaveGame}
+              aria-label={
+                t('games.common.leaveRoom.button' as TranslationKey) ||
+                'Leave Room'
+              }
+              title={
+                t('games.table.controlPanel.leaveGameTooltip') ||
+                'Remove yourself from the game and return to lobby'
+              }
+              data-testid="leave-game-button"
+            >
+              🚪
+              <span className="hidden sm:inline">
+                {' ' +
+                  (t('games.common.leaveRoom.button' as TranslationKey) ||
+                    'Leave')}
+              </span>
+            </Button>
+          )}
+        </div>
+
+        <ConfirmationModal
+          open={showLeaveConfirm}
+          onClose={() => setShowLeaveConfirm(false)}
+          onConfirm={handleConfirmLeave}
+          title={
+            t('games.common.leaveRoom.confirmTitle' as TranslationKey) ||
+            'Leave Room'
+          }
+          message={
+            t('games.common.leaveRoom.confirmMessage' as TranslationKey) ||
+            'Are you sure you want to leave this room?'
+          }
+          confirmLabel={
+            t('games.common.leaveRoom.confirmButton' as TranslationKey) ||
+            'Leave'
+          }
+          cancelLabel={t('games.common.cancel' as TranslationKey) || 'Cancel'}
+        />
+      </div>
     </div>
   );
 }

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.70] - 2026-10-15
+
+### Added
+- add real-time war updates and in-game rival match HUD (ARC-982) (ARC-982)
+
+
 ## [1.30.69] - 2026-10-15
 
 ### Added

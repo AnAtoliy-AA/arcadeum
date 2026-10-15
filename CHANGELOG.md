@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.69] - 2026-10-15
+
+### Added
+- add clan wars worker automation, matchmaking, and post-match resolution (ARC-981) (ARC-981)
+
+
 ## [1.30.68] - 2026-10-14
 
 ### Added

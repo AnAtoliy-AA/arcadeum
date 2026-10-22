@@ -87,7 +87,7 @@ export const TurnIndicator = memo(function TurnIndicator({
         <InGameAvatar
           playerId={onClockUserId}
           name={resolvedName}
-          size="icon"
+          size="sm"
           data-testid="turn-indicator-avatar"
         />
       ) : null}

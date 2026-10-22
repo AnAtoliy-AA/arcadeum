@@ -281,4 +281,16 @@ describe('PlayerAvatar', () => {
     );
     expect(screen.getByTestId('overlay')).toBeInTheDocument();
   });
+
+  it('falls back to initials when avatar image emits an error', () => {
+    render(<PlayerAvatar name="Jane Doe" avatarUrl="/invalid.png" />);
+    const img = screen.getByRole('img');
+    fireEvent.error(img);
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
+
+  it('falls back to initials when avatarUrl is empty or null string', () => {
+    render(<PlayerAvatar name="Jane Doe" avatarUrl="   " />);
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
 });

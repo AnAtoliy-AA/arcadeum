@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.73] - 2026-10-22
+
+### Added
+- add relative and full date to notification items (ARC-1002) (ARC-1002)
+
+
 ## [1.30.72] - 2026-10-22
 
 ### Documentation

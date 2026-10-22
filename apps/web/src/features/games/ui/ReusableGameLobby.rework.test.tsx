@@ -92,4 +92,24 @@ describe('ReusableGameLobby - Reworked Layout', () => {
     expect(screen.getByTestId('difficulty-easy')).toBeInTheDocument();
     expect(screen.getByTestId('difficulty-medium')).toBeInTheDocument();
   });
+
+  it('renders field size badge when boardSize option is provided', () => {
+    render(
+      <ReusableGameLobby
+        room={makeRoom()}
+        userId="user-1"
+        isHost
+        startBusy={false}
+        onStartGame={vi.fn()}
+        gameName="Checkers"
+        gameIcon="🏁"
+        minPlayers={2}
+        maxPlayers={2}
+      />,
+    );
+
+    const badge = screen.getByTestId('lobby-field-size-badge');
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent('Field: 8×8');
+  });
 });

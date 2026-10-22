@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.72] - 2026-10-22
+
+### Documentation
+- add community feedback and bug fixes sprint (ARC-1000) (ARC-1000)
+
+
 ## [1.30.71] - 2026-10-22
 
 ### Changed

@@ -175,6 +175,13 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       .registerFallbackResolveDisplayName(resolveDisplayName);
   }, [resolveDisplayName]);
 
+  useEffect(() => {
+    useGameRematchStore.getState().reset();
+    return () => {
+      useGameRematchStore.getState().reset();
+    };
+  }, [roomId]);
+
   const isGameOver = useGameRematchStore((s) => s.isGameOver);
   const onRematch = useGameRematchStore((s) => s.onRematch);
   const rematchLoading = useGameRematchStore((s) => s.rematchLoading);

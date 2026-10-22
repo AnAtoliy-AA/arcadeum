@@ -15,6 +15,7 @@ export const tableBy = {
     otherTurn: 'Ход {{name}}',
     waiting: 'Чаканне…',
     gameOver: 'Гульня скончана',
+    firstMove: 'Першы ход',
   },
   victory: {
     title: 'Перамога!',

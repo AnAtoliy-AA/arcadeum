@@ -53,68 +53,83 @@
 
 ## ARC Ticket Reference
 
-| Feature                    | ARC     | Branch                                                | Status          |
-| -------------------------- | ------- | ----------------------------------------------------- | --------------- |
-| 1A. Stat Tracking          | ARC-871 | `ARC-871-stat-tracking`                               | **Implemented** |
-| 1B. Emotes                 | ARC-872 | `ARC-872-emotes`                                      | **Implemented** |
-| 1C. House Rules            | ARC-873 | `ARC-873-house-rules`                                 | **Implemented** |
-| 1D. Dark Mode              | —       | —                                                     | **Implemented** |
-| 1E. Undo/Take-Back         | ARC-874 | `ARC-874-undo-takeback`                               | **Implemented** |
-| 1F. Password Rooms         | ARC-875 | `ARC-875-password-rooms`                              | **Implemented** |
-| 2A. Matchmaking Queue      | ARC-876 | `ARC-876-matchmaking`                                 | **Implemented** |
-| 2B. Chess Engine           | ARC-877 | `ARC-877-chess-engine`                                | **Implemented** |
-| 2C. Checkers Engine        | ARC-878 | `ARC-878-checkers-engine`                             | **Implemented** |
-| 2D. Audio Cues             | ARC-879 | `ARC-879-audio-cues`                                  | **Implemented** |
-| 2E. AI Difficulty          | ARC-880 | `ARC-880-ai-difficulty`                               | **Implemented** |
-| 2F. Ranked/ELO             | ARC-881 | `ARC-881-ranked-elo`                                  | **Implemented** |
-| 2G. Achievements           | —       | —                                                     | **Implemented** |
-| 2H. Post-Game Analysis     | ARC-882 | `ARC-882-post-game-analysis`                          | **Implemented** |
-| 2I. Coach Mode             | ARC-883 | `ARC-883-coach-mode`                                  | **Implemented** |
-| 3A. Hearts/Spades          | ARC-884 | `ARC-884-hearts-spades`                               | **Implemented** |
-| 3B. Backgammon             | ARC-885 | `ARC-885-backgammon`                                  | **Implemented** |
-| 3C. Pachisi                | ARC-886 | `ARC-886-pachisi`                                     | **Implemented** |
-| 3D. Go                     | ARC-887 | `ARC-887-go`                                          | **Implemented** |
-| 3F. Game Replays           | ARC-888 | `ARC-888-game-replays`                                | **Implemented** |
-| 3G. Spectator Mode         | ARC-889 | `ARC-889-spectator-mode`                              | **Implemented** |
-| 3H. AI-vs-AI               | ARC-890 | `ARC-890-ai-vs-ai`                                    | **Implemented** |
-| 3I. Clans                  | ARC-891 | `ARC-891-clans`                                       | **Implemented** |
-| 3J. Game Nights            | ARC-892 | `ARC-892-game-nights`                                 | **Implemented** |
-| 4A. Chess Clock            | ARC-893 | `ARC-893-chess-clock`                                 | **Implemented** |
-| 4B. Stats Dashboard        | ARC-894 | `ARC-894-stats-dashboard`                             | **Implemented** |
-| 4C. Tutorials              | ARC-895 | `ARC-895-tutorials`                                   | **Implemented** |
-| 4D. Colorblind             | ARC-896 | `ARC-896-colorblind`                                  | **Implemented** |
-| 4E. Screen Reader          | ARC-897 | `ARC-897-screen-reader`                               | **Implemented** |
-| 4F. Keyboard Nav           | ARC-898 | `ARC-898-keyboard-nav`                                | **Implemented** |
-| 4G. Daily Challenges       | —       | —                                                     | **Implemented** |
-| 4H. Season System          | ARC-899 | `ARC-899-season-system`                               | **Implemented** |
-| 4I. PWA Support            | ARC-903 | `ARC-903-pwa-support`                                 | **Implemented** |
-| 4J. Offline Mode           | ARC-900 | `ARC-900-offline-mode`                                | **Implemented** |
-| 4K. Web Share              | —       | —                                                     | **Implemented** |
-| 4L. Push Notifications     | —       | —                                                     | **Implemented** |
-| 4M. Tournaments            | —       | —                                                     | **Implemented** |
-| 4N. Leaderboards           | —       | —                                                     | **Implemented** |
-| 4O. Board Game Creator     | ARC-901 | `ARC-901-board-game-creator`                          | **Deferred**    |
-| 4P. Mobile Games           | ARC-902 | `ARC-902-mobile-games`                                | Partial         |
-| 4Q. Single-Player          | ARC-924 | `ARC-924-single-player`                               | **Implemented** |
-| 5B. Monetization           | —       | —                                                     | **Implemented** |
-| 8A. Daily Habit System     | ARC-930 | `ARC-930-daily-habit`                                 | **Implemented** |
-| 8B. Async Turn-Based       | ARC-931 | `ARC-931-async-turn-based`                            | **Implemented** |
-| 8C. Quest & Battle Pass    | ARC-932 | `ARC-932-quests-battlepass`                           | **Implemented** |
-| 8D. Social Leagues         | ARC-933 | `ARC-933-social-leagues`                              | **Implemented** |
-| 8E. Winback Triggers       | ARC-934 | `ARC-934-winback-triggers`                            | **Implemented** |
-| 9A. Web Worker AI          | ARC-935 | `ARC-935-web-worker-ai`                               | **Implemented** |
-| 9B. Instant Room Boot      | ARC-936 | `ARC-936-instant-room-boot`                           | **Implemented** |
-| 9C. State Delta Sync       | ARC-937 | `ARC-937-state-delta-sync`                            | **Implemented** |
-| 9D. Core Web Vitals        | ARC-938 | `ARC-938-core-web-vitals`                             | **Implemented** |
-| Sea Battle Blitz Cups      | ARC-966 | `ARC-966-sea-battle-blitz-cups`                       | **Implemented** |
-| Critical Ranked ELO        | ARC-971 | `feat/ARC-971-critical-ranked-elo`                    | **Implemented** |
-| Sea Battle Blitz Cups UI   | ARC-972 | `feat/ARC-972-sea-battle-blitz-cups-ui`               | **Implemented** |
-| Tactical Puzzle Rush       | ARC-973 | `feat/ARC-973-tactical-puzzle-rush-streak`            | **Implemented** |
-| Solitaire Auto-Place       | ARC-975 | `feat/ARC-975-solitaire-auto-place`                   | **Implemented** |
-| Player Profile Showcase    | ARC-976 | `feat/ARC-976-player-profile-match-showcase`          | **Implemented** |
-| Solo Games Assistants      | ARC-977 | `feat/ARC-977-solo-games-intelligent-assistants`      | **Implemented** |
-| Clan Leaderboards & Events | ARC-978 | `feat/ARC-978-clan-leaderboards-community-challenges` | **Implemented** |
-| Clan Wars & Tournaments    | ARC-979 | `feat/ARC-979-clan-wars-tournaments`                  | **Implemented** |
+| Feature                     | ARC      | Branch                                                | Status          |
+| --------------------------- | -------- | ----------------------------------------------------- | --------------- |
+| 1A. Stat Tracking           | ARC-871  | `ARC-871-stat-tracking`                               | **Implemented** |
+| 1B. Emotes                  | ARC-872  | `ARC-872-emotes`                                      | **Implemented** |
+| 1C. House Rules             | ARC-873  | `ARC-873-house-rules`                                 | **Implemented** |
+| 1D. Dark Mode               | —        | —                                                     | **Implemented** |
+| 1E. Undo/Take-Back          | ARC-874  | `ARC-874-undo-takeback`                               | **Implemented** |
+| 1F. Password Rooms          | ARC-875  | `ARC-875-password-rooms`                              | **Implemented** |
+| 2A. Matchmaking Queue       | ARC-876  | `ARC-876-matchmaking`                                 | **Implemented** |
+| 2B. Chess Engine            | ARC-877  | `ARC-877-chess-engine`                                | **Implemented** |
+| 2C. Checkers Engine         | ARC-878  | `ARC-878-checkers-engine`                             | **Implemented** |
+| 2D. Audio Cues              | ARC-879  | `ARC-879-audio-cues`                                  | **Implemented** |
+| 2E. AI Difficulty           | ARC-880  | `ARC-880-ai-difficulty`                               | **Implemented** |
+| 2F. Ranked/ELO              | ARC-881  | `ARC-881-ranked-elo`                                  | **Implemented** |
+| 2G. Achievements            | —        | —                                                     | **Implemented** |
+| 2H. Post-Game Analysis      | ARC-882  | `ARC-882-post-game-analysis`                          | **Implemented** |
+| 2I. Coach Mode              | ARC-883  | `ARC-883-coach-mode`                                  | **Implemented** |
+| 3A. Hearts/Spades           | ARC-884  | `ARC-884-hearts-spades`                               | **Implemented** |
+| 3B. Backgammon              | ARC-885  | `ARC-885-backgammon`                                  | **Implemented** |
+| 3C. Pachisi                 | ARC-886  | `ARC-886-pachisi`                                     | **Implemented** |
+| 3D. Go                      | ARC-887  | `ARC-887-go`                                          | **Implemented** |
+| 3F. Game Replays            | ARC-888  | `ARC-888-game-replays`                                | **Implemented** |
+| 3G. Spectator Mode          | ARC-889  | `ARC-889-spectator-mode`                              | **Implemented** |
+| 3H. AI-vs-AI                | ARC-890  | `ARC-890-ai-vs-ai`                                    | **Implemented** |
+| 3I. Clans                   | ARC-891  | `ARC-891-clans`                                       | **Implemented** |
+| 3J. Game Nights             | ARC-892  | `ARC-892-game-nights`                                 | **Implemented** |
+| 4A. Chess Clock             | ARC-893  | `ARC-893-chess-clock`                                 | **Implemented** |
+| 4B. Stats Dashboard         | ARC-894  | `ARC-894-stats-dashboard`                             | **Implemented** |
+| 4C. Tutorials               | ARC-895  | `ARC-895-tutorials`                                   | **Implemented** |
+| 4D. Colorblind              | ARC-896  | `ARC-896-colorblind`                                  | **Implemented** |
+| 4E. Screen Reader           | ARC-897  | `ARC-897-screen-reader`                               | **Implemented** |
+| 4F. Keyboard Nav            | ARC-898  | `ARC-898-keyboard-nav`                                | **Implemented** |
+| 4G. Daily Challenges        | —        | —                                                     | **Implemented** |
+| 4H. Season System           | ARC-899  | `ARC-899-season-system`                               | **Implemented** |
+| 4I. PWA Support             | ARC-903  | `ARC-903-pwa-support`                                 | **Implemented** |
+| 4J. Offline Mode            | ARC-900  | `ARC-900-offline-mode`                                | **Implemented** |
+| 4K. Web Share               | —        | —                                                     | **Implemented** |
+| 4L. Push Notifications      | —        | —                                                     | **Implemented** |
+| 4M. Tournaments             | —        | —                                                     | **Implemented** |
+| 4N. Leaderboards            | —        | —                                                     | **Implemented** |
+| 4O. Board Game Creator      | ARC-901  | `ARC-901-board-game-creator`                          | **Deferred**    |
+| 4P. Mobile Games            | ARC-902  | `ARC-902-mobile-games`                                | Partial         |
+| 4Q. Single-Player           | ARC-924  | `ARC-924-single-player`                               | **Implemented** |
+| 5B. Monetization            | —        | —                                                     | **Implemented** |
+| 8A. Daily Habit System      | ARC-930  | `ARC-930-daily-habit`                                 | **Implemented** |
+| 8B. Async Turn-Based        | ARC-931  | `ARC-931-async-turn-based`                            | **Implemented** |
+| 8C. Quest & Battle Pass     | ARC-932  | `ARC-932-quests-battlepass`                           | **Implemented** |
+| 8D. Social Leagues          | ARC-933  | `ARC-933-social-leagues`                              | **Implemented** |
+| 8E. Winback Triggers        | ARC-934  | `ARC-934-winback-triggers`                            | **Implemented** |
+| 9A. Web Worker AI           | ARC-935  | `ARC-935-web-worker-ai`                               | **Implemented** |
+| 9B. Instant Room Boot       | ARC-936  | `ARC-936-instant-room-boot`                           | **Implemented** |
+| 9C. State Delta Sync        | ARC-937  | `ARC-937-state-delta-sync`                            | **Implemented** |
+| 9D. Core Web Vitals         | ARC-938  | `ARC-938-core-web-vitals`                             | **Implemented** |
+| Sea Battle Blitz Cups       | ARC-966  | `ARC-966-sea-battle-blitz-cups`                       | **Implemented** |
+| Critical Ranked ELO         | ARC-971  | `feat/ARC-971-critical-ranked-elo`                    | **Implemented** |
+| Sea Battle Blitz Cups UI    | ARC-972  | `feat/ARC-972-sea-battle-blitz-cups-ui`               | **Implemented** |
+| Tactical Puzzle Rush        | ARC-973  | `feat/ARC-973-tactical-puzzle-rush-streak`            | **Implemented** |
+| Solitaire Auto-Place        | ARC-975  | `feat/ARC-975-solitaire-auto-place`                   | **Implemented** |
+| Player Profile Showcase     | ARC-976  | `feat/ARC-976-player-profile-match-showcase`          | **Implemented** |
+| Solo Games Assistants       | ARC-977  | `feat/ARC-977-solo-games-intelligent-assistants`      | **Implemented** |
+| Clan Leaderboards & Events  | ARC-978  | `feat/ARC-978-clan-leaderboards-community-challenges` | **Implemented** |
+| Clan Wars & Tournaments     | ARC-979  | `feat/ARC-979-clan-wars-tournaments`                  | **Implemented** |
+| Clan Wars Worker Automation | ARC-981  | `feat/ARC-981-clan-wars-worker-automation`            | **Implemented** |
+| Clan Wars Real-Time Sync    | ARC-982  | `feat/ARC-982-clan-wars-realtime-sync`                | **Implemented** |
+| We Will Fix It QoL Sprint   | ARC-1000 | `feat/ARC-1000-we-will-fix-it-roadmap`                | **In Progress** |
+| Avatars Visibility & Scale  | ARC-1001 | `feat/ARC-1001-avatar-visibility-and-sizing`          | **Planned**     |
+| Notification Dates & Time   | ARC-1002 | `feat/ARC-1002-notification-dates`                    | **Planned**     |
+| Dice Spacebar Roll & Turn   | ARC-1003 | `feat/ARC-1003-dice-spacebar-turn`                    | **Planned**     |
+| Dice Turn & Re-Roll on 6    | ARC-1004 | `feat/ARC-1004-dice-after-6-re-roll`                  | **Planned**     |
+| Long Backgammon Corners     | ARC-1005 | `feat/ARC-1005-long-backgammon-corners`               | **Planned**     |
+| Play Again Logic Overhaul   | ARC-1006 | `feat/ARC-1006-review-play-again-logic`               | **Planned**     |
+| First Move Random Fair Pick | ARC-1007 | `feat/ARC-1007-first-move-random-selection`           | **Planned**     |
+| Lobby Player Order Parity   | ARC-1008 | `feat/ARC-1008-lobby-change-player-order`             | **Planned**     |
+| Chat Text Send & Render Fix | ARC-1009 | `feat/ARC-1009-text-chat-fixes`                       | **Planned**     |
+| Lobby UI & UX Rework        | ARC-1010 | `feat/ARC-1010-rework-lobby-ui`                       | **Planned**     |
+| Lobby Field Size Setting    | ARC-1011 | `feat/ARC-1011-lobby-field-size-discoverability`      | **Planned**     |
+| Maximize Avatar Visibility  | ARC-1012 | `feat/ARC-1012-avatars-visible-everywhere`            | **Planned**     |
 
 ---
 
@@ -1751,8 +1766,155 @@ Optimize Core Web Vitals metrics across all landing and game pages to maximize S
 
 **Files to create/modify:**
 
-- `apps/web/src/app/[locale]/(app)/games/[game]/page.tsx` — optimized streaming layout
-- `apps/web/src/features/games/ui/LazyGameWidgets.tsx` — split-bundle loader
+- `apps/web/src/app/[locale]/(app)/games/[game]/page.tsx` - optimized streaming layout
+- `apps/web/src/features/games/ui/LazyGameWidgets.tsx` - split-bundle loader
+
+---
+
+### TIER 14: Community Feedback, Bug Fixes & UX Polish ("We Will Fix It" Sprint) `ARC-1000`
+
+Comprehensive quality-of-life and bug-resolution initiative addressing direct player feedback and GitHub issues #1565 to #1576.
+
+#### 14A. Universal Avatar Visibility & Sizing Audit `ARC-1001` & `ARC-1012`
+
+**Effort: Easy-Medium (1-2 days)**
+
+Fix missing user and bot avatars across multiple views (room headers, player lists, notifications, leaderboards, clan roster, chat headers). Increase avatar size where space permits to improve visual hierarchy and readability on desktop and mobile. Provide consistent fallback initials or generated SVG avatars when profile image URL is absent or fails to load.
+
+**Files to create/modify:**
+
+- `packages/ui/src/Avatar/` - shared avatar sizing and fallback handling
+- `apps/web/src/widgets/GameHeader/` - room header avatar visibility
+- `apps/web/src/features/profile/` - profile showcase avatar scaling
+
+---
+
+#### 14B. Notification Timestamp & Date Formatting `ARC-1002`
+
+**Effort: Easy (1 day)**
+
+Display creation date and relative time (e.g., "Just now", "5m ago", "Yesterday at 14:30") on notification list items and dropdown cards. Add full locale-aware tooltip on hover for exact timestamp. Ensure notification DTOs include standard `createdAt` field and i18n relative time formatting.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/notifications/ui/NotificationItem.tsx` - date rendering
+- `apps/be/src/notifications/` - notification timestamp serialization
+
+---
+
+#### 14C. Keyboard Accessibility: Make Turn on Spacebar in Dice Games `ARC-1003`
+
+**Effort: Easy (1 day)**
+
+Allow players to roll dice and confirm standard dice actions by pressing the `Space` keyboard shortcut in Backgammon, Pachisi, and other dice games. Ensure focus handling ignores `Space` when player is typing in chat or input modals. Provide on-screen visual tooltip badge ("Press Space to Roll") during the active player's turn.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/games/dice/` - universal keyboard listener
+- `apps/web/src/widgets/Backgammon/` - Backgammon spacebar turn integration
+- `apps/web/src/widgets/Pachisi/` - Pachisi spacebar turn integration
+
+---
+
+#### 14D. Dice State & Re-Roll Display Fix After Rolling a 6 `ARC-1004`
+
+**Effort: Easy-Medium (1-2 days)**
+
+Fix dice UI state synchronization bug where rolling a 6 in games with bonus turns (such as Pachisi) erroneously displays opponent's previous dice value instead of prompting the current player's next move. Maintain active player turns when rules grant a subsequent roll on a 6.
+
+**Files to create/modify:**
+
+- `apps/be/src/games/pachisi/pachisi.engine.ts` - consecutive turn state transitions
+- `apps/web/src/widgets/Pachisi/ui/PachisiBoard.tsx` - dice re-roll HUD
+
+---
+
+#### 14E. Long Backgammon: Opposite Corner Player Setup `ARC-1005`
+
+**Effort: Easy (1 day)**
+
+Fix initial checker arrangement in Long Backgammon (Narde) so both players' initial heads correctly start in opposite corners according to standard rules. Ensure board orientation rules adhere to local player bottom view.
+
+**Files to create/modify:**
+
+- `apps/be/src/games/backgammon/` - initial board layout configuration
+- `apps/web/src/widgets/Backgammon/` - board rendering and coordinates
+
+---
+
+#### 14F. Play Again & Rematch Flow Overhaul `ARC-1006`
+
+**Effort: Medium (2 days)**
+
+Audit room lifecycle when players click "Play Again" or request a rematch. Prevent room state desync, stuck loading indicators, or unseated players when re-entering game room. Ensure bot fallback triggers seamlessly if opponent leaves or declines rematch.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/game-room/` - rematch dispatch and listener
+- `apps/be/src/rooms/` - room state reset and rematch negotiation
+
+---
+
+#### 14G. Fair Random First-Move Selection `ARC-1007`
+
+**Effort: Easy (1 day)**
+
+Audit first-move determination in two-player games (Checkers, Connect Four/Cascade, Tic-Tac-Toe, Backgammon) to guarantee unbiased 50/50 starting turn assignment. Clear visual indicator of who goes first during room countdown.
+
+**Files to create/modify:**
+
+- `apps/be/src/games/common/` - seed generation and coin-toss logic
+- Individual game gateways and engines
+
+---
+
+#### 14H. Lobby Player Seat Order Parity `ARC-1008`
+
+**Effort: Easy-Medium (1-2 days)**
+
+Standardize player ordering and seat swapping logic across all multiplayer game lobbies. Ensure host actions, team slots, and guest ordering behave consistently regardless of selected game mode.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/game-lobby/` - seat slot rendering and swap controls
+- `apps/be/src/rooms/` - seat index assignment logic
+
+---
+
+#### 14I. In-Game Chat Text Sending & Display Fix `ARC-1009`
+
+**Effort: Easy-Medium (1-2 days)**
+
+Fix bug preventing text chat messages from being submitted or rendered in real-time rooms. Verify socket event handling for `chat.message` and client-side chat bubble feeds.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/chat/` - input submission and optimistic bubble display
+- `apps/be/src/chat/` - chat message socket dispatch
+
+---
+
+#### 14J. Modern Game Lobby UX/UI Redesign `ARC-1010`
+
+**Effort: Medium-Hard (3 days)**
+
+Redesign game room lobby interface for cleaner layout, higher clarity, and modern glassmorphism aesthetic. Improve player readiness indicators, game settings overview, and start match visibility.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/game-lobby/ui/` - LobbyContainer and RoomControls
+
+---
+
+#### 14K. Lobby Field / Board Size Option Discoverability `ARC-1011`
+
+**Effort: Easy (1 day)**
+
+Make board/grid size configuration options prominent and easy to find when configuring game rooms (e.g. Go board size, Tic-Tac-Toe grid, etc.). Add clear segmented controls or badge selectors in room setup modal.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/game-lobby/ui/RoomSettingsModal.tsx` - option controls
 
 ---
 
@@ -1815,21 +1977,22 @@ Automated workflows executing in CI or scheduled runs:
 
 The platform core infrastructure is highly mature. Phases 1-13 are complete or active in production:
 
-| Phase / Focus                         | Features & Ticket Scope                                                                                                                                     | Est. Days | Status / Progress                                            |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| **Phase 1: Core UX**                  | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                                                                   | 10        | **100% Completed**                                           |
-| **Phase 2: Growth & SEO**             | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning                                           | 12        | **100% Completed**                                           |
-| **Phase 3: Classic Games**            | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                                                                   | 15        | **100% Completed**                                           |
-| **Phase 4: Competitive**              | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                                                                 | 20        | **100% Completed**                                           |
-| **Phase 5: Retention**                | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                                                          | 15        | **100% Completed**                                           |
-| **Phase 6: Card & Board**             | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                                                                   | 25        | **100% Completed**                                           |
-| **Phase 7: Advanced Social**          | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                                                           | 25        | **100% Completed**                                           |
-| **Phase 8: Platform Growth**          | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                                                                   | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)    |
-| **Phase 9: Creator Tools**            | Visual Board Game Creator                                                                                                                                   | 20        | **Deferred** (revisit with larger community)                 |
-| **Phase 10: Single-Player**           | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                              | 12        | **100% Completed**                                           |
-| **Phase 11: Growth Acceleration**     | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality | 30        | **Code Complete** (marketing execution ongoing)              |
-| **Phase 12: Player Retention Loops**  | Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930-ARC-934)                                           | 20        | **100% Completed** (Streaks, Winback & Challenges shipped)   |
-| **Phase 13: High-Performance Engine** | Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935-ARC-938)                                        | 15        | **100% Completed** (Workers, Skeletons & Delta Sync shipped) |
+| Phase / Focus                             | Features & Ticket Scope                                                                                                                                                             | Est. Days | Status / Progress                                            |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
+| **Phase 1: Core UX**                      | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                                                                                           | 10        | **100% Completed**                                           |
+| **Phase 2: Growth & SEO**                 | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning                                                                   | 12        | **100% Completed**                                           |
+| **Phase 3: Classic Games**                | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                                                                                           | 15        | **100% Completed**                                           |
+| **Phase 4: Competitive**                  | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                                                                                         | 20        | **100% Completed**                                           |
+| **Phase 5: Retention**                    | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                                                                                  | 15        | **100% Completed**                                           |
+| **Phase 6: Card & Board**                 | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                                                                                           | 25        | **100% Completed**                                           |
+| **Phase 7: Advanced Social**              | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                                                                                   | 25        | **100% Completed**                                           |
+| **Phase 8: Platform Growth**              | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                                                                                           | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)    |
+| **Phase 9: Creator Tools**                | Visual Board Game Creator                                                                                                                                                           | 20        | **Deferred** (revisit with larger community)                 |
+| **Phase 10: Single-Player**               | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                                                      | 12        | **100% Completed**                                           |
+| **Phase 11: Growth Acceleration**         | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality                         | 30        | **Code Complete** (marketing execution ongoing)              |
+| **Phase 12: Player Retention Loops**      | Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930-ARC-934)                                                                   | 20        | **100% Completed** (Streaks, Winback & Challenges shipped)   |
+| **Phase 13: High-Performance Engine**     | Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935-ARC-938)                                                                | 15        | **100% Completed** (Workers, Skeletons & Delta Sync shipped) |
+| **Phase 14: Community Feedback & Polish** | Universal avatar visibility + Notification dates + Dice spacebar + Dice re-roll on 6 + Long backgammon corners + Rematch overhaul + Chat fixes + Lobby redesign (ARC-1000-ARC-1012) | 10        | **In Planning / In Progress**                                |
 
 ### Summary of Completed vs. Outstanding Tasks
 
@@ -1838,10 +2001,22 @@ The platform core infrastructure is highly mature. Phases 1-13 are complete or a
 - **Phase 11 (Growth Acceleration) - Code Complete, Marketing Execution Ongoing**: Funnel tracking, Sea Battle spearhead, viral challenge flow, and live activity social proof.
 - **Phase 12 (Player Retention Loops) - Completed**: Daily challenge rotation, streaks, habit multipliers, winback triggers, and seasonal quest progression shipped.
 - **Phase 13 (High-Performance Engine) - Completed**: Web Worker AI offloading for 120 FPS stutter-free play, sub-100ms instant room initialization, and binary WebSocket delta compression shipped.
+- **Phase 14 (Community Feedback & Polish) - In Planning / In Progress**: Fixing issues ARC-1000 through ARC-1012 (avatars visibility & sizing, notification timestamps, keyboard dice roll shortcuts, dice state synchronization, Long Backgammon layout, lobby overhaul, and rematch stability).
 
 ### Remaining Priorities & Next Steps
 
-1. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
-2. **Strategy Guide Practice Drills (ARC-980)**: Interactive mini-boards and tactical exercises directly inside pillar guides.
+1. **Phase 14 Quality & Polish ("We Will Fix It" Sprint - ARC-1000 through ARC-1012)**:
+   - Avatar visibility and sizing audit across all components (ARC-1001, ARC-1012)
+   - Add timestamps and dates to notifications (ARC-1002)
+   - Spacebar turn/roll in dice games (ARC-1003)
+   - Dice state synchronization on roll of 6 (ARC-1004)
+   - Long Backgammon opposite corner setup (ARC-1005)
+   - Rematch / Play Again lifecycle stability (ARC-1006)
+   - Fair 50/50 starting turn selection (ARC-1007)
+   - Lobby player ordering consistency across games (ARC-1008)
+   - In-game text chat delivery fix (ARC-1009)
+   - Lobby UI rework & field size setting discoverability (ARC-1010, ARC-1011)
+2. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
+3. **Strategy Guide Practice Drills (ARC-980)**: Interactive mini-boards and tactical exercises directly inside pillar guides.
 
 Board Game Creator (4O) stays **deferred** until community scale.

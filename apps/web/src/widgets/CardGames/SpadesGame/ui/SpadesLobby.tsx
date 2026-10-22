@@ -31,6 +31,7 @@ interface SpadesLobbyProps {
   showRulesOpen?: boolean;
   onShowRulesClose?: () => void;
   accessToken?: string | null;
+  onReorderPlayers?: (newOrder: string[]) => void;
 }
 
 const SPADES_LOBBY_THEME = {
@@ -68,6 +69,7 @@ export function SpadesLobby({
   showRulesOpen,
   onShowRulesClose,
   accessToken,
+  onReorderPlayers,
 }: SpadesLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
@@ -157,7 +159,7 @@ export function SpadesLobby({
         />
       }
       onStartGame={onStartGame}
-      onReorderPlayers={handleReorderPlayers}
+      onReorderPlayers={onReorderPlayers ?? handleReorderPlayers}
       onLeaveRoom={onLeaveRoom}
       onDeleteRoom={onDeleteRoom}
       onKickPlayer={onKickPlayer}

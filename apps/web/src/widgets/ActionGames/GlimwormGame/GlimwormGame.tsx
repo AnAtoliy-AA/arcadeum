@@ -17,6 +17,7 @@ import { UndoButton } from '@/features/games/ui/UndoButton';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
+import { useGameRoomActions } from '@/features/games/hooks';
 import { GlimwormThemeProvider } from './lib/GlimwormThemeContext';
 
 export default function GlimwormGame(
@@ -25,6 +26,13 @@ export default function GlimwormGame(
   const { roomId, currentUserId, isHost, room } = props;
   const { t } = useTranslation();
   const { play } = useGameSound('glimworm_v1');
+  const {
+    room: liveRoom,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, room);
 
   // State-backed callback ref: when the canvas div is mounted (after the
   // lobby branch ends), `setCanvasEl` flips the state and the pixi/controls
@@ -103,9 +111,13 @@ export default function GlimwormGame(
   if (isLobby && currentUserId) {
     return (
       <GlimwormLobby
-        room={room}
+        room={liveRoom ?? room}
         isHost={isHost}
         currentUserId={currentUserId}
+        onLeaveRoom={() => onLeaveRoom(currentUserId)}
+        onDeleteRoom={onDeleteRoom}
+        onKickPlayer={(targetId) => onKickPlayer(targetId, currentUserId)}
+        onReorderPlayers={onReorderPlayers}
       />
     );
   }

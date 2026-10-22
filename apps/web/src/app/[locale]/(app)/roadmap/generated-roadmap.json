@@ -542,6 +542,93 @@
           "effort": "2-3 days",
           "status": "implemented",
           "arc": "ARC-938"
+        }
+      ]
+    },
+    {
+      "id": "tier14",
+      "label": "Tier 14",
+      "effort": "Varies",
+      "color": "#6366f1",
+      "gradient": "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05))",
+      "icon": "📋",
+      "features": [
+        {
+          "title": "Universal Avatar Visibility & Sizing Audit",
+          "desc": "Fix missing user and bot avatars across multiple views (room headers, player lists, notifications, leaderboards, clan roster, chat headers). Increase avatar size where space permits to improve visual hierarchy and readability on desktop and mobile. Provide consistent fallback initials or generated SVG avatars when profile image URL is absent or fails to load.",
+          "effort": "1-2 days",
+          "status": "not_started",
+          "arc": "ARC-1001"
+        },
+        {
+          "title": "Notification Timestamp & Date Formatting",
+          "desc": "Display creation date and relative time (e.g., \"Just now\", \"5m ago\", \"Yesterday at 14:30\") on notification list items and dropdown cards. Add full locale-aware tooltip on hover for exact timestamp. Ensure notification DTOs include standard `createdAt` field and i18n relative time formatting.",
+          "effort": "1 day",
+          "status": "not_started",
+          "arc": "ARC-1002"
+        },
+        {
+          "title": "Keyboard Accessibility: Make Turn on Spacebar in Dice Games",
+          "desc": "Allow players to roll dice and confirm standard dice actions by pressing the `Space` keyboard shortcut in Backgammon, Pachisi, and other dice games. Ensure focus handling ignores `Space` when player is typing in chat or input modals. Provide on-screen visual tooltip badge (\"Press Space to Roll\") during the active player's turn.",
+          "effort": "1 day",
+          "status": "not_started",
+          "arc": "ARC-1003"
+        },
+        {
+          "title": "Dice State & Re-Roll Display Fix After Rolling a 6",
+          "desc": "Fix dice UI state synchronization bug where rolling a 6 in games with bonus turns (such as Pachisi) erroneously displays opponent's previous dice value instead of prompting the current player's next move. Maintain active player turns when rules grant a subsequent roll on a 6.",
+          "effort": "1-2 days",
+          "status": "not_started",
+          "arc": "ARC-1004"
+        },
+        {
+          "title": "Long Backgammon: Opposite Corner Player Setup",
+          "desc": "Fix initial checker arrangement in Long Backgammon (Narde) so both players' initial heads correctly start in opposite corners according to standard rules. Ensure board orientation rules adhere to local player bottom view.",
+          "effort": "1 day",
+          "status": "not_started",
+          "arc": "ARC-1005"
+        },
+        {
+          "title": "Play Again & Rematch Flow Overhaul",
+          "desc": "Audit room lifecycle when players click \"Play Again\" or request a rematch. Prevent room state desync, stuck loading indicators, or unseated players when re-entering game room. Ensure bot fallback triggers seamlessly if opponent leaves or declines rematch.",
+          "effort": "2 days",
+          "status": "not_started",
+          "arc": "ARC-1006"
+        },
+        {
+          "title": "Fair Random First-Move Selection",
+          "desc": "Audit first-move determination in two-player games (Checkers, Connect Four/Cascade, Tic-Tac-Toe, Backgammon) to guarantee unbiased 50/50 starting turn assignment. Clear visual indicator of who goes first during room countdown.",
+          "effort": "1 day",
+          "status": "not_started",
+          "arc": "ARC-1007"
+        },
+        {
+          "title": "Lobby Player Seat Order Parity",
+          "desc": "Standardize player ordering and seat swapping logic across all multiplayer game lobbies. Ensure host actions, team slots, and guest ordering behave consistently regardless of selected game mode.",
+          "effort": "1-2 days",
+          "status": "not_started",
+          "arc": "ARC-1008"
+        },
+        {
+          "title": "In-Game Chat Text Sending & Display Fix",
+          "desc": "Fix bug preventing text chat messages from being submitted or rendered in real-time rooms. Verify socket event handling for `chat.message` and client-side chat bubble feeds.",
+          "effort": "1-2 days",
+          "status": "not_started",
+          "arc": "ARC-1009"
+        },
+        {
+          "title": "Modern Game Lobby UX/UI Redesign",
+          "desc": "Redesign game room lobby interface for cleaner layout, higher clarity, and modern glassmorphism aesthetic. Improve player readiness indicators, game settings overview, and start match visibility.",
+          "effort": "3 days",
+          "status": "not_started",
+          "arc": "ARC-1010"
+        },
+        {
+          "title": "Lobby Field / Board Size Option Discoverability",
+          "desc": "Make board/grid size configuration options prominent and easy to find when configuring game rooms (e.g. Go board size, Tic-Tac-Toe grid, etc.). Add clear segmented controls or badge selectors in room setup modal.",
+          "effort": "1 day",
+          "status": "not_started",
+          "arc": "ARC-1011"
         },
         {
           "title": "Platform Strengths to Protect",
@@ -599,7 +686,7 @@
         },
         {
           "title": "Remaining Priorities & Next Steps",
-          "desc": "1. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.",
+          "desc": "1. **Phase 14 Quality & Polish (\"We Will Fix It\" Sprint - ARC-1000 through ARC-1012)**:",
           "effort": "1-3 days",
           "status": "not_started"
         }
@@ -710,12 +797,20 @@
       "days": "15",
       "status": "100% Completed (Workers, Skeletons & Delta Sync shipped)",
       "color": "#f43f5e"
+    },
+    {
+      "phase": 14,
+      "title": "Community Feedback & Polish",
+      "features": "Universal avatar visibility + Notification dates + Dice spacebar + Dice re-roll on 6 + Long backgammon corners + Rematch overhaul + Chat fixes + Lobby redesign (ARC-1000-ARC-1012)",
+      "days": "10",
+      "status": "In Planning / In Progress",
+      "color": "#22c55e"
     }
   ],
   "stats": [
     {
       "label": "Features",
-      "value": "79",
+      "value": "90",
       "icon": "📋"
     },
     {
@@ -730,7 +825,7 @@
     },
     {
       "label": "Planned",
-      "value": "34",
+      "value": "45",
       "icon": "🗺️"
     }
   ]

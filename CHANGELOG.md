@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.74] - 2026-10-22
+
+### Added
+- add spacebar support for rolling dice and taking turns (ARC-1003) (ARC-1003)
+
+
 ## [1.30.73] - 2026-10-22
 
 ### Added

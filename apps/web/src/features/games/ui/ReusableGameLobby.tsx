@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { gamesApi } from '@/features/games/api';
@@ -11,16 +17,6 @@ import {
 import { gameSocket } from '@/shared/lib/socket';
 import {
   LobbyContent,
-  CenterSection,
-  GameIcon,
-  LobbyTitle,
-  LobbySubtitle,
-  ProgressWrapper,
-  ProgressLabel,
-  ProgressBar,
-  ProgressFill,
-  HostControls,
-  HostLabel,
   RoomNameBadge,
   RoomNameIcon,
   RoomNameText,
@@ -34,29 +30,24 @@ import {
   IconButton,
   StartButton,
   DeleteButton,
-  BotCountSelector,
-  BotCountLabel,
-  BotCountButtons,
-  BotCountButton,
 } from './lobbyStyles';
 import { LobbyStartButton } from './LobbyStartButton';
 import { LobbySidebar } from './LobbySidebar';
 import { ConfirmationModal } from './ConfirmationModal';
-import { HouseRulesSection } from './HouseRulesSection';
 import { useMatchmaking } from './MatchmakingQueue';
-
+import { LobbyHeroSection } from './LobbyHeroSection';
+import { LobbySetupSection } from './LobbySetupSection';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import { useRankingStore } from '@/features/ranking/store/rankingStore';
 import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
 
-// Re-export all styles for games to use
 export * from './lobbyStyles';
+export { LobbyHeroSection } from './LobbyHeroSection';
+export { LobbySetupSection } from './LobbySetupSection';
 export type {
   GameLobbyTheme,
   ReusableGameLobbyProps,
 } from './ReusableGameLobby.types';
-
-// ============ Component ============
 
 export function ReusableGameLobby({
   room,
@@ -126,7 +117,7 @@ export function ReusableGameLobby({
   const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
     new Map(),
   );
-  React.useEffect(() => {
+  useEffect(() => {
     gamesApi
       .getCatalog()
       .then((catalog) => {
@@ -152,14 +143,15 @@ export function ReusableGameLobby({
     const settings = loadStoredSettings();
     return settings.aiDifficulty ?? 'medium';
   });
-  const cooldownRef = React.useRef(0);
+  const cooldownRef = useRef(0);
   useEffect(() => {
     saveStoredSettings({ aiDifficulty: difficulty });
     if (enableBots && isHost && room.status === 'lobby') {
       setOption({ aiDifficulty: difficulty });
     }
   }, [difficulty, enableBots, isHost, room.status, setOption]);
-  const handleStart = React.useCallback(() => {
+
+  const handleStart = useCallback(() => {
     const now = Date.now();
     if (now - cooldownRef.current < 1000) return;
     cooldownRef.current = now;
@@ -170,13 +162,14 @@ export function ReusableGameLobby({
     }
   }, [enableBots, room.playerCount, botCount, difficulty, onStartGame]);
 
-  const handleAddBot = React.useCallback(() => {
+  const handleAddBot = useCallback(() => {
     gameSocket.emit('games.room.add_bot', {
       roomId: room.id,
       userId,
     });
   }, [room.id, userId]);
-  const handleRemoveBot = React.useCallback(
+
+  const handleRemoveBot = useCallback(
     (botId: string) => {
       gameSocket.emit('games.room.remove_bot', {
         roomId: room.id,
@@ -224,6 +217,15 @@ export function ReusableGameLobby({
 
   const showHostBots =
     isHost && room.status === 'lobby' && enableBots && room.playerCount === 1;
+
+  const handleToggleQueue = useCallback(() => {
+    if (isQueued) {
+      leaveQueue();
+    } else {
+      const variant = (room.gameOptions?.variant as string) || undefined;
+      joinQueue(room.gameId, variant);
+    }
+  }, [isQueued, leaveQueue, joinQueue, room.gameId, room.gameOptions?.variant]);
 
   return (
     <GameContainer ref={containerRef} theme={visualTheme}>
@@ -290,156 +292,53 @@ export function ReusableGameLobby({
       </GameHeader>
 
       <LobbyContent>
-        {/* Center column: desktop header + settings (single instance) */}
-        <div className="flex flex-col flex-1 min-w-0 max-w-full max-[1023px]:w-full max-[1023px]:order-2">
-          <CenterSection className="[animation:slideIn_0.5s_ease-out_both]">
-            <GameIcon className="[animation:float_3s_ease-in-out_infinite]">
-              {gameIcon}
-            </GameIcon>
-            <LobbyTitle className="[animation:slideIn_0.5s_ease-out_0.15s_both]">
-              {waitingLabel}
-            </LobbyTitle>
-            <LobbySubtitle>{subtitleText || defaultSubtitle}</LobbySubtitle>
+        <div className="flex flex-col flex-1 min-w-0 max-w-full gap-5 max-[1023px]:w-full max-[1023px]:order-2">
+          <LobbyHeroSection
+            gameName={gameName}
+            gameIcon={gameIcon}
+            variantName={variantName}
+            waitingLabel={waitingLabel}
+            subtitleText={subtitleText}
+            defaultSubtitle={defaultSubtitle}
+            playersLabel={playersLabel}
+            playerCount={room.playerCount}
+            maxPlayers={maxPlayers}
+            progress={progress}
+            roomStatus={room.status}
+            isQueued={isQueued}
+            onToggleQueue={handleToggleQueue}
+            findOpponentLabel={t('games.matchmaking.findOpponent')}
+            cancelQueueLabel={t('games.matchmaking.cancel')}
+            queueSearchingSubtitle={t('games.matchmaking.searchingSubtitle', {
+              game: gameName,
+            })}
+            findOpponentHint={t('games.matchmaking.findOpponentHint')}
+          />
 
-            <ProgressWrapper>
-              <ProgressLabel>
-                <span>{playersLabel} in Lobby</span>
-                <span>
-                  {room.playerCount} / {maxPlayers}
-                </span>
-              </ProgressLabel>
-              <ProgressBar>
-                <ProgressFill width={`${progress}%`} />
-              </ProgressBar>
-            </ProgressWrapper>
-
-            {room.status === 'lobby' && room.playerCount < maxPlayers && (
-              <div className="flex flex-col items-center gap-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isQueued) {
-                      leaveQueue();
-                    } else {
-                      const variant =
-                        (room.gameOptions?.variant as string) || undefined;
-                      joinQueue(room.gameId, variant);
-                    }
-                  }}
-                  className={`w-full max-w-[300px] rounded-xl px-5 py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
-                    isQueued
-                      ? 'border border-[var(--borderColor)] bg-transparent text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'
-                      : 'bg-[var(--primary)] text-[var(--primaryText)] hover:opacity-90'
-                  }`}
-                >
-                  {isQueued
-                    ? t('games.matchmaking.cancel')
-                    : t('games.matchmaking.findOpponent')}
-                </button>
-                <span className="text-[11px] text-[var(--textSecondary)]">
-                  {isQueued
-                    ? t('games.matchmaking.searchingSubtitle', {
-                        game: gameName,
-                      })
-                    : t('games.matchmaking.findOpponentHint')}
-                </span>
-              </div>
-            )}
-          </CenterSection>
-
-          {/* Settings: host controls, theme picker, house rules — single instance */}
-          {isHost && room.status === 'lobby' && (
-            <HostControls className="max-[1023px]:mx-3">
-              <HostLabel>{hostControlsLabel}</HostLabel>
-              {showHostBots && (
-                <BotCountSelector>
-                  <BotCountLabel>{botCountLabel}</BotCountLabel>
-                  <BotCountButtons>
-                    {Array.from(
-                      { length: maxPlayers - 1 },
-                      (_, i) => i + 1,
-                    ).map((count) => (
-                      <BotCountButton
-                        key={count}
-                        data-testid={`bot-count-${count}`}
-                        active={botCount === count}
-                        onClick={() => setBotCount(count)}
-                      >
-                        {count}
-                      </BotCountButton>
-                    ))}
-                  </BotCountButtons>
-                </BotCountSelector>
-              )}
-              {showHostBots && showDifficulty && (
-                <BotCountSelector>
-                  <BotCountLabel>
-                    {difficultyLabel || 'AI Difficulty'}
-                  </BotCountLabel>
-                  <BotCountButtons>
-                    {(
-                      [
-                        { key: 'easy', label: difficultyEasyLabel || 'Easy' },
-                        {
-                          key: 'medium',
-                          label: difficultyMediumLabel || 'Medium',
-                        },
-                        {
-                          key: 'hard',
-                          label: difficultyHardLabel || 'Hard',
-                        },
-                        {
-                          key: 'expert',
-                          label: difficultyExpertLabel || 'Expert',
-                        },
-                      ] as const
-                    ).map((d) => (
-                      <BotCountButton
-                        key={d.key}
-                        data-testid={`difficulty-${d.key}`}
-                        active={difficulty === d.key}
-                        onClick={() => setDifficulty(d.key)}
-                      >
-                        {d.label}
-                      </BotCountButton>
-                    ))}
-                  </BotCountButtons>
-                </BotCountSelector>
-              )}
-              {enableBots && showDifficulty && (
-                <span
-                  data-testid="difficulty-badge"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(99,102,241,0.35)] bg-[rgba(99,102,241,0.12)] px-3 py-1 text-[12px] font-semibold text-[#a5b4fc]"
-                >
-                  🤖{' '}
-                  {difficulty === 'easy'
-                    ? difficultyEasyLabel || 'Easy'
-                    : difficulty === 'hard'
-                      ? difficultyHardLabel || 'Hard'
-                      : difficulty === 'expert'
-                        ? difficultyExpertLabel || 'Expert'
-                        : difficultyMediumLabel || 'Medium'}
-                </span>
-              )}
-            </HostControls>
-          )}
-
-          {/* Theme picker + game rules — single instance */}
-          <div className="w-full">{optionsSlot}</div>
-
-          {/* Generic lobby rules — single instance */}
-          {isHost && room.status === 'lobby' && (
-            <div className="max-[1023px]:px-3">
-              <HouseRulesSection
-                room={room}
-                ruleComingSoon={ruleComingSoon}
-                onSetOption={setOption}
-              />
-            </div>
-          )}
+          <LobbySetupSection
+            room={room}
+            isHost={isHost}
+            optionsSlot={optionsSlot}
+            enableBots={enableBots}
+            showDifficulty={showDifficulty}
+            showHostBots={showHostBots}
+            maxPlayers={maxPlayers}
+            botCount={botCount}
+            setBotCount={setBotCount}
+            difficulty={difficulty}
+            setDifficulty={setDifficulty}
+            ruleComingSoon={ruleComingSoon}
+            setOption={setOption}
+            hostControlsLabel={hostControlsLabel}
+            botCountLabel={botCountLabel}
+            difficultyLabel={difficultyLabel}
+            difficultyEasyLabel={difficultyEasyLabel}
+            difficultyMediumLabel={difficultyMediumLabel}
+            difficultyHardLabel={difficultyHardLabel}
+            difficultyExpertLabel={difficultyExpertLabel}
+          />
         </div>
 
-        {/* Player sidebar — single instance */}
         <LobbySidebar
           room={room}
           isHost={isHost}
@@ -485,7 +384,6 @@ export function ReusableGameLobby({
   );
 }
 
-// Export commonly used components
 export {
   GameContainer,
   GameHeader,

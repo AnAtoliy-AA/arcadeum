@@ -66,7 +66,7 @@ export function SortablePlayerItem({
         <InGameAvatar
           playerId={member.id}
           name={member.displayName}
-          size="sm"
+          size="md"
         />
         <PlayerInfo>
           <div className="flex flex-row flex-wrap items-center gap-1.5 min-w-0">

@@ -66,8 +66,9 @@ export function PachisiStatusStrip({
 
   const seatOf = (pid: string): number => snapshot.seats[pid] ?? 0;
   const isExtraRoll = myTurn && canRoll && snapshot.consecutiveSixes > 0;
-  const displayLastDie =
-    myLastDie ?? lastDie ?? snapshot.die ?? snapshot.lastDie ?? null;
+  const displayLastDie = isExtraRoll
+    ? 6
+    : (myLastDie ?? lastDie ?? snapshot.die ?? snapshot.lastDie ?? null);
 
   return (
     <div className="flex w-full flex-col gap-2">

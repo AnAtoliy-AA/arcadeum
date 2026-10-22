@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
+import { usePachisiKeyboardTurn } from '../hooks';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
 import { boardVars } from '../lib/theme';
 import {
@@ -202,6 +203,16 @@ export function PachisiBoard({
         : new Set<number>(),
     [canMove, currentUserId, snapshot.die, snapshot.tokens],
   );
+
+  usePachisiKeyboardTurn({
+    myTurn,
+    isGameOver,
+    actionBusy,
+    canMove,
+    movableTokenIds: movable,
+    onPassTurn,
+    onMove,
+  });
 
   const highlightedTrackCells = useMemo(() => {
     const indices = new Set<number>();

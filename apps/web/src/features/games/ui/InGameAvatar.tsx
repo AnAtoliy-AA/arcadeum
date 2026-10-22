@@ -10,19 +10,16 @@ export interface InGameAvatarProps {
   name: string;
   size?: PlayerAvatarSize;
   priority?: boolean;
+  className?: string;
   'data-testid'?: string;
 }
 
-// In-field avatars render the player's equipped disc cosmetics (avatar, badge,
-// frame ring, aura/rays halo, background wash) so identity reads the same in
-// game as it does in the shop/profile. Banner and name-color stay off: they're
-// chrome-only (card/profile) and `md` has no chrome, and the game's own tile
-// border carries turn/seat/eliminated state.
 export const InGameAvatar = memo(function InGameAvatar({
   playerId,
   name,
   size = 'md',
   priority,
+  className,
   'data-testid': testId,
 }: InGameAvatarProps) {
   const room = useGameStore((s: GameState) => s.room);
@@ -35,7 +32,7 @@ export const InGameAvatar = memo(function InGameAvatar({
     equippedBackgroundId: member?.equippedBackgroundId ?? null,
   });
 
-  return (
+  const avatar = (
     <PlayerAvatar
       name={name}
       size={size}
@@ -51,4 +48,6 @@ export const InGameAvatar = memo(function InGameAvatar({
       data-testid={testId}
     />
   );
+
+  return className ? <div className={className}>{avatar}</div> : avatar;
 });

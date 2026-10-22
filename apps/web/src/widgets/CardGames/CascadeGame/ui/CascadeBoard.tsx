@@ -8,6 +8,7 @@ import { ColorPicker } from './ColorPicker';
 import { useCascadeTheme } from '../lib/CascadeThemeContext';
 import { useActionToasts } from '../hooks/useActionToasts';
 import { useCardFly } from '../hooks/useCardFly';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import styles from './CascadeGame.module.css';
 import type {
   ActiveColor,
@@ -161,15 +162,12 @@ export function CascadeBoard({
                     {t('games.cascade_v1.board.last')}
                   </span>
                 ) : null}
-                <span
-                  className={styles.podAvatar}
-                  style={{
-                    background: theme.palette[avatarColor(opp.playerId)],
-                  }}
-                  aria-hidden="true"
-                >
-                  {shortName(opp.playerId, members).charAt(0).toUpperCase()}
-                </span>
+                <InGameAvatar
+                  playerId={opp.playerId}
+                  name={shortName(opp.playerId, members)}
+                  size="sm"
+                  data-testid={`cascade-pod-avatar-${opp.playerId}`}
+                />
                 <span className={styles.podName}>
                   {shortName(opp.playerId, members)}
                 </span>
@@ -343,15 +341,6 @@ function shortName(
   const member = members?.find((m) => m.id === id);
   if (member?.displayName) return member.displayName;
   return id.slice(0, 6) + '…';
-}
-
-/** Deterministic theme color for an opponent's avatar disc, from their id. */
-function avatarColor(id: string): 'R' | 'Y' | 'G' | 'B' {
-  const palette = ['R', 'Y', 'G', 'B'] as const;
-  let hash = 0;
-  for (let i = 0; i < id.length; i += 1)
-    hash = (hash * 31 + id.charCodeAt(i)) | 0;
-  return palette[Math.abs(hash) % palette.length];
 }
 
 function isPlayable(card: CascadeCard, snapshot: CascadeClientState): boolean {

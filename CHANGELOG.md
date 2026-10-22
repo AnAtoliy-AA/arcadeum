@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.75] - 2026-10-22
+
+### Fixed
+- retain player six on bonus roll instead of opponent prior die (ARC-1004) (ARC-1004)
+
+
 ## [1.30.74] - 2026-10-22
 
 ### Added

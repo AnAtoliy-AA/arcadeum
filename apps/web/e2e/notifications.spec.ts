@@ -61,6 +61,9 @@ test.describe('Notifications smoke', () => {
     await bell.click();
     await expect(page.getByTestId('notification-popover')).toBeVisible();
     await expect(page.getByTestId('notification-row')).toBeVisible();
+    const notifDate = page.getByTestId('notification-date');
+    await expect(notifDate).toBeVisible();
+    await expect(notifDate).not.toBeEmpty();
   });
 
   test('notification popover disappears when clicking now online badge', async ({

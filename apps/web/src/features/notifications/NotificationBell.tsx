@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useEffect, useCallback, useRef } from 'react';
+import { memo, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Typography } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -8,6 +8,8 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n/useLanguage';
+import { formatDateTime, formatRelative } from '@/shared/i18n/formatters';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useNotificationSocket } from '@/shared/lib/socket';
 import { useLiveStatsStore } from '@/features/live-stats';
@@ -220,8 +222,19 @@ const NotificationRow = memo(function NotificationRow({
 }) {
   const { t: rawT } = useTranslation();
   const t: T = rawT as unknown as T;
+  const { locale } = useLanguage();
   const markRead = useNotificationsStore((s) => s.markRead);
   const deleteNotification = useNotificationsStore((s) => s.deleteNotification);
+
+  const formattedDate = useMemo(() => {
+    if (!item.createdAt) return '';
+    return formatRelative(item.createdAt, locale || 'en');
+  }, [item.createdAt, locale]);
+
+  const fullDate = useMemo(() => {
+    if (!item.createdAt) return '';
+    return formatDateTime(item.createdAt, locale || 'en');
+  }, [item.createdAt, locale]);
 
   const gameId = item.i18nParams?.gameId;
   const resolvedGameId = gameId
@@ -295,6 +308,16 @@ const NotificationRow = memo(function NotificationRow({
           </button>
         </div>
         <Typography className="line-clamp-2 text-secondary">{body}</Typography>
+        {formattedDate && (
+          <time
+            dateTime={item.createdAt}
+            title={fullDate}
+            data-testid="notification-date"
+            className="text-[11px] text-secondary tabular-nums mt-0.5"
+          >
+            {formattedDate}
+          </time>
+        )}
       </div>
     </Link>
   );

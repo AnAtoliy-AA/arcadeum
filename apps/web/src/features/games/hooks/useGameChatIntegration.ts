@@ -16,7 +16,9 @@ export function useGameChatIntegration(
   resolveActorColor?: ChatActorColorResolver,
 ): void {
   useEffect(() => {
-    useGameChatStore.getState().setLogs(logs ?? []);
+    if (logs !== undefined) {
+      useGameChatStore.getState().setLogs(logs);
+    }
   }, [logs]);
 
   useEffect(() => {
@@ -36,8 +38,4 @@ export function useGameChatIntegration(
       .getState()
       .registerResolveActorColor(resolveActorColor ?? null);
   }, [resolveActorColor]);
-
-  useEffect(() => {
-    return () => useGameChatStore.getState().clear();
-  }, []);
 }

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -27,10 +27,19 @@ vi.mock('@arcadeum/ui', async () => {
   const button = ({
     children,
     onClick,
+    'data-testid': testId,
+    'aria-label': ariaLabel,
   }: {
     children?: React.ReactNode;
     onClick?: () => void;
-  }) => React.createElement('button', { onClick }, children);
+    'data-testid'?: string;
+    'aria-label'?: string;
+  }) =>
+    React.createElement(
+      'button',
+      { onClick, 'data-testid': testId, 'aria-label': ariaLabel },
+      children,
+    );
   return {
     Button: button,
     IconButton: button,
@@ -196,5 +205,22 @@ describe('GameChat', () => {
     const rendered = screen.getAllByTestId('chat-message');
     expect(rendered[0]?.getAttribute('data-is-own')).toBe('false');
     expect(rendered[0]?.textContent).toContain('Alice');
+  });
+
+  it('sends text when user types and clicks send', () => {
+    const sendMock = vi.fn();
+    useGameChatStore.getState().registerSendMessage(sendMock);
+
+    renderChat(<GameChat currentUserId="me" isPlayer />);
+
+    const input = screen.getByTestId('chat-input') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'Good luck everyone!' } });
+    expect(input.value).toBe('Good luck everyone!');
+
+    const sendBtn = screen.getByTestId('chat-send-btn');
+    fireEvent.click(sendBtn);
+
+    expect(sendMock).toHaveBeenCalledWith('Good luck everyone!', 'all');
+    expect(input.value).toBe('');
   });
 });

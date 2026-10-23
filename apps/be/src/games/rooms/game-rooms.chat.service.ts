@@ -24,6 +24,7 @@ export class GameRoomsChatService {
     scope: string,
   ): Promise<{
     id: string;
+    type: 'message';
     senderId: string;
     senderName: string;
     message: string;
@@ -41,6 +42,7 @@ export class GameRoomsChatService {
 
     const entry = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      type: 'message' as const,
       senderId: userId,
       senderName,
       message: message.slice(0, 240),

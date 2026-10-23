@@ -54,6 +54,7 @@ interface GlimwormLobbyProps {
   onLeaveRoom?: () => void;
   onDeleteRoom?: () => void;
   onKickPlayer?: (userId: string) => void;
+  onReorderPlayers?: (newOrder: string[]) => void;
 }
 
 export function GlimwormLobby({
@@ -63,6 +64,7 @@ export function GlimwormLobby({
   onLeaveRoom,
   onDeleteRoom,
   onKickPlayer,
+  onReorderPlayers,
 }: GlimwormLobbyProps): React.JSX.Element {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({
@@ -284,6 +286,8 @@ export function GlimwormLobby({
       optionsSlot={optionsSlot}
       enableBots={true}
       showDifficulty={false}
+      showReorderControls={true}
+      onReorderPlayers={onReorderPlayers}
     />
   );
 }

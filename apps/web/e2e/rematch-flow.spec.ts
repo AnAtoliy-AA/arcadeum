@@ -89,6 +89,15 @@ test.describe('Rematch & Play Again Flow', () => {
     await waitForRoomReady(page);
 
     const rematchButton = page.locator('[data-testid="rematch-button"]');
+    if (!(await rematchButton.isVisible())) {
+      const toggleButton = page.locator(
+        '[data-testid="toggle-result-modal-button"]',
+      );
+      if (await toggleButton.isVisible()) {
+        await toggleButton.click();
+      }
+    }
+
     await expect(rematchButton).toBeVisible();
 
     await rematchButton.click();

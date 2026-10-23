@@ -22,7 +22,18 @@ export function addRoomParticipant(room: GameRoom, userId: string): boolean {
 export function removeRoomParticipant(room: GameRoom, userId: string): boolean {
   const previousLength = room.participants.length;
   room.participants = room.participants.filter((p) => p.userId !== userId);
-  return room.participants.length < previousLength;
+  const removed = room.participants.length < previousLength;
+  if (
+    removed &&
+    room.gameOptions?.rematchPreviousRoomId &&
+    room.status === 'lobby' &&
+    room.participants.length === 1 &&
+    !room.participants[0].userId.startsWith('bot-')
+  ) {
+    const botId = `bot-${globalThis.crypto.randomUUID().slice(0, 10)}`;
+    room.participants.push({ userId: botId, joinedAt: new Date() });
+  }
+  return removed;
 }
 
 export function getRoomParticipantIds(room: GameRoom): string[] {

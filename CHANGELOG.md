@@ -25,25 +25,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.30.79] - 2026-10-23
 
 ### Added
+
 - standardize lobby player seat reordering across all games (ARC-1008) (ARC-1008)
 
 ### Fixed
-- use routes.gameRoom instead of routes.game in lobby reorder players test (ARC-1008) (ARC-1008)
 
+- use routes.gameRoom instead of routes.game in lobby reorder players test (ARC-1008) (ARC-1008)
 
 ## [1.30.78] - 2026-10-23
 
 ### Fixed
+
 - use routes.gameRoom instead of routes.game in first move indicator test (ARC-1007) (ARC-1007)
 - ensure fair 50/50 random first move selection and indicator (ARC-1007) (ARC-1007)
-
 
 ## [1.30.77] - 2026-10-23
 
 ### Fixed
+
 - use routes.gameRoom instead of routes.game in backgammon long setup test (ARC-1005) (ARC-1005)
 - set up starting heads in opposite corners for long nardy (ARC-1005) (ARC-1005)
-
 
 ## [1.30.76] - 2026-10-23
 

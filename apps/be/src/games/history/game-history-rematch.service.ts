@@ -77,16 +77,54 @@ export class GameHistoryRematchService {
     }
 
     if (!originalRoom) {
-      // Either room doesn't exist or rematch is already in progress
-      const exists = await this.primary
-        .findById(originalRoomId)
-        .select('_id')
-        .lean()
-        .exec();
+      const exists = await this.primary.findById(originalRoomId).lean().exec();
       if (!exists) {
         throw new NotFoundException(
           `Original room not found: ${originalRoomId}`,
         );
+      }
+      const existingRematchRoomId = (
+        exists.gameOptions as Record<string, unknown> | undefined
+      )?.rematchRoomId as string | undefined;
+
+      const existingRoom = existingRematchRoomId
+        ? await this.primary.findById(existingRematchRoomId).exec()
+        : await this.primary
+            .findOne({
+              'gameOptions.rematchPreviousRoomId': originalRoomId,
+              status: { $in: ['lobby', 'active'] },
+            })
+            .sort({ createdAt: -1 })
+            .exec();
+
+      if (
+        existingRoom &&
+        (existingRoom.status === 'lobby' ||
+          existingRoom.status === 'in_progress')
+      ) {
+        const isAlreadyIn = existingRoom.participants.some(
+          (p) => p.userId === userId,
+        );
+        if (!isAlreadyIn && existingRoom.status === 'lobby') {
+          existingRoom.participants.push({ userId, joinedAt: new Date() });
+          if (!existingRoom.gameOptions) {
+            existingRoom.gameOptions = {};
+          }
+          const currentInvited =
+            (existingRoom.gameOptions.rematchInvitedIds as string[]) || [];
+          if (currentInvited.includes(userId)) {
+            existingRoom.gameOptions.rematchInvitedIds = currentInvited.filter(
+              (id) => id !== userId,
+            );
+            existingRoom.markModified('gameOptions');
+          }
+          await existingRoom.save();
+        }
+        return {
+          id: existingRoom._id.toString(),
+          invitedIds:
+            (existingRoom.gameOptions?.rematchInvitedIds as string[]) || [],
+        };
       }
       throw new BadRequestException('Rematch already in progress');
     }
@@ -202,8 +240,33 @@ export class GameHistoryRematchService {
             { upsert: true },
           );
         } catch {
-          // Mirror is best-effort; game works from primary
+          void 0;
         }
+      }
+
+      await this.primary
+        .updateOne(
+          { _id: originalRoomId },
+          {
+            $set: {
+              'gameOptions.rematchRoomId': newRoom._id.toString(),
+              rematchPending: true,
+            },
+          },
+        )
+        .catch(() => {});
+      if (this.mirror) {
+        await this.mirror
+          .updateOne(
+            { _id: originalRoomId },
+            {
+              $set: {
+                'gameOptions.rematchRoomId': newRoom._id.toString(),
+                rematchPending: true,
+              },
+            },
+          )
+          .catch(() => {});
       }
 
       return { id: newRoom._id.toString(), invitedIds };

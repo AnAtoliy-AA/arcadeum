@@ -174,4 +174,32 @@ describe('NotificationBell', () => {
     expect(screen.getByTestId('notification-popover')).toBeDefined();
     expect(useLiveStatsStore.getState().isPopoverOpen).toBe(false);
   });
+
+  it('renders date in notification rows', async () => {
+    const mockItem = {
+      id: 'n-date',
+      category: 'daily_reward_ready' as const,
+      titleKey: 'Daily Bonus',
+      bodyKey: 'Your reward is ready',
+      i18nParams: {},
+      url: '/rewards',
+      data: {},
+      read: false,
+      createdAt: new Date().toISOString(),
+    };
+    const { notificationsApi } = await import('./notifications.api');
+    vi.mocked(notificationsApi.listInbox).mockResolvedValueOnce([mockItem]);
+
+    await act(async () => {
+      render(<NotificationBell />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('notification-bell'));
+    });
+
+    const dateEl = await screen.findByTestId('notification-date');
+    expect(dateEl).toBeDefined();
+    expect(dateEl.textContent?.length).toBeGreaterThan(0);
+  });
 });

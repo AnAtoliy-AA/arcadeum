@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
+import { usePachisiKeyboardTurn } from '../hooks';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
 import { boardVars } from '../lib/theme';
 import {
@@ -72,6 +73,12 @@ function extractLastRoll(snapshot: PachisiClientState): {
       rollerId: snapshot.playerOrder[snapshot.currentTurnIndex] ?? null,
     };
   }
+  if (snapshot.consecutiveSixes > 0) {
+    return {
+      die: 6,
+      rollerId: snapshot.playerOrder[snapshot.currentTurnIndex] ?? null,
+    };
+  }
   if (snapshot.lastDie != null) {
     return {
       die: snapshot.lastDie,
@@ -120,10 +127,21 @@ export function PachisiBoard({
     [snapshot],
   );
 
+  const canRoll = myTurn && snapshot.phase === 'roll';
+  const canMove = myTurn && snapshot.phase === 'move';
+  const isGameOver = snapshot.phase === 'game_over';
+  const isRolling =
+    actionBusy && snapshot.phase === 'roll' && snapshot.die == null;
+  const isExtraRoll = canRoll && snapshot.consecutiveSixes > 0;
+
   const [lastDie, setLastDie] = useState<number | null>(
-    snapshot.die ?? snapshot.lastDie ?? extracted?.die ?? null,
+    isExtraRoll
+      ? 6
+      : (snapshot.die ?? snapshot.lastDie ?? extracted?.die ?? null),
   );
-  if (
+  if (isExtraRoll && lastDie !== 6) {
+    setLastDie(6);
+  } else if (
     (snapshot.die != null && snapshot.die !== lastDie) ||
     (extracted?.die != null && extracted.die !== lastDie)
   ) {
@@ -131,15 +149,20 @@ export function PachisiBoard({
   }
 
   const isMyRoll =
+    isExtraRoll ||
     (myTurn && snapshot.die != null) ||
     (extracted?.rollerId != null && extracted.rollerId === currentUserId);
 
   const [myLastDie, setMyLastDie] = useState<number | null>(
-    isMyRoll && (snapshot.die ?? extracted?.die) != null
-      ? (snapshot.die ?? extracted?.die ?? null)
-      : null,
+    isExtraRoll
+      ? 6
+      : isMyRoll && (snapshot.die ?? extracted?.die) != null
+        ? (snapshot.die ?? extracted?.die ?? null)
+        : null,
   );
-  if (
+  if (isExtraRoll && myLastDie !== 6) {
+    setMyLastDie(6);
+  } else if (
     isMyRoll &&
     (snapshot.die ?? extracted?.die) != null &&
     (snapshot.die ?? extracted?.die) !== myLastDie
@@ -147,13 +170,9 @@ export function PachisiBoard({
     setMyLastDie(snapshot.die ?? extracted?.die ?? null);
   }
 
-  const effectiveLastDie = myLastDie ?? lastDie ?? extracted?.die ?? null;
-
-  const canRoll = myTurn && snapshot.phase === 'roll';
-  const canMove = myTurn && snapshot.phase === 'move';
-  const isGameOver = snapshot.phase === 'game_over';
-  const isRolling =
-    actionBusy && snapshot.phase === 'roll' && snapshot.die == null;
+  const effectiveLastDie = isExtraRoll
+    ? 6
+    : (myLastDie ?? lastDie ?? extracted?.die ?? null);
 
   const mySeat = currentUserId ? snapshot.seats[currentUserId] : undefined;
   const boardRotation = mySeat != null ? (BOARD_ROTATIONS[mySeat] ?? 0) : 0;
@@ -202,6 +221,16 @@ export function PachisiBoard({
         : new Set<number>(),
     [canMove, currentUserId, snapshot.die, snapshot.tokens],
   );
+
+  usePachisiKeyboardTurn({
+    myTurn,
+    isGameOver,
+    actionBusy,
+    canMove,
+    movableTokenIds: movable,
+    onPassTurn,
+    onMove,
+  });
 
   const highlightedTrackCells = useMemo(() => {
     const indices = new Set<number>();
@@ -332,9 +361,11 @@ export function PachisiBoard({
         isGameOver={isGameOver}
         isLastRollNoMoves={isLastRollNoMoves}
         lastDie={effectiveLastDie}
-        lastRollerId={extracted?.rollerId ?? null}
+        lastRollerId={
+          isExtraRoll ? currentUserId : (extracted?.rollerId ?? null)
+        }
         movableCount={movable.size}
-        myLastDie={myLastDie}
+        myLastDie={isExtraRoll ? 6 : myLastDie}
         myTurn={myTurn}
         onPassTurn={onPassTurn}
         snapshot={snapshot}
@@ -440,10 +471,11 @@ export function PachisiBoard({
           boardRotation={boardRotation}
           canRoll={canRoll}
           die={snapshot.die}
+          isExtraRoll={isExtraRoll}
           isGameOver={isGameOver}
           isRolling={isRolling}
           lastDie={effectiveLastDie}
-          myLastDie={myLastDie}
+          myLastDie={isExtraRoll ? 6 : myLastDie}
           onRoll={onRoll}
         />
       </div>

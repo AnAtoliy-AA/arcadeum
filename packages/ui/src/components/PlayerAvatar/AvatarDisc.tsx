@@ -100,6 +100,7 @@ export function AvatarDisc({
 
   return (
     <div
+      data-avatar-disc=""
       style={{
         width: disc,
         height: disc,

@@ -7,68 +7,103 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.80] - 2026-10-23
+
+### Added
+
+- rework game lobby UX and visual hierarchy (ARC-1010) (ARC-1010)
+
+### Fixed
+
+- use compact sm avatar size in lobby player list to preserve username visibility (ARC-1010) (ARC-1010)
+
+## [1.30.79] - 2026-10-23
+
+### Added
+
+- standardize lobby player seat reordering across all games (ARC-1008) (ARC-1008)
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in lobby reorder players test (ARC-1008) (ARC-1008)
+
+## [1.30.78] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in first move indicator test (ARC-1007) (ARC-1007)
+- ensure fair 50/50 random first move selection and indicator (ARC-1007) (ARC-1007)
+
+## [1.30.77] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in backgammon long setup test (ARC-1005) (ARC-1005)
+- set up starting heads in opposite corners for long nardy (ARC-1005) (ARC-1005)
+
 ## [1.30.76] - 2026-10-23
 
 ### Fixed
-- ensure in-game and lobby text chat sending and display (ARC-1009) (ARC-1009)
 
+- ensure in-game and lobby text chat sending and display (ARC-1009) (ARC-1009)
 
 ## [1.30.75] - 2026-10-22
 
 ### Fixed
-- retain player six on bonus roll instead of opponent prior die (ARC-1004) (ARC-1004)
 
+- retain player six on bonus roll instead of opponent prior die (ARC-1004) (ARC-1004)
 
 ## [1.30.74] - 2026-10-22
 
 ### Added
-- add spacebar support for rolling dice and taking turns (ARC-1003) (ARC-1003)
 
+- add spacebar support for rolling dice and taking turns (ARC-1003) (ARC-1003)
 
 ## [1.30.73] - 2026-10-22
 
 ### Added
-- add relative and full date to notification items (ARC-1002) (ARC-1002)
 
+- add relative and full date to notification items (ARC-1002) (ARC-1002)
 
 ## [1.30.72] - 2026-10-22
 
 ### Documentation
-- add community feedback and bug fixes sprint (ARC-1000) (ARC-1000)
 
+- add community feedback and bug fixes sprint (ARC-1000) (ARC-1000)
 
 ## [1.30.71] - 2026-10-22
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.30.70] - 2026-10-15
 
 ### Added
-- add real-time war updates and in-game rival match HUD (ARC-982) (ARC-982)
 
+- add real-time war updates and in-game rival match HUD (ARC-982) (ARC-982)
 
 ## [1.30.69] - 2026-10-15
 
 ### Added
-- add clan wars worker automation, matchmaking, and post-match resolution (ARC-981) (ARC-981)
 
+- add clan wars worker automation, matchmaking, and post-match resolution (ARC-981) (ARC-981)
 
 ## [1.30.68] - 2026-10-14
 
 ### Added
-- add interactive strategy guide practice drills across pillar guides (ARC-980) (ARC-980)
 
+- add interactive strategy guide practice drills across pillar guides (ARC-980) (ARC-980)
 
 ## [1.30.67] - 2026-10-12
 
 ### Added
+
 - add milestone celebration popups to Sudoku, Solitaire, and Minesweeper (ARC-000)
 
 ### Fixed
-- stabilize solo milestones e2e tests for sudoku and solitaire (ARC-000)
 
+- stabilize solo milestones e2e tests for sudoku and solitaire (ARC-000)
 
 ## [1.30.66] - 2026-10-11
 

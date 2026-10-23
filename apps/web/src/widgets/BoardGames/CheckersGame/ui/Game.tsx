@@ -19,7 +19,6 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type {
   Board,
@@ -51,13 +50,18 @@ function CheckersGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: CheckersGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -122,16 +126,6 @@ function CheckersGameImpl({
   const highlightedCell = useGameChatStore((s) => s.highlightedCell);
   const persistedCell = useGameChatStore((s) => s.persistedCell);
   const effectiveHighlight = highlightedCell ?? persistedCell;
-
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -369,7 +363,7 @@ function CheckersGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
-          onReorderPlayers={handleReorderPlayers}
+          onReorderPlayers={onReorderPlayers}
           onStartGame={(opts) => {
             setStartBusy(true);
             startSession({

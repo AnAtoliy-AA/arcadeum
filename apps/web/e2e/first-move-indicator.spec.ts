@@ -63,7 +63,7 @@ test.describe('First Move Indicator', () => {
       },
     });
 
-    await navigateTo(page, routes.game(roomId));
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const turnBadge = page.locator('[data-testid="turn-indicator-label"]');

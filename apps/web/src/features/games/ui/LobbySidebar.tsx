@@ -280,7 +280,7 @@ export function LobbySidebar({
                   <InGameAvatar
                     playerId={member.id}
                     name={member.displayName}
-                    size="md"
+                    size="sm"
                   />
                   <PlayerInfo>
                     <div className="flex flex-row flex-wrap items-center gap-1.5 min-w-0">

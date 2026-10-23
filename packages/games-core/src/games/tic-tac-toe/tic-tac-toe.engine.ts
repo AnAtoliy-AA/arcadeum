@@ -69,7 +69,8 @@ export class TicTacToeEngine extends BaseGameEngine<TicTacToeState> {
       : [];
 
     const shouldRandomize =
-      (config as Record<string, unknown>)?.firstPlayer === 'random';
+      (config as Record<string, unknown>)?.firstPlayer === 'random' ||
+      (options as Record<string, unknown>)?.firstPlayer === 'random';
 
     const orderedPlayerIds = shouldRandomize
       ? [...playerIds].sort(() => Math.random() - 0.5)

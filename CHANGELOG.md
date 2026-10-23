@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.79] - 2026-10-23
+
+### Added
+- standardize lobby player seat reordering across all games (ARC-1008) (ARC-1008)
+
+### Fixed
+- use routes.gameRoom instead of routes.game in lobby reorder players test (ARC-1008) (ARC-1008)
+
+
 ## [1.30.78] - 2026-10-23
 
 ### Fixed

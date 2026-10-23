@@ -69,8 +69,14 @@ function CascadeGameImpl({
   onShowRulesClose,
 }: CascadeGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
   const isLobby = room?.status === 'lobby';
 
   const {
@@ -175,6 +181,7 @@ function CascadeGameImpl({
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />

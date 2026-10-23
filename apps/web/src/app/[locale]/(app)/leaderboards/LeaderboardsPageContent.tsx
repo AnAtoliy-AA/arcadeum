@@ -269,11 +269,13 @@ export default function LeaderboardsPageContent({
                   'Updated every 30 seconds. Top 100 players gear up for the Champions Cup.'}
               </span>
             </div>
-            <EventTicker
-              events={data?.tickerEvents ?? []}
-              liveLabel={tickerT.live ?? 'Live'}
-              data-testid="leaderboard-ticker"
-            />
+            <div className="min-h-[44px]">
+              <EventTicker
+                events={data?.tickerEvents ?? []}
+                liveLabel={tickerT.live ?? 'Live'}
+                data-testid="leaderboard-ticker"
+              />
+            </div>
           </HeroBackdrop>
 
           <FreshnessIndicator

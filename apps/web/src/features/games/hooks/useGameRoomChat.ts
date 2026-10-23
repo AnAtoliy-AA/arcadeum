@@ -15,15 +15,18 @@ import type { ChatScope, CriticalLogEntry } from '@/shared/types/games';
 export function useGameRoomChat(
   roomId: string,
   userId: string | null,
-  isLobby: boolean,
+  _isLobby?: boolean,
 ) {
   useEffect(() => {
-    if (!isLobby || !userId) return;
+    if (!roomId) return;
 
     const handleChat = async (payload: unknown) => {
       const entry = await maybeDecrypt<CriticalLogEntry>(payload);
       if (entry?.id) {
-        useGameChatStore.getState().addLog(entry);
+        useGameChatStore.getState().addLog({
+          ...entry,
+          type: entry.type || 'message',
+        });
       }
     };
 
@@ -44,30 +47,30 @@ export function useGameRoomChat(
       gameSocket.off('games.room.chat', handleChat);
       gameSocket.off('games.room.delete_chat', handleDelete);
     };
-  }, [isLobby, userId]);
+  }, [roomId]);
 
   const sendMessage = useCallback(
     (message: string, scope: ChatScope) => {
-      if (!userId || !isLobby) return;
+      if (!userId) return;
       gameSocket.emit('games.room.chat', { roomId, userId, message, scope });
     },
-    [roomId, userId, isLobby],
+    [roomId, userId],
   );
 
   const deleteMessage = useCallback(
     (messageId: string) => {
-      if (!userId || !isLobby) return;
+      if (!userId) return;
       gameSocket.emit('games.room.delete_chat', {
         roomId,
         userId,
         messageId,
       });
     },
-    [roomId, userId, isLobby],
+    [roomId, userId],
   );
 
   return {
-    sendMessage: isLobby ? sendMessage : undefined,
-    deleteMessage: isLobby ? deleteMessage : undefined,
+    sendMessage,
+    deleteMessage,
   } as const;
 }

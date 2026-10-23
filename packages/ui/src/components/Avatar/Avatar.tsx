@@ -1,23 +1,23 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
 import { CosmeticSprite } from '../CosmeticSprite';
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
 
 const sizeMap: Record<AvatarSize, number> = {
-  sm: 32,
-  md: 48,
-  lg: 64,
-  xl: 80,
+  sm: 36,
+  md: 52,
+  lg: 68,
+  xl: 84,
 };
 
 const fontSizeMap: Record<AvatarSize, number> = {
-  sm: 14,
-  md: 18,
-  lg: 24,
-  xl: 32,
+  sm: 15,
+  md: 20,
+  lg: 26,
+  xl: 34,
 };
 
 function getInitials(name: string): string {
@@ -57,9 +57,21 @@ export const Avatar = memo(function Avatar({
   borderWidth,
   priority = false,
 }: AvatarProps): ReactElement {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
+
   const initials = useMemo(() => getInitials(name), [name]);
   const sizeValue = sizeMap[size];
   const fontSize = fontSizeMap[size];
+  const hasValidSrc =
+    src &&
+    src.trim() !== '' &&
+    src !== 'null' &&
+    src !== 'undefined' &&
+    !imgError;
 
   return (
     <div
@@ -72,7 +84,7 @@ export const Avatar = memo(function Avatar({
         borderWidth: borderWidth ?? 1,
         borderStyle: 'solid',
         borderColor: borderColor ?? 'var(--borderColor)',
-        overflow: src ? 'visible' : 'hidden',
+        overflow: hasValidSrc ? 'visible' : 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -81,12 +93,13 @@ export const Avatar = memo(function Avatar({
         ...style,
       }}
     >
-      {src ? (
+      {hasValidSrc ? (
         <CosmeticSprite
           src={src}
           alt={alt ?? name}
           size={sizeValue}
           priority={priority}
+          onError={() => setImgError(true)}
         />
       ) : (
         <span

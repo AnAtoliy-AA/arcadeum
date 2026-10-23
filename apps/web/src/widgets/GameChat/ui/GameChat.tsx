@@ -376,6 +376,7 @@ export function GameChat({
             placeholder={canSend ? SCOPE_PLACEHOLDER[scope] : signInPlaceholder}
             disabled={!canSend}
             aria-label="Message"
+            data-testid="chat-input"
             style={{
               flex: 1,
               background: 'transparent',
@@ -399,6 +400,7 @@ export function GameChat({
             onClick={send}
             disabled={!draft.trim() || !canSend}
             aria-label="Send message"
+            data-testid="chat-send-btn"
           >
             <span className="text-[14px] text-[#06011b] font-bold">↑</span>
           </IconButton>

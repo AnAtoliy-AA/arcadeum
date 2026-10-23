@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.83] - 2026-10-23
+
+### Added
+- enhance field and board size visibility and selectors (ARC-1011) (ARC-1011)
+
+### Fixed
+- use compact sm avatar size in lobby player list (ARC-1011) (ARC-1011)
+
+
 ## [1.30.82] - 2026-10-23
 
 ### Fixed

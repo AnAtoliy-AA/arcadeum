@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.82] - 2026-10-23
+
+### Fixed
+- use routes.gameRoom instead of routes.game in rematch flow test (ARC-1006) (ARC-1006)
+- overhaul rematch and play again lifecycle with bot fallback (ARC-1006) (ARC-1006)
+
+
 ## [1.30.81] - 2026-10-23
 
 ### Fixed

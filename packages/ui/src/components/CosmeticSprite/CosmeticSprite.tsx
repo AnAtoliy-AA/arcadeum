@@ -16,6 +16,7 @@ export interface CosmeticSpriteProps {
   className?: string;
   'data-testid'?: string;
   priority?: boolean;
+  onError?: () => void;
 }
 
 export const CosmeticSprite = memo(function CosmeticSprite({
@@ -27,6 +28,7 @@ export const CosmeticSprite = memo(function CosmeticSprite({
   className,
   'data-testid': testId,
   priority = false,
+  onError,
 }: CosmeticSpriteProps): ReactElement {
   const targetWidth = width ?? size;
   const targetHeight = height ?? size;
@@ -70,6 +72,7 @@ export const CosmeticSprite = memo(function CosmeticSprite({
       fetchPriority={priority ? 'high' : 'auto'}
       data-testid={testId}
       className={cx('shrink-0 object-contain', className)}
+      onError={onError}
     />
   );
 });

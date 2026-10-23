@@ -4,6 +4,7 @@ import { memo } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { GameRoomMemberSummary } from '@/shared/types/games';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import type { PassDirection } from '../types';
 import { PASS_DIRECTION_LABELS } from '../lib/constants';
 
@@ -48,6 +49,8 @@ export const TurnBadge = memo(function TurnBadge({
     label = t('games.hearts_v1.game.waitingForOpponent');
   }
 
+  const showAvatar = !!currentEntryId && phase !== 'game_over';
+
   return (
     <div className="flex items-center justify-center">
       <div
@@ -59,6 +62,14 @@ export const TurnBadge = memo(function TurnBadge({
             : 'border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--foreground)]',
         )}
       >
+        {showAvatar && (
+          <InGameAvatar
+            playerId={currentEntryId}
+            name={getPlayerName(currentEntryId)}
+            size="icon"
+            data-testid="hearts-turn-avatar"
+          />
+        )}
         <span
           aria-hidden="true"
           className={

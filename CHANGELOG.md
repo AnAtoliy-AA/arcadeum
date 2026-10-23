@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.76] - 2026-10-23
+
+### Fixed
+- ensure in-game and lobby text chat sending and display (ARC-1009) (ARC-1009)
+
+
 ## [1.30.75] - 2026-10-22
 
 ### Fixed

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.76] - 2026-10-23
+
+### Fixed
+- ensure in-game and lobby text chat sending and display (ARC-1009) (ARC-1009)
+
+
+## [1.30.75] - 2026-10-22
+
+### Fixed
+- retain player six on bonus roll instead of opponent prior die (ARC-1004) (ARC-1004)
+
+
+## [1.30.74] - 2026-10-22
+
+### Added
+- add spacebar support for rolling dice and taking turns (ARC-1003) (ARC-1003)
+
+
+## [1.30.73] - 2026-10-22
+
+### Added
+- add relative and full date to notification items (ARC-1002) (ARC-1002)
+
+
 ## [1.30.72] - 2026-10-22
 
 ### Documentation

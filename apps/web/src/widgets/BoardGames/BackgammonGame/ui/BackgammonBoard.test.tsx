@@ -191,4 +191,43 @@ describe('BackgammonBoard', () => {
     fireEvent.click(barZone);
     expect(screen.getByTestId('point-20').textContent).toContain('+4');
   });
+
+  it('rolls dice on Space key press during roll phase', () => {
+    const handleRoll = vi.fn();
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={handleRoll}
+        snapshot={mockState}
+      />,
+    );
+
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' });
+    expect(handleRoll).toHaveBeenCalledTimes(1);
+  });
+
+  it('makes sole legal move on Space key press', () => {
+    const handleMove = vi.fn();
+    const moveState: BackgammonClientState = {
+      ...mockState,
+      phase: 'move',
+      dice: [3],
+      rolledDice: [3, 0],
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={handleMove}
+        onRoll={vi.fn()}
+        snapshot={moveState}
+      />,
+    );
+
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' });
+    expect(handleMove).toHaveBeenCalledWith({ from: 23, to: 20 });
+  });
 });

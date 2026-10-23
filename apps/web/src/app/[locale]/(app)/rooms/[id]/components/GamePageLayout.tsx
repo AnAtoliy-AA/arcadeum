@@ -215,20 +215,16 @@ export function GamePageLayout(props: GamePageLayoutProps) {
     [isLobby, roomChatDelete, roomId, userId],
   );
 
-  // Subscribe to the store's sendMessage so we can detect when a game widget
-  // overwrites it with a session-based function.  When that happens we
-  // re-register the lobby-level function so chat keeps working in lobby mode.
   const storeSendMessage = useGameChatStore((s) => s.sendMessage);
 
   useEffect(() => {
-    if (isLobby && roomChatSend) {
+    if ((isLobby || !storeSendMessage) && roomChatSend) {
       useGameChatStore.getState().registerSendMessage(roomChatSend);
     }
   }, [isLobby, roomChatSend, storeSendMessage]);
 
-  // Seed chat store with existing room chat logs when in lobby
   useEffect(() => {
-    if (isLobby && Array.isArray(room.chatLogs) && room.chatLogs.length > 0) {
+    if (Array.isArray(room.chatLogs) && room.chatLogs.length > 0) {
       const logs = room.chatLogs.map((l) => ({
         ...l,
         type: 'message' as const,
@@ -236,7 +232,13 @@ export function GamePageLayout(props: GamePageLayoutProps) {
       }));
       useGameChatStore.getState().setLogs(logs);
     }
-  }, [isLobby, room.chatLogs]);
+  }, [room.chatLogs]);
+
+  useEffect(() => {
+    return () => {
+      useGameChatStore.getState().clear();
+    };
+  }, [roomId]);
 
   return (
     <>

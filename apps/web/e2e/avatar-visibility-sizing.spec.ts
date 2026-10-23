@@ -50,10 +50,13 @@ test.describe('Avatar Visibility and Sizing (ARC-1001)', () => {
     const hostName = page.getByText('HostHero');
     await expect(hostName).toBeVisible();
 
-    const avatarDiscs = page.locator('[data-avatar-disc]');
-    await expect(avatarDiscs.first()).toBeVisible();
+    const avatarDisc = page
+      .locator('[data-avatar-disc]')
+      .filter({ hasNot: page.locator('[data-profile-menu] *') })
+      .first();
+    await expect(avatarDisc).toBeVisible();
 
-    const box = await avatarDiscs.first().boundingBox();
+    const box = await avatarDisc.boundingBox();
     expect(box).toBeTruthy();
     if (box) {
       expect(box.width).toBeGreaterThanOrEqual(40);

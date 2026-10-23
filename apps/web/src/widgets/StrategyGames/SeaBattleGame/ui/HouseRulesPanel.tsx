@@ -34,6 +34,52 @@ export function HouseRulesPanel({
       <span className="text-[18px] font-semibold">
         {t('games.create.sectionHouseRules') || 'House Rules'}
       </span>
+      <div
+        data-testid="sea-battle-grid-size-section"
+        className="flex flex-col items-stretch gap-2 p-3 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-base">📐</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
+            {t('games.create.seaBattleGridSize') || 'Grid Size'}
+          </span>
+          {ruleComingSoon.get('gridSize') && (
+            <span className="text-xs text-[#f59e0b] font-semibold">
+              {t('games.create.comingSoon') || 'Coming Soon'}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-row items-stretch gap-2 flex-wrap">
+          {([10, 15, 20] as const).map((gs) => {
+            const disabled = !!ruleComingSoon.get('gridSize');
+            const active = gridSize === gs;
+            return (
+              <Button
+                className={`rounded-[8px] font-semibold text-[13px] ${
+                  active
+                    ? 'bg-blue-500/20 border-blue-500/60 text-blue-500 hover:bg-blue-500/25'
+                    : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
+                } ${disabled ? 'opacity-40' : 'opacity-100'}`}
+                key={gs}
+                variant="chip"
+                size="sm"
+                data-testid={`sea-battle-grid-size-${gs}`}
+                disabled={disabled}
+                data-active={active ? 'on' : undefined}
+                onClick={() => {
+                  if (disabled) return;
+                  onOptionChange({
+                    gridSize: gs,
+                    shipCount: getDefaultShipCount(gs),
+                  });
+                }}
+              >
+                {gs}×{gs}
+              </Button>
+            );
+          })}
+        </div>
+      </div>
       <div className="flex flex-col items-stretch gap-2">
         <span className="text-[16px] font-semibold">Game Mode</span>
         <div className="flex flex-row items-stretch gap-2 flex-wrap">
@@ -71,45 +117,6 @@ export function HouseRulesPanel({
                 <span className="text-[13px] font-semibold">{mode.label}</span>
                 <span className="text-[11px] opacity-70">{mode.desc}</span>
               </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex flex-col items-stretch gap-2">
-        <span className="text-[16px] font-semibold">
-          {t('games.create.seaBattleGridSize') || 'Grid Size'}
-          {ruleComingSoon.get('gridSize') && (
-            <span className="text-[48px] text-[#f59e0b] font-semibold -ml-8">
-              {t('games.create.comingSoon') || 'Coming Soon'}
-            </span>
-          )}
-        </span>
-        <div className="flex flex-row items-stretch gap-2 flex-wrap">
-          {([10, 15, 20] as const).map((gs) => {
-            const disabled = !!ruleComingSoon.get('gridSize');
-            const active = gridSize === gs;
-            return (
-              <Button
-                className={`rounded-[8px] font-semibold text-[13px] ${
-                  active
-                    ? 'bg-blue-500/20 border-blue-500/60 text-blue-500 hover:bg-blue-500/25'
-                    : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
-                } ${disabled ? 'opacity-40' : 'opacity-100'}`}
-                key={gs}
-                variant="chip"
-                size="sm"
-                disabled={disabled}
-                data-active={active ? 'on' : undefined}
-                onClick={() => {
-                  if (disabled) return;
-                  onOptionChange({
-                    gridSize: gs,
-                    shipCount: getDefaultShipCount(gs),
-                  });
-                }}
-              >
-                {gs}×{gs}
-              </Button>
             );
           })}
         </div>

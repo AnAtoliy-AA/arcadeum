@@ -101,16 +101,16 @@ export function GoLobby({
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
-        <GameThemePicker
-          selectedTheme={variant}
-          onSelect={(themeId) =>
-            setOption({ theme: themeId, variant: themeId })
-          }
-          disabled={!isHost}
-        />
-      </LobbyOptionSection>
-      <LobbyOptionSection title={t('games.go_v1.lobby.boardSize')}>
+      <div
+        data-testid="go-board-size-section"
+        className="flex flex-col items-stretch gap-2 p-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-base">📐</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
+            {t('games.go_v1.lobby.boardSize')}
+          </span>
+        </div>
         <div className="flex flex-row flex-wrap gap-2">
           {GO_BOARD_SIZES.map(({ size, label }) => (
             <button
@@ -121,10 +121,10 @@ export function GoLobby({
               aria-pressed={options.boardSize === size}
               onClick={() => setOption({ boardSize: size })}
               className={cx(
-                'rounded-lg border px-4 py-2 text-sm font-semibold transition-colors',
+                'rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all',
                 options.boardSize === size
-                  ? 'border-[#3fd38666] bg-[#2563eb] text-white'
-                  : 'border-[var(--borderColor)] bg-[var(--backgroundHover)]',
+                  ? 'border-blue-500 bg-blue-600 text-white shadow-md ring-1 ring-blue-400/50'
+                  : 'border-[var(--borderColor)] bg-[var(--surface)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--textPrimary)]',
                 !isHost && 'cursor-not-allowed opacity-50',
               )}
             >
@@ -132,9 +132,18 @@ export function GoLobby({
             </button>
           ))}
         </div>
-        <span className="text-[14px] opacity-[0.7]">
+        <span className="text-xs text-[var(--textSecondary)] opacity-80">
           {t('games.go_v1.lobby.boardSizeHint')}
         </span>
+      </div>
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={variant}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.go_v1.lobby.aiDifficulty')}>
         <div className="grid grid-cols-2 gap-2">

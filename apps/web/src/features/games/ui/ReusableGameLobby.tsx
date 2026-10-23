@@ -218,6 +218,23 @@ export function ReusableGameLobby({
   const showHostBots =
     isHost && room.status === 'lobby' && enableBots && room.playerCount === 1;
 
+  const fieldSizeBadgeText = useMemo(() => {
+    const opts = room.gameOptions;
+    if (!opts) return null;
+    if (opts.boardSize !== undefined) {
+      if (opts.boardSize === 'infinity') return 'Field: ∞';
+      return `Field: ${opts.boardSize}×${opts.boardSize}`;
+    }
+    if (opts.gridSize !== undefined) {
+      return `Grid: ${opts.gridSize}×${opts.gridSize}`;
+    }
+    if (room.gameId === 'checkers_v1') {
+      const mode = (opts.mode as string) ?? 'american';
+      return mode === 'international' ? 'Board: 10×10' : 'Board: 8×8';
+    }
+    return null;
+  }, [room.gameOptions, room.gameId]);
+
   const handleToggleQueue = useCallback(() => {
     if (isQueued) {
       leaveQueue();
@@ -262,6 +279,17 @@ export function ReusableGameLobby({
               <span>⚡</span>
               <span>{fastRoomLabel}</span>
             </FastBadge>
+          )}
+          {fieldSizeBadgeText && (
+            <span
+              data-testid="lobby-field-size-badge"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[rgba(59,130,246,0.35)] bg-[rgba(59,130,246,0.15)] text-[#93c5fd] shadow-sm shrink-0"
+            >
+              <span className="text-[12px]">⊞</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.5px]">
+                {fieldSizeBadgeText}
+              </span>
+            </span>
           )}
           {isRanked && (
             <span

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.81] - 2026-10-23
+
+### Fixed
+- ensure universal avatar visibility, error fallback, and increased sizing (ARC-1001) (ARC-1001)
+
+
 ## [1.30.80] - 2026-10-23
 
 ### Added

@@ -467,7 +467,7 @@ export function LobbySidebar({
         <DeleteButton
           onClick={() => setShowLeaveConfirm(true)}
           size="md"
-          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
+          className="mt-2 shadow-none"
         >
           {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
         </DeleteButton>

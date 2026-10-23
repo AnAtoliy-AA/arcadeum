@@ -80,7 +80,7 @@ test.describe('Backgammon Long Setup', () => {
       },
     });
 
-    await navigateTo(page, routes.game(roomId));
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const board = page.locator('[data-testid="backgammon-board"]');

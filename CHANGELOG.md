@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.80] - 2026-10-23
+
+### Added
+- rework game lobby UX and visual hierarchy (ARC-1010) (ARC-1010)
+
+### Fixed
+- use compact sm avatar size in lobby player list to preserve username visibility (ARC-1010) (ARC-1010)
+
+
 ## [1.30.79] - 2026-10-23
 
 ### Added

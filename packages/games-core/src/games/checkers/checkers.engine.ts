@@ -53,15 +53,24 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
     const ruleConfig = MODE_CONFIGS[options.mode];
 
+    const shouldRandomize =
+      (config as Record<string, unknown>)?.firstPlayer === 'random' ||
+      (options as Record<string, unknown>)?.firstPlayer === 'random';
+
+    const orderedPlayerIds =
+      shouldRandomize && playerIds.length === 2 && Math.random() < 0.5
+        ? [playerIds[1], playerIds[0]]
+        : [...playerIds];
+
     const players = [
       {
-        playerId: playerIds[0],
+        playerId: orderedPlayerIds[0],
         color: 'light' as const,
         alive: true,
         piecesRemaining: ruleConfig.piecesPerPlayer,
       },
       {
-        playerId: playerIds[1],
+        playerId: orderedPlayerIds[1],
         color: 'dark' as const,
         alive: true,
         piecesRemaining: ruleConfig.piecesPerPlayer,
@@ -72,12 +81,12 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       phase: GAME_PHASE.PLAYING,
       options,
       board: createInitialBoard(
-        playerIds[1],
-        playerIds[0],
+        orderedPlayerIds[1],
+        orderedPlayerIds[0],
         options.mode,
       ),
       currentTurnIndex: 0,
-      playerOrder: [...playerIds],
+      playerOrder: [...orderedPlayerIds],
       players,
       winnerId: null,
       isDraw: false,

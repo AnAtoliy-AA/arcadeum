@@ -71,7 +71,7 @@ test.describe('Rematch & Play Again Flow', () => {
       },
     });
 
-    await navigateTo(page, routes.game(roomId));
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const rematchButton = page.locator('[data-testid="rematch-button"]');

@@ -23,37 +23,54 @@ test.describe('Rematch & Play Again Flow', () => {
     const userId = '507f191e810c19729de860ea';
     const oppId = '507f191e810c19729de860eb';
 
-    await page.route(
-      `**/api/games/history/${roomId}/rematch`,
-      async (route) => {
-        await route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ room: rematchRoomId }),
-        });
-      },
-    );
+    await page.route(`*/**/games/history/${roomId}/rematch`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ room: rematchRoomId }),
+      });
+    });
 
     await mockRoomInfo(page, {
       room: {
         id: roomId,
         name: 'TicTacToe Showdown',
-        gameId: 'tic-tac-toe_v1',
+        gameId: 'tic_tac_toe_v1',
         status: 'completed',
         playerCount: 2,
+        members: [
+          { id: userId, userId, displayName: 'Player 1', isHost: true },
+          { id: oppId, userId: oppId, displayName: 'Player 2', isHost: false },
+        ],
       },
     });
 
     await mockGameSocket(page, roomId, userId, {
-      gameId: 'tic-tac-toe_v1',
+      gameId: 'tic_tac_toe_v1',
       roomJoinedPayload: {
         status: 'completed',
         session: {
           id: 'sess-ttt-end',
           status: 'completed',
           state: {
-            phase: 'finished',
-            grid: ['X', 'O', 'X', 'O', 'X', 'O', 'X', null, null],
+            phase: 'game_over',
+            options: {
+              variant: 'adventure',
+              theme: 'adventure',
+              boardSize: 3,
+              teamMode: false,
+              expansionMargin: 1,
+              infinityWinLength: 5,
+            },
+            board: [
+              ['X', 'O', 'X'],
+              ['O', 'X', 'O'],
+              ['X', null, null],
+            ],
+            origin: { row: 0, col: 0 },
+            winLength: 3,
+            teams: [],
+            winLine: null,
             currentTurnIndex: 0,
             playerOrder: [userId, oppId],
             players: [
@@ -61,10 +78,7 @@ test.describe('Rematch & Play Again Flow', () => {
               { playerId: oppId, symbol: 'O', alive: true },
             ],
             winnerId: userId,
-            gameResult: {
-              winnerIds: [userId],
-              isDraw: false,
-            },
+            isDraw: false,
             logs: [],
           },
         },

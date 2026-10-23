@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.77] - 2026-10-23
+
+### Fixed
+- use routes.gameRoom instead of routes.game in backgammon long setup test (ARC-1005) (ARC-1005)
+- set up starting heads in opposite corners for long nardy (ARC-1005) (ARC-1005)
+
+
 ## [1.30.76] - 2026-10-23
 
 ### Fixed

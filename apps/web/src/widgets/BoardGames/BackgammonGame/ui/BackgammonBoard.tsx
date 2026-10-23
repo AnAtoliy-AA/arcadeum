@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { getAllLegalMoves } from '@arcadeum/games-core/games/backgammon/backgammon.utils';
 import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
@@ -160,6 +160,43 @@ export function BackgammonBoard({
       setSelectedFrom(null);
     }
   };
+
+  useEffect(() => {
+    if (!canMove) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' && e.key !== ' ') return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (selectedFrom !== null && targetMap.size === 1) {
+        e.preventDefault();
+        const [targetPoint] = Array.from(targetMap.keys());
+        onMove({ from: selectedFrom, to: targetPoint });
+        setSelectedFrom(null);
+        return;
+      }
+
+      if (selectedFrom === null && legalMoves.length === 1) {
+        e.preventDefault();
+        const singleMove = legalMoves[0];
+        onMove({ from: singleMove.from, to: singleMove.to });
+        setSelectedFrom(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [canMove, selectedFrom, targetMap, legalMoves, onMove]);
 
   const { gridProps, getCellProps } = useBoardKeyboardNavigation({
     rows: 2,

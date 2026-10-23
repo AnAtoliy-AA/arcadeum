@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { cx } from '../../utils/cx';
 import { AnimatedDice, type DiceSize, type DiceVariant } from './AnimatedDice';
 
@@ -85,6 +85,30 @@ export const DiceRollOverlay = memo(function DiceRollOverlay({
     },
     [canRoll, isRolling, disabled, onRoll],
   );
+
+  useEffect(() => {
+    if (!canRoll || isRolling || disabled) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space' && e.key !== ' ') return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      e.preventDefault();
+      onRoll();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [canRoll, isRolling, disabled, onRoll]);
 
   return (
     <div

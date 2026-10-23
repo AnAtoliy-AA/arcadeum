@@ -11,6 +11,7 @@ interface DiceOverlayProps {
   die: number | null;
   lastDie: number | null;
   myLastDie?: number | null;
+  isExtraRoll?: boolean;
   boardRotation: number;
   onRoll: () => void;
 }
@@ -23,11 +24,12 @@ export function DiceOverlay({
   die,
   lastDie,
   myLastDie,
+  isExtraRoll = false,
   boardRotation,
   onRoll,
 }: DiceOverlayProps) {
   const { t } = useTranslation();
-  const effectiveLastDie = myLastDie ?? lastDie;
+  const effectiveLastDie = isExtraRoll ? 6 : (myLastDie ?? lastDie);
 
   return (
     <div className="pachisi-center-overlay w-full h-full">
@@ -43,6 +45,9 @@ export function DiceOverlay({
         }
         layout="bare"
         onRoll={onRoll}
+        resultLabel={
+          isExtraRoll ? t('games.pachisi_v1.game.extraRoll') : undefined
+        }
         rollingLabel={t('games.pachisi_v1.game.rolling')}
         rollLabel={t('games.pachisi_v1.game.rollDice')}
         rotation={boardRotation}

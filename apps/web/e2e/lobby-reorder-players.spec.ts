@@ -104,7 +104,7 @@ test.describe('Lobby Player Seat Reordering', () => {
       }
     });
 
-    await navigateTo(page, routes.game(roomId));
+    await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
     const moveDownBtn = page.getByTestId(`player-move-down-${hostId}`);

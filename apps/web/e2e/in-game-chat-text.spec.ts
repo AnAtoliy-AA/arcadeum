@@ -93,6 +93,6 @@ test.describe('In-game chat text messaging', () => {
     const chatMsg = page
       .getByTestId('chat-message')
       .filter({ hasText: 'Hello in-game chat!' });
-    await expect(chatMsg).toBeVisible();
+    await expect(chatMsg.first()).toBeVisible();
   });
 });

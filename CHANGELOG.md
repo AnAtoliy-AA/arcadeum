@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.87] - 2026-10-24
+
+### Fixed
+- stabilize solitaire hint engine and shop slot tile interaction (ARC-1015) (ARC-1015)
+- prevent console errors from daily-rewards and sockets during audits (ARC-1015) (ARC-1015)
+- provide descriptive link text and aria-label for Go game links (ARC-1015) (ARC-1015)
+- prevent webkit stability timeouts on single player games and scope quickplay (ARC-1015) (ARC-1015)
+- prevent tablet safari stability and visibility timeouts (ARC-1015) (ARC-1015)
+- fix rooms filter input hydration and mock auth/me on logout (ARC-1015) (ARC-1015)
+
+### Improved
+- optimize image caching, hero LCP delivery, and modern JS baseline (ARC-1015) (ARC-1015)
+
+
 ## [1.30.86] - 2026-10-24
 
 ### Fixed

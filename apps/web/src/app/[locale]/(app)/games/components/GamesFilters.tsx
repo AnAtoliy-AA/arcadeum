@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
+import { useIsMounted } from '@/shared/hooks/useIsMounted';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import type {
   GamesParticipationFilter,
@@ -45,6 +46,7 @@ export function GamesFilters({
   canFilterParticipation,
   onClearAll,
 }: GamesFiltersProps) {
+  const isMounted = useIsMounted();
   const { t } = useTranslation();
 
   const isAllStatus =
@@ -85,6 +87,7 @@ export function GamesFilters({
   return (
     <div
       data-testid="games-filters-container"
+      data-hydrated={isMounted ? 'true' : undefined}
       className="relative z-30 box-border flex w-full max-w-full flex-col gap-3 rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-3 shadow-lg backdrop-blur-xl sm:p-4 overflow-visible"
     >
       <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between overflow-visible">

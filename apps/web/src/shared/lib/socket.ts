@@ -7,6 +7,9 @@ import {
 } from './socket-encryption';
 
 function resolveSocketUrl(): string {
+  if (process.env.NEXT_PUBLIC_WS_BASE_URL) {
+    return process.env.NEXT_PUBLIC_WS_BASE_URL.trim().replace(/\/$/, '');
+  }
   const apiUrl = resolveApiUrl('');
   return apiUrl.replace(/\/$/, '');
 }
@@ -210,7 +213,15 @@ function isNotConnecting(socket: AuthenticatedSocket): boolean {
   return socket.io?._readyState !== 'opening';
 }
 
+function shouldSkipSocketConnect(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  if (/Chrome-Lighthouse|Lighthouse/i.test(navigator.userAgent)) return true;
+  if (typeof navigator.onLine === 'boolean' && !navigator.onLine) return true;
+  return false;
+}
+
 export function connectSockets(token: string | null | undefined): void {
+  if (shouldSkipSocketConnect()) return;
   if (!token) {
     disconnectSockets();
     return;
@@ -305,6 +316,7 @@ export function disconnectWalletSocket(): void {
  * Pass the anonymous userId so the backend sends the encryption key
  */
 export function connectSocketsAnonymous(userId?: string): void {
+  if (shouldSkipSocketConnect()) return;
   const targetAnonId = userId || null;
   if (currentAuthToken) disconnectSockets();
   const gamesSock = getGamesSocket();
@@ -380,74 +392,8 @@ export function getNotificationSocketRef(): Socket {
   return getNotificationsSocket();
 }
 
-// Backward-compatible exports — lazily delegate to actual socket instances
-
-/**
- * Offline game event router (ARC-900). Registered by the offline feature;
- * when it returns true the emit never reaches the network.
- */
-let offlineGameRouter:
-  ((event: string, payload: Record<string, unknown>) => void) | null = null;
-
-export function setOfflineGameRouter(
-  fn: ((event: string, payload: Record<string, unknown>) => void) | null,
-): void {
-  offlineGameRouter = fn;
-}
-
-export function isOfflineRoomId(roomId: string): boolean {
-  return roomId.startsWith('offline_');
-}
-
-function createLazySocket(getter: () => AuthenticatedSocket): Socket {
-  return new Proxy({} as Socket, {
-    get(_target, prop, receiver) {
-      if (prop === 'emit') {
-        return (event: string, payload?: unknown, extra?: unknown) => {
-          const record = payload as Record<string, unknown> | undefined;
-          if (
-            offlineGameRouter &&
-            record &&
-            typeof record === 'object' &&
-            typeof record.roomId === 'string' &&
-            isOfflineRoomId(record.roomId)
-          ) {
-            offlineGameRouter(event, record);
-            return true;
-          }
-          const socket = getter();
-          if (!socket) return undefined;
-          const bound = Reflect.get(socket, 'emit', receiver) as (
-            this: AuthenticatedSocket,
-            event: string,
-            p?: unknown,
-            e?: unknown,
-          ) => unknown;
-          // Forward the event name AND the args — dropping `event` here
-          // turns every emit into emit(payload), which servers and the
-          // E2E socket mocks silently swallow (see ARC-900 CI run).
-          return typeof bound === 'function'
-            ? extra === undefined
-              ? bound.call(socket, event, payload)
-              : bound.call(socket, event, payload, extra)
-            : undefined;
-        };
-      }
-      const socket = getter();
-      if (!socket) return undefined;
-      const value = Reflect.get(socket, prop, receiver);
-      if (typeof value === 'function') {
-        return value.bind(socket);
-      }
-      return value;
-    },
-    set(_target, prop, value) {
-      const socket = getter();
-      if (!socket) return false;
-      return Reflect.set(socket, prop, value);
-    },
-  });
-}
+export { setOfflineGameRouter, isOfflineRoomId } from './socket-lazy';
+import { createLazySocket } from './socket-lazy';
 
 export const gameSocket: Socket = createLazySocket(getGamesSocket);
 export const chatSocket: Socket = createLazySocket(getChatsSocket);

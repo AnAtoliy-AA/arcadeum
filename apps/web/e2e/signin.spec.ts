@@ -53,7 +53,9 @@ test.describe('Sign-in redesign (ARC-690)', () => {
   test('show/hide password toggle flips the password input type', async ({
     page,
   }) => {
+    await expect(page.getByTestId('auth-form-panel')).toBeVisible();
     const password = page.getByTestId('auth-password-input');
+    await expect(password).toBeVisible();
     await password.fill('hunter2');
     await expect(password).toHaveAttribute('type', 'password');
     await page.getByTestId('auth-password-toggle').click();

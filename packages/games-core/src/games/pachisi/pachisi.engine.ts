@@ -235,10 +235,11 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
         return this.successResult(newState);
       }
 
-      // Rolled a six → same player rolls again (extra roll).
       if (newState.die === 6) {
         newState.die = null;
         newState.phase = GAME_PHASE.ROLL;
+        newState.lastDie = 6;
+        newState.lastRollerId = context.userId;
         return this.successResult(newState);
       }
 

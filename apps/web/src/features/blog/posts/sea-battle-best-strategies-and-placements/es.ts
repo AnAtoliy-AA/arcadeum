@@ -194,6 +194,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-sea-battle-hunt-es',
+      gameId: 'sea-battle',
+      title: 'Ejercicio práctico: rematar el acorazado dañado',
+      prompt:
+        'Impacto directo confirmado en C4 (H). Agua en C3, B4 y C5. Encuentra la casilla contigua sobre la fila 4 para volver a impactar.',
+      grid: [
+        '..........',
+        '..........',
+        '..M.......',
+        '.MH.......',
+        '..M.......',
+        '..........',
+      ],
+      colLabels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+      rowLabels: ['1', '2', '3', '4', '5', '6'],
+      solutionIndex: 33,
+      solutionValue: 'H',
+      explanation:
+        '¡Impacto directo en D4! Descartadas las otras tres direcciones, el navío se extiende necesariamente hacia el este.',
+      playHref: '/games/sea-battle',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Juega online gratis con amigos o contra la IA',

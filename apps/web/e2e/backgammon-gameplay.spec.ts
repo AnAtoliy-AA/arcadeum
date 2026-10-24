@@ -332,4 +332,77 @@ test.describe('Backgammon Gameplay Styles and Themes', () => {
     await expect(point2).toBeVisible();
     await expect(point2).toContainText('+2');
   });
+
+  test('pressing Space key triggers dice roll during roll phase', async ({
+    page,
+  }) => {
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
+    const oppId = '507f191e810c19729de860eb';
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Backgammon Space Key Room',
+        gameId: 'backgammon_v1',
+        status: 'active',
+        playerCount: 2,
+      },
+    });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'backgammon_v1',
+      roomJoinedPayload: {
+        status: 'active',
+        session: {
+          id: 'sess-space',
+          status: 'active',
+          state: {
+            phase: 'roll',
+            points: Array.from({ length: 24 }, (_, i) => {
+              if (i === 23) return { playerId: userId, count: 2 };
+              if (i === 0) return { playerId: oppId, count: 2 };
+              return { playerId: null, count: 0 };
+            }),
+            bar: { [userId]: 0, [oppId]: 0 },
+            borneOff: { [userId]: 0, [oppId]: 0 },
+            dice: [],
+            rolledDice: null,
+            currentTurnIndex: 0,
+            playerOrder: [userId, oppId],
+            players: [
+              {
+                playerId: userId,
+                color: 'white',
+                alive: true,
+                bar: 0,
+                borneOff: 0,
+                pipCount: 46,
+              },
+              {
+                playerId: oppId,
+                color: 'black',
+                alive: true,
+                bar: 0,
+                borneOff: 0,
+                pipCount: 46,
+              },
+            ],
+            winnerId: null,
+            isDraw: false,
+            logs: [],
+          },
+        },
+      },
+    });
+
+    await navigateTo(page, routes.gameRoom(roomId));
+    await waitForRoomReady(page);
+
+    const rollBtn = page.getByTestId('roll-dice-btn');
+    await expect(rollBtn).toBeVisible();
+
+    await page.keyboard.press('Space');
+    await expect(rollBtn).toBeAttached();
+  });
 });

@@ -95,4 +95,10 @@ export const clansFr = {
   status_completed: 'Résolue',
   status_pending: 'En attente',
   status_declined: 'Refusée',
+  rivalMatchHudTitle: 'Match de Guerre de Clans',
+  firstToWins: 'Premier à {target} victoires',
+  yourClan: 'Votre Clan',
+  liveBadge: 'EN DIRECT',
+  leadBadge: 'En tête',
+  tiedBadge: 'Égalité',
 };

@@ -89,8 +89,31 @@ export const post: BlogPost = {
         'Rayos X (skewer). La clavada invertida: se ataca una pieza valiosa obligada a moverse, dejando expuesta a la captura la que tiene detrás.',
         'Ataque descubierto. Al mover una pieza se destapa el ataque de otra que estaba detrás; cuando la pieza destapada es una torre o un alfil que cae sobre una dama indefensa, el material simplemente cae.',
         'Eliminación del defensor. Captura o desvía la pieza que sostiene la posición rival y el resto se derrumba.',
-        'Mate de pasillo. Un rey encerrado por sus propios peones puede recibir mate directo de una pieza pesada en la última fila - gánate una casilla de escape antes de que sea demasiado tarde.',
+        'Mate de pasillo. Un rey encerrado por sus propios peones puede recibir mate directo de una pieza pesada en la última fila: gánate una casilla de escape antes de que sea demasiado tarde.',
       ],
+    },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-knight-fork-es',
+      gameId: 'chess',
+      title: 'Ejercicio práctico: El tenedor de caballo real',
+      prompt:
+        'Juegan blancas: encuentra la casilla donde el caballo ataca al rey, a la dama y a la torre simultáneamente.',
+      grid: [
+        'r..qkb.r',
+        'pp..pppp',
+        '..p.....',
+        '....N...',
+        '....P...',
+        '........',
+        'PPPP.PPP',
+        'R.BQKBNR',
+      ],
+      solutionIndex: 10,
+      solutionValue: 'N',
+      explanation:
+        '¡Cc7+ da jaque al rey y ataca a la dama y a la torre! El rey debe apartarse del jaque, garantizando una ganancia decisiva de material.',
+      playHref: '/games/chess',
     },
     {
       type: 'paragraph',

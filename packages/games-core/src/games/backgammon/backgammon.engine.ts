@@ -96,7 +96,13 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         color: 'white',
         bar: 0,
         borneOff: 0,
-        pipCount: calculatePipCount(player0Id, playerIds, points, 0),
+        pipCount: calculatePipCount(
+          player0Id,
+          playerIds,
+          points,
+          0,
+          options.mode,
+        ),
         alive: true,
       },
       {
@@ -104,7 +110,13 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         color: 'black',
         bar: 0,
         borneOff: 0,
-        pipCount: calculatePipCount(player1Id, playerIds, points, 0),
+        pipCount: calculatePipCount(
+          player1Id,
+          playerIds,
+          points,
+          0,
+          options.mode,
+        ),
         alive: true,
       },
     ];
@@ -275,6 +287,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
           newState.playerOrder,
           newState.points,
           pl.bar,
+          newState.options.mode,
         );
       }
 
@@ -299,6 +312,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
           newState.points,
           newState.bar,
           newState.borneOff,
+          newState.options.mode,
         );
         newState.logs.push(
           this.createLogEntry(

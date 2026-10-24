@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 
 export type SeatSide = 'bottom' | 'left' | 'top' | 'right';
 
@@ -50,7 +51,6 @@ export const SeatPanel = memo(function SeatPanel({
   passing,
 }: SeatPanelProps) {
   const horizontal = side === 'left' || side === 'right';
-  const initial = seat.name.trim().charAt(0).toUpperCase() || '?';
 
   return (
     <div
@@ -70,9 +70,12 @@ export const SeatPanel = memo(function SeatPanel({
         />
       )}
 
-      <div className="flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-white/20 to-black/30 text-xs font-black text-white shadow-inner">
-        {initial}
-      </div>
+      <InGameAvatar
+        playerId={seat.playerId}
+        name={seat.name}
+        size="sm"
+        data-testid={`hearts-seat-avatar-${seat.playerId}`}
+      />
 
       <div
         className={cx(

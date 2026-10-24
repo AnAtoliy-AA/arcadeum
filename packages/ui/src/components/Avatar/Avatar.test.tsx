@@ -38,4 +38,11 @@ describe('Avatar', () => {
     render(<Avatar name="John" />);
     expect(screen.getByText('J')).toBeInTheDocument();
   });
+
+  it('falls back to initials when image emits error', () => {
+    render(<Avatar name="John Doe" src="/broken.png" />);
+    const img = screen.getByRole('img');
+    fireEvent.error(img);
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
 });

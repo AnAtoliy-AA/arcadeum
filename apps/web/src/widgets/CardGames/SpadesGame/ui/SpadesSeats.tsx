@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { InGameAvatar } from '@/features/games/ui/InGameAvatar';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export type SeatSide = 'bottom' | 'left' | 'top' | 'right';
@@ -55,7 +56,6 @@ export const SeatPanel = memo(function SeatPanel({
 }: SeatPanelProps) {
   const { t } = useTranslation();
   const horizontal = side === 'left' || side === 'right';
-  const initial = seat.name.trim().charAt(0).toUpperCase() || '?';
 
   return (
     <div
@@ -75,16 +75,12 @@ export const SeatPanel = memo(function SeatPanel({
         />
       )}
 
-      <div
-        className={cx(
-          'flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full border text-xs font-black shadow-inner',
-          seat.isPartner && !seat.isMe
-            ? 'border-[var(--accent)] bg-[var(--accent)]/30 text-[var(--accent)]'
-            : 'border-white/20 bg-gradient-to-br from-white/20 to-black/30 text-white',
-        )}
-      >
-        {initial}
-      </div>
+      <InGameAvatar
+        playerId={seat.playerId}
+        name={seat.name}
+        size="sm"
+        data-testid={`spades-seat-avatar-${seat.playerId}`}
+      />
 
       <div
         className={cx(

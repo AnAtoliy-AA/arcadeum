@@ -2,8 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
+  ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -79,6 +82,26 @@ export class ClansGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
   }
 
+  @SubscribeMessage('clans.join-room')
+  async handleJoinRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { clanId: string },
+  ): Promise<void> {
+    if (data?.clanId) {
+      await this.joinClanRoom(client, data.clanId);
+    }
+  }
+
+  @SubscribeMessage('clans.leave-room')
+  async handleLeaveRoom(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { clanId: string },
+  ): Promise<void> {
+    if (data?.clanId) {
+      await this.leaveClanRoom(client, data.clanId);
+    }
+  }
+
   async joinClanRoom(client: Socket, clanId: string): Promise<void> {
     await client.join(`clan:${clanId}`);
   }
@@ -128,5 +151,16 @@ export class ClansGateway implements OnGatewayConnection, OnGatewayDisconnect {
     },
   ): void {
     this.server.to(targetUserId).emit('clan:invite', payload);
+  }
+
+  emitClanWarUpdated(
+    initiatorClanId: string,
+    targetClanId: string,
+    war: unknown,
+  ): void {
+    if (this.server) {
+      this.server.to(`clan:${initiatorClanId}`).emit('clan:war-updated', war);
+      this.server.to(`clan:${targetClanId}`).emit('clan:war-updated', war);
+    }
   }
 }

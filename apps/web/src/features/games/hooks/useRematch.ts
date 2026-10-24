@@ -5,6 +5,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useSocket } from '@/shared/lib/socket';
 import { rematchApi } from '@/features/rematch/api';
 import { useRoutes } from '@/shared/config/useRoutes';
+import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 import type { GameOptions } from '@/shared/types/games';
 
 interface UseRematchOptions {
@@ -116,6 +117,10 @@ export function useRematch({
         setRematchError(err instanceof Error ? err.message : String(err));
       },
     });
+
+  useEffect(() => {
+    useGameRematchStore.setState({ rematchLoading });
+  }, [rematchLoading]);
 
   // Mutation for declining invitation
   const { mutate: declineInvitationMutate } = useMutation({

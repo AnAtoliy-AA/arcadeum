@@ -108,6 +108,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-checkers-jump',
+      gameId: 'checkers',
+      title: 'Practice Drill: Execute the Mandatory Jump',
+      prompt:
+        'White piece on c3 can capture black piece on d4. Find the landing square on e5 to complete the mandatory jump.',
+      grid: [
+        '........',
+        '........',
+        '........',
+        '....b...',
+        '...b....',
+        '..w.....',
+        '........',
+        '........',
+      ],
+      solutionIndex: 28,
+      solutionValue: 'w',
+      explanation:
+        'Landing on e5 leaps over d4 and captures the opposing checker! In Checkers, jumps are compulsory.',
+      playHref: '/games/checkers',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Endgame principles',

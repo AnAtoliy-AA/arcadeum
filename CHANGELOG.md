@@ -7,14 +7,164 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.86] - 2026-10-24
+
+### Fixed
+- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
+
+
+## [1.30.85] - 2026-10-24
+
+### Fixed
+- prevent event loop monitor exit and add scroll into view for safari (ARC-1013) (ARC-1013)
+- fix GH_REPO and issue write permissions in issue workflows (ARC-1013) (ARC-1013)
+- resolve mobile safari landing navigation and freshness pulse (ARC-1013) (ARC-1013)
+
+
+## [1.30.84] - 2026-10-24
+
+### Added
+- ensure user avatars are visible across game seats and rematch modals (ARC-1012) (ARC-1012)
+
+### Fixed
+- use compact sm avatar size in lobby player list (ARC-1012) (ARC-1012)
+
+### Improved
+- eliminate dynamic loading fallback shift on client page (ARC-1012) (ARC-1012)
+- prevent cumulative layout shift on ticker and freshness indicator (ARC-1012) (ARC-1012)
+
+
+## [1.30.83] - 2026-10-23
+
+### Added
+
+- enhance field and board size visibility and selectors (ARC-1011) (ARC-1011)
+
+### Fixed
+
+- use compact sm avatar size in lobby player list (ARC-1011) (ARC-1011)
+
+## [1.30.82] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in rematch flow test (ARC-1006) (ARC-1006)
+- overhaul rematch and play again lifecycle with bot fallback (ARC-1006) (ARC-1006)
+
+## [1.30.81] - 2026-10-23
+
+### Fixed
+
+- ensure universal avatar visibility, error fallback, and increased sizing (ARC-1001) (ARC-1001)
+
+## [1.30.80] - 2026-10-23
+
+### Added
+
+- rework game lobby UX and visual hierarchy (ARC-1010) (ARC-1010)
+
+### Fixed
+
+- use compact sm avatar size in lobby player list to preserve username visibility (ARC-1010) (ARC-1010)
+
+## [1.30.79] - 2026-10-23
+
+### Added
+
+- standardize lobby player seat reordering across all games (ARC-1008) (ARC-1008)
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in lobby reorder players test (ARC-1008) (ARC-1008)
+
+## [1.30.78] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in first move indicator test (ARC-1007) (ARC-1007)
+- ensure fair 50/50 random first move selection and indicator (ARC-1007) (ARC-1007)
+
+## [1.30.77] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in backgammon long setup test (ARC-1005) (ARC-1005)
+- set up starting heads in opposite corners for long nardy (ARC-1005) (ARC-1005)
+
+## [1.30.76] - 2026-10-23
+
+### Fixed
+
+- ensure in-game and lobby text chat sending and display (ARC-1009) (ARC-1009)
+
+## [1.30.75] - 2026-10-22
+
+### Fixed
+
+- retain player six on bonus roll instead of opponent prior die (ARC-1004) (ARC-1004)
+
+## [1.30.74] - 2026-10-22
+
+### Added
+
+- add spacebar support for rolling dice and taking turns (ARC-1003) (ARC-1003)
+
+## [1.30.73] - 2026-10-22
+
+### Added
+
+- add relative and full date to notification items (ARC-1002) (ARC-1002)
+
+## [1.30.72] - 2026-10-22
+
+### Documentation
+
+- add community feedback and bug fixes sprint (ARC-1000) (ARC-1000)
+
+## [1.30.71] - 2026-10-22
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.70] - 2026-10-15
+
+### Added
+
+- add real-time war updates and in-game rival match HUD (ARC-982) (ARC-982)
+
+## [1.30.69] - 2026-10-15
+
+### Added
+
+- add clan wars worker automation, matchmaking, and post-match resolution (ARC-981) (ARC-981)
+
+## [1.30.68] - 2026-10-14
+
+### Added
+
+- add interactive strategy guide practice drills across pillar guides (ARC-980) (ARC-980)
+
+## [1.30.67] - 2026-10-12
+
+### Added
+
+- add milestone celebration popups to Sudoku, Solitaire, and Minesweeper (ARC-000)
+
+### Fixed
+
+- stabilize solo milestones e2e tests for sudoku and solitaire (ARC-000)
+
 ## [1.30.66] - 2026-10-11
 
 ### Added
+
 - extract universal GameMilestoneToast component for all games (ARC-000)
 - add tiered milestone celebration flair for 512, 1024, 2048, 4096, and 8192 (ARC-000)
 - improve 2048 and solo games ui and fix popup positioning (ARC-000)
 
 ### Fixed
+
 - allow dynamic milestone toast width without text clipping (ARC-000)
 - relabel 512 milestone to heating up and 1024 to halfway (ARC-000)
 - localize milestone toast badges and result stats (ARC-000)
@@ -22,26 +172,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - position 2048 milestone toast at top of screen (ARC-000)
 
 ### Refactored
-- export GAME_2048_MILESTONE_TARGETS constant in 2048 store (ARC-000)
 
+- export GAME_2048_MILESTONE_TARGETS constant in 2048 store (ARC-000)
 
 ## [1.30.65] - 2026-10-11
 
 ### Fixed
-- coordinate header popovers and mobile live stats (ARC-000) (ARC-000)
 
+- coordinate header popovers and mobile live stats (ARC-000) (ARC-000)
 
 ## [1.30.64] - 2026-10-11
 
 ### Fixed
-- prevent concurrent oci deploys and fix stockfish installation (ARC-000) (ARC-000)
 
+- prevent concurrent oci deploys and fix stockfish installation (ARC-000) (ARC-000)
 
 ## [1.30.63] - 2026-10-10
 
 ### Added
-- add interactive game field schemas and replace em dashes (ARC-981) (ARC-981)
 
+- add interactive game field schemas and replace em dashes (ARC-981) (ARC-981)
 
 ## [1.30.62] - 2026-10-10
 

@@ -94,4 +94,10 @@ export const clansRu = {
   status_completed: 'Завершена',
   status_pending: 'Ожидает',
   status_declined: 'Отклонена',
+  rivalMatchHudTitle: 'Матч Кланвара',
+  firstToWins: 'До {target} побед',
+  yourClan: 'Ваш Клан',
+  liveBadge: 'LIVE',
+  leadBadge: 'Лидирует',
+  tiedBadge: 'Ничья',
 };

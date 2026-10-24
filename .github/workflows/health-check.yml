@@ -11,6 +11,8 @@ jobs:
   health-check:
     name: Smoke test production
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Check Web
         id: web
@@ -23,10 +25,16 @@ jobs:
           fi
           echo "Web: OK ($STATUS)"
 
-      - name: Check Backend Health
+      - name: Check Backend API
         id: api
+        env:
+          HEALTH_URL: ${{ secrets.HEALTH_CHECK_URL }}
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "${{ secrets.HEALTH_CHECK_URL }}" || echo "000")
+          if [ -z "$HEALTH_URL" ]; then
+            echo "::warning::HEALTH_CHECK_URL secret not configured (skipped)"
+            exit 0
+          fi
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$HEALTH_URL" || echo "000")
           if [ "$STATUS" = "000" ]; then
             echo "::warning::HEALTH_CHECK_URL secret not configured (skipped)"
             exit 0
@@ -42,6 +50,7 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
         run: |
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           gh issue create \

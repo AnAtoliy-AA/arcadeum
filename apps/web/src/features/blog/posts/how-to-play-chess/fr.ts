@@ -90,8 +90,31 @@ export const post: BlogPost = {
         'La brochette. Le clouage inversé : une pièce précieuse est attaquée et doit bouger, exposant à la capture celle qui est derrière.',
         "L'attaque à la découverte. En bougeant, une pièce démasque l'attaque d'une autre placée derrière elle ; quand la pièce démasquée est une tour ou un fou qui tombe sur une dame non défendue, le matériel s'écroule tout seul.",
         "L'élimination du défenseur. Capturez ou détournez la pièce qui tient la position adverse, et le reste s'effondre.",
-        "Le mat de la dernière rangée. Un roi enfermé par ses propres pions peut être maté net par une grosse pièce sur la rangée du fond - créez une case de fuite avant qu'il ne soit trop tard.",
+        "Le mat de la dernière rangée. Un roi enfermé par ses propres pions peut être maté net par une grosse pièce sur la rangée du fond: créez une case de fuite avant qu'il ne soit trop tard.",
       ],
+    },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-knight-fork-fr',
+      gameId: 'chess',
+      title: 'Exercice pratique: la fourchette royale du cavalier',
+      prompt:
+        'Les Blancs jouent: trouvez la case où le cavalier blanc attaque simultanément le roi, la dame et la tour.',
+      grid: [
+        'r..qkb.r',
+        'pp..pppp',
+        '..p.....',
+        '....N...',
+        '....P...',
+        '........',
+        'PPPP.PPP',
+        'R.BQKBNR',
+      ],
+      solutionIndex: 10,
+      solutionValue: 'N',
+      explanation:
+        'Cc7+ fait échec au roi et fourchette dame et tour ! Le roi doit parer l’échec, garantissant un gain de matériel décisif.',
+      playHref: '/games/chess',
     },
     {
       type: 'paragraph',

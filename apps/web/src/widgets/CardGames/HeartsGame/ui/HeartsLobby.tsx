@@ -31,6 +31,7 @@ interface HeartsLobbyProps {
   showRulesOpen?: boolean;
   onShowRulesClose?: () => void;
   accessToken?: string | null;
+  onReorderPlayers?: (newOrder: string[]) => void;
 }
 
 const HEARTS_LOBBY_THEME = {
@@ -69,6 +70,7 @@ export function HeartsLobby({
   showRulesOpen,
   onShowRulesClose,
   accessToken,
+  onReorderPlayers,
 }: HeartsLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
@@ -156,7 +158,7 @@ export function HeartsLobby({
         />
       }
       onStartGame={onStartGame}
-      onReorderPlayers={handleReorderPlayers}
+      onReorderPlayers={onReorderPlayers ?? handleReorderPlayers}
       onLeaveRoom={onLeaveRoom}
       onDeleteRoom={onDeleteRoom}
       onKickPlayer={onKickPlayer}

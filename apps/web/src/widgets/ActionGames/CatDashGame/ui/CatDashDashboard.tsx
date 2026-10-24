@@ -56,7 +56,21 @@ export const CatDashDashboard = memo(function CatDashDashboard({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.code === 'Space' && myTurn && !isGameOver && !isRolling) {
+      if (
+        (e.code === 'Space' || e.key === ' ') &&
+        myTurn &&
+        !isGameOver &&
+        !isRolling
+      ) {
+        const target = e.target as HTMLElement | null;
+        if (
+          target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.isContentEditable)
+        ) {
+          return;
+        }
         e.preventDefault();
         onRollDice();
       }

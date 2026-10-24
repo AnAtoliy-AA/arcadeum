@@ -118,6 +118,7 @@ test.describe('Critical Ranked ELO & Duel Arena', () => {
       .locator('[data-testid="queue-ranked-critical-button"]')
       .first();
     await expect(queueButton).toBeVisible();
+    await queueButton.scrollIntoViewIfNeeded();
     await queueButton.click();
 
     const queueModalOrIndicator = page

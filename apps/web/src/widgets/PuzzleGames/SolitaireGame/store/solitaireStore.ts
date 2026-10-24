@@ -24,6 +24,20 @@ import type {
 } from '../types';
 
 export const SOLITAIRE_GAME_ID = 'solitaire_v1';
+export const SOLITAIRE_MILESTONE_TARGETS = [26, 39] as const;
+
+let milestoneTimer: ReturnType<typeof setTimeout> | null = null;
+
+function clearMilestoneTimer() {
+  if (milestoneTimer) {
+    clearTimeout(milestoneTimer);
+    milestoneTimer = null;
+  }
+}
+
+function calculateFoundationCards(game: SolitaireState): number {
+  return game.foundations.reduce((sum, pile) => sum + pile.length, 0);
+}
 
 export interface FinishedGameInfo {
   won: boolean;
@@ -42,6 +56,9 @@ interface SolitaireStoreState {
   history: SolitaireState[];
   usedUndo: boolean;
   activeHint: SolitaireHint | null;
+  activeMilestone: number | null;
+  reachedMilestones: number[];
+  dismissMilestone: () => void;
   draw: () => void;
   move: (source: MoveSource, target: MoveTarget) => void;
   autoPlaceStep: () => AutoPlaceStepResult;
@@ -69,9 +86,32 @@ function commitGame(
     startedAt: state.startedAt,
     usedUndo: state.usedUndo,
   });
+
+  const count = calculateFoundationCards(game);
+  let activeMilestone = state.activeMilestone;
+  let reachedMilestones = state.reachedMilestones;
+  if (!outcome.won) {
+    for (const m of SOLITAIRE_MILESTONE_TARGETS) {
+      if (count >= m && !reachedMilestones.includes(m)) {
+        reachedMilestones = [...reachedMilestones, m];
+        activeMilestone = m;
+      }
+    }
+  }
+
+  if (activeMilestone !== null && activeMilestone !== state.activeMilestone) {
+    clearMilestoneTimer();
+    milestoneTimer = setTimeout(() => {
+      milestoneTimer = null;
+      useSolitaireStore.getState().dismissMilestone();
+    }, 3500);
+  }
+
   return {
     history: [...state.history, state.game],
     game,
+    activeMilestone,
+    reachedMilestones,
     ...(result ?? {}),
   };
 }
@@ -86,6 +126,8 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
       history: [],
       usedUndo: false,
       activeHint: null,
+      activeMilestone: null,
+      reachedMilestones: [],
 
       draw: () =>
         set((state) => {
@@ -135,11 +177,15 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
 
       undo: () =>
         set((state) => {
+          clearMilestoneTimer();
           const update = undoReducer(state.history, state.finishedAt);
-          return update ? { ...update, activeHint: null } : state;
+          return update
+            ? { ...update, activeHint: null, activeMilestone: null }
+            : state;
         }),
 
-      newGame: () =>
+      newGame: () => {
+        clearMilestoneTimer();
         set((state) => ({
           game: deal(undefined, state.game.drawMode),
           startedAt: Date.now(),
@@ -148,7 +194,10 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
           history: [],
           usedUndo: false,
           activeHint: null,
-        })),
+          activeMilestone: null,
+          reachedMilestones: [],
+        }));
+      },
 
       setDrawMode: (mode) =>
         set((state) => ({
@@ -179,6 +228,11 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
         );
         set({ ...updated, activeHint: null });
       },
+
+      dismissMilestone: () => {
+        clearMilestoneTimer();
+        set({ activeMilestone: null });
+      },
     }),
     {
       name: 'arcadeum_solitaire_game_v1',
@@ -190,6 +244,7 @@ export const useSolitaireStore = create<SolitaireStoreState>()(
         finished: state.finished,
         history: state.history,
         usedUndo: state.usedUndo,
+        reachedMilestones: state.reachedMilestones,
       }),
     },
   ),

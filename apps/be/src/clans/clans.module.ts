@@ -18,8 +18,14 @@ import { ClanWar, ClanWarSchema } from './schemas/clan-war.schema';
 import { User, UserSchema } from '../auth/schemas/user.schema';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 
+import { AppBullMqModule } from '../common/queue/app-bullmq.module';
+import { ClanWarsAutomationService } from './clan-wars-automation.service';
+import { ClanWarsQueueService } from './clan-wars-queue.service';
+import { ClanWarsProcessor } from './clan-wars.processor';
+
 @Module({
   imports: [
+    AppBullMqModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -41,6 +47,9 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     ClanLeaderboardsService,
     CommunityChallengesService,
     ClanWarsService,
+    ClanWarsAutomationService,
+    ClanWarsQueueService,
+    ClanWarsProcessor,
     ClansGateway,
   ],
   exports: [
@@ -48,6 +57,8 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     ClanLeaderboardsService,
     CommunityChallengesService,
     ClanWarsService,
+    ClanWarsAutomationService,
+    ClanWarsQueueService,
     ClansGateway,
   ],
 })

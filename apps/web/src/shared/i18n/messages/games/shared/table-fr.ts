@@ -15,6 +15,7 @@ export const tableFr = {
     otherTurn: 'Au tour de {{name}}',
     waiting: 'En attente…',
     gameOver: 'Partie terminée',
+    firstMove: 'Premier coup',
   },
   victory: {
     title: 'Victoire !',

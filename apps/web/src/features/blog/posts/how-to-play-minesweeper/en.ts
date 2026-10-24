@@ -84,6 +84,22 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-minesweeper-121',
+      gameId: 'minesweeper',
+      title: 'Practice Drill: Solve the 1-2-1 Pattern',
+      prompt:
+        'With mines flagged at D1 and F1, which middle square is guaranteed safe to click?',
+      grid: ['...F.F...', '...121...', '.........'],
+      colLabels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+      rowLabels: ['1', '2', '3'],
+      solutionIndex: 4,
+      solutionValue: 'S',
+      explanation:
+        'Square E1 is 100% safe! In the 1-2-1 pattern, both mines are on the outer wings, leaving the middle cell free to reveal.',
+      playHref: '/games/minesweeper',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'When logic runs out: probability',

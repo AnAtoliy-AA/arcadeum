@@ -53,12 +53,19 @@ export function useGameEndState({
   }, [session?.state, currentUserId]);
 
   const handleResultRematchClick = useCallback(() => {
-    if (players.length > 1) {
+    if (players.length === 2) {
+      const opponent = players.find((p) => p.playerId !== currentUserId);
+      if (opponent) {
+        void rematch.handleRematch([opponent.playerId], undefined);
+        return;
+      }
+    }
+    if (players.length > 2) {
       rematch.openRematchModal();
     } else {
       void rematch.handleRematch([], undefined);
     }
-  }, [players.length, rematch]);
+  }, [players, currentUserId, rematch]);
 
   return useMemo(
     () => ({

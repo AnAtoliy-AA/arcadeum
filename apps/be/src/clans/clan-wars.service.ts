@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -12,109 +13,18 @@ import {
   ClanWar,
   ClanWarDocument,
   ClanWarLogEntry,
-  ClanWarStatus,
 } from './schemas/clan-war.schema';
+import { ClansGateway } from './clans.gateway';
 import { CreateClanWarDto } from './dto/create-clan-war.dto';
 import { RecordClanWarMatchDto } from './dto/record-clan-war-match.dto';
+import {
+  ClanWarView,
+  DEFAULT_SEEDED_WARS,
+  LeanClanWarDoc,
+  mapToClanWarView,
+} from './clan-wars.helpers';
 
-export interface ClanWarView {
-  id: string;
-  initiatorClanId: string;
-  initiatorClanName: string;
-  initiatorClanTag: string;
-  initiatorScore: number;
-  targetClanId: string;
-  targetClanName: string;
-  targetClanTag: string;
-  targetClanScore: number;
-  targetScore: number;
-  gameId: string;
-  status: ClanWarStatus;
-  winnerClanId: string | null;
-  expiresAt: string;
-  createdAt: string;
-  matchLogs: ClanWarLogEntry[];
-}
-
-interface LeanClanWarDoc {
-  _id: Types.ObjectId;
-  initiatorClanId: Types.ObjectId;
-  initiatorClanName: string;
-  initiatorClanTag: string;
-  initiatorScore: number;
-  targetClanId: Types.ObjectId;
-  targetClanName: string;
-  targetClanTag: string;
-  targetClanScore: number;
-  targetScore: number;
-  gameId: string;
-  status: ClanWarStatus;
-  winnerClanId: Types.ObjectId | null;
-  expiresAt: Date;
-  createdAt: Date;
-  matchLogs: ClanWarLogEntry[];
-}
-
-const DEFAULT_SEEDED_WARS = [
-  {
-    initiatorClanName: 'Vanguard Knights',
-    initiatorClanTag: 'VNG',
-    initiatorScore: 3,
-    targetClanName: 'Shadow Syndicate',
-    targetClanTag: 'SHD',
-    targetClanScore: 2,
-    targetScore: 5,
-    gameId: 'sea-battle',
-    status: 'active' as ClanWarStatus,
-    expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
-    matchLogs: [
-      {
-        id: 'log-1',
-        playerClanId: 'seed-vng',
-        playerName: 'CaptainStorm',
-        opponentClanId: 'seed-shd',
-        opponentName: 'NightRaven',
-        gameId: 'sea-battle',
-        winnerClanId: 'seed-vng',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: 'log-2',
-        playerClanId: 'seed-shd',
-        playerName: 'DarkPhantom',
-        opponentClanId: 'seed-vng',
-        opponentName: 'IronShield',
-        gameId: 'sea-battle',
-        winnerClanId: 'seed-shd',
-        timestamp: new Date(Date.now() - 1800000).toISOString(),
-      },
-    ],
-  },
-  {
-    initiatorClanName: 'Apex Grandmasters',
-    initiatorClanTag: 'APEX',
-    initiatorScore: 4,
-    targetClanName: 'Quantum Tacticians',
-    targetClanTag: 'QT',
-    targetClanScore: 1,
-    targetScore: 5,
-    gameId: 'chess',
-    status: 'active' as ClanWarStatus,
-    expiresAt: new Date(Date.now() + 36 * 60 * 60 * 1000),
-    matchLogs: [
-      {
-        id: 'log-3',
-        playerClanId: 'seed-apex',
-        playerName: 'CheckmateKing',
-        opponentClanId: 'seed-qt',
-        opponentName: 'QuantumRook',
-        gameId: 'chess',
-        winnerClanId: 'seed-apex',
-        timestamp: new Date(Date.now() - 7200000).toISOString(),
-      },
-    ],
-  },
-];
+export type { ClanWarView } from './clan-wars.helpers';
 
 @Injectable()
 export class ClanWarsService {
@@ -125,28 +35,9 @@ export class ClanWarsService {
     private readonly clanModel: Model<ClanDocument>,
     @InjectModel(ClanMember.name)
     private readonly clanMemberModel: Model<ClanMemberDocument>,
+    @Optional()
+    private readonly clansGateway?: ClansGateway,
   ) {}
-
-  private mapToView(doc: LeanClanWarDoc): ClanWarView {
-    return {
-      id: doc._id.toString(),
-      initiatorClanId: doc.initiatorClanId.toString(),
-      initiatorClanName: doc.initiatorClanName,
-      initiatorClanTag: doc.initiatorClanTag,
-      initiatorScore: doc.initiatorScore,
-      targetClanId: doc.targetClanId.toString(),
-      targetClanName: doc.targetClanName,
-      targetClanTag: doc.targetClanTag,
-      targetClanScore: doc.targetClanScore,
-      targetScore: doc.targetScore,
-      gameId: doc.gameId,
-      status: doc.status,
-      winnerClanId: doc.winnerClanId ? doc.winnerClanId.toString() : null,
-      expiresAt: doc.expiresAt.toISOString(),
-      createdAt: doc.createdAt.toISOString(),
-      matchLogs: doc.matchLogs ?? [],
-    };
-  }
 
   private async seedDefaultWarsIfEmpty(): Promise<void> {
     const count = await this.clanWarModel.countDocuments();
@@ -193,7 +84,7 @@ export class ClanWarsService {
       .limit(20)
       .lean<LeanClanWarDoc[]>();
 
-    return docs.map((doc) => this.mapToView(doc));
+    return docs.map((doc) => mapToClanWarView(doc));
   }
 
   async getWarById(warId: string): Promise<ClanWarView> {
@@ -208,7 +99,7 @@ export class ClanWarsService {
       throw new NotFoundException('Clan war not found');
     }
 
-    return this.mapToView(doc);
+    return mapToClanWarView(doc);
   }
 
   async createWarChallenge(
@@ -298,7 +189,11 @@ export class ClanWarsService {
       .findById(created._id)
       .lean<LeanClanWarDoc>();
 
-    return this.mapToView(doc!);
+    const view = mapToClanWarView(doc!);
+    if (this.clansGateway) {
+      this.clansGateway.emitClanWarUpdated(userClanId, dto.targetClanId, view);
+    }
+    return view;
   }
 
   async respondToWarChallenge(
@@ -347,7 +242,15 @@ export class ClanWarsService {
       .findById(war._id)
       .lean<LeanClanWarDoc>();
 
-    return this.mapToView(doc!);
+    const view = mapToClanWarView(doc!);
+    if (this.clansGateway) {
+      this.clansGateway.emitClanWarUpdated(
+        war.initiatorClanId.toString(),
+        war.targetClanId.toString(),
+        view,
+      );
+    }
+    return view;
   }
 
   async recordWarMatch(
@@ -412,7 +315,15 @@ export class ClanWarsService {
       .findById(war._id)
       .lean<LeanClanWarDoc>();
 
-    return this.mapToView(doc!);
+    const view = mapToClanWarView(doc!);
+    if (this.clansGateway) {
+      this.clansGateway.emitClanWarUpdated(
+        war.initiatorClanId.toString(),
+        war.targetClanId.toString(),
+        view,
+      );
+    }
+    return view;
   }
 
   async getClanWarHistory(clanId: string): Promise<ClanWarView[]> {
@@ -430,6 +341,6 @@ export class ClanWarsService {
       .limit(15)
       .lean<LeanClanWarDoc[]>();
 
-    return docs.map((doc) => this.mapToView(doc));
+    return docs.map((doc) => mapToClanWarView(doc));
   }
 }

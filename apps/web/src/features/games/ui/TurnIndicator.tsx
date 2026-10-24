@@ -23,6 +23,7 @@ export interface TurnContract {
   isGameOver?: boolean;
   /** override the resolved display name for the on-clock player (optional) */
   onClockName?: string;
+  isFirstMove?: boolean;
 }
 
 /** Map the turn contract onto the header pill's status variant. */
@@ -87,7 +88,7 @@ export const TurnIndicator = memo(function TurnIndicator({
         <InGameAvatar
           playerId={onClockUserId}
           name={resolvedName}
-          size="icon"
+          size="sm"
           data-testid="turn-indicator-avatar"
         />
       ) : null}
@@ -101,6 +102,14 @@ export const TurnIndicator = memo(function TurnIndicator({
       >
         {label}
       </span>
+      {turn.isFirstMove && !isGameOver && (
+        <span
+          data-testid="first-move-indicator"
+          className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0"
+        >
+          {t('games.table.turn.firstMove')}
+        </span>
+      )}
     </div>
   );
 });

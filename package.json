@@ -1,6 +1,6 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.30.66",
+  "version": "1.30.86",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
@@ -47,10 +47,10 @@
     "husky": "^9.1.7",
     "jimp": "^0.22.12",
     "lint-staged": "^15.5.2",
-    "markdown-it": "^14.3.2",
-    "prettier": "3.9.9",
+    "markdown-it": "^14.3.3",
+    "prettier": "3.9.10",
     "standard-version": "^9.5.0",
-    "turbo": "^2.11.6"
+    "turbo": "^2.11.8"
   },
   "pnpm": {
     "overrides": {

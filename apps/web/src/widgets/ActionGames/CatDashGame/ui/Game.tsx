@@ -57,8 +57,14 @@ function CatDashGameImpl({
   onShowRulesClose,
 }: CatDashGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -197,6 +203,7 @@ function CatDashGameImpl({
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />

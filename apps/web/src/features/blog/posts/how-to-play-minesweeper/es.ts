@@ -62,6 +62,22 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-minesweeper-121-es',
+      gameId: 'minesweeper',
+      title: 'Ejercicio práctico: resolver el patrón 1-2-1',
+      prompt:
+        'Con minas marcadas en D1 y F1, ¿cuál casilla intermedia es 100% segura para revelar?',
+      grid: ['...F.F...', '...121...', '.........'],
+      colLabels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+      rowLabels: ['1', '2', '3'],
+      solutionIndex: 4,
+      solutionValue: 'S',
+      explanation:
+        '¡La casilla E1 es completamente segura! En el patrón 1-2-1, las minas quedan en los flancos exteriores.',
+      playHref: '/games/minesweeper',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Cuando la lógica no alcanza',

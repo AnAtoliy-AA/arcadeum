@@ -42,6 +42,17 @@ export const esMessages = {
       lostBody: 'La mesa está bloqueada. ¡Baraja y prueba otra vez!',
       playAgain: 'Jugar otra vez',
     },
+    milestone: {
+      title: '¡Hito alcanzado!',
+      title_26: '¡Mitad en casa!',
+      title_39: '¡Casi listo: 39 cartas!',
+      badge: 'Hito',
+      badge_26: 'Mitad',
+      badge_39: 'Casi listo',
+      body_26: '26 cartas colocadas en las bases.',
+      body_39: '¡Tres cuartas partes de la baraja están en casa!',
+      keepGoing: 'Continuar',
+    },
     rules: {
       objective:
         'Mueve las 52 cartas a las cuatro bases, construyendo cada palo en orden ascendente del as al rey.',

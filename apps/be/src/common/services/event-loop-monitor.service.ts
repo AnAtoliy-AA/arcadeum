@@ -14,7 +14,7 @@ export class EventLoopMonitorService implements OnModuleInit, OnModuleDestroy {
   private readonly maxLagMs = 8000;
 
   onModuleInit(): void {
-    if (process.env.NODE_ENV === 'test') {
+    if (process.env.NODE_ENV === 'test' || process.env.E2E === 'true') {
       return;
     }
     this.lastTick = Date.now();
@@ -28,7 +28,10 @@ export class EventLoopMonitorService implements OnModuleInit, OnModuleDestroy {
         this.logger.error(
           `CRITICAL: Event loop blocked for ${lag}ms (threshold ${this.maxLagMs}ms). Restarting worker to protect cluster availability.`,
         );
-        if (process.env.NODE_ENV === 'production') {
+        if (
+          process.env.NODE_ENV === 'production' &&
+          process.env.E2E !== 'true'
+        ) {
           process.exit(1);
         }
       } else if (lag > 2000) {

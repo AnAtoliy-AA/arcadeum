@@ -78,6 +78,7 @@ test.describe('Chess Landing Rework & Hierarchy', () => {
     const cyberpunkCard = page.getByTestId('theme-card-cyberpunk');
     await expect(cyberpunkCard).toBeVisible();
 
+    await cyberpunkCard.scrollIntoViewIfNeeded();
     await cyberpunkCard.click();
     await expect(cyberpunkCard.getByText('Previewing')).toBeVisible();
   });

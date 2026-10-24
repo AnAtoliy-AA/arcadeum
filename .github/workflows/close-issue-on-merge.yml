@@ -33,10 +33,13 @@ jobs:
     needs: extract-issue
     if: needs.extract-issue.outputs.issue_number != ''
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Close issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           ISSUE_NUM: ${{ needs.extract-issue.outputs.issue_number }}
           PR_NUM: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}

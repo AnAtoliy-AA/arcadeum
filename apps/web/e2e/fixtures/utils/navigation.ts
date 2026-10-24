@@ -81,18 +81,9 @@ export async function navigateTo(
         await page.reload({ waitUntil: 'commit' });
       }
 
-      // Robust hydration check: wait for either data-hydrated or data-app-ready
-      await expect(async () => {
-        const html = page.locator('html');
-        const hydrated = await html.getAttribute('data-hydrated');
-        const appReady = await html.getAttribute('data-app-ready');
-
-        if (hydrated !== 'true' && appReady !== 'true') {
-          throw new Error('Hydration markers not found');
-        }
-      }).toPass({
-        intervals: [1000, 2000, 5000],
-      });
+      await expect(
+        page.locator('html[data-hydrated="true"], html[data-app-ready="true"]'),
+      ).toBeAttached();
 
       success = true;
     } catch (err) {

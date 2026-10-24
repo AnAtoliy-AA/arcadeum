@@ -15,6 +15,7 @@ test.describe('Themes and Variants separation', () => {
     expect(box?.width).toBeLessThanOrEqual(280);
     const shipSwatch = page.locator('[data-testid="color-swatch-ship"]');
     await expect(shipSwatch).toBeVisible();
+    await boardButton.scrollIntoViewIfNeeded();
     await boardButton.click();
     await expect(boardButton).toBeVisible();
   });

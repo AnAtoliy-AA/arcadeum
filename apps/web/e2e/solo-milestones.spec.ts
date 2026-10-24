@@ -168,6 +168,7 @@ test.describe('Solo Puzzle Games Milestone Popups', () => {
 
     const dismissBtn = page.getByTestId('solitaire-milestone-dismiss');
     await expect(dismissBtn).toBeVisible();
+    await dismissBtn.scrollIntoViewIfNeeded();
     await dismissBtn.click();
 
     await expect(toast).not.toBeVisible();
@@ -239,6 +240,7 @@ test.describe('Solo Puzzle Games Milestone Popups', () => {
 
     const dismissBtn = page.getByTestId('minesweeper-milestone-dismiss');
     await expect(dismissBtn).toBeVisible();
+    await dismissBtn.scrollIntoViewIfNeeded();
     await dismissBtn.click();
 
     await expect(toast).not.toBeVisible();

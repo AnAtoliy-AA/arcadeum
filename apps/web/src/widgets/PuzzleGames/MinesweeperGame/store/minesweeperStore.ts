@@ -10,6 +10,21 @@ import { newGame, revealCell, toggleFlag } from '../lib/engine';
 import type { Difficulty, MinesweeperState } from '../types';
 
 export const MINESWEEPER_GAME_ID = 'minesweeper_v1';
+export const MINESWEEPER_MILESTONE_TARGETS = [50, 80] as const;
+
+let milestoneTimer: ReturnType<typeof setTimeout> | null = null;
+
+function clearMilestoneTimer() {
+  if (milestoneTimer) {
+    clearTimeout(milestoneTimer);
+    milestoneTimer = null;
+  }
+}
+
+function calculateSafeProgress(game: MinesweeperState): number {
+  const totalSafe = game.width * game.height - game.mineCount;
+  return totalSafe > 0 ? (game.revealedCount / totalSafe) * 100 : 0;
+}
 
 export interface FinishedGameInfo {
   won: boolean;
@@ -26,6 +41,9 @@ interface MinesweeperStoreState {
   personalBests: Record<Difficulty, number | null>;
   personalBestsNf: Record<Difficulty, number | null>;
   flaglessMode: boolean;
+  activeMilestone: number | null;
+  reachedMilestones: number[];
+  dismissMilestone: () => void;
   reveal: (index: number) => void;
   flag: (index: number) => void;
   undo: () => void;
@@ -55,6 +73,8 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
         intermediate: null,
         expert: null,
       },
+      activeMilestone: null,
+      reachedMilestones: [],
 
       reveal: (index) =>
         set((state) => {
@@ -107,12 +127,37 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
               }
             }
           }
+          const progress = calculateSafeProgress(game);
+          let activeMilestone = state.activeMilestone;
+          let reachedMilestones = state.reachedMilestones;
+          if (game.status === 'playing') {
+            for (const m of MINESWEEPER_MILESTONE_TARGETS) {
+              if (progress >= m && !reachedMilestones.includes(m)) {
+                reachedMilestones = [...reachedMilestones, m];
+                activeMilestone = m;
+              }
+            }
+          }
+
+          if (
+            activeMilestone !== null &&
+            activeMilestone !== state.activeMilestone
+          ) {
+            clearMilestoneTimer();
+            milestoneTimer = setTimeout(() => {
+              milestoneTimer = null;
+              useMinesweeperStore.getState().dismissMilestone();
+            }, 3500);
+          }
+
           return {
             history: [...state.history, state.game],
             game,
             startedAt,
             personalBests,
             personalBestsNf,
+            activeMilestone,
+            reachedMilestones,
             ...(result ?? {}),
           };
         }),
@@ -130,8 +175,9 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
 
       undo: () =>
         set((state) => {
+          clearMilestoneTimer();
           const update = undoReducer(state.history, state.finishedAt);
-          return update ?? state;
+          return update ? { ...update, activeMilestone: null } : state;
         }),
 
       toggleFlaglessMode: () =>
@@ -139,7 +185,8 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
 
       setFlaglessMode: (enabled) => set({ flaglessMode: enabled }),
 
-      changeDifficulty: (difficulty) =>
+      changeDifficulty: (difficulty) => {
+        clearMilestoneTimer();
         set({
           game: newGame(difficulty),
           startedAt: null,
@@ -147,9 +194,13 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
           finished: null,
           history: [],
           usedUndo: false,
-        }),
+          activeMilestone: null,
+          reachedMilestones: [],
+        });
+      },
 
-      newGame: () =>
+      newGame: () => {
+        clearMilestoneTimer();
         set((state) => ({
           game: newGame(state.game.difficulty),
           startedAt: null,
@@ -157,7 +208,15 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
           finished: null,
           history: [],
           usedUndo: false,
-        })),
+          activeMilestone: null,
+          reachedMilestones: [],
+        }));
+      },
+
+      dismissMilestone: () => {
+        clearMilestoneTimer();
+        set({ activeMilestone: null });
+      },
     }),
     {
       name: 'arcadeum_minesweeper_game_v1',
@@ -172,6 +231,7 @@ export const useMinesweeperStore = create<MinesweeperStoreState>()(
         flaglessMode: state.flaglessMode,
         personalBests: state.personalBests,
         personalBestsNf: state.personalBestsNf,
+        reachedMilestones: state.reachedMilestones,
       }),
     },
   ),

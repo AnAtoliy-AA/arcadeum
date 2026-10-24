@@ -89,4 +89,41 @@ describe('SudokuGame UI', () => {
     fireEvent.click(modeBtn);
     expect(useSudokuStore.getState().inputMode).toBe('cell_first');
   });
+
+  it('renders milestone toast on 50% progress and dismisses on button click', () => {
+    useSudokuStore.setState({
+      activeMilestone: 50,
+      reachedMilestones: [50],
+    });
+
+    render(<SudokuGame />);
+
+    const toast = screen.getByTestId('sudoku-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.sudoku_v1.milestone.badge_50'),
+    ).toBeInTheDocument();
+
+    const dismissBtn = screen.getByTestId('sudoku-milestone-dismiss');
+    fireEvent.click(dismissBtn);
+    expect(useSudokuStore.getState().activeMilestone).toBeNull();
+  });
+
+  it('renders milestone toast on 75% progress with badge and auto-dismisses on animationEnd', () => {
+    useSudokuStore.setState({
+      activeMilestone: 75,
+      reachedMilestones: [75],
+    });
+
+    render(<SudokuGame />);
+
+    const toast = screen.getByTestId('sudoku-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.sudoku_v1.milestone.badge_75'),
+    ).toBeInTheDocument();
+
+    fireEvent.animationEnd(toast);
+    expect(useSudokuStore.getState().activeMilestone).toBeNull();
+  });
 });

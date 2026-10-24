@@ -50,6 +50,17 @@ export const enMessages = {
       flawlessBody: 'Flawless solve - not a single wrong entry.',
       playAgain: 'Play again',
     },
+    milestone: {
+      title: 'Milestone Reached!',
+      title_50: 'Halfway Solved!',
+      title_75: 'Final Stretch: 75%!',
+      badge: 'Milestone',
+      badge_50: 'Halfway',
+      badge_75: 'Final Stretch',
+      body_50: 'You solved 50% of the puzzle. Keep going!',
+      body_75: 'Only one quarter left to solve!',
+      keepGoing: 'Keep Going',
+    },
     rules: {
       objective:
         'Fill the entire 9×9 grid so that every row, every column and each 3×3 box contains the digits 1–9 exactly once.',

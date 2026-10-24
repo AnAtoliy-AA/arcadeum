@@ -86,6 +86,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-checkers-jump-by',
+      gameId: 'checkers',
+      title: 'Практычная задача: выкананне абавязковага ўзяцця',
+      prompt:
+        'Белая шашка на c3 абавязана ўзяць чорную шашку на d4. Знайдзіце клетку прызямлення на e5 для завяршэння ўзяцця.',
+      grid: [
+        '........',
+        '........',
+        '........',
+        '....b...',
+        '...b....',
+        '..w.....',
+        '........',
+        '........',
+      ],
+      solutionIndex: 28,
+      solutionValue: 'w',
+      explanation:
+        'Прызямленне на e5 пераскоквае шашку d4 з узяццем! У шашках узяцце з’яўляецца абавязковым.',
+      playHref: '/games/checkers',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Эндшпіль',

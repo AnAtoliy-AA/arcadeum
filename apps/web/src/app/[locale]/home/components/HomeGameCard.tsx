@@ -92,7 +92,9 @@ export function HomeGameCard({
           href={getCardLinkHref(game, routes, locale)}
           data-testid={`game-title-link-${game.id}`}
           className="featured-card-cover-link absolute inset-0 z-[1] flex items-end p-[18px] text-inherit no-underline focus-visible:rounded-2xl focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-[-4px]"
-          aria-label={t(game.nameKey)}
+          aria-label={
+            game.id === 'go_v1' ? `${t(game.nameKey)} (Baduk)` : t(game.nameKey)
+          }
         >
           <Badge
             accent={accent}

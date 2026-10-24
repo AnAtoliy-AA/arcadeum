@@ -15,6 +15,7 @@ export const tableEn = {
     otherTurn: "{{name}}'s turn",
     waiting: 'Waiting…',
     gameOver: 'Game over',
+    firstMove: 'First Move',
   },
   victory: {
     title: 'Victory!',

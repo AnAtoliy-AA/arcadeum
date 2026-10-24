@@ -130,7 +130,7 @@ export function CheckersLobby({
 
   const modeOptions = MODE_OPTIONS.map((rv) => ({
     id: rv.id,
-    label: t(rv.nameKey),
+    label: `${t(rv.nameKey)} (${rv.id === 'international' ? '10×10' : '8×8'})`,
     emoji:
       rv.id === 'american' ? '🇺🇸' : rv.id === 'international' ? '🌍' : '🇷🇺',
   }));
@@ -139,16 +139,16 @@ export function CheckersLobby({
 
   const optionsSlot = (
     <div className="flex flex-col items-stretch gap-4">
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
-        <GameThemePicker
-          selectedTheme={variant}
-          onSelect={(themeId) =>
-            setOption({ theme: themeId, variant: themeId })
-          }
-          disabled={!isHost}
-        />
-      </LobbyOptionSection>
-      <LobbyOptionSection title={t('games.checkers_v1.lobby.ruleVariant')}>
+      <div
+        data-testid="checkers-board-size-section"
+        className="flex flex-col items-stretch gap-2 p-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-base">📐</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
+            {t('games.checkers_v1.lobby.ruleVariant')}
+          </span>
+        </div>
         <LobbyChipGroup
           options={modeOptions}
           value={mode}
@@ -157,9 +157,18 @@ export function CheckersLobby({
           accentColor="#2563eb"
           testIdPrefix="checkers-rule-variant"
         />
-        <span className="text-[14px] opacity-[0.6] -mt-1">
+        <span className="text-xs text-[var(--textSecondary)] opacity-80">
           {t(MODE_OPTIONS.find((rv) => rv.id === mode)!.descriptionKey)}
         </span>
+      </div>
+      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={variant}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
       </LobbyOptionSection>
       <LobbyOptionSection title={t('games.checkers_v1.lobby.rules')}>
         <div className="flex flex-col items-stretch gap-2">

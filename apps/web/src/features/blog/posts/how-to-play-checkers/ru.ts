@@ -108,6 +108,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-checkers-jump-ru',
+      gameId: 'checkers',
+      title: 'Практическая задача: выполнение обязательного взятия',
+      prompt:
+        'Белая шашка на c3 обязана взять черную шашку на d4. Найдите клетку приземления на e5 для завершения взятия.',
+      grid: [
+        '........',
+        '........',
+        '........',
+        '....b...',
+        '...b....',
+        '..w.....',
+        '........',
+        '........',
+      ],
+      solutionIndex: 28,
+      solutionValue: 'w',
+      explanation:
+        'Приземление на e5 перепрыгивает шашку d4 со взятием! В шашках взятие обязательно.',
+      playHref: '/games/checkers',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Эндшпиль',

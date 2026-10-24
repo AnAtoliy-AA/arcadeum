@@ -197,6 +197,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-sea-battle-hunt',
+      gameId: 'sea-battle',
+      title: 'Practice Drill: Probe the Damaged Battleship',
+      prompt:
+        'A direct hit was registered at C4 (H). Misses eliminated C3, B4, and C5. Find the next cell along row 4 to strike.',
+      grid: [
+        '..........',
+        '..........',
+        '..M.......',
+        '.MH.......',
+        '..M.......',
+        '..........',
+      ],
+      colLabels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+      rowLabels: ['1', '2', '3', '4', '5', '6'],
+      solutionIndex: 33,
+      solutionValue: 'H',
+      explanation:
+        'Direct hit on D4! With misses at C3, B4, and C5, the ship must extend East along row 4.',
+      playHref: '/games/sea-battle',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Play Free Battleship Online with Friends or AI',

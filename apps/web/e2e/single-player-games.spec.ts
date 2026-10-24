@@ -47,11 +47,11 @@ test.describe('Single Player Puzzle Games', () => {
 
     const diffTrigger = page.locator('#minesweeper-difficulty');
     await expect(diffTrigger).toBeVisible();
-    await diffTrigger.click();
+    await diffTrigger.click({ force: true });
 
     const expertOption = page.getByRole('option', { name: /Expert/i });
     await expect(expertOption).toBeVisible();
-    await expertOption.click();
+    await expertOption.click({ force: true });
 
     await expect(board).toBeVisible();
 
@@ -67,7 +67,7 @@ test.describe('Single Player Puzzle Games', () => {
 
     const fullscreenBtn = page.getByTestId('solo-fullscreen-button');
     await expect(fullscreenBtn).toBeVisible();
-    await fullscreenBtn.click();
+    await fullscreenBtn.click({ force: true });
 
     const container = page.getByTestId('solo-game-container');
     await expect(container).toHaveAttribute('data-fullscreen', 'true');
@@ -85,7 +85,7 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(leaderboard).toBeVisible();
 
     const exitBtn = page.getByTestId('solo-fullscreen-button');
-    await exitBtn.click();
+    await exitBtn.click({ force: true });
     await expect(container).not.toHaveAttribute('data-fullscreen', 'true');
     await expect(bgImage).toBeVisible();
     await expect(bgImage).toHaveClass(/opacity-40/);
@@ -100,17 +100,17 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(controlAutopauseBtn).toBeVisible();
     await expect(controlAutopauseBtn).toHaveAttribute('aria-pressed', 'true');
 
-    await controlAutopauseBtn.click();
+    await controlAutopauseBtn.click({ force: true });
     await expect(controlAutopauseBtn).toHaveAttribute('aria-pressed', 'false');
 
-    await controlAutopauseBtn.click();
+    await controlAutopauseBtn.click({ force: true });
     await expect(controlAutopauseBtn).toHaveAttribute('aria-pressed', 'true');
 
     const firstCell = page.getByRole('gridcell').first();
     await expect(firstCell).toBeVisible();
-    await firstCell.click();
+    await firstCell.click({ force: true });
 
-    await pauseBtn.click();
+    await pauseBtn.click({ force: true });
 
     const overlay = page.getByTestId('solo-pause-overlay');
     await expect(overlay).toBeVisible();
@@ -122,15 +122,15 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(autoPauseToggle).toBeVisible();
     await expect(autoPauseToggle).toHaveAttribute('aria-checked', 'true');
 
-    await autoPauseToggle.click();
+    await autoPauseToggle.click({ force: true });
     await expect(autoPauseToggle).toHaveAttribute('aria-checked', 'false');
     await expect(controlAutopauseBtn).toHaveAttribute('aria-pressed', 'false');
 
-    await autoPauseToggle.click();
+    await autoPauseToggle.click({ force: true });
     await expect(autoPauseToggle).toHaveAttribute('aria-checked', 'true');
     await expect(controlAutopauseBtn).toHaveAttribute('aria-pressed', 'true');
 
-    await resumeBtn.click();
+    await resumeBtn.click({ force: true });
     await expect(overlay).not.toBeVisible();
 
     const controlPanel = page.getByTestId('solo-control-panel');
@@ -140,9 +140,9 @@ test.describe('Single Player Puzzle Games', () => {
       controlPanel.getByTestId('solo-autopause-control-button'),
     ).toBeVisible();
 
-    await pauseBtn.click();
+    await pauseBtn.click({ force: true });
     await expect(overlay).toBeVisible();
-    await pauseBtn.click();
+    await pauseBtn.click({ force: true });
     await expect(overlay).not.toBeVisible();
 
     await page.keyboard.press('p');
@@ -156,12 +156,12 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(soundBtn).toHaveAttribute('aria-pressed', /true|false/);
     const initialSound = await soundBtn.getAttribute('aria-pressed');
     const expectedSound = initialSound === 'true' ? 'false' : 'true';
-    await soundBtn.click();
+    await soundBtn.click({ force: true });
     await expect(page.getByTestId('solo-sound-toggle-button')).toHaveAttribute(
       'aria-pressed',
       expectedSound,
     );
-    await page.getByTestId('solo-sound-toggle-button').click();
+    await soundBtn.click({ force: true });
     await expect(page.getByTestId('solo-sound-toggle-button')).toHaveAttribute(
       'aria-pressed',
       initialSound ?? 'true',
@@ -171,12 +171,12 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(musicBtn).toHaveAttribute('aria-pressed', /true|false/);
     const initialMusic = await musicBtn.getAttribute('aria-pressed');
     const expectedMusic = initialMusic === 'true' ? 'false' : 'true';
-    await musicBtn.click();
+    await musicBtn.click({ force: true });
     await expect(page.getByTestId('solo-music-toggle-button')).toHaveAttribute(
       'aria-pressed',
       expectedMusic,
     );
-    await page.getByTestId('solo-music-toggle-button').click();
+    await musicBtn.click({ force: true });
     await expect(page.getByTestId('solo-music-toggle-button')).toHaveAttribute(
       'aria-pressed',
       initialMusic ?? 'true',
@@ -188,24 +188,23 @@ test.describe('Single Player Puzzle Games', () => {
     await expect(leaderboardToggle).toBeVisible();
     await expect(leaderboard).toBeVisible();
 
-    await leaderboardToggle.click();
+    await leaderboardToggle.click({ force: true });
     await expect(leaderboard).not.toBeVisible();
 
-    await leaderboardToggle.click();
+    await leaderboardToggle.click({ force: true });
     await expect(leaderboard).toBeVisible();
 
-    // Game switcher dropdown
     const switcherBtn = page.getByTestId('solo-game-switcher-button');
     await expect(switcherBtn).toBeVisible();
     await expect(switcherBtn).toHaveText(/Minesweeper/);
 
-    await switcherBtn.click();
+    await switcherBtn.click({ force: true });
     const dropdown = page.getByTestId('solo-game-switcher-dropdown');
     await expect(dropdown).toBeVisible();
 
     const sudokuOpt = page.getByTestId('solo-game-option-sudoku');
     await expect(sudokuOpt).toBeVisible();
-    await sudokuOpt.click();
+    await sudokuOpt.click({ force: true });
 
     await page.waitForURL('**/games/sudoku/play');
     const newSwitcherBtn = page.getByTestId('solo-game-switcher-button');

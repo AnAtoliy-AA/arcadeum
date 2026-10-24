@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Typography } from '../Typography/Typography';
 import { getInitials, isGradient, pickSwatchColor } from './colors';
 import { BADGE_SIZE, DISC_SIZE, RING_WIDTH, type PlayerAvatarSize } from './constants';
@@ -14,16 +15,11 @@ interface AvatarDiscProps {
   frameColor?: string | null;
   auraColor?: string | null;
   backgroundColor?: string | null;
-  /** Soft bloom color under the disc (rays/aura → rarity glow), or null. */
   glowColor: string | null;
   priority?: boolean;
   testId?: string;
 }
 
-// The avatar disc: a circular base with optional frame tint, aura ring, inner
-// background wash, the avatar art (or initials fallback) and a corner badge.
-// Rendered at every size; the surrounding chrome (card/banner/name) lives in
-// CardChrome and the rays halo is layered behind the disc by the parent.
 export function AvatarDisc({
   name,
   size,
@@ -36,11 +32,30 @@ export function AvatarDisc({
   priority,
   testId,
 }: AvatarDiscProps) {
+  const [imgError, setImgError] = useState(false);
+  const [badgeError, setBadgeError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [avatarUrl]);
+
+  useEffect(() => {
+    setBadgeError(false);
+  }, [badgeUrl]);
+
+  const sanitizedAvatarUrl =
+    avatarUrl &&
+    avatarUrl.trim() !== '' &&
+    avatarUrl !== 'null' &&
+    avatarUrl !== 'undefined'
+      ? avatarUrl
+      : null;
+
   const disc = DISC_SIZE[size];
   const badge = BADGE_SIZE[size];
   const ring = RING_WIDTH[size];
 
-  const showBadge = !!badgeUrl;
+  const showBadge = !!badgeUrl && !badgeError;
   const showFrame = !!frameColor;
   const showAura = !!auraColor;
 
@@ -85,6 +100,7 @@ export function AvatarDisc({
 
   return (
     <div
+      data-avatar-disc=""
       style={{
         width: disc,
         height: disc,
@@ -149,7 +165,7 @@ export function AvatarDisc({
       {avatarSprite ? (
         <div
           data-testid={testId ? `${testId}-sprite` : undefined}
-          data-avatar-url={avatarUrl ?? undefined}
+          data-avatar-url={sanitizedAvatarUrl ?? undefined}
           style={{
             width: innerImage,
             height: innerImage,
@@ -160,10 +176,10 @@ export function AvatarDisc({
             zIndex: 1,
           }}
         />
-      ) : avatarUrl ? (
+      ) : sanitizedAvatarUrl && !imgError ? (
         <img
-          src={avatarUrl}
-          data-avatar-url={avatarUrl}
+          src={sanitizedAvatarUrl}
+          data-avatar-url={sanitizedAvatarUrl}
           alt={name}
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}
@@ -176,8 +192,8 @@ export function AvatarDisc({
             position: 'relative',
             zIndex: 1,
           }}
-          onError={(e) => {
-            e.currentTarget.style.display = 'none';
+          onError={() => {
+            setImgError(true);
           }}
         />
       ) : (
@@ -205,8 +221,6 @@ export function AvatarDisc({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            // Sits above the avatar art/initials (both zIndex 1) so the corner
-            // badge is never clipped by a full-bleed avatar image.
             zIndex: 2,
           }}
           data-testid={testId ? `${testId}-badge` : undefined}
@@ -228,6 +242,9 @@ export function AvatarDisc({
               width={Math.round(badge * 0.75)}
               height={Math.round(badge * 0.75)}
               style={{ objectFit: 'contain' }}
+              onError={() => {
+                setBadgeError(true);
+              }}
             />
           )}
         </div>

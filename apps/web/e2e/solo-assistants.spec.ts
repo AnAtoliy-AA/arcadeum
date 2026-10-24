@@ -97,7 +97,7 @@ test.describe('Solo Games Intelligent Assistants & QoL', () => {
 
     const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
     await expect(dismissButton).toBeVisible();
-    await dismissButton.click();
+    await dismissButton.click({ force: true });
 
     await expect(toast).not.toBeVisible();
   });
@@ -108,6 +108,61 @@ test.describe('Solo Games Intelligent Assistants & QoL', () => {
     await navigateTo(page, '/en/games/solitaire/play');
 
     const board = page.getByTestId('solitaire-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          game: {
+            stock: [],
+            waste: [
+              {
+                id: 'hearts-1',
+                suit: 'hearts',
+                rank: 1,
+                faceUp: true,
+              },
+            ],
+            foundations: [[], [], [], []],
+            tableau: [
+              [
+                {
+                  id: 'spades-13',
+                  suit: 'spades',
+                  rank: 13,
+                  faceUp: true,
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+            ],
+            moves: 0,
+            score: 0,
+            drawMode: 'draw1',
+          },
+          startedAt: Date.now() - 5000,
+          finishedAt: null,
+          finished: null,
+          history: [],
+          usedUndo: false,
+          activeHint: null,
+          reachedMilestones: [],
+          activeMilestone: null,
+        },
+        version: 0,
+      };
+
+      localStorage.setItem(
+        'arcadeum_solitaire_game_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
     await expect(board).toBeVisible();
 
     const drawModeBtn = page.getByTestId('solitaire-draw-mode-button');

@@ -42,6 +42,17 @@ export const frMessages = {
       lostBody: 'La position est bloquée - mélangez et réessayez !',
       playAgain: 'Rejouer',
     },
+    milestone: {
+      title: 'Étape franchie !',
+      title_26: 'À mi-chemin !',
+      title_39: 'Presque réussi : 39 cartes !',
+      badge: 'Étape',
+      badge_26: 'Mi-chemin',
+      badge_39: 'Presque réussi',
+      body_26: '26 cartes placées sur les fondations.',
+      body_39: 'Les trois quarts du jeu sont rangés !',
+      keepGoing: 'Continuer',
+    },
     rules: {
       objective:
         'Déplacez les 52 cartes vers les quatre fondations en construisant chaque couleur par ordre croissant, de l’as au roi.',

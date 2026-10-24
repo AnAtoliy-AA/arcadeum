@@ -130,6 +130,29 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-knight-fork',
+      gameId: 'chess',
+      title: 'Practice Drill: Land the Knight Fork',
+      prompt:
+        'White to move: find the square where White knight attacks the King, Queen, and Rook at the same time.',
+      grid: [
+        'r..qkb.r',
+        'pp..pppp',
+        '..p.....',
+        '....N...',
+        '....P...',
+        '........',
+        'PPPP.PPP',
+        'R.BQKBNR',
+      ],
+      solutionIndex: 10,
+      solutionValue: 'N',
+      explanation:
+        'Nc7+ forks king, queen, and rook! King must move out of check, guaranteeing material gain on the next turn.',
+      playHref: '/games/chess',
+    },
+    {
       type: 'paragraph',
       text: 'After every opponent move, ask what changed: which lines opened, which pieces became undefended, which checks and captures are now possible. Before committing to your candidate move, run a quick blunder-check: is anything of mine hanging, and does my move leave anything hanging?',
     },

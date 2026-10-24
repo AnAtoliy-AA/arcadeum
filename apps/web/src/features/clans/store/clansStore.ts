@@ -25,12 +25,21 @@ interface ClansState {
   clanMvps: ClanMvpEntry[];
   clanWars: import('../model/types').ClanWar[];
   activeWar: import('../model/types').ClanWar | null;
+  activeMatchWar: import('../model/types').ClanWar | null;
   warHistory: import('../model/types').ClanWar[];
   loading: boolean;
   error: string | null;
 
   setActiveTab: (tab: ClanTab) => void;
   setLeaderboardSort: (sort: ClanLeaderboardSort) => void;
+  setActiveMatchWar: (war: import('../model/types').ClanWar | null) => void;
+  updateClanWar: (war: import('../model/types').ClanWar) => void;
+  fetchActiveMatchWar: (
+    playerA: string,
+    playerB: string,
+    gameId?: string,
+    token?: string,
+  ) => Promise<import('../model/types').ClanWar | null>;
   fetchActiveWars: (clanId?: string, token?: string) => Promise<void>;
   fetchWarById: (warId: string, token?: string) => Promise<void>;
   declareWar: (
@@ -102,6 +111,7 @@ export const useClansStore = create<ClansState>((set, get) => ({
   clanMvps: [],
   clanWars: [],
   activeWar: null,
+  activeMatchWar: null,
   warHistory: [],
   loading: false,
   error: null,
@@ -322,6 +332,57 @@ export const useClansStore = create<ClansState>((set, get) => ({
       set({ warHistory: history });
     } catch (err) {
       set({ error: (err as Error).message });
+    }
+  },
+
+  setActiveMatchWar: (activeMatchWar) => set({ activeMatchWar }),
+
+  updateClanWar: (war) => {
+    set((state) => {
+      const existsInActive = state.clanWars.some((w) => w.id === war.id);
+      const updatedActive = existsInActive
+        ? state.clanWars.map((w) => (w.id === war.id ? war : w))
+        : war.status === 'active' || war.status === 'pending'
+          ? [war, ...state.clanWars]
+          : state.clanWars;
+
+      const filteredActive =
+        war.status === 'completed' || war.status === 'declined'
+          ? updatedActive.filter((w) => w.id !== war.id)
+          : updatedActive;
+
+      const existsInHistory = state.warHistory.some((w) => w.id === war.id);
+      const updatedHistory =
+        war.status === 'completed' || war.status === 'declined'
+          ? existsInHistory
+            ? state.warHistory.map((w) => (w.id === war.id ? war : w))
+            : [war, ...state.warHistory]
+          : state.warHistory;
+
+      const activeMatchWar =
+        state.activeMatchWar?.id === war.id ? war : state.activeMatchWar;
+
+      return {
+        clanWars: filteredActive,
+        activeWar: state.activeWar?.id === war.id ? war : state.activeWar,
+        warHistory: updatedHistory,
+        activeMatchWar,
+      };
+    });
+  },
+
+  fetchActiveMatchWar: async (playerA, playerB, gameId, token) => {
+    try {
+      const war = await clansApi.getActiveMatchWar(
+        playerA,
+        playerB,
+        gameId,
+        token ? { token } : undefined,
+      );
+      set({ activeMatchWar: war });
+      return war;
+    } catch {
+      return null;
     }
   },
 

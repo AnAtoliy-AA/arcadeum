@@ -35,6 +35,22 @@ export const post: BlogPost = {
         'Сцяна: два 1 агульныя = вонкавая бяспечная.',
       ],
     },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-minesweeper-121-by',
+      gameId: 'minesweeper',
+      title: 'Практычная задача: рашэнне патэрна 1-2-1',
+      prompt:
+        'Міны пазначаны на D1 і F1. Якая цэнтральная клетка гарантавана бяспечная для адкрыцця?',
+      grid: ['...F.F...', '...121...', '.........'],
+      colLabels: ['А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'І'],
+      rowLabels: ['1', '2', '3'],
+      solutionIndex: 4,
+      solutionValue: 'S',
+      explanation:
+        'Клетка Д1 (E1) на 100% бяспечная! Па правілу патэрна 1-2-1 абедзве міны ляжаць па краях, пакідаючы цэнтр вольным.',
+      playHref: '/games/minesweeper',
+    },
     { type: 'heading', level: 2, text: 'Стратэгія', id: 'strategy' },
     {
       type: 'list',

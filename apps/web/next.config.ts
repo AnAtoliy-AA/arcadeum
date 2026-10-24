@@ -309,7 +309,7 @@ const nextConfig: NextConfig = {
       // files never change between deploys (Next.js hashes _next/static
       // automatically; the rules below cover /images, /fonts, etc.).
       {
-        source: '/images/(.*)',
+        source: '/:media(images|fonts|music|sounds|shop|slides|games)/(.*)',
         headers: [
           {
             key: 'Cache-Control',
@@ -318,7 +318,8 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/fonts/(.*)',
+        source:
+          '/:file(.*\\.(?:png|jpe?g|gif|webp|avif|ico|svg|mp3|wav|ogg|woff2?))',
         headers: [
           {
             key: 'Cache-Control',
@@ -475,7 +476,7 @@ const nextConfig: NextConfig = {
     // deviceSizes entry — ~35% fewer bytes for the same look. 64 stays
     // first so fixed-size images (logo) keep their 1x srcset small.
     imageSizes: [64, 128, 256, 384, 512],
-    minimumCacheTTL: 3600,
+    minimumCacheTTL: 31536000,
   },
 };
 

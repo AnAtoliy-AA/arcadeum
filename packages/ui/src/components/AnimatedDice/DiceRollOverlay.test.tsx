@@ -86,4 +86,36 @@ describe('DiceRollOverlay', () => {
       expect(handleRoll).toHaveBeenCalledTimes(1);
     }
   });
+
+  it('triggers onRoll on Space key press when canRoll is true', () => {
+    const handleRoll = vi.fn();
+    render(
+      <DiceRollOverlay
+        canRoll={true}
+        isRolling={false}
+        onRoll={handleRoll}
+      />,
+    );
+
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' });
+    expect(handleRoll).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not trigger onRoll on Space key press when typing in input or disabled', () => {
+    const handleRoll = vi.fn();
+    render(
+      <div>
+        <input data-testid="chat-input" />
+        <DiceRollOverlay
+          canRoll={true}
+          isRolling={false}
+          onRoll={handleRoll}
+        />
+      </div>,
+    );
+
+    const input = screen.getByTestId('chat-input');
+    fireEvent.keyDown(input, { code: 'Space', key: ' ' });
+    expect(handleRoll).not.toHaveBeenCalled();
+  });
 });

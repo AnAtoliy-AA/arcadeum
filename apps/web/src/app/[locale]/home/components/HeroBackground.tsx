@@ -13,6 +13,8 @@ export function HeroBackground() {
         fill
         priority
         fetchPriority="high"
+        decoding="sync"
+        quality={55}
         sizes="(max-width: 1200px) 100vw, 1200px"
         className={`hero-background-image h-full w-full object-cover object-center ${HERO_BG_FILTER}`}
       />

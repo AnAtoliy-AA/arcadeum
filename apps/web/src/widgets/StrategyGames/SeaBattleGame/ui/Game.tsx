@@ -24,7 +24,6 @@ import { UndoButton } from '@/features/games/ui/UndoButton';
 import { useRecordGameResult } from '@/features/stats/hooks/useRecordGameResult';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import { SeaBattleLobby } from './SeaBattleLobby';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { SEA_BATTLE_THEMES } from '../lib/constants';
 import { SeaBattleThemeProvider } from '../lib/SeaBattleThemeContext';
 import { getPlayerColor } from '@/shared/lib/playerColors';
@@ -40,13 +39,18 @@ export const SeaBattleGame = memo(function SeaBattleGame({
   currentUserId,
   session: initialSession,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: SeaBattleGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -189,16 +193,6 @@ export const SeaBattleGame = memo(function SeaBattleGame({
     autoStartedRematchRef.current = true;
     handleStartGame({ withBots: true, botCount: autoStartBotCount });
   }, [isHost, room?.status, autoStartBotCount, handleStartGame]);
-
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
 
   // Carry the bot count from the current game into the rematch so the new
   // room can auto-start a fresh game with the same number of bots.
@@ -414,7 +408,7 @@ export const SeaBattleGame = memo(function SeaBattleGame({
           userId={currentUserId ?? undefined}
           startBusy={!!startBusy}
           onStartGame={handleStartGame}
-          onReorderPlayers={handleReorderPlayers}
+          onReorderPlayers={onReorderPlayers}
           onShowRules={setShowRules}
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={

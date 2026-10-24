@@ -41,6 +41,17 @@ export const frMessages = {
       lostBody: 'C’était une mine. Étudiez les chiffres et réessayez.',
       playAgain: 'Rejouer',
     },
+    milestone: {
+      title: 'Étape franchie !',
+      title_50: '50% déminé !',
+      title_80: 'Zone critique : 80% sécurisé !',
+      badge: 'Étape',
+      badge_50: 'Mi-chemin',
+      badge_80: 'Zone critique',
+      body_50: 'La moitié du champ de mines est sécurisée.',
+      body_80: 'Plus que 20% de cases sûres à trouver. Prudence !',
+      keepGoing: 'Continuer',
+    },
     rules: {
       objective:
         'Révélez toutes les cases qui ne cachent pas de mine. Découvrez toutes les cases sûres pour gagner.',

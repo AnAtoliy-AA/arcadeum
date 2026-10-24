@@ -20,6 +20,7 @@ test.describe('Rooms Page Filter UX', () => {
 
     const container = page.getByTestId('games-filters-container');
     await expect(container).toBeVisible();
+    await expect(container).toHaveAttribute('data-hydrated', 'true');
 
     const searchInput = page.getByRole('searchbox', {
       name: /Search games/i,
@@ -35,9 +36,14 @@ test.describe('Rooms Page Filter UX', () => {
   }) => {
     await navigateTo(page, routes.rooms);
 
+    const container = page.getByTestId('games-filters-container');
+    await expect(container).toBeVisible();
+    await expect(container).toHaveAttribute('data-hydrated', 'true');
+
     const searchInput = page.getByRole('searchbox', {
       name: /Search games/i,
     });
+    await expect(searchInput).toBeVisible();
     await searchInput.fill('Chess');
     await expect(searchInput).toHaveValue('Chess');
 
@@ -51,6 +57,10 @@ test.describe('Rooms Page Filter UX', () => {
 
   test('should toggle AI vs AI mode and reflect in URL', async ({ page }) => {
     await navigateTo(page, routes.rooms);
+    await expect(page.getByTestId('games-filters-container')).toHaveAttribute(
+      'data-hydrated',
+      'true',
+    );
 
     const aiBtn = page.getByRole('button', {
       name: /Toggle AI vs AI mode/i,
@@ -67,6 +77,10 @@ test.describe('Rooms Page Filter UX', () => {
     page,
   }) => {
     await navigateTo(page, routes.rooms);
+    await expect(page.getByTestId('games-filters-container')).toHaveAttribute(
+      'data-hydrated',
+      'true',
+    );
 
     const statusDropdown = page.getByTestId('rooms-filter-status-dropdown');
     await expect(statusDropdown).toBeVisible();
@@ -91,6 +105,10 @@ test.describe('Rooms Page Filter UX', () => {
     page,
   }) => {
     await navigateTo(page, routes.rooms);
+    await expect(page.getByTestId('games-filters-container')).toHaveAttribute(
+      'data-hydrated',
+      'true',
+    );
 
     const participationTrigger = page.getByTestId(
       'rooms-filter-toggle-advanced',
@@ -108,6 +126,10 @@ test.describe('Rooms Page Filter UX', () => {
     page,
   }) => {
     await navigateTo(page, routes.rooms);
+    await expect(page.getByTestId('games-filters-container')).toHaveAttribute(
+      'data-hydrated',
+      'true',
+    );
 
     const categoryDropdownTrigger = page.getByTestId(
       'rooms-filter-category-dropdown',

@@ -18,6 +18,7 @@ import { ClansService } from './clans.service';
 import { ClanLeaderboardsService } from './clan-leaderboards.service';
 import { CommunityChallengesService } from './community-challenges.service';
 import { ClanWarsService } from './clan-wars.service';
+import { ClanWarsAutomationService } from './clan-wars-automation.service';
 import { CreateClanDto } from './dto/create-clan.dto';
 import { UpdateClanDto } from './dto/update-clan.dto';
 import { JoinClanDto } from './dto/join-clan.dto';
@@ -27,6 +28,7 @@ import { ContributeChallengeDto } from './dto/contribute-challenge.dto';
 import { CreateClanWarDto } from './dto/create-clan-war.dto';
 import { RespondClanWarDto } from './dto/respond-clan-war.dto';
 import { RecordClanWarMatchDto } from './dto/record-clan-war-match.dto';
+import { MatchmakeClanWarDto } from './dto/matchmake-clan-war.dto';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 
 interface RequestWithUser {
@@ -41,6 +43,7 @@ export class ClansController {
     private readonly clanLeaderboardsService: ClanLeaderboardsService,
     private readonly communityChallengesService: CommunityChallengesService,
     private readonly clanWarsService: ClanWarsService,
+    private readonly clanWarsAutomationService: ClanWarsAutomationService,
   ) {}
 
   @Post()
@@ -87,6 +90,19 @@ export class ClansController {
     return this.clanWarsService.getActiveWars(clanId);
   }
 
+  @Get('wars/active-match')
+  getActiveMatchWar(
+    @Query('playerA') playerA: string,
+    @Query('playerB') playerB: string,
+    @Query('gameId') gameId?: string,
+  ) {
+    return this.clanWarsAutomationService.getActiveWarForPlayers(
+      playerA,
+      playerB,
+      gameId,
+    );
+  }
+
   @Get('wars/:id')
   getWarById(@Param('id') id: string) {
     return this.clanWarsService.getWarById(id);
@@ -123,6 +139,24 @@ export class ClansController {
   @Post('wars/:id/record-match')
   recordWarMatch(@Param('id') id: string, @Body() dto: RecordClanWarMatchDto) {
     return this.clanWarsService.recordWarMatch(id, dto);
+  }
+
+  @Post(':id/wars/matchmake')
+  matchmakeClanWar(
+    @Req() req: RequestWithUser,
+    @Param('id') clanId: string,
+    @Body() dto: MatchmakeClanWarDto,
+  ) {
+    return this.clanWarsAutomationService.matchmakeClanWar(
+      req.user.userId,
+      clanId,
+      dto.gameId,
+    );
+  }
+
+  @Post('wars/expire')
+  expireClanWars() {
+    return this.clanWarsAutomationService.expirePendingAndActiveWars();
   }
 
   @Get(':id/wars')

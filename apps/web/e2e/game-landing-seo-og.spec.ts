@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test, navigateTo } from './fixtures/test-utils';
+import { test } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
 
 test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
@@ -46,7 +46,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('checkers and backgammon render specifications matrix and direct answers', async ({
     page,
   }) => {
-    await navigateTo(page, routes.checkersLanding);
+    await page.goto(routes.checkersLanding, {
+      waitUntil: 'domcontentloaded',
+    });
     const checkersHeading = page.locator('h1').first();
     await expect(checkersHeading).toBeVisible();
     await expect(checkersHeading).toContainText('Checkers');
@@ -57,7 +59,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await expect(checkersSpec).toBeVisible();
     await expect(checkersSpec).toContainText('American Draughts');
 
-    await navigateTo(page, routes.backgammonLanding);
+    await page.goto(routes.backgammonLanding, {
+      waitUntil: 'domcontentloaded',
+    });
     const bgHeading = page.locator('h1').first();
     await expect(bgHeading).toBeVisible();
     await expect(bgHeading).toContainText('Backgammon');
@@ -97,7 +101,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing renders daily puzzle teaser and interactive solving', async ({
     page,
   }) => {
-    await navigateTo(page, routes.chessLanding);
+    await page.goto(routes.chessLanding, {
+      waitUntil: 'domcontentloaded',
+    });
 
     const puzzleTeaser = page.locator('[data-testid="chess-puzzle-teaser"]');
     await expect(puzzleTeaser).toBeVisible();
@@ -117,7 +123,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing invite/share modal opens with QR code and copy link', async ({
     page,
   }) => {
-    await navigateTo(page, routes.chessLanding);
+    await page.goto(routes.chessLanding, {
+      waitUntil: 'domcontentloaded',
+    });
 
     const inviteBtn = page.getByRole('button', { name: /Invite \/ Share/i });
     await expect(inviteBtn).toBeVisible();
@@ -163,7 +171,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing theme showcase preview selection works', async ({
     page,
   }) => {
-    await navigateTo(page, routes.chessLanding);
+    await page.goto(routes.chessLanding, {
+      waitUntil: 'domcontentloaded',
+    });
 
     const cyberpunkCard = page.locator('[data-testid="theme-card-cyberpunk"]');
     await expect(cyberpunkCard).toBeVisible();

@@ -96,6 +96,7 @@ export function SortablePlayerItem({
                 onMoveUp();
               }}
               disabled={index === 0}
+              data-testid={`player-move-up-${member.id}`}
             >
               ↑
             </Button>
@@ -108,6 +109,7 @@ export function SortablePlayerItem({
                 onMoveDown();
               }}
               disabled={index === totalCount - 1}
+              data-testid={`player-move-down-${member.id}`}
             >
               ↓
             </Button>

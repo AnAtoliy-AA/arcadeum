@@ -203,3 +203,42 @@ describe('SolitaireGame auto-place', () => {
     expect(useSolitaireStore.getState().game.moves).toBe(movesAfterFirstSteps);
   });
 });
+
+describe('SolitaireGame milestones', () => {
+  it('renders milestone toast on 26 cards foundation progress and dismisses on click', () => {
+    useSolitaireStore.setState({
+      activeMilestone: 26,
+      reachedMilestones: [26],
+    });
+
+    render(<SolitaireGame />);
+
+    const toast = screen.getByTestId('solitaire-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.solitaire_v1.milestone.badge_26'),
+    ).toBeInTheDocument();
+
+    const dismissBtn = screen.getByTestId('solitaire-milestone-dismiss');
+    fireEvent.click(dismissBtn);
+    expect(useSolitaireStore.getState().activeMilestone).toBeNull();
+  });
+
+  it('renders milestone toast on 39 cards with badge and auto-dismisses on animationEnd', () => {
+    useSolitaireStore.setState({
+      activeMilestone: 39,
+      reachedMilestones: [39],
+    });
+
+    render(<SolitaireGame />);
+
+    const toast = screen.getByTestId('solitaire-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.solitaire_v1.milestone.badge_39'),
+    ).toBeInTheDocument();
+
+    fireEvent.animationEnd(toast);
+    expect(useSolitaireStore.getState().activeMilestone).toBeNull();
+  });
+});

@@ -43,6 +43,7 @@ test.describe('Features Page', () => {
     await expect(page.getByText('8. Real-Time (WebSocket)')).not.toBeVisible();
 
     const allChip = page.getByTestId('filter-all');
+    await allChip.scrollIntoViewIfNeeded();
     await allChip.click();
 
     await expect(page.getByText('8. Real-Time (WebSocket)')).toBeVisible();
@@ -55,16 +56,19 @@ test.describe('Features Page', () => {
     await page.waitForLoadState('domcontentloaded');
 
     const matrixButton = page.getByTestId('features-view-matrix');
+    await matrixButton.scrollIntoViewIfNeeded();
     await matrixButton.click();
 
     await expect(page.getByText('Explore →').first()).toBeVisible();
 
     const directoryButton = page.getByTestId('features-view-directory');
+    await directoryButton.scrollIntoViewIfNeeded();
     await directoryButton.click();
 
     await expect(page.getByText('Directory Index')).toBeVisible();
 
     const fullViewButton = page.getByTestId('features-view-categorized');
+    await fullViewButton.scrollIntoViewIfNeeded();
     await fullViewButton.click();
 
     await expect(page.getByText('1. Games (20+)')).toBeVisible();

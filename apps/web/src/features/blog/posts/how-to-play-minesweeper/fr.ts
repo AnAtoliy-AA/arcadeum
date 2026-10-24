@@ -35,6 +35,22 @@ export const post: BlogPost = {
         'Mur : deux 1 partageant des voisins = case extérieure sûre.',
       ],
     },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-minesweeper-121-fr',
+      gameId: 'minesweeper',
+      title: 'Exercice pratique: résoudre le motif 1-2-1',
+      prompt:
+        'Mines signalées en D1 et F1. Quelle case centrale est garantie sûre à révéler ?',
+      grid: ['...F.F...', '...121...', '.........'],
+      colLabels: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+      rowLabels: ['1', '2', '3'],
+      solutionIndex: 4,
+      solutionValue: 'S',
+      explanation:
+        'La case E1 est 100% sûre ! Dans le motif 1-2-1, les deux mines se situent sur les ailes extérieures.',
+      playHref: '/games/minesweeper',
+    },
     { type: 'heading', level: 2, text: 'Probabilités', id: 'probability' },
     {
       type: 'paragraph',

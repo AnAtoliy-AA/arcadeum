@@ -141,4 +141,41 @@ describe('MinesweeperGame UI', () => {
     fireEvent.click(nfBtn);
     expect(useMinesweeperStore.getState().flaglessMode).toBe(false);
   });
+
+  it('renders milestone toast on 50% safe cells progress and dismisses on click', () => {
+    useMinesweeperStore.setState({
+      activeMilestone: 50,
+      reachedMilestones: [50],
+    });
+
+    render(<MinesweeperGame />);
+
+    const toast = screen.getByTestId('minesweeper-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.minesweeper_v1.milestone.badge_50'),
+    ).toBeInTheDocument();
+
+    const dismissBtn = screen.getByTestId('minesweeper-milestone-dismiss');
+    fireEvent.click(dismissBtn);
+    expect(useMinesweeperStore.getState().activeMilestone).toBeNull();
+  });
+
+  it('renders milestone toast on 80% progress with badge and auto-dismisses on animationEnd', () => {
+    useMinesweeperStore.setState({
+      activeMilestone: 80,
+      reachedMilestones: [80],
+    });
+
+    render(<MinesweeperGame />);
+
+    const toast = screen.getByTestId('minesweeper-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.minesweeper_v1.milestone.badge_80'),
+    ).toBeInTheDocument();
+
+    fireEvent.animationEnd(toast);
+    expect(useMinesweeperStore.getState().activeMilestone).toBeNull();
+  });
 });

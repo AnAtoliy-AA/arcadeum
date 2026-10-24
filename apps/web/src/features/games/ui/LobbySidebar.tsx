@@ -25,10 +25,8 @@ import {
   CardTitle,
   PlayerList,
   PlayerItem,
-  LobbyPlayerAvatar,
   PlayerInfo,
   LobbyPlayerName,
-  LobbyPlayerAvatarText,
   EmptySlot,
   EmptyAvatar,
   EmptyAvatarText,
@@ -42,7 +40,7 @@ import {
   CardHeader,
   RefreshButton,
 } from './lobbyStyles';
-import { SortablePlayerItem, AVATAR_COLORS } from './SortablePlayerItem';
+import { SortablePlayerItem } from './SortablePlayerItem';
 import { ConfirmationModal } from './ConfirmationModal';
 import { InGameAvatar } from './InGameAvatar';
 import { InviteFriendPicker } from './InviteFriendPicker';
@@ -355,16 +353,12 @@ export function LobbySidebar({
             <PlayerList>
               {pendingInvited.map((u) => (
                 <PlayerItem key={u.id} className="opacity-70">
-                  <LobbyPlayerAvatar
+                  <InGameAvatar
+                    playerId={u.id}
+                    name={u.displayName}
+                    size="sm"
                     className="grayscale"
-                    backgroundColor={
-                      AVATAR_COLORS[u.displayName.length % AVATAR_COLORS.length]
-                    }
-                  >
-                    <LobbyPlayerAvatarText>
-                      {u.displayName.slice(0, 2).toUpperCase()}
-                    </LobbyPlayerAvatarText>
-                  </LobbyPlayerAvatar>
+                  />
                   <PlayerInfo>
                     <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
                     <InfoLabel>Waiting...</InfoLabel>
@@ -373,15 +367,13 @@ export function LobbySidebar({
               ))}
               {pendingDeclined.map((u) => (
                 <PlayerItem key={u.id} className="opacity-50">
-                  <div className="flex flex-1 items-center">
-                    <LobbyPlayerAvatar
-                      backgroundColor="#ccc"
+                  <div className="flex flex-1 items-center gap-2">
+                    <InGameAvatar
+                      playerId={u.id}
+                      name={u.displayName}
+                      size="sm"
                       className="grayscale"
-                    >
-                      <LobbyPlayerAvatarText>
-                        {u.displayName.slice(0, 2).toUpperCase()}
-                      </LobbyPlayerAvatarText>
-                    </LobbyPlayerAvatar>
+                    />
                     <PlayerInfo>
                       <LobbyPlayerName className="line-through">
                         {u.displayName}
@@ -467,7 +459,7 @@ export function LobbySidebar({
         <DeleteButton
           onClick={() => setShowLeaveConfirm(true)}
           size="md"
-          style={{ marginTop: 8, boxShadow: '0 0px 0px transparent' }}
+          className="mt-2 shadow-none"
         >
           {labels.leaveRoomLabel || t('games.common.leaveRoom.button')}
         </DeleteButton>

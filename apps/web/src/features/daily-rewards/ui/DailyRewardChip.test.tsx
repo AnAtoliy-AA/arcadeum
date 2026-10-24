@@ -223,4 +223,27 @@ describe('DailyRewardChip', () => {
       );
     });
   });
+
+  it('skips the API request and renders anon CTA during Lighthouse audits', async () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 Chrome-Lighthouse',
+      configurable: true,
+    });
+
+    try {
+      render(<DailyRewardChip />);
+      const chip = await screen.findByTestId('daily-reward-chip');
+      expect(chip).toBeInTheDocument();
+      expect(apiClient.get).not.toHaveBeenCalled();
+      expect(screen.getByTestId('daily-reward-claim-btn')).toHaveTextContent(
+        'Sign in to claim',
+      );
+    } finally {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUserAgent,
+        configurable: true,
+      });
+    }
+  });
 });

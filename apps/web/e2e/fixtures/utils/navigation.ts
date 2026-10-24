@@ -70,29 +70,18 @@ export async function navigateTo(
     page.on('response', onResponse);
 
     try {
-      // Use 'commit' to avoid waiting for full DOM parsing/scripts during slow dev compilation.
-      // Ready state is instead verified via robust hydration markers below.
-      await page.goto(path, { waitUntil: 'commit' });
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
 
       if (shouldReload) {
         console.warn(
           `Detected issue (Hydration: ${hydrationError}) on ${path}, reloading... (Attempt ${attempt + 1})`,
         );
-        await page.reload({ waitUntil: 'commit' });
+        await page.reload({ waitUntil: 'domcontentloaded' });
       }
 
-      // Robust hydration check: wait for either data-hydrated or data-app-ready
-      await expect(async () => {
-        const html = page.locator('html');
-        const hydrated = await html.getAttribute('data-hydrated');
-        const appReady = await html.getAttribute('data-app-ready');
-
-        if (hydrated !== 'true' && appReady !== 'true') {
-          throw new Error('Hydration markers not found');
-        }
-      }).toPass({
-        intervals: [1000, 2000, 5000],
-      });
+      await expect(
+        page.locator('html[data-hydrated="true"], html[data-app-ready="true"]'),
+      ).toBeAttached();
 
       success = true;
     } catch (err) {

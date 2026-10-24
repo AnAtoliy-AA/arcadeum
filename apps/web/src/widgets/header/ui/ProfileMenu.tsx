@@ -177,7 +177,7 @@ export default function ProfileMenu() {
         >
           <EquippedPlayerAvatar
             name={displayName}
-            size="sm"
+            size="md"
             equippedAvatarId={snapshot.equippedAvatarId}
             equippedBadgeId={snapshot.equippedBadgeId}
             equippedNameColorId={snapshot.equippedNameColorId}

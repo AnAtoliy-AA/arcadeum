@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@arcadeum/ui';
+import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   BOARD_SIZES,
@@ -70,25 +71,28 @@ export function BoardSizeSelector({
   const isInfinity = internalSize === 'infinity';
 
   return (
-    <div className="flex flex-col items-stretch gap-2">
-      <span className="text-[16px] font-semibold text-[var(--color)]">
-        {t('games.tic_tac_toe_v1.lobby.boardSize')}
-      </span>
+    <div
+      data-testid="field-size-selector"
+      className="flex flex-col items-stretch gap-2.5 p-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-base">📐</span>
+        <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
+          {t('games.tic_tac_toe_v1.lobby.boardSize')}
+        </span>
+      </div>
       <div className="flex flex-row items-stretch gap-2 flex-wrap">
         {BOARD_SIZES.map((size) => {
           const isActive = size === internalSize;
           return (
             <Button
-              className={`rounded-[10px] font-semibold min-w-[72px] overflow-hidden ${
+              className={cx(
+                'rounded-xl font-semibold min-w-[76px] px-3.5 py-2 transition-all',
                 isActive
-                  ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
-                  : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
-              } ${disabled ? 'opacity-60' : 'opacity-100'}`}
-              style={{
-                color: isActive ? '#fff' : 'inherit',
-                height: 'auto',
-                flex: 0,
-              }}
+                  ? 'bg-blue-600 border-blue-500 text-white shadow-md ring-1 ring-blue-400/50'
+                  : 'bg-[var(--surface)] border-[var(--borderColor)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--textPrimary)]',
+                disabled && 'opacity-60 cursor-not-allowed',
+              )}
               key={size}
               variant="chip"
               size="md"
@@ -97,13 +101,15 @@ export function BoardSizeSelector({
               data-active={isActive ? 'on' : undefined}
               onClick={() => handlePick(size)}
             >
-              <div className="flex flex-col items-center gap-2">
-                <span className="">
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-sm font-bold">
                   {size === 'infinity' ? '∞' : `${size}×${size}`}
                 </span>
                 <span
-                  className="text-[11px] font-medium"
-                  style={{ opacity: isActive ? 0.85 : 0.65 }}
+                  className={cx(
+                    'text-[10px] font-medium tracking-tight',
+                    isActive ? 'opacity-90' : 'opacity-70',
+                  )}
                 >
                   {size === 'infinity'
                     ? t('games.tic_tac_toe_v1.lobby.infinityLabel')
@@ -118,9 +124,9 @@ export function BoardSizeSelector({
       </div>
 
       {isInfinity && (
-        <div className="flex flex-col items-stretch gap-3 -mt-2 p-3 bg-[rgba(99,102,241,0.08)] rounded-[10px]">
-          <div className="flex flex-col items-stretch gap-1">
-            <span className="text-[14px] font-semibold text-[var(--color)]">
+        <div className="flex flex-col items-stretch gap-3 mt-1 p-3 bg-[rgba(99,102,241,0.08)] rounded-xl border border-[rgba(99,102,241,0.2)]">
+          <div className="flex flex-col items-stretch gap-1.5">
+            <span className="text-xs font-semibold text-[var(--textSecondary)]">
               {t('games.tic_tac_toe_v1.lobby.expansionMargin')}
             </span>
             <div className="flex flex-row items-stretch gap-2 flex-wrap">
@@ -128,12 +134,13 @@ export function BoardSizeSelector({
                 const isActive = margin === internalMargin;
                 return (
                   <Button
-                    className={`rounded-[8px] font-semibold text-[13px] ${
+                    className={cx(
+                      'rounded-lg font-semibold text-xs px-3 py-1.5',
                       isActive
-                        ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
-                        : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
-                    } ${disabled ? 'opacity-60' : 'opacity-100'}`}
-                    style={{ color: isActive ? '#fff' : 'inherit' }}
+                        ? 'bg-blue-600 border-blue-500 text-white'
+                        : 'bg-[transparent] border-[var(--borderColor)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]',
+                      disabled && 'opacity-60 cursor-not-allowed',
+                    )}
                     key={margin}
                     variant="chip"
                     size="sm"
@@ -149,8 +156,8 @@ export function BoardSizeSelector({
             </div>
           </div>
 
-          <div className="flex flex-col items-stretch gap-1">
-            <span className="text-[14px] font-semibold text-[var(--color)]">
+          <div className="flex flex-col items-stretch gap-1.5">
+            <span className="text-xs font-semibold text-[var(--textSecondary)]">
               {t('games.tic_tac_toe_v1.lobby.winCondition')}
             </span>
             <div className="flex flex-row items-stretch gap-2 flex-wrap">
@@ -158,12 +165,13 @@ export function BoardSizeSelector({
                 const isActive = winLen === internalWinLength;
                 return (
                   <Button
-                    className={`rounded-[8px] font-semibold text-[13px] ${
+                    className={cx(
+                      'rounded-lg font-semibold text-xs px-3 py-1.5',
                       isActive
-                        ? 'bg-[var(--primary,#3b82f6)] border-[var(--primary,#3b82f6)] hover:bg-[var(--primary,#3b82f6)]'
-                        : 'bg-[transparent] border-[var(--borderColor,#cbd5e1)] hover:bg-[rgba(255,255,255,0.05)]'
-                    } ${disabled ? 'opacity-60' : 'opacity-100'}`}
-                    style={{ color: isActive ? '#fff' : 'inherit' }}
+                        ? 'bg-blue-600 border-blue-500 text-white'
+                        : 'bg-[transparent] border-[var(--borderColor)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]',
+                      disabled && 'opacity-60 cursor-not-allowed',
+                    )}
                     key={winLen}
                     variant="chip"
                     size="sm"

@@ -16,7 +16,6 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';
 import { usePachisiState } from '../hooks/usePachisiState';
 import { usePachisiActions } from '../hooks/usePachisiActions';
@@ -47,13 +46,18 @@ function PachisiGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: PachisiGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -139,16 +143,6 @@ function PachisiGameImpl({
   const chatHighlightCells =
     highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
-
   const { result, resultMessages } = useGameResult({
     session,
     isGameOver,
@@ -225,7 +219,7 @@ function PachisiGameImpl({
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onRefresh={onRefresh}
-          onReorderPlayers={handleReorderPlayers}
+          onReorderPlayers={onReorderPlayers}
           onShowRulesClose={onShowRulesClose}
           onStartGame={handleStartGame}
           room={room}

@@ -12,3 +12,4 @@ export { ContributeChallengeDto } from './contribute-challenge.dto';
 export { CreateClanWarDto } from './create-clan-war.dto';
 export { RespondClanWarDto } from './respond-clan-war.dto';
 export { RecordClanWarMatchDto } from './record-clan-war-match.dto';
+export { MatchmakeClanWarDto } from './matchmake-clan-war.dto';

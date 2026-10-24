@@ -43,7 +43,15 @@ export class GameRoomsRematchService {
       gameOptions.rematchDeclinedIds = declinedIds;
     }
 
-    // Force update because gameOptions is mixed type
+    if (
+      room.status === 'lobby' &&
+      ((gameOptions.rematchInvitedIds as string[]) || []).length === 0 &&
+      room.participants.length < (room.maxPlayers ?? 2)
+    ) {
+      const botId = `bot-${globalThis.crypto.randomUUID().slice(0, 10)}`;
+      room.participants.push({ userId: botId, joinedAt: new Date() });
+    }
+
     room.markModified('gameOptions');
     await room.save();
 
@@ -68,7 +76,6 @@ export class GameRoomsRematchService {
     const declinedIds = (gameOptions.rematchDeclinedIds as string[]) || [];
     const blockedIds = (gameOptions.rematchBlockedIds as string[]) || [];
 
-    // Remove from invited, add to declined AND blocked
     if (invitedIds.includes(userId)) {
       gameOptions.rematchInvitedIds = invitedIds.filter((id) => id !== userId);
     }
@@ -79,6 +86,15 @@ export class GameRoomsRematchService {
     if (!blockedIds.includes(userId)) {
       blockedIds.push(userId);
       gameOptions.rematchBlockedIds = blockedIds;
+    }
+
+    if (
+      room.status === 'lobby' &&
+      ((gameOptions.rematchInvitedIds as string[]) || []).length === 0 &&
+      room.participants.length < (room.maxPlayers ?? 2)
+    ) {
+      const botId = `bot-${globalThis.crypto.randomUUID().slice(0, 10)}`;
+      room.participants.push({ userId: botId, joinedAt: new Date() });
     }
 
     room.markModified('gameOptions');

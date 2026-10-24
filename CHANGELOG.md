@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.84] - 2026-10-24
+
+### Added
+- ensure user avatars are visible across game seats and rematch modals (ARC-1012) (ARC-1012)
+
+### Fixed
+- use compact sm avatar size in lobby player list (ARC-1012) (ARC-1012)
+
+### Improved
+- eliminate dynamic loading fallback shift on client page (ARC-1012) (ARC-1012)
+- prevent cumulative layout shift on ticker and freshness indicator (ARC-1012) (ARC-1012)
+
+
 ## [1.30.83] - 2026-10-23
 
 ### Added

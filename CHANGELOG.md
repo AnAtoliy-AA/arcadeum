@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.86] - 2026-10-24
+
+### Fixed
+- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
+
+
 ## [1.30.85] - 2026-10-24
 
 ### Fixed

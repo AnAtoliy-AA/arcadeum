@@ -1,25 +1,9 @@
 'use client';
-import { useEffect, useInsertionEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
 const STALE_MS = 30_000;
-const LIVE_PULSE_MS = 2_000;
-const PULSE_STYLE_ID = '__arcadeum-freshness-pulse';
-const PULSE_KEYFRAMES = `
-@keyframes arcadeum-freshness-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(52,211,153,0.6); }
-  100% { box-shadow: 0 0 0 10px rgba(52,211,153,0); }
-}
-`;
-
-function injectPulseKeyframes() {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById(PULSE_STYLE_ID)) return;
-  const styleEl = document.createElement('style');
-  styleEl.id = PULSE_STYLE_ID;
-  styleEl.textContent = PULSE_KEYFRAMES;
-  document.head.appendChild(styleEl);
-}
 
 function formatAgo(deltaMs: number, t?: PageTranslations): string {
   const tt = (t?.freshness ?? {}) as Record<string, string | undefined>;
@@ -52,28 +36,11 @@ export function FreshnessIndicator({
   t?: PageTranslations;
 }) {
   const [now, setNow] = useState(() => Date.now());
-  const [pulse, setPulse] = useState(false);
-
-  // Move keyframe injection out of module top-level so SSR-rendered routes
-  // that never mount this component don't pay the side effect.
-  useInsertionEffect(() => {
-    injectPulseKeyframes();
-  }, []);
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 5_000);
     return () => clearInterval(id);
   }, []);
-
-  // Cleared on each pulseKey change; the timer turns the pulse off at the
-  // end of the keyframe so the next bump can re-fire it.
-  useEffect(() => {
-    if (pulseKey === 0) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setPulse(true);
-    const off = setTimeout(() => setPulse(false), LIVE_PULSE_MS);
-    return () => clearTimeout(off);
-  }, [pulseKey]);
 
   if (!capturedAt) {
     return (
@@ -86,7 +53,7 @@ export function FreshnessIndicator({
   }
   const captured = new Date(capturedAt).getTime();
   const delta = Math.max(0, now - captured);
-  const stale = delta > STALE_MS && !pulse;
+  const stale = delta > STALE_MS;
   const tt = (t?.freshness ?? {}) as Record<string, string | undefined>;
   const updatedLabel = (tt.updatedAt ?? 'Updated {ago}').replace(
     '{ago}',
@@ -99,16 +66,22 @@ export function FreshnessIndicator({
       data-testid="leaderboard-freshness"
       data-fresh={!stale}
     >
-      <div
-        className="w-[8px] h-[8px] rounded-2xl"
-        style={{
-          backgroundColor: stale ? 'var(--textSecondary)' : 'var(--success)',
-          animation: pulse ? 'arcadeum-freshness-pulse 2s ease-out' : undefined,
-        }}
-      />
-      <span className="text-[12px] tracking-[1px] opacity-[0.9]">
-        {updatedLabel}
-      </span>
+      <div className="relative flex items-center justify-center w-2 h-2">
+        {pulseKey > 0 && (
+          <span
+            key={pulseKey}
+            className="absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75 animate-ping"
+            aria-hidden="true"
+          />
+        )}
+        <span
+          className={cx(
+            'relative inline-flex rounded-full w-2 h-2',
+            stale ? 'bg-[var(--textSecondary)]' : 'bg-[var(--success)]',
+          )}
+        />
+      </div>
+      <span className="text-xs tracking-wider opacity-90">{updatedLabel}</span>
     </div>
   );
 }

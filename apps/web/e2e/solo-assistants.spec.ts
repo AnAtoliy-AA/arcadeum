@@ -97,8 +97,7 @@ test.describe('Solo Games Intelligent Assistants & QoL', () => {
 
     const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
     await expect(dismissButton).toBeVisible();
-    await dismissButton.scrollIntoViewIfNeeded();
-    await dismissButton.click();
+    await dismissButton.click({ force: true });
 
     await expect(toast).not.toBeVisible();
   });

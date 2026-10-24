@@ -22,7 +22,9 @@ test.describe('Shorts Factory Gameplay and Scenarios Canvas', () => {
     page,
   }) => {
     await navigateTo(page, '/en/games/sea-battle');
-    const quickplayBtn = page
+    const hero = page.locator('#play');
+    await expect(hero).toBeVisible();
+    const quickplayBtn = hero
       .locator('[data-testid="quickplay-ai-button"]')
       .first();
     await expect(quickplayBtn).toBeVisible();
@@ -39,7 +41,9 @@ test.describe('Shorts Factory Gameplay and Scenarios Canvas', () => {
     page,
   }) => {
     await navigateTo(page, '/en/games/chess');
-    const quickplayBtn = page
+    const hero = page.locator('#play');
+    await expect(hero).toBeVisible();
+    const quickplayBtn = hero
       .locator('[data-testid="quickplay-ai-button"]')
       .first();
     await expect(quickplayBtn).toBeVisible();

@@ -95,7 +95,7 @@ export function FreshnessIndicator({
 
   return (
     <div
-      className="flex flex-row items-center gap-2"
+      className="flex flex-row items-center gap-2 h-5"
       data-testid="leaderboard-freshness"
       data-fresh={!stale}
     >

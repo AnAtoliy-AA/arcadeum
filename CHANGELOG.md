@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.85] - 2026-10-24
+
+### Fixed
+- prevent event loop monitor exit and add scroll into view for safari (ARC-1013) (ARC-1013)
+- fix GH_REPO and issue write permissions in issue workflows (ARC-1013) (ARC-1013)
+- resolve mobile safari landing navigation and freshness pulse (ARC-1013) (ARC-1013)
+
+
 ## [1.30.84] - 2026-10-24
 
 ### Added

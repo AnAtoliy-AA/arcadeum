@@ -10,24 +10,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.30.83] - 2026-10-23
 
 ### Added
+
 - enhance field and board size visibility and selectors (ARC-1011) (ARC-1011)
 
 ### Fixed
-- use compact sm avatar size in lobby player list (ARC-1011) (ARC-1011)
 
+- use compact sm avatar size in lobby player list (ARC-1011) (ARC-1011)
 
 ## [1.30.82] - 2026-10-23
 
 ### Fixed
+
 - use routes.gameRoom instead of routes.game in rematch flow test (ARC-1006) (ARC-1006)
 - overhaul rematch and play again lifecycle with bot fallback (ARC-1006) (ARC-1006)
-
 
 ## [1.30.81] - 2026-10-23
 
 ### Fixed
-- ensure universal avatar visibility, error fallback, and increased sizing (ARC-1001) (ARC-1001)
 
+- ensure universal avatar visibility, error fallback, and increased sizing (ARC-1001) (ARC-1001)
 
 ## [1.30.80] - 2026-10-23
 

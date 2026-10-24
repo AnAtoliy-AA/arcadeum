@@ -14,6 +14,7 @@ export interface InGameAvatarProps {
   avatarUrl?: string | null;
   fallbackAvatarUrl?: string;
   role?: string | null;
+  className?: string;
   'data-testid'?: string;
 }
 
@@ -25,6 +26,7 @@ export const InGameAvatar = memo(function InGameAvatar({
   avatarUrl,
   fallbackAvatarUrl,
   role,
+  className,
   'data-testid': testId,
 }: InGameAvatarProps) {
   const room = useGameStore((s: GameState) => s.room);
@@ -64,7 +66,7 @@ export const InGameAvatar = memo(function InGameAvatar({
   const effectiveRole =
     role ?? member?.role ?? (isSelf ? snapshot.role : undefined);
 
-  return (
+  const avatar = (
     <PlayerAvatar
       name={name}
       size={size}
@@ -80,4 +82,6 @@ export const InGameAvatar = memo(function InGameAvatar({
       data-testid={testId}
     />
   );
+
+  return className ? <div className={className}>{avatar}</div> : avatar;
 });

@@ -75,7 +75,15 @@ export function FreshnessIndicator({
     return () => clearTimeout(off);
   }, [pulseKey]);
 
-  if (!capturedAt) return null;
+  if (!capturedAt) {
+    return (
+      <div
+        className="flex flex-row items-center gap-2 h-5"
+        data-testid="leaderboard-freshness"
+        aria-hidden="true"
+      />
+    );
+  }
   const captured = new Date(capturedAt).getTime();
   const delta = Math.max(0, now - captured);
   const stale = delta > STALE_MS && !pulse;
@@ -87,7 +95,7 @@ export function FreshnessIndicator({
 
   return (
     <div
-      className="flex flex-row items-center gap-2"
+      className="flex flex-row items-center gap-2 h-5"
       data-testid="leaderboard-freshness"
       data-fresh={!stale}
     >

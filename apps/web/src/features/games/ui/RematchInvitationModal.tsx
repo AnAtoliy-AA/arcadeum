@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
+import { InGameAvatar } from './InGameAvatar';
 import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface RematchInvitationModalProps {
@@ -78,8 +79,17 @@ export function RematchInvitationModal({
   return (
     <Modal open={isOpen} onOpenChange={(val) => !val && onDecline()}>
       <ModalContent variant={cardVariant}>
-        <div className="flex flex-col items-center -mb-4">
-          <span className="text-[60px]">🔄</span>
+        <div className="flex flex-col items-center gap-2 mb-2">
+          {hostId ? (
+            <InGameAvatar
+              playerId={hostId}
+              name={senderName}
+              size="lg"
+              data-testid="rematch-invitation-avatar"
+            />
+          ) : (
+            <span className="text-[60px]">🔄</span>
+          )}
         </div>
 
         <TitleText>

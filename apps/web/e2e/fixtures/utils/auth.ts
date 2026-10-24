@@ -124,8 +124,18 @@ export async function mockSession(
     }, snapshot);
   }
 
-  // Mock auth check
   await page.route('**/auth/me', async (route) => {
+    const headers = route.request().headers();
+    const hasAuth =
+      Boolean(headers['authorization']) ||
+      Boolean(headers['cookie']?.includes('access_token='));
+    if (!hasAuth) {
+      await route.fulfill({
+        status: 401,
+        body: JSON.stringify({ message: 'Unauthorized' }),
+      });
+      return;
+    }
     await handleRoute(route, {
       user: {
         id: MOCK_OBJECT_ID,

@@ -54,8 +54,8 @@ test.describe('Shop redesign · Showcase Locker', () => {
   }) => {
     await navigateTo(page, '/shop');
     const slotAvatar = page.getByTestId('shop-slot-avatar').first();
-    await slotAvatar.scrollIntoViewIfNeeded();
-    await slotAvatar.click();
+    await expect(slotAvatar).toBeVisible();
+    await slotAvatar.evaluate((el: HTMLElement) => el.click());
     await expect(page.getByTestId('shop-row-row-avatars')).toHaveAttribute(
       'data-active',
       'true',

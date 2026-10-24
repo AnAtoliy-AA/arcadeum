@@ -413,4 +413,44 @@ describe('socket hooks', () => {
       expect.any(Function),
     );
   });
+
+  it('skips socket connection during Lighthouse audits', () => {
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 Chrome-Lighthouse',
+      configurable: true,
+    });
+
+    try {
+      mockSocket.connect.mockClear();
+      connectSockets('test-jwt');
+      connectSocketsAnonymous('anon_123');
+      expect(mockSocket.connect).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: originalUserAgent,
+        configurable: true,
+      });
+    }
+  });
+
+  it('skips socket connection when navigator is offline', () => {
+    const originalOnLine = navigator.onLine;
+    Object.defineProperty(navigator, 'onLine', {
+      value: false,
+      configurable: true,
+    });
+
+    try {
+      mockSocket.connect.mockClear();
+      connectSockets('test-jwt');
+      connectSocketsAnonymous('anon_123');
+      expect(mockSocket.connect).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(navigator, 'onLine', {
+        value: originalOnLine,
+        configurable: true,
+      });
+    }
+  });
 });

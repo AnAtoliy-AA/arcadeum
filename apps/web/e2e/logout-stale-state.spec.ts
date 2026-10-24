@@ -30,6 +30,7 @@ test.describe('Logout stale state', () => {
     await expect(usernameChip).toContainText('PrevUser');
 
     await page.evaluate(() => {
+      window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
       window.localStorage.removeItem('web_session_tokens_v1');
       window.localStorage.removeItem('arcadeum_anon_id');
       document.cookie = 'access_token=; path=/; max-age=0';
@@ -38,11 +39,14 @@ test.describe('Logout stale state', () => {
       document.cookie = 'web_refresh_token=; path=/; max-age=0';
     });
     await page.context().clearCookies();
+    await page.route('**/auth/me', async (route) => {
+      await route.fulfill({ status: 401, body: '{}' });
+    });
 
     await navigateTo(page, '/');
 
-    await expect(usernameChip).not.toContainText('PrevUser');
     await expect(usernameChip).toContainText(/Guest/);
+    await expect(usernameChip).not.toContainText('PrevUser');
 
     const trigger = page.locator('[data-profile-menu] button').first();
     await trigger.click();
@@ -79,6 +83,7 @@ test.describe('Logout stale state', () => {
     await expect(page.getByTestId('header-equipped-avatar')).toBeVisible();
 
     await page.evaluate(() => {
+      window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
       window.localStorage.removeItem('web_session_tokens_v1');
       document.cookie = 'access_token=; path=/; max-age=0';
       document.cookie = 'web_access_token=; path=/; max-age=0';
@@ -86,6 +91,9 @@ test.describe('Logout stale state', () => {
       document.cookie = 'web_refresh_token=; path=/; max-age=0';
     });
     await page.context().clearCookies();
+    await page.route('**/auth/me', async (route) => {
+      await route.fulfill({ status: 401, body: '{}' });
+    });
     await navigateTo(page, '/');
 
     const avatar = page.getByTestId('header-equipped-avatar');

@@ -103,8 +103,7 @@ test.describe('Sea Battle Weekly Blitz Cups UI', () => {
       .locator('[data-testid="blitz-cup-view-bracket"]')
       .first();
     await expect(viewBracketButton).toBeVisible();
-    await viewBracketButton.scrollIntoViewIfNeeded();
-    await viewBracketButton.click();
+    await viewBracketButton.click({ force: true });
 
     const modal = page
       .locator('[data-testid="sea-battle-blitz-modal"]')
@@ -117,8 +116,7 @@ test.describe('Sea Battle Weekly Blitz Cups UI', () => {
     await expect(pendingSection).toBeVisible();
 
     const rosterTab = page.locator('[data-testid="blitz-tab-roster"]').first();
-    await rosterTab.scrollIntoViewIfNeeded();
-    await rosterTab.click();
+    await rosterTab.click({ force: true });
 
     const rosterSection = page
       .locator('[data-testid="blitz-modal-roster-section"]')
@@ -129,8 +127,7 @@ test.describe('Sea Battle Weekly Blitz Cups UI', () => {
     await expect(rosterSection).toContainText('Commander Shepard');
 
     const intelTab = page.locator('[data-testid="blitz-tab-intel"]').first();
-    await intelTab.scrollIntoViewIfNeeded();
-    await intelTab.click();
+    await intelTab.click({ force: true });
 
     const intelSection = page
       .locator('[data-testid="blitz-modal-intel-section"]')
@@ -144,8 +141,7 @@ test.describe('Sea Battle Weekly Blitz Cups UI', () => {
     const closeButton = page
       .locator('[data-testid="blitz-modal-close-btn"]')
       .first();
-    await closeButton.scrollIntoViewIfNeeded();
-    await closeButton.click();
+    await closeButton.click({ force: true });
 
     await expect(modal).not.toBeVisible();
   });

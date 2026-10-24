@@ -110,6 +110,61 @@ test.describe('Solo Games Intelligent Assistants & QoL', () => {
     const board = page.getByTestId('solitaire-board');
     await expect(board).toBeVisible();
 
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          game: {
+            stock: [],
+            waste: [
+              {
+                id: 'hearts-1',
+                suit: 'hearts',
+                rank: 1,
+                faceUp: true,
+              },
+            ],
+            foundations: [[], [], [], []],
+            tableau: [
+              [
+                {
+                  id: 'spades-13',
+                  suit: 'spades',
+                  rank: 13,
+                  faceUp: true,
+                },
+              ],
+              [],
+              [],
+              [],
+              [],
+              [],
+              [],
+            ],
+            moves: 0,
+            score: 0,
+            drawMode: 'draw1',
+          },
+          startedAt: Date.now() - 5000,
+          finishedAt: null,
+          finished: null,
+          history: [],
+          usedUndo: false,
+          activeHint: null,
+          reachedMilestones: [],
+          activeMilestone: null,
+        },
+        version: 0,
+      };
+
+      localStorage.setItem(
+        'arcadeum_solitaire_game_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
     const drawModeBtn = page.getByTestId('solitaire-draw-mode-button');
     await expect(drawModeBtn).toBeVisible();
     await drawModeBtn.click();

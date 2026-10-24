@@ -29,9 +29,7 @@ test.describe('Sign-in redesign (ARC-690)', () => {
     await expect(page.getByTestId('auth-username-input')).toBeVisible();
   });
 
-  test('Apple and Discord OAuth buttons are enabled', async ({
-    page,
-  }) => {
+  test('Apple and Discord OAuth buttons are enabled', async ({ page }) => {
     await expect(page.getByTestId('auth-oauth-apple')).toBeEnabled();
     await expect(page.getByTestId('auth-oauth-discord')).toBeEnabled();
     await expect(page.getByTestId('auth-oauth-google')).toBeEnabled();
@@ -41,10 +39,14 @@ test.describe('Sign-in redesign (ARC-690)', () => {
     page,
   }) => {
     await page.getByTestId('auth-email-input').fill('player@example.com');
-    await page.getByTestId('auth-magic-link-cta').click();
+    const magicLinkCta = page.getByTestId('auth-magic-link-cta');
+    await magicLinkCta.scrollIntoViewIfNeeded();
+    await magicLinkCta.click();
     await expect(page.getByTestId('auth-magic-link-success')).toBeVisible();
     await expect(page.getByText('Check your inbox')).toBeVisible();
-    await page.getByTestId('auth-magic-link-back').click();
+    const backBtn = page.getByTestId('auth-magic-link-back');
+    await backBtn.scrollIntoViewIfNeeded();
+    await backBtn.click();
     await expect(page.getByTestId('auth-form-panel')).toBeVisible();
   });
 

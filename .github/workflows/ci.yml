@@ -152,7 +152,7 @@ jobs:
         run: pnpm exec turbo run test --filter mobile --log-order=stream -- --passWithNoTests
 
   web-e2e:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/4)
     needs: build
     # develop PRs run the chromium-only 6-shard job below. The matrix must stay
     # non-empty for every event that reaches this job: an empty matrix vector
@@ -163,7 +163,7 @@ jobs:
       fail-fast: false
       matrix:
         project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
-        shard: [1, 2, 3]
+        shard: [1, 2, 3, 4]
     services:
       mongodb:
         image: mongo:latest
@@ -194,7 +194,7 @@ jobs:
           name: build-outputs
 
       - name: Extract Build Artifacts
-        run: tar -xvf build-artifacts.tar
+        run: tar -xf build-artifacts.tar
 
       - name: Verify Builds
         run: |
@@ -206,10 +206,13 @@ jobs:
         run: |
           if [[ "${{ matrix.project }}" == "chromium" || "${{ matrix.project }}" == "Mobile Chrome" ]]; then
             echo "browser=chromium" >> $GITHUB_OUTPUT
+            echo "workers=2" >> $GITHUB_OUTPUT
           elif [[ "${{ matrix.project }}" == "firefox" ]]; then
             echo "browser=firefox" >> $GITHUB_OUTPUT
+            echo "workers=2" >> $GITHUB_OUTPUT
           else
             echo "browser=webkit" >> $GITHUB_OUTPUT
+            echo "workers=1" >> $GITHUB_OUTPUT
           fi
 
       - name: Cache Playwright Browsers
@@ -233,7 +236,7 @@ jobs:
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3
+        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/4 --workers=${{ steps.engine.outputs.workers }}
 
       - name: Upload Test Report
         if: always()
@@ -284,7 +287,7 @@ jobs:
           name: build-outputs
 
       - name: Extract Build Artifacts
-        run: tar -xvf build-artifacts.tar
+        run: tar -xf build-artifacts.tar
 
       - name: Verify Builds
         run: |

@@ -171,6 +171,7 @@ jobs:
           - 27017:27017
     env:
       E2E_PROD: true
+      SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -260,6 +261,7 @@ jobs:
           - 27017:27017
     env:
       E2E_PROD: true
+      SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7

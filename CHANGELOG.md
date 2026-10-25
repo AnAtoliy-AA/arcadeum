@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.91] - 2026-10-25
+
+### Fixed
+- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
+
+
 ## [1.30.90] - 2026-10-25
 
 ### Fixed

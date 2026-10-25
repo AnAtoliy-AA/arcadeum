@@ -1,8 +1,19 @@
-import { Module, Logger } from '@nestjs/common';
+import { Module, Logger, OnModuleInit, Optional } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { BullModule } from '@nestjs/bullmq';
-import Redis from 'ioredis';
+import { BullModule, InjectQueue } from '@nestjs/bullmq';
+import type { Queue } from 'bullmq';
+import Redis, { type RedisOptions } from 'ioredis';
 import { AppJobsProcessor } from './app-jobs.processor';
+
+function patchDuplicate(client: Redis): void {
+  const originalDuplicate = (options?: RedisOptions): Redis =>
+    client.duplicate(options);
+  client.duplicate = (options?: RedisOptions): Redis => {
+    const dup = originalDuplicate(options);
+    dup.on('error', () => {});
+    return dup;
+  };
+}
 
 @Module({
   imports: [
@@ -23,6 +34,7 @@ import { AppJobsProcessor } from './app-jobs.processor';
             client.on('error', (err: Error) => {
               logger.warn(`BullMQ Redis error: ${err.message}`);
             });
+            patchDuplicate(client);
             return { connection: client };
           } catch (err) {
             logger.warn(
@@ -45,6 +57,7 @@ import { AppJobsProcessor } from './app-jobs.processor';
           reconnectOnError: () => false,
         });
         client.on('error', () => {});
+        patchDuplicate(client);
 
         return { connection: client };
       },
@@ -61,4 +74,24 @@ import { AppJobsProcessor } from './app-jobs.processor';
   providers: [AppJobsProcessor],
   exports: [BullModule, AppJobsProcessor],
 })
-export class AppBullMqModule {}
+export class AppBullMqModule implements OnModuleInit {
+  private readonly logger = new Logger(AppBullMqModule.name);
+
+  constructor(
+    @Optional()
+    @InjectQueue('app-jobs')
+    private readonly appJobsQueue?: Queue,
+    @Optional()
+    @InjectQueue('clan-wars')
+    private readonly clanWarsQueue?: Queue,
+  ) {}
+
+  onModuleInit(): void {
+    this.appJobsQueue?.on('error', (err: Error) => {
+      this.logger.debug(`BullMQ app-jobs queue error: ${err.message}`);
+    });
+    this.clanWarsQueue?.on('error', (err: Error) => {
+      this.logger.debug(`BullMQ clan-wars queue error: ${err.message}`);
+    });
+  }
+}

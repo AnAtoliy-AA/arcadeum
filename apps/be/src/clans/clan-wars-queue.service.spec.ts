@@ -125,5 +125,23 @@ describe('ClanWarsQueueService', () => {
         expect.objectContaining({ name: 'expire_wars' }),
       );
     });
+
+    it('handles ECONNREFUSED gracefully when offline', async () => {
+      (mockQueue.upsertJobScheduler as jest.Mock).mockRejectedValue(
+        new Error('connect ECONNREFUSED 127.0.0.1:6379'),
+      );
+      await expect(
+        serviceWithQueue.setupRepeatableExpirationJob(),
+      ).resolves.toBeUndefined();
+    });
+
+    it('handles unexpected error gracefully', async () => {
+      (mockQueue.upsertJobScheduler as jest.Mock).mockRejectedValue(
+        new Error('Unexpected scheduler error'),
+      );
+      await expect(
+        serviceWithQueue.setupRepeatableExpirationJob(),
+      ).resolves.toBeUndefined();
+    });
   });
 });

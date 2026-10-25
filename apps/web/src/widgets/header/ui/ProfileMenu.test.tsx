@@ -88,7 +88,7 @@ describe('ProfileMenu', () => {
     render(<ProfileMenu />);
     const trigger = screen.getByTestId('profile-menu').querySelector('button');
     expect(trigger).toBeInTheDocument();
-    expect(trigger).toHaveClass('h-9');
+    expect(trigger).toHaveClass('h-12');
     expect(trigger).toHaveClass('rounded-full');
 
     const avatar = screen.getByTestId('header-equipped-avatar');

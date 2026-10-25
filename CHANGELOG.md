@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.90] - 2026-10-25
+
+### Fixed
+- resolve chromium live-info navigation and level-badges strict mode (ARC-1018) (ARC-1018)
+- resolve webkit e2e stability timeouts in shard 2 (ARC-1018) (ARC-1018)
+
+
 ## [1.30.89] - 2026-10-25
 
 ### Fixed

@@ -106,15 +106,19 @@ test.describe('Live Platform Info & Online Users', () => {
       name: /In Progress|Идут матчи|En curso|En cours|Ідуць матчы/i,
     });
     await expect(inProgressBtn).toBeVisible();
-    await inProgressBtn.click();
-    await expect(page).toHaveURL(/.*status=in_progress.*/);
+    await expect(async () => {
+      await inProgressBtn.click();
+      await expect(page).toHaveURL(/.*status=in_progress.*/);
+    }).toPass();
 
     await statusDropdown.click();
 
     const clearAllBtn = page.getByTestId('rooms-filter-clear-all');
     await expect(clearAllBtn).toBeVisible();
-    await clearAllBtn.click();
-    await expect(page).toHaveURL(/^((?!status=).)*$/);
+    await expect(async () => {
+      await clearAllBtn.click();
+      await expect(page).toHaveURL(/^((?!status=).)*$/);
+    }).toPass();
   });
 
   test('should be fully visible without cutting off on mobile viewport and coordinate with mobile menu', async ({

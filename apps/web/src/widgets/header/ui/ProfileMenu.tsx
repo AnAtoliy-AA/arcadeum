@@ -80,8 +80,9 @@ export default function ProfileMenu() {
       ? snapshot.userId.slice(0, 4)
       : '';
   const guestName = anonSuffix ? `Guest #${anonSuffix}` : 'Guest';
-  const displayName =
-    snapshot.displayName || snapshot.username || snapshot.email || guestName;
+  const displayName = isAnonymous
+    ? guestName
+    : snapshot.displayName || snapshot.username || snapshot.email || guestName;
   const chipName = displayName.trim().split(/\s+/)[0] ?? displayName;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();

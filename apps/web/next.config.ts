@@ -352,8 +352,8 @@ const nextConfig: NextConfig = {
         return sources.map((source) => ({
           source,
           missing: [
-            { type: 'query', key: '_rsc' },
-            { type: 'header', key: 'rsc' },
+            { type: 'query' as const, key: '_rsc' },
+            { type: 'header' as const, key: 'rsc' },
           ],
           headers: [
             {
@@ -398,8 +398,8 @@ const nextConfig: NextConfig = {
         return sources.map((source) => ({
           source,
           missing: [
-            { type: 'query', key: '_rsc' },
-            { type: 'header', key: 'rsc' },
+            { type: 'query' as const, key: '_rsc' },
+            { type: 'header' as const, key: 'rsc' },
           ],
           headers: [
             {

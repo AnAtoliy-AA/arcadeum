@@ -144,15 +144,18 @@ export class GameHistoryRematchService {
         .map((p) => p.userId)
         .filter((id) => id !== userId);
 
-      const invitedIds =
+      const rawInvitedIds =
         participantIds && participantIds.length > 0
           ? participantIds.filter((id) => id !== userId)
           : originalParticipantIds;
+
+      const invitedIds = rawInvitedIds.filter((id) => !id.startsWith('bot-'));
 
       const now = new Date();
       const participants: { userId: string; joinedAt: Date }[] = [
         { userId, joinedAt: now },
       ];
+      const seen = new Set<string>([userId]);
       const carriedOptions = dto.gameOptions || originalRoom.gameOptions || {};
       const carriedTeams = (
         carriedOptions as {
@@ -160,7 +163,6 @@ export class GameHistoryRematchService {
         }
       ).teams;
       if (Array.isArray(carriedTeams)) {
-        const seen = new Set<string>([userId]);
         for (const team of carriedTeams) {
           if (!Array.isArray(team.playerIds)) continue;
           for (const pid of team.playerIds) {
@@ -170,6 +172,18 @@ export class GameHistoryRematchService {
             seen.add(pid);
             participants.push({ userId: pid, joinedAt: now });
           }
+        }
+      } else {
+        const botSources = [
+          ...originalRoom.participants.map((p) => p.userId),
+          ...(participantIds || []),
+        ];
+        for (const pid of botSources) {
+          if (typeof pid !== 'string') continue;
+          if (!pid.startsWith('bot-')) continue;
+          if (seen.has(pid)) continue;
+          seen.add(pid);
+          participants.push({ userId: pid, joinedAt: now });
         }
       }
 

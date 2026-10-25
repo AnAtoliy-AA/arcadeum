@@ -162,4 +162,70 @@ describe('GameHistoryRematchService', () => {
       ),
     ).rejects.toThrow(BadRequestException);
   });
+
+  it('preserves bots in participants and does not invite bots when rematching a bot game', async () => {
+    const originalRoom = {
+      _id: 'room-1',
+      gameId: 'tic_tac_toe_v1',
+      name: 'Quick Match',
+      hostId: 'user-1',
+      visibility: 'public',
+      maxPlayers: 2,
+      participants: [
+        { userId: 'user-1', joinedAt: new Date() },
+        { userId: 'bot-12345', joinedAt: new Date() },
+      ],
+      gameOptions: {},
+    };
+
+    (primaryModel.findOneAndUpdate as jest.Mock).mockReturnValue({
+      lean: () => ({
+        exec: jest.fn().mockResolvedValue(originalRoom),
+      }),
+    });
+
+    (primaryModel.find as jest.Mock).mockReturnValue({
+      select: () => ({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue([]),
+        }),
+      }),
+    });
+
+    let createdRoomData: Record<string, unknown> | null = null;
+    (primaryModel.create as jest.Mock).mockImplementation(
+      (data: Record<string, unknown>) => {
+        createdRoomData = data;
+        return Promise.resolve({
+          _id: { toString: () => 'room-2' },
+          toObject: () => ({ _id: 'room-2' }),
+        });
+      },
+    );
+
+    (primaryModel.updateOne as jest.Mock).mockReturnValue({
+      catch: jest.fn(),
+    });
+
+    const result = await service.createRematchFromHistory(
+      { roomId: 'room-1', participantIds: ['bot-12345'] },
+      'user-1',
+    );
+
+    expect(result.id).toBe('room-2');
+    expect(result.invitedIds).toEqual([]);
+    expect(createdRoomData).not.toBeNull();
+    const createdParticipants = (
+      createdRoomData as unknown as { participants: { userId: string }[] }
+    ).participants;
+    expect(createdParticipants).toHaveLength(2);
+    expect(createdParticipants[0].userId).toBe('user-1');
+    expect(createdParticipants[1].userId).toBe('bot-12345');
+    const createdOptions = (
+      createdRoomData as unknown as {
+        gameOptions: { rematchInvitedIds: string[] };
+      }
+    ).gameOptions;
+    expect(createdOptions.rematchInvitedIds).toEqual([]);
+  });
 });

@@ -30,8 +30,6 @@ const CHIP_CLASSNAME =
 const CTA_CLASSNAME =
   'w-full rounded-[10px] border-none px-5 py-3 text-center text-[14px] font-bold transition-opacity bg-gradient-to-br from-amber-400 to-amber-500 text-neutral-950 inline-block no-underline';
 
-const ANON_FALLBACK_MS = 4_000;
-
 function isLighthouse(): boolean {
   if (typeof navigator === 'undefined') return false;
   return /Chrome-Lighthouse|Lighthouse/i.test(navigator.userAgent);
@@ -52,9 +50,23 @@ export function DailyRewardChip() {
   useEffect(() => {
     if (!hydrated || isLighthouse()) return;
     let cancelled = false;
-    let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const currentSnapshot = useSessionStore.getState().snapshot;
+    const awaitingRestore =
+      !currentSnapshot.accessToken &&
+      !!(currentSnapshot.userId || currentSnapshot.refreshToken);
+
+    if (awaitingRestore) {
+      return;
+    }
 
     (async () => {
+      if (!currentSnapshot.accessToken) {
+        if (cancelled) return;
+        setStatus(null);
+        setPhase('anon');
+        return;
+      }
       try {
         const next =
           await apiClient.get<DailyRewardStatus>('/daily-rewards/me');
@@ -67,18 +79,6 @@ export function DailyRewardChip() {
           err instanceof ApiError &&
           (err.status === 401 || err.status === 403)
         ) {
-          const currentSnapshot = useSessionStore.getState().snapshot;
-          const awaitingRestore =
-            !currentSnapshot.accessToken &&
-            !!(currentSnapshot.userId || currentSnapshot.refreshToken);
-          if (awaitingRestore) {
-            fallbackTimer = setTimeout(() => {
-              if (cancelled) return;
-              setStatus(null);
-              setPhase('anon');
-            }, ANON_FALLBACK_MS);
-            return;
-          }
           setStatus(null);
           setPhase('anon');
           return;
@@ -89,7 +89,6 @@ export function DailyRewardChip() {
 
     return () => {
       cancelled = true;
-      if (fallbackTimer) clearTimeout(fallbackTimer);
     };
   }, [hydrated, accessToken]);
 

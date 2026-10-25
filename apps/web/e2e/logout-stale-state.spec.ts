@@ -31,6 +31,7 @@ test.describe('Logout stale state', () => {
 
     await page.evaluate(() => {
       window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
+      window.localStorage.setItem('__arcadeum_session_mocked', 'true');
       window.localStorage.removeItem('web_session_tokens_v1');
       window.localStorage.removeItem('arcadeum_anon_id');
       document.cookie = 'access_token=; path=/; max-age=0';
@@ -84,6 +85,7 @@ test.describe('Logout stale state', () => {
 
     await page.evaluate(() => {
       window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
+      window.localStorage.setItem('__arcadeum_session_mocked', 'true');
       window.localStorage.removeItem('web_session_tokens_v1');
       document.cookie = 'access_token=; path=/; max-age=0';
       document.cookie = 'web_access_token=; path=/; max-age=0';

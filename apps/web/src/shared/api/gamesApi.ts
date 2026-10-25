@@ -1,118 +1,66 @@
-import { resolveApiUrl } from '../lib/api-base';
+import { apiClient, ApiError } from '../lib/api-client';
 import type { GameRoomSummary, GameSessionSummary } from '../types/games';
 
 export async function startGameRoom(
   roomId: string,
   engine: string,
-  accessToken: string,
+  accessToken?: string,
 ): Promise<{ room: GameRoomSummary; session: GameSessionSummary }> {
-  const url = resolveApiUrl(`/games/rooms/${roomId}/start`);
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ engine }),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.message || 'Failed to start game');
-  }
-
-  return response.json();
+  return apiClient.post<{ room: GameRoomSummary; session: GameSessionSummary }>(
+    `/games/rooms/${roomId}/start`,
+    { engine },
+    { token: accessToken },
+  );
 }
 
 export async function reorderRoomParticipants(
   roomId: string,
   userIds: string[],
-  accessToken: string,
+  accessToken?: string,
 ): Promise<{ room: GameRoomSummary }> {
-  const url = resolveApiUrl(`/games/rooms/${roomId}/participants`);
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ userIds }),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.message || 'Failed to reorder participants');
-  }
-
-  return response.json();
+  return apiClient.post<{ room: GameRoomSummary }>(
+    `/games/rooms/${roomId}/participants`,
+    { userIds },
+    { token: accessToken },
+  );
 }
 
 export async function getGameRoomSession(
   roomId: string,
-  accessToken: string,
+  accessToken?: string,
 ): Promise<{ session: GameSessionSummary | null }> {
-  const url = resolveApiUrl(`/games/rooms/${roomId}/session`);
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    next: { revalidate: 5 },
-  });
-
-  if (!response.ok) {
-    if (response.status === 404) {
+  try {
+    return await apiClient.get<{ session: GameSessionSummary | null }>(
+      `/games/rooms/${roomId}/session`,
+      { token: accessToken },
+    );
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
       return { session: null };
     }
-    throw new Error('Failed to fetch session');
+    throw error;
   }
-
-  return response.json();
 }
 
 export async function addBotToRoom(
   roomId: string,
-  accessToken: string,
+  accessToken?: string,
 ): Promise<{ room: GameRoomSummary }> {
-  const url = resolveApiUrl(`/games/rooms/${roomId}/add-bot`);
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.message || 'Failed to add bot');
-  }
-
-  return response.json();
+  return apiClient.post<{ room: GameRoomSummary }>(
+    `/games/rooms/${roomId}/add-bot`,
+    undefined,
+    { token: accessToken },
+  );
 }
 
 export async function removeBotFromRoom(
   roomId: string,
   botId: string,
-  accessToken: string,
+  accessToken?: string,
 ): Promise<{ room: GameRoomSummary }> {
-  const url = resolveApiUrl(`/games/rooms/${roomId}/remove-bot`);
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest',
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify({ botId }),
-  });
-
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.message || 'Failed to remove bot');
-  }
-
-  return response.json();
+  return apiClient.post<{ room: GameRoomSummary }>(
+    `/games/rooms/${roomId}/remove-bot`,
+    { botId },
+    { token: accessToken },
+  );
 }

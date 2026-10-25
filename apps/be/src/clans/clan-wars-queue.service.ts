@@ -128,8 +128,18 @@ export class ClanWarsQueueService {
         },
       );
     } catch (err) {
+      const message = (err as Error).message;
+      if (
+        message.includes('ECONNREFUSED') ||
+        message.includes('Connection is closed')
+      ) {
+        this.logger.debug(
+          `Skipped repeatable clan war expiration setup: ${message}`,
+        );
+        return;
+      }
       this.logger.warn(
-        `Failed to setup repeatable clan war expiration: ${(err as Error).message}`,
+        `Failed to setup repeatable clan war expiration: ${message}`,
       );
     }
   }

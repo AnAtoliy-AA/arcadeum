@@ -87,27 +87,28 @@ export function BoardSizeSelector({
           return (
             <Button
               className={cx(
-                'rounded-xl font-semibold min-w-[76px] px-3.5 py-2 transition-all',
+                'rounded-xl font-semibold min-w-[76px] h-auto min-h-[50px] transition-all',
                 isActive
                   ? 'bg-blue-600 border-blue-500 text-white shadow-md ring-1 ring-blue-400/50'
                   : 'bg-[var(--surface)] border-[var(--borderColor)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--textPrimary)]',
                 disabled && 'opacity-60 cursor-not-allowed',
               )}
               key={size}
-              variant="chip"
+              variant="ghost"
               size="md"
+              padding="px-3.5 py-2"
               data-testid={`ttt-board-size-${size}`}
               disabled={disabled}
               data-active={isActive ? 'on' : undefined}
               onClick={() => handlePick(size)}
             >
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-sm font-bold">
+              <div className="flex flex-col items-center justify-center gap-0.5">
+                <span className="text-sm font-bold leading-none">
                   {size === 'infinity' ? '∞' : `${size}×${size}`}
                 </span>
                 <span
                   className={cx(
-                    'text-[10px] font-medium tracking-tight',
+                    'text-[10px] font-medium tracking-tight leading-normal',
                     isActive ? 'opacity-90' : 'opacity-70',
                   )}
                 >

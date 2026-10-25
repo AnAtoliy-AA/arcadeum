@@ -76,4 +76,12 @@ describe('GameSoundManager & Registry', () => {
       gameSounds.preload('chess_v1', ['chess_move', 'chess_capture']),
     ).not.toThrow();
   });
+
+  it('ensures all registered sounds use same-origin paths without cross-origin CORS risk', () => {
+    const sounds = getGameSounds('tic_tac_toe_v1');
+    for (const id of sounds) {
+      const entry = getSoundEntry(id);
+      expect(entry?.file).toMatch(/^\/sounds\//);
+    }
+  });
 });

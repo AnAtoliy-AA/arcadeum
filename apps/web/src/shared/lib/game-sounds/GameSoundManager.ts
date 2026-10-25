@@ -36,8 +36,16 @@ class GameSoundManager {
     const promise = (async () => {
       try {
         const ctx = this.getContext();
-        const response = await fetch(entry.file);
-        if (!response.ok) return null;
+        let response = await fetch(entry.file).catch(() => null);
+        if (!response || !response.ok) {
+          const localUrl = entry.file.startsWith('http')
+            ? entry.file.replace(/^https?:\/\/[^/]+/, '')
+            : entry.file;
+          if (localUrl !== entry.file) {
+            response = await fetch(localUrl).catch(() => null);
+          }
+        }
+        if (!response || !response.ok) return null;
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
         this.buffers.set(id, audioBuffer);

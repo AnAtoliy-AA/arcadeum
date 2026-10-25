@@ -1,7 +1,6 @@
 import type { GameSoundId, GameSoundEntry } from './gameSoundTypes';
 
-const CDN = (process.env.NEXT_PUBLIC_CDN_URL || '').replace(/\/+$/, '');
-const SOUND_BASE = CDN ? `${CDN}/sounds` : '/sounds';
+const SOUND_BASE = '/sounds';
 
 const SHARED_SOUNDS: Record<string, GameSoundEntry> = {
   click: { file: `${SOUND_BASE}/shared/click.wav`, volume: 0.3 },

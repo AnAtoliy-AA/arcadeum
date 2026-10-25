@@ -93,4 +93,78 @@ describe('BaseGameService.startSession', () => {
       }),
     );
   });
+
+  it('preserves player order when firstPlayer is not random', async () => {
+    const roomsService = {
+      getRoom: jest.fn().mockResolvedValue({
+        hostId: 'user-1',
+        gameOptions: { firstPlayer: 'host' },
+      }),
+      getRoomParticipants: jest.fn().mockResolvedValue(['user-1', 'user-2']),
+      updateRoomStatus: jest.fn().mockResolvedValue(undefined),
+    };
+    const sessionsService = {
+      createSession: jest.fn().mockResolvedValue({ id: 's-1' }),
+      sanitizeSummaryForPlayer: jest.fn(),
+    };
+    const realtimeService = {
+      emitGameStarted: jest.fn().mockResolvedValue(undefined),
+    };
+    const botService = { checkAndPlay: jest.fn().mockResolvedValue(undefined) };
+    const service = new TestGameService(
+      roomsService as unknown as GameRoomsService,
+      sessionsService as unknown as GameSessionsService,
+      realtimeService as unknown as GamesRealtimeService,
+      botService,
+      { readyState: 1 } as unknown as Connection,
+    );
+
+    await service.startSession('user-1', 'r-1', false);
+
+    const firstCallArgs = sessionsService.createSession.mock.calls[0] as [
+      { playerIds: string[]; config: Record<string, unknown> },
+    ];
+    expect(firstCallArgs[0].playerIds).toEqual(['user-1', 'user-2']);
+    expect(firstCallArgs[0].config.firstPlayer).toBe('host');
+  });
+
+  it('sets coinToss and random firstPlayer when firstPlayer is random', async () => {
+    const roomsService = {
+      getRoom: jest.fn().mockResolvedValue({
+        hostId: 'user-1',
+        gameOptions: { firstPlayer: 'random' },
+      }),
+      getRoomParticipants: jest.fn().mockResolvedValue(['user-1', 'user-2']),
+      updateRoomStatus: jest.fn().mockResolvedValue(undefined),
+    };
+    const sessionsService = {
+      createSession: jest.fn().mockResolvedValue({ id: 's-1' }),
+      sanitizeSummaryForPlayer: jest.fn(),
+    };
+    const realtimeService = {
+      emitGameStarted: jest.fn().mockResolvedValue(undefined),
+    };
+    const botService = { checkAndPlay: jest.fn().mockResolvedValue(undefined) };
+    const service = new TestGameService(
+      roomsService as unknown as GameRoomsService,
+      sessionsService as unknown as GameSessionsService,
+      realtimeService as unknown as GamesRealtimeService,
+      botService,
+      { readyState: 1 } as unknown as Connection,
+    );
+
+    await service.startSession('user-1', 'r-1', false);
+
+    const secondCallArgs = sessionsService.createSession.mock.calls[0] as [
+      {
+        playerIds: string[];
+        config: { firstPlayer: string; coinToss: { toss: string } };
+      },
+    ];
+    expect(secondCallArgs[0].playerIds).toEqual(['user-1', 'user-2']);
+    expect(secondCallArgs[0].config.firstPlayer).toBe('random');
+    expect(['heads', 'tails']).toContain(
+      secondCallArgs[0].config.coinToss.toss,
+    );
+  });
 });

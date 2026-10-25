@@ -11,7 +11,8 @@ import type {
 } from './shop.types';
 
 export type ShopActionResult<T> =
-  { ok: true; data: T } | { ok: false; error: ShopActionError };
+  | { ok: true; data: T }
+  | { ok: false; error: ShopActionError; message?: string };
 
 export type ShopActionError =
   | 'insufficient_funds'
@@ -53,13 +54,32 @@ function classifyError(status: number, body: string): ShopActionError {
   return 'generic';
 }
 
-/**
- * Every shop mutation invalidates the /shop route + the root layout cache.
- * /shop because that's where inventory + equipped state renders directly;
- * the layout because the header BalanceChip + ProfileMenu avatar (Server-
- * Component data) should also refresh. Pair with router.refresh() on the
- * client to get an immediate visible update without a manual reload.
- */
+async function extractActionError(
+  res: Response,
+): Promise<{ error: ShopActionError; message?: string }> {
+  const raw = await res.text();
+  let message: string | undefined;
+  try {
+    const parsed = JSON.parse(raw) as {
+      message?: string | string[];
+      error?: string;
+    };
+    if (typeof parsed.message === 'string') {
+      message = parsed.message;
+    } else if (Array.isArray(parsed.message)) {
+      message = parsed.message.join(', ');
+    } else if (typeof parsed.error === 'string') {
+      message = parsed.error;
+    }
+  } catch {
+    message = raw || undefined;
+  }
+  return {
+    error: classifyError(res.status, raw),
+    message,
+  };
+}
+
 function revalidateShopSurfaces(): void {
   revalidatePath('/shop');
   revalidatePath('/', 'layout');
@@ -74,7 +94,8 @@ export async function purchaseItemAction(
     body: JSON.stringify({ itemId, purchaseId }),
   });
   if (!res.ok) {
-    return { ok: false, error: classifyError(res.status, await res.text()) };
+    const err = await extractActionError(res);
+    return { ok: false, error: err.error, message: err.message };
   }
   const data = (await res.json()) as PurchaseResult;
   revalidateShopSurfaces();
@@ -89,15 +110,14 @@ export async function sellItemAction(
     body: JSON.stringify({ purchaseId }),
   });
   if (!res.ok) {
-    return { ok: false, error: classifyError(res.status, await res.text()) };
+    const err = await extractActionError(res);
+    return { ok: false, error: err.error, message: err.message };
   }
   const data = (await res.json()) as SellResult;
   revalidateShopSurfaces();
   return { ok: true, data };
 }
 
-// BE InventoryService.equip / unequip return the EquippedView directly
-// (not wrapped in `{ equipped: ... }`). The action result mirrors that.
 export async function equipItemAction(
   itemId: string,
 ): Promise<ShopActionResult<EquippedView>> {
@@ -106,7 +126,8 @@ export async function equipItemAction(
     body: JSON.stringify({ itemId }),
   });
   if (!res.ok) {
-    return { ok: false, error: classifyError(res.status, await res.text()) };
+    const err = await extractActionError(res);
+    return { ok: false, error: err.error, message: err.message };
   }
   const data = (await res.json()) as EquippedView;
   revalidateShopSurfaces();
@@ -121,7 +142,8 @@ export async function unequipItemAction(
     body: JSON.stringify({ category }),
   });
   if (!res.ok) {
-    return { ok: false, error: classifyError(res.status, await res.text()) };
+    const err = await extractActionError(res);
+    return { ok: false, error: err.error, message: err.message };
   }
   const data = (await res.json()) as EquippedView;
   revalidateShopSurfaces();
@@ -138,7 +160,8 @@ export async function sendGiftAction(input: {
     body: JSON.stringify(input),
   });
   if (!res.ok) {
-    return { ok: false, error: classifyError(res.status, await res.text()) };
+    const err = await extractActionError(res);
+    return { ok: false, error: err.error, message: err.message };
   }
   const data = (await res.json()) as GiftResult;
   revalidateShopSurfaces();

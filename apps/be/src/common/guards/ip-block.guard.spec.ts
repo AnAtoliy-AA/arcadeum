@@ -86,4 +86,13 @@ describe('IpBlockService', () => {
     expect(await service.isBlocked('1.2.3.4')).toBe(true);
     expect(await service.isBlocked('5.6.7.8')).toBe(false);
   });
+
+  it('should never block loopback IPs', async () => {
+    await service.block('127.0.0.1', 60_000, 'test');
+    await service.recordSevereAbuse('127.0.0.1', 'test');
+    expect(await service.isBlocked('127.0.0.1')).toBe(false);
+
+    await service.block('::1', 60_000, 'test');
+    expect(await service.isBlocked('::1')).toBe(false);
+  });
 });

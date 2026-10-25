@@ -132,14 +132,14 @@ export default function ProfileMenu() {
     <ProfileMenuContainer data-profile-menu data-testid="profile-menu">
       <Button
         variant="chip"
-        size="sm"
+        size="md"
         shape="round"
-        className="h-9 pl-1 pr-3 gap-2 border-[var(--glassBorder)] bg-[var(--glassBg)] hover:bg-[var(--glassBgHover)] hover:border-[var(--glassBorderHover)] text-[var(--color)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:border-[var(--glassBorder)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] shadow-sm"
+        className="h-12 pl-1 pr-3.5 gap-2.5 border-[var(--glassBorder)] bg-[var(--glassBg)] hover:bg-[var(--glassBgHover)] hover:border-[var(--glassBorderHover)] text-[var(--color)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:border-[var(--glassBorder)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] shadow-sm"
         onClick={toggleMenu}
       >
         <EquippedPlayerAvatar
           name={displayName}
-          size="icon"
+          size="sm"
           equippedAvatarId={snapshot.equippedAvatarId}
           equippedBadgeId={snapshot.equippedBadgeId}
           equippedNameColorId={snapshot.equippedNameColorId}

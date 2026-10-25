@@ -1,15 +1,12 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
 
 test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing renders complete AEO summary, specifications matrix and schemas', async ({
     page,
   }) => {
-    const res = await page.goto(routes.chessLanding, {
-      waitUntil: 'domcontentloaded',
-    });
-    expect(res?.status()).toBe(200);
+    await navigateTo(page, routes.chessLanding);
 
     const heading = page.locator('h1').first();
     await expect(heading).toBeVisible();
@@ -46,9 +43,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('checkers and backgammon render specifications matrix and direct answers', async ({
     page,
   }) => {
-    await page.goto(routes.checkersLanding, {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, routes.checkersLanding);
     const checkersHeading = page.locator('h1').first();
     await expect(checkersHeading).toBeVisible();
     await expect(checkersHeading).toContainText('Checkers');
@@ -59,9 +54,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await expect(checkersSpec).toBeVisible();
     await expect(checkersSpec).toContainText('American Draughts');
 
-    await page.goto(routes.backgammonLanding, {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, routes.backgammonLanding);
     const bgHeading = page.locator('h1').first();
     await expect(bgHeading).toBeVisible();
     await expect(bgHeading).toContainText('Backgammon');
@@ -74,9 +67,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess page contains OpenGraph and Twitter card meta tags', async ({
     page,
   }) => {
-    await page.goto(routes.chessLanding, {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, routes.chessLanding);
 
     const ogImage = page.locator('meta[property="og:image"]');
     await expect(ogImage).toHaveCount(1);
@@ -101,9 +92,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing renders daily puzzle teaser and interactive solving', async ({
     page,
   }) => {
-    await page.goto(routes.chessLanding, {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, routes.chessLanding);
 
     const puzzleTeaser = page.locator('[data-testid="chess-puzzle-teaser"]');
     await expect(puzzleTeaser).toBeVisible();
@@ -114,7 +103,6 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
       name: 'Solve Move (1. Qxf7+)',
     });
     await expect(solveBtn).toBeVisible();
-    await solveBtn.scrollIntoViewIfNeeded();
     await solveBtn.click();
 
     await expect(puzzleTeaser).toContainText('Brilliant!! 1. Qxf7+!');
@@ -123,18 +111,19 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing invite/share modal opens with QR code and copy link', async ({
     page,
   }) => {
-    await page.goto(routes.chessLanding, {
-      waitUntil: 'domcontentloaded',
-    });
-
-    const inviteBtn = page.getByRole('button', { name: /Invite \/ Share/i });
-    await expect(inviteBtn).toBeVisible();
-    await inviteBtn.click();
+    await navigateTo(page, routes.chessLanding);
 
     const modalContent = page.locator(
       '[data-testid="game-invite-modal-content"]',
     );
-    await expect(modalContent).toBeVisible();
+
+    await expect(async () => {
+      const inviteBtn = page.getByRole('button', { name: /Invite \/ Share/i });
+      await expect(inviteBtn).toBeVisible();
+      await inviteBtn.click();
+      await expect(modalContent).toBeVisible();
+    }).toPass();
+
     await expect(modalContent).toContainText('Invite a Friend to Chess');
 
     const qrCode = modalContent.getByLabel('QR Code to join game');
@@ -171,13 +160,10 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   test('chess landing theme showcase preview selection works', async ({
     page,
   }) => {
-    await page.goto(routes.chessLanding, {
-      waitUntil: 'domcontentloaded',
-    });
+    await navigateTo(page, routes.chessLanding);
 
     const cyberpunkCard = page.locator('[data-testid="theme-card-cyberpunk"]');
     await expect(cyberpunkCard).toBeVisible();
-    await cyberpunkCard.scrollIntoViewIfNeeded();
     await cyberpunkCard.click();
 
     await expect(cyberpunkCard).toContainText('Previewing');

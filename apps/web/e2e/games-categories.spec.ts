@@ -50,18 +50,26 @@ test.describe('Games Lounge - Category Dropdown and Filtering', () => {
       .locator('input[type="search"], input[placeholder*="search" i]')
       .first();
     if (await searchInput.isVisible()) {
-      await searchInput.fill('Critical');
-      await expect(searchInput).toHaveValue('Critical');
+      await expect(async () => {
+        await searchInput.fill('Critical');
+        await expect(searchInput).toHaveValue('Critical');
+      }).toPass();
     }
 
     const categoryDropdown = page.getByTestId('rooms-filter-category-dropdown');
     await expect(categoryDropdown).toBeVisible();
-    await categoryDropdown.click();
 
     const boardChip = page.getByRole('checkbox', {
       name: /Filter by category: Board/i,
     });
-    await expect(boardChip).toBeVisible();
+
+    await expect(async () => {
+      if (!(await boardChip.isVisible())) {
+        await categoryDropdown.click();
+      }
+      await expect(boardChip).toBeVisible();
+    }).toPass();
+
     await boardChip.click();
     await expect(boardChip).toHaveAttribute('aria-checked', 'true');
   });

@@ -126,21 +126,20 @@ test.describe('Level Badge Rewards', () => {
   test('badges are shown in shop catalog ordered by level as unpurchasable progression rewards', async ({
     page,
   }) => {
-    await navigateTo(page, '/shop');
+    await navigateTo(page, '/en/shop');
 
-    await expect(page.locator('#row-badges')).toBeVisible();
-    await expect(page.getByTestId('shop-card-badge-scout')).toBeVisible();
-    await expect(page.getByTestId('shop-card-badge-scout')).toHaveText(
-      /lv\. 5/i,
-    );
-    await expect(page.getByTestId('shop-card-action-badge-scout')).toHaveText(
-      /view in stats/i,
-    );
-    await expect(page.getByTestId('shop-buy-badge-scout')).toHaveCount(0);
+    const badgeRow = page.locator('#row-badges').first();
+    await expect(badgeRow).toBeVisible();
 
-    const badgeCards = page.locator(
-      '#row-badges [data-testid^="shop-card-badge-"]',
-    );
+    const scoutCard = badgeRow.getByTestId('shop-card-badge-scout');
+    await expect(scoutCard).toBeVisible();
+    await expect(scoutCard).toHaveText(/lv\. 5/i);
+    await expect(
+      badgeRow.getByTestId('shop-card-action-badge-scout'),
+    ).toHaveText(/view in stats/i);
+    await expect(badgeRow.getByTestId('shop-buy-badge-scout')).toHaveCount(0);
+
+    const badgeCards = badgeRow.locator('[data-testid^="shop-card-badge-"]');
     await expect(badgeCards.nth(0)).toHaveAttribute(
       'data-testid',
       'shop-card-badge-newcomer',

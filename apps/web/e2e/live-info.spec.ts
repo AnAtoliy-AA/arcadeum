@@ -7,7 +7,7 @@ import {
 
 test.describe('Live Platform Info & Online Users', () => {
   test.beforeEach(async ({ page }) => {
-    await navigateTo(page, '/');
+    await navigateTo(page, '/en');
   });
 
   test('should render live pulse badge in navigation header', async ({
@@ -70,8 +70,10 @@ test.describe('Live Platform Info & Online Users', () => {
     const waitingRoomsCard = page.getByTestId('live-waiting-rooms-card');
     await expect(waitingRoomsCard).toBeVisible();
     await expect(waitingRoomsCard).toHaveAttribute('href', /.*status=lobby/);
-    await waitingRoomsCard.click();
-    await expect(page).toHaveURL(/.*status=lobby/);
+    await expect(async () => {
+      await waitingRoomsCard.click();
+      await expect(page).toHaveURL(/.*status=lobby/);
+    }).toPass();
   });
 
   test('should render live stats on game landing page', async ({ page }) => {

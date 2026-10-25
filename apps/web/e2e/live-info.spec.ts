@@ -67,13 +67,11 @@ test.describe('Live Platform Info & Online Users', () => {
   test('should navigate to rooms page filtered by lobby status when clicking open lobbies', async ({
     page,
   }) => {
-    const waitingRoomsCard = page
-      .getByTestId('home-live-pulse-section')
-      .getByTestId('live-waiting-rooms-counter')
-      .locator('..');
+    const waitingRoomsCard = page.getByTestId('live-waiting-rooms-card');
     await expect(waitingRoomsCard).toBeVisible();
+    await expect(waitingRoomsCard).toHaveAttribute('href', /.*status=lobby/);
     await waitingRoomsCard.click();
-    await expect(page).toHaveURL(/.*\/rooms\?status=lobby/);
+    await expect(page).toHaveURL(/.*status=lobby/);
   });
 
   test('should render live stats on game landing page', async ({ page }) => {

@@ -91,4 +91,34 @@ describe('useActiveClanWarMatch', () => {
 
     expect(setActiveMatchWarSpy).toHaveBeenCalledWith(null);
   });
+
+  it('resets match war and skips API call when opponent is a bot', () => {
+    const fetchSpy = vi.fn();
+    const setActiveMatchWarSpy = vi.fn();
+    useClansStore.setState({
+      fetchActiveMatchWar: fetchSpy,
+      setActiveMatchWar: setActiveMatchWarSpy,
+    });
+
+    renderHook(() => useActiveClanWarMatch('bot-d9547e0d9a', 'tic_tac_toe_v1'));
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(setActiveMatchWarSpy).toHaveBeenCalledWith(null);
+  });
+
+  it('resets match war and skips API call when opponent is anonymous', () => {
+    const fetchSpy = vi.fn();
+    const setActiveMatchWarSpy = vi.fn();
+    useClansStore.setState({
+      fetchActiveMatchWar: fetchSpy,
+      setActiveMatchWar: setActiveMatchWarSpy,
+    });
+
+    renderHook(() =>
+      useActiveClanWarMatch('anon_8fff7a0ae8053b4b', 'tic_tac_toe_v1'),
+    );
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(setActiveMatchWarSpy).toHaveBeenCalledWith(null);
+  });
 });

@@ -26,7 +26,11 @@ export function useActiveClanWarMatch(
     if (
       !opponentUserId ||
       !snapshot.userId ||
-      opponentUserId === snapshot.userId
+      opponentUserId === snapshot.userId ||
+      !snapshot.accessToken ||
+      snapshot.userId.startsWith('anon_') ||
+      opponentUserId.startsWith('anon_') ||
+      opponentUserId.startsWith('bot-')
     ) {
       setActiveMatchWar(null);
       return;

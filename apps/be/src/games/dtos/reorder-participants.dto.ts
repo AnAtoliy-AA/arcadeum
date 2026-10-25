@@ -1,9 +1,9 @@
-import { IsArray, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class ReorderParticipantsDto {
   @IsArray()
-  @IsNotEmpty()
+  @ArrayNotEmpty()
   @IsString({ each: true })
-  @IsMongoId({ each: true })
+  @IsNotEmpty({ each: true })
   userIds!: string[];
 }

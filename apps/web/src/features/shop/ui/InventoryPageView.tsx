@@ -156,6 +156,7 @@ export function InventoryPageView({
           onClose={() => setPurchaseTarget(null)}
           onSuccess={() => setPurchaseTarget(null)}
           labels={labels.purchase}
+          isAuthenticated={isAuthenticated}
         />
 
         <SellConfirmDialog

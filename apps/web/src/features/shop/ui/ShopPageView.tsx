@@ -389,6 +389,7 @@ export function ShopPageView({
           onClose={() => setPurchaseTarget(null)}
           onSuccess={() => setPurchaseTarget(null)}
           labels={labels.purchase}
+          isAuthenticated={isAuthenticated}
         />
       </div>
     </PageLayout>

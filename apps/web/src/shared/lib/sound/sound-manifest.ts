@@ -7,8 +7,7 @@
  * Next.js public directory — reducing deployment size and improving TTFB.
  */
 
-const CDN = (process.env.NEXT_PUBLIC_CDN_URL || '').replace(/\/+$/, '');
-const BASE = CDN ? `${CDN}/sounds` : '/sounds';
+const BASE = '/sounds';
 
 export const SOUNDS = {
   /** Game won — celebratory ascending arpeggio. */

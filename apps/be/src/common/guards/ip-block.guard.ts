@@ -15,6 +15,15 @@ const BLOCKED_PREFIX = 'ipblock:blocked:';
 const FAIL_PREFIX = 'ipblock:fail:';
 const ALL_BLOCKED_KEY = 'ipblock:all_blocked';
 
+function isLoopbackIp(ip: string): boolean {
+  return (
+    ip === '127.0.0.1' ||
+    ip === '::1' ||
+    ip === '::ffff:127.0.0.1' ||
+    ip === 'localhost'
+  );
+}
+
 function parseIpList(raw: string): string[] {
   const parsed: unknown = JSON.parse(raw);
   return Array.isArray(parsed) ? (parsed as string[]) : [];
@@ -69,6 +78,8 @@ export class IpBlockService {
   }
 
   async record429(ip: string): Promise<void> {
+    if (isLoopbackIp(ip)) return;
+
     const count = await this.store.increment(
       FAIL_PREFIX + ip,
       this.failureWindowMs,
@@ -81,18 +92,24 @@ export class IpBlockService {
   }
 
   async recordSevereAbuse(ip: string, reason: string): Promise<void> {
+    if (isLoopbackIp(ip)) return;
+
     await this.block(ip, this.severeBlockDurationMs, reason);
     await this.store.delete(FAIL_PREFIX + ip);
     void reason;
   }
 
   async isBlocked(ip: string): Promise<boolean> {
+    if (isLoopbackIp(ip)) return false;
+
     const expiresAt = await this.store.get(BLOCKED_PREFIX + ip);
     if (!expiresAt) return false;
     return Date.now() < expiresAt;
   }
 
   async block(ip: string, durationMs: number, reason: string): Promise<void> {
+    if (isLoopbackIp(ip)) return;
+
     const expiresAt = Date.now() + durationMs;
     await this.store.set(BLOCKED_PREFIX + ip, expiresAt, durationMs);
     await this.addToAllBlocked(ip, durationMs);
@@ -186,9 +203,9 @@ export class IpBlockGuard implements CanActivate {
     if (isE2EMode()) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
+    const ip = this.ipBlockService.extractIp(request);
+    if (isLoopbackIp(ip)) return true;
 
-    return !(await this.ipBlockService.isBlocked(
-      this.ipBlockService.extractIp(request),
-    ));
+    return !(await this.ipBlockService.isBlocked(ip));
   }
 }

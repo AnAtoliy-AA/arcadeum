@@ -5,14 +5,12 @@ import type { Queue } from 'bullmq';
 import Redis, { type RedisOptions } from 'ioredis';
 import { AppJobsProcessor } from './app-jobs.processor';
 
-function patchDuplicate(client: Redis): void {
-  const originalDuplicate = (options?: RedisOptions): Redis =>
-    client.duplicate(options);
-  client.duplicate = (options?: RedisOptions): Redis => {
-    const dup = originalDuplicate(options);
+class DevRedis extends Redis {
+  override duplicate(overrideOptions?: RedisOptions): Redis {
+    const dup = super.duplicate(overrideOptions);
     dup.on('error', () => {});
     return dup;
-  };
+  }
 }
 
 @Module({
@@ -26,7 +24,7 @@ function patchDuplicate(client: Redis): void {
 
         if (redisUrl) {
           try {
-            const client = new Redis(redisUrl, {
+            const client = new DevRedis(redisUrl, {
               maxRetriesPerRequest: null,
               enableOfflineQueue: false,
               lazyConnect: true,
@@ -34,7 +32,6 @@ function patchDuplicate(client: Redis): void {
             client.on('error', (err: Error) => {
               logger.warn(`BullMQ Redis error: ${err.message}`);
             });
-            patchDuplicate(client);
             return { connection: client };
           } catch (err) {
             logger.warn(
@@ -46,7 +43,7 @@ function patchDuplicate(client: Redis): void {
         const host = config.get<string>('REDIS_HOST') || '127.0.0.1';
         const port = Number(config.get<string>('REDIS_PORT') || 6379);
 
-        const client = new Redis({
+        const client = new DevRedis({
           host,
           port,
           maxRetriesPerRequest: null,
@@ -57,7 +54,6 @@ function patchDuplicate(client: Redis): void {
           reconnectOnError: () => false,
         });
         client.on('error', () => {});
-        patchDuplicate(client);
 
         return { connection: client };
       },

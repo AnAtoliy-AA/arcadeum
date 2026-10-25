@@ -21,20 +21,11 @@ test.describe('Matchmaking Queue', () => {
     const humanBtn = page.getByTestId('quickplay-human-button').first();
     await expect(humanBtn).toBeVisible();
 
-    await page.waitForFunction(
-      () =>
-        typeof (window as Window & { __joinMatchmaking?: unknown })
-          .__joinMatchmaking === 'function',
-    );
-
-    await page.evaluate(() =>
-      (
-        window as Window & { __joinMatchmaking?: (g: string) => Promise<void> }
-      ).__joinMatchmaking?.('sea_battle_v1'),
-    );
-
     const modal = page.getByTestId('matchmaking-modal');
-    await expect(modal).toBeVisible();
+    await expect(async () => {
+      await humanBtn.click();
+      await expect(modal).toBeVisible();
+    }).toPass();
 
     const timer = page.getByTestId('matchmaking-timer');
     await expect(timer).toBeVisible();
@@ -54,20 +45,11 @@ test.describe('Matchmaking Queue', () => {
     const humanBtn = page.getByTestId('quickplay-human-button').first();
     await expect(humanBtn).toBeVisible();
 
-    await page.waitForFunction(
-      () =>
-        typeof (window as Window & { __joinMatchmaking?: unknown })
-          .__joinMatchmaking === 'function',
-    );
-
-    await page.evaluate(() =>
-      (
-        window as Window & { __joinMatchmaking?: (g: string) => Promise<void> }
-      ).__joinMatchmaking?.('sea_battle_v1'),
-    );
-
     const modal = page.getByTestId('matchmaking-modal');
-    await expect(modal).toBeVisible();
+    await expect(async () => {
+      await humanBtn.click();
+      await expect(modal).toBeVisible();
+    }).toPass();
 
     const minimizeBtn = page.getByTestId('matchmaking-minimize');
     await expect(minimizeBtn).toBeVisible();

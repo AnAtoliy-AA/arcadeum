@@ -69,8 +69,8 @@ function setStoreState(
     hydrated: true,
     snapshot: {
       ...snapshot,
-      accessToken: null,
-      userId: null,
+      accessToken: 'test-token',
+      userId: 'test-user',
       refreshToken: null,
     },
     ...overrides,
@@ -102,7 +102,29 @@ describe('DailyRewardChip', () => {
     expect(screen.queryByTestId('daily-reward-chip')).toBeNull();
   });
 
-  it('shows the sign-in CTA for anonymous visitors on 401', async () => {
+  it('shows the sign-in CTA for anonymous visitors without calling the API', async () => {
+    const snapshot = useSessionStore.getState().snapshot;
+    useSessionStore.setState({
+      snapshot: {
+        ...snapshot,
+        accessToken: null,
+        userId: null,
+        refreshToken: null,
+      },
+    });
+
+    render(<DailyRewardChip />);
+
+    const chip = await screen.findByTestId('daily-reward-chip');
+    expect(chip).toBeInTheDocument();
+    expect(apiClient.get).not.toHaveBeenCalled();
+
+    const cta = screen.getByTestId('daily-reward-claim-btn');
+    expect(cta).toHaveTextContent('Sign in to claim');
+    expect(cta).toHaveAttribute('href', routes.auth);
+  });
+
+  it('shows the sign-in CTA when the session is invalid (401)', async () => {
     vi.mocked(apiClient.get).mockRejectedValue(
       new ApiError('Unauthorized', 401),
     );
@@ -153,43 +175,16 @@ describe('DailyRewardChip', () => {
   });
 
   it('stays hidden while a prior session restore is still pending', async () => {
-    setStoreState();
     const snapshot = useSessionStore.getState().snapshot;
     useSessionStore.setState({
-      snapshot: { ...snapshot, userId: 'user-1' },
+      snapshot: { ...snapshot, accessToken: null, userId: 'user-1' },
     });
-    vi.mocked(apiClient.get).mockRejectedValue(
-      new ApiError('Unauthorized', 401),
-    );
 
     render(<DailyRewardChip />);
-    await waitFor(() => expect(apiClient.get).toHaveBeenCalled());
     await flush();
 
-    // SessionRoleSync may still be restoring the token from the cookie;
-    // the sign-in CTA must not flash for a logged-in user.
     expect(screen.queryByTestId('daily-reward-chip')).toBeNull();
-  });
-
-  it('falls back to the anon CTA when the session restore never lands', async () => {
-    vi.useFakeTimers();
-    const snapshot = useSessionStore.getState().snapshot;
-    useSessionStore.setState({
-      snapshot: { ...snapshot, userId: 'user-1' },
-    });
-    vi.mocked(apiClient.get).mockRejectedValue(
-      new ApiError('Unauthorized', 401),
-    );
-
-    render(<DailyRewardChip />);
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(4_000);
-    });
-
-    expect(screen.getByTestId('daily-reward-chip')).toBeInTheDocument();
-    expect(screen.getByTestId('daily-reward-claim-btn')).toHaveTextContent(
-      'Sign in to claim',
-    );
+    expect(apiClient.get).not.toHaveBeenCalled();
   });
 
   it('flips to the claimed state after a successful claim', async () => {

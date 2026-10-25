@@ -5,6 +5,9 @@ import { User } from '../../auth/schemas/user.schema';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameRoomSummary, GameRoomMemberSummary } from './game-rooms.types';
 
+const USER_COSMETIC_FIELDS =
+  'username email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId';
+
 @Injectable()
 export class GameRoomsMapper {
   constructor(
@@ -17,6 +20,7 @@ export class GameRoomsMapper {
     viewerId?: string,
   ): Promise<GameRoomSummary> {
     const { invitedIds, declinedIds } = this.getRematchLists(room);
+
     const userMap = await this.fetchAllRelevantUsers(
       room,
       invitedIds,
@@ -52,7 +56,7 @@ export class GameRoomsMapper {
 
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
-      .select('username email role')
+      .select(USER_COSMETIC_FIELDS)
       .lean()
       .exec();
 
@@ -136,6 +140,14 @@ export class GameRoomsMapper {
             username: host.username || null,
             email: host.email || null,
             isHost: true,
+            role: host.role ?? null,
+            equippedAvatarId: host.equippedAvatarId ?? null,
+            equippedBadgeId: host.equippedBadgeId ?? null,
+            equippedNameColorId: host.equippedNameColorId ?? null,
+            equippedFrameId: host.equippedFrameId ?? null,
+            equippedAuraId: host.equippedAuraId ?? null,
+            equippedBannerId: host.equippedBannerId ?? null,
+            equippedBackgroundId: host.equippedBackgroundId ?? null,
           }
         : undefined,
       members,
@@ -179,7 +191,7 @@ export class GameRoomsMapper {
     );
 
     const selectFields = includeCosmetics
-      ? 'username email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId'
+      ? USER_COSMETIC_FIELDS
       : 'username email role';
 
     const users = await this.userModel
@@ -228,12 +240,31 @@ export class GameRoomsMapper {
 
   private mapRematchUser(userId: string, userMap: Map<string, User>) {
     const user = userMap.get(userId);
+    const isBot = userId.startsWith('bot-');
+    const isAnonymous = userId.startsWith('anon_');
+    const anonSuffix = isAnonymous
+      ? userId.replace('anon_', '').slice(0, 4)
+      : '';
+    const displayName = isBot
+      ? 'Bot'
+      : user?.username ||
+        user?.email ||
+        (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
+
     return {
       id: userId,
-      displayName: user?.username || user?.email || 'Unknown',
+      displayName,
       username: user?.username || null,
       email: user?.email || null,
       isHost: false,
+      role: user?.role ?? null,
+      equippedAvatarId: user?.equippedAvatarId ?? null,
+      equippedBadgeId: user?.equippedBadgeId ?? null,
+      equippedNameColorId: user?.equippedNameColorId ?? null,
+      equippedFrameId: user?.equippedFrameId ?? null,
+      equippedAuraId: user?.equippedAuraId ?? null,
+      equippedBannerId: user?.equippedBannerId ?? null,
+      equippedBackgroundId: user?.equippedBackgroundId ?? null,
     };
   }
 

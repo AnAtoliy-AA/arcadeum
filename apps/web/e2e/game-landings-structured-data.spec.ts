@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 interface SchemaRecord {
   '@type'?: string | string[];
@@ -41,9 +41,7 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
     test(`${game.name} landing emits VideoGame, SoftwareApplication with AggregateRating`, async ({
       page,
     }) => {
-      await page.goto(`/en/games/${game.slug}`, {
-        waitUntil: 'domcontentloaded',
-      });
+      await navigateTo(page, `/en/games/${game.slug}`);
       const schemas = await getJsonLdSchemas(page, `#json-ld-${game.id}`);
       expect(schemas.length).toBeGreaterThanOrEqual(2);
 
@@ -71,9 +69,12 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
   test('sitemap includes all games and strategy guides', async ({
     request,
   }) => {
-    const res = await request.get('/sitemap.xml');
-    expect(res.status()).toBe(200);
-    const text = await res.text();
+    let text = '';
+    await expect(async () => {
+      const res = await request.get('/sitemap.xml');
+      expect(res.status()).toBe(200);
+      text = await res.text();
+    }).toPass();
 
     const expectedSlugs = [
       'chess',

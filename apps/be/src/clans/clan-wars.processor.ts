@@ -12,6 +12,7 @@ export interface ClanWarJobData {
 @Processor('clan-wars')
 export class ClanWarsProcessor extends WorkerHost implements OnModuleInit {
   private readonly logger = new Logger(ClanWarsProcessor.name);
+  private hasReportedOffline = false;
 
   constructor(
     private readonly clanWarsAutomationService: ClanWarsAutomationService,
@@ -23,6 +24,18 @@ export class ClanWarsProcessor extends WorkerHost implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     if (this.worker) {
       this.worker.on('error', (err: Error) => {
+        if (
+          err.message.includes('ECONNREFUSED') ||
+          err.message.includes('Connection is closed')
+        ) {
+          if (!this.hasReportedOffline) {
+            this.hasReportedOffline = true;
+            this.logger.debug(
+              `BullMQ clan-wars worker offline: ${err.message}`,
+            );
+          }
+          return;
+        }
         this.logger.warn(`BullMQ clan-wars worker error: ${err.message}`);
       });
     }

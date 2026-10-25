@@ -23,6 +23,9 @@ test.describe('Content Security Policy', () => {
     if (csp) {
       expect(csp).toContain('script-src');
       expect(csp).toContain('https://vercel.live');
+      expect(csp).toContain('https://static.cloudflareinsights.com');
+      expect(csp).toContain('connect-src');
+      expect(csp).toContain('https://cloudflareinsights.com');
     }
   });
 });

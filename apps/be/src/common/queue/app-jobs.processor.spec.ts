@@ -40,4 +40,28 @@ describe('AppJobsProcessor', () => {
     const result = await processor.process(job as never);
     expect(result).toEqual({ success: true, handled: true });
   });
+
+  it('attaches worker error listener on module init and handles offline error', () => {
+    let errorHandler: ((err: Error) => void) | undefined;
+    const mockWorker = {
+      on: jest.fn((event: string, handler: (err: Error) => void) => {
+        if (event === 'error') {
+          errorHandler = handler;
+        }
+      }),
+    };
+    Object.defineProperty(processor, 'worker', {
+      value: mockWorker,
+      writable: true,
+    });
+
+    processor.onModuleInit();
+    expect(mockWorker.on).toHaveBeenCalledWith('error', expect.any(Function));
+
+    expect(() => {
+      errorHandler?.(new Error('connect ECONNREFUSED 127.0.0.1:6379'));
+      errorHandler?.(new Error('Connection is closed.'));
+      errorHandler?.(new Error('unexpected error'));
+    }).not.toThrow();
+  });
 });

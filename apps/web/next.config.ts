@@ -142,6 +142,7 @@ const defaultConnectSrc = [
   'https://vercel.live',
   'wss://*.vercel.live',
   'https://*.vercel.app',
+  'https://cloudflareinsights.com',
   process.env.NEXT_PUBLIC_CDN_URL || '',
 ].concat(analyticsOrigins);
 
@@ -160,6 +161,7 @@ const cspScriptSrc = [
   "'unsafe-inline'",
   'https://vercel.live',
   'https://*.vercel.app',
+  'https://static.cloudflareinsights.com',
   ...analyticsOrigins,
 ].join(' ');
 const cspStyleSrc = "'self' 'unsafe-inline'";
@@ -349,6 +351,10 @@ const nextConfig: NextConfig = {
         }
         return sources.map((source) => ({
           source,
+          missing: [
+            { type: 'query' as const, key: '_rsc' },
+            { type: 'header' as const, key: 'rsc' },
+          ],
           headers: [
             {
               key: 'Cache-Control',
@@ -391,6 +397,10 @@ const nextConfig: NextConfig = {
         }
         return sources.map((source) => ({
           source,
+          missing: [
+            { type: 'query' as const, key: '_rsc' },
+            { type: 'header' as const, key: 'rsc' },
+          ],
           headers: [
             {
               key: 'Cache-Control',

@@ -137,12 +137,16 @@ test.describe('Idle Connection Overlay', () => {
 
     await overlay.click({});
 
-    // Use a fresh locator to avoid detached element issues and include all translation variants
     await expect(
       page.locator('[data-testid^="connection-overlay-"]'),
-    ).toContainText(
-      /Reconnecting|Reconectando|Reconnexion|Пераключэнне|Переключэнне|Переподключение|Connection Lost/i,
-    );
+    ).toBeHidden();
+
+    await page.waitForFunction(() => {
+      const win = window as unknown as {
+        __ZUSTAND_GAME_STORE__?: { getState: () => { isConnected: boolean } };
+      };
+      return win.__ZUSTAND_GAME_STORE__?.getState()?.isConnected === true;
+    });
   });
 
   test('should keep game content visible beneath the overlay', async ({

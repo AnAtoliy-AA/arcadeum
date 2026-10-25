@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.91] - 2026-10-25
+
+### Fixed
+- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
+
+
+## [1.30.90] - 2026-10-25
+
+### Fixed
+- resolve chromium live-info navigation and level-badges strict mode (ARC-1018) (ARC-1018)
+- resolve webkit e2e stability timeouts in shard 2 (ARC-1018) (ARC-1018)
+
+
+## [1.30.89] - 2026-10-25
+
+### Fixed
+- resolve webkit e2e test flakes for academy, matchmaking, and logout (ARC-1017) (ARC-1017)
+
+
+## [1.30.88] - 2026-10-25
+
+### Added
+- enlarge avatar and profile menu button in header (ARC-1016) (ARC-1016)
+- enlarge profile menu avatar and button in header (ARC-1016) (ARC-1016)
+
+### Fixed
+- support guest and bot ids in participant reorder dto (ARC-1016) (ARC-1016)
+- exempt loopback addresses from IP blocking guard (ARC-1016) (ARC-1016)
+- allow anonymous host to reorder participants (ARC-1016) (ARC-1016)
+- randomize first move only when explicitly configured (ARC-1016) (ARC-1016)
+- prevent board size option subtext clipping (ARC-1016) (ARC-1016)
+- serve game sounds from same-origin path to prevent cors errors (ARC-1016) (ARC-1016)
+- handle bullmq connection gracefully when redis is offline in dev (ARC-1016) (ARC-1016)
+- show actual error and prompt sign in on unauthorized purchase (ARC-1016) (ARC-1016)
+- fix profile menu avatar clipping and align button height (ARC-1016) (ARC-1016)
+- add rfc-9116 security.txt in .well-known and skip prefix in proxy (ARC-1016) (ARC-1016)
+- seat bots in rematch room and render member avatars (ARC-1016) (ARC-1016)
+- allow cloudflare analytics in csp and prevent unauth errors (ARC-1016) (ARC-1016)
+
+
 ## [1.30.87] - 2026-10-24
 
 ### Fixed

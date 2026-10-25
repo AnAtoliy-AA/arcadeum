@@ -111,9 +111,11 @@ export async function mockSession(
     await page.addInitScript((s) => {
       if (
         !document.cookie.includes('__arcadeum_session_mocked=true') &&
-        !window.sessionStorage.getItem('__arcadeum_session_mocked')
+        !window.sessionStorage.getItem('__arcadeum_session_mocked') &&
+        !window.localStorage.getItem('__arcadeum_session_mocked')
       ) {
         window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
+        window.localStorage.setItem('__arcadeum_session_mocked', 'true');
         window.localStorage.setItem(
           'web_session_tokens_v1',
           JSON.stringify({ state: { snapshot: s }, version: 0 }),

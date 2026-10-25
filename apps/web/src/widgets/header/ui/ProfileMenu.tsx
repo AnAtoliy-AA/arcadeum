@@ -80,8 +80,9 @@ export default function ProfileMenu() {
       ? snapshot.userId.slice(0, 4)
       : '';
   const guestName = anonSuffix ? `Guest #${anonSuffix}` : 'Guest';
-  const displayName =
-    snapshot.displayName || snapshot.username || snapshot.email || guestName;
+  const displayName = isAnonymous
+    ? guestName
+    : snapshot.displayName || snapshot.username || snapshot.email || guestName;
   const chipName = displayName.trim().split(/\s+/)[0] ?? displayName;
   const role = snapshot.role || 'free';
   const { data: cosmeticBadges } = useCosmeticBadges();
@@ -131,15 +132,16 @@ export default function ProfileMenu() {
   return (
     <ProfileMenuContainer data-profile-menu data-testid="profile-menu">
       <Button
-        variant="chip"
-        size="sm"
+        variant="ghost"
+        size="md"
         shape="round"
-        className="h-9 pl-1 pr-3 gap-2 border-[var(--glassBorder)] bg-[var(--glassBg)] hover:bg-[var(--glassBgHover)] hover:border-[var(--glassBorderHover)] text-[var(--color)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:border-[var(--glassBorder)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] shadow-sm"
+        padding="py-0 pl-1 pr-3.5"
+        className="h-12 gap-2.5 border border-[var(--glassBorder)] bg-[var(--glassBg)] hover:bg-[var(--glassBgHover)] hover:border-[var(--glassBorderHover)] text-[var(--color)] transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] focus:border-[var(--glassBorder)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] shadow-sm"
         onClick={toggleMenu}
       >
         <EquippedPlayerAvatar
           name={displayName}
-          size="icon"
+          size="sm"
           equippedAvatarId={snapshot.equippedAvatarId}
           equippedBadgeId={snapshot.equippedBadgeId}
           equippedNameColorId={snapshot.equippedNameColorId}

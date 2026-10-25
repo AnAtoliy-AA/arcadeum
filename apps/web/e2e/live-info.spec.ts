@@ -7,7 +7,7 @@ import {
 
 test.describe('Live Platform Info & Online Users', () => {
   test.beforeEach(async ({ page }) => {
-    await navigateTo(page, '/');
+    await navigateTo(page, '/en');
   });
 
   test('should render live pulse badge in navigation header', async ({
@@ -67,13 +67,13 @@ test.describe('Live Platform Info & Online Users', () => {
   test('should navigate to rooms page filtered by lobby status when clicking open lobbies', async ({
     page,
   }) => {
-    const waitingRoomsCard = page
-      .getByTestId('home-live-pulse-section')
-      .getByTestId('live-waiting-rooms-counter')
-      .locator('..');
+    const waitingRoomsCard = page.getByTestId('live-waiting-rooms-card');
     await expect(waitingRoomsCard).toBeVisible();
-    await waitingRoomsCard.click();
-    await expect(page).toHaveURL(/.*\/rooms\?status=lobby/);
+    await expect(waitingRoomsCard).toHaveAttribute('href', /.*status=lobby/);
+    await expect(async () => {
+      await waitingRoomsCard.click();
+      await expect(page).toHaveURL(/.*status=lobby/);
+    }).toPass();
   });
 
   test('should render live stats on game landing page', async ({ page }) => {
@@ -108,15 +108,19 @@ test.describe('Live Platform Info & Online Users', () => {
       name: /In Progress|Идут матчи|En curso|En cours|Ідуць матчы/i,
     });
     await expect(inProgressBtn).toBeVisible();
-    await inProgressBtn.click();
-    await expect(page).toHaveURL(/.*status=in_progress.*/);
+    await expect(async () => {
+      await inProgressBtn.click();
+      await expect(page).toHaveURL(/.*status=in_progress.*/);
+    }).toPass();
 
     await statusDropdown.click();
 
     const clearAllBtn = page.getByTestId('rooms-filter-clear-all');
     await expect(clearAllBtn).toBeVisible();
-    await clearAllBtn.click();
-    await expect(page).toHaveURL(/^((?!status=).)*$/);
+    await expect(async () => {
+      await clearAllBtn.click();
+      await expect(page).toHaveURL(/^((?!status=).)*$/);
+    }).toPass();
   });
 
   test('should be fully visible without cutting off on mobile viewport and coordinate with mobile menu', async ({

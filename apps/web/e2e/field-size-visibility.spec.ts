@@ -52,6 +52,11 @@ test.describe('Lobby Field Size Visibility', () => {
     const fieldSizeSelector = page.getByTestId('field-size-selector');
     await expect(fieldSizeSelector).toBeVisible();
 
+    const size3Btn = page.getByTestId('ttt-board-size-3');
+    await expect(size3Btn).toBeVisible();
+    const box = await size3Btn.boundingBox();
+    expect(box?.height).toBeGreaterThanOrEqual(48);
+
     const size5Btn = page.getByTestId('ttt-board-size-5');
     await expect(size5Btn).toBeVisible();
   });

@@ -443,7 +443,7 @@ export class GamesController {
     return { room };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @HttpCode(200)
   @Post('rooms/:roomId/participants') // Using POST over PATCH for easier implementation
   async reorderParticipants(
@@ -465,7 +465,7 @@ export class GamesController {
     );
     return { room };
   }
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @HttpCode(200)
   @Post('rooms/:roomId/add-bot')
   async addBotToRoom(
@@ -477,7 +477,7 @@ export class GamesController {
     const room = await this.gamesService.addBotToRoom(roomId, user.userId);
     return { room };
   }
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtOptionalAuthGuard)
   @HttpCode(200)
   @Post('rooms/:roomId/remove-bot')
   async removeBotFromRoom(

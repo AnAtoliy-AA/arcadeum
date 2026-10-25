@@ -7,7 +7,6 @@ import {
   mockRoomInfo,
   waitForRoomReady,
   checkNoBackendErrors,
-  getIsMobile,
   MOCK_OBJECT_ID,
 } from './fixtures/test-utils';
 import { routes } from '../src/shared/config/routes';
@@ -50,15 +49,14 @@ test.describe('Tutorial Overlay', () => {
     const tutorialOverlay = page.getByTestId('tutorial-overlay');
     await expect(tutorialOverlay).toBeHidden();
 
-    const isMobile = getIsMobile(page);
     const moreOptionsBtn = page.getByTestId('more-options-button');
+    const isMoreOptionsVisible = await moreOptionsBtn.isVisible();
 
-    if (isMobile) {
-      await expect(moreOptionsBtn).toBeVisible();
+    if (isMoreOptionsVisible) {
       await moreOptionsBtn.click();
     }
 
-    const showTutorialBtn = isMobile
+    const showTutorialBtn = isMoreOptionsVisible
       ? page.getByTestId('show-tutorial-button-mobile')
       : page.getByTestId('show-tutorial-button-desktop');
     await expect(showTutorialBtn).toBeVisible();
@@ -72,10 +70,11 @@ test.describe('Tutorial Overlay', () => {
     await closeBtn.click();
     await expect(tutorialOverlay).toBeHidden();
 
-    if (isMobile) {
+    if (isMoreOptionsVisible) {
       await expect(moreOptionsBtn).toBeVisible();
       await moreOptionsBtn.click();
     }
+    await expect(showTutorialBtn).toBeVisible();
     await showTutorialBtn.click();
     await expect(tutorialOverlay).toBeVisible();
 

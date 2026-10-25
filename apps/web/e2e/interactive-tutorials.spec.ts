@@ -48,15 +48,16 @@ test.describe('Interactive Tutorials & Academy', () => {
   }) => {
     await navigateTo(page, '/en/games/tic-tac-toe');
 
-    const academySection = page.getByTestId('game-academy-section');
+    const academySection = page
+      .locator('#main-content')
+      .getByTestId('game-academy-section')
+      .first();
+    await academySection.scrollIntoViewIfNeeded();
     await expect(academySection).toBeVisible();
 
-    const puzzle2Tab = page.getByRole('button', { name: 'Puzzle 2' });
+    const puzzle2Tab = academySection.getByTestId('academy-puzzle-tab-2');
     await expect(puzzle2Tab).toBeVisible();
 
-    // The academy section hydrates as its own lazy chunk, so an early click
-    // can land before React has attached the tab handlers. Retry the click
-    // until the selected challenge actually renders.
     const challenge2Title = page.getByText(
       'Academy Challenge 2: Defend the Center Trap',
     );

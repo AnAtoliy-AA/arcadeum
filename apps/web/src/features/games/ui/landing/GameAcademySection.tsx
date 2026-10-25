@@ -86,6 +86,7 @@ export function GameAcademySection({
                 <button
                   key={c.id}
                   type="button"
+                  data-testid={`academy-puzzle-tab-${i + 1}`}
                   onClick={() => setActiveChallengeIdx(i)}
                   className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
                     activeChallengeIdx === i

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.100] - 2026-10-31
+
+### Added
+- add capture and game over audio cues and multi-token depth styling (ARC-1022) (ARC-1022)
+
+
 ## [1.30.99] - 2026-10-31
 
 ### Added

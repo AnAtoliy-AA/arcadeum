@@ -181,13 +181,15 @@ test.describe('Sea Battle Opponent Confirm Placement', () => {
     await expect(page.getByText(/place your ships/i).first()).toBeVisible();
 
     const autoPlaceBtn = page
-      .getByRole('button', { name: /auto place/i })
+      .getByTestId('sea-battle-auto-place')
+      .or(page.getByRole('button', { name: /auto place/i }))
       .or(page.getByText(/auto place/i))
       .first();
     await autoPlaceBtn.dispatchEvent('click');
 
     const confirmBtn = page
-      .getByRole('button', { name: /confirm/i })
+      .getByTestId('sea-battle-confirm-placement')
+      .or(page.getByRole('button', { name: /confirm/i }))
       .or(page.getByText(/confirm/i))
       .first();
     await expect(confirmBtn).toBeEnabled();
@@ -218,6 +220,11 @@ test.describe('Sea Battle Opponent Confirm Placement', () => {
     await expect(page.getByText(/place your ships/i).first()).toBeVisible();
 
     await confirmBtn.dispatchEvent('click');
-    await expect(page.getByText(/waiting for|battle/i).first()).toBeVisible();
+    await expect(
+      page
+        .getByText(/your turn/i)
+        .first()
+        .or(page.getByTestId('game-main-area')),
+    ).toBeVisible();
   });
 });

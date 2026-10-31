@@ -117,7 +117,11 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   const renderedHeader =
     header ??
     (headerProps ? (
-      <GameHeader>
+      <GameHeader
+        className={
+          headerProps.compact ? 'gap-2 px-4 py-1 max-[800px]:px-2' : undefined
+        }
+      >
         <GameInfo>
           <VariantIconBadge>
             <span className="text-[15px]">{headerProps.variantEmoji}</span>

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.97] - 2026-10-31
+
+### Added
+- add interactive practice drills to Go and Sudoku guides (ARC-980) (ARC-980)
+
+
 ## [1.30.96] - 2026-10-31
 
 ### Added

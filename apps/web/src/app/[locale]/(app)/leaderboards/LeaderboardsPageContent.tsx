@@ -6,7 +6,6 @@ import {
   useState,
   startTransition,
 } from 'react';
-import { useRouter } from 'next/navigation';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n';
 import { useDebounce } from '@/shared/hooks/useDebounce';
@@ -18,21 +17,20 @@ import {
   ErrorState,
   HeroBackdrop,
   EventTicker,
-  MythicSpotlight,
-  RunnerUpCard,
 } from '@arcadeum/ui';
-import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { useLeaderboard } from '@/entities/leaderboard/model/useLeaderboard';
 import type {
   GameMode,
   LeaderboardPlayer,
   LeaderboardSnapshot,
   OpponentType,
-  Region,
 } from '@/entities/leaderboard/model/types';
 
 import { CupCountdown } from './_components/CupCountdown';
-import { GameModeTabs } from './_components/GameModeTabs';
+import {
+  GameModeTabs,
+  DEFAULT_LEADERBOARD_MODES,
+} from './_components/GameModeTabs';
 import { ClimbersFallersRail } from './_components/ClimbersFallersRail';
 import { SquadStrip } from './_components/SquadStrip';
 import { RegionStrip } from './_components/RegionStrip';
@@ -45,7 +43,7 @@ import {
   type Range,
 } from './_components/LeaderboardControls';
 import { FreshnessIndicator } from './_components/FreshnessIndicator';
-import { MythicBloom } from './_components/MythicBloom';
+import { TopPodiumSection } from './_components/TopPodiumSection';
 import { useLeaderboardRealtime } from './useLeaderboardRealtime';
 
 const PAGE_SIZE = 50;
@@ -53,23 +51,19 @@ const SELF_ROW_FALLBACK_HEIGHT = 88;
 const SELF_ROW_PADDING = 32;
 const HEADER_OFFSET = 80;
 
-const regionLabel = (
-  region: Region | undefined,
-  labels: Record<string, string | undefined>,
-) => (region ? (labels[region] ?? region.toUpperCase()) : undefined);
-
 interface LeaderboardsPageContentProps {
   t?: PageTranslations;
   selfId?: string;
   accessToken?: string;
+  initialData?: LeaderboardSnapshot | null;
 }
 
 export default function LeaderboardsPageContent({
   t: initialT,
   selfId,
   accessToken,
+  initialData,
 }: LeaderboardsPageContentProps) {
-  const router = useRouter();
   const { messages } = useLanguage();
   const t =
     (messages.pages?.leaderboards as unknown as PageTranslations) || initialT;
@@ -89,6 +83,14 @@ export default function LeaderboardsPageContent({
     );
   }, []);
 
+  const isDefaultView =
+    mode === 'all' &&
+    page === 1 &&
+    !debouncedSearch &&
+    scope === 'global' &&
+    range === 'week' &&
+    opponentType === 'all';
+
   const { data, isLoading, error, refetch } = useLeaderboard({
     mode,
     selfId,
@@ -99,6 +101,7 @@ export default function LeaderboardsPageContent({
     scope,
     range,
     opponentType,
+    initialData: isDefaultView ? initialData : undefined,
     onSuccess: handleLoaded,
   });
 
@@ -290,111 +293,17 @@ export default function LeaderboardsPageContent({
           />
           <CupCountdown cup={data?.cup ?? null} t={t} />
 
-          {mythic ? (
-            <div className="flex flex-row gap-4 flex-wrap items-stretch">
-              <div className="flex-[2] min-w-[360px] relative">
-                <MythicBloom />
-                <MythicSpotlight
-                  rank={mythic.rank}
-                  name={mythic.name}
-                  rating={mythic.rating}
-                  ratingDelta={mythic.ratingDelta}
-                  streak={mythic.streak}
-                  region={regionLabel(mythic.region, regionLabels)}
-                  recentForm={mythic.recentForm}
-                  portrait={
-                    <EquippedPlayerAvatar
-                      name={mythic.name}
-                      size="lg"
-                      equippedAvatarId={mythic.equippedAvatarId}
-                      equippedBadgeId={mythic.equippedBadgeId}
-                      equippedNameColorId={mythic.equippedNameColorId}
-                      equippedFrameId={mythic.equippedFrameId}
-                      equippedAuraId={mythic.equippedAuraId}
-                      equippedBannerId={mythic.equippedBannerId}
-                      role={mythic.role}
-                      fallbackAvatarUrl={mythic.avatarUrl}
-                      priority
-                    />
-                  }
-                  streakLabel={(
-                    mythicLabels.streak ?? '{count}-game streak'
-                  ).replace('{count}', String(mythic.streak))}
-                  leadLabel={(
-                    mythicLabels.leadOver ?? '+{delta} over #2'
-                  ).replace('{delta}', String(mythic.ratingDelta))}
-                  recentLabel={mythicLabels.recentLabel ?? 'Last 12 matches'}
-                  challengeLabel={mythicLabels.cta ?? 'View profile'}
-                  onChallenge={() => {
-                    router.push(`/players/${mythic.id}`);
-                  }}
-                />
-              </div>
-              {second ? (
-                <div className="flex flex-col items-stretch flex-1 min-w-[220px] gap-3">
-                  <RunnerUpCard
-                    place={2}
-                    name={second.name}
-                    rating={second.rating}
-                    wins={second.wins}
-                    winrate={second.winrate}
-                    region={regionLabel(second.region, regionLabels)}
-                    placeLabel={mythicLabels.runnerUp ?? 'Runner · Up'}
-                    onClick={() => {
-                      router.push(`/players/${encodeURIComponent(second.id)}`);
-                    }}
-                    avatar={
-                      <EquippedPlayerAvatar
-                        name={second.name}
-                        size="sm"
-                        equippedAvatarId={second.equippedAvatarId}
-                        equippedBadgeId={second.equippedBadgeId}
-                        equippedNameColorId={second.equippedNameColorId}
-                        equippedFrameId={second.equippedFrameId}
-                        equippedAuraId={second.equippedAuraId}
-                        equippedBannerId={second.equippedBannerId}
-                        role={second.role}
-                        fallbackAvatarUrl={second.avatarUrl}
-                        priority
-                      />
-                    }
-                  />
-                  {third ? (
-                    <RunnerUpCard
-                      place={3}
-                      name={third.name}
-                      rating={third.rating}
-                      wins={third.wins}
-                      winrate={third.winrate}
-                      region={regionLabel(third.region, regionLabels)}
-                      placeLabel={mythicLabels.thirdPlace ?? '3rd · Place'}
-                      onClick={() => {
-                        router.push(`/players/${encodeURIComponent(third.id)}`);
-                      }}
-                      avatar={
-                        <EquippedPlayerAvatar
-                          name={third.name}
-                          size="sm"
-                          equippedAvatarId={third.equippedAvatarId}
-                          equippedBadgeId={third.equippedBadgeId}
-                          equippedNameColorId={third.equippedNameColorId}
-                          equippedFrameId={third.equippedFrameId}
-                          equippedAuraId={third.equippedAuraId}
-                          equippedBannerId={third.equippedBannerId}
-                          role={third.role}
-                          fallbackAvatarUrl={third.avatarUrl}
-                          priority
-                        />
-                      }
-                    />
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+          <TopPodiumSection
+            mythic={mythic}
+            second={second}
+            third={third}
+            isLoading={isLoading}
+            mythicLabels={mythicLabels}
+            regionLabels={regionLabels}
+          />
 
           <GameModeTabs
-            modes={data?.modes ?? ['all']}
+            modes={data?.modes ?? DEFAULT_LEADERBOARD_MODES}
             value={mode}
             onChange={handleModeChange}
             t={t}
@@ -405,10 +314,28 @@ export default function LeaderboardsPageContent({
               fallers={data?.fallers ?? []}
               t={t}
             />
-            <SquadStrip squads={data?.squads ?? []} t={t} />
+            {data?.squads?.length ? (
+              <SquadStrip squads={data.squads} t={t} />
+            ) : isLoading ? (
+              <div className="flex flex-col items-stretch gap-3 p-4 rounded-2xl border border-[var(--borderColor)]/40 bg-[rgba(255,255,255,0.02)] flex-1 min-w-[280px] h-[220px] animate-pulse" />
+            ) : null}
           </div>
 
-          <RewardLadder rewards={data?.rewards ?? []} t={t} />
+          {data?.rewards?.length ? (
+            <RewardLadder rewards={data.rewards} t={t} />
+          ) : isLoading ? (
+            <div className="flex flex-col items-stretch gap-3">
+              <div className="w-[120px] h-[16px] rounded bg-[rgba(255,255,255,0.04)] animate-pulse" />
+              <div className="flex flex-row items-stretch gap-3 flex-wrap">
+                {Array.from({ length: 5 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-1 min-w-[150px] h-[100px] rounded-xl border border-[var(--borderColor)]/30 bg-[rgba(255,255,255,0.02)] animate-pulse"
+                  />
+                ))}
+              </div>
+            </div>
+          ) : null}
           <LeaderboardControls
             scope={scope}
             onScopeChange={handleScopeChange}

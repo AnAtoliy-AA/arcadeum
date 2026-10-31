@@ -55,23 +55,30 @@ function Column({
       <span className="text-[14px] tracking-[2px] opacity-[0.9] uppercase">
         {title}
       </span>
-      <div className="flex flex-col items-stretch gap-2">
-        {rows.map(({ player, fromRank, toRank }) => (
-          <button
-            type="button"
-            className="flex flex-row items-center justify-between gap-3 hover:bg-[rgba(255,255,255,0.04)] px-2 py-1 -mx-2 rounded-lg transition-colors text-left cursor-pointer"
-            key={player.id}
-            onClick={() => router.push(routes.playerProfile(player.id))}
-          >
-            <span
-              className="font-semibold break-words flex-1"
-              title={player.name}
-            >
-              {player.name}
-            </span>
-            <DeltaChip from={fromRank} to={toRank} />
-          </button>
-        ))}
+      <div className="flex flex-col items-stretch gap-2 min-h-[160px]">
+        {rows.length === 0
+          ? Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className="h-[28px] rounded-lg bg-[rgba(255,255,255,0.03)] animate-pulse"
+              />
+            ))
+          : rows.map(({ player, fromRank, toRank }) => (
+              <button
+                type="button"
+                className="flex flex-row items-center justify-between gap-3 hover:bg-[rgba(255,255,255,0.04)] px-2 py-1 -mx-2 rounded-lg transition-colors text-left cursor-pointer"
+                key={player.id}
+                onClick={() => router.push(routes.playerProfile(player.id))}
+              >
+                <span
+                  className="font-semibold break-words flex-1"
+                  title={player.name}
+                >
+                  {player.name}
+                </span>
+                <DeltaChip from={fromRank} to={toRank} />
+              </button>
+            ))}
       </div>
     </div>
   );

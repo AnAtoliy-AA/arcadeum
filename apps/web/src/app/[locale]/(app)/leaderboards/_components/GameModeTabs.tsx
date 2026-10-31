@@ -42,23 +42,23 @@ const FALLBACK_ICONS: Record<GameMode, string> = {
 
 type ModeMeta = { name?: string; subtitle?: string; icon?: string };
 
+export const DEFAULT_LEADERBOARD_MODES: GameMode[] = Object.keys(
+  GRADIENTS,
+) as GameMode[];
+
 export function GameModeTabs({
-  modes,
+  modes = DEFAULT_LEADERBOARD_MODES,
   value,
   onChange,
   t,
 }: {
-  /** Server-provided list of available modes (from the game catalog). */
-  modes: GameMode[];
+  modes?: GameMode[];
   value: GameMode;
   onChange: (m: GameMode) => void;
   t?: PageTranslations;
 }) {
   const modeLabels = (t?.modes ?? {}) as Record<string, ModeMeta>;
-
-  // Fall back to the active mode so a mode removed server-side doesn't
-  // leave the tab strip empty while the snapshot is loading.
-  const tabs = modes.length > 0 ? modes : [value];
+  const tabs = modes && modes.length > 0 ? modes : DEFAULT_LEADERBOARD_MODES;
 
   function handleKey(e: KeyboardEvent<HTMLDivElement>, current: GameMode) {
     const idx = tabs.indexOf(current);

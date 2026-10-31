@@ -8,6 +8,7 @@ import type { LeaderboardSnapshot } from '@/entities/leaderboard/model/types';
 
 type UseLeaderboardArgs = GetLeaderboardArgs & {
   onSuccess?: (data: LeaderboardSnapshot) => void;
+  initialData?: LeaderboardSnapshot | null;
 };
 
 export function useLeaderboard({
@@ -21,6 +22,7 @@ export function useLeaderboard({
   range,
   opponentType,
   onSuccess,
+  initialData,
 }: UseLeaderboardArgs = {}) {
   return useQuery({
     queryKey: [
@@ -46,6 +48,7 @@ export function useLeaderboard({
         range,
         opponentType,
       }),
+    initialData,
     onSuccess,
   });
 }

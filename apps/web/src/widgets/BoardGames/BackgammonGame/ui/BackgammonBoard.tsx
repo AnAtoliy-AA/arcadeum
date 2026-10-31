@@ -73,7 +73,7 @@ export function BackgammonBoard({
   const [selectedFrom, setSelectedFrom] = useState<number | 'bar' | null>(null);
 
   const isLongMode =
-    snapshot.options.mode === 'long' || snapshot.options.mode === 'gulbara';
+    snapshot.options?.mode === 'long' || snapshot.options?.mode === 'gulbara';
   const isP0 = snapshot.playerOrder[0] === currentUserId;
   const isFlipped = !isP0 && Boolean(currentUserId) && !isLongMode;
 
@@ -111,7 +111,7 @@ export function BackgammonBoard({
       snapshot.bar,
       snapshot.borneOff,
       snapshot.dice,
-      snapshot.options.mode,
+      snapshot.options?.mode,
     );
   }, [canMove, currentUserId, snapshot]);
 
@@ -238,7 +238,7 @@ export function BackgammonBoard({
         isDoubles={isDoubles}
         isFlipped={isFlipped}
         isP0={isP0}
-        mode={snapshot.options.mode}
+        mode={snapshot.options?.mode}
         myTurn={myTurn}
         p0BorneOff={p0BorneOff}
         p0Pip={p0Pip}

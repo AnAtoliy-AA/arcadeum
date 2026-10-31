@@ -11,16 +11,14 @@ import {
 import { routes } from '../src/shared/config/routes';
 
 test.describe('Backgammon Long Setup', () => {
-  test.beforeEach(async ({ page }) => {
-    await mockSession(page);
-  });
-
   test('sets up players in opposite corners for long backgammon mode', async ({
     page,
   }) => {
     const roomId = MOCK_OBJECT_ID;
     const userId = '507f191e810c19729de860ea';
     const oppId = '507f191e810c19729de860eb';
+
+    await mockSession(page);
 
     await mockRoomInfo(page, {
       room: {
@@ -111,6 +109,8 @@ test.describe('Backgammon Long Setup', () => {
     const roomId = MOCK_OBJECT_ID;
     const p1Id = '507f191e810c19729de860ea';
     const p2Id = '507f191e810c19729de860eb';
+
+    await mockSession(page, { userId: p2Id });
 
     await mockRoomInfo(page, {
       room: {

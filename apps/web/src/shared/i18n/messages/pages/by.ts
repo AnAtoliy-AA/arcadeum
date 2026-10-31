@@ -317,6 +317,26 @@ export const by = {
         subtitle: 'Настольная стратэгія',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Чарвякі',
+        subtitle: 'Узяткі і чарвякі',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Пікі',
+        subtitle: 'Казырныя ўзяткі',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Го',
+        subtitle: 'Старажытная стратэгія',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Пачысі',
+        subtitle: 'Гонка фішак',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Турнір',
@@ -353,13 +373,18 @@ export const by = {
         month: 'Месяц',
         season: 'Сезон',
       },
+      opponentTypes: {
+        all: 'Усе супернікі',
+        pvp: 'PvP (Гульцы)',
+        bot: 'Супраць ботаў (AI)',
+      },
     },
     table: {
       rank: '#',
       player: 'Гулец',
       region: 'Рэгіён',
       rating: 'Рэйтынг',
-      record: 'П–П–Н',
+      record: 'В-П-Н',
       winrate: 'Вінрэйт',
       form: 'Форма',
       trend: 'Трэнд',

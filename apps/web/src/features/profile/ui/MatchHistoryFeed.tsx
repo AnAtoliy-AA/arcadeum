@@ -60,7 +60,7 @@ export function MatchHistoryFeed({ userId, matches }: MatchHistoryFeedProps) {
           {matches.map((match) => {
             const opponents = match.participants
               .filter((p) => p.id !== userId)
-              .map((p) => p.username || 'Opponent')
+              .map((p) => p.displayName || p.username || 'Opponent')
               .join(', ');
 
             const dateStr =

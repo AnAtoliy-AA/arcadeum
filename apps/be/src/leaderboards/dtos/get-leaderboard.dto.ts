@@ -46,4 +46,9 @@ export class GetLeaderboardDto {
   @IsString()
   @MaxLength(32)
   range?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(16)
+  opponentType?: 'all' | 'pvp' | 'bot';
 }

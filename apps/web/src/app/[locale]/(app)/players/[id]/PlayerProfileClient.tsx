@@ -148,7 +148,8 @@ function Profile({
             <div className="flex flex-col items-stretch gap-1">
               <div className="flex flex-row items-center gap-2 flex-wrap">
                 <span
-                  className="text-3xl sm:text-4xl font-extrabold tracking-tight"
+                  className="text-3xl sm:text-4xl font-extrabold tracking-tight break-words"
+                  title={player.name}
                   {...(nameProps.color ? { color: nameProps.color } : {})}
                   {...(nameProps.style ? { style: nameProps.style } : {})}
                 >
@@ -201,7 +202,7 @@ function Profile({
       <PlayerGameHistory
         recentForm={player.recentForm}
         playerName={player.name}
-        modes={modeRanks.map((m) => m.mode)}
+        modes={modeRanks.map((m) => m.mode).filter((m) => m && m !== 'all')}
       />
 
       {achievementsSlot ? (

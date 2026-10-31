@@ -104,6 +104,7 @@ export class LeaderboardsCacheService {
     scope?: string;
     range?: string;
     selfUserId?: string;
+    opponentType?: string;
   }): string {
     return [
       args.mode,
@@ -113,6 +114,7 @@ export class LeaderboardsCacheService {
       args.scope ?? '',
       args.range ?? '',
       args.selfUserId ?? '',
+      args.opponentType ?? 'all',
     ].join('|');
   }
 
@@ -120,7 +122,14 @@ export class LeaderboardsCacheService {
     gameId?: string;
     limit: number;
     offset: number;
+    opponentType?: string;
   }): string {
-    return ['raw', args.gameId ?? 'all', args.limit, args.offset].join('|');
+    return [
+      'raw',
+      args.gameId ?? 'all',
+      args.limit,
+      args.offset,
+      args.opponentType ?? 'all',
+    ].join('|');
   }
 }

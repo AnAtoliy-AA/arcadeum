@@ -64,8 +64,18 @@ export class GamesHistoryFacade {
     return this.playerStats.syncRecords(userId, records);
   }
 
-  async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
-    return this.historyService.getLeaderboard(limit, offset, gameId);
+  async getLeaderboard(
+    limit?: number,
+    offset?: number,
+    gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
+  ) {
+    return this.historyService.getLeaderboard(
+      limit,
+      offset,
+      gameId,
+      opponentType,
+    );
   }
 
   async getHeadToHead(userId1: string, userId2: string, gameId?: string) {

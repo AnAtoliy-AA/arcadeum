@@ -26,4 +26,20 @@ describe('PlayerFavoriteGames', () => {
       'Critical',
     );
   });
+
+  it('renders friendly names for newer games and unmapped keys', () => {
+    render(
+      <PlayerFavoriteGames
+        modeRanks={[
+          { mode: 'pachisi_v1', rank: 1, rating: 2400 },
+          { mode: 'go_v1', rank: 2, rating: 2300 },
+        ]}
+      />,
+    );
+
+    expect(screen.getByTestId('fav-game-pachisi_v1')).toHaveTextContent(
+      'Pachisi',
+    );
+    expect(screen.getByTestId('fav-game-go_v1')).toHaveTextContent('Go');
+  });
 });

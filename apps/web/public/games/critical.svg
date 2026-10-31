@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#3b0d24"/>
+      <stop offset="100%" stop-color="#12020a"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="50%" stop-color="#fb7185"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <!-- Exploding blast rays -->
+    <path d="M0 -45 L8 -15 L38 -32 L20 -5 L48 8 L18 16 L32 45 L5 22 L-10 46 L-15 18 L-45 28 L-22 5 L-48 -10 L-18 -15 Z" fill="#fb7185" opacity="0.3"/>
+
+    <!-- Revolver cylinder / card blast -->
+    <circle cx="0" cy="0" r="32" fill="#1e1b4b" stroke="#f43f5e" stroke-width="4"/>
+    <circle cx="0" cy="-18" r="7" fill="#f43f5e"/>
+    <circle cx="16" cy="-9" r="7" fill="#fbbf24"/>
+    <circle cx="16" cy="9" r="7" fill="#fbbf24"/>
+    <circle cx="0" cy="18" r="7" fill="#fbbf24"/>
+    <circle cx="-16" cy="9" r="7" fill="#fbbf24"/>
+    <circle cx="-16" cy="-9" r="7" fill="#fbbf24"/>
+    <circle cx="0" cy="0" r="5" fill="#f8fafc"/>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="28" font-weight="900" letter-spacing="6" fill="url(#title)">CRITICAL</text>
+</svg>

@@ -1,14 +1,17 @@
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { RewardTierItem } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
-const TIER_COLORS: Record<string, string> = {
-  mythic: '#ec4899',
-  diamond: '#22d3ee',
-  platinum: '#a78bfa',
-  gold: '#facc15',
-  silver: '#94a3b8',
-  bronze: '#b45309',
+const TIER_CLASSES: Record<string, { border: string; text: string }> = {
+  mythic: { border: 'border-[#ec4899]/30', text: 'text-[#ec4899]' },
+  diamond: { border: 'border-[#22d3ee]/30', text: 'text-[#22d3ee]' },
+  platinum: { border: 'border-[#a78bfa]/30', text: 'text-[#a78bfa]' },
+  gold: { border: 'border-[#facc15]/30', text: 'text-[#facc15]' },
+  silver: { border: 'border-[#94a3b8]/30', text: 'text-[#94a3b8]' },
+  bronze: { border: 'border-[#b45309]/30', text: 'text-[#b45309]' },
 };
+
+const DEFAULT_TIER = { border: 'border-[#94a3b8]/30', text: 'text-[#94a3b8]' };
 
 export function RewardLadder({
   rewards,
@@ -29,11 +32,11 @@ export function RewardLadder({
       </span>
       <div className="flex flex-row items-stretch gap-3 flex-wrap">
         {rewards.map((r) => {
-          const color = r.color ?? TIER_COLORS[r.tier] ?? '#94a3b8';
+          const tierStyle = TIER_CLASSES[r.tier] ?? DEFAULT_TIER;
           const range =
             r.rankFrom === r.rankTo
               ? `RANK ${r.rankFrom}`
-              : `RANK ${r.rankFrom}–${r.rankTo}`;
+              : `RANK ${r.rankFrom}-${r.rankTo}`;
           const prizeText =
             rTitles[r.tier] ??
             r.rewardLabel
@@ -41,20 +44,21 @@ export function RewardLadder({
               .replace(/^./, (c) => c.toUpperCase());
           return (
             <div
-              className="flex flex-col flex-1 min-w-[150px] p-3 gap-2 rounded-xl border items-center"
-              style={{
-                borderColor: `${color}55`,
-                backgroundColor: 'rgba(255,255,255,0.02)',
-              }}
+              className={cx(
+                'flex flex-col flex-1 min-w-[150px] p-3 gap-2 rounded-xl border items-center bg-[rgba(255,255,255,0.02)]',
+                tierStyle.border,
+              )}
               key={r.tier}
               data-testid={`reward-card-${r.tier}`}
             >
-              <span className="text-[28px]" style={{ color: color as never }}>
+              <span className={cx('text-[28px]', tierStyle.text)}>
                 {r.icon ?? '★'}
               </span>
               <span
-                className="text-[12px] font-bold tracking-[2px] uppercase"
-                style={{ color: color as never }}
+                className={cx(
+                  'text-[12px] font-bold tracking-[2px] uppercase',
+                  tierStyle.text,
+                )}
               >
                 {r.tier}
               </span>

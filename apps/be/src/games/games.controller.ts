@@ -257,6 +257,7 @@ export class GamesController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
     @Query('gameId') gameId?: string,
+    @Query('opponentType') opponentType?: 'all' | 'pvp' | 'bot',
   ) {
     const limitNum = limit ? parseInt(limit, 10) : 20;
     const offsetNum = offset ? parseInt(offset, 10) : 0;
@@ -264,6 +265,7 @@ export class GamesController {
       limitNum,
       offsetNum,
       gameId || undefined,
+      opponentType,
     );
   }
 

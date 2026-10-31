@@ -3,6 +3,7 @@
 export interface HistoryParticipant {
   id: string;
   username: string;
+  displayName?: string | null;
   email: string | null;
   isHost: boolean;
   equippedAvatarId?: string | null;

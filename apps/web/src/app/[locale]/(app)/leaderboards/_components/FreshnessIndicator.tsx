@@ -1,9 +1,16 @@
-'use client';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 
 const STALE_MS = 30_000;
+
+const subscribeTick = (callback: () => void) => {
+  const id = setInterval(callback, 5_000);
+  return () => clearInterval(id);
+};
+
+const getNowSnapshot = () => Date.now();
+const getServerSnapshot = () => 0;
 
 function formatAgo(deltaMs: number, t?: PageTranslations): string {
   const tt = (t?.freshness ?? {}) as Record<string, string | undefined>;
@@ -35,14 +42,13 @@ export function FreshnessIndicator({
   pulseKey: number;
   t?: PageTranslations;
 }) {
-  const [now, setNow] = useState(() => Date.now());
+  const now = useSyncExternalStore(
+    subscribeTick,
+    getNowSnapshot,
+    getServerSnapshot,
+  );
 
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 5_000);
-    return () => clearInterval(id);
-  }, []);
-
-  if (!capturedAt) {
+  if (!capturedAt || now === 0) {
     return (
       <div
         className="flex flex-row items-center gap-2 h-5"

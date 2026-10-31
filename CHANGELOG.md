@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.95] - 2026-10-31
+
+### Improved
+- lazy load in-game chat overlay (ARC-938)
+
+
 ## [1.30.94] - 2026-10-31
 
 ### Fixed

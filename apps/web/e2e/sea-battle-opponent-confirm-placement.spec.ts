@@ -220,11 +220,6 @@ test.describe('Sea Battle Opponent Confirm Placement', () => {
     await expect(page.getByText(/place your ships/i).first()).toBeVisible();
 
     await confirmBtn.dispatchEvent('click');
-    await expect(
-      page
-        .getByText(/your turn/i)
-        .first()
-        .or(page.getByTestId('game-main-area')),
-    ).toBeVisible();
+    await expect(page.getByTestId('game-main-area')).toBeVisible();
   });
 });

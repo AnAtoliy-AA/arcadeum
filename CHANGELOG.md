@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.96] - 2026-10-31
+
+### Added
+- modularize board components, add landing animation, and auto-pass timer (ARC-1021) (ARC-1021)
+
+
 ## [1.30.95] - 2026-10-31
 
 ### Improved

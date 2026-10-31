@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.99] - 2026-10-31
+
+### Added
+- rework Cat Dash playfield (ARC-938)
+
+### Fixed
+- show Cat Dash racer cards on desktop (ARC-938)
+
+
 ## [1.30.98] - 2026-10-31
 
 ### Documentation

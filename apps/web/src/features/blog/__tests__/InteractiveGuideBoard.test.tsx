@@ -121,4 +121,75 @@ describe('InteractiveGuideBoard', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Играть сейчас')).toBeInTheDocument();
   });
+
+  it('renders and solves Go atari capture drill', () => {
+    render(
+      <InteractiveGuideBoard
+        id="drill-go-atari"
+        gameId="go"
+        title="Execute the Atari Capture"
+        prompt="Capture the surrounded White stone in atari."
+        grid={[
+          '.........',
+          '.........',
+          '.........',
+          '....B....',
+          '...BWB...',
+          '.........',
+          '.........',
+          '.........',
+          '.........',
+        ]}
+        solutionIndex={49}
+        solutionValue="B"
+        explanation="Playing at E4 removes the last remaining liberty!"
+        playHref="/games/go"
+      />,
+    );
+
+    expect(screen.getByText('Execute the Atari Capture')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^puzzle-cell-/)).toHaveLength(81);
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-49'));
+    expect(screen.getByTestId('puzzle-feedback-correct')).toBeInTheDocument();
+    expect(
+      screen.getByText('Playing at E4 removes the last remaining liberty!'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders and solves Sudoku naked single drill', () => {
+    render(
+      <InteractiveGuideBoard
+        id="drill-sudoku-naked-single"
+        gameId="sudoku"
+        title="Spot the Last Single Digit"
+        prompt="Find the single remaining cell."
+        grid={[
+          '534678912',
+          '672195348',
+          '198342567',
+          '859761423',
+          '426853791',
+          '713924856',
+          '961537284',
+          '287419635',
+          '34528617.',
+        ]}
+        solutionIndex={80}
+        solutionValue="9"
+        explanation="Placing 9 completes the constraint!"
+        playHref="/games/sudoku"
+      />,
+    );
+
+    expect(screen.getByText('Spot the Last Single Digit')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^puzzle-cell-/)).toHaveLength(81);
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-80'));
+    expect(screen.getByTestId('puzzle-feedback-correct')).toBeInTheDocument();
+    expect(
+      screen.getByText('Placing 9 completes the constraint!'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('puzzle-cell-80')).toHaveTextContent('9');
+  });
 });

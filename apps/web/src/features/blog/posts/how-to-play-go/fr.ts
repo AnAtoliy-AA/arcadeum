@@ -38,6 +38,30 @@ export const post: BlogPost = {
       type: 'paragraph',
       text: 'Les libertés sont les intersections vides adjacentes. Un groupe partage ses libertés. Zéro liberté = capturé et retiré.',
     },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-go-atari',
+      gameId: 'go',
+      title: 'Exercice pratique : Exécuter la capture en atari',
+      prompt:
+        "Aux Noirs de jouer : trouvez l'intersection critique pour capturer la pierre blanche en atari.",
+      grid: [
+        '.........',
+        '.........',
+        '.........',
+        '....B....',
+        '...BWB...',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+      ],
+      solutionIndex: 49,
+      solutionValue: 'B',
+      explanation:
+        'Jouer en E4 retire la dernière liberté de la pierre blanche et la capture du goban !',
+      playHref: '/games/go',
+    },
     { type: 'heading', level: 2, text: 'Règle du ko', id: 'ko' },
     {
       type: 'paragraph',

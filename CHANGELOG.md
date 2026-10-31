@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.93] - 2026-10-31
+
+### Fixed
+- guard options access and mock player 2 session in e2e (ARC-1005) (ARC-1005)
+- ensure opposite corners stay unflipped in long mode (ARC-1005) (ARC-1005)
+
+
 ## [1.30.92] - 2026-10-31
 
 ### Fixed

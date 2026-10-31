@@ -27,6 +27,30 @@ export const post: BlogPost = {
     },
     { type: 'heading', level: 2, text: 'Анатацыі', id: 'pencil-marks' },
     { type: 'paragraph', text: 'Пішыце кандыдатаў у кожную пустую клетку.' },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-sudoku-naked-single',
+      gameId: 'sudoku',
+      title: 'Практычная задача: Знайдзіце адзіную лічбу',
+      prompt:
+        'Знайдзіце адзіную пустую клетку ў ніжнім радку і блоку 3×3, дзе не хапае роўна адной лічбы.',
+      grid: [
+        '534678912',
+        '672195348',
+        '198342567',
+        '859761423',
+        '426853791',
+        '713924856',
+        '961537284',
+        '287419635',
+        '34528617.',
+      ],
+      solutionIndex: 80,
+      solutionValue: '9',
+      explanation:
+        'У клетцы I9 (радок 9, слупок 9) усе іншыя лічбы ад 1 да 8 ужо прысутнічаюць у яе радку, слупку і блоку. Адзіны магчымы выбар - 9!',
+      playHref: '/games/sudoku',
+    },
     { type: 'heading', level: 2, text: 'Тэхнікі', id: 'intermediate' },
     {
       type: 'list',

@@ -96,30 +96,20 @@ test.describe('Sea Battle Rules Modal', () => {
   }) => {
     await navigateTo(page, '/games/create?gameId=sea_battle_v1');
 
-    // Look for rules button on create screen
     const rulesBtn = page
-      .getByRole('button', { name: /Game Rules|📖/i })
-      .first()
-      .or(page.getByTestId('view-rules-button'));
+      .getByTestId('view-rules-button')
+      .or(page.getByRole('button', { name: /Game Rules|📖/i }))
+      .first();
     await expect(rulesBtn).toBeVisible({});
 
-    // Ensure button is stable before clicking — Mobile Chrome can race past
-    // the click handler if we tap before paint completes.
     await rulesBtn.waitFor({ state: 'visible' });
-    // dispatchEvent fires synchronously and skips the pointer-events check
-    // that flakes on slow mobile viewports.
     await rulesBtn.dispatchEvent('click');
 
-    // Check modal
     const modal = page.getByTestId('rules-modal');
     await expect(modal).toBeVisible({});
     await expect(modal).toContainText(/objective/i);
 
-    // Close using close button, with fallback for animation timing
-    const closeBtn = page.getByTestId('modal-close-button').first();
-    await closeBtn.click({ force: true });
     await closeGameRulesModal(page);
-
     await expect(modal).not.toBeVisible({});
   });
 });

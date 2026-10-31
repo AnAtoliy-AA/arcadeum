@@ -7,7 +7,6 @@ import type {
   ShipConfig,
   SeaBattlePlayerState,
   Ship,
-  CellState,
 } from '../types';
 import { CELL_STATE, getActiveShips } from '../types';
 import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
@@ -15,7 +14,8 @@ import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { useDragPlacement } from '../hooks/useDragPlacement';
 import { useMobileShipMove } from '../hooks/useMobileShipMove';
 import {
-  createEmptyBoard,
+  deriveBoard,
+  generateAutoPlacedShips,
   getCellsForPlacement,
 } from './ShipPlacement/placement-utils';
 
@@ -38,16 +38,6 @@ interface ShipPlacementBoardProps {
   shipCount?: number;
 }
 
-function deriveBoard(localShips: Ship[], boardSize: number): CellState[][] {
-  const next = createEmptyBoard(boardSize);
-  for (const ship of localShips) {
-    for (const c of ship.cells) {
-      next[c.row][c.col] = CELL_STATE.SHIP;
-    }
-  }
-  return next;
-}
-
 export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   currentPlayer,
   onPlaceShip: _onPlaceShip,
@@ -68,25 +58,22 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const theme = useSeaBattleTheme();
   const media = useMediaQuery();
   const isMobile = !media.gtMd;
-  const serverShips = useMemo(
+  const [localShips, setLocalShips] = useState<Ship[]>(
     () => currentPlayer?.ships ?? [],
-    [currentPlayer?.ships],
   );
-  const [localShips, setLocalShips] = useState<Ship[]>([]);
-  const localShipsRef = useRef<Ship[]>([]);
-  const localShipsModifiedRef = useRef(false);
-  const prevServerShipsRef = useRef(serverShips);
+  const localShipsRef = useRef<Ship[]>(localShips);
+  const hasInitializedRef = useRef((currentPlayer?.ships?.length ?? 0) > 0);
 
   useEffect(() => {
     localShipsRef.current = localShips;
   });
 
   useEffect(() => {
-    if (serverShips.length > 0) localShipsModifiedRef.current = false;
-    if (prevServerShipsRef.current === serverShips) return;
-    prevServerShipsRef.current = serverShips;
-    setLocalShips(serverShips);
-  }, [serverShips]);
+    if (!hasInitializedRef.current && (currentPlayer?.ships?.length ?? 0) > 0) {
+      hasInitializedRef.current = true;
+      setLocalShips(currentPlayer?.ships ?? []);
+    }
+  }, [currentPlayer?.ships]);
 
   const board = useMemo(
     () => deriveBoard(localShips, boardSize),
@@ -95,7 +82,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
 
   const handleMoveShip = useCallback(
     (shipId: string, cells: ShipCell[]) => {
-      localShipsModifiedRef.current = true;
+      hasInitializedRef.current = true;
       setLocalShips((prev) =>
         prev.map((s) => (s.id === shipId ? { ...s, cells } : s)),
       );
@@ -145,7 +132,7 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
         hits: 0,
         sunk: false,
       };
-      localShipsModifiedRef.current = true;
+      hasInitializedRef.current = true;
       const nextShips = [...localShipsRef.current, ship];
       setLocalShips(nextShips);
       const nextShip = activeShips.find(
@@ -352,7 +339,6 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   const handleRotate = useCallback(() => setIsVertical((p) => !p), []);
 
   const handleConfirm = useCallback(() => {
-    localShipsModifiedRef.current = false;
     const shipsData = localShipsRef.current.map((s) => ({
       shipId: s.id,
       cells: s.cells,
@@ -361,15 +347,19 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   }, [onConfirmPlacement]);
 
   const handleReset = useCallback(() => {
-    localShipsModifiedRef.current = false;
+    hasInitializedRef.current = true;
     setLocalShips([]);
     onResetPlacement();
   }, [onResetPlacement]);
 
   const handleAutoPlaceInternal = useCallback(() => {
-    localShipsModifiedRef.current = false;
+    hasInitializedRef.current = true;
+    const generated = generateAutoPlacedShips(boardSize, shipCount);
+    if (generated.length > 0) {
+      setLocalShips(generated);
+    }
     onAutoPlace?.();
-  }, [onAutoPlace]);
+  }, [boardSize, shipCount, onAutoPlace]);
 
   const isAllShipsPlaced = unplacedShips.length === 0;
   const pendingCells: ShipCell[] = [];

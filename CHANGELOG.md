@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.94] - 2026-10-31
+
+### Fixed
+- eliminate board jump by consolidating status strip (ARC-1020) (ARC-1020)
+
+
 ## [1.30.93] - 2026-10-31
 
 ### Fixed

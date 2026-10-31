@@ -8,6 +8,8 @@ interface PachisiTokenViewProps {
   onClick?: () => void;
   testId?: string;
   isButton?: boolean;
+  stackIndex?: number;
+  isBlockade?: boolean;
 }
 
 function CrownIcon(): ReactElement {
@@ -74,12 +76,19 @@ export function PachisiTokenView({
   onClick,
   testId,
   isButton = false,
+  stackIndex,
+  isBlockade = false,
 }: PachisiTokenViewProps): ReactElement {
   const normalizedSeat = ((seat % 4) + 4) % 4;
   const seatTokenClass = `pachisi-token pachisi-token-seat-${normalizedSeat}`;
+  const stackClass =
+    stackIndex !== undefined
+      ? `pachisi-token-stacked pachisi-token-layer-${Math.min(stackIndex, 3)}`
+      : '';
+  const blockadeClass = isBlockade ? 'pachisi-token-blockade' : '';
 
   const positionClass = className.includes('absolute') ? '' : 'relative';
-  const baseClasses = `${seatTokenClass} aspect-square shrink-0 overflow-hidden rounded-full flex items-center justify-center ${positionClass} ${className}`;
+  const baseClasses = `${seatTokenClass} ${stackClass} ${blockadeClass} aspect-square shrink-0 overflow-hidden rounded-full flex items-center justify-center ${positionClass} ${className}`;
 
   const innerContent = (
     <span className="pachisi-token-content pointer-events-none absolute inset-0 flex items-center justify-center">

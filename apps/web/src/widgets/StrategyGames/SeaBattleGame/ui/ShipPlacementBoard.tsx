@@ -7,7 +7,6 @@ import type {
   ShipConfig,
   SeaBattlePlayerState,
   Ship,
-  CellState,
 } from '../types';
 import { CELL_STATE, getActiveShips } from '../types';
 import { PlacementHeader, GameBoardWrapper, BoardContainer } from './styles';
@@ -15,7 +14,8 @@ import { useSeaBattleTheme } from '../lib/SeaBattleThemeContext';
 import { useDragPlacement } from '../hooks/useDragPlacement';
 import { useMobileShipMove } from '../hooks/useMobileShipMove';
 import {
-  createEmptyBoard,
+  deriveBoard,
+  areShipsEqual,
   getCellsForPlacement,
 } from './ShipPlacement/placement-utils';
 
@@ -36,16 +36,6 @@ interface ShipPlacementBoardProps {
   onAutoPlace?: () => void;
   gridSize?: number;
   shipCount?: number;
-}
-
-function deriveBoard(localShips: Ship[], boardSize: number): CellState[][] {
-  const next = createEmptyBoard(boardSize);
-  for (const ship of localShips) {
-    for (const c of ship.cells) {
-      next[c.row][c.col] = CELL_STATE.SHIP;
-    }
-  }
-  return next;
 }
 
 export const ShipPlacementBoard = memo(function ShipPlacementBoard({
@@ -72,8 +62,10 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
     () => currentPlayer?.ships ?? [],
     [currentPlayer?.ships],
   );
-  const [localShips, setLocalShips] = useState<Ship[]>([]);
-  const localShipsRef = useRef<Ship[]>([]);
+  const [localShips, setLocalShips] = useState<Ship[]>(
+    () => currentPlayer?.ships ?? [],
+  );
+  const localShipsRef = useRef<Ship[]>(localShips);
   const localShipsModifiedRef = useRef(false);
   const prevServerShipsRef = useRef(serverShips);
 
@@ -82,9 +74,9 @@ export const ShipPlacementBoard = memo(function ShipPlacementBoard({
   });
 
   useEffect(() => {
-    if (serverShips.length > 0) localShipsModifiedRef.current = false;
-    if (prevServerShipsRef.current === serverShips) return;
+    if (areShipsEqual(prevServerShipsRef.current, serverShips)) return;
     prevServerShipsRef.current = serverShips;
+    if (localShipsModifiedRef.current) return;
     setLocalShips(serverShips);
   }, [serverShips]);
 

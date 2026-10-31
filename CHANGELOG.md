@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.92] - 2026-10-31
+
+### Fixed
+- assert game-main-area visibility directly to prevent strict mode violation (ARC-1019) (ARC-1019)
+- update battle assertion and rules button selector in sea battle tests (ARC-1019) (ARC-1019)
+- make ship placement client-side draft to prevent network resets (ARC-1019) (ARC-1019)
+- prevent ship placement reset on opponent confirmation (ARC-1019) (ARC-1019)
+
+
 ## [1.30.91] - 2026-10-25
 
 ### Fixed

@@ -10,57 +10,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.30.95] - 2026-10-31
 
 ### Improved
-- lazy load in-game chat overlay (ARC-938)
 
+- lazy load in-game chat overlay (ARC-938)
 
 ## [1.30.94] - 2026-10-31
 
 ### Fixed
-- eliminate board jump by consolidating status strip (ARC-1020) (ARC-1020)
 
+- eliminate board jump by consolidating status strip (ARC-1020) (ARC-1020)
 
 ## [1.30.93] - 2026-10-31
 
 ### Fixed
+
 - guard options access and mock player 2 session in e2e (ARC-1005) (ARC-1005)
 - ensure opposite corners stay unflipped in long mode (ARC-1005) (ARC-1005)
-
 
 ## [1.30.92] - 2026-10-31
 
 ### Fixed
+
 - assert game-main-area visibility directly to prevent strict mode violation (ARC-1019) (ARC-1019)
 - update battle assertion and rules button selector in sea battle tests (ARC-1019) (ARC-1019)
 - make ship placement client-side draft to prevent network resets (ARC-1019) (ARC-1019)
 - prevent ship placement reset on opponent confirmation (ARC-1019) (ARC-1019)
 
-
 ## [1.30.91] - 2026-10-25
 
 ### Fixed
-- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
 
+- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
 
 ## [1.30.90] - 2026-10-25
 
 ### Fixed
+
 - resolve chromium live-info navigation and level-badges strict mode (ARC-1018) (ARC-1018)
 - resolve webkit e2e stability timeouts in shard 2 (ARC-1018) (ARC-1018)
-
 
 ## [1.30.89] - 2026-10-25
 
 ### Fixed
-- resolve webkit e2e test flakes for academy, matchmaking, and logout (ARC-1017) (ARC-1017)
 
+- resolve webkit e2e test flakes for academy, matchmaking, and logout (ARC-1017) (ARC-1017)
 
 ## [1.30.88] - 2026-10-25
 
 ### Added
+
 - enlarge avatar and profile menu button in header (ARC-1016) (ARC-1016)
 - enlarge profile menu avatar and button in header (ARC-1016) (ARC-1016)
 
 ### Fixed
+
 - support guest and bot ids in participant reorder dto (ARC-1016) (ARC-1016)
 - exempt loopback addresses from IP blocking guard (ARC-1016) (ARC-1016)
 - allow anonymous host to reorder participants (ARC-1016) (ARC-1016)
@@ -74,10 +76,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - seat bots in rematch room and render member avatars (ARC-1016) (ARC-1016)
 - allow cloudflare analytics in csp and prevent unauth errors (ARC-1016) (ARC-1016)
 
-
 ## [1.30.87] - 2026-10-24
 
 ### Fixed
+
 - stabilize solitaire hint engine and shop slot tile interaction (ARC-1015) (ARC-1015)
 - prevent console errors from daily-rewards and sockets during audits (ARC-1015) (ARC-1015)
 - provide descriptive link text and aria-label for Go game links (ARC-1015) (ARC-1015)
@@ -86,35 +88,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix rooms filter input hydration and mock auth/me on logout (ARC-1015) (ARC-1015)
 
 ### Improved
-- optimize image caching, hero LCP delivery, and modern JS baseline (ARC-1015) (ARC-1015)
 
+- optimize image caching, hero LCP delivery, and modern JS baseline (ARC-1015) (ARC-1015)
 
 ## [1.30.86] - 2026-10-24
 
 ### Fixed
-- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
 
+- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
 
 ## [1.30.85] - 2026-10-24
 
 ### Fixed
+
 - prevent event loop monitor exit and add scroll into view for safari (ARC-1013) (ARC-1013)
 - fix GH_REPO and issue write permissions in issue workflows (ARC-1013) (ARC-1013)
 - resolve mobile safari landing navigation and freshness pulse (ARC-1013) (ARC-1013)
 
-
 ## [1.30.84] - 2026-10-24
 
 ### Added
+
 - ensure user avatars are visible across game seats and rematch modals (ARC-1012) (ARC-1012)
 
 ### Fixed
+
 - use compact sm avatar size in lobby player list (ARC-1012) (ARC-1012)
 
 ### Improved
+
 - eliminate dynamic loading fallback shift on client page (ARC-1012) (ARC-1012)
 - prevent cumulative layout shift on ticker and freshness indicator (ARC-1012) (ARC-1012)
-
 
 ## [1.30.83] - 2026-10-23
 

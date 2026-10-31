@@ -33,6 +33,9 @@ export function PachisiTokenStack({
 }: PachisiTokenStackProps): ReactElement {
   const { t } = useTranslation();
 
+  const isBlockade =
+    tokens.length >= 2 && tokens.every((t) => t.ownerId === tokens[0].ownerId);
+
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <div className="relative flex h-full w-full items-center justify-center">
@@ -73,6 +76,8 @@ export function PachisiTokenStack({
               seat={placed.seat}
               isMovable={movableToken}
               isButton={movableToken}
+              stackIndex={tokens.length > 1 ? i : undefined}
+              isBlockade={isBlockade}
               ariaLabel={
                 movableToken
                   ? t('games.pachisi_v1.game.moveTokenAria', {
@@ -89,7 +94,23 @@ export function PachisiTokenStack({
           );
         })}
         {tokens.length > 1 && (
-          <span className="pointer-events-none absolute -top-1 -right-1 z-30 rounded-full bg-black/85 px-1 py-0.2 text-[8px] font-black text-white shadow-sm ring-1 ring-white/30">
+          <span
+            data-testid={`stack-count-${cellKey}`}
+            className={`pointer-events-none absolute -top-1 -right-1 z-30 flex items-center gap-0.5 rounded-full px-1 py-0.5 text-[8px] font-black shadow-sm ring-1 ${
+              isBlockade
+                ? 'bg-amber-950/90 text-amber-300 ring-amber-400/60'
+                : 'bg-black/85 text-white ring-white/30'
+            }`}
+          >
+            {isBlockade && (
+              <svg
+                className="h-2 w-2 text-amber-300 shrink-0"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z" />
+              </svg>
+            )}
             {tokens.length}
           </span>
         )}

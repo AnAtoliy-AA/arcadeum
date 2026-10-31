@@ -4,6 +4,7 @@ export type GameHistoryStatus =
 export interface HistoryParticipantSummary {
   id: string;
   username: string;
+  displayName?: string | null;
   email: string | null;
   isHost: boolean;
 }
@@ -67,11 +68,12 @@ export interface LeaderboardEntry {
   rank: number;
   playerId: string;
   username: string;
+  displayName?: string | null;
   totalGames: number;
   wins: number;
   losses: number;
   winRate: number;
-  /** Prestige role (premium/vip/supporter/…) for the VIP avatar treatment. */
+  countryCode?: string | null;
   role?: string | null;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
@@ -79,4 +81,6 @@ export interface LeaderboardEntry {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  recentForm?: Array<'W' | 'L' | 'D'>;
+  currentStreak?: number;
 }

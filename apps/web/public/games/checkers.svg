@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#3d1e0f"/>
+      <stop offset="100%" stop-color="#140702"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#fde047"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <!-- Red piece -->
+    <ellipse cx="-24" cy="4" rx="26" ry="16" fill="#ef4444" stroke="#991b1b" stroke-width="2"/>
+    <ellipse cx="-24" cy="-2" rx="26" ry="16" fill="#f87171" stroke="#ef4444" stroke-width="1.5"/>
+    <ellipse cx="-24" cy="-2" rx="16" ry="10" fill="none" stroke="#fca5a5" stroke-width="2"/>
+
+    <!-- Black/Dark piece crowned -->
+    <ellipse cx="24" cy="8" rx="26" ry="16" fill="#1e293b" stroke="#0f172a" stroke-width="2"/>
+    <ellipse cx="24" cy="2" rx="26" ry="16" fill="#334155" stroke="#1e293b" stroke-width="1.5"/>
+    <ellipse cx="24" cy="-4" rx="26" ry="16" fill="#475569" stroke="#334155" stroke-width="1.5"/>
+    <ellipse cx="24" cy="-4" rx="16" ry="10" fill="none" stroke="#94a3b8" stroke-width="2"/>
+    <!-- Crown icon on king -->
+    <path d="M16 -8 L19 -3 L24 -7 L29 -3 L32 -8 L31 0 H17 Z" fill="#fbbf24"/>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="26" font-weight="900" letter-spacing="4" fill="url(#title)">CHECKERS</text>
+</svg>

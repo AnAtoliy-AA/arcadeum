@@ -322,6 +322,26 @@ export const es = {
         subtitle: 'Estrategia de tablero',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Corazones',
+        subtitle: 'Juego de cartas',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Picas',
+        subtitle: 'Juego de bazas',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Go',
+        subtitle: 'Estrategia de tablero',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Pachisi',
+        subtitle: 'Carrera de fichas',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Torneo',
@@ -359,13 +379,18 @@ export const es = {
         month: 'Mes',
         season: 'Temporada',
       },
+      opponentTypes: {
+        all: 'Todos los rivales',
+        pvp: 'PvP (Jugadores)',
+        bot: 'vs Bots (IA)',
+      },
     },
     table: {
       rank: '#',
       player: 'Jugador',
       region: 'Región',
       rating: 'Puntuación',
-      record: 'V–D–E',
+      record: 'V-D-E',
       winrate: 'Ratio',
       form: 'Forma',
       trend: 'Tendencia',

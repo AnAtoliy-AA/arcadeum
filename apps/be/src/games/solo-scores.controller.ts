@@ -41,6 +41,7 @@ export class SoloScoresController {
     @Query('order') order?: 'asc' | 'desc',
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
+    @Query('usedUndo') usedUndo?: string,
   ) {
     const safeGameId = sanitizeString(gameId, 'gameId');
     const safeDifficulty = sanitizeString(difficulty, 'difficulty');
@@ -49,6 +50,8 @@ export class SoloScoresController {
     }
     const limitNum = limit ? parseInt(limit, 10) : 20;
     const offsetNum = offset ? parseInt(offset, 10) : 0;
+    const parsedUsedUndo =
+      usedUndo === 'true' ? true : usedUndo === 'false' ? false : undefined;
     return this.soloScoresService.getLeaderboard(
       safeGameId,
       safeDifficulty,
@@ -56,6 +59,7 @@ export class SoloScoresController {
       order,
       limitNum,
       offsetNum,
+      parsedUsedUndo,
     );
   }
 

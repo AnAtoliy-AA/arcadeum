@@ -15,19 +15,29 @@ const GRADIENTS: Record<GameMode, string> = {
   chess_v1: 'linear-gradient(135deg,#94a3b8,#e2e8f0)',
   checkers_v1: 'linear-gradient(135deg,#f97316,#facc15)',
   cat_dash_v1: 'linear-gradient(135deg,#fb923c,#ec4899)',
+  backgammon_v1: 'linear-gradient(135deg,#f59e0b,#ef4444)',
+  hearts_v1: 'linear-gradient(135deg,#ec4899,#f43f5e)',
+  spades_v1: 'linear-gradient(135deg,#38bdf8,#6366f1)',
+  go_v1: 'linear-gradient(135deg,#06b6d4,#10b981)',
+  pachisi_v1: 'linear-gradient(135deg,#f97316,#e11d48)',
 };
 
 const FALLBACK_ICONS: Record<GameMode, string> = {
   all: '◎',
   critical_v1: '♠',
   sea_battle_v1: '⚓',
-  texas_holdem_v1: '♠',
+  texas_holdem_v1: '♣',
   glimworm_v1: '🐍',
   tic_tac_toe_v1: '✕',
   cascade_v1: '▥',
   chess_v1: '♞',
   checkers_v1: '●',
   cat_dash_v1: '🐱',
+  backgammon_v1: '🎲',
+  hearts_v1: '♥',
+  spades_v1: '♠',
+  go_v1: '⚪',
+  pachisi_v1: '🎯',
 };
 
 type ModeMeta = { name?: string; subtitle?: string; icon?: string };

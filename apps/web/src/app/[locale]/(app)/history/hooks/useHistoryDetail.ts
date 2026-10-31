@@ -110,6 +110,7 @@ export function useHistoryDetail({
         return '';
       }
       return (
+        participant.displayName ||
         participant.username ||
         participant.email?.split('@')[0] ||
         participant.id

@@ -55,11 +55,15 @@ function SegBtn({
   );
 }
 
+import type { OpponentType } from '@/entities/leaderboard/model/types';
+
 export function LeaderboardControls({
   scope,
   onScopeChange,
   range,
   onRangeChange,
+  opponentType = 'all',
+  onOpponentTypeChange,
   search,
   onSearchChange,
   onJumpToSelf,
@@ -69,6 +73,8 @@ export function LeaderboardControls({
   onScopeChange: (s: Scope) => void;
   range: Range;
   onRangeChange: (r: Range) => void;
+  opponentType?: OpponentType;
+  onOpponentTypeChange?: (o: OpponentType) => void;
   search: string;
   onSearchChange: (s: string) => void;
   onJumpToSelf?: () => void;
@@ -76,6 +82,7 @@ export function LeaderboardControls({
 }) {
   const tt = (t?.controls ?? {}) as Record<string, string | object>;
   const ranges = (tt.ranges as Record<string, string>) ?? {};
+  const opponentTypes = (tt.opponentTypes as Record<string, string>) ?? {};
 
   return (
     <div className="flex flex-row items-center gap-3 justify-between flex-wrap">
@@ -107,6 +114,27 @@ export function LeaderboardControls({
         ))}
       </div>
       <div className="flex flex-row gap-2 flex-wrap items-center">
+        {onOpponentTypeChange ? (
+          <div className="flex flex-col items-stretch">
+            <select
+              value={opponentType}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                onOpponentTypeChange(e.target.value as OpponentType)
+              }
+              data-testid="opponent-type-select"
+              aria-label="Opponent type"
+              className="bg-[rgba(255,255,255,0.02)] text-inherit border border-[var(--borderColor)] rounded-lg px-3 py-2 text-[14px] focus:outline-none focus:ring-1 focus:ring-[var(--mythicAccent)]"
+            >
+              <option value="all">
+                {opponentTypes.all ?? 'All Opponents'}
+              </option>
+              <option value="pvp">
+                {opponentTypes.pvp ?? 'PvP (Players)'}
+              </option>
+              <option value="bot">{opponentTypes.bot ?? 'vs Bots (AI)'}</option>
+            </select>
+          </div>
+        ) : null}
         <div className="flex flex-col items-stretch">
           <select
             value={range}
@@ -115,14 +143,7 @@ export function LeaderboardControls({
             }
             data-testid="range-select"
             aria-label="Time range"
-            style={{
-              background: 'rgba(255,255,255,0.02)',
-              color: 'inherit',
-              border: '1px solid var(--borderColor)',
-              borderRadius: 8,
-              padding: '8px 12px',
-              fontSize: 14,
-            }}
+            className="bg-[rgba(255,255,255,0.02)] text-inherit border border-[var(--borderColor)] rounded-lg px-3 py-2 text-[14px] focus:outline-none focus:ring-1 focus:ring-[var(--mythicAccent)]"
           >
             {RANGES.map((r) => (
               <option key={r} value={r}>

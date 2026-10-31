@@ -107,7 +107,7 @@ export function MythicSpotlight({
               <span className="text-[14px] opacity-[0.6]">· {region}</span>
             ) : null}
           </div>
-          <span className="text-[40px] font-extrabold tracking-[-0.5px]">
+          <span className="text-[40px] font-extrabold tracking-[-0.5px] break-words" title={name}>
             {name}
           </span>
           <div className="flex flex-row flex-wrap items-center gap-3">

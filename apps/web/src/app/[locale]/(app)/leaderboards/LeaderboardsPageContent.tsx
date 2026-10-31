@@ -27,6 +27,7 @@ import type {
   GameMode,
   LeaderboardPlayer,
   LeaderboardSnapshot,
+  OpponentType,
   Region,
 } from '@/entities/leaderboard/model/types';
 
@@ -77,12 +78,11 @@ export default function LeaderboardsPageContent({
   const [accumulated, setAccumulated] = useState<LeaderboardPlayer[]>([]);
   const [scope, setScope] = useState<Scope>('global');
   const [range, setRange] = useState<Range>('week');
+  const [opponentType, setOpponentType] = useState<OpponentType>('all');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
   const [selfRowHeight, setSelfRowHeight] = useState(SELF_ROW_FALLBACK_HEIGHT);
 
-  // Bug #7: merge keyed off the snapshot's own page so we never depend on
-  // the latest React `page` state — async fetches can resolve out of order.
   const handleLoaded = useCallback((snapshot: LeaderboardSnapshot) => {
     setAccumulated((prev) =>
       snapshot.page === 1 ? snapshot.rows : [...prev, ...snapshot.rows],
@@ -98,6 +98,7 @@ export default function LeaderboardsPageContent({
     q: debouncedSearch,
     scope,
     range,
+    opponentType,
     onSuccess: handleLoaded,
   });
 
@@ -143,6 +144,10 @@ export default function LeaderboardsPageContent({
 
   function handleRangeChange(next: Range) {
     resetAndSet(setRange, next);
+  }
+
+  function handleOpponentTypeChange(next: OpponentType) {
+    resetAndSet(setOpponentType, next);
   }
 
   // Blocker #3: jump to the actual self row inside the table, not the
@@ -335,6 +340,9 @@ export default function LeaderboardsPageContent({
                     winrate={second.winrate}
                     region={regionLabel(second.region, regionLabels)}
                     placeLabel={mythicLabels.runnerUp ?? 'Runner · Up'}
+                    onClick={() => {
+                      router.push(`/players/${encodeURIComponent(second.id)}`);
+                    }}
                     avatar={
                       <EquippedPlayerAvatar
                         name={second.name}
@@ -345,6 +353,7 @@ export default function LeaderboardsPageContent({
                         equippedFrameId={second.equippedFrameId}
                         equippedAuraId={second.equippedAuraId}
                         equippedBannerId={second.equippedBannerId}
+                        role={second.role}
                         fallbackAvatarUrl={second.avatarUrl}
                         priority
                       />
@@ -359,6 +368,9 @@ export default function LeaderboardsPageContent({
                       winrate={third.winrate}
                       region={regionLabel(third.region, regionLabels)}
                       placeLabel={mythicLabels.thirdPlace ?? '3rd · Place'}
+                      onClick={() => {
+                        router.push(`/players/${encodeURIComponent(third.id)}`);
+                      }}
                       avatar={
                         <EquippedPlayerAvatar
                           name={third.name}
@@ -369,6 +381,7 @@ export default function LeaderboardsPageContent({
                           equippedFrameId={third.equippedFrameId}
                           equippedAuraId={third.equippedAuraId}
                           equippedBannerId={third.equippedBannerId}
+                          role={third.role}
                           fallbackAvatarUrl={third.avatarUrl}
                           priority
                         />
@@ -401,6 +414,8 @@ export default function LeaderboardsPageContent({
             onScopeChange={handleScopeChange}
             range={range}
             onRangeChange={handleRangeChange}
+            opponentType={opponentType}
+            onOpponentTypeChange={handleOpponentTypeChange}
             search={search}
             onSearchChange={setSearch}
             onJumpToSelf={data?.self ? jumpToSelf : undefined}

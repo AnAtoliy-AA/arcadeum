@@ -322,6 +322,26 @@ export const fr = {
         subtitle: 'Stratégie de plateau',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Cœurs',
+        subtitle: 'Jeu de levées',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Piques',
+        subtitle: 'Jeu de levées',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Go',
+        subtitle: 'Stratégie de territoire',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Pachisi',
+        subtitle: 'Course de pions',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Tournoi',
@@ -359,13 +379,18 @@ export const fr = {
         month: 'Mois',
         season: 'Saison',
       },
+      opponentTypes: {
+        all: 'Tous les adversaires',
+        pvp: 'PvP (Joueurs)',
+        bot: 'vs Bots (IA)',
+      },
     },
     table: {
       rank: '#',
       player: 'Joueur',
       region: 'Région',
       rating: 'Score',
-      record: 'V–D–N',
+      record: 'V-D-N',
       winrate: 'Ratio',
       form: 'Forme',
       trend: 'Tendance',

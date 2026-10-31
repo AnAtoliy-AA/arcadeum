@@ -19,6 +19,7 @@ export function useLeaderboard({
   q,
   scope,
   range,
+  opponentType,
   onSuccess,
 }: UseLeaderboardArgs = {}) {
   return useQuery({
@@ -31,6 +32,7 @@ export function useLeaderboard({
       q?.trim() ?? '',
       scope ?? '',
       range ?? '',
+      opponentType ?? 'all',
     ],
     queryFn: () =>
       getLeaderboard({
@@ -42,6 +44,7 @@ export function useLeaderboard({
         q,
         scope,
         range,
+        opponentType,
       }),
     onSuccess,
   });

@@ -35,7 +35,7 @@ export const CatDashMobileRaceInfo = memo(function CatDashMobileRaceInfo({
   const { t } = useTranslation();
 
   return (
-    <div className="grid grid-cols-1 items-start gap-2.5 md:grid-cols-3 lg:hidden">
+    <div className="grid grid-cols-1 items-start gap-2.5 md:grid-cols-3 lg:grid-cols-2">
       <div className="flex flex-col gap-2 rounded-3xl border border-white/10 bg-slate-900/80 p-3 shadow-xl backdrop-blur-xl md:col-span-2">
         <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
           <div className="flex items-center gap-2">

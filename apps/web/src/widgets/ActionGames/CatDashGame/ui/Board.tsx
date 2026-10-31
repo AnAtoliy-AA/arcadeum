@@ -493,7 +493,6 @@ export const CatDashBoard = memo(function CatDashBoard({
           );
         })}
       </svg>
-
       <BoardFooter snapshot={snapshot} resolveName={resolveName} />
     </div>
   );

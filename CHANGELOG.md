@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.101] - 2026-10-31
+
+### Fixed
+- fix game mode keys, player name visibility, thumbnails and form sync (ARC-1024) (ARC-1024)
+
+### Improved
+- eliminate layout shift and fix hydration in leaderboard page (ARC-1024) (ARC-1024)
+
+
 ## [1.30.100] - 2026-10-31
 
 ### Added

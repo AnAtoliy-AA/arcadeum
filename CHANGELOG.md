@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.98] - 2026-10-31
+
+### Documentation
+- sync generated-roadmap.json with Phase 14 updates (ARC-1000) (ARC-1000)
+- mark phase 14 and strategy guide drills as 100% completed (ARC-1000) (ARC-1000)
+
+
 ## [1.30.97] - 2026-10-31
 
 ### Added

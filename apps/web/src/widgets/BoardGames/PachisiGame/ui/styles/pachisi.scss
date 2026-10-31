@@ -323,6 +323,19 @@
   animation: pachisi-six-celebrate 0.4s ease-in-out;
 }
 
+@keyframes pachisi-auto-pass {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.pachisi-auto-pass-timer {
+  animation: pachisi-auto-pass 2.5s linear forwards;
+}
+
 /* ── Reduced Motion ── */
 
 @media (prefers-reduced-motion: reduce) {

@@ -130,13 +130,19 @@ export function PachisiStatusStrip({
             {onPassTurn && (
               <button
                 aria-label={t('games.pachisi_v1.game.passTurn')}
-                className="cursor-pointer rounded border border-amber-500/40 bg-amber-950/80 px-2 py-0.5 text-[10px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95 disabled:opacity-50"
+                className="relative cursor-pointer overflow-hidden rounded border border-amber-500/40 bg-amber-950/80 px-2 py-0.5 text-[10px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95 disabled:opacity-50"
                 data-testid="pachisi-pass-button"
                 disabled={actionBusy}
                 onClick={onPassTurn}
                 type="button"
               >
-                {t('games.pachisi_v1.game.passTurn')}
+                <span
+                  className="pachisi-auto-pass-timer pointer-events-none absolute inset-0 bg-amber-400/20"
+                  onAnimationEnd={onPassTurn}
+                />
+                <span className="relative z-10">
+                  {t('games.pachisi_v1.game.passTurn')}
+                </span>
               </button>
             )}
           </div>

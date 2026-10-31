@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from '@/shared/i18n/useTranslation';
-import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
-import { usePachisiKeyboardTurn } from '../hooks';
+import { usePachisiDiceState, usePachisiKeyboardTurn } from '../hooks';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
 import { boardVars } from '../lib/theme';
 import {
@@ -15,11 +13,12 @@ import {
   absoluteCell,
   movableTokenIds,
 } from '../lib/boardLayout';
-import type { PachisiClientState, PachisiToken } from '../types';
+import type { PachisiClientState } from '../types';
 import { FINISH_PROGRESS, MAIN_PATH_STEPS } from '../types';
 import { PachisiStatusStrip } from './PachisiStatusStrip';
-import { PachisiTokenView } from './PachisiTokenView';
 import { PachisiYard } from './PachisiYard';
+import { PachisiCenterHome } from './PachisiCenterHome';
+import { PachisiTokenStack, type PlacedToken } from './PachisiTokenStack';
 import { DiceOverlay } from './DiceOverlay';
 import './styles/pachisi.scss';
 
@@ -34,12 +33,6 @@ interface PachisiBoardProps {
   onMove: (tokenId: number) => void;
   onPassTurn?: () => void;
   highlightedCells?: { row: number; col: number }[];
-}
-
-interface PlacedToken {
-  ownerId: string;
-  seat: number;
-  token: PachisiToken;
 }
 
 interface LastMove {
@@ -63,50 +56,6 @@ function buildTokenPositionMap(
   return map;
 }
 
-function extractLastRoll(snapshot: PachisiClientState): {
-  die: number;
-  rollerId: string | null;
-} | null {
-  if (snapshot.die != null) {
-    return {
-      die: snapshot.die,
-      rollerId: snapshot.playerOrder[snapshot.currentTurnIndex] ?? null,
-    };
-  }
-  if (snapshot.consecutiveSixes > 0) {
-    return {
-      die: 6,
-      rollerId: snapshot.playerOrder[snapshot.currentTurnIndex] ?? null,
-    };
-  }
-  if (snapshot.lastDie != null) {
-    return {
-      die: snapshot.lastDie,
-      rollerId: snapshot.lastRollerId ?? null,
-    };
-  }
-  if (snapshot.logs && snapshot.logs.length > 0) {
-    for (let i = snapshot.logs.length - 1; i >= 0; i--) {
-      const entry = snapshot.logs[i];
-      const match = entry.message.match(/rolled\s+(?:a\s+)?(\d+)/i);
-      if (match) {
-        const val = parseInt(match[1], 10);
-        if (val >= 1 && val <= 6) {
-          return { die: val, rollerId: entry.senderId ?? null };
-        }
-      }
-    }
-  }
-  return null;
-}
-
-function hasRecentNoMoves(snapshot: PachisiClientState): boolean {
-  if (snapshot.phase === 'move') return false;
-  if (!snapshot.logs || snapshot.logs.length === 0) return false;
-  const lastEntry = snapshot.logs[snapshot.logs.length - 1];
-  return Boolean(lastEntry?.message.toLowerCase().includes('no legal moves'));
-}
-
 export function PachisiBoard({
   snapshot,
   currentUserId,
@@ -117,62 +66,20 @@ export function PachisiBoard({
   onPassTurn,
   highlightedCells = [],
 }: PachisiBoardProps) {
-  const { t } = useTranslation();
   const theme = usePachisiTheme();
   const isFullscreen = useWidgetFullscreen();
 
-  const extracted = useMemo(() => extractLastRoll(snapshot), [snapshot]);
-  const isLastRollNoMoves = useMemo(
-    () => hasRecentNoMoves(snapshot),
-    [snapshot],
-  );
-
-  const canRoll = myTurn && snapshot.phase === 'roll';
-  const canMove = myTurn && snapshot.phase === 'move';
-  const isGameOver = snapshot.phase === 'game_over';
-  const isRolling =
-    actionBusy && snapshot.phase === 'roll' && snapshot.die == null;
-  const isExtraRoll = canRoll && snapshot.consecutiveSixes > 0;
-
-  const [lastDie, setLastDie] = useState<number | null>(
-    isExtraRoll
-      ? 6
-      : (snapshot.die ?? snapshot.lastDie ?? extracted?.die ?? null),
-  );
-  if (isExtraRoll && lastDie !== 6) {
-    setLastDie(6);
-  } else if (
-    (snapshot.die != null && snapshot.die !== lastDie) ||
-    (extracted?.die != null && extracted.die !== lastDie)
-  ) {
-    setLastDie(snapshot.die ?? extracted?.die ?? null);
-  }
-
-  const isMyRoll =
-    isExtraRoll ||
-    (myTurn && snapshot.die != null) ||
-    (extracted?.rollerId != null && extracted.rollerId === currentUserId);
-
-  const [myLastDie, setMyLastDie] = useState<number | null>(
-    isExtraRoll
-      ? 6
-      : isMyRoll && (snapshot.die ?? extracted?.die) != null
-        ? (snapshot.die ?? extracted?.die ?? null)
-        : null,
-  );
-  if (isExtraRoll && myLastDie !== 6) {
-    setMyLastDie(6);
-  } else if (
-    isMyRoll &&
-    (snapshot.die ?? extracted?.die) != null &&
-    (snapshot.die ?? extracted?.die) !== myLastDie
-  ) {
-    setMyLastDie(snapshot.die ?? extracted?.die ?? null);
-  }
-
-  const effectiveLastDie = isExtraRoll
-    ? 6
-    : (myLastDie ?? lastDie ?? extracted?.die ?? null);
+  const {
+    extracted,
+    isLastRollNoMoves,
+    canRoll,
+    canMove,
+    isGameOver,
+    isRolling,
+    isExtraRoll,
+    myLastDie,
+    effectiveLastDie,
+  } = usePachisiDiceState(snapshot, currentUserId, myTurn, actionBusy);
 
   const mySeat = currentUserId ? snapshot.seats[currentUserId] : undefined;
   const boardRotation = mySeat != null ? (BOARD_ROTATIONS[mySeat] ?? 0) : 0;
@@ -275,77 +182,8 @@ export function PachisiBoard({
   const seatOf = (playerId: string): number => snapshot.seats[playerId] ?? 0;
   const playerAtSeat = (seat: number): string | null =>
     snapshot.playerOrder.find((pid) => snapshot.seats[pid] === seat) ?? null;
-  const isMovableToken = (placed: PlacedToken): boolean =>
-    canMove && placed.ownerId === currentUserId && movable.has(placed.token.id);
   const activeSeat =
     myTurn && currentUserId ? snapshot.seats[currentUserId] : undefined;
-
-  const renderPlacedToken = (
-    placed: PlacedToken,
-    i: number,
-    stackSize: number,
-    cellKey: string,
-  ) => {
-    const movableToken = isMovableToken(placed);
-    let layoutClass = 'aspect-square h-[74%] w-[74%] shrink-0';
-    if (stackSize === 2) {
-      layoutClass =
-        i === 0
-          ? 'aspect-square h-[60%] w-[60%] shrink-0 -translate-x-1.5 -translate-y-1.5'
-          : 'aspect-square h-[60%] w-[60%] shrink-0 translate-x-1.5 translate-y-1.5';
-    } else if (stackSize >= 3) {
-      const offsets = [
-        '-translate-x-1.5 -translate-y-1.5',
-        'translate-x-1.5 -translate-y-1.5',
-        '-translate-x-1.5 translate-y-1.5',
-        'translate-x-1.5 translate-y-1.5',
-      ];
-      layoutClass = `aspect-square h-[48%] w-[48%] shrink-0 ${offsets[i % 4]}`;
-    }
-
-    const zIndexClass = movableToken ? 'z-30' : i === 0 ? 'z-10' : 'z-20';
-    const testId = cellKey.startsWith('lane-')
-      ? stackSize === 1 || i === 0
-        ? cellKey
-        : `${cellKey}-${placed.token.id}`
-      : `token-cell-${cellKey}-${placed.token.id}`;
-
-    return (
-      <PachisiTokenView
-        key={`${placed.ownerId}-${placed.token.id}`}
-        seat={placed.seat}
-        isMovable={movableToken}
-        isButton={movableToken}
-        ariaLabel={
-          movableToken
-            ? t('games.pachisi_v1.game.moveTokenAria', {
-                id: placed.token.id,
-              })
-            : undefined
-        }
-        onClick={movableToken ? () => onMove(placed.token.id) : undefined}
-        testId={testId}
-        className={`pointer-events-auto absolute ${layoutClass} ${zIndexClass} ${
-          movableToken ? BOARD_CELL_FOCUS_CLASS : ''
-        }`}
-      />
-    );
-  };
-
-  const renderTokenStack = (tokens: PlacedToken[], cellKey: string) => (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-      <div className="relative flex h-full w-full items-center justify-center">
-        {tokens.map((placed, i) =>
-          renderPlacedToken(placed, i, tokens.length, cellKey),
-        )}
-        {tokens.length > 1 && (
-          <span className="pointer-events-none absolute -top-1 -right-1 z-30 rounded-full bg-black/85 px-1 py-0.2 text-[8px] font-black text-white shadow-sm ring-1 ring-white/30">
-            {tokens.length}
-          </span>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div
@@ -398,12 +236,13 @@ export function PachisiBoard({
           const occupants = trackTokens.get(idx) ?? [];
           const cellClass =
             startSeat >= 0 ? `pachisi-cell-seat-${startSeat}` : 'pachisi-cell';
-          const highlightClass =
-            lastMove?.fromCell === idx || lastMove?.toCell === idx
-              ? 'pachisi-cell-highlight'
-              : highlightedTrackCells.has(idx)
-                ? 'ring-2 ring-indigo-400/80 bg-indigo-500/20 animate-pulse'
-                : '';
+          const isHighlight =
+            lastMove?.fromCell === idx || lastMove?.toCell === idx;
+          const highlightClass = isHighlight
+            ? 'pachisi-cell-highlight'
+            : highlightedTrackCells.has(idx)
+              ? 'ring-2 ring-indigo-400/80 bg-indigo-500/20 animate-pulse'
+              : '';
           return (
             <div
               key={`track-${idx}`}
@@ -415,7 +254,17 @@ export function PachisiBoard({
                   ★
                 </span>
               )}
-              {occupants.length > 0 && renderTokenStack(occupants, `${idx}`)}
+              {occupants.length > 0 && (
+                <PachisiTokenStack
+                  cellKey={`${idx}`}
+                  currentUserId={currentUserId}
+                  canMove={canMove}
+                  movable={movable}
+                  onMove={onMove}
+                  tokens={occupants}
+                  isLandingCell={lastMove?.toCell === idx}
+                />
+              )}
             </div>
           );
         })}
@@ -434,37 +283,26 @@ export function PachisiBoard({
                 className={`pachisi-lane-seat-${seat} pachisi-row-${row + 1} pachisi-col-${col + 1} relative m-[10%] rounded-md border`}
                 data-testid={`lane-cell-${seat}-${laneIdx}`}
               >
-                {occupants.length > 0 &&
-                  renderTokenStack(occupants, `lane-token-${seat}-${laneIdx}`)}
+                {occupants.length > 0 && (
+                  <PachisiTokenStack
+                    cellKey={`lane-token-${seat}-${laneIdx}`}
+                    currentUserId={currentUserId}
+                    canMove={canMove}
+                    movable={movable}
+                    onMove={onMove}
+                    tokens={occupants}
+                  />
+                )}
               </div>
             );
           }),
         )}
 
-        <div className="pachisi-center-home pachisi-center-home-area relative z-10 m-[6%] flex items-center justify-center rounded-lg border shadow-inner">
-          <div className="pachisi-center-home-content relative h-full w-full">
-            {snapshot.playerOrder.map((pid) => {
-              const seat = seatOf(pid);
-              const finished = finishedCounts.get(pid) ?? 0;
-              const posClass =
-                seat === 0
-                  ? 'left-1 top-1/2 -translate-y-1/2'
-                  : seat === 1
-                    ? 'top-1 left-1/2 -translate-x-1/2'
-                    : seat === 2
-                      ? 'right-1 top-1/2 -translate-y-1/2'
-                      : 'bottom-1 left-1/2 -translate-x-1/2';
-              return (
-                <span
-                  key={`home-count-${pid}`}
-                  className={`pachisi-score-pill-seat-${seat} absolute ${posClass} flex items-center gap-0.5 rounded-full px-1 text-[9px] font-black text-white shadow-sm`}
-                >
-                  ● {finished}
-                </span>
-              );
-            })}
-          </div>
-        </div>
+        <PachisiCenterHome
+          finishedCounts={finishedCounts}
+          seatOf={seatOf}
+          snapshot={snapshot}
+        />
 
         <DiceOverlay
           actionBusy={actionBusy}

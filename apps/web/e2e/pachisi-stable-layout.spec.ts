@@ -114,4 +114,100 @@ test.describe('Pachisi Layout Stability', () => {
     await expect(statusLastRoll).toBeVisible();
     await expect(statusLastRoll).toContainText('4');
   });
+
+  test('displays auto-pass button and timer indicator when player has no legal moves', async ({
+    page,
+  }) => {
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
+    const oppId = '507f191e810c19729de860eb';
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Pachisi No Moves Room',
+        gameId: 'pachisi_v1',
+        gameOptions: {
+          variant: 'adventure',
+          theme: 'adventure',
+          mode: 'standard',
+        },
+        status: 'active',
+        playerCount: 2,
+      },
+    });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'pachisi_v1',
+      roomJoinedPayload: {
+        status: 'active',
+        gameOptions: {
+          variant: 'adventure',
+          theme: 'adventure',
+          mode: 'standard',
+        },
+        session: {
+          id: 'sess-pachisi-no-moves',
+          status: 'active',
+          state: {
+            phase: 'move',
+            options: {
+              theme: 'adventure',
+              variant: 'adventure',
+              mode: 'standard',
+            },
+            seats: { [userId]: 0, [oppId]: 2 },
+            tokens: {
+              [userId]: [
+                { id: 0, progress: -1 },
+                { id: 1, progress: -1 },
+                { id: 2, progress: -1 },
+                { id: 3, progress: -1 },
+              ],
+              [oppId]: [
+                { id: 0, progress: -1 },
+                { id: 1, progress: -1 },
+                { id: 2, progress: -1 },
+                { id: 3, progress: -1 },
+              ],
+            },
+            die: 3,
+            consecutiveSixes: 0,
+            currentTurnIndex: 0,
+            playerOrder: [userId, oppId],
+            players: [
+              {
+                playerId: userId,
+                seat: 0,
+                color: 'red',
+                alive: true,
+              },
+              {
+                playerId: oppId,
+                seat: 2,
+                color: 'yellow',
+                alive: true,
+              },
+            ],
+            winnerId: null,
+            winnerIds: [],
+            isDraw: false,
+            logs: [],
+          },
+        },
+      },
+    });
+
+    await navigateTo(page, routes.gameRoom(roomId));
+    await waitForRoomReady(page);
+
+    const noMovesBanner = page.getByTestId('pachisi-no-moves');
+    await expect(noMovesBanner).toBeVisible();
+
+    const passButton = page.getByTestId('pachisi-pass-button');
+    await expect(passButton).toBeVisible();
+
+    const autoPassTimer = passButton.locator('.pachisi-auto-pass-timer');
+    await expect(autoPassTimer).toBeAttached();
+  });
 });

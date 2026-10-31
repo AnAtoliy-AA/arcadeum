@@ -3,6 +3,7 @@ import {
   createEmptyBoard,
   deriveBoard,
   areShipsEqual,
+  generateAutoPlacedShips,
   getCellsForPlacement,
 } from './placement-utils';
 import { CELL_STATE } from '../../types';
@@ -109,5 +110,19 @@ describe('placement-utils', () => {
 
     const outOfBounds = getCellsForPlacement(9, 9, 3, false, 10);
     expect(outOfBounds).toBeNull();
+  });
+
+  it('generates auto placed ships fitting grid size', () => {
+    const ships = generateAutoPlacedShips(10, 5);
+    expect(ships.length).toBeGreaterThan(0);
+    for (const ship of ships) {
+      expect(ship.cells.length).toBe(ship.size);
+      for (const cell of ship.cells) {
+        expect(cell.row).toBeGreaterThanOrEqual(0);
+        expect(cell.row).toBeLessThan(10);
+        expect(cell.col).toBeGreaterThanOrEqual(0);
+        expect(cell.col).toBeLessThan(10);
+      }
+    }
   });
 });

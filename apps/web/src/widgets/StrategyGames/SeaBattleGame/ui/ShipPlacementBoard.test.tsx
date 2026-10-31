@@ -207,4 +207,39 @@ describe('ShipPlacementBoard', () => {
       },
     ]);
   });
+
+  it('places all ships instantly on auto-place click without waiting for server', () => {
+    const onConfirmPlacement = vi.fn();
+    const onAutoPlace = vi.fn();
+
+    render(
+      <SeaBattleThemeProvider>
+        <ShipPlacementBoard
+          currentPlayer={mockEmptyPlayer}
+          onPlaceShip={vi.fn()}
+          onMoveShip={vi.fn()}
+          onConfirmPlacement={onConfirmPlacement}
+          onResetPlacement={vi.fn()}
+          onAutoPlace={onAutoPlace}
+          isPlacementComplete={false}
+          gridSize={10}
+          shipCount={2}
+        />
+      </SeaBattleThemeProvider>,
+    );
+
+    const autoPlaceButton = screen.getByRole('button', {
+      name: /games.sea_battle_v1.table.actions.autoPlace/i,
+    });
+    fireEvent.click(autoPlaceButton);
+    expect(onAutoPlace).toHaveBeenCalledTimes(1);
+
+    const confirmButton = screen.getByRole('button', {
+      name: /games.sea_battle_v1.table.actions.confirmPlacement/i,
+    });
+    expect(confirmButton).not.toBeDisabled();
+    fireEvent.click(confirmButton);
+    expect(onConfirmPlacement).toHaveBeenCalledTimes(1);
+    expect(onConfirmPlacement.mock.calls[0][0]).toHaveLength(2);
+  });
 });

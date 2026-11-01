@@ -95,4 +95,15 @@ describe('ArcadePetSocialStage', () => {
     ).toBeInTheDocument();
     expect(screen.getByText("BobMaster's Pet")).toBeInTheDocument();
   });
+
+  it('renders home booth and hides roaming pet when pet is at home', () => {
+    useArcadePetStore.setState({ isAtHome: true });
+    render(<ArcadePetSocialStage onOpenCare={onOpenCare} />);
+
+    expect(screen.getByTestId('arcade-pet-home-booth')).toBeInTheDocument();
+    expect(screen.getByTestId('arcade-pet-inside-house')).toBeInTheDocument();
+    expect(
+      screen.queryByTestId('arcade-pet-local-screen-pet'),
+    ).not.toBeInTheDocument();
+  });
 });

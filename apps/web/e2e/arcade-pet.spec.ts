@@ -19,10 +19,10 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     const btnA = page.getByTestId('arcade-pet-btn-a');
     await btnA.click();
-    await expect(page.getByText('Snack')).toBeVisible();
+    await expect(page.getByText('🍰')).toBeVisible();
 
     await btnA.click();
-    await expect(page.getByText('Play')).toBeVisible();
+    await expect(page.getByText('🎮')).toBeVisible();
   });
 
   test('should hatch egg when pressing Hatch button B', async ({ page }) => {
@@ -62,7 +62,9 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(page.getByTestId('arcade-pet-adoption-modal')).toBeVisible();
     await expect(page.getByTestId('adopt-random-btn')).toBeVisible();
 
-    const closeBtn = page.getByRole('button', { name: 'Close' });
+    const closeBtn = page
+      .getByTestId('arcade-pet-adoption-modal')
+      .getByRole('button', { name: 'Close', exact: true });
     await closeBtn.click();
     await expect(page.getByTestId('arcade-pet-adoption-modal')).toBeHidden();
 
@@ -70,5 +72,23 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await openGiftsBtn.click();
     await expect(page.getByTestId('arcade-pet-gifts-modal')).toBeVisible();
     await expect(page.getByTestId('tab-received-presents')).toBeVisible();
+  });
+
+  test('should send pet to home when pressing home button and allow calling back outside', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const homeBtn = page.getByTestId('arcade-pet-home-toggle-btn');
+    await expect(homeBtn).toBeVisible();
+
+    await homeBtn.click();
+    await expect(page.getByTestId('arcade-pet-inside-house')).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-sleeping-bubble')).toBeVisible();
+
+    await homeBtn.click();
+    await expect(page.getByTestId('arcade-pet-inside-house')).toBeHidden();
+    await expect(page.getByTestId('arcade-pet-local-screen-pet')).toBeVisible();
   });
 });

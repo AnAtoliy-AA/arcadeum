@@ -24,6 +24,7 @@ interface ArcadePetStoreState {
   queuedThemeForNextPet: string | null;
   presents: PetGiftPresent[];
   isWidgetOpen: boolean;
+  isAtHome: boolean;
   activeTreat: GameTreatId | null;
   initialize: (userId?: string, theme?: string) => void;
   performAction: (action: PetActionType, treatId?: GameTreatId) => void;
@@ -54,6 +55,8 @@ interface ArcadePetStoreState {
   addGems: (amount: number) => void;
   toggleWidget: () => void;
   setWidgetOpen: (open: boolean) => void;
+  toggleHome: () => void;
+  setAtHome: (atHome: boolean) => void;
 }
 
 const STORAGE_KEY = 'arcadeum_pet_collection_v2';
@@ -129,6 +132,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   queuedThemeForNextPet: null,
   presents: [DEFAULT_WELCOME_PRESENT],
   isWidgetOpen: false,
+  isAtHome: false,
   activeTreat: null,
 
   initialize: (userId = 'local-user', theme = 'cyberpunk') => {
@@ -448,4 +452,6 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
   toggleWidget: () => set((state) => ({ isWidgetOpen: !state.isWidgetOpen })),
   setWidgetOpen: (open) => set({ isWidgetOpen: open }),
+  toggleHome: () => set((state) => ({ isAtHome: !state.isAtHome })),
+  setAtHome: (atHome) => set({ isAtHome: atHome }),
 }));

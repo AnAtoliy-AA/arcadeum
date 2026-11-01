@@ -27,10 +27,12 @@ export const ArcadePetCompanionWidget: React.FC<
     gemBalance,
     presents,
     isWidgetOpen,
+    isAtHome,
     initialize,
     performAction,
     toggleWidget,
     setWidgetOpen,
+    toggleHome,
   } = useArcadePetStore();
 
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
@@ -200,6 +202,18 @@ export const ArcadePetCompanionWidget: React.FC<
                   </button>
                 </div>
 
+                <button
+                  type="button"
+                  data-testid="companion-modal-home-btn"
+                  onClick={toggleHome}
+                  className="w-full py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1.5"
+                >
+                  <span>🏠</span>
+                  <span>
+                    {isAtHome ? 'Call Pet Outside' : 'Send Pet to Home'}
+                  </span>
+                </button>
+
                 <Link
                   href={petGameHref}
                   className="w-full mt-1 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase text-center tracking-wide block"
@@ -211,23 +225,50 @@ export const ArcadePetCompanionWidget: React.FC<
           </div>
         )}
 
-        <button
-          type="button"
-          data-testid="arcade-pet-companion-trigger"
-          onClick={toggleWidget}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-indigo-500/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          aria-label="Toggle ArcadePet Companion"
-        >
-          <span className="text-lg">{speciesEmoji}</span>
-          <span className="text-xs font-bold hidden sm:inline">{pet.name}</span>
-          {unopenedCount > 0 ? (
-            <span className="px-1.5 py-0.2 rounded-full bg-pink-500 text-white text-[10px] font-bold">
-              🎁 {unopenedCount}
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            data-testid="arcade-pet-home-toggle-btn"
+            onClick={toggleHome}
+            title={isAtHome ? 'Call pet out of home' : 'Send pet to home'}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full border shadow-lg backdrop-blur-md transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 ${
+              isAtHome
+                ? 'bg-amber-950/90 border-amber-500/80 text-amber-300 focus:ring-amber-400'
+                : 'bg-neutral-900/90 hover:bg-neutral-800 border-neutral-700 hover:border-amber-400 text-neutral-300 hover:text-amber-300 focus:ring-neutral-400'
+            }`}
+            aria-label={isAtHome ? 'Call pet outside' : 'Send pet home'}
+          >
+            <span className="text-sm">🏠</span>
+            <span className="text-[11px] font-bold">
+              {isAtHome ? 'At Home' : 'Home'}
             </span>
-          ) : (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          )}
-        </button>
+          </button>
+
+          <button
+            type="button"
+            data-testid="arcade-pet-companion-trigger"
+            onClick={toggleWidget}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-indigo-500/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            aria-label="Toggle ArcadePet Companion"
+          >
+            <span className="text-lg">{speciesEmoji}</span>
+            <span className="text-xs font-bold hidden sm:inline">
+              {pet.name}
+            </span>
+            {isAtHome && (
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-[10px] text-amber-200 font-semibold">
+                💤 Home
+              </span>
+            )}
+            {unopenedCount > 0 ? (
+              <span className="px-1.5 py-0.2 rounded-full bg-pink-500 text-white text-[10px] font-bold">
+                🎁 {unopenedCount}
+              </span>
+            ) : !isAtHome ? (
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            ) : null}
+          </button>
+        </div>
       </div>
     </>
   );

@@ -5,6 +5,7 @@ import type { PetSpecies } from '@arcadeum/games-core';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { ArcadePetHomeBooth } from './ArcadePetHomeBooth';
 import styles from './arcade-pet-companion.module.scss';
 
 interface SimState {
@@ -21,6 +22,7 @@ interface SimState {
   remoteState: 'walking' | 'idle' | 'happy' | 'sleeping';
   remoteEmote: string | null;
   tick: number;
+  knockTicks: number;
 }
 
 const COL_CLASSES = [
@@ -63,6 +65,7 @@ const INITIAL_SIM: SimState = {
   remoteState: 'idle',
   remoteEmote: '👋',
   tick: 0,
+  knockTicks: 0,
 };
 
 export function ArcadePetSocialStage({
@@ -71,6 +74,9 @@ export function ArcadePetSocialStage({
   onOpenCare: () => void;
 }) {
   const localPet = useArcadePetStore((s) => s.pet);
+  const isAtHome = useArcadePetStore((s) => s.isAtHome);
+  const setAtHome = useArcadePetStore((s) => s.setAtHome);
+  const toggleHome = useArcadePetStore((s) => s.toggleHome);
   const room = useGameStore((s) => s.room);
   const members = useMemo(() => room?.members ?? [], [room?.members]);
 
@@ -88,6 +94,55 @@ export function ArcadePetSocialStage({
     const timer = setInterval(() => {
       setSim((prev) => {
         const nextTick = prev.tick + 1;
+
+        if (isAtHome) {
+          const atDoor = prev.remoteCol === 7 && prev.remoteRow === 1;
+          if (atDoor) {
+            const nextKnock = prev.knockTicks + 1;
+            if (nextKnock >= 2) {
+              setAtHome(false);
+              return {
+                ...prev,
+                tick: nextTick,
+                knockTicks: 0,
+                localCol: 8,
+                localRow: 1,
+                localState: 'happy',
+                localEmote: '😄',
+                remoteState: 'happy',
+                remoteEmote: '🎉',
+                targetCol: 4,
+                targetRow: 4,
+              };
+            }
+            return {
+              ...prev,
+              tick: nextTick,
+              knockTicks: nextKnock,
+              remoteDir: 'right',
+              remoteState: 'idle',
+              remoteEmote: '✊',
+            };
+          }
+
+          const stepRX = prev.remoteCol < 7 ? 1 : prev.remoteCol > 7 ? -1 : 0;
+          const stepRY = prev.remoteRow < 1 ? 1 : prev.remoteRow > 1 ? -1 : 0;
+          const nextRCol = Math.max(0, Math.min(9, prev.remoteCol + stepRX));
+          const nextRRow = Math.max(0, Math.min(7, prev.remoteRow + stepRY));
+          const nextRDir =
+            stepRX > 0 ? 'right' : stepRX < 0 ? 'left' : prev.remoteDir;
+
+          return {
+            ...prev,
+            tick: nextTick,
+            remoteCol: nextRCol,
+            remoteRow: nextRRow,
+            remoteDir: nextRDir,
+            remoteState: 'walking',
+            remoteEmote: null,
+            knockTicks: 0,
+          };
+        }
 
         if (!hasFriend) {
           const atTarget =
@@ -242,7 +297,23 @@ export function ArcadePetSocialStage({
     }, 2800);
 
     return () => clearInterval(timer);
-  }, [hasFriend, localPet]);
+  }, [hasFriend, localPet, isAtHome, setAtHome]);
+
+  const handleOpenDoor = useCallback(() => {
+    setAtHome(false);
+    setSim((prev) => ({
+      ...prev,
+      localCol: 8,
+      localRow: 1,
+      localState: 'happy',
+      localEmote: '😄',
+      remoteState: 'happy',
+      remoteEmote: '🎉',
+      targetCol: 4,
+      targetRow: 4,
+      knockTicks: 0,
+    }));
+  }, [setAtHome]);
 
   const handleLocalClick = useCallback(() => {
     setSim((prev) => ({
@@ -276,45 +347,64 @@ export function ArcadePetSocialStage({
   const remoteColClass = COL_CLASSES[sim.remoteCol] ?? styles.col5;
   const remoteRowClass = ROW_CLASSES[sim.remoteRow] ?? styles.row2;
 
+  const isKnocked = isAtHome && sim.remoteCol === 7 && sim.remoteRow === 1;
+  const knockerName = otherPlayer?.displayName
+    ? `${otherPlayer.displayName}'s Pet`
+    : 'Neighbor Pixel';
+  const hasRemotePet = hasFriend || isAtHome;
+
   return (
     <div
       className={styles.stageContainer}
       data-testid="arcade-pet-social-stage"
     >
       <div className={styles.petTrack}>
-        <div
-          data-testid="arcade-pet-local-screen-pet"
-          onClick={handleLocalClick}
-          className={`${styles.petEntity} ${localColClass} ${localRowClass}`}
-        >
-          {sim.localEmote && (
-            <div
-              className={`mb-1 px-2 py-0.5 rounded-full bg-black/85 border border-emerald-500/60 text-xs shadow-md ${styles.floatingEmote}`}
-            >
-              <span>{sim.localEmote}</span>
-            </div>
-          )}
+        <ArcadePetHomeBooth
+          isAtHome={isAtHome}
+          onToggleHome={toggleHome}
+          localPetName={localPet.name}
+          localPetSpecies={localSpecies}
+          localPetTheme={localPet.theme}
+          isKnocked={isKnocked}
+          knockerName={knockerName}
+          onOpenDoor={handleOpenDoor}
+        />
 
+        {!isAtHome && (
           <div
-            className={
-              sim.localDir === 'left'
-                ? styles.spriteDirectionLeft
-                : styles.spriteDirectionRight
-            }
+            data-testid="arcade-pet-local-screen-pet"
+            onClick={handleLocalClick}
+            className={`${styles.petEntity} ${localColClass} ${localRowClass}`}
           >
-            <ArcadePetWalkingSprite
-              species={localSpecies}
-              state={sim.localState}
-              theme={localPet.theme}
-            />
+            {sim.localEmote && (
+              <div
+                className={`mb-1 px-2 py-0.5 rounded-full bg-black/85 border border-emerald-500/60 text-xs shadow-md ${styles.floatingEmote}`}
+              >
+                <span>{sim.localEmote}</span>
+              </div>
+            )}
+
+            <div
+              className={
+                sim.localDir === 'left'
+                  ? styles.spriteDirectionLeft
+                  : styles.spriteDirectionRight
+              }
+            >
+              <ArcadePetWalkingSprite
+                species={localSpecies}
+                state={sim.localState}
+                theme={localPet.theme}
+              />
+            </div>
+
+            <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none select-none">
+              {localPet.name}
+            </span>
           </div>
+        )}
 
-          <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none select-none">
-            {localPet.name}
-          </span>
-        </div>
-
-        {hasFriend && (
+        {hasRemotePet && (
           <div
             data-testid="arcade-pet-remote-screen-pet"
             onClick={handleRemoteClick}
@@ -343,7 +433,7 @@ export function ArcadePetSocialStage({
             </div>
 
             <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-indigo-400/50 text-[10px] font-semibold text-indigo-300 pointer-events-none select-none">
-              {otherPlayer?.displayName ?? 'Friend'}&apos;s Pet
+              {otherPlayer?.displayName ?? 'Neighbor'}&apos;s Pet
             </span>
           </div>
         )}

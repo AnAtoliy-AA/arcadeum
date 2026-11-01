@@ -138,4 +138,19 @@ describe('useArcadePetStore', () => {
     useArcadePetStore.getState().toggleWidget();
     expect(useArcadePetStore.getState().isWidgetOpen).toBe(false);
   });
+
+  it('toggles pet home state', () => {
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+    useArcadePetStore.getState().toggleHome();
+    expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    useArcadePetStore.getState().toggleHome();
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+  });
+
+  it('sets pet home state directly', () => {
+    useArcadePetStore.getState().setAtHome(true);
+    expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    useArcadePetStore.getState().setAtHome(false);
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+  });
 });

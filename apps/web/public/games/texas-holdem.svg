@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#3b2b0a"/>
+      <stop offset="100%" stop-color="#120c02"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <!-- Poker chips stacked -->
+    <g transform="translate(-24, 0)">
+      <circle cx="0" cy="8" r="22" fill="#ef4444" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="0" cy="0" r="22" fill="#3b82f6" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="0" cy="-8" r="22" fill="#10b981" stroke="#f8fafc" stroke-width="2"/>
+      <circle cx="0" cy="-8" r="14" fill="none" stroke="#f8fafc" stroke-width="1.5" stroke-dasharray="4 4"/>
+    </g>
+
+    <!-- Playing cards -->
+    <g transform="translate(22, -6) rotate(10)">
+      <rect x="-18" y="-26" width="36" height="52" rx="4" fill="#f8fafc" stroke="#120c02" stroke-width="2"/>
+      <text x="0" y="8" font-size="22" text-anchor="middle" fill="#dc2626">A♥</text>
+    </g>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="26" font-weight="900" letter-spacing="4" fill="url(#title)">POKER</text>
+</svg>

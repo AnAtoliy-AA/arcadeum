@@ -22,6 +22,14 @@ vi.mock('@/features/chess/lib/puzzle-duel-socket', () => ({
   }),
 }));
 
+vi.mock('@/features/chess/lib/puzzle-api', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/features/chess/lib/puzzle-api')>();
+  return {
+    ...actual,
+    getRandomPuzzle: vi.fn().mockResolvedValue(null),
+  };
+});
+
 describe('OnlinePuzzleDuel', () => {
   it('renders online duel lobby with create and join room options', () => {
     render(<OnlinePuzzleDuel onBackToBot={vi.fn()} />);

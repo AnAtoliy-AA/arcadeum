@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#3b1d11"/>
+      <stop offset="100%" stop-color="#120703"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="50%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="paw" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <ellipse cx="0" cy="12" rx="34" ry="26" fill="url(#paw)"/>
+    <ellipse cx="-30" cy="-16" rx="13" ry="17" fill="url(#paw)" transform="rotate(-15 -30 -16)"/>
+    <ellipse cx="-11" cy="-28" rx="12" ry="18" fill="url(#paw)" transform="rotate(-5 -11 -28)"/>
+    <ellipse cx="11" cy="-28" rx="12" ry="18" fill="url(#paw)" transform="rotate(5 11 -28)"/>
+    <ellipse cx="30" cy="-16" rx="13" ry="17" fill="url(#paw)" transform="rotate(15 30 -16)"/>
+  </g>
+
+  <g transform="translate(320,165)">
+    <rect x="-18" y="-18" width="36" height="36" rx="8" fill="#f8fafc" stroke="#120703" stroke-width="2.5"/>
+    <circle cx="-9" cy="-9" r="3.5" fill="#ea580c"/>
+    <circle cx="0" cy="0" r="3.5" fill="#ea580c"/>
+    <circle cx="9" cy="9" r="3.5" fill="#ea580c"/>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="26" font-weight="900" letter-spacing="4" fill="url(#title)">CAT DASH</text>
+</svg>

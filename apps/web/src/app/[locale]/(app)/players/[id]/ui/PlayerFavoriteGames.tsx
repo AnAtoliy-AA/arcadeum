@@ -21,20 +21,77 @@ const MODE_TO_GAME_PATH: Record<
   critical_v1: { name: 'Critical', path: '/games/critical', icon: '💥' },
   sea_battle: { name: 'Sea Battle', path: '/games/sea-battle', icon: '🚢' },
   sea_battle_v1: { name: 'Sea Battle', path: '/games/sea-battle', icon: '🚢' },
+  'sea-battle': { name: 'Sea Battle', path: '/games/sea-battle', icon: '🚢' },
   checkers: { name: 'Checkers', path: '/games/checkers', icon: '⚪' },
   checkers_v1: { name: 'Checkers', path: '/games/checkers', icon: '⚪' },
   backgammon: { name: 'Backgammon', path: '/games/backgammon', icon: '🎲' },
+  backgammon_v1: { name: 'Backgammon', path: '/games/backgammon', icon: '🎲' },
   cat_dash: { name: 'Cat Dash', path: '/games/cat-dash', icon: '🐾' },
   cat_dash_v1: { name: 'Cat Dash', path: '/games/cat-dash', icon: '🐾' },
+  'cat-dash': { name: 'Cat Dash', path: '/games/cat-dash', icon: '🐾' },
   cascade: { name: 'Cascade', path: '/games/cascade', icon: '🃏' },
   cascade_v1: { name: 'Cascade', path: '/games/cascade', icon: '🃏' },
+  tic_tac_toe: { name: 'Tic-Tac-Toe', path: '/games/tic-tac-toe', icon: '❌' },
   tic_tac_toe_v1: {
     name: 'Tic-Tac-Toe',
     path: '/games/tic-tac-toe',
     icon: '❌',
   },
+  'tic-tac-toe': {
+    name: 'Tic-Tac-Toe',
+    path: '/games/tic-tac-toe',
+    icon: '❌',
+  },
+  glimworm: { name: 'Glimworm', path: '/games/glimworm', icon: '🐛' },
   glimworm_v1: { name: 'Glimworm', path: '/games/glimworm', icon: '🐛' },
+  texas_holdem: {
+    name: "Texas Hold'em Poker",
+    path: '/games/texas-holdem',
+    icon: '♣️',
+  },
+  texas_holdem_v1: {
+    name: "Texas Hold'em Poker",
+    path: '/games/texas-holdem',
+    icon: '♣️',
+  },
+  'texas-holdem': {
+    name: "Texas Hold'em Poker",
+    path: '/games/texas-holdem',
+    icon: '♣️',
+  },
+  hearts: { name: 'Hearts', path: '/games/hearts', icon: '♥️' },
+  hearts_v1: { name: 'Hearts', path: '/games/hearts', icon: '♥️' },
+  spades: { name: 'Spades', path: '/games/spades', icon: '♠️' },
+  spades_v1: { name: 'Spades', path: '/games/spades', icon: '♠️' },
+  go: { name: 'Go', path: '/games/go', icon: '⚪' },
+  go_v1: { name: 'Go', path: '/games/go', icon: '⚪' },
+  pachisi: { name: 'Pachisi', path: '/games/pachisi', icon: '🎯' },
+  pachisi_v1: { name: 'Pachisi', path: '/games/pachisi', icon: '🎯' },
+  game_2048: { name: '2048', path: '/games/2048', icon: '🔢' },
+  '2048': { name: '2048', path: '/games/2048', icon: '🔢' },
+  minesweeper: { name: 'Minesweeper', path: '/games/minesweeper', icon: '💣' },
+  minesweeper_v1: {
+    name: 'Minesweeper',
+    path: '/games/minesweeper',
+    icon: '💣',
+  },
+  solitaire: { name: 'Solitaire', path: '/games/solitaire', icon: '🎴' },
+  solitaire_v1: { name: 'Solitaire', path: '/games/solitaire', icon: '🎴' },
+  sudoku: { name: 'Sudoku', path: '/games/sudoku', icon: '🧩' },
+  sudoku_v1: { name: 'Sudoku', path: '/games/sudoku', icon: '🧩' },
 };
+
+function getFavoriteGameInfo(mode: string): {
+  name: string;
+  path: string;
+  icon: string;
+} {
+  if (MODE_TO_GAME_PATH[mode]) return MODE_TO_GAME_PATH[mode];
+  const cleaned = mode.replace(/[-_]v\d+$/i, '').replace(/[-_]/g, ' ');
+  const formatted = cleaned.replace(/\b\w/g, (c) => c.toUpperCase());
+  const slug = mode.replace(/_v\d+$/i, '').replace(/_/g, '-');
+  return { name: formatted, path: `/games/${slug}`, icon: '🎮' };
+}
 
 export function PlayerFavoriteGames({ modeRanks }: PlayerFavoriteGamesProps) {
   const filteredModes = modeRanks.filter((m) => m.mode !== 'all');
@@ -56,11 +113,7 @@ export function PlayerFavoriteGames({ modeRanks }: PlayerFavoriteGamesProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {displayModes.map((item) => {
-          const game = MODE_TO_GAME_PATH[item.mode] ?? {
-            name: item.mode,
-            path: '/games',
-            icon: '🎮',
-          };
+          const game = getFavoriteGameInfo(item.mode);
 
           return (
             <div

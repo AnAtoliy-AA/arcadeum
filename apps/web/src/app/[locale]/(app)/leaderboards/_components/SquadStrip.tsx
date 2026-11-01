@@ -1,4 +1,4 @@
-'use client';
+import { cx } from '@arcadeum/ui/utils/cx';
 import type { Squad } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useLanguage } from '@/shared/i18n';
@@ -23,23 +23,16 @@ export function SquadStrip({
       <div className="flex flex-col items-stretch gap-2">
         {squads.map((s) => (
           <div
-            className="flex flex-row items-center gap-2 justify-between"
-            style={{
-              paddingLeft: s.isYou ? 8 : 0,
-              paddingRight: s.isYou ? 8 : 0,
-              paddingTop: s.isYou ? 4 : 0,
-              paddingBottom: s.isYou ? 4 : 0,
-              borderRadius: s.isYou ? 8 : 0,
-              backgroundColor: s.isYou
-                ? 'rgba(236,72,153,0.08)'
-                : 'transparent',
-            }}
+            className={cx(
+              'flex flex-row items-center gap-2 justify-between',
+              s.isYou && 'px-2 py-1 rounded-lg bg-[rgba(236,72,153,0.08)]',
+            )}
             key={s.id}
           >
             <div className="flex flex-row items-center gap-2 flex-1">
               {s.isYou ? (
-                <div className="px-6 py-1 rounded-[999px] bg-[var(--mythicAccent)]">
-                  <span className="text-[40px] font-extrabold text-[#0f0c19]">
+                <div className="px-2 py-0.5 rounded-full bg-[var(--mythicAccent)]">
+                  <span className="text-[10px] font-extrabold text-[#0f0c19]">
                     YOU
                   </span>
                 </div>

@@ -25,9 +25,8 @@ export function StatsHeroBanner({
   currentStreakType,
 }: StatsHeroBannerProps) {
   const { t } = useTranslation();
-  const level = snapshot.level || 1;
   const xp = snapshot.xp || 0;
-  const { progress, xpInLevel, xpNeeded } = xpProgress(xp);
+  const { level, progress, xpInLevel, xpNeeded } = xpProgress(xp);
   const progressPercent = Math.min(
     100,
     Math.max(0, Math.round(progress * 100)),
@@ -56,6 +55,7 @@ export function StatsHeroBanner({
               equippedFrameId={snapshot.equippedFrameId}
               equippedAuraId={snapshot.equippedAuraId}
               equippedBannerId={snapshot.equippedBannerId}
+              level={level}
             />
           </div>
 

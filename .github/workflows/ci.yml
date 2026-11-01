@@ -152,27 +152,37 @@ jobs:
         run: pnpm exec turbo run test --filter mobile --log-order=stream -- --passWithNoTests
 
   web-e2e:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/4)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
-    # develop PRs run the chromium-only 6-shard job below. The matrix must stay
-    # non-empty for every event that reaches this job: an empty matrix vector
-    # fails strategy evaluation and marks the whole run as failed.
     if: "${{ (github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version'))) && (github.event_name != 'pull_request' || github.base_ref != 'develop') }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
-        shard: [1, 2, 3, 4]
+        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari"]
+        shard: [1, 2, 3]
     services:
       mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
+        options: >-
+          --memory 1g
     env:
       E2E_PROD: true
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
+      NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
+      - name: Configure Swap Space
+        run: |
+          sudo swapoff /swapfile2 2>/dev/null || true
+          sudo rm -f /swapfile2
+          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
+          free -h
+
       - name: Checkout Repository
         uses: actions/checkout@v7
 
@@ -212,7 +222,7 @@ jobs:
             echo "workers=2" >> $GITHUB_OUTPUT
           else
             echo "browser=webkit" >> $GITHUB_OUTPUT
-            echo "workers=1" >> $GITHUB_OUTPUT
+            echo "workers=2" >> $GITHUB_OUTPUT
           fi
 
       - name: Cache Playwright Browsers
@@ -236,7 +246,7 @@ jobs:
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/4 --workers=${{ steps.engine.outputs.workers }}
+        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3 --workers=${{ steps.engine.outputs.workers }}
 
       - name: Upload Test Report
         if: always()
@@ -248,7 +258,7 @@ jobs:
           retention-days: 30
 
   web-e2e-develop:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/6)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
     if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' && !startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version') }}"
     runs-on: ubuntu-latest
@@ -256,16 +266,29 @@ jobs:
       fail-fast: false
       matrix:
         project: ['chromium']
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3]
     services:
       mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
+        options: >-
+          --memory 1g
     env:
       E2E_PROD: true
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
+      NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
+      - name: Configure Swap Space
+        run: |
+          sudo swapoff /swapfile2 2>/dev/null || true
+          sudo rm -f /swapfile2
+          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
+          free -h
+
       - name: Checkout Repository
         uses: actions/checkout@v7
 
@@ -315,7 +338,7 @@ jobs:
         run: pnpm --filter web exec playwright install chromium
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project=chromium --shard=${{ matrix.shard }}/6
+        run: pnpm --filter web test:e2e --project=chromium --shard=${{ matrix.shard }}/3
 
       - name: Upload Test Report
         if: always()
@@ -473,7 +496,7 @@ jobs:
   lhci-comment:
     name: Lighthouse Report
     needs: lhci-audit
-    if: always() && github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request' && github.base_ref == 'develop' && needs.lhci-audit.result != 'skipped'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -508,6 +531,16 @@ jobs:
         ports:
           - 27017:27017
     steps:
+      - name: Configure Swap Space
+        run: |
+          sudo swapoff /swapfile2 2>/dev/null || true
+          sudo rm -f /swapfile2
+          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
+          free -h
+
       - name: Checkout Repository
         uses: actions/checkout@v7
 

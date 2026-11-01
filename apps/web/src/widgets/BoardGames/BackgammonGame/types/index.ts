@@ -81,7 +81,7 @@ export interface BackgammonLogEntry {
 
 export interface BackgammonClientState {
   phase: GamePhase;
-  options: BackgammonOptions;
+  options?: BackgammonOptions;
   points: BackgammonPoint[];
   bar: Record<string, number>;
   borneOff: Record<string, number>;

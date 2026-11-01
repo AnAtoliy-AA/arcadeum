@@ -97,10 +97,10 @@ test.describe('Critical Combo Modal', () => {
 
     const playButton = page
       .getByTestId('hand-rail-play')
-      .or(page.getByTestId('mobile-hand-bar-play'));
+      .or(page.getByTestId('mobile-hand-bar-play'))
+      .first();
     await expect(playButton).toBeVisible();
     await expect(playButton).toBeEnabled();
-    await playButton.scrollIntoViewIfNeeded();
     await playButton.click();
 
     const modal = page.getByTestId('combo-modal');

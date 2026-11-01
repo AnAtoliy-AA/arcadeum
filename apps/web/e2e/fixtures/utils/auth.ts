@@ -3,6 +3,7 @@ import { handleRoute } from './network';
 
 export interface MockSessionOptions {
   persistent?: boolean;
+  userId?: string;
   role?:
     | 'free'
     | 'admin'
@@ -37,7 +38,7 @@ export async function mockSession(
       Date.now() + 24 * 60 * 60 * 1000,
     ).toISOString(),
     updatedAt: new Date().toISOString(),
-    userId: MOCK_OBJECT_ID,
+    userId: options.userId ?? MOCK_OBJECT_ID,
     email: 'test@example.com',
     username: options.username ?? 'testuser',
     displayName: options.displayName ?? 'Test User',
@@ -140,7 +141,7 @@ export async function mockSession(
     }
     await handleRoute(route, {
       user: {
-        id: MOCK_OBJECT_ID,
+        id: options.userId ?? MOCK_OBJECT_ID,
         email: 'test@example.com',
         username: options.username ?? 'testuser',
         displayName: options.displayName ?? 'Test User',
@@ -168,7 +169,7 @@ export async function mockSession(
     }
     await handleRoute(route, {
       profile: {
-        userId: MOCK_OBJECT_ID,
+        userId: options.userId ?? MOCK_OBJECT_ID,
         email: snapshot.email,
         username: snapshot.username,
         displayName: snapshot.displayName,

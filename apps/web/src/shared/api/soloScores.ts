@@ -17,6 +17,7 @@ export interface SoloLeaderboardEntry {
   playerId: string;
   username: string;
   displayName: string | null;
+  role?: string | null;
   score: number;
   moves: number;
   durationMs: number;

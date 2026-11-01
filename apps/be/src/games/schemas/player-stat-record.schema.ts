@@ -17,6 +17,9 @@ export class PlayerStatRecord {
 
   @Prop({ required: true })
   timestamp!: number;
+
+  @Prop({ type: Boolean, default: false, index: true })
+  hasBots?: boolean;
 }
 
 export type PlayerStatRecordDocument = PlayerStatRecord & Document;
@@ -25,3 +28,4 @@ export const PlayerStatRecordSchema =
 
 PlayerStatRecordSchema.index({ userId: 1, sessionId: 1 }, { unique: true });
 PlayerStatRecordSchema.index({ userId: 1, gameId: 1, timestamp: -1 });
+PlayerStatRecordSchema.index({ userId: 1, hasBots: 1, timestamp: -1 });

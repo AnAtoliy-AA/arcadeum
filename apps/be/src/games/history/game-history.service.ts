@@ -361,7 +361,7 @@ export class GameHistoryService {
       isDraw,
       participants: participants.map((p) => ({
         userId: p.id,
-        displayName: p.username,
+        displayName: p.displayName?.trim() || p.username,
         isWinner: winnerIds.includes(p.id),
       })),
       ratingDeltas,
@@ -398,7 +398,12 @@ export class GameHistoryService {
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
-  ): Promise<{ id: string; invitedIds: string[] }> {
+  ): Promise<{
+    id: string;
+    invitedIds: string[];
+    pending: boolean;
+    pendingUserIds: string[];
+  }> {
     return this.rematchService.createRematchFromHistory(dto, userId);
   }
 
@@ -474,7 +479,13 @@ export class GameHistoryService {
     limit = 20,
     offset = 0,
     gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
-    return this.statsService.getLeaderboard(limit, offset, gameId);
+    return this.statsService.getLeaderboard(
+      limit,
+      offset,
+      gameId,
+      opponentType,
+    );
   }
 }

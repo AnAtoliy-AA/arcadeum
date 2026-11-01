@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.106] - 2026-11-01
+
+### Fixed
+- reduce e2e shards to 3 and skip axe audit in regular runs (ARC-1028) (ARC-1028)
+
+
 ## [1.30.105] - 2026-11-01
 
 ### Fixed

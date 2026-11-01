@@ -173,6 +173,16 @@ jobs:
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
       NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
+      - name: Configure Swap Space
+        run: |
+          sudo swapoff /swapfile2 2>/dev/null || true
+          sudo rm -f /swapfile2
+          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
+          free -h
+
       - name: Checkout Repository
         uses: actions/checkout@v7
 
@@ -269,6 +279,16 @@ jobs:
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
       NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
+      - name: Configure Swap Space
+        run: |
+          sudo swapoff /swapfile2 2>/dev/null || true
+          sudo rm -f /swapfile2
+          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
+          free -h
+
       - name: Checkout Repository
         uses: actions/checkout@v7
 
@@ -511,6 +531,16 @@ jobs:
         ports:
           - 27017:27017
     steps:
+      - name: Configure Swap Space
+        run: |
+          sudo swapoff /swapfile2 2>/dev/null || true
+          sudo rm -f /swapfile2
+          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
+          sudo chmod 600 /swapfile2
+          sudo mkswap /swapfile2
+          sudo swapon /swapfile2
+          free -h
+
       - name: Checkout Repository
         uses: actions/checkout@v7
 

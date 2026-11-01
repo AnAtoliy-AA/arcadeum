@@ -148,4 +148,16 @@ describe('ArcadePetSocialStage', () => {
       screen.queryByTestId('arcade-pet-local-screen-pet'),
     ).not.toBeInTheDocument();
   });
+
+  it('hides home booth by default when pet is roaming outside', () => {
+    useArcadePetStore.setState({ isAtHome: false });
+    render(<ArcadePetSocialStage onOpenCare={onOpenCare} />);
+
+    expect(
+      screen.queryByTestId('arcade-pet-home-booth'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByTestId('arcade-pet-local-screen-pet'),
+    ).toBeInTheDocument();
+  });
 });

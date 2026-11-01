@@ -84,7 +84,9 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     await confirmBtn.click();
     await expect(page.getByTestId('arcade-pet-commitment-modal')).toBeHidden();
-    await expect(page.getByTestId('arcade-pet-home-toggle-btn')).toBeVisible();
+    await expect(
+      page.getByTestId('arcade-pet-companion-trigger'),
+    ).toBeVisible();
   });
 
   test('should open companion widget, mounts nursery, and presents modal for owner', async ({
@@ -184,6 +186,12 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await navigateTo(page, '/en/games');
     await page.waitForLoadState('domcontentloaded');
 
+    await expect(page.getByTestId('arcade-pet-home-booth')).toBeHidden();
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+
     const homeBtn = page.getByTestId('arcade-pet-home-toggle-btn');
     await expect(homeBtn).toBeVisible();
 
@@ -193,6 +201,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     await homeBtn.click();
     await expect(page.getByTestId('arcade-pet-inside-house')).toBeHidden();
+    await expect(page.getByTestId('arcade-pet-home-booth')).toBeHidden();
     await expect(page.getByTestId('arcade-pet-local-screen-pet')).toBeVisible();
   });
 

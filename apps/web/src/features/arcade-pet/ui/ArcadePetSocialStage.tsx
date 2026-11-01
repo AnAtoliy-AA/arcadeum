@@ -95,16 +95,18 @@ export function ArcadePetSocialStage({
       data-testid="arcade-pet-social-stage"
     >
       <div className={styles.petTrack}>
-        <ArcadePetHomeBooth
-          isAtHome={isAtHome}
-          onToggleHome={toggleHome}
-          localPetName={localPet.name}
-          localPetSpecies={localSpecies}
-          localPetTheme={localPet.theme}
-          isKnocked={isKnocked}
-          knockerName={knockerName}
-          onOpenDoor={handleOpenDoor}
-        />
+        {isAtHome && (
+          <ArcadePetHomeBooth
+            isAtHome={isAtHome}
+            onToggleHome={toggleHome}
+            localPetName={localPet.name}
+            localPetSpecies={localSpecies}
+            localPetTheme={localPet.theme}
+            isKnocked={isKnocked}
+            knockerName={knockerName}
+            onOpenDoor={handleOpenDoor}
+          />
+        )}
 
         {!isAtHome && (
           <div

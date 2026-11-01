@@ -1,29 +1,22 @@
 .stageContainer {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 110px;
+  inset: 0;
   pointer-events: none;
   z-index: 35;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .petTrack {
   position: absolute;
-  bottom: 12px;
-  left: 0;
-  right: 0;
-  height: 64px;
+  inset: 0;
 }
 
 .petEntity {
   position: absolute;
-  bottom: 0;
   pointer-events: auto;
   cursor: pointer;
   user-select: none;
-  transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: left 3.2s cubic-bezier(0.25, 1, 0.5, 1), bottom 3.2s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,15 +30,21 @@
   transform: scaleX(1);
 }
 
-.slot0 { left: 6%; }
-.slot1 { left: 16%; }
-.slot2 { left: 26%; }
-.slot3 { left: 36%; }
-.slot4 { left: 46%; }
-.slot5 { left: 56%; }
-.slot6 { left: 66%; }
-.slot7 { left: 76%; }
-.slot8 { left: 86%; }
+.col0 { left: 4%; }
+.col1 { left: 16%; }
+.col2 { left: 28%; }
+.col3 { left: 40%; }
+.col4 { left: 52%; }
+.col5 { left: 64%; }
+.col6 { left: 76%; }
+.col7 { left: 88%; }
+
+.row0 { bottom: 5%; }
+.row1 { bottom: 18%; }
+.row2 { bottom: 34%; }
+.row3 { bottom: 50%; }
+.row4 { bottom: 66%; }
+.row5 { bottom: 82%; }
 
 .petWalkAnimation {
   animation: petWalkBob 0.6s ease-in-out infinite alternate;

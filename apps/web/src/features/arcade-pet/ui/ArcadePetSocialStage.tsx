@@ -8,37 +8,49 @@ import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 import styles from './arcade-pet-companion.module.scss';
 
 interface SimState {
-  localSlot: number;
+  localCol: number;
+  localRow: number;
   localDir: 'left' | 'right';
   localState: 'walking' | 'idle' | 'happy' | 'sleeping';
   localEmote: string | null;
-  remoteSlot: number;
+  remoteCol: number;
+  remoteRow: number;
   remoteDir: 'left' | 'right';
   remoteState: 'walking' | 'idle' | 'happy' | 'sleeping';
   remoteEmote: string | null;
   tick: number;
 }
 
-const SLOT_CLASSES = [
-  styles.slot0,
-  styles.slot1,
-  styles.slot2,
-  styles.slot3,
-  styles.slot4,
-  styles.slot5,
-  styles.slot6,
-  styles.slot7,
-  styles.slot8,
+const COL_CLASSES = [
+  styles.col0,
+  styles.col1,
+  styles.col2,
+  styles.col3,
+  styles.col4,
+  styles.col5,
+  styles.col6,
+  styles.col7,
+];
+
+const ROW_CLASSES = [
+  styles.row0,
+  styles.row1,
+  styles.row2,
+  styles.row3,
+  styles.row4,
+  styles.row5,
 ];
 
 const EMOTE_CYCLE = ['❤️', '😄', '✨', '🎵', '🍰', '👋'];
 
 const INITIAL_SIM: SimState = {
-  localSlot: 2,
+  localCol: 2,
+  localRow: 1,
   localDir: 'right',
   localState: 'idle',
   localEmote: '😄',
-  remoteSlot: 6,
+  remoteCol: 5,
+  remoteRow: 2,
   remoteDir: 'left',
   remoteState: 'idle',
   remoteEmote: '👋',
@@ -68,9 +80,10 @@ export function ArcadePetSocialStage({
     const timer = setInterval(() => {
       setSim((prev) => {
         const nextTick = prev.tick + 1;
+
         if (!hasFriend) {
-          const step = Math.random() > 0.45 ? 1 : 0;
-          if (step === 0) {
+          const isResting = Math.random() > 0.65;
+          if (isResting) {
             return {
               ...prev,
               tick: nextTick,
@@ -78,34 +91,47 @@ export function ArcadePetSocialStage({
               localEmote: EMOTE_CYCLE[nextTick % EMOTE_CYCLE.length] ?? '😄',
             };
           }
+
+          const colDelta =
+            Math.random() > 0.5 ? (prev.localDir === 'right' ? 1 : -1) : 0;
+          const rowDelta =
+            Math.random() > 0.6 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+
+          let nextCol = prev.localCol + colDelta;
           let nextDir = prev.localDir;
-          let nextSlot =
-            prev.localDir === 'right' ? prev.localSlot + 1 : prev.localSlot - 1;
-          if (nextSlot > 7) {
-            nextSlot = 7;
+          if (nextCol > 7) {
+            nextCol = 7;
             nextDir = 'left';
-          } else if (nextSlot < 1) {
-            nextSlot = 1;
+          } else if (nextCol < 0) {
+            nextCol = 0;
             nextDir = 'right';
           }
+
+          const nextRow = Math.max(0, Math.min(5, prev.localRow + rowDelta));
+
           return {
             ...prev,
             tick: nextTick,
-            localSlot: nextSlot,
+            localCol: nextCol,
+            localRow: nextRow,
             localDir: nextDir,
             localState: 'walking',
             localEmote: null,
           };
         }
 
-        const distance = Math.abs(prev.localSlot - prev.remoteSlot);
-        if (distance <= 1) {
-          const walkTogether = nextTick % 2 === 0 ? 1 : -1;
-          const nextL = Math.max(0, Math.min(7, prev.localSlot + walkTogether));
-          const nextR = Math.max(
-            1,
-            Math.min(8, prev.remoteSlot + walkTogether),
-          );
+        const distCol = Math.abs(prev.localCol - prev.remoteCol);
+        const distRow = Math.abs(prev.localRow - prev.remoteRow);
+
+        if (distCol <= 1 && distRow <= 1) {
+          const walkDirX = nextTick % 3 === 0 ? 1 : nextTick % 3 === 1 ? -1 : 0;
+          const walkDirY = nextTick % 2 === 0 ? 1 : -1;
+
+          const nextLCol = Math.max(0, Math.min(6, prev.localCol + walkDirX));
+          const nextRCol = Math.max(1, Math.min(7, nextLCol + 1));
+          const nextLRow = Math.max(0, Math.min(5, prev.localRow + walkDirY));
+          const nextRRow = nextLRow;
+
           return {
             ...prev,
             tick: nextTick,
@@ -113,25 +139,39 @@ export function ArcadePetSocialStage({
             remoteState: 'happy',
             localEmote: '❤️',
             remoteEmote: '😄',
-            localDir: prev.localSlot < prev.remoteSlot ? 'right' : 'left',
-            remoteDir: prev.localSlot < prev.remoteSlot ? 'left' : 'right',
-            localSlot: nextL,
-            remoteSlot: nextR,
+            localDir: prev.localCol < prev.remoteCol ? 'right' : 'left',
+            remoteDir: prev.localCol < prev.remoteCol ? 'left' : 'right',
+            localCol: nextLCol,
+            localRow: nextLRow,
+            remoteCol: nextRCol,
+            remoteRow: nextRRow,
           };
         }
 
-        const localMoveRight = prev.localSlot < prev.remoteSlot;
+        const targetColDir = prev.localCol < prev.remoteCol ? 1 : -1;
+        const targetRowDir = prev.localRow < prev.remoteRow ? 1 : -1;
+
+        const nextLCol = Math.max(0, Math.min(7, prev.localCol + targetColDir));
+        const nextLRow = Math.max(0, Math.min(5, prev.localRow + targetRowDir));
+
+        const nextRCol = Math.max(
+          0,
+          Math.min(7, prev.remoteCol - targetColDir),
+        );
+        const nextRRow = Math.max(
+          0,
+          Math.min(5, prev.remoteRow - targetRowDir),
+        );
+
         return {
           ...prev,
           tick: nextTick,
-          localSlot: localMoveRight
-            ? Math.min(prev.localSlot + 1, 7)
-            : Math.max(prev.localSlot - 1, 1),
-          localDir: localMoveRight ? 'right' : 'left',
-          remoteSlot: localMoveRight
-            ? Math.max(prev.remoteSlot - 1, 1)
-            : Math.min(prev.remoteSlot + 1, 7),
-          remoteDir: localMoveRight ? 'left' : 'right',
+          localCol: nextLCol,
+          localRow: nextLRow,
+          localDir: targetColDir === 1 ? 'right' : 'left',
+          remoteCol: nextRCol,
+          remoteRow: nextRRow,
+          remoteDir: targetColDir === 1 ? 'left' : 'right',
           localState: 'walking',
           remoteState: 'walking',
           localEmote: null,
@@ -169,8 +209,11 @@ export function ArcadePetSocialStage({
       ? 'cyber_cat'
       : 'dragon';
 
-  const localSlotClass = SLOT_CLASSES[sim.localSlot] ?? styles.slot2;
-  const remoteSlotClass = SLOT_CLASSES[sim.remoteSlot] ?? styles.slot6;
+  const localColClass = COL_CLASSES[sim.localCol] ?? styles.col2;
+  const localRowClass = ROW_CLASSES[sim.localRow] ?? styles.row1;
+
+  const remoteColClass = COL_CLASSES[sim.remoteCol] ?? styles.col5;
+  const remoteRowClass = ROW_CLASSES[sim.remoteRow] ?? styles.row2;
 
   return (
     <div
@@ -181,7 +224,7 @@ export function ArcadePetSocialStage({
         <div
           data-testid="arcade-pet-local-screen-pet"
           onClick={handleLocalClick}
-          className={`${styles.petEntity} ${localSlotClass}`}
+          className={`${styles.petEntity} ${localColClass} ${localRowClass}`}
         >
           {sim.localEmote && (
             <div
@@ -213,7 +256,7 @@ export function ArcadePetSocialStage({
           <div
             data-testid="arcade-pet-remote-screen-pet"
             onClick={handleRemoteClick}
-            className={`${styles.petEntity} ${remoteSlotClass}`}
+            className={`${styles.petEntity} ${remoteColClass} ${remoteRowClass}`}
           >
             {sim.remoteEmote && (
               <div

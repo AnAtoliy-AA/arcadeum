@@ -1,4 +1,5 @@
 import type { SharedGamesMessages } from './shared/index';
+import type { ArcadePetMessages } from './arcade-pet/index';
 import type { CriticalGamesMessages } from './critical/index';
 import type { TexasHoldemGamesMessages } from './texas-holdem';
 import type { SeaBattleGamesMessages } from './sea-battle/index';
@@ -19,6 +20,7 @@ import type { SudokuMessages } from './sudoku/index';
 import type { Game2048Messages } from './game-2048/index';
 
 export type GamesMessagesBundle = SharedGamesMessages &
+  ArcadePetMessages &
   CriticalGamesMessages &
   TexasHoldemGamesMessages &
   SeaBattleGamesMessages &

@@ -36,6 +36,7 @@ const DEFAULT_PATH_BUILDERS: Partial<Record<SeoPageKey, PathBuilder>> = {
   games: (r) => r.games,
   rooms: (r) => r.rooms,
   gameCreate: (r) => r.gameCreate,
+  arcadePetLanding: (r) => r.arcadePetLanding,
   seaBattleLanding: (r) => r.seaBattleLanding,
   battleshipLanding: (r) => r.battleshipLanding,
   criticalLanding: (r) => r.criticalLanding,

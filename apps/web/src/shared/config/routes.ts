@@ -24,6 +24,8 @@ export const buildRoutes = (locale: Locale) => {
     gameDetail: (id: string) => `/${locale}/${s('games')}/${id}`,
     gameCreate: `/${locale}/${s('games')}/create`,
     gameRoom: (id: string) => `/${locale}/${s('rooms')}/${id}`,
+    arcadePet: `/${locale}/${s('games')}/arcade-pet`,
+    arcadePetLanding: `/${locale}/${s('games')}/arcade-pet`,
     seaBattleLanding: `/${locale}/${s('games')}/sea-battle`,
     battleshipLanding: `/${locale}/${s('games')}/battleship`,
     criticalLanding: `/${locale}/${s('games')}/critical`,

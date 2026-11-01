@@ -32,6 +32,8 @@ export const ArcadePetCompanionWidget: React.FC<
     pet,
     pets,
     gemBalance,
+    coinBalance,
+    actionError,
     presents,
     isWidgetOpen,
     isAtHome,
@@ -209,8 +211,20 @@ export const ArcadePetCompanionWidget: React.FC<
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-[11px] font-bold text-indigo-300">
+              <div className="flex items-center gap-1.5">
+                <div
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-950 border border-amber-500/40 text-[11px] font-bold text-amber-300"
+                  title="Coins"
+                >
+                  <span>🪙</span>
+                  <span data-testid="companion-coin-balance">
+                    {coinBalance}
+                  </span>
+                </div>
+                <div
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-[11px] font-bold text-indigo-300"
+                  title="Gems"
+                >
                   <span>💎</span>
                   <span>{gemBalance}</span>
                 </div>
@@ -265,6 +279,15 @@ export const ArcadePetCompanionWidget: React.FC<
                   />
                 </div>
 
+                {actionError && (
+                  <div
+                    data-testid="pet-action-error"
+                    className="text-[11px] text-amber-400 font-semibold text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2"
+                  >
+                    {actionError}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   <button
                     type="button"
@@ -272,7 +295,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => performAction('feed_snack')}
                     className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
                   >
-                    <span>🍰</span> Snack
+                    <span>🍰</span> Snack (🪙 1)
                   </button>
                   <button
                     type="button"

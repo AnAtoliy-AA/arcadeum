@@ -42,6 +42,7 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
   const [showTreatPicker, setShowTreatPicker] = useState<boolean>(false);
   const [hatchSpecies, setHatchSpecies] = useState<PetSpecies>('dragon');
   const [petNameInput, setPetNameInput] = useState<string>('BitBuddy');
+  const [coins, setCoins] = useState<number>(10);
 
   const playBeep = useCallback(
     (freq = 440, type: OscillatorType = 'square') => {
@@ -69,6 +70,15 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
 
   const handleAction = useCallback(
     (action: PetActionType, treatId?: GameTreatId) => {
+      if (action === 'feed_snack') {
+        if (coins < 1) {
+          playBeep(260, 'sawtooth');
+          setScreenMessage('NEED 1 COIN');
+          return;
+        }
+        setCoins((c) => Math.max(0, c - 1));
+      }
+
       playBeep(action === 'sleep' ? 300 : 600);
       const result = executePetAction(pet, action, {
         treatId,
@@ -83,7 +93,7 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
         setScreenMessage(result.messageCode.toUpperCase());
       }
     },
-    [pet, hatchSpecies, gameOptions?.theme, playBeep],
+    [pet, hatchSpecies, gameOptions?.theme, playBeep, coins],
   );
 
   const handlePressA = () => {
@@ -245,9 +255,17 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
               Level {pet.stats.level} (XP: {pet.stats.xp})
             </span>
           </div>
-          <span className="text-xs px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold uppercase">
-            Weight: {pet.stats.weight}g
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              data-testid="arcade-pet-game-coins"
+              className="text-xs px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold"
+            >
+              🪙 {coins} Coins
+            </span>
+            <span className="text-xs px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold uppercase">
+              Weight: {pet.stats.weight}g
+            </span>
+          </div>
         </div>
 
         {pet.stage === 'egg' ? (

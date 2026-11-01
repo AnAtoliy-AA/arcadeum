@@ -64,6 +64,7 @@ describe('arcade-pet-economy', () => {
 
     for (const theme of requiredThemes) {
       const pets = getThemePets(theme);
+      expect(pets.length).toBeGreaterThanOrEqual(3);
       expect(pets.length).toBe(5);
       const signature = getSignaturePet(theme);
       expect(signature).toBeDefined();

@@ -217,4 +217,37 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().pets.length).toBe(0);
     expect(useArcadePetStore.getState().hasConfirmedCare).toBe(false);
   });
+
+  it('charges 1 coin when feeding a snack', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 5,
+    });
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const initialCoins = useArcadePetStore.getState().coinBalance;
+    const initialHunger = useArcadePetStore.getState().pet?.stats.hunger ?? 0;
+
+    const result = useArcadePetStore.getState().performAction('feed_snack');
+    expect(result.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(initialCoins - 1);
+    expect(
+      useArcadePetStore.getState().pet?.stats.hunger,
+    ).toBeGreaterThanOrEqual(initialHunger);
+  });
+
+  it('prevents feeding snack when coins are zero and sets actionError', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 0,
+    });
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const result = useArcadePetStore.getState().performAction('feed_snack');
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('INSUFFICIENT_COINS');
+    expect(useArcadePetStore.getState().actionError).toContain('1 Coin');
+  });
 });

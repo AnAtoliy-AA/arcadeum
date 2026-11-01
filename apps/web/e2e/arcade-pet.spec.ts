@@ -126,6 +126,14 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     await expect(page.getByTestId('arcade-pet-companion-modal')).toBeVisible();
 
+    const coinBadge = page.getByTestId('companion-coin-balance');
+    await expect(coinBadge).toBeVisible();
+    const initialCoins = await coinBadge.textContent();
+
+    const feedBtn = page.getByTestId('companion-feed-btn');
+    await feedBtn.click();
+    await expect(coinBadge).toHaveText(String(Number(initialCoins) - 1));
+
     const openAdoptionBtn = page.getByTestId('open-adoption-modal-btn');
     await openAdoptionBtn.click();
     await expect(page.getByTestId('arcade-pet-adoption-modal')).toBeVisible();

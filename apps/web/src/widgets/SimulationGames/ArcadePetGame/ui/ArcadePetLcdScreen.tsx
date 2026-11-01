@@ -16,7 +16,7 @@ interface ArcadePetLcdScreenProps {
 
 const MENU_ICONS: readonly { id: string; label: string; icon: string }[] = [
   { id: 'meal', label: 'Meal', icon: '🍖' },
-  { id: 'snack', label: 'Snack', icon: '🍰' },
+  { id: 'snack', label: 'Snack (1🪙)', icon: '🍰' },
   { id: 'play', label: 'Play', icon: '🎮' },
   { id: 'clean', label: 'Clean', icon: '🛁' },
   { id: 'sleep', label: 'Sleep', icon: '💡' },

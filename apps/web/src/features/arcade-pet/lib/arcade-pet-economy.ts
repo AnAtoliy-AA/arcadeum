@@ -182,6 +182,22 @@ export function getPetFoodCost(petIndex: number): number {
   return 100 + (petIndex - 4) * 50;
 }
 
+export const DEFAULT_HOME_CAPACITY = 1;
+
+export function getHomeUpgradeCost(currentCapacity: number): {
+  coinCost: number;
+  gemCost: number;
+} {
+  if (currentCapacity <= 1) return { coinCost: 50, gemCost: 100 };
+  if (currentCapacity === 2) return { coinCost: 150, gemCost: 250 };
+  if (currentCapacity === 3) return { coinCost: 300, gemCost: 450 };
+  if (currentCapacity === 4) return { coinCost: 500, gemCost: 700 };
+  return {
+    coinCost: currentCapacity * 150,
+    gemCost: currentCapacity * 200,
+  };
+}
+
 export interface PetGiftPresent {
   id: string;
   senderId: string;

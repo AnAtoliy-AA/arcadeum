@@ -14,6 +14,7 @@ export interface StoredCollection {
   presents: PetGiftPresent[];
   hasConfirmedCare?: boolean;
   isAtHome?: boolean;
+  homeCapacity?: number;
 }
 
 export const DEFAULT_WELCOME_PRESENT: PetGiftPresent = {
@@ -52,6 +53,7 @@ export function loadStoredCollection(): StoredCollection | null {
         coinBalance: parsed.coinBalance ?? 50,
         hasConfirmedCare: true,
         isAtHome: parsed.isAtHome ?? false,
+        homeCapacity: parsed.homeCapacity ?? Math.max(1, validPets.length),
         pets: refreshedPets,
       };
     }
@@ -89,6 +91,7 @@ export function persistStore(state: {
   presents: PetGiftPresent[];
   hasConfirmedCare: boolean;
   isAtHome: boolean;
+  homeCapacity: number;
 }): void {
   saveStoredCollection({
     hasConfirmedCare: state.hasConfirmedCare,
@@ -100,5 +103,6 @@ export function persistStore(state: {
     queuedThemeForNextPet: state.queuedThemeForNextPet,
     presents: state.presents,
     isAtHome: state.isAtHome,
+    homeCapacity: state.homeCapacity,
   });
 }

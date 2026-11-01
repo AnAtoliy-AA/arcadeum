@@ -3,12 +3,10 @@ import {
   applyDeterministicDecay,
   createInitialPet,
   executePetAction,
-  type GameTreatId,
-  type PetActionType,
-  type PetSpecies,
   type PetState,
 } from '@arcadeum/games-core';
 import {
+  getHomeUpgradeCost,
   getPetAdoptionCost,
   getPetFoodCost,
   getRandomPetSpec,
@@ -21,60 +19,7 @@ import {
   persistStore,
   DEFAULT_WELCOME_PRESENT,
 } from './arcade-pet-storage';
-
-interface ArcadePetStoreState {
-  pet: PetState | null;
-  pets: PetState[];
-  activePetId: string | null;
-  gemBalance: number;
-  coinBalance: number;
-  adoptionCount: number;
-  queuedThemeForNextPet: string | null;
-  presents: PetGiftPresent[];
-  isWidgetOpen: boolean;
-  isAtHome: boolean;
-  activeTreat: GameTreatId | null;
-  hasConfirmedCare: boolean;
-  actionError: string | null;
-  initialize: (userId?: string, theme?: string) => void;
-  performAction: (
-    action: PetActionType,
-    treatId?: GameTreatId,
-    targetPetId?: string,
-  ) => { success: boolean; error?: string };
-  hatch: (name: string, species: PetSpecies, theme?: string) => void;
-  awardTreat: (treatId: GameTreatId) => void;
-  adoptRandomPet: () => { success: boolean; pet?: PetState; error?: string };
-  adoptSelectedPet: (
-    species: PetSpecies,
-    theme: string,
-    name: string,
-  ) => { success: boolean; pet?: PetState; error?: string };
-  selectActivePet: (petId: string) => void;
-  claimPresent: (presentId: string) => {
-    success: boolean;
-    present?: PetGiftPresent;
-  };
-  sendGiftPet: (
-    recipientId: string,
-    recipientName: string,
-    gift: {
-      species: PetSpecies;
-      theme: string;
-      petName: string;
-      message?: string;
-    },
-    isAdmin?: boolean,
-  ) => { success: boolean; error?: string };
-  buyGameTheme: (themeId: string) => void;
-  addGems: (amount: number) => void;
-  addCoins: (amount: number) => void;
-  clearActionError: () => void;
-  toggleWidget: () => void;
-  setWidgetOpen: (open: boolean) => void;
-  toggleHome: () => void;
-  setAtHome: (atHome: boolean) => void;
-}
+import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   pet: null,
@@ -83,6 +28,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   gemBalance: 300,
   coinBalance: 50,
   adoptionCount: 0,
+  homeCapacity: 1,
   queuedThemeForNextPet: null,
   presents: [DEFAULT_WELCOME_PRESENT],
   isWidgetOpen: false,
@@ -100,46 +46,60 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     }
 
     const stored = loadStoredCollection();
-    if (stored && stored.hasConfirmedCare && stored.pets.length > 0) {
-      const active =
-        stored.pets.find((p) => p.id === stored.activePetId) ??
-        stored.pets[0] ??
-        null;
-      set({
-        hasConfirmedCare: true,
-        pets: stored.pets,
-        activePetId: active?.id ?? null,
-        pet: active,
-        gemBalance: stored.gemBalance ?? 300,
-        coinBalance: stored.coinBalance ?? 50,
-        adoptionCount: stored.adoptionCount ?? stored.pets.length,
-        queuedThemeForNextPet: stored.queuedThemeForNextPet ?? null,
-        presents: stored.presents ?? [DEFAULT_WELCOME_PRESENT],
-        isAtHome: stored.isAtHome ?? false,
-        actionError: null,
-      });
-      return;
-    }
-
-    set({
-      hasConfirmedCare: false,
-      pets: [],
-      activePetId: null,
-      pet: null,
+    const common = {
       gemBalance: stored?.gemBalance ?? 300,
       coinBalance: stored?.coinBalance ?? 50,
       adoptionCount: stored?.adoptionCount ?? 0,
       queuedThemeForNextPet: stored?.queuedThemeForNextPet ?? null,
       presents: stored?.presents ?? [DEFAULT_WELCOME_PRESENT],
       isAtHome: stored?.isAtHome ?? false,
+      homeCapacity: stored?.homeCapacity ?? 1,
       actionError: null,
+    };
+
+    if (stored && stored.hasConfirmedCare && stored.pets.length > 0) {
+      const active =
+        stored.pets.find((p) => p.id === stored.activePetId) ??
+        stored.pets[0] ??
+        null;
+      set({
+        ...common,
+        hasConfirmedCare: true,
+        pets: stored.pets,
+        activePetId: active?.id ?? null,
+        pet: active,
+        adoptionCount: stored.adoptionCount ?? stored.pets.length,
+      });
+      return;
+    }
+
+    set({
+      ...common,
+      hasConfirmedCare: false,
+      pets: [],
+      activePetId: null,
+      pet: null,
     });
   },
 
   adoptRandomPet: () => {
-    const { adoptionCount, gemBalance, pets, queuedThemeForNextPet } = get();
-    const cost = getPetAdoptionCost(adoptionCount);
+    const {
+      adoptionCount,
+      gemBalance,
+      pets,
+      queuedThemeForNextPet,
+      homeCapacity,
+    } = get();
 
+    if (pets.length >= homeCapacity) {
+      set({
+        actionError:
+          'Home is full! Upgrade your Home to have place for more pets.',
+      });
+      return { success: false, error: 'HOME_FULL' };
+    }
+
+    const cost = getPetAdoptionCost(adoptionCount);
     if (gemBalance < cost) {
       return { success: false, error: 'INSUFFICIENT_GEMS' };
     }
@@ -166,6 +126,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       gemBalance: nextGems,
       adoptionCount: nextCount,
       queuedThemeForNextPet: null,
+      actionError: null,
     });
 
     persistStore({
@@ -181,7 +142,16 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   },
 
   adoptSelectedPet: (species, theme, name) => {
-    const { gemBalance, pets, adoptionCount } = get();
+    const { gemBalance, pets, adoptionCount, homeCapacity } = get();
+
+    if (pets.length >= homeCapacity) {
+      set({
+        actionError:
+          'Home is full! Upgrade your Home to have place for more pets.',
+      });
+      return { success: false, error: 'HOME_FULL' };
+    }
+
     if (gemBalance < SELECT_PET_COST) {
       return { success: false, error: 'INSUFFICIENT_GEMS' };
     }
@@ -207,6 +177,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       gemBalance: nextGems,
       adoptionCount: nextCount,
       queuedThemeForNextPet: null,
+      actionError: null,
     });
 
     persistStore({
@@ -219,6 +190,39 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     });
 
     return { success: true, pet: newPet };
+  },
+
+  upgradeHome: (currency) => {
+    const { homeCapacity, coinBalance, gemBalance } = get();
+    const cost = getHomeUpgradeCost(homeCapacity);
+    if (currency === 'coins') {
+      if (coinBalance < cost.coinCost) {
+        set({
+          actionError: `Need 🪙 ${cost.coinCost} Coins to upgrade Home place!`,
+        });
+        return { success: false, error: 'INSUFFICIENT_COINS' };
+      }
+      const nextCoins = coinBalance - cost.coinCost;
+      const nextCap = homeCapacity + 1;
+      set({
+        coinBalance: nextCoins,
+        homeCapacity: nextCap,
+        actionError: null,
+      });
+      persistStore({ ...get(), coinBalance: nextCoins, homeCapacity: nextCap });
+      return { success: true };
+    }
+    if (gemBalance < cost.gemCost) {
+      set({
+        actionError: `Need 💎 ${cost.gemCost} Gems to upgrade Home place!`,
+      });
+      return { success: false, error: 'INSUFFICIENT_GEMS' };
+    }
+    const nextGems = gemBalance - cost.gemCost;
+    const nextCap = homeCapacity + 1;
+    set({ gemBalance: nextGems, homeCapacity: nextCap, actionError: null });
+    persistStore({ ...get(), gemBalance: nextGems, homeCapacity: nextCap });
+    return { success: true };
   },
 
   selectActivePet: (petId) => {
@@ -238,9 +242,17 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   },
 
   claimPresent: (presentId) => {
-    const { presents, pets, gemBalance } = get();
+    const { presents, pets, gemBalance, homeCapacity } = get();
     const target = presents.find((p) => p.id === presentId && !p.isOpened);
     if (!target) return { success: false };
+
+    if (pets.length >= homeCapacity) {
+      set({
+        actionError:
+          'Home is full! Upgrade your Home to have place for more pets.',
+      });
+      return { success: false, error: 'HOME_FULL' };
+    }
 
     const newId = `present-pet-${Date.now()}`;
     const giftedPet = createInitialPet({
@@ -264,6 +276,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       activePetId: newId,
       pet: giftedPet,
       gemBalance: nextGems,
+      actionError: null,
     });
 
     persistStore({

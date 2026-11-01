@@ -44,6 +44,7 @@ export const ArcadePetCompanionWidget: React.FC<
     toggleHome,
     adoptRandomPet,
     selectActivePet,
+    homeCapacity,
   } = useArcadePetStore();
 
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
@@ -381,7 +382,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => setShowAdoptionModal(true)}
                     className="py-1.5 px-2 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-300 text-xs font-semibold text-center flex items-center justify-center gap-1"
                   >
-                    <span>🥚</span> Mounts ({pets.length})
+                    <span>🥚</span> Mounts ({pets.length}/{homeCapacity})
                   </button>
                   <button
                     type="button"

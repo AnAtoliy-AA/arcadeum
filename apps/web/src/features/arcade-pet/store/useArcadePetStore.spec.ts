@@ -256,6 +256,7 @@ describe('useArcadePetStore', () => {
       adoptionCount: 0,
       gemBalance: 1000,
       coinBalance: 50,
+      homeCapacity: 5,
       pets: [],
     });
 
@@ -291,6 +292,7 @@ describe('useArcadePetStore', () => {
       adoptionCount: 0,
       gemBalance: 1000,
       coinBalance: 3,
+      homeCapacity: 5,
       pets: [],
     });
 
@@ -304,6 +306,66 @@ describe('useArcadePetStore', () => {
     expect(res.success).toBe(false);
     expect(res.error).toBe('INSUFFICIENT_COINS');
     expect(useArcadePetStore.getState().actionError).toContain('5 Coins');
+  });
+
+  it('enforces home capacity when adopting pets', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 500,
+      coinBalance: 100,
+      homeCapacity: 1,
+      pets: [],
+    });
+
+    const first = useArcadePetStore.getState().adoptRandomPet();
+    expect(first.success).toBe(true);
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+
+    const second = useArcadePetStore.getState().adoptRandomPet();
+    expect(second.success).toBe(false);
+    expect(second.error).toBe('HOME_FULL');
+    expect(useArcadePetStore.getState().actionError).toContain('Home is full');
+  });
+
+  it('upgrades home capacity using coins and allows adopting another pet', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 1,
+      gemBalance: 500,
+      coinBalance: 100,
+      homeCapacity: 1,
+      pets: [],
+    });
+
+    useArcadePetStore.getState().adoptRandomPet();
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+
+    const failedUpgrade = useArcadePetStore.getState().upgradeHome('coins');
+    expect(failedUpgrade.success).toBe(true);
+    expect(useArcadePetStore.getState().homeCapacity).toBe(2);
+    expect(useArcadePetStore.getState().coinBalance).toBe(50);
+
+    const second = useArcadePetStore.getState().adoptRandomPet();
+    expect(second.success).toBe(true);
+    expect(useArcadePetStore.getState().pets.length).toBe(2);
+  });
+
+  it('upgrades home capacity using gems when coins are insufficient', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 200,
+      coinBalance: 0,
+      homeCapacity: 1,
+      pets: [],
+    });
+
+    const coinFail = useArcadePetStore.getState().upgradeHome('coins');
+    expect(coinFail.success).toBe(false);
+    expect(coinFail.error).toBe('INSUFFICIENT_COINS');
+
+    const gemSuccess = useArcadePetStore.getState().upgradeHome('gems');
+    expect(gemSuccess.success).toBe(true);
+    expect(useArcadePetStore.getState().homeCapacity).toBe(2);
+    expect(useArcadePetStore.getState().gemBalance).toBe(100);
   });
 
   it('freezes hunger timestamps when toggling home or setting home', () => {

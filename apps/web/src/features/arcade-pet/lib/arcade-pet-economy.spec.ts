@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  getHomeUpgradeCost,
   getPetAdoptionCost,
   getPetFoodCost,
   getRandomPetSpec,
@@ -10,6 +11,14 @@ import {
 } from './arcade-pet-economy';
 
 describe('arcade-pet-economy', () => {
+  it('calculates home upgrade costs in coins and gems', () => {
+    expect(getHomeUpgradeCost(1)).toEqual({ coinCost: 50, gemCost: 100 });
+    expect(getHomeUpgradeCost(2)).toEqual({ coinCost: 150, gemCost: 250 });
+    expect(getHomeUpgradeCost(3)).toEqual({ coinCost: 300, gemCost: 450 });
+    expect(getHomeUpgradeCost(4)).toEqual({ coinCost: 500, gemCost: 700 });
+    expect(getHomeUpgradeCost(5)).toEqual({ coinCost: 750, gemCost: 1000 });
+  });
+
   it('escalates food cost for subsequent pets: 1, 5, 20, 50, 100 coins', () => {
     expect(getPetFoodCost(0)).toBe(1);
     expect(getPetFoodCost(1)).toBe(5);

@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import {
+  getHomeUpgradeCost,
   getPetAdoptionCost,
   SELECT_PET_COST,
   THEME_PET_PALETTES,
   getSignaturePet,
   getPetByThemeAndSpecies,
 } from '../lib/arcade-pet-economy';
-import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { ArcadePetCollectionList } from './ArcadePetCollectionList';
 
 interface ArcadePetAdoptionModalProps {
   open: boolean;
@@ -36,11 +37,13 @@ export function ArcadePetAdoptionModal({
   const {
     gemBalance,
     adoptionCount,
+    homeCapacity,
     pets,
     activePetId,
     queuedThemeForNextPet,
     adoptRandomPet,
     adoptSelectedPet,
+    upgradeHome,
     selectActivePet,
     addGems,
   } = useArcadePetStore();
@@ -58,13 +61,36 @@ export function ArcadePetAdoptionModal({
 
   const nextCost = getPetAdoptionCost(adoptionCount);
   const isFirstMountFree = adoptionCount === 0;
+  const isHomeFull = pets.length >= homeCapacity;
+  const upgradeCost = getHomeUpgradeCost(homeCapacity);
+
+  const handleUpgradeHome = (currency: 'coins' | 'gems') => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    const result = upgradeHome(currency);
+    if (!result.success) {
+      if (result.error === 'INSUFFICIENT_COINS') {
+        setErrorMsg(`Need 🪙 ${upgradeCost.coinCost} Coins to upgrade Home!`);
+      } else if (result.error === 'INSUFFICIENT_GEMS') {
+        setErrorMsg(`Need 💎 ${upgradeCost.gemCost} Gems to upgrade Home!`);
+      } else {
+        setErrorMsg('Could not upgrade Home.');
+      }
+      return;
+    }
+    setSuccessMsg(`Upgraded Home capacity to ${homeCapacity + 1} places! 🏠`);
+  };
 
   const handleAdoptRandom = () => {
     setErrorMsg(null);
     setSuccessMsg(null);
     const result = adoptRandomPet();
     if (!result.success) {
-      if (result.error === 'INSUFFICIENT_GEMS') {
+      if (result.error === 'HOME_FULL') {
+        setErrorMsg(
+          `Home is full (${pets.length}/${homeCapacity})! Upgrade Home to adopt more pets.`,
+        );
+      } else if (result.error === 'INSUFFICIENT_GEMS') {
         setErrorMsg(
           `Need 💎 ${nextCost} gems to adopt. You have 💎 ${gemBalance}.`,
         );
@@ -90,7 +116,11 @@ export function ArcadePetAdoptionModal({
       customName.trim() || defaultName,
     );
     if (!result.success) {
-      if (result.error === 'INSUFFICIENT_GEMS') {
+      if (result.error === 'HOME_FULL') {
+        setErrorMsg(
+          `Home is full (${pets.length}/${homeCapacity})! Upgrade Home to adopt more pets.`,
+        );
+      } else if (result.error === 'INSUFFICIENT_GEMS') {
         setErrorMsg(
           `Need 💎 ${SELECT_PET_COST} gems. You have 💎 ${gemBalance}.`,
         );
@@ -120,13 +150,24 @@ export function ArcadePetAdoptionModal({
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-xs font-bold text-emerald-300"
+              title="Home Places"
+              data-testid="home-places-badge"
+            >
+              <span>🏠</span>
+              <span>
+                {pets.length}/{homeCapacity} Places
+              </span>
+            </div>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-xs font-bold text-indigo-300">
               <span>💎</span>
               <span>{gemBalance}</span>
             </div>
             <button
               type="button"
+              data-testid="close-adoption-modal-btn"
               onClick={onClose}
               className="text-neutral-400 hover:text-white p-1 text-sm"
               aria-label="Close"
@@ -201,6 +242,42 @@ export function ArcadePetAdoptionModal({
             </div>
           )}
 
+          {isHomeFull && (
+            <div
+              data-testid="home-full-banner"
+              className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/50 flex flex-col gap-2 text-center"
+            >
+              <div className="text-xs text-amber-300 font-bold flex items-center justify-center gap-1.5">
+                <span>🏠</span>
+                <span>
+                  Home is Full ({pets.length}/{homeCapacity} Places)
+                </span>
+              </div>
+              <p className="text-[11px] text-neutral-300">
+                To adopt a pet, your home needs enough place! Upgrade with Coins
+                or Gems:
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <button
+                  type="button"
+                  data-testid="upgrade-home-coins-btn"
+                  onClick={() => handleUpgradeHome('coins')}
+                  className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1 shadow"
+                >
+                  <span>🪙</span> Upgrade (🪙 {upgradeCost.coinCost})
+                </button>
+                <button
+                  type="button"
+                  data-testid="upgrade-home-gems-btn"
+                  onClick={() => handleUpgradeHome('gems')}
+                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 shadow"
+                >
+                  <span>💎</span> Upgrade (💎 {upgradeCost.gemCost})
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'random' && (
             <div className="space-y-4">
               <div className="p-5 rounded-2xl bg-neutral-950 border border-neutral-800 text-center space-y-3">
@@ -223,12 +300,19 @@ export function ArcadePetAdoptionModal({
                 <button
                   type="button"
                   data-testid="adopt-random-btn"
+                  disabled={isHomeFull}
                   onClick={handleAdoptRandom}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg transition-transform active:scale-95"
+                  className={`w-full py-3 rounded-xl font-bold text-sm shadow-lg transition-transform active:scale-95 ${
+                    isHomeFull
+                      ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white'
+                  }`}
                 >
-                  {isFirstMountFree
-                    ? 'Roll First Mount (FREE)'
-                    : `Roll Random Pet (💎 ${nextCost} Gems)`}
+                  {isHomeFull
+                    ? '🏠 Upgrade Home to Adopt'
+                    : isFirstMountFree
+                      ? 'Roll First Mount (FREE)'
+                      : `Roll Random Pet (💎 ${nextCost} Gems)`}
                 </button>
               </div>
 
@@ -237,26 +321,29 @@ export function ArcadePetAdoptionModal({
                   Mount Cost Progression
                 </span>
                 <div className="grid grid-cols-5 gap-2 text-center text-[11px]">
-                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
-                    <span className="block text-neutral-400">1st</span>
-                    <span className="font-bold text-emerald-400">FREE</span>
-                  </div>
-                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
-                    <span className="block text-neutral-400">2nd</span>
-                    <span className="font-bold text-indigo-300">💎 50</span>
-                  </div>
-                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
-                    <span className="block text-neutral-400">3rd</span>
-                    <span className="font-bold text-indigo-300">💎 150</span>
-                  </div>
-                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
-                    <span className="block text-neutral-400">4th</span>
-                    <span className="font-bold text-indigo-300">💎 300</span>
-                  </div>
-                  <div className="p-2 rounded bg-neutral-900 border border-neutral-800">
-                    <span className="block text-neutral-400">5th+</span>
-                    <span className="font-bold text-indigo-300">💎 500+</span>
-                  </div>
+                  {[
+                    { label: '1st', cost: 'FREE', color: 'text-emerald-400' },
+                    { label: '2nd', cost: '💎 50', color: 'text-indigo-300' },
+                    { label: '3rd', cost: '💎 150', color: 'text-indigo-300' },
+                    { label: '4th', cost: '💎 300', color: 'text-indigo-300' },
+                    {
+                      label: '5th+',
+                      cost: '💎 500+',
+                      color: 'text-indigo-300',
+                    },
+                  ].map((tier) => (
+                    <div
+                      key={tier.label}
+                      className="p-2 rounded bg-neutral-900 border border-neutral-800"
+                    >
+                      <span className="block text-neutral-400">
+                        {tier.label}
+                      </span>
+                      <span className={`font-bold ${tier.color}`}>
+                        {tier.cost}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -384,74 +471,27 @@ export function ArcadePetAdoptionModal({
               <button
                 type="button"
                 data-testid="adopt-selected-btn"
+                disabled={isHomeFull}
                 onClick={handleAdoptSelected}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white font-bold text-sm shadow-lg transition-transform active:scale-95"
+                className={`w-full py-3 rounded-xl font-bold text-sm shadow-lg transition-transform active:scale-95 ${
+                  isHomeFull
+                    ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white'
+                }`}
               >
-                Select & Equip (💎 {SELECT_PET_COST} Gems)
+                {isHomeFull
+                  ? '🏠 Upgrade Home to Adopt'
+                  : `Select & Equip (💎 ${SELECT_PET_COST} Gems)`}
               </button>
             </div>
           )}
 
           {activeTab === 'collection' && (
-            <div className="space-y-3">
-              <span className="text-xs text-neutral-400 block">
-                Select which companion walks on your screen:
-              </span>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {pets.map((p) => {
-                  const isActive = p.id === activePetId;
-                  const palette = THEME_PET_PALETTES[p.theme];
-                  return (
-                    <div
-                      key={p.id}
-                      data-testid={`pet-item-${p.id}`}
-                      className={`flex items-center justify-between p-3 rounded-xl border ${
-                        isActive
-                          ? 'border-emerald-500/60 bg-emerald-950/30'
-                          : 'border-neutral-800 bg-neutral-950'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <ArcadePetWalkingSprite
-                          species={p.stage === 'egg' ? 'blob' : p.species}
-                          state="idle"
-                          theme={p.theme}
-                          className="w-10 h-10"
-                        />
-                        <div className="flex flex-col">
-                          <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                            {p.name}
-                            {palette && (
-                              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
-                                {palette.emoji} {palette.title}
-                              </span>
-                            )}
-                          </span>
-                          <span className="text-[10px] text-neutral-400">
-                            Level {p.stats.level} • {p.species} • {p.stage}
-                          </span>
-                        </div>
-                      </div>
-
-                      {isActive ? (
-                        <span className="text-[11px] font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
-                          Active Mount
-                        </span>
-                      ) : (
-                        <button
-                          type="button"
-                          data-testid={`equip-pet-${p.id}`}
-                          onClick={() => selectActivePet(p.id)}
-                          className="text-[11px] font-semibold text-white px-3 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700"
-                        >
-                          Equip
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <ArcadePetCollectionList
+              pets={pets}
+              activePetId={activePetId}
+              onSelectPet={selectActivePet}
+            />
           )}
         </div>
       </div>

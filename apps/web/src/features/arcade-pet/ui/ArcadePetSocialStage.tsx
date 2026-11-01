@@ -47,6 +47,9 @@ export function ArcadePetSocialStage({
   const isAtHome = useArcadePetStore((s) => s.isAtHome);
   const setAtHome = useArcadePetStore((s) => s.setAtHome);
   const toggleHome = useArcadePetStore((s) => s.toggleHome);
+  const pets = useArcadePetStore((s) => s.pets);
+  const homeCapacity = useArcadePetStore((s) => s.homeCapacity);
+  const upgradeHome = useArcadePetStore((s) => s.upgradeHome);
   const room = useGameStore((s) => s.room);
   const members = useMemo(() => room?.members ?? [], [room?.members]);
 
@@ -102,6 +105,9 @@ export function ArcadePetSocialStage({
             localPetName={localPet.name}
             localPetSpecies={localSpecies}
             localPetTheme={localPet.theme}
+            pets={pets}
+            homeCapacity={homeCapacity}
+            onUpgradeHome={upgradeHome}
             isKnocked={isKnocked}
             knockerName={knockerName}
             onOpenDoor={handleOpenDoor}

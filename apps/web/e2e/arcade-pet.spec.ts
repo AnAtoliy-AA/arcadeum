@@ -8,16 +8,16 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await page.waitForLoadState('domcontentloaded');
 
     await expect(page.locator('h1')).toContainText('ArcadePet');
-    await expect(page.getByTestId('arcade-pet-btn-a')).toBeVisible();
-    await expect(page.getByTestId('arcade-pet-btn-b')).toBeVisible();
-    await expect(page.getByTestId('arcade-pet-btn-c')).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-btn-a').first()).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-btn-b').first()).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-btn-c').first()).toBeVisible();
   });
 
   test('should cycle menu items when pressing Button A', async ({ page }) => {
     await navigateTo(page, '/en/games/arcade-pet');
     await page.waitForLoadState('domcontentloaded');
 
-    const btnA = page.getByTestId('arcade-pet-btn-a');
+    const btnA = page.getByTestId('arcade-pet-btn-a').first();
     await btnA.click();
     await expect(page.getByText('🍰')).toBeVisible();
 
@@ -332,5 +332,76 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(page.getByTestId('pet-home-resting-banner')).toContainText(
       'Resting at Home',
     );
+  });
+
+  test('should show places for all pets in home, block adoption when full, and allow home upgrade for coins or gems', async ({
+    page,
+  }) => {
+    await mockSession(page);
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'arcadeum_pet_collection_v2',
+        JSON.stringify({
+          pets: [
+            {
+              id: 'home-pet-1',
+              name: 'Cyber Fox',
+              species: 'cyber_cat',
+              stage: 'adult',
+              theme: 'cyberpunk',
+              stats: { hunger: 80, happiness: 80, level: 1 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+          ],
+          activePetId: 'home-pet-1',
+          homeCapacity: 1,
+          coinBalance: 100,
+          gemBalance: 200,
+          adoptionCount: 1,
+          queuedThemeForNextPet: null,
+          presents: [],
+          hasConfirmedCare: true,
+          isAtHome: true,
+        }),
+      );
+    });
+
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await trigger.click();
+
+    await expect(page.getByTestId('open-adoption-modal-btn')).toContainText(
+      'Mounts (1/1)',
+    );
+
+    await page.getByTestId('open-adoption-modal-btn').click();
+    await expect(page.getByTestId('arcade-pet-adoption-modal')).toBeVisible();
+    await expect(page.getByTestId('home-places-badge')).toContainText(
+      '1/1 Places',
+    );
+    await expect(page.getByTestId('home-full-banner')).toBeVisible();
+    await expect(page.getByTestId('adopt-random-btn')).toBeDisabled();
+
+    const upgradeCoinsBtn = page.getByTestId('upgrade-home-coins-btn');
+    await expect(upgradeCoinsBtn).toBeVisible();
+    await upgradeCoinsBtn.click();
+
+    await expect(page.getByTestId('home-places-badge')).toContainText(
+      '1/2 Places',
+    );
+    await expect(page.getByTestId('home-full-banner')).not.toBeVisible();
+    await expect(page.getByTestId('adopt-random-btn')).not.toBeDisabled();
+
+    await page.getByTestId('close-adoption-modal-btn').click();
+
+    const stage = page.getByTestId('arcade-pet-social-stage');
+    await expect(stage).toBeVisible();
+    await expect(page.getByTestId('home-places-container')).toBeVisible();
+    await expect(page.getByTestId('home-place-slot-0')).toBeVisible();
+    await expect(page.getByTestId('home-empty-slot-1')).toBeVisible();
+    await expect(page.getByTestId('booth-capacity-tag')).toContainText('1/2');
   });
 });

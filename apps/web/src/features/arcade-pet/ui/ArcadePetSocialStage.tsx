@@ -181,28 +181,30 @@ export function ArcadePetSocialStage({
         <div
           data-testid="arcade-pet-local-screen-pet"
           onClick={handleLocalClick}
-          className={`${styles.petEntity} ${localSlotClass} ${
-            sim.localDir === 'left'
-              ? styles.petFacingLeft
-              : styles.petFacingRight
-          }`}
+          className={`${styles.petEntity} ${localSlotClass}`}
         >
           {sim.localEmote && (
             <div
-              className={`-scale-x-100 mb-1 px-1.5 py-0.5 rounded-full bg-black/80 border border-emerald-500/60 text-xs shadow-md ${styles.floatingEmote}`}
+              className={`mb-1 px-2 py-0.5 rounded-full bg-black/85 border border-emerald-500/60 text-xs shadow-md ${styles.floatingEmote}`}
             >
               <span>{sim.localEmote}</span>
             </div>
           )}
 
-          <ArcadePetWalkingSprite
-            species={localSpecies}
-            state={sim.localState}
-          />
-
-          <span
-            className={`-scale-x-100 mt-1 px-1.5 py-0.2 rounded bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none`}
+          <div
+            className={
+              sim.localDir === 'left'
+                ? styles.spriteDirectionLeft
+                : styles.spriteDirectionRight
+            }
           >
+            <ArcadePetWalkingSprite
+              species={localSpecies}
+              state={sim.localState}
+            />
+          </div>
+
+          <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none select-none">
             {localPet.name}
           </span>
         </div>
@@ -211,28 +213,30 @@ export function ArcadePetSocialStage({
           <div
             data-testid="arcade-pet-remote-screen-pet"
             onClick={handleRemoteClick}
-            className={`${styles.petEntity} ${remoteSlotClass} ${
-              sim.remoteDir === 'left'
-                ? styles.petFacingLeft
-                : styles.petFacingRight
-            }`}
+            className={`${styles.petEntity} ${remoteSlotClass}`}
           >
             {sim.remoteEmote && (
               <div
-                className={`-scale-x-100 mb-1 px-1.5 py-0.5 rounded-full bg-black/80 border border-indigo-500/60 text-xs shadow-md ${styles.floatingEmote}`}
+                className={`mb-1 px-2 py-0.5 rounded-full bg-black/85 border border-indigo-500/60 text-xs shadow-md ${styles.floatingEmote}`}
               >
                 <span>{sim.remoteEmote}</span>
               </div>
             )}
 
-            <ArcadePetWalkingSprite
-              species={remoteSpecies}
-              state={sim.remoteState}
-            />
-
-            <span
-              className={`-scale-x-100 mt-1 px-1.5 py-0.2 rounded bg-neutral-900/90 border border-indigo-400/50 text-[10px] font-semibold text-indigo-300 pointer-events-none`}
+            <div
+              className={
+                sim.remoteDir === 'left'
+                  ? styles.spriteDirectionLeft
+                  : styles.spriteDirectionRight
+              }
             >
+              <ArcadePetWalkingSprite
+                species={remoteSpecies}
+                state={sim.remoteState}
+              />
+            </div>
+
+            <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-indigo-400/50 text-[10px] font-semibold text-indigo-300 pointer-events-none select-none">
               {otherPlayer?.displayName ?? 'Friend'}&apos;s Pet
             </span>
           </div>

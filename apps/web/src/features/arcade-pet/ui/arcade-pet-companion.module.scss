@@ -3,10 +3,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 96px;
+  height: 110px;
   pointer-events: none;
   z-index: 35;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .petTrack {
@@ -29,11 +29,11 @@
   align-items: center;
 }
 
-.petFacingLeft {
+.spriteDirectionLeft {
   transform: scaleX(-1);
 }
 
-.petFacingRight {
+.spriteDirectionRight {
   transform: scaleX(1);
 }
 

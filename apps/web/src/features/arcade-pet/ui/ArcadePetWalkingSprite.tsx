@@ -320,10 +320,18 @@ export function ArcadePetWalkingSprite({
         </g>
 
         <path
-          d="M 18 42 C 16 26 24 16 32 16 C 40 16 48 26 46 42 C 45 52 19 52 18 42 Z"
+          d="M 32 16 C 43 16 48 26 48 39 C 48 49 42 53 32 53 C 22 53 16 49 16 39 C 16 26 21 16 32 16 Z"
           fill="#38bdf8"
         />
-        <ellipse cx="26" cy="22" rx="4" ry="2" fill="#7dd3fc" opacity="0.8" />
+        <ellipse
+          cx="27"
+          cy="24"
+          rx="4"
+          ry="2.2"
+          transform="rotate(-20 27 24)"
+          fill="#ffffff"
+          opacity="0.4"
+        />
 
         {isSleeping ? (
           <>

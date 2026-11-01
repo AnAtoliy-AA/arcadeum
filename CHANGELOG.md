@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.104] - 2026-11-01
+
+### Fixed
+- stabilize combo modal, chess themes locator, and view mode clicks (ARC-1026) (ARC-1026)
+- optimize workflow jobs and fix webkit e2e stability (ARC-1026) (ARC-1026)
+
+
 ## [1.30.103] - 2026-11-01
 
 ### Added

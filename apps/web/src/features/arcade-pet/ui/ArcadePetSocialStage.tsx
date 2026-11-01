@@ -1,29 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 import { ArcadePetHomeBooth } from './ArcadePetHomeBooth';
+import { usePetStageSimulation } from '../lib/usePetStageSimulation';
 import styles from './arcade-pet-companion.module.scss';
-
-interface SimState {
-  localCol: number;
-  localRow: number;
-  targetCol: number;
-  targetRow: number;
-  localDir: 'left' | 'right';
-  localState: 'walking' | 'idle' | 'happy' | 'sleeping';
-  localEmote: string | null;
-  remoteCol: number;
-  remoteRow: number;
-  remoteDir: 'left' | 'right';
-  remoteState: 'walking' | 'idle' | 'happy' | 'sleeping';
-  remoteEmote: string | null;
-  tick: number;
-  knockTicks: number;
-}
 
 const COL_CLASSES = [
   styles.col0,
@@ -49,25 +33,6 @@ const ROW_CLASSES = [
   styles.row7,
 ];
 
-const EMOTE_CYCLE = ['❤️', '😄', '✨', '🎵', '🍰', '👋'];
-
-const INITIAL_SIM: SimState = {
-  localCol: 2,
-  localRow: 1,
-  targetCol: 7,
-  targetRow: 6,
-  localDir: 'right',
-  localState: 'idle',
-  localEmote: '😄',
-  remoteCol: 6,
-  remoteRow: 2,
-  remoteDir: 'left',
-  remoteState: 'idle',
-  remoteEmote: '👋',
-  tick: 0,
-  knockTicks: 0,
-};
-
 export function ArcadePetSocialStage({
   onOpenCare,
 }: {
@@ -80,266 +45,30 @@ export function ArcadePetSocialStage({
   const room = useGameStore((s) => s.room);
   const members = useMemo(() => room?.members ?? [], [room?.members]);
 
-  const [sim, setSim] = useState<SimState>(INITIAL_SIM);
-
   const otherPlayer = useMemo(() => {
     return members.find((m) => m.id && m.id !== localPet?.id) ?? null;
   }, [members, localPet?.id]);
 
   const hasFriend = Boolean(otherPlayer);
 
-  useEffect(() => {
-    if (!localPet) return;
-
-    const timer = setInterval(() => {
-      setSim((prev) => {
-        const nextTick = prev.tick + 1;
-
-        if (isAtHome) {
-          const atDoor = prev.remoteCol === 7 && prev.remoteRow === 1;
-          if (atDoor) {
-            const nextKnock = prev.knockTicks + 1;
-            if (nextKnock >= 2) {
-              setAtHome(false);
-              return {
-                ...prev,
-                tick: nextTick,
-                knockTicks: 0,
-                localCol: 8,
-                localRow: 1,
-                localState: 'happy',
-                localEmote: '😄',
-                remoteState: 'happy',
-                remoteEmote: '🎉',
-                targetCol: 4,
-                targetRow: 4,
-              };
-            }
-            return {
-              ...prev,
-              tick: nextTick,
-              knockTicks: nextKnock,
-              remoteDir: 'right',
-              remoteState: 'idle',
-              remoteEmote: '✊',
-            };
-          }
-
-          const stepRX = prev.remoteCol < 7 ? 1 : prev.remoteCol > 7 ? -1 : 0;
-          const stepRY = prev.remoteRow < 1 ? 1 : prev.remoteRow > 1 ? -1 : 0;
-          const nextRCol = Math.max(0, Math.min(9, prev.remoteCol + stepRX));
-          const nextRRow = Math.max(0, Math.min(7, prev.remoteRow + stepRY));
-          const nextRDir =
-            stepRX > 0 ? 'right' : stepRX < 0 ? 'left' : prev.remoteDir;
-
-          return {
-            ...prev,
-            tick: nextTick,
-            remoteCol: nextRCol,
-            remoteRow: nextRRow,
-            remoteDir: nextRDir,
-            remoteState: 'walking',
-            remoteEmote: null,
-            knockTicks: 0,
-          };
-        }
-
-        if (!hasFriend) {
-          const atTarget =
-            prev.localCol === prev.targetCol &&
-            prev.localRow === prev.targetRow;
-
-          if (atTarget) {
-            let nextTCol = Math.floor(Math.random() * 10);
-            let nextTRow = Math.floor(Math.random() * 8);
-            if (Math.abs(nextTCol - prev.localCol) < 3) {
-              nextTCol = (prev.localCol + 5) % 10;
-            }
-            if (Math.abs(nextTRow - prev.localRow) < 2) {
-              nextTRow = (prev.localRow + 4) % 8;
-            }
-
-            return {
-              ...prev,
-              tick: nextTick,
-              targetCol: nextTCol,
-              targetRow: nextTRow,
-              localState: 'happy',
-              localEmote: EMOTE_CYCLE[nextTick % EMOTE_CYCLE.length] ?? '😄',
-            };
-          }
-
-          const stepX =
-            prev.localCol < prev.targetCol
-              ? 1
-              : prev.localCol > prev.targetCol
-                ? -1
-                : 0;
-          const stepY =
-            prev.localRow < prev.targetRow
-              ? 1
-              : prev.localRow > prev.targetRow
-                ? -1
-                : 0;
-
-          const nextCol = Math.max(0, Math.min(9, prev.localCol + stepX));
-          const nextRow = Math.max(0, Math.min(7, prev.localRow + stepY));
-          const nextDir =
-            stepX > 0 ? 'right' : stepX < 0 ? 'left' : prev.localDir;
-
-          return {
-            ...prev,
-            tick: nextTick,
-            localCol: nextCol,
-            localRow: nextRow,
-            localDir: nextDir,
-            localState: 'walking',
-            localEmote: null,
-          };
-        }
-
-        const distCol = Math.abs(prev.localCol - prev.remoteCol);
-        const distRow = Math.abs(prev.localRow - prev.remoteRow);
-
-        if (distCol <= 1 && distRow <= 1) {
-          const atTarget =
-            prev.localCol === prev.targetCol &&
-            prev.localRow === prev.targetRow;
-
-          if (atTarget) {
-            let nextTCol = Math.floor(Math.random() * 9);
-            let nextTRow = Math.floor(Math.random() * 8);
-            if (Math.abs(nextTCol - prev.localCol) < 3) {
-              nextTCol = (prev.localCol + 5) % 9;
-            }
-            if (Math.abs(nextTRow - prev.localRow) < 2) {
-              nextTRow = (prev.localRow + 4) % 8;
-            }
-
-            return {
-              ...prev,
-              tick: nextTick,
-              targetCol: nextTCol,
-              targetRow: nextTRow,
-              localState: 'happy',
-              remoteState: 'happy',
-              localEmote: '❤️',
-              remoteEmote: '😄',
-            };
-          }
-
-          const stepX =
-            prev.localCol < prev.targetCol
-              ? 1
-              : prev.localCol > prev.targetCol
-                ? -1
-                : 0;
-          const stepY =
-            prev.localRow < prev.targetRow
-              ? 1
-              : prev.localRow > prev.targetRow
-                ? -1
-                : 0;
-
-          const nextLCol = Math.max(0, Math.min(8, prev.localCol + stepX));
-          const nextLRow = Math.max(0, Math.min(7, prev.localRow + stepY));
-          const nextRCol = Math.min(9, nextLCol + 1);
-          const nextRRow = nextLRow;
-          const walkDir =
-            stepX > 0 ? 'right' : stepX < 0 ? 'left' : prev.localDir;
-
-          return {
-            ...prev,
-            tick: nextTick,
-            localCol: nextLCol,
-            localRow: nextLRow,
-            remoteCol: nextRCol,
-            remoteRow: nextRRow,
-            localDir: walkDir,
-            remoteDir: walkDir,
-            localState: 'walking',
-            remoteState: 'walking',
-            localEmote: null,
-            remoteEmote: null,
-          };
-        }
-
-        const targetColDir = prev.localCol < prev.remoteCol ? 1 : -1;
-        const targetRowDir = prev.localRow < prev.remoteRow ? 1 : -1;
-
-        const nextLCol = Math.max(0, Math.min(9, prev.localCol + targetColDir));
-        const nextLRow = Math.max(0, Math.min(7, prev.localRow + targetRowDir));
-
-        const nextRCol = Math.max(
-          0,
-          Math.min(9, prev.remoteCol - targetColDir),
-        );
-        const nextRRow = Math.max(
-          0,
-          Math.min(7, prev.remoteRow - targetRowDir),
-        );
-
-        return {
-          ...prev,
-          tick: nextTick,
-          localCol: nextLCol,
-          localRow: nextLRow,
-          localDir: targetColDir === 1 ? 'right' : 'left',
-          remoteCol: nextRCol,
-          remoteRow: nextRRow,
-          remoteDir: targetColDir === 1 ? 'left' : 'right',
-          localState: 'walking',
-          remoteState: 'walking',
-          localEmote: null,
-          remoteEmote: null,
-        };
-      });
-    }, 2800);
-
-    return () => clearInterval(timer);
-  }, [hasFriend, localPet, isAtHome, setAtHome]);
-
-  const handleOpenDoor = useCallback(() => {
-    setAtHome(false);
-    setSim((prev) => ({
-      ...prev,
-      localCol: 8,
-      localRow: 1,
-      localState: 'happy',
-      localEmote: '😄',
-      remoteState: 'happy',
-      remoteEmote: '🎉',
-      targetCol: 4,
-      targetRow: 4,
-      knockTicks: 0,
-    }));
-  }, [setAtHome]);
-
-  const handleLocalClick = useCallback(() => {
-    setSim((prev) => ({
-      ...prev,
-      localState: 'happy',
-      localEmote: '❤️',
-    }));
-    onOpenCare();
-  }, [onOpenCare]);
-
-  const handleRemoteClick = useCallback(() => {
-    setSim((prev) => ({
-      ...prev,
-      remoteState: 'happy',
-      remoteEmote: '✨',
-    }));
-  }, []);
-
-  if (!localPet) return null;
-
   const localSpecies: PetSpecies =
-    localPet.stage === 'egg' ? 'blob' : localPet.species;
+    localPet?.stage === 'egg' ? 'blob' : (localPet?.species ?? 'cyber_cat');
   const remoteSpecies: PetSpecies =
     otherPlayer?.displayName?.length && otherPlayer.displayName.length % 2 === 0
       ? 'cyber_cat'
       : 'dragon';
+
+  const { sim, handleOpenDoor, handleLocalClick, handleRemoteClick } =
+    usePetStageSimulation({
+      localSpecies,
+      remoteSpecies,
+      isAtHome,
+      hasFriend,
+      setAtHome,
+      onOpenCare,
+    });
+
+  if (!localPet) return null;
 
   const localColClass = COL_CLASSES[sim.localCol] ?? styles.col2;
   const localRowClass = ROW_CLASSES[sim.localRow] ?? styles.row1;

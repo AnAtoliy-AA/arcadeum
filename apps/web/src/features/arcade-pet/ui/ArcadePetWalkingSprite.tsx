@@ -37,10 +37,32 @@ export function ArcadePetWalkingSprite({
 
   const themeAura = (theme && THEME_AURA_MAP[theme]) ?? styles.auraRetro;
 
+  const walkClass =
+    species === 'cyber_cat'
+      ? styles.catWalkAnimation
+      : species === 'dragon'
+        ? styles.dragonFlyAnimation
+        : species === 'dino'
+          ? styles.dinoStompAnimation
+          : species === 'blob'
+            ? styles.blobBounceAnimation
+            : styles.slimeSlideAnimation;
+
+  const happyClass =
+    species === 'cyber_cat'
+      ? styles.catPounceAnimation
+      : species === 'dragon'
+        ? styles.dragonBreathAnimation
+        : species === 'dino'
+          ? styles.dinoRoarAnimation
+          : species === 'blob'
+            ? styles.blobSpinAnimation
+            : styles.slimeBubbleAnimation;
+
   const animationClass = isHappy
-    ? styles.petBounceAnimation
+    ? happyClass
     : isWalking
-      ? styles.petWalkAnimation
+      ? walkClass
       : isSleeping
         ? styles.petSleepAnimation
         : styles.petSmileAnimation;

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.103] - 2026-11-01
+
+### Added
+- implement rematch consent flow, UI/UX waiting modal, and notifications (ARC-1045) (ARC-1045)
+
+### Fixed
+- require rematch consent and notify players (ARC-1045)
+
+
 ## [1.30.102] - 2026-11-01
 
 ### Fixed

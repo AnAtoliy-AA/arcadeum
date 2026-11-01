@@ -4,6 +4,7 @@ import { type ReactNode } from 'react';
 import BrowserRegistry from '@/app/BrowserRegistry';
 import { StatsReplay } from '@/shared/ui/StatsReplay';
 import { RootModals } from '@/app/[locale]/RootModals';
+import { ArcadePetCompanionWidget } from '@/features/arcade-pet';
 
 /**
  * BrowserRegistry (socket.io) must mount on every page so notifications,
@@ -17,6 +18,7 @@ export function InteractiveShell({ children }: { children: ReactNode }) {
       {children}
       <RootModals />
       <StatsReplay />
+      <ArcadePetCompanionWidget />
     </BrowserRegistry>
   );
 }

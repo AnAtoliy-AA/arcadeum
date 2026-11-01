@@ -2,6 +2,9 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { ProgressBar } from '@arcadeum/ui';
+import { useLanguage } from '@/shared/i18n/useLanguage';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 
 interface ArcadePetCompanionWidgetProps {
@@ -12,12 +15,18 @@ interface ArcadePetCompanionWidgetProps {
 export const ArcadePetCompanionWidget: React.FC<
   ArcadePetCompanionWidgetProps
 > = ({ currentUserId, theme }) => {
+  const pathname = usePathname();
+  const { locale } = useLanguage();
   const { pet, isWidgetOpen, initialize, performAction, toggleWidget } =
     useArcadePetStore();
 
   useEffect(() => {
     initialize(currentUserId, theme);
   }, [currentUserId, theme, initialize]);
+
+  if (pathname?.includes('/games/arcade-pet')) {
+    return null;
+  }
 
   if (!pet) return null;
 
@@ -33,6 +42,8 @@ export const ArcadePetCompanionWidget: React.FC<
             : pet.species === 'blob'
               ? '🐡'
               : '👾';
+
+  const petGameHref = `/${locale}/games/arcade-pet`;
 
   return (
     <div className="fixed bottom-5 right-5 z-40 flex flex-col items-end">
@@ -69,7 +80,7 @@ export const ArcadePetCompanionWidget: React.FC<
                 Your ArcadePet is resting in its egg!
               </span>
               <Link
-                href="/games/arcade-pet"
+                href={petGameHref}
                 className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase text-center"
               >
                 Hatch in Game Room
@@ -77,19 +88,18 @@ export const ArcadePetCompanionWidget: React.FC<
             </div>
           ) : (
             <>
-              <div className="flex flex-col gap-1.5 text-xs">
+              <div className="flex flex-col gap-2 text-xs">
                 <div className="flex justify-between text-[11px] text-neutral-400">
                   <span>Hunger</span>
                   <span className="font-bold text-neutral-200">
                     {pet.stats.hunger}%
                   </span>
                 </div>
-                <div className="w-full h-1.5 rounded bg-neutral-800 overflow-hidden">
-                  <div
-                    className="h-full bg-amber-500"
-                    style={{ width: `${pet.stats.hunger}%` }}
-                  />
-                </div>
+                <ProgressBar
+                  value={pet.stats.hunger}
+                  height={6}
+                  color="#f59e0b"
+                />
 
                 <div className="flex justify-between text-[11px] text-neutral-400 pt-1">
                   <span>Happiness</span>
@@ -97,12 +107,11 @@ export const ArcadePetCompanionWidget: React.FC<
                     {pet.stats.happiness}%
                   </span>
                 </div>
-                <div className="w-full h-1.5 rounded bg-neutral-800 overflow-hidden">
-                  <div
-                    className="h-full bg-rose-500"
-                    style={{ width: `${pet.stats.happiness}%` }}
-                  />
-                </div>
+                <ProgressBar
+                  value={pet.stats.happiness}
+                  height={6}
+                  color="#f43f5e"
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-2 pt-1">
@@ -125,7 +134,7 @@ export const ArcadePetCompanionWidget: React.FC<
               </div>
 
               <Link
-                href="/games/arcade-pet"
+                href={petGameHref}
                 className="w-full mt-1 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs uppercase text-center tracking-wide block"
               >
                 Open Game Room →

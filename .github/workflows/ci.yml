@@ -222,7 +222,7 @@ jobs:
             echo "workers=2" >> $GITHUB_OUTPUT
           else
             echo "browser=webkit" >> $GITHUB_OUTPUT
-            echo "workers=1" >> $GITHUB_OUTPUT
+            echo "workers=2" >> $GITHUB_OUTPUT
           fi
 
       - name: Cache Playwright Browsers

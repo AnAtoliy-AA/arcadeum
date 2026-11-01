@@ -59,6 +59,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
 
     await navigateTo(page, routes.backgammonLanding);
     const bgHeading = page.locator('h1').first();
+    await bgHeading.scrollIntoViewIfNeeded().catch(() => {});
     await expect(bgHeading).toBeVisible();
     await expect(bgHeading).toContainText('Backgammon');
 

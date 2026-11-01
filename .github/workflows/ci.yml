@@ -152,26 +152,26 @@ jobs:
         run: pnpm exec turbo run test --filter mobile --log-order=stream -- --passWithNoTests
 
   web-e2e:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/4)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/8)
     needs: build
-    # develop PRs run the chromium-only 6-shard job below. The matrix must stay
-    # non-empty for every event that reaches this job: an empty matrix vector
-    # fails strategy evaluation and marks the whole run as failed.
     if: "${{ (github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version'))) && (github.event_name != 'pull_request' || github.base_ref != 'develop') }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8]
     services:
       mongodb:
         image: mongo:latest
         ports:
           - 27017:27017
+        options: >-
+          --memory 1g
     env:
       E2E_PROD: true
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
+      NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -236,7 +236,7 @@ jobs:
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/4 --workers=${{ steps.engine.outputs.workers }}
+        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/8 --workers=${{ steps.engine.outputs.workers }}
 
       - name: Upload Test Report
         if: always()
@@ -262,9 +262,12 @@ jobs:
         image: mongo:latest
         ports:
           - 27017:27017
+        options: >-
+          --memory 1g
     env:
       E2E_PROD: true
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
+      NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7

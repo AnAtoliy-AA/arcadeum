@@ -103,6 +103,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
       name: 'Solve Move (1. Qxf7+)',
     });
     await expect(solveBtn).toBeVisible();
+    await solveBtn.scrollIntoViewIfNeeded();
     await solveBtn.click();
 
     await expect(puzzleTeaser).toContainText('Brilliant!! 1. Qxf7+!');

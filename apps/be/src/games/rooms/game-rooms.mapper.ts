@@ -6,7 +6,7 @@ import { GameRoom } from '../schemas/game-room.schema';
 import { GameRoomSummary, GameRoomMemberSummary } from './game-rooms.types';
 
 const USER_COSMETIC_FIELDS =
-  'username email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId';
+  'username displayName email role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId equippedBackgroundId';
 
 @Injectable()
 export class GameRoomsMapper {
@@ -136,7 +136,11 @@ export class GameRoomsMapper {
       host: host
         ? {
             id: room.hostId,
-            displayName: host.username || host.email || 'Unknown',
+            displayName:
+              host.displayName?.trim() ||
+              host.username ||
+              host.email ||
+              'Unknown',
             username: host.username || null,
             email: host.email || null,
             isHost: true,
@@ -217,7 +221,8 @@ export class GameRoomsMapper {
       : '';
     const displayName = isBot
       ? `Bot${botIndex ? ` ${botIndex}` : ''}`
-      : user?.username ||
+      : user?.displayName?.trim() ||
+        user?.username ||
         user?.email ||
         (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
 
@@ -247,7 +252,8 @@ export class GameRoomsMapper {
       : '';
     const displayName = isBot
       ? 'Bot'
-      : user?.username ||
+      : user?.displayName?.trim() ||
+        user?.username ||
         user?.email ||
         (isAnonymous ? `Anonymous #${anonSuffix}` : 'Unknown');
 

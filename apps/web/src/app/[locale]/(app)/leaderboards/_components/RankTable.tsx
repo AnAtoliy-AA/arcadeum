@@ -5,6 +5,7 @@ import {
   TrendPill,
   EnergyBar,
   LiveChip,
+  RoleBadge,
 } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
@@ -12,31 +13,46 @@ import type { LeaderboardPlayer } from '@/entities/leaderboard/model/types';
 import type { PageTranslations } from '@/shared/i18n/page-translations';
 import { useEquippedCosmetics } from '@/features/shop/hooks/useEquippedCosmetics';
 import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+
+import { useRouter } from 'next/navigation';
+import { useRoutes } from '@/shared/config/useRoutes';
 
 const rowBase =
   'flex flex-row items-center gap-3 border-b border-[var(--borderColor)]';
 
 function Row({
   className,
-  minHeight,
   children,
   'data-testid': dataTestId,
   'data-self': dataSelf,
+  onClick,
+  role,
+  tabIndex,
+  onKeyDown,
 }: {
   className?: string;
-  minHeight?: number;
   children?: React.ReactNode;
   'data-testid'?: string;
   'data-self'?: string;
+  onClick?: () => void;
+  role?: string;
+  tabIndex?: number;
+  onKeyDown?: React.KeyboardEventHandler<HTMLDivElement>;
 }) {
   return (
     <div
       className={cx(
         rowBase,
         'px-3 py-3 hover:bg-[rgba(255,255,255,0.03)]',
+        onClick &&
+          'cursor-pointer hover:bg-[rgba(255,255,255,0.06)] transition-colors',
         className,
       )}
-      style={minHeight ? { minHeight } : undefined}
+      onClick={onClick}
+      role={role}
+      tabIndex={tabIndex}
+      onKeyDown={onKeyDown}
       data-testid={dataTestId}
       data-self={dataSelf}
     >
@@ -129,7 +145,7 @@ export function RankTable({
 
       {loading
         ? Array.from({ length: 8 }).map((_, i) => (
-            <Row key={`sk_${i}`} minHeight={56}>
+            <Row key={`sk_${i}`} className="min-h-[56px]">
               <div className="w-[56px] items-start">
                 <div className="w-[36px] h-[22px] bg-[rgba(255,255,255,0.06)] rounded-2xl" />
               </div>
@@ -173,8 +189,15 @@ function RankRow({
   isSelf: boolean;
   priority?: boolean;
 }) {
+  const router = useRouter();
+  const routes = useRoutes();
+  const { t } = useTranslation();
   const live = p.isInMatch ?? false;
   const flag = p.countryCode ? regionFlag(p.countryCode) : null;
+  const roleLabel =
+    p.role && p.role !== 'free' && p.role !== 'user'
+      ? t(`common.roles.${p.role}` as never) || p.role.toUpperCase()
+      : null;
   const { nameColor } = useEquippedCosmetics({
     equippedAvatarId: p.equippedAvatarId,
     equippedBadgeId: p.equippedBadgeId,
@@ -184,10 +207,23 @@ function RankRow({
     equippedBannerId: p.equippedBannerId,
   });
   const nameProps = nameColorRenderProps(nameColor);
+  const handleNavigate = () => {
+    router.push(routes.playerProfile(p.id));
+  };
+
   return (
     <Row
       data-testid={`leaderboard-row-${p.rank}`}
       {...(isSelf ? { 'data-self': 'true' } : {})}
+      onClick={handleNavigate}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleNavigate();
+        }
+      }}
     >
       <div className="w-[56px]">
         <RankBadge tier={p.tier as never}>{`#${p.rank}`}</RankBadge>
@@ -214,13 +250,17 @@ function RankRow({
             </span>
           ) : null}
           <span
-            className="font-bold line-clamp-1"
+            className="font-bold break-words"
+            title={p.name}
             style={
               nameProps.color ? { color: nameProps.color } : nameProps.style
             }
           >
             {p.name}
           </span>
+          {roleLabel && p.role ? (
+            <RoleBadge role={p.role as never}>{roleLabel}</RoleBadge>
+          ) : null}
           {p.isOnline ? (
             <div className="w-[8px] h-[8px] rounded-2xl bg-[var(--success)]" />
           ) : null}
@@ -237,10 +277,13 @@ function RankRow({
               {p.elo} ELO
             </span>
           ) : null}
+          <span className="text-[11px] opacity-[0.7] font-mono min-[801px]:hidden">
+            {p.rating} pts
+          </span>
         </div>
       </div>
       <span className="w-[80px] text-[14px] opacity-[0.8] line-clamp-1">
-        {p.region ? (regionLabels[p.region] ?? p.region.toUpperCase()) : '—'}
+        {p.region ? (regionLabels[p.region] ?? p.region.toUpperCase()) : '-'}
       </span>
       <div className="w-[240px] max-[800px]:hidden">
         <EnergyBar value={p.rating} max={max} />

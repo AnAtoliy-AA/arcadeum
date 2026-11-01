@@ -84,6 +84,7 @@ export type GetLeaderboardArgs = {
   q?: string;
   scope?: string;
   range?: string;
+  opponentType?: 'all' | 'pvp' | 'bot';
 };
 
 @Injectable()
@@ -122,8 +123,14 @@ export class LeaderboardsService {
     limit: number,
     offset: number,
     gameId: string | undefined,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
   ) {
-    const key = LeaderboardsCacheService.rawKeyFor({ gameId, limit, offset });
+    const key = LeaderboardsCacheService.rawKeyFor({
+      gameId,
+      limit,
+      offset,
+      opponentType,
+    });
     const cached =
       this.cache.getRaw<
         Awaited<ReturnType<GameHistoryStatsService['getLeaderboard']>>
@@ -132,7 +139,7 @@ export class LeaderboardsService {
     const existing = this.inFlight.get(key);
     if (existing) return existing;
     const fresh = this.historyStats
-      .getLeaderboard(limit, offset, gameId)
+      .getLeaderboard(limit, offset, gameId, opponentType)
       .then((value) => {
         this.cache.setRaw(key, value);
         return value;
@@ -238,6 +245,7 @@ export class LeaderboardsService {
     if (Types.ObjectId.isValid(userId)) {
       const userDoc = await this.userModel
         .findById(userId, {
+          displayName: 1,
           xp: 1,
           equippedAvatarId: 1,
           equippedBadgeId: 1,
@@ -249,6 +257,7 @@ export class LeaderboardsService {
           equippedBackgroundId: 1,
         })
         .lean<{
+          displayName?: string | null;
           xp?: number | null;
           equippedAvatarId?: string | null;
           equippedBadgeId?: string | null;
@@ -260,6 +269,9 @@ export class LeaderboardsService {
           equippedBackgroundId?: string | null;
         } | null>();
       if (userDoc) {
+        if (userDoc.displayName?.trim()) {
+          primary.entry.displayName = userDoc.displayName.trim();
+        }
         xp = userDoc.xp ?? 0;
         equippedAvatarId = userDoc.equippedAvatarId ?? null;
         equippedBadgeId = userDoc.equippedBadgeId ?? null;
@@ -299,6 +311,7 @@ export class LeaderboardsService {
     );
     const trimmedQ = args.q?.trim();
 
+    const opponentType = args.opponentType ?? 'all';
     const cacheKey = LeaderboardsCacheService.keyFor({
       mode,
       page,
@@ -307,16 +320,19 @@ export class LeaderboardsService {
       scope: args.scope,
       range: args.range,
       selfUserId: args.selfUserId,
+      opponentType,
     });
     const cached = this.cache.get(cacheKey);
     if (cached) return cached;
 
-    // Pull a window of real leaderboard data from completed game history.
-    // Same source the Stats page uses, so the new page never falls out of
-    // sync with the stats tab.
     const gameId = MODE_TO_GAME_ID[mode];
     const realLimit = Math.min(500, pageSize * page + pageSize);
-    const real = await this.cachedRealLeaderboard(realLimit, 0, gameId);
+    const real = await this.cachedRealLeaderboard(
+      realLimit,
+      0,
+      gameId,
+      opponentType,
+    );
 
     let scopeFiltered = real.entries;
     if (args.scope === 'friends' && args.selfUserId) {

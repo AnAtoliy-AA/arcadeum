@@ -33,12 +33,12 @@ export type RealLeaderboardEntry = {
   rank: number;
   playerId: string;
   username: string;
+  displayName?: string | null;
   totalGames: number;
   wins: number;
   losses: number;
   winRate: number;
   elo?: number;
-  /** Real ISO 3166-1 alpha-2 country code from the user's IP (lowercase). */
   countryCode?: string | null;
   role?: string | null;
   equippedAvatarId?: string | null;
@@ -47,6 +47,8 @@ export type RealLeaderboardEntry = {
   equippedFrameId?: string | null;
   equippedAuraId?: string | null;
   equippedBannerId?: string | null;
+  recentForm?: FormResult[];
+  currentStreak?: number;
 };
 
 function hashSeed(input: string): number {
@@ -97,13 +99,6 @@ function computeStreak(form: FormResult[]): number {
   return n;
 }
 
-/**
- * Take a real leaderboard entry (computed from completed sessions) and
- * derive the per-player fields the page needs (tier, recent form, streak,
- * rating, etc.). Region and country come from the user's real geo data
- * resolved via IP lookup — never fabricated. Players without a known
- * country get no region/country and the UI falls back gracefully.
- */
 export function hydratePlayer(
   real: RealLeaderboardEntry,
 ): LeaderboardPlayerDto {
@@ -111,27 +106,28 @@ export function hydratePlayer(
   const countryCode = real.countryCode?.toLowerCase() || undefined;
   const region: Region | undefined = regionForCountry(countryCode);
   const tier = tierForRank(real.rank);
-  // Derive a rating from real wins/losses so it lines up with reality but
-  // still differentiates ties on the page.
-  const rating =
-    1500 + real.wins * 12 - real.losses * 4 + Math.floor(rng() * 30);
-  const recentForm = synthesizeForm(rng, real.winRate);
+  const rating = real.elo ?? 1500 + real.wins * 12 - real.losses * 4;
+  const recentForm =
+    real.recentForm && real.recentForm.length > 0
+      ? real.recentForm
+      : synthesizeForm(rng, real.winRate);
+  const streak = real.currentStreak ?? computeStreak(recentForm);
   return {
     id: real.playerId,
     rank: real.rank,
-    name: real.username,
+    name: real.displayName?.trim() || real.username,
     region,
     countryCode,
     tier,
     rating,
-    elo: real.elo ?? rating + 80,
+    elo: real.elo ?? rating,
     wins: real.wins,
     losses: real.losses,
     draws: 0,
     winrate: real.winRate / 100,
     recentForm,
-    streak: computeStreak(recentForm),
-    isOnline: rng() > 0.6,
+    streak,
+    isOnline: false,
     isFriend: false,
     isInMatch: false,
     gameTags: [],

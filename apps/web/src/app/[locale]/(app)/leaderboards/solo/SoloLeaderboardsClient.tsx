@@ -109,7 +109,7 @@ export function SoloLeaderboardsClient() {
           difficulty={selectedDifficulty}
           sortBy={game.sortBy}
           order={game.order}
-          currentUserId={snapshot.accessToken?.slice(0, 16)}
+          currentUserId={snapshot.userId ?? undefined}
         />
       </div>
     </div>

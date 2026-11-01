@@ -142,6 +142,7 @@ export function Leaderboard({
         <div className="divide-y divide-[var(--borderColor)]/30">
           {leaderboard.map((entry) => {
             const isCurrentUser = entry.playerId === currentUserId;
+            const playerName = entry.displayName || entry.username;
 
             return (
               <div
@@ -158,7 +159,7 @@ export function Leaderboard({
 
                 <div className="flex items-center gap-3 min-w-0 pl-1">
                   <EquippedPlayerAvatar
-                    name={entry.username}
+                    name={playerName}
                     size="md"
                     equippedAvatarId={entry.equippedAvatarId ?? null}
                     equippedBadgeId={entry.equippedBadgeId ?? null}
@@ -167,10 +168,36 @@ export function Leaderboard({
                     equippedAuraId={entry.equippedAuraId}
                     equippedBannerId={entry.equippedBannerId}
                   />
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[14px] font-bold text-[var(--color)] truncate">
-                      {entry.username}
+                  <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <span
+                      className="text-[14px] font-bold text-[var(--color)] break-words"
+                      title={playerName}
+                    >
+                      {playerName}
                     </span>
+                    {entry.currentStreak && entry.currentStreak >= 3 ? (
+                      <span className="text-[12px] whitespace-nowrap">
+                        🔥 {entry.currentStreak}
+                      </span>
+                    ) : null}
+                    {entry.recentForm && entry.recentForm.length > 0 ? (
+                      <div className="hidden lg:flex items-center gap-1">
+                        {entry.recentForm.slice(-5).map((res, idx) => (
+                          <span
+                            key={idx}
+                            className={`inline-flex items-center justify-center w-4 h-4 rounded text-[10px] font-bold ${
+                              res === 'W'
+                                ? 'bg-emerald-500/20 text-emerald-400'
+                                : res === 'L'
+                                  ? 'bg-rose-500/20 text-rose-400'
+                                  : 'bg-zinc-500/20 text-zinc-400'
+                            }`}
+                          >
+                            {res}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
                     {isCurrentUser && (
                       <Badge variant="info" size="sm">
                         {t('stats.you')}

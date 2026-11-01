@@ -23,6 +23,30 @@ export class PlayerStats {
 
   @Prop({ default: 1200 })
   elo!: number;
+
+  @Prop({ default: 0 })
+  pvpGames!: number;
+
+  @Prop({ default: 0 })
+  pvpWins!: number;
+
+  @Prop({ default: 0 })
+  pvpLosses!: number;
+
+  @Prop({ default: 0 })
+  pvpDraws!: number;
+
+  @Prop({ default: 0 })
+  botGames!: number;
+
+  @Prop({ default: 0 })
+  botWins!: number;
+
+  @Prop({ default: 0 })
+  botLosses!: number;
+
+  @Prop({ default: 0 })
+  botDraws!: number;
 }
 
 export type PlayerStatsDocument = PlayerStats & Document;

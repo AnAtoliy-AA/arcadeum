@@ -7,6 +7,7 @@ import type {
   Tier,
   FormResult,
   TickerEvent,
+  OpponentType,
 } from '@/entities/leaderboard/model/types';
 import { apiClient, ApiError } from '@/shared/lib/api-client';
 import { HttpStatus } from '@/shared/lib/http-status';
@@ -127,6 +128,24 @@ function makePlayer(rng: () => number, rank: number): LeaderboardPlayer {
     // it impossible to satisfy.
     isInMatch: rank <= 5,
     gameTags,
+    role:
+      rank === 1
+        ? 'admin'
+        : rank === 2
+          ? 'vip'
+          : rank === 3
+            ? 'premium'
+            : rank === 4
+              ? 'supporter'
+              : null,
+    equippedAvatarId:
+      rank === 1
+        ? 'avatar-falcon-cyber'
+        : rank === 2
+          ? 'avatar-samurai-retro'
+          : rank === 3
+            ? 'avatar-dragon-neon'
+            : null,
   };
 }
 
@@ -139,6 +158,7 @@ export type GetLeaderboardArgs = {
   q?: string;
   scope?: string;
   range?: string;
+  opponentType?: OpponentType;
 };
 
 function shouldUseMock() {
@@ -160,6 +180,7 @@ export async function getLeaderboard(
       q,
       scope,
       range,
+      opponentType,
     } = args;
     const qs = new URLSearchParams();
     qs.set('mode', mode);
@@ -168,6 +189,7 @@ export async function getLeaderboard(
     if (q && q.trim()) qs.set('q', q.trim());
     if (scope) qs.set('scope', scope);
     if (range) qs.set('range', range);
+    if (opponentType) qs.set('opponentType', opponentType);
     return apiClient.get<LeaderboardSnapshot>(
       `/leaderboards?${qs.toString()}`,
       accessToken ? { token: accessToken } : {},
@@ -194,33 +216,6 @@ export async function getPlayer(
   }
 }
 
-export function getMockPlayer(id: string): PlayerProfile {
-  const rng = seededRandom(id.length || 7);
-  const player = makePlayer(rng, 247);
-  player.id = id;
-  return {
-    player,
-    modeRanks: [
-      { mode: 'all', rank: 247, rating: player.rating },
-      { mode: 'critical_v1', rank: 18, rating: player.rating - 80 },
-    ],
-    xp: 0,
-    level: 1,
-    prestige: 0,
-    squad: {
-      id: 'sq_1',
-      name: 'Ember Pact',
-      tag: 'EMBR',
-      rating: 9720,
-      memberCount: 7,
-      rank: 2,
-      isYou: true,
-    },
-  };
-}
-
-// Memoized full population per mode so mock filtering applies across the
-// whole leaderboard, not just the page slice (Bug #9).
 const POPULATION_CACHE = new Map<string, LeaderboardPlayer[]>();
 const TOTAL_POPULATION = 1248;
 
@@ -231,12 +226,67 @@ function getPopulationFor(mode: GameMode): LeaderboardPlayer[] {
   const pop = Array.from({ length: TOTAL_POPULATION }, (_, i) =>
     makePlayer(rng, i + 1),
   );
-  // Tag a few rows as in-match (single source of truth — no liveMatchRanks).
   for (const idx of [2, 7, 14]) {
     if (pop[idx]) pop[idx].isInMatch = true;
   }
   POPULATION_CACHE.set(mode, pop);
   return pop;
+}
+
+export function getMockPlayer(id: string): PlayerProfile {
+  const population = getPopulationFor('all');
+  const found = population.find((p) => p.id === id);
+
+  let player: LeaderboardPlayer;
+  if (found) {
+    player = { ...found };
+  } else {
+    const match = id.match(/\d+/);
+    const rankNum = match ? parseInt(match[0], 10) : 1;
+    const rng = seededRandom(rankNum * 31);
+    player = makePlayer(rng, rankNum);
+    player.id = id;
+  }
+
+  return {
+    player,
+    modeRanks: [
+      { mode: 'all', rank: player.rank, rating: player.rating },
+      {
+        mode: 'critical_v1',
+        rank: Math.max(1, player.rank - 5),
+        rating: Math.max(100, player.rating - 80),
+      },
+      {
+        mode: 'sea_battle_v1',
+        rank: Math.max(1, player.rank + 2),
+        rating: Math.max(100, player.rating - 120),
+      },
+      {
+        mode: 'chess_v1',
+        rank: Math.max(1, player.rank - 1),
+        rating: Math.max(100, player.rating - 40),
+      },
+    ],
+    xp: player.wins * 250,
+    level: Math.min(99, Math.max(1, Math.floor(player.rating / 50))),
+    prestige: player.rating > 2600 ? 1 : 0,
+    squad: {
+      id: 'sq_1',
+      name: 'Ember Pact',
+      tag: 'EMBR',
+      rating: 9720,
+      memberCount: 7,
+      rank: 2,
+      isYou: true,
+    },
+    equippedAvatarId: player.equippedAvatarId,
+    equippedBadgeId: player.equippedBadgeId,
+    equippedNameColorId: player.equippedNameColorId,
+    equippedFrameId: player.equippedFrameId,
+    equippedAuraId: player.equippedAuraId,
+    equippedBannerId: player.equippedBannerId,
+  };
 }
 
 export async function getMockLeaderboard(
@@ -321,6 +371,11 @@ export async function getMockLeaderboard(
       'chess_v1',
       'checkers_v1',
       'cat_dash_v1',
+      'backgammon_v1',
+      'hearts_v1',
+      'spades_v1',
+      'go_v1',
+      'pachisi_v1',
     ],
     page,
     mythic,

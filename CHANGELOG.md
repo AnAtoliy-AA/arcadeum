@@ -7,11 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.101] - 2026-10-31
+
+### Fixed
+- fix game mode keys, player name visibility, thumbnails and form sync (ARC-1024) (ARC-1024)
+
+### Improved
+- eliminate layout shift and fix hydration in leaderboard page (ARC-1024) (ARC-1024)
+
+
+## [1.30.100] - 2026-10-31
+
+### Added
+
+- add capture and game over audio cues and multi-token depth styling (ARC-1022) (ARC-1022)
+
+## [1.30.99] - 2026-10-31
+
+### Added
+
+- rework Cat Dash playfield (ARC-938)
+
+### Fixed
+
+- show Cat Dash racer cards on desktop (ARC-938)
+
+## [1.30.98] - 2026-10-31
+
+### Documentation
+
+- sync generated-roadmap.json with Phase 14 updates (ARC-1000) (ARC-1000)
+- mark phase 14 and strategy guide drills as 100% completed (ARC-1000) (ARC-1000)
+
+## [1.30.97] - 2026-10-31
+
+### Added
+
+- add interactive practice drills to Go and Sudoku guides (ARC-980) (ARC-980)
+
 ## [1.30.96] - 2026-10-31
 
 ### Added
-- modularize board components, add landing animation, and auto-pass timer (ARC-1021) (ARC-1021)
 
+- modularize board components, add landing animation, and auto-pass timer (ARC-1021) (ARC-1021)
 
 ## [1.30.95] - 2026-10-31
 

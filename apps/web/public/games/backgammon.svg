@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#3b1d11"/>
+      <stop offset="100%" stop-color="#120703"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="50%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <!-- Backgammon board points -->
+    <polygon points="-60,-45 -48,0 -36,-45" fill="#ef4444" opacity="0.8"/>
+    <polygon points="-36,-45 -24,0 -12,-45" fill="#f8fafc" opacity="0.8"/>
+    <polygon points="-12,-45 0,0 12,-45" fill="#ef4444" opacity="0.8"/>
+    <polygon points="12,-45 24,0 36,-45" fill="#f8fafc" opacity="0.8"/>
+    <polygon points="36,-45 48,0 60,-45" fill="#ef4444" opacity="0.8"/>
+
+    <!-- Checkers stacked -->
+    <circle cx="-48" cy="-35" r="10" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="-48" cy="-18" r="10" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>
+    <circle cx="48" cy="-35" r="10" fill="#1e293b" stroke="#0f172a" stroke-width="1.5"/>
+
+    <!-- Pair of dice -->
+    <g transform="translate(-16, 25)">
+      <rect x="-14" y="-14" width="28" height="28" rx="6" fill="#f8fafc" stroke="#0f172a" stroke-width="2"/>
+      <circle cx="-7" cy="-7" r="2.5" fill="#ef4444"/>
+      <circle cx="0" cy="0" r="2.5" fill="#ef4444"/>
+      <circle cx="7" cy="7" r="2.5" fill="#ef4444"/>
+    </g>
+    <g transform="translate(18, 25)">
+      <rect x="-14" y="-14" width="28" height="28" rx="6" fill="#f8fafc" stroke="#0f172a" stroke-width="2"/>
+      <circle cx="-7" cy="-7" r="2.5" fill="#0f172a"/>
+      <circle cx="7" cy="-7" r="2.5" fill="#0f172a"/>
+      <circle cx="-7" cy="7" r="2.5" fill="#0f172a"/>
+      <circle cx="7" cy="7" r="2.5" fill="#0f172a"/>
+      <circle cx="0" cy="0" r="2.5" fill="#ef4444"/>
+    </g>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="26" font-weight="900" letter-spacing="4" fill="url(#title)">BACKGAMMON</text>
+</svg>

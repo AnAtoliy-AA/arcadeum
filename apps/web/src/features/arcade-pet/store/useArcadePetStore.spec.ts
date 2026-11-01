@@ -163,4 +163,27 @@ describe('useArcadePetStore', () => {
     useArcadePetStore.getState().setAtHome(false);
     expect(useArcadePetStore.getState().isAtHome).toBe(false);
   });
+
+  it('allows admin to gift pet for 0 gems with official admin attribution', () => {
+    useArcadePetStore.setState({ gemBalance: 0, presents: [] });
+    const result = useArcadePetStore.getState().sendGiftPet(
+      'lucky-player',
+      'Lucky',
+      {
+        species: 'cyber_cat',
+        theme: 'cyberpunk',
+        petName: 'Admin Cyber Cat',
+      },
+      true,
+    );
+
+    expect(result.success).toBe(true);
+    expect(useArcadePetStore.getState().gemBalance).toBe(0);
+    const presents = useArcadePetStore.getState().presents;
+    expect(presents.length).toBe(1);
+    expect(presents[0]?.senderId).toBe('admin');
+    expect(presents[0]?.senderName).toBe('👑 Arcadeum Admin');
+    expect(presents[0]?.species).toBe('cyber_cat');
+    expect(presents[0]?.message).toBe('Official Administrator Gift');
+  });
 });

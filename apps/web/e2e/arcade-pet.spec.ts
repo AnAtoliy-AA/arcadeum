@@ -185,4 +185,61 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(page.getByTestId('arcade-pet-inside-house')).toBeHidden();
     await expect(page.getByTestId('arcade-pet-local-screen-pet')).toBeVisible();
   });
+
+  test('should allow admin to grant pet gift for 0 gems with admin authority', async ({
+    page,
+  }) => {
+    await mockSession(page, { role: 'admin' });
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'arcadeum_pet_collection_v2',
+        JSON.stringify({
+          pets: [
+            {
+              id: 'admin-pet-1',
+              name: 'AdminBot',
+              species: 'cyber_cat',
+              stage: 'adult',
+              theme: 'cyberpunk',
+              stats: { hunger: 100, happiness: 100, level: 10 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+          ],
+          activePetId: 'admin-pet-1',
+          gemBalance: 0,
+          adoptionCount: 1,
+          queuedThemeForNextPet: null,
+          presents: [],
+        }),
+      );
+    });
+
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await trigger.click();
+
+    const openGiftsBtn = page.getByTestId('open-gifts-modal-btn');
+    await openGiftsBtn.click();
+
+    const sendTab = page.getByTestId('tab-send-gift');
+    await expect(sendTab).toContainText('Admin Gift Pet 👑');
+    await sendTab.click();
+
+    await expect(page.getByTestId('admin-gift-callout')).toBeVisible();
+    const sendBtn = page.getByTestId('send-pet-gift-btn');
+    await expect(sendBtn).toContainText(
+      'Grant Pet Gift (0 💎 Admin Authority) 👑',
+    );
+
+    const recipientInput = page.getByTestId('gift-recipient-input');
+    await recipientInput.fill('GrandChampion');
+    await sendBtn.click();
+
+    await expect(
+      page.getByText(/Pet gift sent to GrandChampion/i),
+    ).toBeVisible();
+  });
 });

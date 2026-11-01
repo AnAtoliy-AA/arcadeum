@@ -5,6 +5,7 @@ import type { PetSpecies } from '@arcadeum/games-core';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 
 interface ArcadePetGiftsModalProps {
   open: boolean;
@@ -29,6 +30,9 @@ export function ArcadePetGiftsModal({
 }: ArcadePetGiftsModalProps) {
   const { presents, gemBalance, claimPresent, sendGiftPet } =
     useArcadePetStore();
+  const { snapshot } = useSessionTokens();
+  const isAdmin = snapshot.role === 'admin';
+
   const [activeTab, setActiveTab] = useState<'received' | 'send'>('received');
   const [recipient, setRecipient] = useState('');
   const [species, setSpecies] = useState<PetSpecies>('dragon');
@@ -61,14 +65,23 @@ export function ArcadePetGiftsModal({
       return;
     }
 
-    const result = sendGiftPet(recipient.trim(), recipient.trim(), {
-      species,
-      theme,
-      petName:
-        petName.trim() ||
-        `${THEME_PET_PALETTES[theme]?.title ?? ''} ${species}`,
-      message: message.trim() || 'A friendly companion gift for you!',
-    });
+    const result = sendGiftPet(
+      recipient.trim(),
+      recipient.trim(),
+      {
+        species,
+        theme,
+        petName:
+          petName.trim() ||
+          `${THEME_PET_PALETTES[theme]?.title ?? ''} ${species}`,
+        message:
+          message.trim() ||
+          (isAdmin
+            ? 'Official Administrator Gift from Arcadeum!'
+            : 'A friendly companion gift for you!'),
+      },
+      isAdmin,
+    );
 
     if (!result.success) {
       if (result.error === 'INSUFFICIENT_GEMS') {
@@ -147,7 +160,7 @@ export function ArcadePetGiftsModal({
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            Gift a Pet (💎 50)
+            {isAdmin ? 'Admin Gift Pet 👑' : 'Gift a Pet (💎 50)'}
           </button>
         </div>
 
@@ -204,8 +217,16 @@ export function ArcadePetGiftsModal({
                                 </span>
                               )}
                             </span>
-                            <span className="text-[11px] text-pink-300 font-semibold">
+                            <span className="text-[11px] text-pink-300 font-semibold flex items-center gap-1.5">
                               From: {present.senderName}
+                              {present.senderId === 'admin' && (
+                                <span
+                                  data-testid="admin-gift-badge"
+                                  className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 font-bold"
+                                >
+                                  👑 Admin Gift
+                                </span>
+                              )}
                             </span>
                             {present.message && (
                               <span className="text-[10px] text-neutral-400 italic">
@@ -239,9 +260,22 @@ export function ArcadePetGiftsModal({
 
           {activeTab === 'send' && (
             <div className="space-y-4">
-              <div className="p-3 rounded-xl bg-pink-950/30 border border-pink-500/30 text-xs text-pink-200">
-                Gift a companion mount to another player for 💎 50 gems.
-              </div>
+              {isAdmin ? (
+                <div
+                  data-testid="admin-gift-callout"
+                  className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/50 text-xs text-amber-200 flex items-center gap-2"
+                >
+                  <span>👑</span>
+                  <span>
+                    Admin Grant Authority: Gift free companion mounts to any
+                    player (0 💎 cost).
+                  </span>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-pink-950/30 border border-pink-500/30 text-xs text-pink-200">
+                  Gift a companion mount to another player for 💎 50 gems.
+                </div>
+              )}
 
               <div className="space-y-1">
                 <span className="text-xs font-bold text-neutral-300 block">
@@ -325,7 +359,9 @@ export function ArcadePetGiftsModal({
                 onClick={handleSendGift}
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg transition-transform active:scale-95"
               >
-                Send Pet Gift (💎 50 Gems)
+                {isAdmin
+                  ? 'Grant Pet Gift (0 💎 Admin Authority) 👑'
+                  : 'Send Pet Gift (💎 50 Gems)'}
               </button>
             </div>
           )}

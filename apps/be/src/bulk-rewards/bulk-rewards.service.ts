@@ -109,6 +109,16 @@ export class BulkRewardsService {
         await this.inventoryService.grant(userId, dto.itemId, idempotencyKey);
         break;
 
+      case BulkRewardType.PET: {
+        const petSpecies = dto.itemId || 'dragon';
+        await this.inventoryService.grant(
+          userId,
+          `pet:${petSpecies}`,
+          idempotencyKey,
+        );
+        break;
+      }
+
       default:
         throw new BadRequestException('bulkRewards.invalidType');
     }

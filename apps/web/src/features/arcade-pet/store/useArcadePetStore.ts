@@ -50,6 +50,7 @@ interface ArcadePetStoreState {
       petName: string;
       message?: string;
     },
+    isAdmin?: boolean,
   ) => { success: boolean; error?: string };
   buyGameTheme: (themeId: string) => void;
   addGems: (amount: number) => void;
@@ -315,15 +316,30 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     return { success: true, present: target };
   },
 
-  sendGiftPet: (_recipientId, _recipientName, _gift) => {
-    const { gemBalance } = get();
-    const giftCost = 50;
+  sendGiftPet: (recipientId, _recipientName, gift, isAdmin = false) => {
+    const { gemBalance, presents } = get();
+    const giftCost = isAdmin ? 0 : 50;
     if (gemBalance < giftCost) {
       return { success: false, error: 'INSUFFICIENT_GEMS' };
     }
 
     const nextGems = gemBalance - giftCost;
-    set({ gemBalance: nextGems });
+    const newPresent: PetGiftPresent = {
+      id: `gift-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      senderId: isAdmin ? 'admin' : 'friend',
+      senderName: isAdmin ? '👑 Arcadeum Admin' : 'Friend',
+      species: gift.species,
+      theme: gift.theme,
+      petName: gift.petName,
+      message:
+        gift.message ||
+        (isAdmin ? 'Official Administrator Gift' : 'A special gift!'),
+      createdAt: Date.now(),
+      isOpened: false,
+    };
+    const nextPresents = [newPresent, ...presents];
+
+    set({ gemBalance: nextGems, presents: nextPresents });
 
     saveStoredCollection({
       pets: get().pets,
@@ -331,7 +347,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       gemBalance: nextGems,
       adoptionCount: get().adoptionCount,
       queuedThemeForNextPet: get().queuedThemeForNextPet,
-      presents: get().presents,
+      presents: nextPresents,
     });
 
     return { success: true };

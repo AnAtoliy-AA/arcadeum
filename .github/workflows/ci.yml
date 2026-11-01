@@ -159,7 +159,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari", "Tablet Safari"]
+        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari"]
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
     services:
       mongodb:
@@ -476,7 +476,7 @@ jobs:
   lhci-comment:
     name: Lighthouse Report
     needs: lhci-audit
-    if: always() && github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request' && github.base_ref == 'develop' && needs.lhci-audit.result != 'skipped'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository

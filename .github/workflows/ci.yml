@@ -152,7 +152,7 @@ jobs:
         run: pnpm exec turbo run test --filter mobile --log-order=stream -- --passWithNoTests
 
   web-e2e:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/8)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
     if: "${{ (github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version'))) && (github.event_name != 'pull_request' || github.base_ref != 'develop') }}"
     runs-on: ubuntu-latest
@@ -160,7 +160,7 @@ jobs:
       fail-fast: false
       matrix:
         project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari"]
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3]
     services:
       mongodb:
         image: mongo:latest
@@ -236,7 +236,7 @@ jobs:
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/8 --workers=${{ steps.engine.outputs.workers }}
+        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3 --workers=${{ steps.engine.outputs.workers }}
 
       - name: Upload Test Report
         if: always()
@@ -248,7 +248,7 @@ jobs:
           retention-days: 30
 
   web-e2e-develop:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/6)
+    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
     if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' && !startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version') }}"
     runs-on: ubuntu-latest
@@ -256,7 +256,7 @@ jobs:
       fail-fast: false
       matrix:
         project: ['chromium']
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3]
     services:
       mongodb:
         image: mongo:latest
@@ -318,7 +318,7 @@ jobs:
         run: pnpm --filter web exec playwright install chromium
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project=chromium --shard=${{ matrix.shard }}/6
+        run: pnpm --filter web test:e2e --project=chromium --shard=${{ matrix.shard }}/3
 
       - name: Upload Test Report
         if: always()

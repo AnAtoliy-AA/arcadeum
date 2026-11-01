@@ -4,11 +4,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const urlsPath = resolve(__dirname, '../../lighthouse-urls.json');
+const isAxeAuditRun = Boolean(process.env.SHARD_INDEX || process.env.AXE_AUDIT);
 
-// When lighthouse-urls.json hasn't been generated (regular E2E runs),
-// register a single skip test so the file exits cleanly.
-if (!existsSync(urlsPath)) {
-  test('axe-a11y audit (skipped — lighthouse-urls.json not found)', () => {
+if (!existsSync(urlsPath) || !isAxeAuditRun) {
+  test('axe-a11y audit (skipped during regular E2E runs)', () => {
     test.skip();
   });
 } else {

@@ -41,5 +41,13 @@ export const enMessages = {
         level: 'Level',
       },
     },
+    rules: {
+      title: 'How to Play',
+      objective:
+        'Hatch and raise a healthy retro companion by balancing hunger, happiness, energy, and hygiene.',
+      care: 'Feed meals and snacks, clean up messes, turn off the lights for sleep, and play mini-games to maintain high happiness.',
+      evolution:
+        'Earn XP through attentive daily care and cross-game companion treats to trigger evolutions from egg to adult and senior stages.',
+    },
   },
 };

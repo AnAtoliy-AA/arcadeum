@@ -41,5 +41,13 @@ export const frMessages = {
         level: 'Niveau',
       },
     },
+    rules: {
+      title: 'Regles du jeu',
+      objective:
+        'Elevez un compagnon retro en bonne sante en equilibrant la faim, le bonheur, l energie et l hygiene.',
+      care: 'Donnez des repas et des en-cas, nettoyez les besoins, eteignez la lumiere pour dormir et jouez a des mini-jeux.',
+      evolution:
+        'Gagnez de l experience avec des soins reguliers et des friandises inter-jeux pour faire evoluer votre animal.',
+    },
   },
 };

@@ -41,5 +41,13 @@ export const esMessages = {
         level: 'Nivel',
       },
     },
+    rules: {
+      title: 'Reglas del juego',
+      objective:
+        'Cria una mascota retro saludable manteniendo el hambre, la felicidad, la energia y la higiene.',
+      care: 'Alimenta con comidas y snacks, limpia los restos, apaga la luz para dormir y juega minijuegos.',
+      evolution:
+        'Gana experiencia con cuidados constantes y premios entre juegos para evolucionar tu mascota.',
+    },
   },
 };

@@ -16,6 +16,7 @@ import { SolitaireRealCards } from './SolitaireRealCards';
 import { MinesweeperRealBoard } from './MinesweeperRealBoard';
 import { SudokuRealBoard } from './SudokuRealBoard';
 import { Game2048RealBoard } from './Game2048RealBoard';
+import { ArcadePetRealPreview } from './ArcadePetRealPreview';
 
 interface Props {
   gameId: string;
@@ -55,6 +56,8 @@ export function GamesCatalogRealPreview({ gameId }: Props) {
       return <SudokuRealBoard />;
     case 'game_2048_v1':
       return <Game2048RealBoard />;
+    case 'arcade_pet_v1':
+      return <ArcadePetRealPreview />;
     case 'glimworm_v1':
     default:
       return <GlimwormRealArena />;

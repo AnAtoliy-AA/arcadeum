@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.108] - 2026-11-01
+
+### Fixed
+- scroll theme showcase card into view before click in chess landing (ARC-1030) (ARC-1030)
+- enable 2 workers for webkit and stabilize safari locators (ARC-1030) (ARC-1030)
+
+
 ## [1.30.107] - 2026-11-01
 
 ### Fixed

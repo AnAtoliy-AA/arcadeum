@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.109] - 2026-11-01
+
+### Fixed
+- derive player level from xp so stats never show stale level (ARC-1047) (ARC-1047)
+
+
 ## [1.30.108] - 2026-11-01
 
 ### Fixed

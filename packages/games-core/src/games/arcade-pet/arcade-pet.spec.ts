@@ -3,6 +3,8 @@ import {
   applyDeterministicDecay,
   createInitialPet,
   executePetAction,
+  getGrowthSpeedPercent,
+  levelFromPetXp,
 } from './arcade-pet.utils';
 
 describe('ArcadePet Engine', () => {
@@ -113,5 +115,62 @@ describe('ArcadePet Engine', () => {
     const wakeResult = executePetAction(sleepResult.state, 'wake', { now: 1000 });
     expect(wakeResult.success).toBe(true);
     expect(wakeResult.state.isSleeping).toBe(false);
+  });
+
+  it('decays hunger slower and grows slower when at home compared to running on screen', () => {
+    const egg = createInitialPet({ id: 'pet-1', name: 'PixelBuddy', now: 1000 });
+    const hatched = executePetAction(egg, 'hatch', { now: 1000 }).state;
+    hatched.stats.hunger = 100;
+    hatched.stats.growthHours = 0;
+
+    const twoHoursLater = 1000 + 2 * 3600000;
+    const runningDecayed = applyDeterministicDecay(hatched, twoHoursLater, { isAtHome: false });
+    const homeDecayed = applyDeterministicDecay(hatched, twoHoursLater, { isAtHome: true });
+
+    expect(runningDecayed.stats.hunger).toBeLessThan(homeDecayed.stats.hunger);
+    expect(homeDecayed.stats.growthHours!).toBeLessThan(runningDecayed.stats.growthHours!);
+  });
+
+  it('grows slower when hunger percentage is low', () => {
+    const egg = createInitialPet({ id: 'pet-1', name: 'PixelBuddy', now: 1000 });
+    const hatched = executePetAction(egg, 'hatch', { now: 1000 }).state;
+
+    const fullPet = { ...hatched, stats: { ...hatched.stats, hunger: 100, growthHours: 0 } };
+    const hungryPet = { ...hatched, stats: { ...hatched.stats, hunger: 10, growthHours: 0 } };
+
+    const oneHourLater = 1000 + 3600000;
+    const fullDecayed = applyDeterministicDecay(fullPet, oneHourLater, { isAtHome: false });
+    const hungryDecayed = applyDeterministicDecay(hungryPet, oneHourLater, { isAtHome: false });
+
+    expect(hungryDecayed.stats.growthHours!).toBeLessThan(fullDecayed.stats.growthHours!);
+  });
+
+  it('calculates growth speed percentages accurately for UI feedback', () => {
+    expect(getGrowthSpeedPercent(100, false)).toBe(100);
+    expect(getGrowthSpeedPercent(50, false)).toBe(50);
+    expect(getGrowthSpeedPercent(10, false)).toBe(10);
+    expect(getGrowthSpeedPercent(100, true)).toBe(33);
+    expect(getGrowthSpeedPercent(50, true)).toBe(17);
+    expect(getGrowthSpeedPercent(10, true)).toBe(3);
+  });
+
+  it('accumulates passive xp across many short ticks', () => {
+    const now = 1_700_000_000_000;
+    const hatched = executePetAction(createInitialPet({ id: 'p', name: 'P' }), 'hatch', { species: 'dragon', theme: 'cyberpunk', now }).state;
+    let pet = hatched;
+    for (let i = 1; i <= 720; i += 1) {
+      pet = applyDeterministicDecay(pet, now + i * 5000);
+    }
+    expect(pet.stats.xp).toBeGreaterThan(0);
+  });
+
+  it('derives level from xp for every action', () => {
+    const now = 1_700_000_000_000;
+    const hatched = executePetAction(createInitialPet({ id: 'p', name: 'P' }), 'hatch', { species: 'dragon', theme: 'cyberpunk', now }).state;
+    const boosted = { ...hatched, stats: { ...hatched.stats, hunger: 50, xp: 95, level: 1 } };
+    const fed = executePetAction(boosted, 'feed_meal', { now });
+    expect(fed.state.stats.xp).toBe(105);
+    expect(fed.state.stats.level).toBe(levelFromPetXp(105));
+    expect(fed.state.stats.level).toBe(2);
   });
 });

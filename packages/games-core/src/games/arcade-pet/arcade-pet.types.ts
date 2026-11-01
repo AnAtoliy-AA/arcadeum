@@ -40,6 +40,7 @@ export interface PetStats {
   weight: number;
   level: number;
   xp: number;
+  growthHours?: number;
 }
 
 export interface PetTimestamps {

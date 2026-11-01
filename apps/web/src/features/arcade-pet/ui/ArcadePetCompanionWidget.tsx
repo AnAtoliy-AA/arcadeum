@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ProgressBar } from '@arcadeum/ui';
+import { getGrowthSpeedPercent } from '@arcadeum/games-core';
 import { useLanguage } from '@/shared/i18n/useLanguage';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useArcadePetStore } from '../store/useArcadePetStore';
@@ -309,14 +310,24 @@ export const ArcadePetCompanionWidget: React.FC<
               </div>
             ) : (
               <>
-                {isAtHome && (
+                {isAtHome ? (
                   <div
                     data-testid="pet-home-resting-banner"
                     className="text-[11px] text-amber-200 font-medium text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
                   >
                     <span>🏠</span>
                     <span>
-                      Resting at Home • Pets need no food while resting!
+                      Resting at Home • Growth & hunger slowed to 1/3 speed
+                    </span>
+                  </div>
+                ) : (
+                  <div
+                    data-testid="pet-running-banner"
+                    className="text-[11px] text-emerald-300 font-medium text-center bg-emerald-950/30 border border-emerald-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
+                  >
+                    <span>⚡</span>
+                    <span>
+                      Running on Screen • Fast growth! Keep fed to grow faster.
                     </span>
                   </div>
                 )}
@@ -345,6 +356,26 @@ export const ArcadePetCompanionWidget: React.FC<
                     height={6}
                     color="#f43f5e"
                   />
+
+                  <div
+                    data-testid="pet-growth-rate-badge"
+                    className="flex items-center justify-between text-[11px] px-2 py-1 rounded bg-neutral-950/70 border border-neutral-800"
+                  >
+                    <span className="text-neutral-400">Growth Speed</span>
+                    <span
+                      className={`font-bold ${
+                        getGrowthSpeedPercent(pet.stats.hunger, isAtHome) >= 70
+                          ? 'text-emerald-400'
+                          : getGrowthSpeedPercent(pet.stats.hunger, isAtHome) >=
+                              30
+                            ? 'text-amber-400'
+                            : 'text-rose-400'
+                      }`}
+                    >
+                      {getGrowthSpeedPercent(pet.stats.hunger, isAtHome)}%
+                      {pet.stats.hunger < 25 ? ' (⚠️ Hungry)' : ''}
+                    </span>
+                  </div>
                 </div>
 
                 {actionError && (
@@ -406,8 +437,8 @@ export const ArcadePetCompanionWidget: React.FC<
                   <span>🏠</span>
                   <span>
                     {isAtHome
-                      ? 'Call Pets Outside'
-                      : 'Send Pets to Home (Freeze Hunger)'}
+                      ? 'Call Pets Outside (Fast Growth)'
+                      : 'Send Pets to Home (Slow Growth & Hunger)'}
                   </span>
                 </button>
 

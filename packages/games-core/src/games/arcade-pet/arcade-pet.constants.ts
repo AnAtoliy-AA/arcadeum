@@ -3,6 +3,7 @@ import type { GameTreatId, PetSpecies, PetStage } from './arcade-pet.types';
 export const DECAY_RATES_PER_HOUR = {
   hungerAwake: 12,
   hungerAsleep: 4,
+  hungerHome: 4,
   happinessAwake: 10,
   happinessAsleep: 2,
   energyAwake: 8,
@@ -11,13 +12,19 @@ export const DECAY_RATES_PER_HOUR = {
   discipline: 2,
 } as const;
 
+export const GROWTH_RATES = {
+  runningMultiplier: 1.0,
+  homeMultiplier: 0.33,
+  minHungerFactor: 0.1,
+} as const;
+
 export const STAGE_THRESHOLDS_HOURS: Record<PetStage, number> = {
   egg: 0,
-  baby: 0.05,
-  child: 4,
-  teen: 24,
-  adult: 72,
-  senior: 168,
+  baby: 0.02,
+  child: 2,
+  teen: 12,
+  adult: 36,
+  senior: 96,
 };
 
 export const TREAT_EFFECTS: Record<

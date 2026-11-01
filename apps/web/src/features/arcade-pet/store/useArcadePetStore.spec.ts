@@ -368,7 +368,7 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().gemBalance).toBe(100);
   });
 
-  it('freezes hunger timestamps when toggling home or setting home', () => {
+  it('updates timestamps and applies decay when toggling home or setting home', () => {
     useArcadePetStore.setState({
       adoptionCount: 0,
       gemBalance: 300,

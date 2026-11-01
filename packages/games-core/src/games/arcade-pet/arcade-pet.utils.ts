@@ -1,5 +1,6 @@
 import {
   DECAY_RATES_PER_HOUR,
+  GROWTH_RATES,
   STAGE_THRESHOLDS_HOURS,
   TREAT_EFFECTS,
 } from './arcade-pet.constants';
@@ -17,23 +18,35 @@ export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+export const PET_XP_PER_LEVEL = 100;
+
+export function levelFromPetXp(xp: number): number {
+  return Math.max(1, Math.floor(xp / PET_XP_PER_LEVEL) + 1);
+}
+
+function roundXp(xp: number): number {
+  return Math.round(xp * 100) / 100;
+}
+
 export function calculateStage(
   bornAt: number,
   now: number,
   currentStage?: PetStage,
+  growthHours?: number,
 ): PetStage {
-  const ageHours = Math.max(0, (now - bornAt) / (1000 * 60 * 60));
-  let calculated: PetStage = 'egg';
-  if (ageHours >= STAGE_THRESHOLDS_HOURS.senior) calculated = 'senior';
-  else if (ageHours >= STAGE_THRESHOLDS_HOURS.adult) calculated = 'adult';
-  else if (ageHours >= STAGE_THRESHOLDS_HOURS.teen) calculated = 'teen';
-  else if (ageHours >= STAGE_THRESHOLDS_HOURS.child) calculated = 'child';
-  else if (ageHours >= STAGE_THRESHOLDS_HOURS.baby) calculated = 'baby';
+  const ageHours = typeof growthHours === 'number' ? growthHours : Math.max(0, (now - bornAt) / 3600000);
+  if (ageHours >= STAGE_THRESHOLDS_HOURS.senior) return 'senior';
+  if (ageHours >= STAGE_THRESHOLDS_HOURS.adult) return 'adult';
+  if (ageHours >= STAGE_THRESHOLDS_HOURS.teen) return 'teen';
+  if (ageHours >= STAGE_THRESHOLDS_HOURS.child) return 'child';
+  if (ageHours >= STAGE_THRESHOLDS_HOURS.baby) return 'baby';
+  return currentStage && currentStage !== 'egg' ? 'baby' : 'egg';
+}
 
-  if (currentStage && currentStage !== 'egg' && calculated === 'egg') {
-    return 'baby';
-  }
-  return calculated;
+export function getGrowthSpeedPercent(hunger: number, isAtHome = false): number {
+  const base = isAtHome ? GROWTH_RATES.homeMultiplier : GROWTH_RATES.runningMultiplier;
+  const hungerFactor = clamp(hunger / 100, GROWTH_RATES.minHungerFactor, 1.0);
+  return Math.round(base * hungerFactor * 100);
 }
 
 export function deriveMood(state: {
@@ -49,12 +62,22 @@ export function deriveMood(state: {
   return 'neutral';
 }
 
+export interface DecayOptions {
+  isAtHome?: boolean;
+}
+
 export function applyDeterministicDecay(
   state: PetState,
   now: number = Date.now(),
+  options?: DecayOptions,
 ): PetState {
   if (state.stage === 'egg') {
-    const nextStage = calculateStage(state.timestamps.bornAt, now);
+    const nextStage = calculateStage(
+      state.timestamps.bornAt,
+      now,
+      state.stage,
+      state.stats.growthHours,
+    );
     return {
       ...state,
       stage: nextStage,
@@ -71,15 +94,23 @@ export function applyDeterministicDecay(
 
   if (elapsedHours <= 0) return state;
 
+  const isAtHome = Boolean(options?.isAtHome);
+
   const hungerDecay = state.isSleeping
     ? DECAY_RATES_PER_HOUR.hungerAsleep
-    : DECAY_RATES_PER_HOUR.hungerAwake;
+    : isAtHome
+      ? DECAY_RATES_PER_HOUR.hungerHome
+      : DECAY_RATES_PER_HOUR.hungerAwake;
   const happinessDecay = state.isSleeping
     ? DECAY_RATES_PER_HOUR.happinessAsleep
-    : DECAY_RATES_PER_HOUR.happinessAwake;
+    : isAtHome
+      ? DECAY_RATES_PER_HOUR.happinessAsleep
+      : DECAY_RATES_PER_HOUR.happinessAwake;
   const energyDecay = state.isSleeping
     ? DECAY_RATES_PER_HOUR.energyAsleep
-    : DECAY_RATES_PER_HOUR.energyAwake;
+    : isAtHome
+      ? 0
+      : DECAY_RATES_PER_HOUR.energyAwake;
 
   const newHunger = clamp(
     state.stats.hunger - hungerDecay * elapsedHours,
@@ -97,17 +128,17 @@ export function applyDeterministicDecay(
     100,
   );
   const newHygiene = clamp(
-    state.stats.hygiene - DECAY_RATES_PER_HOUR.hygiene * elapsedHours,
+    state.stats.hygiene - (isAtHome ? 1 : DECAY_RATES_PER_HOUR.hygiene) * elapsedHours,
     0,
     100,
   );
   const newDiscipline = clamp(
-    state.stats.discipline - DECAY_RATES_PER_HOUR.discipline * elapsedHours,
+    state.stats.discipline - (isAtHome ? 0.5 : DECAY_RATES_PER_HOUR.discipline) * elapsedHours,
     0,
     100,
   );
 
-  const additionalPoop = Math.floor(elapsedHours / 6);
+  const additionalPoop = isAtHome ? 0 : Math.floor(elapsedHours / 6);
   const totalPoop = Math.min(4, state.poopCount + additionalPoop);
 
   const shouldBeSick =
@@ -121,7 +152,29 @@ export function applyDeterministicDecay(
     100,
   );
 
-  const newStage = calculateStage(state.timestamps.bornAt, now, state.stage);
+  const avgHunger = (state.stats.hunger + newHunger) / 2;
+  const hungerFactor = clamp(avgHunger / 100, GROWTH_RATES.minHungerFactor, 1.0);
+  const growthMultiplier = isAtHome
+    ? GROWTH_RATES.homeMultiplier
+    : GROWTH_RATES.runningMultiplier;
+
+  const currentGrowth =
+    typeof state.stats.growthHours === 'number'
+      ? state.stats.growthHours
+      : STAGE_THRESHOLDS_HOURS[state.stage] ?? 0;
+
+  const gainedGrowth = elapsedHours * growthMultiplier * hungerFactor;
+  const newGrowthHours = Math.round((currentGrowth + gainedGrowth) * 1000) / 1000;
+
+  const newStage = calculateStage(
+    state.timestamps.bornAt,
+    now,
+    state.stage,
+    newGrowthHours,
+  );
+
+  const newXp = roundXp(state.stats.xp + gainedGrowth * 20);
+  const newLevel = levelFromPetXp(newXp);
 
   const updatedState: PetState = {
     ...state,
@@ -136,6 +189,9 @@ export function applyDeterministicDecay(
       hygiene: Math.round(newHygiene),
       discipline: Math.round(newDiscipline),
       health: Math.round(healthScore),
+      growthHours: newGrowthHours,
+      xp: newXp,
+      level: newLevel,
     },
     timestamps: {
       ...state.timestamps,
@@ -177,6 +233,7 @@ export function createInitialPet(params: {
       weight: 5,
       level: 1,
       xp: 0,
+      growthHours: 0,
     },
     timestamps: {
       bornAt: now,
@@ -202,6 +259,31 @@ export function createInitialPet(params: {
 }
 
 export function executePetAction(
+  rawState: PetState,
+  action: PetActionType,
+  payload?: {
+    treatId?: GameTreatId;
+    species?: PetSpecies;
+    theme?: string;
+    now?: number;
+  },
+): ArcadePetActionResult {
+  const result = runPetAction(rawState, action, payload);
+  const xp = roundXp(result.state.stats.xp);
+  return {
+    ...result,
+    state: {
+      ...result.state,
+      stats: {
+        ...result.state.stats,
+        xp,
+        level: levelFromPetXp(xp),
+      },
+    },
+  };
+}
+
+function runPetAction(
   rawState: PetState,
   action: PetActionType,
   payload?: {

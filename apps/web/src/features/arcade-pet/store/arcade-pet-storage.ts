@@ -45,14 +45,15 @@ export function loadStoredCollection(): StoredCollection | null {
       if (validPets.length === 0) {
         return null;
       }
-      const refreshedPets = parsed.isAtHome
-        ? freezePetsForHome(validPets)
-        : validPets.map(applyDeterministicDecay);
+      const isHome = parsed.isAtHome ?? false;
+      const refreshedPets = validPets.map((p) =>
+        applyDeterministicDecay(p, undefined, { isAtHome: isHome }),
+      );
       return {
         ...parsed,
         coinBalance: parsed.coinBalance ?? 50,
         hasConfirmedCare: true,
-        isAtHome: parsed.isAtHome ?? false,
+        isAtHome: isHome,
         homeCapacity: parsed.homeCapacity ?? Math.max(1, validPets.length),
         pets: refreshedPets,
       };
@@ -72,13 +73,7 @@ export function saveStoredCollection(state: StoredCollection): void {
 
 export function freezePetsForHome(pets: PetState[]): PetState[] {
   const now = Date.now();
-  return pets.map((p) => ({
-    ...p,
-    timestamps: {
-      ...p.timestamps,
-      lastInteractedAt: now,
-    },
-  }));
+  return pets.map((p) => applyDeterministicDecay(p, now, { isAtHome: true }));
 }
 
 export function persistStore(state: {

@@ -312,6 +312,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await trigger.click();
 
     await expect(page.getByTestId('companion-pet-selector')).toBeVisible();
+    await expect(page.getByTestId('pet-growth-rate-badge')).toBeVisible();
     await expect(page.getByTestId('companion-feed-btn')).toContainText(
       'Snack (🪙 1)',
     );

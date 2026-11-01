@@ -14,7 +14,6 @@ import {
   type PetGiftPresent,
 } from '../lib/arcade-pet-economy';
 import {
-  freezePetsForHome,
   loadStoredCollection,
   persistStore,
   DEFAULT_WELCOME_PRESENT,
@@ -40,7 +39,9 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
     if (current && get().hasConfirmedCare) {
-      const refreshed = applyDeterministicDecay(current);
+      const refreshed = applyDeterministicDecay(current, undefined, {
+        isAtHome: get().isAtHome,
+      });
       set({ pet: refreshed });
       return;
     }
@@ -457,10 +458,15 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   setWidgetOpen: (open) => set({ isWidgetOpen: open }),
   toggleHome: () => get().setAtHome(!get().isAtHome),
   setAtHome: (atHome) => {
-    const { pets } = get();
-    const refreshedPets = atHome ? freezePetsForHome(pets) : pets;
+    const { pets, isAtHome: prevAtHome } = get();
+    const now = Date.now();
+    const refreshedPets = pets.map((p) =>
+      applyDeterministicDecay(p, now, { isAtHome: prevAtHome }),
+    );
     const active =
-      refreshedPets.find((p) => p.id === get().activePetId) ?? get().pet;
+      refreshedPets.find((p) => p.id === get().activePetId) ??
+      refreshedPets[0] ??
+      null;
     set({
       isAtHome: atHome,
       pets: refreshedPets,

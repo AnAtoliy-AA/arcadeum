@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.105] - 2026-11-01
+
+### Fixed
+- sanitize and single quote secret values in fetch-secrets (ARC-1027) (ARC-1027)
+- mock puzzle-api in online puzzle duel test (ARC-1027) (ARC-1027)
+- improve oci vault secrets sync and deploy resilience (ARC-1027) (ARC-1027)
+
+
 ## [1.30.104] - 2026-11-01
 
 ### Fixed

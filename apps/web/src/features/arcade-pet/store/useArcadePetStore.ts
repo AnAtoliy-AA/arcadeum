@@ -26,6 +26,7 @@ interface ArcadePetStoreState {
   isWidgetOpen: boolean;
   isAtHome: boolean;
   activeTreat: GameTreatId | null;
+  hasConfirmedCare: boolean;
   initialize: (userId?: string, theme?: string) => void;
   performAction: (action: PetActionType, treatId?: GameTreatId) => void;
   hatch: (name: string, species: PetSpecies, theme?: string) => void;
@@ -70,33 +71,30 @@ interface StoredCollection {
   adoptionCount: number;
   queuedThemeForNextPet: string | null;
   presents: PetGiftPresent[];
+  hasConfirmedCare?: boolean;
 }
 
 function loadStoredCollection(): StoredCollection | null {
   if (typeof window === 'undefined') return null;
   try {
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as StoredCollection;
-      const refreshedPets = parsed.pets.map(applyDeterministicDecay);
+      if (!parsed.hasConfirmedCare) {
+        return null;
+      }
+      const validPets = (parsed.pets || []).filter(
+        (p) => p.name !== 'ArcadePet' || parsed.hasConfirmedCare,
+      );
+      if (validPets.length === 0) {
+        return null;
+      }
+      const refreshedPets = validPets.map(applyDeterministicDecay);
       return {
         ...parsed,
+        hasConfirmedCare: true,
         pets: refreshedPets,
-      };
-    }
-
-    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
-    if (legacyRaw) {
-      const legacyPet = applyDeterministicDecay(
-        JSON.parse(legacyRaw) as PetState,
-      );
-      return {
-        pets: [legacyPet],
-        activePetId: legacyPet.id,
-        gemBalance: 300,
-        adoptionCount: 1,
-        queuedThemeForNextPet: null,
-        presents: [],
       };
     }
     return null;
@@ -135,22 +133,24 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   isWidgetOpen: false,
   isAtHome: false,
   activeTreat: null,
+  hasConfirmedCare: false,
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
-    if (current) {
+    if (current && get().hasConfirmedCare) {
       const refreshed = applyDeterministicDecay(current);
       set({ pet: refreshed });
       return;
     }
 
     const stored = loadStoredCollection();
-    if (stored && stored.pets.length > 0) {
+    if (stored && stored.hasConfirmedCare && stored.pets.length > 0) {
       const active =
         stored.pets.find((p) => p.id === stored.activePetId) ??
         stored.pets[0] ??
         null;
       set({
+        hasConfirmedCare: true,
         pets: stored.pets,
         activePetId: active?.id ?? null,
         pet: active,
@@ -163,6 +163,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     }
 
     set({
+      hasConfirmedCare: false,
       pets: [],
       activePetId: null,
       pet: null,
@@ -196,6 +197,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     const nextCount = adoptionCount + 1;
 
     set({
+      hasConfirmedCare: true,
       pets: nextPets,
       activePetId: newId,
       pet: newPet,
@@ -205,6 +207,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     });
 
     saveStoredCollection({
+      hasConfirmedCare: true,
       pets: nextPets,
       activePetId: newId,
       gemBalance: nextGems,
@@ -236,6 +239,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     const nextCount = adoptionCount + 1;
 
     set({
+      hasConfirmedCare: true,
       pets: nextPets,
       activePetId: newId,
       pet: newPet,
@@ -245,6 +249,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     });
 
     saveStoredCollection({
+      hasConfirmedCare: true,
       pets: nextPets,
       activePetId: newId,
       gemBalance: nextGems,
@@ -297,6 +302,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     const nextGems = gemBalance + 50;
 
     set({
+      hasConfirmedCare: true,
       presents: nextPresents,
       pets: nextPets,
       activePetId: newId,
@@ -305,6 +311,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     });
 
     saveStoredCollection({
+      hasConfirmedCare: true,
       pets: nextPets,
       activePetId: newId,
       gemBalance: nextGems,

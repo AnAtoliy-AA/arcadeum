@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { useGameStore } from '@/features/games/store/gameStore';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 import { ArcadePetHomeBooth } from './ArcadePetHomeBooth';
 import { usePetStageSimulation } from '../lib/usePetStageSimulation';
@@ -34,10 +35,14 @@ const ROW_CLASSES = [
 ];
 
 export function ArcadePetSocialStage({
+  currentUserId,
   onOpenCare,
 }: {
+  currentUserId?: string;
   onOpenCare: () => void;
 }) {
+  const { snapshot } = useSessionTokens();
+  const effectiveUserId = currentUserId || snapshot.userId;
   const localPet = useArcadePetStore((s) => s.pet);
   const isAtHome = useArcadePetStore((s) => s.isAtHome);
   const setAtHome = useArcadePetStore((s) => s.setAtHome);
@@ -46,8 +51,9 @@ export function ArcadePetSocialStage({
   const members = useMemo(() => room?.members ?? [], [room?.members]);
 
   const otherPlayer = useMemo(() => {
-    return members.find((m) => m.id && m.id !== localPet?.id) ?? null;
-  }, [members, localPet?.id]);
+    if (!effectiveUserId) return null;
+    return members.find((m) => m.id && m.id !== effectiveUserId) ?? null;
+  }, [members, effectiveUserId]);
 
   const hasFriend = Boolean(otherPlayer);
 
@@ -76,11 +82,12 @@ export function ArcadePetSocialStage({
   const remoteColClass = COL_CLASSES[sim.remoteCol] ?? styles.col5;
   const remoteRowClass = ROW_CLASSES[sim.remoteRow] ?? styles.row2;
 
-  const isKnocked = isAtHome && sim.remoteCol === 7 && sim.remoteRow === 1;
+  const isKnocked =
+    hasFriend && isAtHome && sim.remoteCol === 7 && sim.remoteRow === 1;
   const knockerName = otherPlayer?.displayName
     ? `${otherPlayer.displayName}'s Pet`
-    : 'Neighbor Pixel';
-  const hasRemotePet = hasFriend || isAtHome;
+    : 'Opponent Pet';
+  const hasRemotePet = hasFriend;
 
   return (
     <div

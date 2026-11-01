@@ -169,7 +169,10 @@ export const ArcadePetCompanionWidget: React.FC<
 
   return (
     <>
-      <ArcadePetSocialStage onOpenCare={() => setWidgetOpen(true)} />
+      <ArcadePetSocialStage
+        currentUserId={snapshot.userId || currentUserId}
+        onOpenCare={() => setWidgetOpen(true)}
+      />
 
       <ArcadePetAdoptionModal
         open={showAdoptionModal}

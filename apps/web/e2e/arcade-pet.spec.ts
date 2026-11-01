@@ -112,6 +112,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
           adoptionCount: 1,
           queuedThemeForNextPet: null,
           presents: [],
+          hasConfirmedCare: true,
         }),
       );
     });
@@ -167,6 +168,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
           adoptionCount: 1,
           queuedThemeForNextPet: null,
           presents: [],
+          hasConfirmedCare: true,
         }),
       );
     });
@@ -211,6 +213,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
           adoptionCount: 1,
           queuedThemeForNextPet: null,
           presents: [],
+          hasConfirmedCare: true,
         }),
       );
     });

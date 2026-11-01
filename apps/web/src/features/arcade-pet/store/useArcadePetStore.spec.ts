@@ -186,4 +186,35 @@ describe('useArcadePetStore', () => {
     expect(presents[0]?.species).toBe('cyber_cat');
     expect(presents[0]?.message).toBe('Official Administrator Gift');
   });
+
+  it('does not load unconfirmed collection or legacy unconfirmed pet without care confirmation', () => {
+    window.localStorage.setItem(
+      'arcadeum_pet_collection_v2',
+      JSON.stringify({
+        pets: [
+          {
+            id: 'legacy-pet-1',
+            name: 'ArcadePet',
+            species: 'slime',
+            stage: 'egg',
+            theme: 'retro',
+            stats: { hunger: 80, happiness: 80 },
+            timestamps: { bornAt: Date.now() },
+            inventory: {},
+          },
+        ],
+        activePetId: 'legacy-pet-1',
+        gemBalance: 300,
+        adoptionCount: 0,
+        queuedThemeForNextPet: null,
+        presents: [],
+        hasConfirmedCare: false,
+      }),
+    );
+
+    useArcadePetStore.getState().initialize('test-user', 'cyberpunk');
+    expect(useArcadePetStore.getState().pet).toBeNull();
+    expect(useArcadePetStore.getState().pets.length).toBe(0);
+    expect(useArcadePetStore.getState().hasConfirmedCare).toBe(false);
+  });
 });

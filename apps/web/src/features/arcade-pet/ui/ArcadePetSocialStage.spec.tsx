@@ -88,12 +88,54 @@ describe('ArcadePetSocialStage', () => {
       },
     });
 
-    render(<ArcadePetSocialStage onOpenCare={onOpenCare} />);
+    render(
+      <ArcadePetSocialStage
+        currentUserId="local-player-id"
+        onOpenCare={onOpenCare}
+      />,
+    );
 
     expect(
       screen.getByTestId('arcade-pet-remote-screen-pet'),
     ).toBeInTheDocument();
     expect(screen.getByText("BobMaster's Pet")).toBeInTheDocument();
+  });
+
+  it('does not render remote pet when user is the only member in the room', () => {
+    useGameStore.setState({
+      room: {
+        id: 'room-1',
+        gameId: 'chess_v1',
+        name: 'Solo Match',
+        hostId: 'my-user-id',
+        visibility: 'public',
+        playerCount: 1,
+        maxPlayers: 2,
+        createdAt: new Date().toISOString(),
+        status: 'in_progress',
+        members: [
+          {
+            id: 'my-user-id',
+            displayName: 'Anatoli Aliaksandrau',
+            isHost: true,
+          },
+        ],
+      },
+    });
+
+    render(
+      <ArcadePetSocialStage
+        currentUserId="my-user-id"
+        onOpenCare={onOpenCare}
+      />,
+    );
+
+    expect(
+      screen.queryByTestId('arcade-pet-remote-screen-pet'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Anatoli Aliaksandrau's Pet"),
+    ).not.toBeInTheDocument();
   });
 
   it('renders home booth and hides roaming pet when pet is at home', () => {

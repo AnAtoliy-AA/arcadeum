@@ -124,7 +124,7 @@ export function usePetStageSimulation({
   }, [localSpecies, localBehavior.cadenceMs, isAtHome]);
 
   useEffect(() => {
-    if (!hasFriend && !isAtHome) return;
+    if (!hasFriend) return;
 
     const remoteTimer = setInterval(() => {
       setSim((prev) => {

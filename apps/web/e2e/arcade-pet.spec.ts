@@ -262,4 +262,75 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
       page.getByText(/Pet gift sent to GrandChampion/i),
     ).toBeVisible();
   });
+
+  test('should show escalating food costs for multiple pets and resting banner when at home', async ({
+    page,
+  }) => {
+    await mockSession(page);
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'arcadeum_pet_collection_v2',
+        JSON.stringify({
+          pets: [
+            {
+              id: 'multi-pet-1',
+              name: 'Cyber Alpha',
+              species: 'cyber_cat',
+              stage: 'adult',
+              theme: 'cyberpunk',
+              stats: { hunger: 50, happiness: 50, level: 2 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+            {
+              id: 'multi-pet-2',
+              name: 'Drake Beta',
+              species: 'dragon',
+              stage: 'adult',
+              theme: 'fantasy',
+              stats: { hunger: 50, happiness: 50, level: 2 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+          ],
+          activePetId: 'multi-pet-1',
+          coinBalance: 50,
+          gemBalance: 300,
+          adoptionCount: 2,
+          queuedThemeForNextPet: null,
+          presents: [],
+          hasConfirmedCare: true,
+          isAtHome: false,
+        }),
+      );
+    });
+
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await trigger.click();
+
+    await expect(page.getByTestId('companion-pet-selector')).toBeVisible();
+    await expect(page.getByTestId('companion-feed-btn')).toContainText(
+      'Snack (🪙 1)',
+    );
+
+    const pet2Btn = page.getByTestId('select-pet-multi-pet-2');
+    await expect(pet2Btn).toBeVisible();
+    await expect(pet2Btn).toContainText('5');
+    await pet2Btn.click();
+
+    await expect(page.getByTestId('companion-feed-btn')).toContainText(
+      'Snack (🪙 5)',
+    );
+
+    const homeBtn = page.getByTestId('arcade-pet-home-toggle-btn');
+    await homeBtn.click();
+
+    await expect(page.getByTestId('pet-home-resting-banner')).toBeVisible();
+    await expect(page.getByTestId('pet-home-resting-banner')).toContainText(
+      'Resting at Home',
+    );
+  });
 });

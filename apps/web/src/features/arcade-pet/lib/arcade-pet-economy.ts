@@ -171,6 +171,17 @@ export function getPetAdoptionCost(count: number): number {
   return 500 + (count - 4) * 250;
 }
 
+export const PET_FOOD_COSTS = [1, 5, 20, 50, 100] as const;
+
+export function getPetFoodCost(petIndex: number): number {
+  if (petIndex <= 0) return 1;
+  if (petIndex === 1) return 5;
+  if (petIndex === 2) return 20;
+  if (petIndex === 3) return 50;
+  if (petIndex === 4) return 100;
+  return 100 + (petIndex - 4) * 50;
+}
+
 export interface PetGiftPresent {
   id: string;
   senderId: string;

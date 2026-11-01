@@ -11,7 +11,7 @@ import { ArcadePetSocialStage } from './ArcadePetSocialStage';
 import { ArcadePetAdoptionModal } from './ArcadePetAdoptionModal';
 import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
 import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
-import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
+import { THEME_PET_PALETTES, getPetFoodCost } from '../lib/arcade-pet-economy';
 import { gamesApi } from '@/features/games/api';
 import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
 
@@ -43,6 +43,7 @@ export const ArcadePetCompanionWidget: React.FC<
     setWidgetOpen,
     toggleHome,
     adoptRandomPet,
+    selectActivePet,
   } = useArcadePetStore();
 
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
@@ -168,6 +169,11 @@ export const ArcadePetCompanionWidget: React.FC<
               : '👾';
 
   const petGameHref = `/${locale}/games/arcade-pet`;
+  const currentPetIndex = Math.max(
+    0,
+    pets.findIndex((p) => p.id === pet.id),
+  );
+  const currentFoodCost = getPetFoodCost(currentPetIndex);
 
   return (
     <>
@@ -239,6 +245,55 @@ export const ArcadePetCompanionWidget: React.FC<
               </div>
             </div>
 
+            {pets.length > 1 && (
+              <div
+                data-testid="companion-pet-selector"
+                className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 border-b border-neutral-800"
+              >
+                {pets.map((p, idx) => {
+                  const cost = getPetFoodCost(idx);
+                  const isCurrent = p.id === pet.id;
+                  const icon =
+                    p.stage === 'egg'
+                      ? '🥚'
+                      : p.species === 'dragon'
+                        ? '🐲'
+                        : p.species === 'cyber_cat'
+                          ? '🐱'
+                          : p.species === 'dino'
+                            ? '🦖'
+                            : p.species === 'blob'
+                              ? '🐡'
+                              : '👾';
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      data-testid={`select-pet-${p.id}`}
+                      onClick={() => selectActivePet(p.id)}
+                      className={`px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 shrink-0 transition-colors ${
+                        isCurrent
+                          ? 'bg-indigo-600 text-white shadow-sm'
+                          : 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300'
+                      }`}
+                    >
+                      <span>{icon}</span>
+                      <span className="truncate max-w-[80px]">{p.name}</span>
+                      <span
+                        className={`text-[10px] px-1 rounded ${
+                          isCurrent
+                            ? 'bg-indigo-900/60 text-amber-300'
+                            : 'text-amber-400'
+                        }`}
+                      >
+                        🪙 {cost}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {pet.stage === 'egg' ? (
               <div className="flex flex-col items-center py-2 text-center gap-2">
                 <span className="text-xs text-neutral-300">
@@ -253,6 +308,18 @@ export const ArcadePetCompanionWidget: React.FC<
               </div>
             ) : (
               <>
+                {isAtHome && (
+                  <div
+                    data-testid="pet-home-resting-banner"
+                    className="text-[11px] text-amber-200 font-medium text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
+                  >
+                    <span>🏠</span>
+                    <span>
+                      Resting at Home • Pets need no food while resting!
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-2 text-xs">
                   <div className="flex justify-between text-[11px] text-neutral-400">
                     <span>Hunger</span>
@@ -295,7 +362,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => performAction('feed_snack')}
                     className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
                   >
-                    <span>🍰</span> Snack (🪙 1)
+                    <span>🍰</span> Snack (🪙 {currentFoodCost})
                   </button>
                   <button
                     type="button"
@@ -337,7 +404,9 @@ export const ArcadePetCompanionWidget: React.FC<
                 >
                   <span>🏠</span>
                   <span>
-                    {isAtHome ? 'Call Pet Outside' : 'Send Pet to Home'}
+                    {isAtHome
+                      ? 'Call Pets Outside'
+                      : 'Send Pets to Home (Freeze Hunger)'}
                   </span>
                 </button>
 

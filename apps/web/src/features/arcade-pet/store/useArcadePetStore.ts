@@ -10,10 +10,17 @@ import {
 } from '@arcadeum/games-core';
 import {
   getPetAdoptionCost,
+  getPetFoodCost,
   getRandomPetSpec,
   SELECT_PET_COST,
   type PetGiftPresent,
 } from '../lib/arcade-pet-economy';
+import {
+  freezePetsForHome,
+  loadStoredCollection,
+  persistStore,
+  DEFAULT_WELCOME_PRESENT,
+} from './arcade-pet-storage';
 
 interface ArcadePetStoreState {
   pet: PetState | null;
@@ -33,6 +40,7 @@ interface ArcadePetStoreState {
   performAction: (
     action: PetActionType,
     treatId?: GameTreatId,
+    targetPetId?: string,
   ) => { success: boolean; error?: string };
   hatch: (name: string, species: PetSpecies, theme?: string) => void;
   awardTreat: (treatId: GameTreatId) => void;
@@ -67,11 +75,6 @@ interface ArcadePetStoreState {
   toggleHome: () => void;
   setAtHome: (atHome: boolean) => void;
 }
-import {
-  loadStoredCollection,
-  saveStoredCollection,
-  DEFAULT_WELCOME_PRESENT,
-} from './arcade-pet-storage';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   pet: null,
@@ -112,6 +115,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
         adoptionCount: stored.adoptionCount ?? stored.pets.length,
         queuedThemeForNextPet: stored.queuedThemeForNextPet ?? null,
         presents: stored.presents ?? [DEFAULT_WELCOME_PRESENT],
+        isAtHome: stored.isAtHome ?? false,
         actionError: null,
       });
       return;
@@ -127,6 +131,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       adoptionCount: stored?.adoptionCount ?? 0,
       queuedThemeForNextPet: stored?.queuedThemeForNextPet ?? null,
       presents: stored?.presents ?? [DEFAULT_WELCOME_PRESENT],
+      isAtHome: stored?.isAtHome ?? false,
       actionError: null,
     });
   },
@@ -163,15 +168,13 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       queuedThemeForNextPet: null,
     });
 
-    saveStoredCollection({
-      hasConfirmedCare: true,
+    persistStore({
+      ...get(),
       pets: nextPets,
       activePetId: newId,
       gemBalance: nextGems,
-      coinBalance: get().coinBalance,
       adoptionCount: nextCount,
       queuedThemeForNextPet: null,
-      presents: get().presents,
     });
 
     return { success: true, pet: newPet };
@@ -206,15 +209,13 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       queuedThemeForNextPet: null,
     });
 
-    saveStoredCollection({
-      hasConfirmedCare: true,
+    persistStore({
+      ...get(),
       pets: nextPets,
       activePetId: newId,
       gemBalance: nextGems,
-      coinBalance: get().coinBalance,
       adoptionCount: nextCount,
       queuedThemeForNextPet: null,
-      presents: get().presents,
     });
 
     return { success: true, pet: newPet };
@@ -230,15 +231,9 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       pet: target,
     });
 
-    saveStoredCollection({
-      hasConfirmedCare: true,
-      pets,
+    persistStore({
+      ...get(),
       activePetId: petId,
-      gemBalance: get().gemBalance,
-      coinBalance: get().coinBalance,
-      adoptionCount: get().adoptionCount,
-      queuedThemeForNextPet: get().queuedThemeForNextPet,
-      presents: get().presents,
     });
   },
 
@@ -271,15 +266,12 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       gemBalance: nextGems,
     });
 
-    saveStoredCollection({
-      hasConfirmedCare: true,
+    persistStore({
+      ...get(),
+      presents: nextPresents,
       pets: nextPets,
       activePetId: newId,
       gemBalance: nextGems,
-      coinBalance: get().coinBalance,
-      adoptionCount: get().adoptionCount,
-      queuedThemeForNextPet: get().queuedThemeForNextPet,
-      presents: nextPresents,
     });
 
     return { success: true, present: target };
@@ -310,14 +302,9 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
     set({ gemBalance: nextGems, presents: nextPresents });
 
-    saveStoredCollection({
-      hasConfirmedCare: true,
-      pets: get().pets,
-      activePetId: get().activePetId,
+    persistStore({
+      ...get(),
       gemBalance: nextGems,
-      coinBalance: get().coinBalance,
-      adoptionCount: get().adoptionCount,
-      queuedThemeForNextPet: get().queuedThemeForNextPet,
       presents: nextPresents,
     });
 
@@ -326,81 +313,69 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
   buyGameTheme: (themeId) => {
     set({ queuedThemeForNextPet: themeId });
-    saveStoredCollection({
-      hasConfirmedCare: true,
-      pets: get().pets,
-      activePetId: get().activePetId,
-      gemBalance: get().gemBalance,
-      coinBalance: get().coinBalance,
-      adoptionCount: get().adoptionCount,
+    persistStore({
+      ...get(),
       queuedThemeForNextPet: themeId,
-      presents: get().presents,
     });
   },
 
   addGems: (amount) => {
     const nextGems = Math.max(0, get().gemBalance + amount);
     set({ gemBalance: nextGems });
-    saveStoredCollection({
-      hasConfirmedCare: true,
-      pets: get().pets,
-      activePetId: get().activePetId,
+    persistStore({
+      ...get(),
       gemBalance: nextGems,
-      coinBalance: get().coinBalance,
-      adoptionCount: get().adoptionCount,
-      queuedThemeForNextPet: get().queuedThemeForNextPet,
-      presents: get().presents,
     });
   },
 
   addCoins: (amount) => {
     const nextCoins = Math.max(0, get().coinBalance + amount);
     set({ coinBalance: nextCoins });
-    saveStoredCollection({
-      hasConfirmedCare: true,
-      pets: get().pets,
-      activePetId: get().activePetId,
-      gemBalance: get().gemBalance,
+    persistStore({
+      ...get(),
       coinBalance: nextCoins,
-      adoptionCount: get().adoptionCount,
-      queuedThemeForNextPet: get().queuedThemeForNextPet,
-      presents: get().presents,
     });
   },
 
   clearActionError: () => set({ actionError: null }),
 
-  performAction: (action, treatId) => {
-    const current = get().pet;
-    if (!current) return { success: false, error: 'NO_PET' };
+  performAction: (action, treatId, targetPetId) => {
+    const { pets, pet, coinBalance } = get();
+    const target = targetPetId
+      ? (pets.find((p) => p.id === targetPetId) ?? pet)
+      : pet;
+    if (!target) return { success: false, error: 'NO_PET' };
 
     if (action === 'feed_snack') {
-      const { coinBalance } = get();
-      if (coinBalance < 1) {
-        set({ actionError: 'Need 🪙 1 Coin to feed a snack!' });
+      const petIndex = Math.max(
+        0,
+        pets.findIndex((p) => p.id === target.id),
+      );
+      const foodCost = getPetFoodCost(petIndex);
+      if (coinBalance < foodCost) {
+        set({
+          actionError: `Need 🪙 ${foodCost} Coin${foodCost > 1 ? 's' : ''} to feed ${target.name}!`,
+        });
         return { success: false, error: 'INSUFFICIENT_COINS' };
       }
-      const nextCoins = coinBalance - 1;
-      const result = executePetAction(current, action, { treatId });
+      const nextCoins = coinBalance - foodCost;
+      const result = executePetAction(target, action, { treatId });
       if (result.success) {
-        const updatedPets = get().pets.map((p) =>
-          p.id === current.id ? result.state : p,
+        const updatedPets = pets.map((p) =>
+          p.id === target.id ? result.state : p,
         );
+        const nextActive =
+          get().activePetId === target.id ? result.state : get().pet;
         set({
-          pet: result.state,
+          pet: nextActive,
           pets: updatedPets,
           coinBalance: nextCoins,
           actionError: null,
         });
-        saveStoredCollection({
-          hasConfirmedCare: true,
+        persistStore({
+          ...get(),
           pets: updatedPets,
-          activePetId: get().activePetId,
-          gemBalance: get().gemBalance,
           coinBalance: nextCoins,
-          adoptionCount: get().adoptionCount,
-          queuedThemeForNextPet: get().queuedThemeForNextPet,
-          presents: get().presents,
         });
         return { success: true };
       }
@@ -408,21 +383,17 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     }
 
     set({ actionError: null });
-    const result = executePetAction(current, action, { treatId });
+    const result = executePetAction(target, action, { treatId });
     if (result.success) {
-      const updatedPets = get().pets.map((p) =>
-        p.id === current.id ? result.state : p,
+      const updatedPets = pets.map((p) =>
+        p.id === target.id ? result.state : p,
       );
-      set({ pet: result.state, pets: updatedPets });
-      saveStoredCollection({
-        hasConfirmedCare: true,
+      const nextActive =
+        get().activePetId === target.id ? result.state : get().pet;
+      set({ pet: nextActive, pets: updatedPets });
+      persistStore({
+        ...get(),
         pets: updatedPets,
-        activePetId: get().activePetId,
-        gemBalance: get().gemBalance,
-        coinBalance: get().coinBalance,
-        adoptionCount: get().adoptionCount,
-        queuedThemeForNextPet: get().queuedThemeForNextPet,
-        presents: get().presents,
       });
       return { success: true };
     }
@@ -440,15 +411,9 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
         p.id === current.id ? result.state : p,
       );
       set({ pet: result.state, pets: updatedPets });
-      saveStoredCollection({
-        hasConfirmedCare: true,
+      persistStore({
+        ...get(),
         pets: updatedPets,
-        activePetId: get().activePetId,
-        gemBalance: get().gemBalance,
-        coinBalance: get().coinBalance,
-        adoptionCount: get().adoptionCount,
-        queuedThemeForNextPet: get().queuedThemeForNextPet,
-        presents: get().presents,
       });
     }
   },
@@ -469,20 +434,29 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       p.id === current.id ? updated : p,
     );
     set({ pet: updated, pets: updatedPets });
-    saveStoredCollection({
-      hasConfirmedCare: true,
+    persistStore({
+      ...get(),
       pets: updatedPets,
-      activePetId: get().activePetId,
-      gemBalance: get().gemBalance,
-      coinBalance: get().coinBalance,
-      adoptionCount: get().adoptionCount,
-      queuedThemeForNextPet: get().queuedThemeForNextPet,
-      presents: get().presents,
     });
   },
 
   toggleWidget: () => set((state) => ({ isWidgetOpen: !state.isWidgetOpen })),
   setWidgetOpen: (open) => set({ isWidgetOpen: open }),
-  toggleHome: () => set((state) => ({ isAtHome: !state.isAtHome })),
-  setAtHome: (atHome) => set({ isAtHome: atHome }),
+  toggleHome: () => get().setAtHome(!get().isAtHome),
+  setAtHome: (atHome) => {
+    const { pets } = get();
+    const refreshedPets = atHome ? freezePetsForHome(pets) : pets;
+    const active =
+      refreshedPets.find((p) => p.id === get().activePetId) ?? get().pet;
+    set({
+      isAtHome: atHome,
+      pets: refreshedPets,
+      pet: active,
+    });
+    persistStore({
+      ...get(),
+      isAtHome: atHome,
+      pets: refreshedPets,
+    });
+  },
 }));

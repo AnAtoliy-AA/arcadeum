@@ -13,6 +13,7 @@ export interface StoredCollection {
   queuedThemeForNextPet: string | null;
   presents: PetGiftPresent[];
   hasConfirmedCare?: boolean;
+  isAtHome?: boolean;
 }
 
 export const DEFAULT_WELCOME_PRESENT: PetGiftPresent = {
@@ -43,11 +44,14 @@ export function loadStoredCollection(): StoredCollection | null {
       if (validPets.length === 0) {
         return null;
       }
-      const refreshedPets = validPets.map(applyDeterministicDecay);
+      const refreshedPets = parsed.isAtHome
+        ? freezePetsForHome(validPets)
+        : validPets.map(applyDeterministicDecay);
       return {
         ...parsed,
         coinBalance: parsed.coinBalance ?? 50,
         hasConfirmedCare: true,
+        isAtHome: parsed.isAtHome ?? false,
         pets: refreshedPets,
       };
     }
@@ -62,4 +66,39 @@ export function saveStoredCollection(state: StoredCollection): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch {}
+}
+
+export function freezePetsForHome(pets: PetState[]): PetState[] {
+  const now = Date.now();
+  return pets.map((p) => ({
+    ...p,
+    timestamps: {
+      ...p.timestamps,
+      lastInteractedAt: now,
+    },
+  }));
+}
+
+export function persistStore(state: {
+  pets: PetState[];
+  activePetId: string | null;
+  gemBalance: number;
+  coinBalance: number;
+  adoptionCount: number;
+  queuedThemeForNextPet: string | null;
+  presents: PetGiftPresent[];
+  hasConfirmedCare: boolean;
+  isAtHome: boolean;
+}): void {
+  saveStoredCollection({
+    hasConfirmedCare: state.hasConfirmedCare,
+    pets: state.pets,
+    activePetId: state.activePetId,
+    gemBalance: state.gemBalance,
+    coinBalance: state.coinBalance,
+    adoptionCount: state.adoptionCount,
+    queuedThemeForNextPet: state.queuedThemeForNextPet,
+    presents: state.presents,
+    isAtHome: state.isAtHome,
+  });
 }

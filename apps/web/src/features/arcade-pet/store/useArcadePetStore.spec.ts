@@ -250,4 +250,75 @@ describe('useArcadePetStore', () => {
     expect(result.error).toBe('INSUFFICIENT_COINS');
     expect(useArcadePetStore.getState().actionError).toContain('1 Coin');
   });
+
+  it('charges escalating food cost based on pet collection index (1, 5, 20)', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 1000,
+      coinBalance: 50,
+      pets: [],
+    });
+
+    useArcadePetStore.getState().adoptRandomPet();
+    useArcadePetStore.getState().adoptRandomPet();
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const { pets } = useArcadePetStore.getState();
+    expect(pets.length).toBe(3);
+
+    const pet1 = pets[0]!;
+    const pet2 = pets[1]!;
+    const pet3 = pets[2]!;
+
+    useArcadePetStore.getState().selectActivePet(pet1.id);
+    const res1 = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res1.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(49);
+
+    useArcadePetStore.getState().selectActivePet(pet2.id);
+    const res2 = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res2.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(44);
+
+    useArcadePetStore.getState().selectActivePet(pet3.id);
+    const res3 = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res3.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(24);
+  });
+
+  it('rejects snack feeding with correct error message when 2nd or 3rd pet food is unaffordable', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 1000,
+      coinBalance: 3,
+      pets: [],
+    });
+
+    useArcadePetStore.getState().adoptRandomPet();
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const pet2 = useArcadePetStore.getState().pets[1]!;
+    useArcadePetStore.getState().selectActivePet(pet2.id);
+
+    const res = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res.success).toBe(false);
+    expect(res.error).toBe('INSUFFICIENT_COINS');
+    expect(useArcadePetStore.getState().actionError).toContain('5 Coins');
+  });
+
+  it('freezes hunger timestamps when toggling home or setting home', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 50,
+      isAtHome: false,
+    });
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const before = Date.now();
+    useArcadePetStore.getState().toggleHome();
+    expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    const pet = useArcadePetStore.getState().pet;
+    expect(pet?.timestamps.lastInteractedAt).toBeGreaterThanOrEqual(before);
+  });
 });

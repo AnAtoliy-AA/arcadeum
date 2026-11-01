@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   getPetAdoptionCost,
+  getPetFoodCost,
   getRandomPetSpec,
   SELECT_PET_COST,
   THEME_PET_PALETTES,
@@ -9,6 +10,15 @@ import {
 } from './arcade-pet-economy';
 
 describe('arcade-pet-economy', () => {
+  it('escalates food cost for subsequent pets: 1, 5, 20, 50, 100 coins', () => {
+    expect(getPetFoodCost(0)).toBe(1);
+    expect(getPetFoodCost(1)).toBe(5);
+    expect(getPetFoodCost(2)).toBe(20);
+    expect(getPetFoodCost(3)).toBe(50);
+    expect(getPetFoodCost(4)).toBe(100);
+    expect(getPetFoodCost(5)).toBe(150);
+  });
+
   it('has zero cost for first mount and escalating costs for subsequent mounts', () => {
     expect(getPetAdoptionCost(0)).toBe(0);
     expect(getPetAdoptionCost(1)).toBe(50);

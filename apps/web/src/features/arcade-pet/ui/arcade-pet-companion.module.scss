@@ -1,0 +1,196 @@
+.stageContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  pointer-events: none;
+  z-index: 35;
+  overflow: hidden;
+}
+
+.petTrack {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  height: 64px;
+}
+
+.petEntity {
+  position: absolute;
+  bottom: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.petFacingLeft {
+  transform: scaleX(-1);
+}
+
+.petFacingRight {
+  transform: scaleX(1);
+}
+
+.slot0 { left: 6%; }
+.slot1 { left: 16%; }
+.slot2 { left: 26%; }
+.slot3 { left: 36%; }
+.slot4 { left: 46%; }
+.slot5 { left: 56%; }
+.slot6 { left: 66%; }
+.slot7 { left: 76%; }
+.slot8 { left: 86%; }
+
+.petWalkAnimation {
+  animation: petWalkBob 0.6s ease-in-out infinite alternate;
+}
+
+.petBounceAnimation {
+  animation: petJoyHop 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+}
+
+.petSmileAnimation {
+  animation: petGentleSway 1.8s ease-in-out infinite;
+}
+
+.petSleepAnimation {
+  animation: petBreathe 2s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+.tailWag {
+  transform-origin: 20% 80%;
+  animation: tailWiggle 0.4s ease-in-out infinite alternate;
+}
+
+.wingFlap {
+  transform-origin: 30% 40%;
+  animation: wingFlutter 0.3s ease-in-out infinite alternate;
+}
+
+.pawStepLeft {
+  animation: legStep 0.4s ease-in-out infinite alternate;
+}
+
+.pawStepRight {
+  animation: legStep 0.4s ease-in-out infinite alternate-reverse;
+}
+
+.floatingEmote {
+  animation: emoteFloat 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.friendshipSparkle {
+  animation: sparkleTwinkle 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes petWalkBob {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+}
+
+@keyframes petJoyHop {
+  0%, 100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  30% {
+    transform: translateY(-16px) scale(0.95, 1.08);
+  }
+  50% {
+    transform: translateY(0) scale(1.08, 0.92);
+  }
+  70% {
+    transform: translateY(-6px) scale(0.98, 1.02);
+  }
+}
+
+@keyframes petGentleSway {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) rotate(3deg) scale(1.02);
+  }
+}
+
+@keyframes petBreathe {
+  0%, 100% {
+    transform: scale(1, 0.96);
+  }
+  50% {
+    transform: scale(1.03, 1.02);
+  }
+}
+
+@keyframes tailWiggle {
+  0% {
+    transform: rotate(-12deg);
+  }
+  100% {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes wingFlutter {
+  0% {
+    transform: rotate(-15deg) scaleY(0.9);
+  }
+  100% {
+    transform: rotate(20deg) scaleY(1.1);
+  }
+}
+
+@keyframes legStep {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes emoteFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  40% {
+    transform: translateY(-4px) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-12px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.2) rotate(45deg);
+    opacity: 1;
+  }
+}

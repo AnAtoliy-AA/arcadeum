@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PetSpecies, PetStage, PetState } from '@arcadeum/games-core';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { useDraggableHome } from './useDraggableHome';
 import styles from './arcade-pet-companion.module.scss';
 
 interface ArcadePetHomeBoothProps {
@@ -32,11 +33,25 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
   homeCapacity = 1,
 }) => {
   const placesCount = Math.max(1, homeCapacity);
+  const {
+    boothRef,
+    isDragging,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    handleHouseClick,
+  } = useDraggableHome();
 
   return (
     <div
+      ref={boothRef}
       data-testid="arcade-pet-home-booth"
-      className={`${styles.homeBooth} ${styles.col8} ${styles.row1}`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      className={`${styles.homeBooth} ${styles.col8} ${styles.row1} ${
+        isDragging ? styles.homeBoothDragging : ''
+      }`}
     >
       {isKnocked && (
         <div
@@ -74,11 +89,20 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
 
       <div
         data-testid="arcade-pet-house-structure"
-        onClick={onToggleHome}
+        onClick={() => handleHouseClick(onToggleHome)}
         className={`relative flex flex-col items-center cursor-pointer transition-all transform hover:scale-105 ${
           isKnocked ? styles.houseKnockWobble : ''
         }`}
       >
+        <div
+          data-testid="arcade-pet-home-drag-handle"
+          className="flex items-center gap-1 text-[8px] text-amber-400/80 font-bold tracking-wider select-none mb-0.5"
+          title="Drag to move pet home"
+        >
+          <span>⠿</span>
+          <span>DRAG</span>
+          <span>⠿</span>
+        </div>
         <div className="absolute -top-3 right-2 flex flex-col items-center pointer-events-none">
           <span className={`text-[10px] text-neutral-400 ${styles.smokePuff}`}>
             💨

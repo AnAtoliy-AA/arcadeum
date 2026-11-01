@@ -85,4 +85,70 @@ describe('ArcadePetHomeBooth', () => {
     fireEvent.click(screen.getByTestId('arcade-pet-house-structure'));
     expect(handleToggle).toHaveBeenCalledTimes(1);
   });
+
+  it('renders drag handle affordance', () => {
+    render(
+      <ArcadePetHomeBooth
+        isAtHome={true}
+        onToggleHome={vi.fn()}
+        localPetName="Cyber Drake"
+        localPetSpecies="dragon"
+        localPetTheme="cyberpunk"
+        isKnocked={false}
+        onOpenDoor={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByTestId('arcade-pet-home-drag-handle'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('DRAG')).toBeInTheDocument();
+  });
+
+  it('supports dragging home booth and suppresses toggle on drag', () => {
+    const handleToggle = vi.fn();
+    render(
+      <ArcadePetHomeBooth
+        isAtHome={true}
+        onToggleHome={handleToggle}
+        localPetName="Cyber Drake"
+        localPetSpecies="dragon"
+        localPetTheme="cyberpunk"
+        isKnocked={false}
+        onOpenDoor={vi.fn()}
+      />,
+    );
+
+    const booth = screen.getByTestId('arcade-pet-home-booth');
+    booth.setPointerCapture = vi.fn();
+    booth.releasePointerCapture = vi.fn();
+
+    vi.spyOn(booth, 'getBoundingClientRect').mockReturnValue({
+      left: 200,
+      top: 300,
+      width: 120,
+      height: 150,
+      right: 320,
+      bottom: 450,
+      x: 200,
+      y: 300,
+      toJSON: () => {},
+    });
+
+    fireEvent.pointerDown(booth, {
+      clientX: 220,
+      clientY: 320,
+      button: 0,
+      pointerId: 1,
+    });
+    fireEvent.pointerMove(booth, { clientX: 270, clientY: 380, pointerId: 1 });
+
+    expect(booth.style.getPropertyValue('--home-drag-x')).toBeTruthy();
+    expect(booth.style.getPropertyValue('--home-drag-y')).toBeTruthy();
+
+    fireEvent.pointerUp(booth, { clientX: 270, clientY: 380, pointerId: 1 });
+
+    fireEvent.click(screen.getByTestId('arcade-pet-house-structure'));
+    expect(handleToggle).not.toHaveBeenCalled();
+  });
 });

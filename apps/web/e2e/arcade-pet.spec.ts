@@ -416,4 +416,68 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(page.getByTestId('home-empty-slot-1')).toBeVisible();
     await expect(page.getByTestId('booth-capacity-tag')).toContainText('1/2');
   });
+
+  test('should allow dragging pet home booth across the screen', async ({
+    page,
+  }) => {
+    await mockSession(page);
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'arcadeum_pet_collection_v2',
+        JSON.stringify({
+          pets: [
+            {
+              id: 'home-pet-drag-1',
+              name: 'Draggie',
+              species: 'cyber_cat',
+              stage: 'adult',
+              theme: 'cyberpunk',
+              stats: { hunger: 80, happiness: 80, level: 1 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+          ],
+          activePetId: 'home-pet-drag-1',
+          homeCapacity: 1,
+          coinBalance: 50,
+          gemBalance: 100,
+          adoptionCount: 1,
+          queuedThemeForNextPet: null,
+          presents: [],
+          hasConfirmedCare: true,
+          isAtHome: true,
+        }),
+      );
+    });
+
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const booth = page.getByTestId('arcade-pet-home-booth');
+    await expect(booth).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-home-drag-handle')).toBeVisible();
+
+    const initialBox = await booth.boundingBox();
+    expect(initialBox).not.toBeNull();
+
+    if (initialBox) {
+      await page.mouse.move(
+        initialBox.x + initialBox.width / 2,
+        initialBox.y + 10,
+      );
+      await page.mouse.down();
+      await page.mouse.move(
+        initialBox.x + initialBox.width / 2 - 120,
+        initialBox.y - 60,
+        { steps: 5 },
+      );
+      await page.mouse.up();
+
+      const newBox = await booth.boundingBox();
+      expect(newBox).not.toBeNull();
+      if (newBox) {
+        expect(newBox.x).not.toBe(initialBox.x);
+      }
+    }
+  });
 });

@@ -1,4 +1,4 @@
-import { test, expect, navigateTo } from './fixtures/test-utils';
+import { test, expect, navigateTo, mockSession } from './fixtures/test-utils';
 
 test.describe('ArcadePet Virtual Pet Simulation', () => {
   test('should render arcade-pet landing page with hero and interactive widget', async ({
@@ -45,9 +45,77 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(cyberpunkButton).toHaveClass(/bg-indigo-600/);
   });
 
-  test('should open companion widget, mounts nursery, and presents modal', async ({
+  test('should show disabled pet button with register prompt for guest player', async ({
     page,
   }) => {
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toBeDisabled();
+    await expect(trigger).toContainText('Register for Pet');
+
+    await trigger.dispatchEvent('click');
+    await expect(page.getByTestId('arcade-pet-register-prompt')).toBeVisible();
+    await expect(page.getByText('Registration Required')).toBeVisible();
+  });
+
+  test('should allow registered player to adopt first pet after confirming care commitment', async ({
+    page,
+  }) => {
+    await mockSession(page);
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await expect(trigger).toBeVisible();
+    await expect(trigger).not.toBeDisabled();
+    await expect(trigger).toContainText('Adopt Free Pet');
+
+    await trigger.click();
+    await expect(page.getByTestId('arcade-pet-commitment-modal')).toBeVisible();
+
+    const confirmBtn = page.getByTestId('confirm-adopt-pet-btn');
+    await expect(confirmBtn).toBeDisabled();
+
+    await page.getByTestId('care-commitment-checkbox').check();
+    await expect(confirmBtn).not.toBeDisabled();
+
+    await confirmBtn.click();
+    await expect(page.getByTestId('arcade-pet-commitment-modal')).toBeHidden();
+    await expect(page.getByTestId('arcade-pet-home-toggle-btn')).toBeVisible();
+  });
+
+  test('should open companion widget, mounts nursery, and presents modal for owner', async ({
+    page,
+  }) => {
+    await mockSession(page);
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'arcadeum_pet_collection_v2',
+        JSON.stringify({
+          pets: [
+            {
+              id: 'owner-pet-1',
+              name: 'PixelBuddy',
+              species: 'cyber_cat',
+              stage: 'adult',
+              theme: 'cyberpunk',
+              stats: { hunger: 80, happiness: 90, level: 3 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+          ],
+          activePetId: 'owner-pet-1',
+          gemBalance: 300,
+          adoptionCount: 1,
+          queuedThemeForNextPet: null,
+          presents: [],
+        }),
+      );
+    });
+
     await navigateTo(page, '/en/games');
     await page.waitForLoadState('domcontentloaded');
 
@@ -77,6 +145,32 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
   test('should send pet to home when pressing home button and allow calling back outside', async ({
     page,
   }) => {
+    await mockSession(page);
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        'arcadeum_pet_collection_v2',
+        JSON.stringify({
+          pets: [
+            {
+              id: 'owner-pet-1',
+              name: 'PixelBuddy',
+              species: 'cyber_cat',
+              stage: 'adult',
+              theme: 'cyberpunk',
+              stats: { hunger: 80, happiness: 90, level: 3 },
+              timestamps: { bornAt: Date.now() },
+              inventory: {},
+            },
+          ],
+          activePetId: 'owner-pet-1',
+          gemBalance: 300,
+          adoptionCount: 1,
+          queuedThemeForNextPet: null,
+          presents: [],
+        }),
+      );
+    });
+
     await navigateTo(page, '/en/games');
     await page.waitForLoadState('domcontentloaded');
 

@@ -28,12 +28,22 @@ describe('useArcadePetStore', () => {
     });
   });
 
-  it('initializes first mount as free and active', () => {
+  it('initializes by default with no pet until player adopts', () => {
     useArcadePetStore.getState().initialize('test-user', 'cyberpunk');
     const state = useArcadePetStore.getState();
-    expect(state.pet).toBeDefined();
-    expect(state.pets.length).toBe(1);
-    expect(state.adoptionCount).toBe(1);
+    expect(state.pet).toBeNull();
+    expect(state.pets.length).toBe(0);
+    expect(state.adoptionCount).toBe(0);
+  });
+
+  it('adopts first mount as free and sets it active', () => {
+    useArcadePetStore.getState().initialize('test-user', 'cyberpunk');
+    const result = useArcadePetStore.getState().adoptRandomPet();
+    expect(result.success).toBe(true);
+    expect(useArcadePetStore.getState().pet).toBeDefined();
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+    expect(useArcadePetStore.getState().adoptionCount).toBe(1);
+    expect(useArcadePetStore.getState().gemBalance).toBe(300);
   });
 
   it('adopts second pet with progressive gem cost', () => {

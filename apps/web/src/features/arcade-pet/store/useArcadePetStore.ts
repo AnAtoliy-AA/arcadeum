@@ -135,7 +135,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   isAtHome: false,
   activeTreat: null,
 
-  initialize: (userId = 'local-user', theme = 'cyberpunk') => {
+  initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
     if (current) {
       const refreshed = applyDeterministicDecay(current);
@@ -161,34 +161,15 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       return;
     }
 
-    const spec = getRandomPetSpec(theme);
-    const firstPet = createInitialPet({
-      id: userId || 'local-pet-1',
-      name: spec.name,
-      theme: spec.theme,
-    });
-    firstPet.species = spec.species;
-    firstPet.stage = 'adult';
-
-    const initialCollection: StoredCollection = {
-      pets: [firstPet],
-      activePetId: firstPet.id,
-      gemBalance: 300,
-      adoptionCount: 1,
-      queuedThemeForNextPet: null,
-      presents: [DEFAULT_WELCOME_PRESENT],
-    };
-
     set({
-      pets: initialCollection.pets,
-      activePetId: firstPet.id,
-      pet: firstPet,
-      gemBalance: initialCollection.gemBalance,
-      adoptionCount: initialCollection.adoptionCount,
-      queuedThemeForNextPet: null,
-      presents: initialCollection.presents,
+      pets: [],
+      activePetId: null,
+      pet: null,
+      gemBalance: stored?.gemBalance ?? 300,
+      adoptionCount: stored?.adoptionCount ?? 0,
+      queuedThemeForNextPet: stored?.queuedThemeForNextPet ?? null,
+      presents: stored?.presents ?? [DEFAULT_WELCOME_PRESENT],
     });
-    saveStoredCollection(initialCollection);
   },
 
   adoptRandomPet: () => {

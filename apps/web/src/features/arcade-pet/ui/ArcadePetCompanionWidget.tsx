@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ProgressBar } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n/useLanguage';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { ArcadePetSocialStage } from './ArcadePetSocialStage';
 import { ArcadePetAdoptionModal } from './ArcadePetAdoptionModal';
 import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
+import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
 
 interface ArcadePetCompanionWidgetProps {
@@ -21,6 +23,9 @@ export const ArcadePetCompanionWidget: React.FC<
 > = ({ currentUserId, theme }) => {
   const pathname = usePathname();
   const { locale } = useLanguage();
+  const { snapshot } = useSessionTokens();
+  const isAuthenticated = Boolean(snapshot.accessToken || currentUserId);
+
   const {
     pet,
     pets,
@@ -33,10 +38,13 @@ export const ArcadePetCompanionWidget: React.FC<
     toggleWidget,
     setWidgetOpen,
     toggleHome,
+    adoptRandomPet,
   } = useArcadePetStore();
 
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
   const [showGiftsModal, setShowGiftsModal] = useState(false);
+  const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
+  const [showCommitmentModal, setShowCommitmentModal] = useState(false);
 
   useEffect(() => {
     initialize(currentUserId, theme);
@@ -46,7 +54,81 @@ export const ArcadePetCompanionWidget: React.FC<
     return null;
   }
 
-  if (!pet) return null;
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
+        {showRegisterPrompt && (
+          <div
+            data-testid="arcade-pet-register-prompt"
+            className="mb-3 w-72 rounded-2xl bg-neutral-900/95 border border-amber-500/50 p-4 shadow-2xl backdrop-blur-md text-white font-sans flex flex-col gap-2.5 text-center"
+          >
+            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                <span>🔒</span>
+                <span>Registration Required</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowRegisterPrompt(false)}
+                className="text-neutral-400 hover:text-white p-1 text-xs"
+                aria-label="Close prompt"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-xs text-neutral-300 leading-relaxed">
+              Only registered players can adopt ArcadePets! Register or log in
+              to unlock your free pet companion.
+            </p>
+            <Link
+              href={`/${locale}/auth`}
+              className="w-full py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs uppercase text-center shadow-md transition-transform transform hover:scale-105"
+            >
+              Register / Log In →
+            </Link>
+          </div>
+        )}
+
+        <button
+          type="button"
+          aria-disabled="true"
+          data-testid="arcade-pet-companion-trigger"
+          onClick={() => setShowRegisterPrompt((prev) => !prev)}
+          title="Only registered players can have pets. Register to adopt!"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 border border-neutral-700/80 shadow-lg backdrop-blur-md text-neutral-400 opacity-80 cursor-pointer hover:border-amber-500/60 transition-all"
+          aria-label="Register to adopt pet"
+        >
+          <span className="text-lg">🔒</span>
+          <span className="text-xs font-bold">Register for Pet</span>
+        </button>
+      </div>
+    );
+  }
+
+  if (!pet) {
+    return (
+      <>
+        <ArcadePetCommitmentModal
+          open={showCommitmentModal}
+          onClose={() => setShowCommitmentModal(false)}
+          onConfirm={() => adoptRandomPet()}
+        />
+
+        <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
+          <button
+            type="button"
+            data-testid="arcade-pet-companion-trigger"
+            onClick={() => setShowCommitmentModal(true)}
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            aria-label="Adopt Free Pet"
+          >
+            <span className="text-lg">🥚</span>
+            <span className="text-xs font-bold">Adopt Free Pet 🐾</span>
+          </button>
+        </div>
+      </>
+    );
+  }
 
   const unopenedCount = presents.filter((p) => !p.isOpened).length;
   const themePalette = THEME_PET_PALETTES[pet.theme];

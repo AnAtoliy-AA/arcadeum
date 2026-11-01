@@ -52,8 +52,10 @@ c = d['data']['secret-bundle-content']['content']
 print(base64.b64decode(c).decode('utf-8'), end='')
 ")
   if [ -n "$value" ]; then
+    value="$(printf '%s' "$value" | tr -d '\000-\010\013\014\016-\037\177')"
     value="${value//$'\n'/\\n}"
-    printf '%s=%s\n' "$bare" "$value" >> "$TMP"
+    escaped_value="${value//\'/\'\"\'\"\'}"
+    printf "%s='%s'\n" "$bare" "$escaped_value" >> "$TMP"
   fi
 done <<< "$SECRETS"
 

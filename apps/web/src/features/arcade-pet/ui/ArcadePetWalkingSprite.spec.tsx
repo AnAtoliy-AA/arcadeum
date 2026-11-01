@@ -51,4 +51,15 @@ describe('ArcadePetWalkingSprite', () => {
     expect(container.querySelector('svg')).toBeInTheDocument();
     expect(container.firstChild).toHaveClass(/slimeSlideAnimation/);
   });
+
+  it('renders mystery egg sprite when stage is egg regardless of underlying species', () => {
+    const { getByTestId } = render(
+      <ArcadePetWalkingSprite
+        species="cyber_cat"
+        state="walking"
+        stage="egg"
+      />,
+    );
+    expect(getByTestId('arcade-pet-egg-sprite')).toBeInTheDocument();
+  });
 });

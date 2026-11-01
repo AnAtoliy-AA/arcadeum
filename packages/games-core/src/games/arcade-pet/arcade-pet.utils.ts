@@ -72,15 +72,32 @@ export function applyDeterministicDecay(
   options?: DecayOptions,
 ): PetState {
   if (state.stage === 'egg') {
+    const elapsedMs = Math.max(0, now - state.timestamps.lastInteractedAt);
+    const elapsedHours = elapsedMs / (1000 * 60 * 60);
+    const isAtHome = Boolean(options?.isAtHome);
+    const growthMultiplier = isAtHome
+      ? GROWTH_RATES.homeMultiplier
+      : GROWTH_RATES.runningMultiplier;
+    const currentGrowth = state.stats.growthHours ?? 0;
+    const gainedGrowth = elapsedHours * growthMultiplier;
+    const newGrowthHours = Math.round((currentGrowth + gainedGrowth) * 1000) / 1000;
     const nextStage = calculateStage(
       state.timestamps.bornAt,
       now,
       state.stage,
-      state.stats.growthHours,
+      newGrowthHours,
     );
     return {
       ...state,
       stage: nextStage,
+      stats: {
+        ...state.stats,
+        growthHours: newGrowthHours,
+      },
+      timestamps: {
+        ...state.timestamps,
+        lastInteractedAt: now,
+      },
       mood: deriveMood({
         isSleeping: state.isSleeping,
         isSick: state.isSick,

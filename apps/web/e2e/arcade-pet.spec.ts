@@ -84,9 +84,20 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     await confirmBtn.click();
     await expect(page.getByTestId('arcade-pet-commitment-modal')).toBeHidden();
+    const companionTrigger = page.getByTestId('arcade-pet-companion-trigger');
+    await expect(companionTrigger).toBeVisible();
+    await expect(companionTrigger).toContainText('Mystery Egg');
+
+    await companionTrigger.click();
+    await expect(page.getByTestId('arcade-pet-companion-modal')).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-companion-modal')).toContainText(
+      'Mystery Egg',
+    );
+    await expect(page.getByText('🥚 Mystery')).toBeVisible();
     await expect(
-      page.getByTestId('arcade-pet-companion-trigger'),
+      page.getByText('Incubating Egg • Grows to reveal'),
     ).toBeVisible();
+    await expect(page.getByTestId('arcade-pet-egg-sprite')).toBeVisible();
   });
 
   test('should open companion widget, mounts nursery, and presents modal for owner', async ({

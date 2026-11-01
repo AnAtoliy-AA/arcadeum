@@ -206,16 +206,24 @@ export const ArcadePetCompanionWidget: React.FC<
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-bold leading-tight">
-                      {pet.name}
+                      {pet.stage === 'egg' ? 'Mystery Egg' : pet.name}
                     </span>
-                    {themePalette && (
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
-                        {themePalette.emoji} {themePalette.title}
+                    {pet.stage === 'egg' ? (
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-amber-300">
+                        🥚 Mystery
                       </span>
+                    ) : (
+                      themePalette && (
+                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
+                          {themePalette.emoji} {themePalette.title}
+                        </span>
+                      )
                     )}
                   </div>
                   <span className="text-[10px] text-neutral-400 uppercase tracking-wider">
-                    Level {pet.stats.level} {pet.stage} • {pets.length} Owned
+                    {pet.stage === 'egg'
+                      ? 'Incubating Egg • Grows to reveal'
+                      : `Level ${pet.stats.level} ${pet.stage} • ${pets.length} Owned`}
                   </span>
                 </div>
               </div>
@@ -280,7 +288,9 @@ export const ArcadePetCompanionWidget: React.FC<
                       }`}
                     >
                       <span>{icon}</span>
-                      <span className="truncate max-w-[80px]">{p.name}</span>
+                      <span className="truncate max-w-[80px]">
+                        {p.stage === 'egg' ? 'Mystery Egg' : p.name}
+                      </span>
                       <span
                         className={`text-[10px] px-1 rounded ${
                           isCurrent
@@ -461,7 +471,9 @@ export const ArcadePetCompanionWidget: React.FC<
           aria-label="Toggle ArcadePet Companion"
         >
           <span className="text-lg">{speciesEmoji}</span>
-          <span className="text-xs font-bold hidden sm:inline">{pet.name}</span>
+          <span className="text-xs font-bold hidden sm:inline">
+            {pet.stage === 'egg' ? 'Mystery Egg' : pet.name}
+          </span>
           {isAtHome && (
             <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-[10px] text-amber-200 font-semibold">
               💤 Home

@@ -36,22 +36,25 @@ export function ArcadePetCollectionList({
             >
               <div className="flex items-center gap-3">
                 <ArcadePetWalkingSprite
-                  species={p.stage === 'egg' ? 'blob' : p.species}
+                  species={p.species}
                   state="idle"
                   theme={p.theme}
+                  stage={p.stage}
                   className="w-10 h-10"
                 />
                 <div className="flex flex-col">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    {p.name}
-                    {palette && (
+                    {p.stage === 'egg' ? 'Mystery Egg' : p.name}
+                    {p.stage !== 'egg' && palette && (
                       <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
                         {palette.emoji} {palette.title}
                       </span>
                     )}
                   </span>
                   <span className="text-[10px] text-neutral-400">
-                    Level {p.stats.level} • {p.species} • {p.stage}
+                    {p.stage === 'egg'
+                      ? 'Incubating • Mystery Companion'
+                      : `Level ${p.stats.level} • ${p.species} • ${p.stage}`}
                   </span>
                 </div>
               </div>

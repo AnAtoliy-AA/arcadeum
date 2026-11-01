@@ -102,9 +102,12 @@ export function ArcadePetSocialStage({
           <ArcadePetHomeBooth
             isAtHome={isAtHome}
             onToggleHome={toggleHome}
-            localPetName={localPet.name}
+            localPetName={
+              localPet.stage === 'egg' ? 'Mystery Egg' : localPet.name
+            }
             localPetSpecies={localSpecies}
             localPetTheme={localPet.theme}
+            localPetStage={localPet.stage}
             pets={pets}
             homeCapacity={homeCapacity}
             onUpgradeHome={upgradeHome}
@@ -139,11 +142,12 @@ export function ArcadePetSocialStage({
                 species={localSpecies}
                 state={sim.localState}
                 theme={localPet.theme}
+                stage={localPet.stage}
               />
             </div>
 
             <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none select-none">
-              {localPet.name}
+              {localPet.stage === 'egg' ? 'Mystery Egg' : localPet.name}
             </span>
           </div>
         )}

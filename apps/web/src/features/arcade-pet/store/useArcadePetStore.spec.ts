@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
+import { applyDeterministicDecay } from '@arcadeum/games-core';
 import { useArcadePetStore } from './useArcadePetStore';
 
 describe('useArcadePetStore', () => {
@@ -218,6 +219,31 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().hasConfirmedCare).toBe(false);
   });
 
+  it('starts adopted pet in egg stage and unlocks interactions once grown past baby threshold', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 10,
+    });
+    const adoptRes = useArcadePetStore.getState().adoptRandomPet();
+    expect(adoptRes.success).toBe(true);
+    expect(adoptRes.pet?.stage).toBe('egg');
+
+    const feedWhileEgg = useArcadePetStore
+      .getState()
+      .performAction('feed_snack');
+    expect(feedWhileEgg.success).toBe(false);
+
+    const now = Date.now() + 120 * 1000;
+    const pet = useArcadePetStore.getState().pet!;
+    const grown = applyDeterministicDecay(pet, now);
+    useArcadePetStore.setState({ pet: grown, pets: [grown] });
+    expect(useArcadePetStore.getState().pet?.stage).toBe('baby');
+
+    const feedBaby = useArcadePetStore.getState().performAction('feed_snack');
+    expect(feedBaby.success).toBe(true);
+  });
+
   it('charges 1 coin when feeding a snack', () => {
     useArcadePetStore.setState({
       adoptionCount: 0,
@@ -225,9 +251,15 @@ describe('useArcadePetStore', () => {
       coinBalance: 5,
     });
     useArcadePetStore.getState().adoptRandomPet();
+    const current = useArcadePetStore.getState().pet!;
+    const adultPet = { ...current, stage: 'adult' as const };
+    useArcadePetStore.setState({
+      pet: adultPet,
+      pets: [adultPet],
+    });
 
     const initialCoins = useArcadePetStore.getState().coinBalance;
-    const initialHunger = useArcadePetStore.getState().pet?.stats.hunger ?? 0;
+    const initialHunger = adultPet.stats.hunger;
 
     const result = useArcadePetStore.getState().performAction('feed_snack');
     expect(result.success).toBe(true);
@@ -264,12 +296,15 @@ describe('useArcadePetStore', () => {
     useArcadePetStore.getState().adoptRandomPet();
     useArcadePetStore.getState().adoptRandomPet();
 
-    const { pets } = useArcadePetStore.getState();
-    expect(pets.length).toBe(3);
+    const adultPets = useArcadePetStore.getState().pets.map((p) => ({
+      ...p,
+      stage: 'adult' as const,
+    }));
+    useArcadePetStore.setState({ pets: adultPets, pet: adultPets[0] });
 
-    const pet1 = pets[0]!;
-    const pet2 = pets[1]!;
-    const pet3 = pets[2]!;
+    const pet1 = adultPets[0]!;
+    const pet2 = adultPets[1]!;
+    const pet3 = adultPets[2]!;
 
     useArcadePetStore.getState().selectActivePet(pet1.id);
     const res1 = useArcadePetStore.getState().performAction('feed_snack');

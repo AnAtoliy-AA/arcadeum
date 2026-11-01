@@ -34,6 +34,15 @@ describe('ArcadePet Engine', () => {
     expect(result.messageCode).toBe('is_egg');
   });
 
+  it('hatches automatically once egg grows past baby threshold', () => {
+    const egg = createInitialPet({ id: 'pet-1', name: 'PixelBuddy', now: 1000 });
+    const smallGrowth = applyDeterministicDecay(egg, 1000 + 30 * 1000);
+    expect(smallGrowth.stage).toBe('egg');
+
+    const grownEgg = applyDeterministicDecay(egg, 1000 + 120 * 1000);
+    expect(grownEgg.stage).toBe('baby');
+  });
+
   it('applies deterministic decay over elapsed time', () => {
     const egg = createInitialPet({ id: 'pet-1', name: 'PixelBuddy', now: 1000 });
     const hatched = executePetAction(egg, 'hatch', { now: 1000 }).state;

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PetSpecies, PetState } from '@arcadeum/games-core';
+import type { PetSpecies, PetStage, PetState } from '@arcadeum/games-core';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 import styles from './arcade-pet-companion.module.scss';
 
@@ -9,6 +9,7 @@ interface ArcadePetHomeBoothProps {
   localPetName: string;
   localPetSpecies: PetSpecies;
   localPetTheme: string;
+  localPetStage?: PetStage;
   isKnocked: boolean;
   knockerName?: string;
   onOpenDoor: () => void;
@@ -23,6 +24,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
   localPetName,
   localPetSpecies,
   localPetTheme,
+  localPetStage,
   isKnocked,
   knockerName,
   onOpenDoor,
@@ -111,6 +113,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
                     species={localPetSpecies}
                     state="sleeping"
                     theme={localPetTheme}
+                    stage={localPetStage}
                   />
                 </div>
               </div>
@@ -151,7 +154,11 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
                     >
                       <span>🛏️</span>
                       <span className="truncate">
-                        {occupant ? occupant.name : `Empty Place`}
+                        {occupant
+                          ? occupant.stage === 'egg'
+                            ? 'Mystery Egg'
+                            : occupant.name
+                          : 'Empty Place'}
                       </span>
                     </div>
                   );

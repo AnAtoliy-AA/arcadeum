@@ -1,5 +1,5 @@
 import React from 'react';
-import type { PetSpecies } from '@arcadeum/games-core';
+import type { PetSpecies, PetStage } from '@arcadeum/games-core';
 import styles from './arcade-pet-companion.module.scss';
 
 const THEME_AURA_MAP: Record<string, string | undefined> = {
@@ -23,6 +23,7 @@ interface ArcadePetWalkingSpriteProps {
   state: 'walking' | 'idle' | 'happy' | 'sleeping';
   className?: string;
   theme?: string;
+  stage?: PetStage;
 }
 
 export function ArcadePetWalkingSprite({
@@ -30,6 +31,7 @@ export function ArcadePetWalkingSprite({
   state,
   className = '',
   theme = 'retro',
+  stage,
 }: ArcadePetWalkingSpriteProps) {
   const isWalking = state === 'walking';
   const isHappy = state === 'happy';
@@ -68,6 +70,39 @@ export function ArcadePetWalkingSprite({
         : styles.petSmileAnimation;
 
   const containerClass = `${animationClass} ${themeAura} ${className} w-14 h-14`;
+
+  if (stage === 'egg') {
+    return (
+      <div className={containerClass} data-testid="arcade-pet-egg-sprite">
+        <svg
+          viewBox="0 0 64 64"
+          className="w-full h-full drop-shadow-lg"
+          aria-hidden="true"
+        >
+          <ellipse
+            cx="32"
+            cy="36"
+            rx="16"
+            ry="22"
+            fill="#fef08a"
+            stroke="#ca8a04"
+            strokeWidth="2"
+          />
+          <ellipse cx="27" cy="28" rx="5" ry="9" fill="#ffffff" opacity="0.4" />
+          <path
+            d="M 28 32 L 31 36 L 29 40 L 33 43"
+            stroke="#ca8a04"
+            strokeWidth="1.5"
+            fill="none"
+            strokeLinecap="round"
+          />
+          <circle cx="38" cy="38" r="2" fill="#eab308" />
+          <circle cx="26" cy="44" r="2.5" fill="#eab308" />
+          <circle cx="36" cy="26" r="1.5" fill="#eab308" />
+        </svg>
+      </div>
+    );
+  }
 
   if (species === 'cyber_cat') {
     return (

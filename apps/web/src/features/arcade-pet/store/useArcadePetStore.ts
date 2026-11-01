@@ -113,7 +113,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       theme: spec.theme,
     });
     newPet.species = spec.species;
-    newPet.stage = 'adult';
+    newPet.stage = 'egg';
 
     const nextPets = [...pets, newPet];
     const nextGems = gemBalance - cost;
@@ -262,7 +262,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       theme: target.theme,
     });
     giftedPet.species = target.species;
-    giftedPet.stage = 'adult';
+    giftedPet.stage = 'egg';
 
     const nextPresents = presents.map((p) =>
       p.id === presentId ? { ...p, isOpened: true } : p,

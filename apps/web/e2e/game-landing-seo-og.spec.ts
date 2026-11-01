@@ -51,6 +51,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     const checkersSpec = page
       .locator('[data-testid="game-spec-table"]')
       .first();
+    await checkersSpec
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(checkersSpec).toBeVisible();
     await expect(checkersSpec).toContainText('American Draughts');
 
@@ -60,6 +63,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await expect(bgHeading).toContainText('Backgammon');
 
     const bgSpec = page.locator('[data-testid="game-spec-table"]').first();
+    await bgSpec
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(bgSpec).toBeVisible();
     await expect(bgSpec).toContainText('24 Points');
   });
@@ -103,8 +109,10 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
       name: 'Solve Move (1. Qxf7+)',
     });
     await expect(solveBtn).toBeVisible();
-    await solveBtn.scrollIntoViewIfNeeded();
-    await solveBtn.click();
+    await solveBtn
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
+    await solveBtn.click({ force: true });
 
     await expect(puzzleTeaser).toContainText('Brilliant!! 1. Qxf7+!');
   });

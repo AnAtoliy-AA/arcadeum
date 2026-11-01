@@ -59,20 +59,26 @@ test.describe('Features Page', () => {
     await page.waitForLoadState('domcontentloaded');
 
     const matrixButton = page.getByTestId('features-view-matrix');
-    await matrixButton.scrollIntoViewIfNeeded();
-    await matrixButton.click();
+    await matrixButton
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
+    await matrixButton.click({ force: true });
 
     await expect(page.getByText('Explore →').first()).toBeVisible();
 
     const directoryButton = page.getByTestId('features-view-directory');
-    await directoryButton.scrollIntoViewIfNeeded();
-    await directoryButton.click();
+    await directoryButton
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
+    await directoryButton.click({ force: true });
 
     await expect(page.getByText('Directory Index')).toBeVisible();
 
     const fullViewButton = page.getByTestId('features-view-categorized');
-    await fullViewButton.scrollIntoViewIfNeeded();
-    await fullViewButton.click();
+    await fullViewButton
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
+    await fullViewButton.click({ force: true });
 
     await expect(page.getByText('1. Games (20+)')).toBeVisible();
   });

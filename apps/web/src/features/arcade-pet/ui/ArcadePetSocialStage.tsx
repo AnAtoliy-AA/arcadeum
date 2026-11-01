@@ -10,6 +10,8 @@ import styles from './arcade-pet-companion.module.scss';
 interface SimState {
   localCol: number;
   localRow: number;
+  targetCol: number;
+  targetRow: number;
   localDir: 'left' | 'right';
   localState: 'walking' | 'idle' | 'happy' | 'sleeping';
   localEmote: string | null;
@@ -30,6 +32,8 @@ const COL_CLASSES = [
   styles.col5,
   styles.col6,
   styles.col7,
+  styles.col8,
+  styles.col9,
 ];
 
 const ROW_CLASSES = [
@@ -39,6 +43,8 @@ const ROW_CLASSES = [
   styles.row3,
   styles.row4,
   styles.row5,
+  styles.row6,
+  styles.row7,
 ];
 
 const EMOTE_CYCLE = ['❤️', '😄', '✨', '🎵', '🍰', '👋'];
@@ -46,10 +52,12 @@ const EMOTE_CYCLE = ['❤️', '😄', '✨', '🎵', '🍰', '👋'];
 const INITIAL_SIM: SimState = {
   localCol: 2,
   localRow: 1,
+  targetCol: 7,
+  targetRow: 6,
   localDir: 'right',
   localState: 'idle',
   localEmote: '😄',
-  remoteCol: 5,
+  remoteCol: 6,
   remoteRow: 2,
   remoteDir: 'left',
   remoteState: 'idle',
@@ -82,32 +90,47 @@ export function ArcadePetSocialStage({
         const nextTick = prev.tick + 1;
 
         if (!hasFriend) {
-          const isResting = Math.random() > 0.65;
-          if (isResting) {
+          const atTarget =
+            prev.localCol === prev.targetCol &&
+            prev.localRow === prev.targetRow;
+
+          if (atTarget) {
+            let nextTCol = Math.floor(Math.random() * 10);
+            let nextTRow = Math.floor(Math.random() * 8);
+            if (Math.abs(nextTCol - prev.localCol) < 3) {
+              nextTCol = (prev.localCol + 5) % 10;
+            }
+            if (Math.abs(nextTRow - prev.localRow) < 2) {
+              nextTRow = (prev.localRow + 4) % 8;
+            }
+
             return {
               ...prev,
               tick: nextTick,
-              localState: 'idle',
+              targetCol: nextTCol,
+              targetRow: nextTRow,
+              localState: 'happy',
               localEmote: EMOTE_CYCLE[nextTick % EMOTE_CYCLE.length] ?? '😄',
             };
           }
 
-          const colDelta =
-            Math.random() > 0.5 ? (prev.localDir === 'right' ? 1 : -1) : 0;
-          const rowDelta =
-            Math.random() > 0.6 ? (Math.random() > 0.5 ? 1 : -1) : 0;
+          const stepX =
+            prev.localCol < prev.targetCol
+              ? 1
+              : prev.localCol > prev.targetCol
+                ? -1
+                : 0;
+          const stepY =
+            prev.localRow < prev.targetRow
+              ? 1
+              : prev.localRow > prev.targetRow
+                ? -1
+                : 0;
 
-          let nextCol = prev.localCol + colDelta;
-          let nextDir = prev.localDir;
-          if (nextCol > 7) {
-            nextCol = 7;
-            nextDir = 'left';
-          } else if (nextCol < 0) {
-            nextCol = 0;
-            nextDir = 'right';
-          }
-
-          const nextRow = Math.max(0, Math.min(5, prev.localRow + rowDelta));
+          const nextCol = Math.max(0, Math.min(9, prev.localCol + stepX));
+          const nextRow = Math.max(0, Math.min(7, prev.localRow + stepY));
+          const nextDir =
+            stepX > 0 ? 'right' : stepX < 0 ? 'left' : prev.localDir;
 
           return {
             ...prev,
@@ -124,43 +147,81 @@ export function ArcadePetSocialStage({
         const distRow = Math.abs(prev.localRow - prev.remoteRow);
 
         if (distCol <= 1 && distRow <= 1) {
-          const walkDirX = nextTick % 3 === 0 ? 1 : nextTick % 3 === 1 ? -1 : 0;
-          const walkDirY = nextTick % 2 === 0 ? 1 : -1;
+          const atTarget =
+            prev.localCol === prev.targetCol &&
+            prev.localRow === prev.targetRow;
 
-          const nextLCol = Math.max(0, Math.min(6, prev.localCol + walkDirX));
-          const nextRCol = Math.max(1, Math.min(7, nextLCol + 1));
-          const nextLRow = Math.max(0, Math.min(5, prev.localRow + walkDirY));
+          if (atTarget) {
+            let nextTCol = Math.floor(Math.random() * 9);
+            let nextTRow = Math.floor(Math.random() * 8);
+            if (Math.abs(nextTCol - prev.localCol) < 3) {
+              nextTCol = (prev.localCol + 5) % 9;
+            }
+            if (Math.abs(nextTRow - prev.localRow) < 2) {
+              nextTRow = (prev.localRow + 4) % 8;
+            }
+
+            return {
+              ...prev,
+              tick: nextTick,
+              targetCol: nextTCol,
+              targetRow: nextTRow,
+              localState: 'happy',
+              remoteState: 'happy',
+              localEmote: '❤️',
+              remoteEmote: '😄',
+            };
+          }
+
+          const stepX =
+            prev.localCol < prev.targetCol
+              ? 1
+              : prev.localCol > prev.targetCol
+                ? -1
+                : 0;
+          const stepY =
+            prev.localRow < prev.targetRow
+              ? 1
+              : prev.localRow > prev.targetRow
+                ? -1
+                : 0;
+
+          const nextLCol = Math.max(0, Math.min(8, prev.localCol + stepX));
+          const nextLRow = Math.max(0, Math.min(7, prev.localRow + stepY));
+          const nextRCol = Math.min(9, nextLCol + 1);
           const nextRRow = nextLRow;
+          const walkDir =
+            stepX > 0 ? 'right' : stepX < 0 ? 'left' : prev.localDir;
 
           return {
             ...prev,
             tick: nextTick,
-            localState: 'happy',
-            remoteState: 'happy',
-            localEmote: '❤️',
-            remoteEmote: '😄',
-            localDir: prev.localCol < prev.remoteCol ? 'right' : 'left',
-            remoteDir: prev.localCol < prev.remoteCol ? 'left' : 'right',
             localCol: nextLCol,
             localRow: nextLRow,
             remoteCol: nextRCol,
             remoteRow: nextRRow,
+            localDir: walkDir,
+            remoteDir: walkDir,
+            localState: 'walking',
+            remoteState: 'walking',
+            localEmote: null,
+            remoteEmote: null,
           };
         }
 
         const targetColDir = prev.localCol < prev.remoteCol ? 1 : -1;
         const targetRowDir = prev.localRow < prev.remoteRow ? 1 : -1;
 
-        const nextLCol = Math.max(0, Math.min(7, prev.localCol + targetColDir));
-        const nextLRow = Math.max(0, Math.min(5, prev.localRow + targetRowDir));
+        const nextLCol = Math.max(0, Math.min(9, prev.localCol + targetColDir));
+        const nextLRow = Math.max(0, Math.min(7, prev.localRow + targetRowDir));
 
         const nextRCol = Math.max(
           0,
-          Math.min(7, prev.remoteCol - targetColDir),
+          Math.min(9, prev.remoteCol - targetColDir),
         );
         const nextRRow = Math.max(
           0,
-          Math.min(5, prev.remoteRow - targetRowDir),
+          Math.min(7, prev.remoteRow - targetRowDir),
         );
 
         return {
@@ -178,7 +239,7 @@ export function ArcadePetSocialStage({
           remoteEmote: null,
         };
       });
-    }, 3200);
+    }, 2800);
 
     return () => clearInterval(timer);
   }, [hasFriend, localPet]);

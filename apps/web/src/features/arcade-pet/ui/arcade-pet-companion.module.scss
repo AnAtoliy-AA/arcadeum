@@ -16,7 +16,7 @@
   pointer-events: auto;
   cursor: pointer;
   user-select: none;
-  transition: left 3.2s cubic-bezier(0.25, 1, 0.5, 1), bottom 3.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: left 2.8s cubic-bezier(0.25, 1, 0.5, 1), bottom 2.8s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,21 +30,25 @@
   transform: scaleX(1);
 }
 
-.col0 { left: 4%; }
-.col1 { left: 16%; }
-.col2 { left: 28%; }
-.col3 { left: 40%; }
-.col4 { left: 52%; }
-.col5 { left: 64%; }
-.col6 { left: 76%; }
-.col7 { left: 88%; }
+.col0 { left: 3%; }
+.col1 { left: 12%; }
+.col2 { left: 21%; }
+.col3 { left: 31%; }
+.col4 { left: 41%; }
+.col5 { left: 50%; }
+.col6 { left: 60%; }
+.col7 { left: 70%; }
+.col8 { left: 79%; }
+.col9 { left: 88%; }
 
-.row0 { bottom: 5%; }
-.row1 { bottom: 18%; }
-.row2 { bottom: 34%; }
-.row3 { bottom: 50%; }
-.row4 { bottom: 66%; }
-.row5 { bottom: 82%; }
+.row0 { bottom: 4%; }
+.row1 { bottom: 15%; }
+.row2 { bottom: 26%; }
+.row3 { bottom: 37%; }
+.row4 { bottom: 48%; }
+.row5 { bottom: 59%; }
+.row6 { bottom: 70%; }
+.row7 { bottom: 82%; }
 
 .petWalkAnimation {
   animation: petWalkBob 0.6s ease-in-out infinite alternate;

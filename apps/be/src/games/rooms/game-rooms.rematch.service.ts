@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -31,6 +32,7 @@ export class GameRoomsRematchService {
     }
 
     const gameOptions = room.gameOptions || {};
+    this.assertRematchAvailable(room, gameOptions);
     const invitedIds = (gameOptions.rematchInvitedIds as string[]) || [];
     const declinedIds = (gameOptions.rematchDeclinedIds as string[]) || [];
 
@@ -43,9 +45,13 @@ export class GameRoomsRematchService {
       gameOptions.rematchDeclinedIds = declinedIds;
     }
 
+    const remainingInvited = (gameOptions.rematchInvitedIds as string[]) || [];
+    const acceptedIds = (gameOptions.rematchAcceptedIds as string[]) || [];
+
     if (
       room.status === 'lobby' &&
-      ((gameOptions.rematchInvitedIds as string[]) || []).length === 0 &&
+      remainingInvited.length === 0 &&
+      acceptedIds.length <= 1 &&
       room.participants.length < (room.maxPlayers ?? 2)
     ) {
       const botId = `bot-${globalThis.crypto.randomUUID().slice(0, 10)}`;
@@ -56,6 +62,114 @@ export class GameRoomsRematchService {
     await room.save();
 
     return this.gameRoomsMapper.prepareRoomSummary(room);
+  }
+
+  /** Accept a rematch invitation and join the already-created rematch lobby. */
+  async acceptRematchInvitation(
+    roomId: string,
+    userId: string,
+  ): Promise<GameRoomSummary> {
+    const room = await this.gameRoomModel.findById(roomId).exec();
+    if (!room) {
+      throw new NotFoundException(`Room not found: ${roomId}`);
+    }
+
+    const gameOptions = room.gameOptions || {};
+    this.assertRematchAvailable(room, gameOptions);
+    const acceptedIds = (gameOptions.rematchAcceptedIds as string[]) || [];
+    if (acceptedIds.includes(userId)) {
+      throw new BadRequestException('You have already accepted this rematch');
+    }
+    const invitedIds = (gameOptions.rematchInvitedIds as string[]) || [];
+    if (!invitedIds.includes(userId)) {
+      throw new ForbiddenException('You are not invited to this rematch');
+    }
+
+    if (room.status !== 'lobby') {
+      throw new ForbiddenException('This rematch is no longer available');
+    }
+
+    if (
+      !room.participants.some((participant) => participant.userId === userId)
+    ) {
+      room.participants.push({ userId, joinedAt: new Date() });
+    }
+    gameOptions.rematchInvitedIds = invitedIds.filter((id) => id !== userId);
+    acceptedIds.push(userId);
+    gameOptions.rematchAcceptedIds = acceptedIds;
+    room.markModified('gameOptions');
+    await room.save();
+
+    return this.gameRoomsMapper.prepareRoomSummary(room);
+  }
+
+  async cancelRematchInvitation(
+    roomId: string,
+    userId: string,
+  ): Promise<{ oldRoomId?: string }> {
+    const room = await this.gameRoomModel.findById(roomId).exec();
+    if (!room) throw new NotFoundException(`Room not found: ${roomId}`);
+    if (room.hostId !== userId) {
+      throw new ForbiddenException('Only the rematch host can cancel it');
+    }
+    const gameOptions = room.gameOptions || {};
+    const oldRoomId = gameOptions.rematchPreviousRoomId as string | undefined;
+    gameOptions.rematchCancelledAt = new Date().toISOString();
+    gameOptions.rematchInvitedIds = [];
+    room.status = 'completed';
+    room.markModified('gameOptions');
+    await room.save();
+    if (oldRoomId) {
+      await this.gameRoomModel
+        .findByIdAndUpdate(oldRoomId, { $set: { rematchPending: false } })
+        .exec();
+    }
+    return { oldRoomId };
+  }
+
+  async expireStaleRematches(): Promise<number> {
+    const nowIso = new Date().toISOString();
+    const staleRooms = await this.gameRoomModel
+      .find({
+        status: 'lobby',
+        'gameOptions.rematchExpiresAt': { $lte: nowIso },
+        'gameOptions.rematchCancelledAt': { $exists: false },
+      })
+      .exec();
+
+    let count = 0;
+    for (const room of staleRooms) {
+      const gameOptions = room.gameOptions || {};
+      const oldRoomId = gameOptions.rematchPreviousRoomId as string | undefined;
+      gameOptions.rematchCancelledAt = nowIso;
+      gameOptions.rematchInvitedIds = [];
+      room.status = 'completed';
+      room.markModified('gameOptions');
+      await room.save();
+      if (oldRoomId) {
+        await this.gameRoomModel
+          .findByIdAndUpdate(oldRoomId, { $set: { rematchPending: false } })
+          .exec();
+      }
+      count++;
+    }
+    return count;
+  }
+
+  private assertRematchAvailable(
+    room: GameRoom,
+    gameOptions: Record<string, unknown>,
+  ): void {
+    if (gameOptions.rematchCancelledAt) {
+      throw new BadRequestException('This rematch was cancelled');
+    }
+    const expiresAt = gameOptions.rematchExpiresAt;
+    if (typeof expiresAt === 'string' && Date.parse(expiresAt) <= Date.now()) {
+      throw new BadRequestException('This rematch invitation has expired');
+    }
+    if (room.status !== 'lobby') {
+      throw new ForbiddenException('This rematch is no longer available');
+    }
   }
 
   /**

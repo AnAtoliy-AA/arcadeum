@@ -97,7 +97,7 @@ export class GamesHistoryFacade {
       gameOptions?: Record<string, unknown>;
       message?: string;
     },
-  ) {
+  ): Promise<{ id: string; pending: boolean; pendingUserIds: string[] }> {
     return this.rematchService.createRematchFromHistory(
       userId,
       roomId,
@@ -108,6 +108,14 @@ export class GamesHistoryFacade {
 
   async declineInvitation(roomId: string, userId: string): Promise<void> {
     return this.rematchService.declineInvitation(roomId, userId);
+  }
+
+  async acceptInvitation(roomId: string, userId: string): Promise<void> {
+    return this.rematchService.acceptInvitation(roomId, userId);
+  }
+
+  async cancelInvitation(roomId: string, userId: string): Promise<void> {
+    return this.rematchService.cancelInvitation(roomId, userId);
   }
 
   async blockRematchRoom(roomId: string, userId: string): Promise<void> {

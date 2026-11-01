@@ -79,7 +79,7 @@ describe('GameHistoryRematchService', () => {
     );
   });
 
-  it('reuses existing active rematch room when rematch is already in progress', async () => {
+  it('does not join an existing rematch room from a duplicate click', async () => {
     (primaryModel.findOneAndUpdate as jest.Mock).mockReturnValue({
       lean: () => ({
         exec: jest.fn().mockResolvedValue(null),
@@ -115,9 +115,87 @@ describe('GameHistoryRematchService', () => {
     );
 
     expect(result.id).toBe('room-2');
-    expect(existingRematchRoom.participants).toHaveLength(2);
-    expect(existingRematchRoom.participants[1].userId).toBe('user-2');
-    expect(mockSave).toHaveBeenCalled();
+    expect(existingRematchRoom.participants).toHaveLength(1);
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
+  it('handles simultaneous clicks where only the first caller creates room and second gets existing pending room', async () => {
+    const originalRoom = {
+      _id: 'room-sim',
+      gameId: 'chess_v1',
+      name: 'Simultaneous Match',
+      hostId: 'user-1',
+      visibility: 'public',
+      maxPlayers: 2,
+      participants: [
+        { userId: 'user-1', joinedAt: new Date() },
+        { userId: 'user-2', joinedAt: new Date() },
+      ],
+      gameOptions: {},
+    };
+
+    let lockClaimed = false;
+    (primaryModel.findOneAndUpdate as jest.Mock).mockImplementation(() => ({
+      lean: () => ({
+        exec: jest.fn().mockImplementation(() => {
+          if (!lockClaimed) {
+            lockClaimed = true;
+            return Promise.resolve(originalRoom);
+          }
+          return Promise.resolve(null);
+        }),
+      }),
+    }));
+
+    (primaryModel.find as jest.Mock).mockReturnValue({
+      select: () => ({
+        lean: () => ({
+          exec: jest.fn().mockResolvedValue([]),
+        }),
+      }),
+    });
+
+    (primaryModel.create as jest.Mock).mockResolvedValue({
+      _id: { toString: () => 'room-created-1' },
+      toObject: () => ({ _id: 'room-created-1' }),
+    });
+
+    (primaryModel.findById as jest.Mock).mockImplementation((id: string) => {
+      if (id === 'room-sim') {
+        return {
+          lean: () => ({
+            exec: jest.fn().mockResolvedValue({
+              _id: 'room-sim',
+              gameOptions: { rematchRoomId: 'room-created-1' },
+            }),
+          }),
+        };
+      }
+      return {
+        exec: jest.fn().mockResolvedValue({
+          _id: { toString: () => 'room-created-1' },
+          status: 'lobby',
+          participants: [{ userId: 'user-1', joinedAt: new Date() }],
+          gameOptions: { rematchInvitedIds: ['user-2'] },
+        }),
+      };
+    });
+
+    const [res1, res2] = await Promise.all([
+      service.createRematchFromHistory(
+        { roomId: 'room-sim', participantIds: ['user-2'] },
+        'user-1',
+      ),
+      service.createRematchFromHistory(
+        { roomId: 'room-sim', participantIds: ['user-1'] },
+        'user-2',
+      ),
+    ]);
+
+    expect(primaryModel.create).toHaveBeenCalledTimes(1);
+    expect(res1.id).toBe('room-created-1');
+    expect(res2.id).toBe('room-created-1');
+    expect(res2.pending).toBe(true);
   });
 
   it('throws NotFoundException when original room does not exist', async () => {

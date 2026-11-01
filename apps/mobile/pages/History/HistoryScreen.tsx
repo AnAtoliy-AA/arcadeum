@@ -198,9 +198,14 @@ export default function HistoryScreen() {
       );
       handleCloseModal();
       await reload();
+      if (response.pending) {
+        return;
+      }
+      const roomId =
+        typeof response.room === 'string' ? response.room : response.room.id;
       router.push({
         pathname: '/games/rooms/[id]',
-        params: { id: response.room.id },
+        params: { id: roomId },
       });
     } catch (err) {
       setRematchError(err instanceof Error ? err.message : String(err));

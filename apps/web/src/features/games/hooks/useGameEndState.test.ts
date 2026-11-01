@@ -28,6 +28,17 @@ describe('useGameEndState', () => {
       handleReinvite: vi.fn(),
       handleBlockRematch: vi.fn(),
       handleBlockUser: vi.fn(),
+      waiting: {
+        roomId: 'new-room-1',
+        status: 'pending' as const,
+        pendingUserIds: ['user-2'],
+        acceptedUserIds: [],
+        declinedUserIds: [],
+      },
+      waitingTimeLeft: 25,
+      cancelRematch: vi.fn(),
+      joinRematchRoom: vi.fn(),
+      dismissWaiting: vi.fn(),
     });
   });
 
@@ -78,5 +89,29 @@ describe('useGameEndState', () => {
 
     expect(mockOpenRematchModal).toHaveBeenCalled();
     expect(mockHandleRematch).not.toHaveBeenCalled();
+  });
+
+  it('exposes waiting state, countdown, and cancellation actions', () => {
+    const { result } = renderHook(() =>
+      useGameEndState({
+        roomId: 'room-1',
+        currentUserId: 'user-1',
+        session: null,
+        result: 'victory',
+        players: [],
+      }),
+    );
+
+    expect(result.current.waiting).toEqual({
+      roomId: 'new-room-1',
+      status: 'pending',
+      pendingUserIds: ['user-2'],
+      acceptedUserIds: [],
+      declinedUserIds: [],
+    });
+    expect(result.current.waitingTimeLeft).toBe(25);
+    expect(typeof result.current.cancelRematch).toBe('function');
+    expect(typeof result.current.joinRematchRoom).toBe('function');
+    expect(typeof result.current.dismissWaiting).toBe('function');
   });
 });

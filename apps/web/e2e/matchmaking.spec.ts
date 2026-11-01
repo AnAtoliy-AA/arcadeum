@@ -47,6 +47,7 @@ test.describe('Matchmaking Queue', () => {
 
     const modal = page.getByTestId('matchmaking-modal');
     await expect(async () => {
+      await humanBtn.scrollIntoViewIfNeeded();
       await humanBtn.click();
       await expect(modal).toBeVisible();
     }).toPass();

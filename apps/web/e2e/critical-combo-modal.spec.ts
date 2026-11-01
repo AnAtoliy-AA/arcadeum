@@ -88,16 +88,19 @@ test.describe('Critical Combo Modal', () => {
 
     const cancelCard = page.getByTestId('hand-card-cancel');
     await expect(cancelCard).toBeVisible();
+    await cancelCard.scrollIntoViewIfNeeded();
     await cancelCard.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '1');
     const incButton = page.getByTestId('stack-inc-cancel');
     await expect(incButton).toBeVisible();
+    await incButton.scrollIntoViewIfNeeded();
     await incButton.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '2');
 
     const playButton = page
       .getByTestId('hand-rail-play')
-      .or(page.getByTestId('mobile-hand-bar-play'));
+      .or(page.getByTestId('mobile-hand-bar-play'))
+      .first();
     await expect(playButton).toBeVisible();
     await expect(playButton).toBeEnabled();
     await playButton.scrollIntoViewIfNeeded();
@@ -115,6 +118,7 @@ test.describe('Critical Combo Modal', () => {
     const firstBlindCard = page.getByTestId('blind-card-0');
     await expect(firstBlindCard).toBeVisible();
     await expect(firstBlindCard).toContainText('#1');
+    await firstBlindCard.scrollIntoViewIfNeeded();
     await firstBlindCard.click();
 
     await expect(firstBlindCard).toHaveAttribute('aria-pressed', 'true');

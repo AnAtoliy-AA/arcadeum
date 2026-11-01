@@ -79,7 +79,7 @@ describe('GameHistoryRematchService', () => {
     );
   });
 
-  it('reuses existing active rematch room when rematch is already in progress', async () => {
+  it('does not join an existing rematch room from a duplicate click', async () => {
     (primaryModel.findOneAndUpdate as jest.Mock).mockReturnValue({
       lean: () => ({
         exec: jest.fn().mockResolvedValue(null),
@@ -115,9 +115,8 @@ describe('GameHistoryRematchService', () => {
     );
 
     expect(result.id).toBe('room-2');
-    expect(existingRematchRoom.participants).toHaveLength(2);
-    expect(existingRematchRoom.participants[1].userId).toBe('user-2');
-    expect(mockSave).toHaveBeenCalled();
+    expect(existingRematchRoom.participants).toHaveLength(1);
+    expect(mockSave).not.toHaveBeenCalled();
   });
 
   it('throws NotFoundException when original room does not exist', async () => {

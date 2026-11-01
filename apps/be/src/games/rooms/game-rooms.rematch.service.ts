@@ -58,6 +58,41 @@ export class GameRoomsRematchService {
     return this.gameRoomsMapper.prepareRoomSummary(room);
   }
 
+  /** Accept a rematch invitation and join the already-created rematch lobby. */
+  async acceptRematchInvitation(
+    roomId: string,
+    userId: string,
+  ): Promise<GameRoomSummary> {
+    const room = await this.gameRoomModel.findById(roomId).exec();
+    if (!room) {
+      throw new NotFoundException(`Room not found: ${roomId}`);
+    }
+
+    const gameOptions = room.gameOptions || {};
+    const invitedIds = (gameOptions.rematchInvitedIds as string[]) || [];
+    if (!invitedIds.includes(userId)) {
+      throw new ForbiddenException('You are not invited to this rematch');
+    }
+
+    if (room.status !== 'lobby') {
+      throw new ForbiddenException('This rematch is no longer available');
+    }
+
+    if (
+      !room.participants.some((participant) => participant.userId === userId)
+    ) {
+      room.participants.push({ userId, joinedAt: new Date() });
+    }
+    gameOptions.rematchInvitedIds = invitedIds.filter((id) => id !== userId);
+    const acceptedIds = (gameOptions.rematchAcceptedIds as string[]) || [];
+    if (!acceptedIds.includes(userId)) acceptedIds.push(userId);
+    gameOptions.rematchAcceptedIds = acceptedIds;
+    room.markModified('gameOptions');
+    await room.save();
+
+    return this.gameRoomsMapper.prepareRoomSummary(room);
+  }
+
   /**
    * Block re-invites for a specific rematch room
    * User won't be re-invited to this specific room, but can still receive invites from the host in other games

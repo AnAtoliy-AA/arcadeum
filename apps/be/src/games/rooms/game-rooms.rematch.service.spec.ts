@@ -103,4 +103,34 @@ describe('GameRoomsRematchService', () => {
       service.declineRematchInvitation('missing', 'user-1'),
     ).rejects.toThrow(NotFoundException);
   });
+
+  it('accepts an invitation and joins the rematch lobby', async () => {
+    const mockSave = jest.fn().mockResolvedValue(true);
+    const room = {
+      _id: 'rematch-room-1',
+      status: 'lobby',
+      participants: [{ userId: 'host-1', joinedAt: new Date() }],
+      gameOptions: {
+        rematchInvitedIds: ['invited-1'],
+        rematchAcceptedIds: ['host-1'],
+      },
+      markModified: jest.fn(),
+      save: mockSave,
+    };
+
+    (roomModel.findById as jest.Mock).mockReturnValue({
+      exec: jest.fn().mockResolvedValue(room),
+    });
+
+    await service.acceptRematchInvitation('rematch-room-1', 'invited-1');
+
+    expect(room.participants).toHaveLength(2);
+    expect(room.participants[1].userId).toBe('invited-1');
+    expect(room.gameOptions.rematchInvitedIds).toEqual([]);
+    expect(room.gameOptions.rematchAcceptedIds).toEqual([
+      'host-1',
+      'invited-1',
+    ]);
+    expect(mockSave).toHaveBeenCalled();
+  });
 });

@@ -72,7 +72,11 @@ export function useRematch({
         timeout: number;
       };
 
-      if (data?.oldRoomId === roomId) {
+      if (
+        data?.oldRoomId === roomId &&
+        data.hostId !== snapshot.userId &&
+        data.invitedUserIds?.includes(snapshot.userId || '')
+      ) {
         setInvitation({
           newRoomId: data.newRoomId,
           hostId: data.hostId,
@@ -83,7 +87,7 @@ export function useRematch({
         setInvitationTimeLeft(data.timeout || 30);
       }
     },
-    [roomId],
+    [roomId, snapshot.userId],
   );
 
   useSocket('games.rematch.invited', handleRematchInvited);
@@ -108,9 +112,11 @@ export function useRematch({
       onSuccess: (data) => {
         const newRoomId =
           typeof data.room === 'string' ? data.room : data.room?.id;
-        if (newRoomId) {
+        if (newRoomId && !data.pending) {
           setShowRematchModal(false);
           router.push(routes.gameRoom(newRoomId));
+        } else if (data.pending) {
+          setShowRematchModal(false);
         }
       },
       onError: (err) => {
@@ -216,9 +222,14 @@ export function useRematch({
   const handleAcceptInvitation = useCallback(() => {
     if (invitation) {
       setIsAcceptingInvitation(true);
-      router.push(routes.gameRoom(invitation.newRoomId));
+      void rematchApi
+        .acceptInvitation(invitation.newRoomId, {
+          token: snapshot.accessToken || undefined,
+        })
+        .then(() => router.push(routes.gameRoom(invitation.newRoomId)))
+        .catch(() => setIsAcceptingInvitation(false));
     }
-  }, [invitation, router, routes]);
+  }, [invitation, router, routes, snapshot.accessToken]);
 
   const handleDeclineInvitation = useCallback(() => {
     if (!invitation?.newRoomId) return;

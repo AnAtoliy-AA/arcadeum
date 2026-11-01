@@ -35,7 +35,7 @@ export class GameHistoryRematchService {
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
-  ): Promise<{ id: string; invitedIds: string[] }> {
+  ): Promise<{ id: string; invitedIds: string[]; pending: boolean }> {
     const { roomId: originalRoomId, participantIds } = dto;
 
     // Atomically claim the rematch lock — only one player can create a
@@ -102,28 +102,15 @@ export class GameHistoryRematchService {
         (existingRoom.status === 'lobby' ||
           existingRoom.status === 'in_progress')
       ) {
-        const isAlreadyIn = existingRoom.participants.some(
-          (p) => p.userId === userId,
-        );
-        if (!isAlreadyIn && existingRoom.status === 'lobby') {
-          existingRoom.participants.push({ userId, joinedAt: new Date() });
-          if (!existingRoom.gameOptions) {
-            existingRoom.gameOptions = {};
-          }
-          const currentInvited =
-            (existingRoom.gameOptions.rematchInvitedIds as string[]) || [];
-          if (currentInvited.includes(userId)) {
-            existingRoom.gameOptions.rematchInvitedIds = currentInvited.filter(
-              (id) => id !== userId,
-            );
-            existingRoom.markModified('gameOptions');
-          }
-          await existingRoom.save();
-        }
+        // A second click is not consent. The invited player must use the
+        // explicit accept endpoint before joining the rematch lobby.
         return {
           id: existingRoom._id.toString(),
           invitedIds:
             (existingRoom.gameOptions?.rematchInvitedIds as string[]) || [],
+          pending: (
+            (existingRoom.gameOptions?.rematchInvitedIds as string[]) || []
+          ).includes(userId),
         };
       }
       throw new BadRequestException('Rematch already in progress');
@@ -241,6 +228,7 @@ export class GameHistoryRematchService {
         gameOptions: {
           ...(dto.gameOptions || originalRoom.gameOptions || {}),
           rematchInvitedIds: invitedIds,
+          rematchAcceptedIds: [userId],
           rematchMessage: dto.message,
           rematchPreviousRoomId: originalRoomId,
         },
@@ -283,7 +271,11 @@ export class GameHistoryRematchService {
           .catch(() => {});
       }
 
-      return { id: newRoom._id.toString(), invitedIds };
+      return {
+        id: newRoom._id.toString(),
+        invitedIds,
+        pending: invitedIds.length > 0,
+      };
     } catch (err) {
       // Release the lock on failure so the other player can retry
       await this.primary

@@ -34,14 +34,17 @@ export class GamesRematchService {
       gameOptions?: Record<string, unknown>;
       message?: string;
     },
-  ) {
+  ): Promise<{ id: string; pending: boolean }> {
     const dto: HistoryRematchDto = {
       roomId,
       participantIds,
       ...options,
     };
-    const { id: newRoomId, invitedIds } =
-      await this.historyService.createRematchFromHistory(dto, userId);
+    const {
+      id: newRoomId,
+      invitedIds,
+      pending,
+    } = await this.historyService.createRematchFromHistory(dto, userId);
 
     // Fetch new room to get host details
     const newRoom = await this.roomsService.getRoom(newRoomId, userId);
@@ -62,9 +65,29 @@ export class GamesRematchService {
         filteredInvitedIds,
         options?.message,
       );
+
+      const gameId = newRoom.gameId || 'game';
+      await this.dispatcher.dispatchMany(filteredInvitedIds, {
+        category: 'game_invitation',
+        titleKey: 'notifications.game_invitation.title',
+        bodyKey: 'notifications.game_invitation.body',
+        i18nParams: {
+          hostName: newRoom.host?.displayName || 'Unknown Host',
+          gameId,
+        },
+        url: `/rooms/${encodeURIComponent(newRoomId)}`,
+        data: {
+          roomId: newRoomId,
+          oldRoomId: roomId,
+          hostId: userId,
+          gameId,
+          type: 'rematch',
+        },
+        skipCategoryCheck: true,
+      });
     }
 
-    return newRoomId;
+    return { id: newRoomId, pending };
   }
 
   /**
@@ -76,6 +99,14 @@ export class GamesRematchService {
       userId,
     );
     this.realtimeService.emitPlayerDeclined(room, userId);
+  }
+
+  async acceptInvitation(roomId: string, userId: string): Promise<void> {
+    const room = await this.roomsService.acceptRematchInvitation(
+      roomId,
+      userId,
+    );
+    this.realtimeService.emitRoomUpdated(room);
   }
 
   /**

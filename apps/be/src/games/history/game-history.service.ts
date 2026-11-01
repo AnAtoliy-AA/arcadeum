@@ -398,7 +398,7 @@ export class GameHistoryService {
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
-  ): Promise<{ id: string; invitedIds: string[] }> {
+  ): Promise<{ id: string; invitedIds: string[]; pending: boolean }> {
     return this.rematchService.createRematchFromHistory(dto, userId);
   }
 

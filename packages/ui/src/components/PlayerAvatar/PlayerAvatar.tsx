@@ -6,6 +6,7 @@ import { AvatarDisc } from './AvatarDisc';
 import { CardChrome } from './CardChrome';
 import { pickSwatchColor } from './colors';
 import { DISC_SIZE, type PlayerAvatarSize } from './constants';
+import { LevelPill } from './LevelPill';
 import { buildRaysStyle, RaysHalo } from './RaysHalo';
 import { getRoleGlyph, getRoleTierColor } from './roles';
 
@@ -51,6 +52,7 @@ export const PlayerAvatar = memo(function PlayerAvatar({
   backgroundColor,
   bannerColor,
   nameColor,
+  level,
   presenceLine,
   role,
   priority,
@@ -118,6 +120,9 @@ export const PlayerAvatar = memo(function PlayerAvatar({
         priority={priority}
         testId={testId}
       />
+      {level && size !== 'icon' ? (
+        <LevelPill level={level} size={size} testId={testId} />
+      ) : null}
     </div>
   );
 

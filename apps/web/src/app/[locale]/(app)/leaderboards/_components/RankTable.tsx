@@ -18,6 +18,14 @@ import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRouter } from 'next/navigation';
 import { useRoutes } from '@/shared/config/useRoutes';
 
+const PRESTIGE_ROW: Record<string, string> = {
+  vip: 'border-l-4 border-l-[var(--roleVip)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--roleVipFrom)_22%,transparent),transparent_70%)] shadow-[inset_0_0_24px_color-mix(in_srgb,var(--roleVipFrom)_12%,transparent)]',
+  premium:
+    'border-l-4 border-l-[var(--rolePremium)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--rolePremium)_16%,transparent),transparent_70%)]',
+  supporter:
+    'border-l-4 border-l-[var(--roleSupporter)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--roleSupporter)_14%,transparent),transparent_70%)]',
+};
+
 const rowBase =
   'flex flex-row items-center gap-3 border-b border-[var(--borderColor)]';
 
@@ -26,6 +34,7 @@ function Row({
   children,
   'data-testid': dataTestId,
   'data-self': dataSelf,
+  'data-role': dataRole,
   onClick,
   role,
   tabIndex,
@@ -35,6 +44,7 @@ function Row({
   children?: React.ReactNode;
   'data-testid'?: string;
   'data-self'?: string;
+  'data-role'?: string;
   onClick?: () => void;
   role?: string;
   tabIndex?: number;
@@ -55,6 +65,7 @@ function Row({
       onKeyDown={onKeyDown}
       data-testid={dataTestId}
       data-self={dataSelf}
+      data-role={dataRole}
     >
       {children}
     </div>
@@ -213,7 +224,9 @@ function RankRow({
 
   return (
     <Row
+      className={p.role ? PRESTIGE_ROW[p.role] : undefined}
       data-testid={`leaderboard-row-${p.rank}`}
+      {...(p.role ? { 'data-role': p.role } : {})}
       {...(isSelf ? { 'data-self': 'true' } : {})}
       onClick={handleNavigate}
       role="link"

@@ -55,6 +55,7 @@ export function StatsHeroBanner({
               equippedFrameId={snapshot.equippedFrameId}
               equippedAuraId={snapshot.equippedAuraId}
               equippedBannerId={snapshot.equippedBannerId}
+              level={level}
             />
           </div>
 

@@ -14,8 +14,8 @@ export const DECAY_RATES_PER_HOUR = {
 
 export const GROWTH_RATES = {
   runningMultiplier: 1.0,
-  homeMultiplier: 0.33,
-  minHungerFactor: 0.1,
+  homeMultiplier: 0.0,
+  minHungerFactor: 0.33,
 } as const;
 
 export const STAGE_THRESHOLDS_HOURS: Record<PetStage, number> = {

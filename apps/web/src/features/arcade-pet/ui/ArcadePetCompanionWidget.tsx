@@ -327,7 +327,8 @@ export const ArcadePetCompanionWidget: React.FC<
                   >
                     <span>🏠</span>
                     <span>
-                      Resting at Home • Growth & hunger slowed to 1/3 speed
+                      Resting at Home • Growth paused (counts only running
+                      hours)
                     </span>
                   </div>
                 ) : (
@@ -374,16 +375,18 @@ export const ArcadePetCompanionWidget: React.FC<
                     <span className="text-neutral-400">Growth Speed</span>
                     <span
                       className={`font-bold ${
-                        getGrowthSpeedPercent(pet.stats.hunger, isAtHome) >= 70
-                          ? 'text-emerald-400'
+                        isAtHome
+                          ? 'text-neutral-400'
                           : getGrowthSpeedPercent(pet.stats.hunger, isAtHome) >=
-                              30
-                            ? 'text-amber-400'
-                            : 'text-rose-400'
+                              70
+                            ? 'text-emerald-400'
+                            : 'text-amber-400'
                       }`}
                     >
-                      {getGrowthSpeedPercent(pet.stats.hunger, isAtHome)}%
-                      {pet.stats.hunger < 25 ? ' (⚠️ Hungry)' : ''}
+                      {isAtHome
+                        ? '0% (Paused at Home)'
+                        : `${getGrowthSpeedPercent(pet.stats.hunger, isAtHome)}%`}
+                      {!isAtHome && pet.stats.hunger < 25 ? ' (⚠️ Hungry)' : ''}
                     </span>
                   </div>
                 </div>

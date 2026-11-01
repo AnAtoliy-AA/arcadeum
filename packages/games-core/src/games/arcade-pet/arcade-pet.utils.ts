@@ -34,7 +34,7 @@ export function calculateStage(
   currentStage?: PetStage,
   growthHours?: number,
 ): PetStage {
-  const ageHours = typeof growthHours === 'number' ? growthHours : Math.max(0, (now - bornAt) / 3600000);
+  const ageHours = typeof growthHours === 'number' ? growthHours : 0;
   if (ageHours >= STAGE_THRESHOLDS_HOURS.senior) return 'senior';
   if (ageHours >= STAGE_THRESHOLDS_HOURS.adult) return 'adult';
   if (ageHours >= STAGE_THRESHOLDS_HOURS.teen) return 'teen';

@@ -126,7 +126,7 @@ describe('ArcadePet Engine', () => {
     expect(wakeResult.state.isSleeping).toBe(false);
   });
 
-  it('decays hunger slower and grows slower when at home compared to running on screen', () => {
+  it('decays hunger slower and counts only running hours when at home compared to running on screen', () => {
     const egg = createInitialPet({ id: 'pet-1', name: 'PixelBuddy', now: 1000 });
     const hatched = executePetAction(egg, 'hatch', { now: 1000 }).state;
     hatched.stats.hunger = 100;
@@ -137,7 +137,8 @@ describe('ArcadePet Engine', () => {
     const homeDecayed = applyDeterministicDecay(hatched, twoHoursLater, { isAtHome: true });
 
     expect(runningDecayed.stats.hunger).toBeLessThan(homeDecayed.stats.hunger);
-    expect(homeDecayed.stats.growthHours!).toBeLessThan(runningDecayed.stats.growthHours!);
+    expect(homeDecayed.stats.growthHours!).toBe(0);
+    expect(runningDecayed.stats.growthHours!).toBeGreaterThan(0);
   });
 
   it('grows slower when hunger percentage is low', () => {
@@ -156,11 +157,13 @@ describe('ArcadePet Engine', () => {
 
   it('calculates growth speed percentages accurately for UI feedback', () => {
     expect(getGrowthSpeedPercent(100, false)).toBe(100);
+    expect(getGrowthSpeedPercent(90, false)).toBe(90);
+    expect(getGrowthSpeedPercent(85, false)).toBe(85);
     expect(getGrowthSpeedPercent(50, false)).toBe(50);
-    expect(getGrowthSpeedPercent(10, false)).toBe(10);
-    expect(getGrowthSpeedPercent(100, true)).toBe(33);
-    expect(getGrowthSpeedPercent(50, true)).toBe(17);
-    expect(getGrowthSpeedPercent(10, true)).toBe(3);
+    expect(getGrowthSpeedPercent(10, false)).toBe(33);
+    expect(getGrowthSpeedPercent(0, false)).toBe(33);
+    expect(getGrowthSpeedPercent(100, true)).toBe(0);
+    expect(getGrowthSpeedPercent(50, true)).toBe(0);
   });
 
   it('accumulates passive xp across many short ticks', () => {

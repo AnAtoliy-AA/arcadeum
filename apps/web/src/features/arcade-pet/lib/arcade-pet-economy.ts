@@ -183,40 +183,46 @@ export interface PetGiftPresent {
   isOpened: boolean;
 }
 
-const AVAILABLE_SPECIES: readonly PetSpecies[] = [
-  'cyber_cat',
-  'dragon',
-  'dino',
-  'blob',
-  'slime',
-];
+import {
+  type ThemePetDefinition,
+  THEME_PET_ROSTER,
+  GAME_THEME_IDS,
+  getThemePets,
+  getSignaturePet,
+  getPetByThemeAndSpecies,
+} from './arcade-pet-theme-roster';
+
+export {
+  type ThemePetDefinition,
+  THEME_PET_ROSTER,
+  GAME_THEME_IDS,
+  getThemePets,
+  getSignaturePet,
+  getPetByThemeAndSpecies,
+};
 
 export function getRandomPetSpec(queuedTheme?: string | null): {
   species: PetSpecies;
   theme: string;
   name: string;
+  tagline?: string;
 } {
-  const chosenSpecies =
-    AVAILABLE_SPECIES[Math.floor(Math.random() * AVAILABLE_SPECIES.length)] ??
-    'cyber_cat';
-
-  const themePool = ALL_THEME_IDS.filter((t) => t !== 'retro');
+  const themePool = GAME_THEME_IDS.filter((t) => t !== 'retro');
   const chosenTheme =
-    queuedTheme && THEME_PET_PALETTES[queuedTheme]
+    queuedTheme && THEME_PET_ROSTER[queuedTheme]
       ? queuedTheme
       : (themePool[Math.floor(Math.random() * themePool.length)] ??
         'cyberpunk');
 
-  const palette = THEME_PET_PALETTES[chosenTheme];
-  const prefix = palette?.title ?? 'Arcade';
-  const speciesLabel =
-    chosenSpecies === 'cyber_cat'
-      ? 'Cat'
-      : chosenSpecies.charAt(0).toUpperCase() + chosenSpecies.slice(1);
+  const themePets = getThemePets(chosenTheme);
+  const chosenPet =
+    themePets[Math.floor(Math.random() * themePets.length)] ??
+    getSignaturePet(chosenTheme);
 
   return {
-    species: chosenSpecies,
+    species: chosenPet.species,
     theme: chosenTheme,
-    name: `${prefix} ${speciesLabel}`,
+    name: chosenPet.name,
+    tagline: chosenPet.tagline,
   };
 }

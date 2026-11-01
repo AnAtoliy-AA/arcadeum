@@ -4,6 +4,8 @@ import {
   getRandomPetSpec,
   SELECT_PET_COST,
   THEME_PET_PALETTES,
+  getThemePets,
+  getSignaturePet,
 } from './arcade-pet-economy';
 
 describe('arcade-pet-economy', () => {
@@ -44,14 +46,41 @@ describe('arcade-pet-economy', () => {
     }
   });
 
-  it('prioritizes queued bought theme in getRandomPetSpec', () => {
+  it('guarantees each game theme has at least one signature pet and 5 pets in roster', () => {
+    const requiredThemes = [
+      'adventure',
+      'cyberpunk',
+      'underwater',
+      'crime',
+      'horror',
+      'high-altitude-hike',
+      'galaxy',
+      'fantasy',
+      'western',
+      'egypt',
+      'steampunk',
+      'zen',
+    ];
+
+    for (const theme of requiredThemes) {
+      const pets = getThemePets(theme);
+      expect(pets.length).toBe(5);
+      const signature = getSignaturePet(theme);
+      expect(signature).toBeDefined();
+      expect(signature.isSignature).toBe(true);
+      expect(signature.theme).toBe(theme);
+    }
+  });
+
+  it('prioritizes queued bought theme in getRandomPetSpec and pulls from that theme roster', () => {
     const spec = getRandomPetSpec('underwater');
     expect(spec.theme).toBe('underwater');
     expect(spec.species).toBeDefined();
-    expect(spec.name).toContain('Underwater');
+    const underwaterPets = getThemePets('underwater');
+    expect(underwaterPets.some((p) => p.name === spec.name)).toBe(true);
   });
 
-  it('generates random species and theme when no queued theme is provided', () => {
+  it('generates random species and theme from game themes when no queued theme is provided', () => {
     const spec = getRandomPetSpec();
     expect(spec.theme).toBeDefined();
     expect(spec.species).toBeDefined();

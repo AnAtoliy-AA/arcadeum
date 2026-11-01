@@ -61,4 +61,13 @@ describe('ArcadePetAdoptionModal', () => {
     expect(useArcadePetStore.getState().gemBalance).toBe(150);
     expect(useArcadePetStore.getState().pet?.name).toBe('Mystic Drake');
   });
+
+  it('displays theme pet cards showing signature pets for game themes', () => {
+    render(<ArcadePetAdoptionModal open onClose={onClose} />);
+    expect(
+      screen.getByText('Game Theme Pets (5 Pets per Theme)'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('theme-pet-card-cyberpunk')).toBeInTheDocument();
+    expect(screen.getByText('⭐ Neon Cyber Cat')).toBeInTheDocument();
+  });
 });

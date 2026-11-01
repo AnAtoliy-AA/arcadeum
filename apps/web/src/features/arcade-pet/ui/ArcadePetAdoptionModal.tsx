@@ -7,6 +7,8 @@ import {
   getPetAdoptionCost,
   SELECT_PET_COST,
   THEME_PET_PALETTES,
+  getSignaturePet,
+  getPetByThemeAndSpecies,
 } from '../lib/arcade-pet-economy';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 
@@ -79,11 +81,13 @@ export function ArcadePetAdoptionModal({
   const handleAdoptSelected = () => {
     setErrorMsg(null);
     setSuccessMsg(null);
+    const defaultName =
+      getPetByThemeAndSpecies(selectedTheme, selectedSpecies)?.name ||
+      `${THEME_PET_PALETTES[selectedTheme]?.title ?? ''} ${selectedSpecies}`;
     const result = adoptSelectedPet(
       selectedSpecies,
       selectedTheme,
-      customName ||
-        `${THEME_PET_PALETTES[selectedTheme]?.title ?? ''} ${selectedSpecies}`,
+      customName.trim() || defaultName,
     );
     if (!result.success) {
       if (result.error === 'INSUFFICIENT_GEMS') {
@@ -253,6 +257,42 @@ export function ArcadePetAdoptionModal({
                     <span className="block text-neutral-400">5th+</span>
                     <span className="font-bold text-indigo-300">💎 500+</span>
                   </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl bg-neutral-950/60 border border-neutral-800 text-xs text-neutral-400 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-neutral-300 block">
+                    Game Theme Pets (5 Pets per Theme)
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300 font-semibold">
+                    13 Themes • 65 Total Pets
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto p-1">
+                  {Object.values(THEME_PET_PALETTES).map((pal) => {
+                    const signature = getSignaturePet(pal.id);
+                    return (
+                      <div
+                        key={pal.id}
+                        data-testid={`theme-pet-card-${pal.id}`}
+                        className="p-2 rounded-xl bg-neutral-900 border border-neutral-800 flex flex-col gap-1"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-base">{pal.emoji}</span>
+                          <span className="font-bold text-white text-[11px] truncate">
+                            {pal.title}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-indigo-300 font-medium truncate">
+                          ⭐ {signature.name}
+                        </span>
+                        <span className="text-[9px] text-neutral-400 line-clamp-1">
+                          {signature.tagline}
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

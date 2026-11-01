@@ -2,20 +2,40 @@ import React from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import styles from './arcade-pet-companion.module.scss';
 
+const THEME_AURA_MAP: Record<string, string | undefined> = {
+  cyberpunk: styles.auraCyberpunk,
+  underwater: styles.auraUnderwater,
+  galaxy: styles.auraGalaxy,
+  fantasy: styles.auraFantasy,
+  steampunk: styles.auraSteampunk,
+  zen: styles.auraZen,
+  adventure: styles.auraAdventure,
+  egypt: styles.auraEgypt,
+  western: styles.auraWestern,
+  horror: styles.auraHorror,
+  crime: styles.auraCrime,
+  'high-altitude-hike': styles.auraHighAltitudeHike,
+  retro: styles.auraRetro,
+};
+
 interface ArcadePetWalkingSpriteProps {
   species: PetSpecies;
   state: 'walking' | 'idle' | 'happy' | 'sleeping';
   className?: string;
+  theme?: string;
 }
 
 export function ArcadePetWalkingSprite({
   species,
   state,
   className = '',
+  theme = 'retro',
 }: ArcadePetWalkingSpriteProps) {
   const isWalking = state === 'walking';
   const isHappy = state === 'happy';
   const isSleeping = state === 'sleeping';
+
+  const themeAura = (theme && THEME_AURA_MAP[theme]) ?? styles.auraRetro;
 
   const animationClass = isHappy
     ? styles.petBounceAnimation
@@ -25,9 +45,11 @@ export function ArcadePetWalkingSprite({
         ? styles.petSleepAnimation
         : styles.petSmileAnimation;
 
+  const containerClass = `${animationClass} ${themeAura} ${className} w-14 h-14`;
+
   if (species === 'cyber_cat') {
     return (
-      <div className={`${animationClass} ${className} w-14 h-14`}>
+      <div className={containerClass}>
         <svg
           viewBox="0 0 64 64"
           className="w-full h-full drop-shadow-lg"
@@ -142,7 +164,7 @@ export function ArcadePetWalkingSprite({
 
   if (species === 'dragon') {
     return (
-      <div className={`${animationClass} ${className} w-14 h-14`}>
+      <div className={containerClass}>
         <svg
           viewBox="0 0 64 64"
           className="w-full h-full drop-shadow-lg"
@@ -229,7 +251,7 @@ export function ArcadePetWalkingSprite({
 
   if (species === 'dino') {
     return (
-      <div className={`${animationClass} ${className} w-14 h-14`}>
+      <div className={containerClass}>
         <svg
           viewBox="0 0 64 64"
           className="w-full h-full drop-shadow-lg"
@@ -306,7 +328,7 @@ export function ArcadePetWalkingSprite({
   }
 
   return (
-    <div className={`${animationClass} ${className} w-14 h-14`}>
+    <div className={containerClass}>
       <svg
         viewBox="0 0 64 64"
         className="w-full h-full drop-shadow-lg"

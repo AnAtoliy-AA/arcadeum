@@ -44,4 +44,31 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await cyberpunkButton.click();
     await expect(cyberpunkButton).toHaveClass(/bg-indigo-600/);
   });
+
+  test('should open companion widget, mounts nursery, and presents modal', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+
+    const trigger = page.getByTestId('arcade-pet-companion-trigger');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+
+    await expect(page.getByTestId('arcade-pet-companion-modal')).toBeVisible();
+
+    const openAdoptionBtn = page.getByTestId('open-adoption-modal-btn');
+    await openAdoptionBtn.click();
+    await expect(page.getByTestId('arcade-pet-adoption-modal')).toBeVisible();
+    await expect(page.getByTestId('adopt-random-btn')).toBeVisible();
+
+    const closeBtn = page.getByRole('button', { name: 'Close' });
+    await closeBtn.click();
+    await expect(page.getByTestId('arcade-pet-adoption-modal')).toBeHidden();
+
+    const openGiftsBtn = page.getByTestId('open-gifts-modal-btn');
+    await openGiftsBtn.click();
+    await expect(page.getByTestId('arcade-pet-gifts-modal')).toBeVisible();
+    await expect(page.getByTestId('tab-received-presents')).toBeVisible();
+  });
 });

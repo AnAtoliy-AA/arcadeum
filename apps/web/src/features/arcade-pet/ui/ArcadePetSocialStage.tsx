@@ -305,6 +305,7 @@ export function ArcadePetSocialStage({
             <ArcadePetWalkingSprite
               species={localSpecies}
               state={sim.localState}
+              theme={localPet.theme}
             />
           </div>
 
@@ -337,6 +338,7 @@ export function ArcadePetSocialStage({
               <ArcadePetWalkingSprite
                 species={remoteSpecies}
                 state={sim.remoteState}
+                theme="galaxy"
               />
             </div>
 

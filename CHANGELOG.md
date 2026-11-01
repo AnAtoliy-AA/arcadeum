@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.102] - 2026-11-01
+
+### Fixed
+- expand ci sharding to 8 shards and scroll elements before click (ARC-1025) (ARC-1025)
+
+
 ## [1.30.101] - 2026-10-31
 
 ### Fixed

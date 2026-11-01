@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.107] - 2026-11-01
+
+### Fixed
+- use swapfile2 with cleanup to prevent text file busy (ARC-1029) (ARC-1029)
+- configure swap space on e2e runners to prevent oom (ARC-1029) (ARC-1029)
+
+
 ## [1.30.106] - 2026-11-01
 
 ### Fixed

@@ -30,6 +30,12 @@ export const SOUNDS = {
   sink: `${BASE}/sink.wav`,
   /** Audio cue: game session started. */
   gameStart: `${BASE}/game-start.wav`,
+  /** Audio cue: rematch invitation notification. */
+  notification: `${BASE}/shared/ding.wav`,
+  /** Audio cue: rematch accepted. */
+  rematchAccepted: `${BASE}/shared/success.wav`,
+  /** Audio cue: rematch declined. */
+  rematchDeclined: `${BASE}/shared/reject.wav`,
 } as const;
 
 export type SoundId = keyof typeof SOUNDS;

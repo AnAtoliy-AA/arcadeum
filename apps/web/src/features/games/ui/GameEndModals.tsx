@@ -3,6 +3,7 @@
 import { GameResultModal, type GameResultModalProps } from './GameResultModal';
 import { RematchModal } from './RematchModal';
 import { RematchInvitationModal } from './RematchInvitationModal';
+import { RematchWaitingModal } from './RematchWaitingModal';
 import type { GameResultStats } from './GameResultStatsGrid';
 import type { UseGameEndStateResult } from '../hooks/useGameEndState';
 import type { GameTheme } from '../lib/shared-themes';
@@ -94,6 +95,22 @@ export function GameEndModals({
         onBlockRematch={gameEnd.handleBlockRematch}
         onBlockUser={gameEnd.handleBlockUser}
         accepting={gameEnd.isAcceptingInvitation}
+        cardVariant={cardVariant}
+        t={t}
+      />
+
+      <RematchWaitingModal
+        waiting={gameEnd.waiting}
+        waitingTimeLeft={gameEnd.waitingTimeLeft}
+        players={players}
+        currentUserId={currentUserId}
+        onCancel={gameEnd.cancelRematch}
+        onJoin={gameEnd.joinRematchRoom}
+        onDismiss={gameEnd.dismissWaiting}
+        onRetry={() => {
+          gameEnd.dismissWaiting();
+          gameEnd.handleResultRematchClick();
+        }}
         cardVariant={cardVariant}
         t={t}
       />

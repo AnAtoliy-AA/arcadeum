@@ -140,6 +140,7 @@ export class GameRoomsService {
     const page = filters.page || 0;
     const limit = filters.limit || 10;
 
+    void this.gameRoomsRematchService.expireStaleRematches();
     const query = GameRoomsQueryBuilder.buildListQuery(filters);
 
     // Cursor-based pagination: use _id as cursor for O(1) page lookups
@@ -437,38 +438,6 @@ export class GameRoomsService {
     room.updatedAt = new Date();
     await room.save();
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
-  }
-  async declineRematchInvitation(
-    roomId: string,
-    userId: string,
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.declineRematchInvitation(
-      roomId,
-      userId,
-    );
-  }
-  async acceptRematchInvitation(
-    roomId: string,
-    userId: string,
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.acceptRematchInvitation(roomId, userId);
-  }
-  async blockRematchRoom(
-    roomId: string,
-    userId: string,
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
-  }
-  async reinviteRematchPlayers(
-    roomId: string,
-    hostId: string,
-    userIds: string[],
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.reinviteRematchPlayers(
-      roomId,
-      hostId,
-      userIds,
-    );
   }
   async postRoomChat(
     roomId: string,

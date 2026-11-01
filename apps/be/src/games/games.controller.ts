@@ -34,7 +34,6 @@ import { CreateAiVsAiGameDto } from './dtos/create-ai-vs-ai.dto';
 import { AiVsAiService } from './ai-vs-ai/ai-vs-ai.service';
 import { RoomInfoDto } from './dtos/room-info.dto';
 import { UpdateRoomOptionsDto } from './dtos/update-room-options.dto';
-import { InvitePlayersDto } from './dtos/invite-players.dto';
 import { ReorderParticipantsDto } from './dtos/reorder-participants.dto';
 import {
   parseStatusFilters,
@@ -301,49 +300,6 @@ export class GamesController {
       gameId || undefined,
       limitNum,
     );
-  }
-  @UseGuards(JwtOptionalAuthGuard)
-  @Post('rooms/:roomId/invitation/decline')
-  @HttpCode(204)
-  async declineInvitation(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-  ): Promise<void> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    await this.gamesService.declineInvitation(roomId, user.userId);
-  }
-  @UseGuards(JwtOptionalAuthGuard)
-  @Post('rooms/:roomId/invitation/block')
-  @HttpCode(204)
-  async blockRematchRoom(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-  ): Promise<void> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    await this.gamesService.blockRematchRoom(roomId, user.userId);
-  }
-  @UseGuards(JwtOptionalAuthGuard)
-  @Post('rooms/:roomId/invitation/invite')
-  @HttpCode(204)
-  async invitePlayers(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-    @Body() dto: InvitePlayersDto,
-  ): Promise<void> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    await this.gamesService.reinvitePlayers(roomId, user.userId, dto.userIds);
   }
 
   @UseGuards(JwtOptionalAuthGuard)

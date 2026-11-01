@@ -35,10 +35,15 @@ export class GameHistoryRematchService {
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
-  ): Promise<{ id: string; invitedIds: string[]; pending: boolean }> {
+  ): Promise<{
+    id: string;
+    invitedIds: string[];
+    pending: boolean;
+    pendingUserIds: string[];
+  }> {
     const { roomId: originalRoomId, participantIds } = dto;
 
-    // Atomically claim the rematch lock — only one player can create a
+    // Atomically claim the rematch lock - only one player can create a
     // rematch from a given room at a time.  If rematchPending is already
     // true we reject immediately instead of creating duplicate rooms.
     const lockedRoom = await this.primary
@@ -71,7 +76,7 @@ export class GameHistoryRematchService {
             { $set: { rematchPending: true } },
           );
         } catch {
-          // Best-effort mirror — game works from mirror if primary fails
+          // Best-effort mirror - game works from mirror if primary fails
         }
       }
     }
@@ -111,6 +116,8 @@ export class GameHistoryRematchService {
           pending: (
             (existingRoom.gameOptions?.rematchInvitedIds as string[]) || []
           ).includes(userId),
+          pendingUserIds:
+            (existingRoom.gameOptions?.rematchInvitedIds as string[]) || [],
         };
       }
       throw new BadRequestException('Rematch already in progress');
@@ -139,6 +146,7 @@ export class GameHistoryRematchService {
       const invitedIds = rawInvitedIds.filter((id) => !id.startsWith('bot-'));
 
       const now = new Date();
+      const rematchExpiresAt = new Date(now.getTime() + 30_000).toISOString();
       const participants: { userId: string; joinedAt: Date }[] = [
         { userId, joinedAt: now },
       ];
@@ -229,8 +237,10 @@ export class GameHistoryRematchService {
           ...(dto.gameOptions || originalRoom.gameOptions || {}),
           rematchInvitedIds: invitedIds,
           rematchAcceptedIds: [userId],
+          rematchExpiresAt,
           rematchMessage: dto.message,
           rematchPreviousRoomId: originalRoomId,
+          rematchNumber,
         },
       });
 
@@ -275,6 +285,7 @@ export class GameHistoryRematchService {
         id: newRoom._id.toString(),
         invitedIds,
         pending: invitedIds.length > 0,
+        pendingUserIds: invitedIds,
       };
     } catch (err) {
       // Release the lock on failure so the other player can retry

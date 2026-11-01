@@ -122,7 +122,11 @@ export class GamesHistoryController {
     @Req() req: Request,
     @Param('roomId') roomId: string,
     @Body() dto: HistoryRematchDto,
-  ): Promise<{ room: string; pending: boolean }> {
+  ): Promise<{
+    room: string;
+    pending: boolean;
+    pendingUserIds: string[];
+  }> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
       throw new UnauthorizedException();
@@ -145,19 +149,11 @@ export class GamesHistoryController {
       },
     );
 
-    return { room: room.id, pending: room.pending };
-  }
-
-  @UseGuards(JwtOptionalAuthGuard)
-  @Post('rooms/:roomId/invitation/accept')
-  @HttpCode(204)
-  async acceptInvitation(
-    @Req() req: Request,
-    @Param('roomId') roomId: string,
-  ): Promise<void> {
-    const user = req.user as AuthenticatedUser | undefined;
-    if (!user) throw new UnauthorizedException();
-    await this.gamesService.acceptInvitation(roomId, user.userId);
+    return {
+      room: room.id,
+      pending: room.pending,
+      pendingUserIds: room.pendingUserIds,
+    };
   }
 
   @UseGuards(JwtAuthGuard)

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { GameRoomsService } from './rooms/game-rooms.service';
+import { GameRoomsRematchService } from './rooms/game-rooms.rematch.service';
 import { GameHistoryService } from './history/game-history.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { NotificationDispatcher } from '../notifications/notifications.dispatcher';
@@ -14,6 +15,7 @@ export class GamesRematchService {
 
   constructor(
     private readonly roomsService: GameRoomsService,
+    private readonly rematchRoomsService: GameRoomsRematchService,
     private readonly historyService: GameHistoryService,
     private readonly realtimeService: GamesRealtimeService,
     private readonly dispatcher: NotificationDispatcher,
@@ -34,7 +36,7 @@ export class GamesRematchService {
       gameOptions?: Record<string, unknown>;
       message?: string;
     },
-  ): Promise<{ id: string; pending: boolean }> {
+  ): Promise<{ id: string; pending: boolean; pendingUserIds: string[] }> {
     const dto: HistoryRematchDto = {
       roomId,
       participantIds,
@@ -44,6 +46,7 @@ export class GamesRematchService {
       id: newRoomId,
       invitedIds,
       pending,
+      pendingUserIds,
     } = await this.historyService.createRematchFromHistory(dto, userId);
 
     // Fetch new room to get host details
@@ -87,33 +90,155 @@ export class GamesRematchService {
       });
     }
 
-    return { id: newRoomId, pending };
+    return { id: newRoomId, pending, pendingUserIds };
   }
 
   /**
    * Decline a rematch invitation
    */
   async declineInvitation(roomId: string, userId: string): Promise<void> {
-    const room = await this.roomsService.declineRematchInvitation(
+    const room = await this.rematchRoomsService.declineRematchInvitation(
       roomId,
       userId,
     );
     this.realtimeService.emitPlayerDeclined(room, userId);
+    const oldRoomId = room.gameOptions?.rematchPreviousRoomId as
+      string | undefined;
+    const pendingUserIds =
+      (room.gameOptions?.rematchInvitedIds as string[]) || [];
+    const acceptedUserIds =
+      (room.gameOptions?.rematchAcceptedIds as string[]) || [];
+    const declinedUserIds =
+      (room.gameOptions?.rematchDeclinedIds as string[]) || [];
+
+    if (oldRoomId) {
+      this.realtimeService.emitRematchStatus(
+        oldRoomId,
+        room.id,
+        'declined',
+        userId,
+        pendingUserIds,
+        acceptedUserIds,
+        declinedUserIds,
+      );
+    }
+
+    if (room.hostId && room.hostId !== userId) {
+      const decliner = await this.userModel
+        .findById(userId)
+        .select('displayName username')
+        .lean()
+        .exec();
+      const opponentName =
+        decliner?.displayName || decliner?.username || 'Opponent';
+      await this.dispatcher
+        .dispatch({
+          userId: room.hostId,
+          category: 'game_invitation',
+          titleKey: 'notifications.rematch_declined.title',
+          bodyKey: 'notifications.rematch_declined.body',
+          i18nParams: { opponentName, gameId: room.gameId || 'game' },
+          url: `/games/rooms/${encodeURIComponent(room.id)}`,
+          data: {
+            roomId: room.id,
+            oldRoomId,
+            type: 'rematch_declined',
+            opponentId: userId,
+            opponentName,
+          },
+          skipCategoryCheck: true,
+        })
+        .catch((err) => {
+          this.logger.warn(
+            `Failed to dispatch rematch_declined notification: ${err}`,
+          );
+        });
+    }
   }
 
   async acceptInvitation(roomId: string, userId: string): Promise<void> {
-    const room = await this.roomsService.acceptRematchInvitation(
+    const room = await this.rematchRoomsService.acceptRematchInvitation(
       roomId,
       userId,
     );
+    const oldRoomId = room.gameOptions?.rematchPreviousRoomId as
+      string | undefined;
+    const pendingUserIds =
+      (room.gameOptions?.rematchInvitedIds as string[]) || [];
+    const acceptedUserIds =
+      (room.gameOptions?.rematchAcceptedIds as string[]) || [];
+    const declinedUserIds =
+      (room.gameOptions?.rematchDeclinedIds as string[]) || [];
+
+    if (oldRoomId) {
+      this.realtimeService.emitRematchStatus(
+        oldRoomId,
+        room.id,
+        'accepted',
+        userId,
+        pendingUserIds,
+        acceptedUserIds,
+        declinedUserIds,
+      );
+    }
     this.realtimeService.emitRoomUpdated(room);
+
+    if (room.hostId && room.hostId !== userId) {
+      const acceptor = await this.userModel
+        .findById(userId)
+        .select('displayName username')
+        .lean()
+        .exec();
+      const opponentName =
+        acceptor?.displayName || acceptor?.username || 'Opponent';
+      await this.dispatcher
+        .dispatch({
+          userId: room.hostId,
+          category: 'game_invitation',
+          titleKey: 'notifications.rematch_accepted.title',
+          bodyKey: 'notifications.rematch_accepted.body',
+          i18nParams: { opponentName, gameId: room.gameId || 'game' },
+          url: `/games/rooms/${encodeURIComponent(room.id)}`,
+          data: {
+            roomId: room.id,
+            oldRoomId,
+            type: 'rematch_accepted',
+            opponentId: userId,
+            opponentName,
+          },
+          skipCategoryCheck: true,
+        })
+        .catch((err) => {
+          this.logger.warn(
+            `Failed to dispatch rematch_accepted notification: ${err}`,
+          );
+        });
+    }
+  }
+
+  async cancelInvitation(roomId: string, userId: string): Promise<void> {
+    const result = await this.rematchRoomsService.cancelRematchInvitation(
+      roomId,
+      userId,
+    );
+    if (result.oldRoomId) {
+      this.realtimeService.emitRematchStatus(
+        result.oldRoomId,
+        roomId,
+        'cancelled',
+        userId,
+      );
+    }
   }
 
   /**
    * Block re-invites for a specific rematch room
    */
   async blockRematchRoom(roomId: string, userId: string): Promise<void> {
-    const room = await this.roomsService.blockRematchRoom(roomId, userId);
+    const room = await this.rematchRoomsService.blockRematchRoom(
+      roomId,
+      userId,
+    );
     this.realtimeService.emitPlayerDeclined(room, userId);
   }
 
@@ -125,7 +250,7 @@ export class GamesRematchService {
     hostId: string,
     userIds: string[],
   ): Promise<void> {
-    const room = await this.roomsService.reinviteRematchPlayers(
+    const room = await this.rematchRoomsService.reinviteRematchPlayers(
       roomId,
       hostId,
       userIds,

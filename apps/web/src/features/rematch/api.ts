@@ -9,6 +9,7 @@ interface CreateRematchParams {
 
 interface CreateRematchResponse {
   pending?: boolean;
+  pendingUserIds?: string[];
   room:
     | {
         id: string;
@@ -52,6 +53,17 @@ export const rematchApi = {
   ): Promise<void> => {
     return apiClient.post(
       `/games/rooms/${encodeURIComponent(roomId)}/invitation/accept`,
+      undefined,
+      options,
+    );
+  },
+
+  cancelInvitation: async (
+    roomId: string,
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post(
+      `/games/rooms/${encodeURIComponent(roomId)}/invitation/cancel`,
       undefined,
       options,
     );

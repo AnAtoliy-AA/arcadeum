@@ -6,6 +6,7 @@ import { ArcadePetGame } from '@/widgets/SimulationGames/ArcadePetGame';
 interface ArcadePetLandingProps {
   gameName: string;
   description: string;
+  comingSoon?: boolean;
 }
 
 const THEME_OPTIONS: readonly { id: string; label: string; emoji: string }[] = [
@@ -18,6 +19,7 @@ const THEME_OPTIONS: readonly { id: string; label: string; emoji: string }[] = [
 export const ArcadePetLanding: React.FC<ArcadePetLandingProps> = ({
   gameName,
   description,
+  comingSoon = false,
 }) => {
   const [selectedTheme, setSelectedTheme] = useState<string>('retro');
 
@@ -34,31 +36,49 @@ export const ArcadePetLanding: React.FC<ArcadePetLandingProps> = ({
           {description}
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-          {THEME_OPTIONS.map((theme) => (
-            <button
-              key={theme.id}
-              type="button"
-              onClick={() => setSelectedTheme(theme.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                selectedTheme === theme.id
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 scale-105'
-                  : 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 border border-neutral-700/60'
-              }`}
-            >
-              <span>{theme.emoji}</span>
-              <span>{theme.label}</span>
-            </button>
-          ))}
-        </div>
+        {!comingSoon && (
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+            {THEME_OPTIONS.map((theme) => (
+              <button
+                key={theme.id}
+                type="button"
+                onClick={() => setSelectedTheme(theme.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  selectedTheme === theme.id
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 scale-105'
+                    : 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 border border-neutral-700/60'
+                }`}
+              >
+                <span>{theme.emoji}</span>
+                <span>{theme.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="w-full flex justify-center py-4">
-        <ArcadePetGame
-          gameOptions={{ theme: selectedTheme, mode: 'classic' }}
-          currentUserId="guest-player"
-          roomId="arcade-pet-preview"
-        />
+        {comingSoon ? (
+          <div
+            data-testid="arcade-pet-coming-soon-banner"
+            className="w-full max-w-xl p-8 rounded-2xl bg-neutral-900/90 border border-amber-500/40 text-center flex flex-col items-center gap-3 shadow-xl backdrop-blur-md"
+          >
+            <div className="text-4xl">🔒</div>
+            <h2 className="text-xl font-bold text-amber-300">
+              Feature Currently Disabled
+            </h2>
+            <p className="text-sm text-neutral-300">
+              ArcadePet simulation is temporarily disabled by administrators.
+              Check back soon!
+            </p>
+          </div>
+        ) : (
+          <ArcadePetGame
+            gameOptions={{ theme: selectedTheme, mode: 'classic' }}
+            currentUserId="guest-player"
+            roomId="arcade-pet-preview"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">

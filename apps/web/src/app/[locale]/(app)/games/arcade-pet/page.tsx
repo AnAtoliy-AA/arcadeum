@@ -5,6 +5,7 @@ import { isLocale, DEFAULT_LOCALE, type Locale } from '@/shared/i18n';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
+import { isGameComingSoon } from '@/features/games/api.server';
 import ArcadePetLanding from './ArcadePetLanding';
 
 export const dynamic = 'force-static';
@@ -76,10 +77,16 @@ export default async function ArcadePetLandingRoute({ params }: PageProps) {
     },
   });
 
+  const comingSoon = await isGameComingSoon(ARCADE_PET_SLUG);
+
   return (
     <>
       <JsonLd data={jsonLd} />
-      <ArcadePetLanding gameName={gameName} description={description} />
+      <ArcadePetLanding
+        gameName={gameName}
+        description={description}
+        comingSoon={comingSoon}
+      />
     </>
   );
 }

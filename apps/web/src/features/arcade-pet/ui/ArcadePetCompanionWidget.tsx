@@ -12,6 +12,8 @@ import { ArcadePetAdoptionModal } from './ArcadePetAdoptionModal';
 import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
 import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
+import { gamesApi } from '@/features/games/api';
+import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
 
 interface ArcadePetCompanionWidgetProps {
   currentUserId?: string;
@@ -45,12 +47,29 @@ export const ArcadePetCompanionWidget: React.FC<
   const [showGiftsModal, setShowGiftsModal] = useState(false);
   const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
   const [showCommitmentModal, setShowCommitmentModal] = useState(false);
+  const [isFeatureDisabled, setIsFeatureDisabled] = useState(false);
 
   useEffect(() => {
     initialize(currentUserId, theme);
   }, [currentUserId, theme, initialize]);
 
-  if (pathname?.includes('/games/arcade-pet')) {
+  useEffect(() => {
+    let cancelled = false;
+    gamesApi
+      .getCatalog({ token: snapshot.accessToken || undefined })
+      .then((res) => {
+        if (cancelled) return;
+        setIsFeatureDisabled(isPetFeatureDisabled(res.games));
+      })
+      .catch(() => {
+        // Fallback on network error: keep available
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [snapshot.accessToken]);
+
+  if (pathname?.includes('/games/arcade-pet') || isFeatureDisabled) {
     return null;
   }
 

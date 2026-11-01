@@ -26,6 +26,12 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
     variants: [...SHARED_VISUAL_THEMES, 'classic', 'speed'],
     rules: [
       {
+        ruleId: 'pets',
+        label: 'Virtual pets & companions',
+        description:
+          'Enable pet companions, floating stage, adoption, and nursery across Arcadeum.',
+      },
+      {
         ruleId: 'treats',
         label: 'Cross-game treats',
         description:

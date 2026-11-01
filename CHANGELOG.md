@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.110] - 2026-11-01
+
+### Added
+- show level pill under avatar and highlight prestige rows in leaderboard (ARC-1048) (ARC-1048)
+
+
 ## [1.30.109] - 2026-11-01
 
 ### Fixed

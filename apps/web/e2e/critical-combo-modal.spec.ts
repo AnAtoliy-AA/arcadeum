@@ -88,17 +88,11 @@ test.describe('Critical Combo Modal', () => {
 
     const cancelCard = page.getByTestId('hand-card-cancel');
     await expect(cancelCard).toBeVisible();
-    await cancelCard
-      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
-      .catch(() => {});
-    await cancelCard.click({ force: true });
+    await cancelCard.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '1');
     const incButton = page.getByTestId('stack-inc-cancel');
     await expect(incButton).toBeVisible();
-    await incButton
-      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
-      .catch(() => {});
-    await incButton.click({ force: true });
+    await incButton.click();
     await expect(cancelCard).toHaveAttribute('data-selected-count', '2');
 
     const playButton = page
@@ -107,10 +101,7 @@ test.describe('Critical Combo Modal', () => {
       .first();
     await expect(playButton).toBeVisible();
     await expect(playButton).toBeEnabled();
-    await playButton
-      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
-      .catch(() => {});
-    await playButton.click({ force: true });
+    await playButton.click();
 
     const modal = page.getByTestId('combo-modal');
     await expect(modal).toBeVisible();
@@ -124,10 +115,7 @@ test.describe('Critical Combo Modal', () => {
     const firstBlindCard = page.getByTestId('blind-card-0');
     await expect(firstBlindCard).toBeVisible();
     await expect(firstBlindCard).toContainText('#1');
-    await firstBlindCard
-      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
-      .catch(() => {});
-    await firstBlindCard.click({ force: true });
+    await firstBlindCard.click();
 
     await expect(firstBlindCard).toHaveAttribute('aria-pressed', 'true');
     await expect(confirmButton).toBeEnabled();

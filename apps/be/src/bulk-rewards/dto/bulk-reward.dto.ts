@@ -14,6 +14,7 @@ export enum BulkRewardType {
   GEMS = 'gems',
   ARCADEUM = 'arcadeum',
   ITEM = 'item',
+  PET = 'pet',
 }
 
 export class BulkRewardDto {

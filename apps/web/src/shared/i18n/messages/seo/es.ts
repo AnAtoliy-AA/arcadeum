@@ -26,6 +26,10 @@ export const es: DeepPartial<SeoMessages> = {
     title: `Sala de juego · ${APP}`,
     description: `Únete a una sala en vivo en ${APP}, toma asiento y empieza a jugar - o conviértete en espectador.`,
   },
+  arcadePetLanding: {
+    title: `ArcadePet - Mascota virtual gratis en línea · ${APP}`,
+    description: `Cría, alimenta, entrena y evoluciona tu mascota virtual de píxeles en ${APP}. Gana premios jugando, juega minijuegos y sube de nivel.`,
+  },
   criticalLanding: {
     title: `Critical · Juego de cartas explosivo gratis en línea · ${APP}`,
     description: `Juega gratis a Critical en línea en ${APP} - un juego de cartas estratégico donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos. Sin descarga, sin registro.`,

@@ -7,6 +7,7 @@ export const gameLoaders: Record<
   string,
   () => Promise<{ default: React.ComponentType<BaseGameWidgetProps> }>
 > = {
+  arcade_pet_v1: () => import('@/widgets/SimulationGames/ArcadePetGame'),
   critical_v1: () => import('@/widgets/CardGames/CriticalGame'),
   sea_battle_v1: () => import('@/widgets/StrategyGames/SeaBattleGame'),
   glimworm_v1: () => import('@/widgets/ActionGames/GlimwormGame'),
@@ -20,11 +21,28 @@ export const gameLoaders: Record<
   spades_v1: () => import('@/widgets/CardGames/SpadesGame'),
   go_v1: () => import('@/widgets/BoardGames/GoGame'),
   pachisi_v1: () => import('@/widgets/BoardGames/PachisiGame'),
-  // Add more games as they are implemented
 } as const;
 
-// Game metadata registry
 export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
+  arcade_pet_v1: {
+    slug: 'arcade_pet_v1',
+    name: 'ArcadePet',
+    description:
+      'Retro virtual pet companion simulation with cross-game treats and evolution',
+    category: 'Simulation',
+    minPlayers: 1,
+    maxPlayers: 1,
+    estimatedDuration: 10,
+    complexity: 2,
+    ageRating: 'E',
+    thumbnail: '/games/arcade-pet.svg',
+    version: '1.0.0',
+    supportsAI: true,
+    tags: ['pet', 'retro', 'pixel', 'simulation', 'companion'],
+    implementationPath: '@/widgets/SimulationGames/ArcadePetGame',
+    lastUpdated: '2026-11-01',
+    status: 'active',
+  },
   critical_v1: {
     slug: 'critical_v1',
     name: 'Critical',

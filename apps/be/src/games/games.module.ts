@@ -29,6 +29,8 @@ import { CriticalGateway } from './critical.gateway';
 import { CriticalActionsGateway } from './critical-actions.gateway';
 import { TexasHoldemGateway } from './texas-holdem.gateway';
 import { SeaBattleGateway } from './sea-battle.gateway';
+import { ArcadePetGateway } from './arcade-pet.gateway';
+import { ArcadePetModule } from '../arcade-pet/arcade-pet.module';
 import { SocketDeltaService } from './common/socket-delta.service';
 // Game handlers — plain services, not gateways (single-namespace architecture)
 import { GameEnginesModule } from './engines/engines.module';
@@ -224,6 +226,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     ChessBattlePassModule,
     ChessBroadcastModule,
     TablebaseModule,
+    ArcadePetModule,
   ],
   controllers: [
     GamesController,
@@ -330,6 +333,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     SpadesGateway,
     GoGateway,
     PachisiGateway,
+    ArcadePetGateway,
     SocketDeltaService,
     {
       provide: GAME_GATEWAYS,
@@ -350,6 +354,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
         SpadesGateway,
         GoGateway,
         PachisiGateway,
+        ArcadePetGateway,
       ],
     },
     AntiCollusionService,

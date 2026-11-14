@@ -15,3 +15,4 @@ export * from './SolitaireSymbol';
 export * from './MinesweeperSymbol';
 export * from './SudokuSymbol';
 export * from './Game2048Symbol';
+export * from './ArcadePetSymbol';

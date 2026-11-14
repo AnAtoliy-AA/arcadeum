@@ -2,7 +2,7 @@
 
 import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 
-export type BulkRewardType = 'coins' | 'gems' | 'arcadeum' | 'item';
+export type BulkRewardType = 'coins' | 'gems' | 'arcadeum' | 'item' | 'pet';
 
 export interface BulkRewardResult {
   totalUsers: number;
@@ -12,9 +12,7 @@ export interface BulkRewardResult {
 }
 
 export type AdminBulkRewardsActionError =
-  | 'validation'
-  | 'forbidden'
-  | 'generic';
+  'validation' | 'forbidden' | 'generic';
 
 export type AdminBulkRewardsActionResult =
   | { ok: true; data: BulkRewardResult }
@@ -32,7 +30,10 @@ export async function sendBulkRewardsAction(input: {
   itemId?: string;
   reason?: string;
 }): Promise<AdminBulkRewardsActionResult> {
-  if (!input.type || (input.type === 'item' && !input.itemId?.trim())) {
+  if (
+    !input.type ||
+    ((input.type === 'item' || input.type === 'pet') && !input.itemId?.trim())
+  ) {
     return { ok: false, error: 'validation' };
   }
 

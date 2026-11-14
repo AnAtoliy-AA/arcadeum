@@ -1,5 +1,6 @@
 // Game slug type definitions for all supported games
 export type GameSlug =
+  | 'arcade_pet_v1'
   | 'critical_v1'
   | 'sea_battle_v1'
   | 'texas_holdem_v1'

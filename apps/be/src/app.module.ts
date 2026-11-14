@@ -38,6 +38,7 @@ import { SocialRewardsModule } from './social-rewards/social-rewards.module';
 import { AsyncMatchModule } from './games/async-match/async-match.module';
 import { XpModule } from './xp/xp.module';
 import { LeaguesModule } from './leagues/leagues.module';
+import { ArcadePetModule } from './arcade-pet/arcade-pet.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -100,6 +101,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     AsyncMatchModule,
     LeaguesModule,
     XpModule,
+    ArcadePetModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,

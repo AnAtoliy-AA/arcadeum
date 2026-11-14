@@ -19,6 +19,7 @@ import type { GameVisibilityService } from '../admin/game-visibility/game-visibi
 import type { UserRoleResolver } from '../auth/lib/user-role-resolver.service';
 import { BackgammonGateway } from './backgammon.gateway';
 import { GoGateway } from './go.gateway';
+import { ArcadePetGateway } from './arcade-pet.gateway';
 import { GAME_CATALOG, type GameCatalogEntry } from './games.catalog';
 import type { GameMessageHandler } from './game-message-handler.interface';
 
@@ -40,6 +41,7 @@ import type { Server, Socket } from 'socket.io';
  */
 
 const EXPECTED_START_EVENT: ExpectedStartEvents = {
+  arcade_pet_v1: 'arcadePet.session.start',
   critical_v1: 'games.session.start',
   sea_battle_v1: 'seaBattle.session.start',
   texas_holdem_v1: 'games.session.start_holdem',
@@ -243,6 +245,7 @@ describe('GamesGateway covers every catalog game', () => {
       new SpadesGateway(inert),
       new GoGateway(inert),
       new PachisiGateway(inert),
+      new ArcadePetGateway(inert),
     ];
 
     const events = new Set<string>();

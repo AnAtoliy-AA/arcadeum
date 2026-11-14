@@ -9,6 +9,8 @@ import {
   type GameTheme,
 } from '@/features/games/lib/shared-themes';
 
+import { useArcadePetStore } from '@/features/arcade-pet/store/useArcadePetStore';
+
 interface SoloThemeState {
   themes: Record<string, string>;
   setTheme: (gameId: string, themeId: string) => void;
@@ -28,6 +30,9 @@ export const useSoloThemeStore = create<SoloThemeState>()(
             [gameId]: themeId,
           },
         }));
+        try {
+          useArcadePetStore.getState().buyGameTheme(themeId);
+        } catch {}
       },
       getTheme: (gameId) => {
         return get().themes[gameId] ?? DEFAULT_THEME_ID;

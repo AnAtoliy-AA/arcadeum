@@ -47,6 +47,7 @@ export class LeaderboardsController {
       q: query.q,
       scope: query.scope,
       range: query.range,
+      opponentType: query.opponentType,
       selfUserId: user?.userId,
     });
   }

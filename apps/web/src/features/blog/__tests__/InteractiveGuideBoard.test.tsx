@@ -50,4 +50,146 @@ describe('InteractiveGuideBoard', () => {
     expect(screen.getByText('Play Full Game Now')).toBeInTheDocument();
     expect(screen.getByTestId('puzzle-cell-2')).toHaveTextContent('X');
   });
+
+  it('renders multi-row grid and coordinates for chess drills', () => {
+    render(
+      <InteractiveGuideBoard
+        id="chess-drill-test"
+        title="Scholar's Mate Defense"
+        prompt="Find the defensive knight move."
+        gameId="chess"
+        grid={[
+          'r.bqk.nr',
+          'pppp.ppp',
+          '..n.....',
+          '..B.p...',
+          '....P...',
+          '.....Q..',
+          'PPPP.PPP',
+          'RNB.K.NR',
+        ]}
+        solutionIndex={18}
+        solutionValue="N"
+        explanation="Nf6 develops and attacks the queen while guarding f7!"
+        playHref="/games/chess"
+      />,
+    );
+
+    expect(screen.getByText("Scholar's Mate Defense")).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^puzzle-cell-/)).toHaveLength(64);
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-18'));
+    expect(screen.getByTestId('puzzle-feedback-correct')).toBeInTheDocument();
+    expect(
+      screen.getByText('Nf6 develops and attacks the queen while guarding f7!'),
+    ).toBeInTheDocument();
+  });
+
+  it('supports localized Russian labels and feedback', () => {
+    render(
+      <InteractiveGuideBoard
+        {...defaultProps}
+        locale="ru"
+        title="Найдите вилку"
+        prompt="Сыграйте за X для победы."
+        explanation="Ход в правый угол создает двойную угрозу!"
+      />,
+    );
+
+    expect(screen.getByText('Интерактивная задача')).toBeInTheDocument();
+    expect(screen.getByText('Найдите вилку')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-1'));
+    expect(screen.getByTestId('puzzle-feedback-incorrect')).toBeInTheDocument();
+    expect(
+      screen.getByText('Не совсем! Это оставляет уязвимость.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Изучите угрозы на поле и попробуйте снова.'),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Попробовать снова'));
+    expect(
+      screen.queryByTestId('puzzle-feedback-incorrect'),
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-2'));
+    expect(screen.getByTestId('puzzle-feedback-correct')).toBeInTheDocument();
+    expect(screen.getByText('Верный ход!')).toBeInTheDocument();
+    expect(
+      screen.getByText('Ход в правый угол создает двойную угрозу!'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Играть сейчас')).toBeInTheDocument();
+  });
+
+  it('renders and solves Go atari capture drill', () => {
+    render(
+      <InteractiveGuideBoard
+        id="drill-go-atari"
+        gameId="go"
+        title="Execute the Atari Capture"
+        prompt="Capture the surrounded White stone in atari."
+        grid={[
+          '.........',
+          '.........',
+          '.........',
+          '....B....',
+          '...BWB...',
+          '.........',
+          '.........',
+          '.........',
+          '.........',
+        ]}
+        solutionIndex={49}
+        solutionValue="B"
+        explanation="Playing at E4 removes the last remaining liberty!"
+        playHref="/games/go"
+      />,
+    );
+
+    expect(screen.getByText('Execute the Atari Capture')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^puzzle-cell-/)).toHaveLength(81);
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-49'));
+    expect(screen.getByTestId('puzzle-feedback-correct')).toBeInTheDocument();
+    expect(
+      screen.getByText('Playing at E4 removes the last remaining liberty!'),
+    ).toBeInTheDocument();
+  });
+
+  it('renders and solves Sudoku naked single drill', () => {
+    render(
+      <InteractiveGuideBoard
+        id="drill-sudoku-naked-single"
+        gameId="sudoku"
+        title="Spot the Last Single Digit"
+        prompt="Find the single remaining cell."
+        grid={[
+          '534678912',
+          '672195348',
+          '198342567',
+          '859761423',
+          '426853791',
+          '713924856',
+          '961537284',
+          '287419635',
+          '34528617.',
+        ]}
+        solutionIndex={80}
+        solutionValue="9"
+        explanation="Placing 9 completes the constraint!"
+        playHref="/games/sudoku"
+      />,
+    );
+
+    expect(screen.getByText('Spot the Last Single Digit')).toBeInTheDocument();
+    expect(screen.getAllByTestId(/^puzzle-cell-/)).toHaveLength(81);
+
+    fireEvent.click(screen.getByTestId('puzzle-cell-80'));
+    expect(screen.getByTestId('puzzle-feedback-correct')).toBeInTheDocument();
+    expect(
+      screen.getByText('Placing 9 completes the constraint!'),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('puzzle-cell-80')).toHaveTextContent('9');
+  });
 });

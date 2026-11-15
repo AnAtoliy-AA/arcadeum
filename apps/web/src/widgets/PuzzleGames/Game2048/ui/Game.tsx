@@ -17,6 +17,7 @@ import { Game2048ThemeProvider } from '../lib/Game2048ThemeContext';
 import { useGame2048Store } from '../store/game2048Store';
 import type { Direction } from '../types';
 import { Game2048Board } from './Game2048Board';
+import { Game2048MilestoneToast } from './Game2048MilestoneToast';
 
 export default function Game2048() {
   useTrackSoloGameStarted('game_2048_v1');
@@ -42,6 +43,13 @@ function Game2048Table() {
   const move = useGame2048Store((state) => state.move);
   const continuePlaying = useGame2048Store((state) => state.continuePlaying);
   const newGame = useGame2048Store((state) => state.newGame);
+  const history = useGame2048Store((state) => state.history);
+  const undo = useGame2048Store((state) => state.undo);
+  const canUndo = useGame2048Store(
+    (state) => state.history.length > 0 && state.finishedAt === null,
+  );
+  const activeMilestone = useGame2048Store((state) => state.activeMilestone);
+  const dismissMilestone = useGame2048Store((state) => state.dismissMilestone);
 
   const isRunning = finishedAt === null;
   const pause = useSoloPause(isRunning, finishedAt);
@@ -50,7 +58,7 @@ function Game2048Table() {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (pause.isPaused) return;
+      if (pause.isPaused || !isRunning) return;
       const keyMap: Record<string, Direction> = {
         ArrowUp: 'up',
         ArrowDown: 'down',
@@ -66,13 +74,19 @@ function Game2048Table() {
         D: 'right',
       };
       const direction = keyMap[event.key];
-      if (!direction) return;
+      if (!direction) {
+        if (event.key === 'z' && (event.ctrlKey || event.metaKey)) {
+          event.preventDefault();
+          undo();
+        }
+        return;
+      }
       event.preventDefault();
       move(direction);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [move, pause.isPaused]);
+  }, [isRunning, move, pause.isPaused, undo]);
 
   const maxTile = useMemo(() => Math.max(0, ...grid), [grid]);
 
@@ -90,7 +104,7 @@ function Game2048Table() {
         },
         {
           id: 'max-tile',
-          label: 'Max Tile',
+          label: t('games.game_2048_v1.hud.maxTile'),
           value: maxTile,
         },
       ],
@@ -99,17 +113,25 @@ function Game2048Table() {
 
   const handleMove = useCallback(
     (direction: Direction) => {
-      if (pause.isPaused) return;
+      if (pause.isPaused || !isRunning) return;
       const prevScore = useGame2048Store.getState().score;
+      const prevMilestone = useGame2048Store.getState().activeMilestone;
       move(direction);
       const newScore = useGame2048Store.getState().score;
-      if (newScore > prevScore) {
+      const newMilestone = useGame2048Store.getState().activeMilestone;
+      if (newMilestone !== null && newMilestone !== prevMilestone) {
+        if (newMilestone >= 2048) {
+          play('win');
+        } else {
+          play('merge');
+        }
+      } else if (newScore > prevScore) {
         play('merge');
       } else {
         play('slide_tile');
       }
     },
-    [move, pause.isPaused, play],
+    [isRunning, move, pause.isPaused, play],
   );
 
   const statsItems = [
@@ -133,6 +155,13 @@ function Game2048Table() {
       value: timer.formatted,
       icon: '⏱️',
       dataTestId: 'game-2048-timer',
+    },
+    {
+      id: 'undos',
+      label: t('games.game_2048_v1.hud.undosAvailable'),
+      value: history.length,
+      icon: '↩️',
+      dataTestId: 'game-2048-undos-counter',
     },
   ];
 
@@ -159,37 +188,55 @@ function Game2048Table() {
       onNewGame={newGame}
       statsItems={statsItems}
       actions={actions}
+      undo={{ onUndo: undo, canUndo }}
       loadingMessage="games.game_2048_v1.board.loading"
       modal={{
         result: finished ? (finished.won ? 'victory' : 'defeat') : null,
         gameName: '2048',
-        rematchLabel: t('games.game_2048_v1.result.playAgain'),
+        rematchLabel:
+          finished?.won && status !== 'lost' && !keepPlayingFlag
+            ? t('games.game_2048_v1.result.finish')
+            : t('games.game_2048_v1.result.playAgain'),
+        rematchTestId:
+          finished?.won && status !== 'lost' && !keepPlayingFlag
+            ? 'finish-button'
+            : 'rematch-button',
         theme: themeId,
         stats,
         messages: {
           title: t(
-            finished?.won
-              ? 'games.game_2048_v1.result.wonTitle'
-              : 'games.game_2048_v1.result.lostTitle',
+            status === 'lost'
+              ? 'games.game_2048_v1.result.lostTitle'
+              : finished?.won
+                ? 'games.game_2048_v1.result.wonTitle'
+                : 'games.game_2048_v1.result.lostTitle',
           ),
           message: t(
-            finished?.won
-              ? 'games.game_2048_v1.result.wonBody'
-              : 'games.game_2048_v1.result.lostBody',
+            status === 'lost'
+              ? 'games.game_2048_v1.result.lostBody'
+              : finished?.won
+                ? 'games.game_2048_v1.result.wonBody'
+                : 'games.game_2048_v1.result.lostBody',
           ),
         },
         secondaryAction:
           finished?.won && status !== 'lost' && !keepPlayingFlag
             ? {
-                label: t('games.game_2048_v1.result.keepGoing'),
+                label: t('games.game_2048_v1.result.continue'),
                 onClick: continuePlaying,
-                testId: 'keep-going-button',
+                testId: 'continue-button',
               }
             : undefined,
         onClose: status === 'won' ? continuePlaying : undefined,
       }}
     >
-      <Game2048Board grid={grid} onMove={handleMove} />
+      <div className="relative flex w-full flex-col items-center">
+        <Game2048MilestoneToast
+          milestone={activeMilestone}
+          onDismiss={dismissMilestone}
+        />
+        <Game2048Board grid={grid} onMove={handleMove} />
+      </div>
 
       <div className="flex flex-col items-center gap-3">
         <div className="flex flex-col items-center gap-1 sm:hidden select-none">
@@ -199,7 +246,7 @@ function Game2048Table() {
               onClick={() => handleMove('up')}
               data-testid="pad-up"
               aria-label="Move Up"
-              className="absolute top-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute top-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50 touch-manipulation"
             >
               ▲
             </button>
@@ -208,7 +255,7 @@ function Game2048Table() {
               onClick={() => handleMove('left')}
               data-testid="pad-left"
               aria-label="Move Left"
-              className="absolute left-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute left-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50 touch-manipulation"
             >
               ◀
             </button>
@@ -217,7 +264,7 @@ function Game2048Table() {
               onClick={() => handleMove('down')}
               data-testid="pad-down"
               aria-label="Move Down"
-              className="absolute bottom-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute bottom-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50 touch-manipulation"
             >
               ▼
             </button>
@@ -226,11 +273,11 @@ function Game2048Table() {
               onClick={() => handleMove('right')}
               data-testid="pad-right"
               aria-label="Move Right"
-              className="absolute right-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--glassBg)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/20 active:border-[var(--primary)] transition-transform"
+              className="absolute right-0 h-10 w-10 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] flex items-center justify-center text-sm font-bold shadow-md active:scale-90 active:bg-[var(--primary)]/25 active:border-[var(--primary)] transition-transform text-[var(--color)] hover:border-[var(--primary)]/50 touch-manipulation"
             >
               ▶
             </button>
-            <div className="h-5 w-5 rounded-full bg-[var(--backgroundHover)]" />
+            <div className="h-5 w-5 rounded-full bg-[var(--backgroundHover)] border border-[var(--glassBorder)]" />
           </div>
           <p className="text-center text-xs text-[var(--textSecondary)]">
             {t('games.game_2048_v1.board.controlsHint')}

@@ -334,12 +334,12 @@ describe('BackgammonEngine', () => {
     expect(count(player2)).toBe(3);
   });
 
-  it('initializes long nardy with 15 checkers on heads', () => {
+  it('initializes long nardy with 15 checkers on heads in opposite corners', () => {
     const state = engine.initializeState([player1, player2], {
       options: { mode: 'long' },
     });
     expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
-    expect(state.points[0]).toEqual({ playerId: player2, count: 15 });
+    expect(state.points[11]).toEqual({ playerId: player2, count: 15 });
   });
 
   it('initializes nackgammon with 2 checkers on point 23', () => {
@@ -356,6 +356,6 @@ describe('BackgammonEngine', () => {
       options: { mode: 'gulbara' },
     });
     expect(state.points[23]).toEqual({ playerId: player1, count: 15 });
-    expect(state.points[0]).toEqual({ playerId: player2, count: 15 });
+    expect(state.points[11]).toEqual({ playerId: player2, count: 15 });
   });
 });

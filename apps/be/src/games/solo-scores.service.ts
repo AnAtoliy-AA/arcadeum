@@ -35,7 +35,7 @@ export class SoloScoresService {
   async getLeaderboard(
     gameId: string,
     difficulty: string,
-    _sortBy: 'score' | 'durationMs' = 'score',
+    sortBy: 'score' | 'durationMs' = 'score',
     order: 'asc' | 'desc' = 'desc',
     limit = 20,
     offset = 0,
@@ -57,6 +57,15 @@ export class SoloScoresService {
     total: number;
   }> {
     const sortDirection = order === 'asc' ? 1 : -1;
+    const byDuration = sortBy === 'durationMs';
+    // Rank by the requested metric, use the other one only as a tiebreaker in
+    // its "better" direction (higher score, faster time).
+    const recordSort: Record<string, 1 | -1> = byDuration
+      ? { durationMs: sortDirection, score: -1 }
+      : { score: sortDirection, durationMs: 1 };
+    const rankingSort: Record<string, 1 | -1> = byDuration
+      ? { bestDurationMs: sortDirection, bestScore: -1 }
+      : { bestScore: sortDirection, bestDurationMs: 1 };
 
     const matchStage: Record<string, unknown> = {
       gameId,
@@ -72,10 +81,7 @@ export class SoloScoresService {
         $match: matchStage,
       },
       {
-        $sort: {
-          score: sortDirection,
-          durationMs: 1,
-        },
+        $sort: recordSort,
       },
       {
         $group: {
@@ -87,10 +93,7 @@ export class SoloScoresService {
         },
       },
       {
-        $sort: {
-          bestScore: sortDirection,
-          bestDurationMs: 1,
-        },
+        $sort: rankingSort,
       },
       {
         $facet: {
@@ -98,48 +101,13 @@ export class SoloScoresService {
             { $skip: offset },
             { $limit: limit },
             {
-              $lookup: {
-                from: 'users',
-                localField: '_id',
-                foreignField: '_id',
-                as: 'user',
-                pipeline: [
-                  {
-                    $project: {
-                      username: 1,
-                      displayName: 1,
-                      equippedAvatarId: 1,
-                      equippedBadgeId: 1,
-                      equippedNameColorId: 1,
-                      equippedFrameId: 1,
-                    },
-                  },
-                ],
-              },
-            },
-            { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
-            {
               $project: {
                 _id: 0,
                 playerId: '$_id',
-                username: { $ifNull: ['$user.username', 'Unknown'] },
-                displayName: { $ifNull: ['$user.displayName', null] },
                 score: '$bestScore',
                 moves: '$bestMoves',
                 durationMs: '$bestDurationMs',
                 totalGames: 1,
-                equippedAvatarId: {
-                  $ifNull: ['$user.equippedAvatarId', null],
-                },
-                equippedBadgeId: {
-                  $ifNull: ['$user.equippedBadgeId', null],
-                },
-                equippedNameColorId: {
-                  $ifNull: ['$user.equippedNameColorId', null],
-                },
-                equippedFrameId: {
-                  $ifNull: ['$user.equippedFrameId', null],
-                },
               },
             },
           ],
@@ -152,27 +120,65 @@ export class SoloScoresService {
       .aggregate<{
         entries: Array<{
           playerId: string;
-          username: string;
-          displayName: string | null;
           score: number;
           moves: number;
           durationMs: number;
           totalGames: number;
-          equippedAvatarId: string | null;
-          equippedBadgeId: string | null;
-          equippedNameColorId: string | null;
-          equippedFrameId: string | null;
         }>;
         total: Array<{ count: number }>;
       }>(pipeline)
       .exec();
 
-    return {
-      entries: result.entries.map((e, i) => ({
-        ...e,
+    const rawEntries = result?.entries ?? [];
+    const totalCount = result?.total?.[0]?.count ?? 0;
+
+    const userIds = rawEntries.map((e) => e.playerId);
+    const users =
+      userIds.length > 0
+        ? await this.userModel
+            .find({ _id: { $in: userIds } })
+            .select(
+              '_id username displayName role equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId',
+            )
+            .lean<
+              Array<{
+                _id: unknown;
+                username?: string;
+                displayName?: string;
+                role?: string;
+                equippedAvatarId?: string;
+                equippedBadgeId?: string;
+                equippedNameColorId?: string;
+                equippedFrameId?: string;
+              }>
+            >()
+            .exec()
+        : [];
+
+    const userMap = new Map(users.map((u) => [String(u._id), u]));
+
+    const entries = rawEntries.map((e, i) => {
+      const user = userMap.get(e.playerId);
+      return {
         rank: offset + i + 1,
-      })),
-      total: result.total[0]?.count ?? 0,
+        playerId: e.playerId,
+        username: user?.username ?? 'Unknown',
+        displayName: user?.displayName ?? null,
+        role: user?.role ?? null,
+        score: e.score,
+        moves: e.moves,
+        durationMs: e.durationMs,
+        totalGames: e.totalGames,
+        equippedAvatarId: user?.equippedAvatarId ?? null,
+        equippedBadgeId: user?.equippedBadgeId ?? null,
+        equippedNameColorId: user?.equippedNameColorId ?? null,
+        equippedFrameId: user?.equippedFrameId ?? null,
+      };
+    });
+
+    return {
+      entries,
+      total: totalCount,
     };
   }
 

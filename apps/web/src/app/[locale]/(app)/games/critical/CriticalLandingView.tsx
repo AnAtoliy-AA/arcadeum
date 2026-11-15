@@ -6,6 +6,7 @@ import {
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
 import { CriticalLandingPreview } from './CriticalLandingPreview';
+import { CriticalRankedHub } from '@/features/games/ui/critical/CriticalRankedHub';
 
 type CriticalMessages = CriticalGamesMessages['critical_v1'];
 type Landing = CriticalMessages['landing'];
@@ -60,7 +61,7 @@ export function CriticalLandingView({
     {
       key: 'party',
       icon: '👥',
-      title: '2–5 Player Chaos',
+      title: '2-5 Player Chaos',
       body: 'Fast party matches with instant matchmaking against friends or smart AI bots.',
     },
   ];
@@ -150,6 +151,19 @@ export function CriticalLandingView({
         { label: landing.breadcrumb.games, href: gamesHref },
         { label: landing.breadcrumb.critical },
       ]}
+      quickNavItems={[
+        {
+          id: 'ranked',
+          label: '⚔️ Ranked 1v1',
+          badge: 'ELO',
+          href: '#ranked',
+        },
+        { id: 'highlights', label: '✨ Features', href: '#highlights' },
+        { id: 'how-to-play', label: '📖 Rules', href: '#how-to-play' },
+        { id: 'themes', label: '🎨 Themes', href: '#themes' },
+        { id: 'faq', label: '❓ FAQ', href: '#faq' },
+      ]}
+      topSection={<CriticalRankedHub gameId={gameId} labels={landing.ranked} />}
       hero={{
         gameId,
         title: landing.hero.title,
@@ -157,10 +171,10 @@ export function CriticalLandingView({
         subtitle: landing.hero.tagline,
         intro: landing.hero.intro,
         category: 'Card Game',
-        playersBadge: '2–5 Players',
-        durationBadge: '10–20 min',
+        playersBadge: '2-5 Players',
+        durationBadge: '10-20 min',
         difficultyBadge: 'High Tension',
-        chips: landing.hero.chips,
+        chips: [...landing.hero.chips, 'Ranked 1v1 ELO'],
         ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.ctaRooms,

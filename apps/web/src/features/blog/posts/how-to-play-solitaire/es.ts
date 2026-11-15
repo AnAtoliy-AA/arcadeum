@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-solitaire',
   locale: 'es',
   title:
-    'Cómo jugar al Solitario (Klondike) online — reglas, estrategia, consejos',
+    'Cómo jugar al Solitario (Klondike) online - reglas, estrategia, consejos',
   excerpt:
     'Guía completa al Solitario Klondike: distribución, movimientos permitidos, estrategia de fundaciones y los hábitos que aumentan tu tasa de victoria.',
   publishedAt: '2026-07-28',
@@ -52,12 +52,12 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Un porcentaje significativo de repartos son irresolubles — entre 20% y 40% son ganadores según el modo. El juego hábil aumenta tu tasa, pero reconocer repartos muertos rápidamente también es parte del juego eficiente.',
+      text: 'Un porcentaje significativo de repartos son irresolubles - entre 20% y 40% son ganadores según el modo. El juego hábil aumenta tu tasa, pero reconocer repartos muertos rápidamente también es parte del juego eficiente.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Estrategia — hábitos que ganan',
+      text: 'Estrategia - hábitos que ganan',
       id: 'strategy',
     },
     {
@@ -88,14 +88,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/solitaire',
-      text: 'Juega al Solitario online — gratis, en tu navegador',
+      text: 'Juega al Solitario online - gratis, en tu navegador',
       description:
         'Klondike clásico con modos draw-1 y draw-3. Rastrea tu tasa de victoria.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Resumen — cuatro hábitos que ganan',
+      text: 'Resumen - cuatro hábitos que ganan',
       id: 'tldr',
     },
     {
@@ -103,7 +103,7 @@ export const post: BlogPost = {
       items: [
         'Prefiere siempre el movimiento que revela una carta boca abajo.',
         'Trabaja la columna más profunda primero.',
-        'No envíes cartas medias a fundaciones — guárdalas como buffer.',
+        'No envíes cartas medias a fundaciones - guárdalas como buffer.',
         'Elige el Rey que equilibre tus cartas ocultas.',
       ],
     },
@@ -127,7 +127,7 @@ export const post: BlogPost = {
       },
       {
         name: 'Guarda cartas medias',
-        text: 'No envíes 5s, 6s o 7s a fundaciones — pueden servir para secuencias.',
+        text: 'No envíes 5s, 6s o 7s a fundaciones - pueden servir para secuencias.',
         url: '#strategy',
       },
       {

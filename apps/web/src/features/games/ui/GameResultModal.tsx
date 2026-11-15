@@ -31,6 +31,7 @@ export interface GameResultModalProps {
   gameSlug?: string;
   onRematch?: () => void;
   rematchLabel?: string;
+  rematchTestId?: string;
   secondaryAction?: {
     label: string;
     onClick: () => void;
@@ -97,6 +98,7 @@ export function GameResultModal({
   gameSlug,
   onRematch,
   rematchLabel,
+  rematchTestId,
   secondaryAction,
   onClose,
   rematchLoading,
@@ -317,7 +319,7 @@ export function GameResultModal({
                 size="sm"
                 onClick={onRematch}
                 disabled={rematchLoading}
-                data-testid="rematch-button"
+                data-testid={rematchTestId ?? 'rematch-button'}
                 showShimmer={isVictory}
               >
                 {rematchLoading

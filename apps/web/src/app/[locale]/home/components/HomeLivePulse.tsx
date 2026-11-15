@@ -103,6 +103,7 @@ export function HomeLivePulse() {
           </Link>
 
           <Link
+            data-testid="live-waiting-rooms-card"
             href={`${routes.rooms}?status=lobby`}
             className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-indigo-950/20 to-black/30 p-4 transition-all hover:border-indigo-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] active:scale-[0.98]"
           >

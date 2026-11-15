@@ -86,13 +86,17 @@ vi.mock('@/shared/lib/socket', () => ({
 }));
 
 vi.mock('./useMobileMenu', () => ({
-  useMobileMenu: () => ({ isOpen: false, toggle: vi.fn() }),
+  useMobileMenu: () => ({ isOpen: false, toggle: vi.fn(), close: vi.fn() }),
 }));
 
 vi.mock('@/features/live-stats', () => ({
   LivePulseBadge: () => <div data-testid="live-pulse" />,
   LiveActivityPopover: () => <div data-testid="live-popover" />,
   useLiveStatsWs: vi.fn(),
+  useLiveStatsStore: {
+    subscribe: vi.fn(() => vi.fn()),
+    getState: vi.fn(() => ({ isPopoverOpen: false, setPopoverOpen: vi.fn() })),
+  },
 }));
 
 vi.mock('@/widgets/header/ui/LanguageSwitcher', () => ({

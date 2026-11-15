@@ -207,7 +207,7 @@ export function AdminGemPackageForm({
 
       <div>
         <label style={LABEL_STYLE} htmlFor="gem-pkg-price">
-          Price (USD) *{pricePreview ? ` — ${pricePreview}` : ''}
+          Price (USD) *{pricePreview ? ` (${pricePreview})` : ''}
         </label>
         <input
           id="gem-pkg-price"

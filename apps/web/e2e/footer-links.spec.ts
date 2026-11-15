@@ -99,11 +99,13 @@ test.describe('Footer Links', () => {
     const supportLink = footer.locator(`a[href="${routes.support}"]`);
     if (!(await supportLink.isVisible())) {
       const resourcesToggle = footer
-        .getByText('RESOURCES')
-        .or(footer.getByText('Resources'))
-        .or(footer.getByText('resources'))
+        .getByRole('button', { name: /resources/i })
+        .or(footer.getByText(/resources/i))
         .first();
-      if (await resourcesToggle.isVisible({}).catch(() => false)) {
+      await resourcesToggle
+        .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+        .catch(() => {});
+      if (await resourcesToggle.isVisible().catch(() => false)) {
         await resourcesToggle.click({ force: true });
       }
     }

@@ -3,6 +3,7 @@
 import { useLocalStatsStore } from '@/features/stats/store/statsStore';
 import { useSoloScoreStore } from '@/features/stats/store/soloScoreStore';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
+import { soloActiveTimer } from './soloActiveTimer';
 import type { SoloGameFinishedInfo } from './solo-game-types';
 
 export interface FinishIfOverConfig {
@@ -41,7 +42,12 @@ export function finishIfOver<F = SoloGameFinishedInfo>(
   if (!config.isOver) return null;
 
   const finishedAt = Date.now();
-  const durationMs = finishedAt - config.startedAt;
+  // Record active play time (same number the HUD shows), so pauses, hidden
+  // tabs and time away from the page never leak into leaderboard durations.
+  // Falls back to wall clock when no timer was started for this session
+  // (store-only flows, tests).
+  const activeMs = soloActiveTimer.getActiveMsFor(config.startedAt);
+  const durationMs = activeMs ?? finishedAt - config.startedAt;
   const userId = useSessionStore.getState().snapshot.userId ?? 'anon';
   const sessionId = `${config.sessionPrefix}_${userId}_${finishedAt}`;
 

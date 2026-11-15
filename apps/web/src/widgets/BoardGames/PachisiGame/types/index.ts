@@ -86,6 +86,8 @@ export interface PachisiClientState {
   seats: Record<string, number>;
   tokens: Record<string, PachisiToken[]>;
   die: number | null;
+  lastDie?: number | null;
+  lastRollerId?: string | null;
   consecutiveSixes: number;
   currentTurnIndex: number;
   playerOrder: string[];

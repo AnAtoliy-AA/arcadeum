@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-glimworm',
   locale: 'en',
-  title: 'How to Play Glimworm Online — Glow Arena, Tactics, Survival',
+  title: 'How to Play Glimworm Online - Glow Arena, Tactics, Survival',
   excerpt:
     'A complete beginner-friendly guide to Glimworm: the multiplayer snake arena where you eat light, leave lethal trails, and outmanoeuvre rivals in a neon battleground.',
   publishedAt: '2026-08-18',
@@ -23,7 +23,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'The game takes place in a bounded arena filled with scattered light orbs and glowing particles. The arena has a visible boundary — crossing it eliminates you. The arena is dark except for the glow trails left by worms and the ambient light orbs.',
+      text: 'The game takes place in a bounded arena filled with scattered light orbs and glowing particles. The arena has a visible boundary - crossing it eliminates you. The arena is dark except for the glow trails left by worms and the ambient light orbs.',
     },
     {
       type: 'heading',
@@ -90,14 +90,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/glimworm',
-      text: 'Play Glimworm online — free, in your browser',
+      text: 'Play Glimworm online - free, in your browser',
       description:
         'Join a glow arena, compete against friends or AI. Zero downloads, instant play.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR - the four habits that win games',
       id: 'tldr',
     },
     {

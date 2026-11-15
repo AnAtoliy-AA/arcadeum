@@ -14,15 +14,7 @@ export function CatDashRealTrack() {
           <stop offset="60%" stopColor="#6d28d9" stopOpacity="0.08" />
           <stop offset="100%" stopColor="#080312" stopOpacity="0" />
         </radialGradient>
-        <filter id="cat-shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow
-            dx="0"
-            dy="4"
-            stdDeviation="4"
-            floodColor="#000000"
-            floodOpacity="0.8"
-          />
-        </filter>
+
         <linearGradient id="cat-dice-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ffffff" />
           <stop offset="100%" stopColor="#cbd5e1" />
@@ -146,7 +138,7 @@ export function CatDashRealTrack() {
       </text>
 
       {/* Racing Cat Token 1 (Orange Lead Cat) */}
-      <g transform="translate(180 52)" filter="url(#cat-shadow)">
+      <g transform="translate(180 52)">
         <circle
           cx="0"
           cy="0"
@@ -172,7 +164,7 @@ export function CatDashRealTrack() {
       </g>
 
       {/* Racing Cat Token 2 (Purple Chaser Cat) */}
-      <g transform="translate(105 87)" filter="url(#cat-shadow)">
+      <g transform="translate(105 87)">
         <circle
           cx="0"
           cy="0"
@@ -187,7 +179,7 @@ export function CatDashRealTrack() {
       </g>
 
       {/* 3D Dice Roller */}
-      <g transform="translate(265 42) rotate(12)" filter="url(#cat-shadow)">
+      <g transform="translate(265 42) rotate(12)">
         <rect
           width="36"
           height="36"

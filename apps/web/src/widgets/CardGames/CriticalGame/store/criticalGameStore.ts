@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import type {
   CriticalCard,
-  CriticalComboCard,
   EventComboModalState,
   SeeTheFutureModalState,
   AlterTheFutureModalState,
@@ -54,11 +53,14 @@ interface CriticalGameState {
   // Complex Logic Actions
   toggleFiverCard: (card: CriticalCard) => void;
   openEventCombo: (
-    cards: CriticalComboCard[],
+    cards: CriticalCard[],
     handCards: CriticalCard[],
+    initialMode?: 'pair' | 'trio' | 'fiver' | null,
+    initialTarget?: string | null,
+    initialFiverCards?: CriticalCard[],
   ) => void;
   closeEventComboModal: () => void;
-  selectComboCard: (card: CriticalComboCard) => void;
+  selectComboCard: (card: CriticalCard) => void;
   reset: () => void;
 }
 
@@ -116,8 +118,15 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       return { selectedFiverCards: [...prev, card] };
     }),
 
-  openEventCombo: (comboCards, handCards) => {
-    const availableComboCards = comboCards
+  openEventCombo: (
+    comboCards,
+    handCards,
+    initialMode,
+    initialTarget,
+    initialFiverCards,
+  ) => {
+    const uniqueComboCards = Array.from(new Set(comboCards));
+    const availableComboCards = uniqueComboCards
       .map((card) => {
         const count = handCards.filter((c) => c === card).length;
         const availableModes: ('pair' | 'trio')[] = [];
@@ -127,17 +136,42 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       })
       .filter((item) => item.availableModes.length > 0);
 
-    const fiverAvailable = comboCards.every((card) =>
-      handCards.some((c) => c === card),
-    );
+    const fiverAvailable =
+      initialMode === 'fiver' || new Set(handCards).size >= FIVER_COMBO_SIZE;
 
     if (availableComboCards.length === 0 && !fiverAvailable) return;
 
     const selectedComboCard =
-      availableComboCards.length === 1 ? availableComboCards[0].card : null;
-    const defaultMode = selectedComboCard
-      ? availableComboCards[0].availableModes[0]
-      : null;
+      availableComboCards.length >= 1 ? availableComboCards[0].card : null;
+
+    let defaultMode: 'pair' | 'trio' | 'fiver' | null = initialMode ?? null;
+    if (!defaultMode) {
+      if (
+        comboCards.length >= 3 &&
+        availableComboCards.some((c) => c.availableModes.includes('trio'))
+      ) {
+        defaultMode = 'trio';
+      } else if (selectedComboCard) {
+        const cardData = availableComboCards.find(
+          (c) => c.card === selectedComboCard,
+        );
+        defaultMode = cardData?.availableModes[0] ?? null;
+      } else if (fiverAvailable) {
+        defaultMode = 'fiver';
+      }
+    }
+
+    const uniqueHandCards = Array.from(new Set(handCards));
+    let resolvedFiverCards: CriticalCard[] = [];
+    if (initialFiverCards && initialFiverCards.length > 0) {
+      resolvedFiverCards = initialFiverCards;
+    } else if (defaultMode === 'fiver') {
+      if (uniqueComboCards.length === FIVER_COMBO_SIZE) {
+        resolvedFiverCards = uniqueComboCards;
+      } else if (uniqueHandCards.length === FIVER_COMBO_SIZE) {
+        resolvedFiverCards = uniqueHandCards;
+      }
+    }
 
     set({
       eventComboModal: {
@@ -146,10 +180,11 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
         fiverAvailable,
       },
       selectedMode: defaultMode,
-      selectedTarget: null,
+      selectedTarget: initialTarget ?? null,
       selectedCard: null,
-      selectedIndex: defaultMode === 'pair' ? 0 : null,
+      selectedIndex: null,
       selectedDiscardCard: null,
+      selectedFiverCards: resolvedFiverCards,
     });
   },
 
@@ -177,7 +212,7 @@ export const useCriticalGameStore = create<CriticalGameState>((set) => ({
       if (cardData) {
         const defaultMode = cardData.availableModes[0];
         updates.selectedMode = defaultMode;
-        updates.selectedIndex = defaultMode === 'pair' ? 0 : null;
+        updates.selectedIndex = null;
       }
       updates.selectedTarget = null;
       updates.selectedCard = null;

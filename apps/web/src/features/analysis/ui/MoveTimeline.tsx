@@ -62,7 +62,7 @@ function MoveCell({
       onBlur={() => onHover(false)}
     >
       <span className="truncate text-[13px] font-medium text-[rgba(248,250,252,0.85)]">
-        {move.notation || '—'}
+        {move.notation || '-'}
       </span>
       <span
         className={cx(

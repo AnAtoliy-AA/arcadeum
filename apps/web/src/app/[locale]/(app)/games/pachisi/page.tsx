@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/pachisi/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Pachisi — free multiplayer on Arcadeum',
+          alt: 'Pachisi - free multiplayer on Arcadeum',
         },
       ],
     },
@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function PachisiLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(PACHISI_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.pachisi_v1?.landing;
@@ -85,7 +88,7 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Pachisi on ${appConfig.appName}`,
           description:
-            'Play Pachisi online with 2 to 4 players — free, no download.',
+            'Play Pachisi online with 2 to 4 players - free, no download.',
           steps: [
             {
               name: landing.steps?.create?.title ?? 'Create a room',
@@ -117,8 +120,6 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(PACHISI_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-pachisi" data={jsonLd} />
@@ -145,7 +146,7 @@ export default async function PachisiLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Pachisi',
           'Ludo',
           'Board Game',

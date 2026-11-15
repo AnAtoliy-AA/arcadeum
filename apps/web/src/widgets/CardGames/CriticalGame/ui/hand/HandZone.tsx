@@ -10,6 +10,8 @@ interface HandZoneProps {
   cards: HandCardInstance[];
   selectedUids: string[];
   onToggleSelect: (uid: string) => void;
+  onSelectUids?: (uids: string[]) => void;
+  groupDuplicates?: boolean;
   combo: { kind: ComboKind; label: string };
   defuseCount: number;
   canPlay: boolean;
@@ -55,11 +57,13 @@ export function HandZone(props: HandZoneProps) {
           cards={props.cards}
           selectedUids={props.selectedUids}
           onToggleSelect={props.onToggleSelect}
+          onSelectUids={props.onSelectUids}
           cardVariant={props.cardVariant}
           showName={props.showCardName}
           showDescription={props.showCardDescription}
           isFanned={false}
           onDoubleClick={props.onDoubleClickCard}
+          groupDuplicates={props.groupDuplicates ?? true}
         />
         <MobileHandBar
           handCount={props.cards.length}
@@ -114,10 +118,12 @@ export function HandZone(props: HandZoneProps) {
         cards={props.cards}
         selectedUids={props.selectedUids}
         onToggleSelect={props.onToggleSelect}
+        onSelectUids={props.onSelectUids}
         cardVariant={props.cardVariant}
         showName={props.showCardName}
         showDescription={props.showCardDescription}
         onDoubleClick={props.onDoubleClickCard}
+        groupDuplicates={props.groupDuplicates ?? true}
       />
     </div>
   );

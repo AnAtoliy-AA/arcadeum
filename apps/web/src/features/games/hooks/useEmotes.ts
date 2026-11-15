@@ -7,13 +7,16 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useGameChatStore } from '@/widgets/GameChat/store/gameChatStore';
 import { EMOTES, type EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
 
-const BUBBLE_DURATION_MS = 5000;
-const RATE_LIMIT_MS = 2000;
+const BUBBLE_DURATION_MS = 2800;
+const RATE_LIMIT_MS = 1000;
+const MAX_CONCURRENT_EMOTES = 12;
 
-interface ActiveEmote {
+export interface ActiveEmote {
   key: string;
   userId: string;
   emoteId: EmoteId;
+  laneIndex: number;
+  ts: number;
 }
 
 interface UseEmotesReturn {
@@ -30,6 +33,7 @@ export function useEmotes(): UseEmotesReturn {
   const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
     new Map(),
   );
+  const nextLaneRef = useRef(0);
   const lastSentRef = useRef(0);
 
   const roomId = useGameStore((s: GameState) => s.room?.id);
@@ -42,22 +46,31 @@ export function useEmotes(): UseEmotesReturn {
       const d = data as { userId?: string; emoteId?: EmoteId; ts?: number };
       if (!d?.userId || !d?.emoteId) return;
 
-      const entryKey = `${d.userId}-${d.ts ?? Date.now()}`;
+      const lane = nextLaneRef.current % 6;
+      nextLaneRef.current = (nextLaneRef.current + 1) % 6;
+      const ts = d.ts ?? Date.now();
+      const entryKey = `${d.userId}-${ts}-${Math.random().toString(36).slice(2, 7)}`;
 
-      setActiveEmotes((prev) => [
-        ...prev.filter((e) => e.userId !== d.userId),
-        { key: entryKey, userId: d.userId!, emoteId: d.emoteId! },
-      ]);
-
-      const existing = timersRef.current.get(d.userId);
-      if (existing) clearTimeout(existing);
+      setActiveEmotes((prev) => {
+        const nextList = [
+          ...prev,
+          {
+            key: entryKey,
+            userId: d.userId!,
+            emoteId: d.emoteId!,
+            laneIndex: lane,
+            ts,
+          },
+        ];
+        return nextList.slice(-MAX_CONCURRENT_EMOTES);
+      });
 
       const timer = setTimeout(() => {
-        setActiveEmotes((prev) => prev.filter((e) => e.userId !== d.userId));
-        timersRef.current.delete(d.userId!);
+        setActiveEmotes((prev) => prev.filter((e) => e.key !== entryKey));
+        timersRef.current.delete(entryKey);
       }, BUBBLE_DURATION_MS);
 
-      timersRef.current.set(d.userId, timer);
+      timersRef.current.set(entryKey, timer);
     }, []),
   );
 
@@ -83,10 +96,12 @@ export function useEmotes(): UseEmotesReturn {
         emoteId,
       });
 
-      // Also send as chat message so it persists in server history
       const sendMessage = useGameChatStore.getState().sendMessage;
       if (sendMessage) {
-        sendMessage(`${findEmoji(emoteId)} ${emoteId.replace(/_/g, ' ')}`, 'all');
+        sendMessage(
+          `${findEmoji(emoteId)} ${emoteId.replace(/_/g, ' ')}`,
+          'all',
+        );
       }
     },
     [roomId, userId],

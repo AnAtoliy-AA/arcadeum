@@ -286,7 +286,7 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
       state,
       this.createLogEntry(
         'system',
-        `Hand ${state.handNumber + 1} begins — ${state.playerOrder[state.currentTurnIndex]} leads with the 2♣.`,
+        `Hand ${state.handNumber + 1} begins: ${state.playerOrder[state.currentTurnIndex]} leads with the 2♣.`,
         { kind: 'hearts.hand_start' },
       ),
     );
@@ -312,7 +312,7 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
 
     let logMessage = `${context.userId} played ${card}.`;
     if (card.endsWith('H') && !state.heartsBroken) {
-      logMessage = `${context.userId} played ${card} — hearts are broken!`;
+      logMessage = `${context.userId} played ${card}: hearts are broken!`;
     }
     if (card.endsWith('H')) {
       state.heartsBroken = true;
@@ -396,7 +396,7 @@ export class HeartsEngine extends BaseGameEngine<HeartsState> {
       state,
       this.createLogEntry(
         'system',
-        `Hand ${state.handNumber + 1} begins — pass direction: ${state.passDirection}.`,
+        `Hand ${state.handNumber + 1} begins: pass direction: ${state.passDirection}.`,
         { kind: 'hearts.hand_start' },
       ),
     );

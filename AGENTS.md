@@ -40,6 +40,10 @@
 - **No Hardcoded Theme CSS in Games** — never write hardcoded per-theme CSS/SCSS selectors (e.g. `[data-theme='cyberpunk'] { ... }`). Instead, map `theme.colors.*` in `lib/theme-adapter.ts` to game-specific tokens, mint scoped CSS custom properties on the root board container via a `boardVars(theme)` helper (as in `BackgammonBoard` and `HeartsBoard`), and have stylesheets strictly consume `var(--...)`. Any new theme added to `SHARED_THEMES` must immediately work with zero CSS modifications.
 - **Two-Player Board Orientation** — in all two-player games (Chess, Checkers, Backgammon, etc.), the current local player's side/home board/pieces must ALWAYS be oriented at the bottom. The view must dynamically flip or invert coordinates based on `currentUserId` so the player always plays upwards from their perspective.
 
+### Copy & Typography
+
+- **Never use long dash / em dash (`—`) in text anywhere in the app**: Do not use `—` in UI copy, landing pages, SEO titles, descriptions, open graph text, badges, or i18n strings. Use standard hyphens (`-`), colons (`:`), pipes (`|`), parentheses, or rewrite the sentence without it.
+
 ### i18n
 
 - **No hardcoded user-facing strings** — all text must go through the i18n system (`getTranslations()` on web server components, `useTranslation()` on web client/mobile). Add keys to all locale files (`en`, `ru`, `es`, `fr`, `by`).
@@ -157,3 +161,14 @@ Project skills are located in `.claude/skills/` (30 skills). Use the `skill` too
 - etc.
 
 ## Imported Claude Cowork project instructions
+
+<!-- BEGIN:turborepo-agent-rules -->
+
+# This is NOT the Turborepo you know
+
+Turborepo configuration, task behavior, and CLI commands can vary between installed versions and may differ from your training data. Resolve the `turbo` package from this file's directory or relevant workspace; in monorepos, it may not be visible from the repository root. For example, run `node -p "require.resolve('turbo/package.json')"` from a workspace that depends on `turbo`.
+
+Read `docs/README.md` inside that installed package first, then read the relevant pages from its `docs/` directory before changing Turborepo configuration or commands. Heed deprecation notices. These bundled docs match the installed package version and are available without network access.
+
+This block is written and re-added by `turbo` before repository-scoped commands when an AI agent is detected. In the Turborepo source repository, its template is defined in `crates/turborepo-cli/src/cli/agent_guidance.rs`. Removing the managed block while updates are enabled means a later qualifying invocation will add it again. Set `"agentGuidance": false` in the root `turbo.json` or `turbo.jsonc` to opt out; this does not remove an existing block. Keep the block committed with your work to avoid an uncommitted change on the next agent invocation.
+<!-- END:turborepo-agent-rules -->

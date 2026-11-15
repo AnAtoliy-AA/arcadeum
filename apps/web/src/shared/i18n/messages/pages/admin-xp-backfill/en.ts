@@ -9,7 +9,7 @@ export const adminXpBackfillEn = {
   },
   result: {
     success: 'Backfill completed successfully!',
-    dryRun: 'Dry run completed — no changes were made.',
+    dryRun: 'Dry run completed - no changes were made.',
     affected: 'Users updated',
     skipped: 'Users skipped',
     details: 'Details',

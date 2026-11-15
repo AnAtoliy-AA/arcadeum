@@ -78,7 +78,7 @@ export function AdminGemPackageRow({
       <td style={{ padding: '12px 16px', fontSize: '14px' }}>{pkg.name}</td>
       <td style={{ padding: '12px 16px', fontSize: '14px' }}>{pkg['gems']}</td>
       <td style={{ padding: '12px 16px', fontSize: '14px' }}>
-        {pkg['bonusGems'] > 0 ? `+${pkg['bonusGems']}` : '—'}
+        {pkg['bonusGems'] > 0 ? `+${pkg['bonusGems']}` : '-'}
       </td>
       <td style={{ padding: '12px 16px', fontSize: '14px' }}>{priceDisplay}</td>
       <td style={{ padding: '12px 16px', fontSize: '14px' }}>

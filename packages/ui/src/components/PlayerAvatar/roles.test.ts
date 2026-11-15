@@ -3,6 +3,8 @@ import { getRoleTierColor, getRoleGlyph } from './roles';
 
 describe('PlayerAvatar roles', () => {
   it('returns tier colors for prestige roles', () => {
+    expect(getRoleTierColor('admin')).toBe('#ef4444');
+    expect(getRoleTierColor('developer')).toBe('#10b981');
     expect(getRoleTierColor('premium')).toBe('#fbbf24');
     expect(getRoleTierColor('vip')).toBe('#e879f9');
     expect(getRoleTierColor('supporter')).toBe('#f472b6');
@@ -16,6 +18,8 @@ describe('PlayerAvatar roles', () => {
   });
 
   it('returns a glyph only for prestige roles', () => {
+    expect(getRoleGlyph('admin')).toBe('🛡️');
+    expect(getRoleGlyph('developer')).toBe('⚙️');
     expect(getRoleGlyph('vip')).toBe('💎');
     expect(getRoleGlyph('premium')).toBe('👑');
     expect(getRoleGlyph('free')).toBeNull();

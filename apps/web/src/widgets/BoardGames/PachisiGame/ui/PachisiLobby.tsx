@@ -13,6 +13,7 @@ import {
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { RulesModal } from './RulesModal';
 import { PACHISI_THEMES } from '../lib/constants';
 import type { PachisiOptions, PachisiMode, PachisiTheme } from '../types';
@@ -66,7 +67,7 @@ interface PachisiLobbyProps {
   onShowRulesClose: () => void;
 }
 
-function resolveOptions(raw: unknown): PachisiOptions {
+function resolveOptions(raw: unknown, fallbackTheme: string): PachisiOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
@@ -74,8 +75,8 @@ function resolveOptions(raw: unknown): PachisiOptions {
     aiDifficulty: string;
   }>;
   return {
-    theme: (r.theme ?? r.variant ?? 'adventure') as PachisiTheme,
-    variant: (r.theme ?? r.variant ?? 'adventure') as PachisiTheme,
+    theme: (r.theme ?? r.variant ?? fallbackTheme) as PachisiTheme,
+    variant: (r.theme ?? r.variant ?? fallbackTheme) as PachisiTheme,
     mode: (r.mode ?? 'standard') as PachisiMode,
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
@@ -97,9 +98,10 @@ export function PachisiLobby({
   onShowRulesClose,
 }: PachisiLobbyProps) {
   const { t } = useTranslation();
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
-    [room.gameOptions],
+    () => resolveOptions(room.gameOptions, equippedTheme),
+    [room.gameOptions, equippedTheme],
   );
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
 

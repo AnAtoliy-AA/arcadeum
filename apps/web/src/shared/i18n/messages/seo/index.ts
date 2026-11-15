@@ -1,11 +1,11 @@
 import type { DeepPartial } from '../../base-types';
-import type { en, SeoMessages as SeoMessagesEn } from './en';
+import type { SeoMessages as SeoMessagesEn } from './en';
 
 export type { en } from './en';
 
 export type SeoMessages = DeepPartial<SeoMessagesEn>;
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadSeoMessages(locale: string) {
   switch (locale) {
     case 'en':

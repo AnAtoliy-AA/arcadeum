@@ -39,6 +39,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./apps/be/.env
+      - /run/arcadeum-secrets/secrets.env
     environment:
       REDIS_URL: redis://redis:6379
       STOCKFISH_POOL_SIZE: '1'
@@ -69,6 +70,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./apps/be/.env
+      - /run/arcadeum-secrets/secrets.env
     environment:
       REDIS_URL: redis://redis:6379
       STOCKFISH_POOL_SIZE: '1'
@@ -117,6 +119,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./apps/be/.env
+      - /run/arcadeum-secrets/secrets.env
     environment:
       REDIS_URL: redis://redis:6379
     depends_on:
@@ -138,6 +141,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./apps/tg-bot/.env
+      - /run/arcadeum-secrets/secrets.env
     environment:
       REDIS_URL: redis://redis:6379
     ports:

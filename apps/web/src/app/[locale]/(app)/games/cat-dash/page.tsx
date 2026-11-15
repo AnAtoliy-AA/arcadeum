@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/cat-dash/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Cat Dash — free multiplayer cat racing on Arcadeum',
+          alt: 'Cat Dash - free multiplayer cat racing on Arcadeum',
         },
       ],
     },
@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function CatDashLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CAT_DASH_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.cat_dash_v1?.landing;
@@ -86,7 +89,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Cat Dash on ${appConfig.appName}`,
           description:
-            'Play Cat Dash — a dice-based race game for 2 to 6 players.',
+            'Play Cat Dash - a dice-based race game for 2 to 6 players.',
           steps: [
             {
               name: landing.steps?.create?.title ?? 'Create a room',
@@ -118,8 +121,6 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(CAT_DASH_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-cat-dash" data={jsonLd} />
@@ -147,7 +148,7 @@ export default async function CatDashLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Cat Dash',
           'Board Game',
           'Racing',

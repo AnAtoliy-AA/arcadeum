@@ -20,7 +20,7 @@ function resolveLocale(raw: string): Locale {
 export default async function BlogPostTwitterImage({ params }: Props) {
   const { locale: rawLocale, slug } = await params;
   const locale = resolveLocale(rawLocale);
-  const post = getPost(slug, locale);
+  const post = await getPost(slug, locale);
 
   if (!post) {
     return renderOgCard({

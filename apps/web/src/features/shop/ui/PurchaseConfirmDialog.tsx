@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Typography } from '@arcadeum/ui';
 import { useLanguage } from '@/shared/i18n';
@@ -14,7 +15,6 @@ import type {
 } from '../server/shop.types';
 
 function uuid(): string {
-  // RFC 4122 v4 — crypto.randomUUID is available in modern browsers + Node 16+.
   return globalThis.crypto.randomUUID();
 }
 
@@ -27,10 +27,12 @@ export interface PurchaseConfirmLabels {
   free: string;
   successTitle?: string;
   successBody?: string;
+  signIn?: string;
   errors: {
     insufficientFunds: string;
     unavailable: string;
     generic: string;
+    unauthorized?: string;
   };
 }
 
@@ -43,16 +45,13 @@ export interface PurchaseConfirmDialogProps {
   onClose: () => void;
   onSuccess: () => void;
   labels: PurchaseConfirmLabels;
+  isAuthenticated?: boolean;
 }
 
 export function PurchaseConfirmDialog(
   props: PurchaseConfirmDialogProps,
 ): React.JSX.Element | null {
   if (!props.open || !props.item) return null;
-  // Parent gates `open`; we render a fresh inner component per open cycle so
-  // local state (UUID nonce, succeeded flag, error) resets without
-  // setState-in-effect. The inner key is the item id so opening a *different*
-  // item also remounts.
   return (
     <PurchaseConfirmDialogInner
       key={props.item.id}
@@ -64,6 +63,7 @@ export function PurchaseConfirmDialog(
       onClose={props.onClose}
       onSuccess={props.onSuccess}
       labels={props.labels}
+      isAuthenticated={props.isAuthenticated}
     />
   );
 }
@@ -77,28 +77,32 @@ function PurchaseConfirmDialogInner({
   onClose,
   onSuccess,
   labels,
+  isAuthenticated = true,
 }: PurchaseConfirmDialogProps) {
   const router = useRouter();
   const { locale } = useLanguage();
-  // Stable per-mount UUID — regenerated only when the outer key changes (new
-  // open / new item), so React's strict-mode double-render and any retries
-  // reuse the same id.
   const purchaseIdRef = useRef<string>(uuid());
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [succeeded, setSucceeded] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [isUnauthorized, setIsUnauthorized] = useState(!isAuthenticated);
 
   if (!item) return null;
 
-  // Destructure to avoid the no-restricted-syntax wallet-balance member-access
-  // guardrail (only direct property reads are restricted).
   const { coins: coinBalance, gems: gemBalance } = balance;
   const balanceForCurrency =
     item.priceCurrency === 'coins' ? coinBalance : gemBalance;
   const hasFunds = balanceForCurrency >= item.priceAmount;
 
   const handleConfirm = () => {
+    if (!isAuthenticated || isUnauthorized) {
+      setErrorMsg(
+        labels.errors.unauthorized ?? 'Please sign in to complete purchase.',
+      );
+      setIsUnauthorized(true);
+      return;
+    }
     if (!hasFunds) {
       setErrorMsg(labels.errors.insufficientFunds);
       return;
@@ -107,19 +111,23 @@ function PurchaseConfirmDialogInner({
     startTransition(async () => {
       const result = await purchaseItemAction(item.id, purchaseIdRef.current);
       if (result.ok) {
-        // BE auto-equips on purchase (spec D5); push new equipped state into
-        // the client session snapshot so the header avatar updates without
-        // a manual reload.
         syncEquippedToSession(result.data.equipped);
         setSucceeded(true);
         router.refresh();
         onSuccess();
         return;
       }
-      if (result.error === 'insufficient_funds') {
+      if (result.error === 'unauthorized') {
+        setErrorMsg(
+          labels.errors.unauthorized ?? 'Please sign in to complete purchase.',
+        );
+        setIsUnauthorized(true);
+      } else if (result.error === 'insufficient_funds') {
         setErrorMsg(labels.errors.insufficientFunds);
       } else if (result.error === 'unavailable') {
         setErrorMsg(labels.errors.unavailable);
+      } else if (result.message && !result.message.startsWith('shop.')) {
+        setErrorMsg(result.message);
       } else {
         setErrorMsg(labels.errors.generic);
       }
@@ -182,7 +190,17 @@ function PurchaseConfirmDialogInner({
               .replace('{currency}', item.priceCurrency)}
           </Typography>
         </div>
-        {errorMsg ? (
+        {!isAuthenticated || isUnauthorized ? (
+          <Typography
+            color="var(--danger)"
+            uiSize="sm"
+            data-testid="purchase-unauthorized-message"
+          >
+            {errorMsg ??
+              labels.errors.unauthorized ??
+              'Please sign in to complete purchase.'}
+          </Typography>
+        ) : errorMsg ? (
           <Typography
             color="var(--danger)"
             uiSize="sm"
@@ -195,13 +213,21 @@ function PurchaseConfirmDialogInner({
           <Button variant="outline" onClick={onClose} disabled={isPending}>
             {labels.cancel}
           </Button>
-          <Button
-            onClick={handleConfirm}
-            disabled={!hasFunds || isPending}
-            data-testid="purchase-confirm-button"
-          >
-            {labels.buy}
-          </Button>
+          {!isAuthenticated || isUnauthorized ? (
+            <Link href="/auth">
+              <Button variant="primary" data-testid="purchase-signin-button">
+                {labels.signIn ?? 'Sign In'}
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              onClick={handleConfirm}
+              disabled={!hasFunds || isPending}
+              data-testid="purchase-confirm-button"
+            >
+              {labels.buy}
+            </Button>
+          )}
         </div>
       </div>
     </DialogShell>

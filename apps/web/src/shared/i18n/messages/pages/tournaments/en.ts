@@ -2,7 +2,7 @@ export const tournamentsEn = {
   title: 'Tournaments',
   subtitle: 'Compete against the best players worldwide',
   description:
-    'Join exciting tournaments, climb the brackets, and compete for exclusive prizes and bragging rights. New tournaments are added regularly — find one that fits your schedule and skill level.',
+    'Join exciting tournaments, climb the brackets, and compete for exclusive prizes and bragging rights. New tournaments are added regularly - find one that fits your schedule and skill level.',
   features: [
     {
       title: 'Dynamic Brackets',
@@ -78,6 +78,53 @@ export const tournamentsEn = {
         'The bracket is locked because some results were already reported.',
       notEnoughPlayers: 'Not enough players to generate a bracket.',
     },
+  },
+  blitzBanner: {
+    ariaLabel: 'Sea Battle Weekly Blitz Cup',
+    kicker: 'Weekly Naval Championship',
+    statusLive: 'Live Cup In Progress',
+    statusOpen: 'Registration Open',
+    statusClosed: 'Registration Closed',
+    statusUpcoming: 'Upcoming Cup',
+    statusRegistered: 'Registered',
+    formatDetails: '{count} Captains • Single Elimination',
+    captainsReady: 'Captains Ready',
+    startsIn: 'Starts In',
+    battleStatus: 'Battle Status',
+    playingNow: 'PLAYING NOW',
+    signInNotice: 'Sign in to enter the Blitz Cup',
+    leaveCup: 'Leave Blitz Cup',
+    registerCup: 'Register for Blitz Cup',
+    tournamentFull: 'Tournament Full',
+    viewBracket: 'View Bracket',
+    allTournaments: 'All Tournaments',
+    openModal: 'Inspect Bracket & Roster',
+    modalTitle: 'Sea Battle Blitz Cup',
+    tabBracket: 'Tournament Bracket',
+    tabRoster: 'Captains Roster',
+    tabIntel: 'Rules & Intel',
+    bracketPendingTitle: 'Bracket Seeds Drawing Soon',
+    bracketPendingDesc:
+      'The tournament bracket will be seeded automatically once registration concludes. Battle commences at the scheduled hour.',
+    rosterTitle: 'Registered Fleet Commanders',
+    rosterSubtitle: '{count} of {max} battlestations occupied',
+    rosterWaitlist: 'Waitlist',
+    rosterYou: 'Your Battlestation',
+    rosterEmpty: 'No captains registered yet. Be the first to deploy!',
+    captainSeed: 'Seed #{seed}',
+    intelFormat: 'Tournament Format',
+    intelFormatDesc:
+      'Single elimination naval combat. Win to advance through the bracket to the grand final.',
+    intelFleet: 'Fleet Deployment',
+    intelFleetDesc:
+      'Standard 10x10 naval grid with classic 5-ship fleet (Carrier, Battleship, Cruiser, Submarine, Destroyer).',
+    intelClock: 'Turn Clock',
+    intelClockDesc: '30-second rapid turn timer with auto-firing salvo mode.',
+    intelRewards: 'Championship Rewards',
+    intelRewardsDesc:
+      'Tournament Winner receives 500 Coins, the coveted Admiral Trophy, and a top placement on the Sea Battle leaderboard.',
+    fullPageView: 'Open Tournament Page',
+    closeModal: 'Close',
   },
 };
 

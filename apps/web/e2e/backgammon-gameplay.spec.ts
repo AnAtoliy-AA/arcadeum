@@ -252,4 +252,157 @@ test.describe('Backgammon Gameplay Styles and Themes', () => {
     await expect(point20).toBeVisible();
     await expect(point20).toContainText('+3');
   });
+
+  test('renders flipped perspective for player 2 with accessible board zones', async ({
+    page,
+  }) => {
+    const roomId = MOCK_OBJECT_ID;
+    const userId = MOCK_OBJECT_ID;
+    const oppId = '507f191e810c19729de860eb';
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Backgammon P2 Perspective Room',
+        gameId: 'backgammon_v1',
+        gameOptions: { variant: 'classic', theme: 'classic' },
+        status: 'active',
+        playerCount: 2,
+      },
+    });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'backgammon_v1',
+      roomJoinedPayload: {
+        status: 'active',
+        gameOptions: { variant: 'classic', theme: 'classic' },
+        session: {
+          id: 'sess-p2',
+          status: 'active',
+          state: {
+            phase: 'move',
+            options: { theme: 'classic', variant: 'classic' },
+            points: Array.from({ length: 24 }, (_, i) => {
+              if (i === 0) return { playerId: userId, count: 2 };
+              return { playerId: null, count: 0 };
+            }),
+            bar: { [userId]: 0, [oppId]: 0 },
+            borneOff: { [userId]: 0, [oppId]: 0 },
+            dice: [2],
+            rolledDice: [2, 0],
+            currentTurnIndex: 1,
+            playerOrder: [oppId, userId],
+            players: [
+              {
+                playerId: oppId,
+                color: 'white',
+                alive: true,
+                bar: 0,
+                borneOff: 0,
+                pipCount: 0,
+              },
+              {
+                playerId: userId,
+                color: 'black',
+                alive: true,
+                bar: 0,
+                borneOff: 0,
+                pipCount: 48,
+              },
+            ],
+            winnerId: null,
+            isDraw: false,
+            logs: [],
+          },
+        },
+      },
+    });
+
+    await navigateTo(page, routes.gameRoom(roomId));
+    await waitForRoomReady(page);
+
+    const board = page.getByTestId('backgammon-board');
+    await expect(board).toBeVisible();
+
+    const point0 = page.getByTestId('point-0');
+    await expect(point0).toBeVisible();
+    await point0.click();
+
+    const point2 = page.getByTestId('point-2');
+    await expect(point2).toBeVisible();
+    await expect(point2).toContainText('+2');
+  });
+
+  test('pressing Space key triggers dice roll during roll phase', async ({
+    page,
+  }) => {
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
+    const oppId = '507f191e810c19729de860eb';
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Backgammon Space Key Room',
+        gameId: 'backgammon_v1',
+        status: 'active',
+        playerCount: 2,
+      },
+    });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'backgammon_v1',
+      roomJoinedPayload: {
+        status: 'active',
+        session: {
+          id: 'sess-space',
+          status: 'active',
+          state: {
+            phase: 'roll',
+            points: Array.from({ length: 24 }, (_, i) => {
+              if (i === 23) return { playerId: userId, count: 2 };
+              if (i === 0) return { playerId: oppId, count: 2 };
+              return { playerId: null, count: 0 };
+            }),
+            bar: { [userId]: 0, [oppId]: 0 },
+            borneOff: { [userId]: 0, [oppId]: 0 },
+            dice: [],
+            rolledDice: null,
+            currentTurnIndex: 0,
+            playerOrder: [userId, oppId],
+            players: [
+              {
+                playerId: userId,
+                color: 'white',
+                alive: true,
+                bar: 0,
+                borneOff: 0,
+                pipCount: 46,
+              },
+              {
+                playerId: oppId,
+                color: 'black',
+                alive: true,
+                bar: 0,
+                borneOff: 0,
+                pipCount: 46,
+              },
+            ],
+            winnerId: null,
+            isDraw: false,
+            logs: [],
+          },
+        },
+      },
+    });
+
+    await navigateTo(page, routes.gameRoom(roomId));
+    await waitForRoomReady(page);
+
+    const rollBtn = page.getByTestId('roll-dice-btn');
+    await expect(rollBtn).toBeVisible();
+
+    await page.keyboard.press('Space');
+    await expect(rollBtn).toBeAttached();
+  });
 });

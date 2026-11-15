@@ -1,8 +1,6 @@
-import type { seasonsEn } from './en';
-
 export type { seasonsEn } from './en';
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadSeasonsMessages(locale: string) {
   switch (locale) {
     case 'en':

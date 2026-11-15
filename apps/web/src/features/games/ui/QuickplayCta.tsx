@@ -1,5 +1,6 @@
 'use client';
 
+import type { ButtonProps } from '@arcadeum/ui';
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 
 interface Props {
@@ -10,6 +11,7 @@ interface Props {
   ctaPlayHumanError?: string;
   /** Preselected shared theme id (e.g. `cyberpunk`) sent to the room. */
   theme?: string;
+  size?: ButtonProps['size'];
   disabled?: boolean;
 }
 
@@ -20,6 +22,7 @@ export function QuickplayCta({
   ctaPlayHuman,
   ctaPlayHumanError,
   theme,
+  size,
   disabled = false,
 }: Props) {
   return (
@@ -29,6 +32,7 @@ export function QuickplayCta({
         label={ctaPlayHuman ?? 'Find Opponent'}
         mode="human"
         theme={theme}
+        size={size}
         errorLabel={ctaPlayHumanError ?? ctaQuickplayError}
         disabled={disabled}
       />
@@ -38,6 +42,7 @@ export function QuickplayCta({
           label={ctaQuickplay}
           mode="ai"
           theme={theme}
+          size={size}
           errorLabel={ctaQuickplayError}
           buttonVariant="secondary"
           disabled={disabled}

@@ -21,19 +21,19 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Tres en raya — multijugador en tableros 3×3, 5×5, 7×7, 9×9',
+        title: 'Tres en raya - multijugador en tableros 3×3, 5×5, 7×7, 9×9',
         description:
           'Juega al tres en raya multijugador online. Seis variantes temáticas, 2–5 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin instalación.',
         keywords:
           'tres en raya, tic tac toe online, multijugador tres en raya, gomoku, cinco en raya, juegos de mesa',
       },
       hero: {
-        title: 'Tres en raya — refinado y multijugador',
+        title: 'Tres en raya - refinado y multijugador',
         subtitle:
           'Tableros temáticos, equipos y bots. Entra solo o con amigos, en tableros del 3×3 al 9×9.',
         createRoom: 'Crear sala',
         ctaQuickplay: 'Jugar contra la IA',
-        ctaQuickplayError: 'No se pudo iniciar la partida — inténtalo de nuevo',
+        ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
         browseRooms: 'Buscar salas',
       },
       highlights: {
@@ -77,12 +77,12 @@ export const esMessages = {
         teams: {
           question: '¿Podemos jugar por equipos?',
           answer:
-            'Sí — activa el modo equipos en la sala. Hasta 4 jugadores divididos en dos equipos; los miembros comparten marca y alternan turnos.',
+            'Sí - activa el modo equipos en la sala. Hasta 4 jugadores divididos en dos equipos; los miembros comparten marca y alternan turnos.',
         },
         bots: {
           question: '¿Los bots son buenos?',
           answer:
-            'En 3×3 el bot juega minimax perfecto — nunca pierde. En 5×5 bloquea amenazas inmediatas y prefiere el centro. En 7×7 y 9×9 juega heurísticas rápidas de ganar/bloquear con espaciado aleatorio.',
+            'En 3×3 el bot juega minimax perfecto - nunca pierde. En 5×5 bloquea amenazas inmediatas y prefiere el centro. En 7×7 y 9×9 juega heurísticas rápidas de ganar/bloquear con espaciado aleatorio.',
         },
         firstPlayerAdvantage: {
           question: '¿Tiene ventaja el primer jugador en Tres en Raya?',
@@ -142,11 +142,11 @@ export const esMessages = {
       },
       s2: {
         title: 'Ojo con la longitud de victoria',
-        body: '3×3 necesita 3 en raya, 5×5 necesita 4, y 7×7 o 9×9 necesitan 5 — horizontal, vertical o diagonal.',
+        body: '3×3 necesita 3 en raya, 5×5 necesita 4, y 7×7 o 9×9 necesitan 5 - horizontal, vertical o diagonal.',
       },
       s3: {
         title: 'Modo infinito',
-        body: 'En los tableros Infinito la cuadrícula se expande cuando alguien juega cerca del borde — nunca hay empates.',
+        body: 'En los tableros Infinito la cuadrícula se expande cuando alguien juega cerca del borde - nunca hay empates.',
       },
       s4: {
         title: 'Habla de estrategia',
@@ -156,7 +156,7 @@ export const esMessages = {
     rules: {
       title: 'Reglas',
       objective:
-        'Sé el primero en colocar tu marca en {{winLength}} casillas en línea — horizontal, vertical o diagonal.',
+        'Sé el primero en colocar tu marca en {{winLength}} casillas en línea - horizontal, vertical o diagonal.',
       objectiveInfinity:
         'Sé el primero en colocar tu marca en {{winLength}} casillas en línea. El tablero comienza en 9×9 y se expande en {{margin}} casillas cuando juegas cerca del borde.',
       steps:
@@ -164,7 +164,7 @@ export const esMessages = {
       winLengths:
         'Longitud ganadora por tablero: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5, ∞ → configurable.',
       infinityDescription:
-        'En el modo Infinito, el tablero comienza en 9×9 y se expande automáticamente en {{margin}} casillas en todas las direcciones cuando se coloca una marca cerca del borde. El juego nunca termina en empate — el tablero sigue creciendo hasta que alguien gane.',
+        'En el modo Infinito, el tablero comienza en 9×9 y se expande automáticamente en {{margin}} casillas en todas las direcciones cuando se coloca una marca cerca del borde. El juego nunca termina en empate - el tablero sigue creciendo hasta que alguien gane.',
       headers: {
         objective: 'Objetivo',
         howToPlay: 'Cómo jugar',

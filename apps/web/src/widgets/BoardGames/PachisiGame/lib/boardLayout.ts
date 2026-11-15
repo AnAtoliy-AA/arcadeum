@@ -123,7 +123,7 @@ export function movableTokenIds(
   const movable = new Set<number>();
   if (!tokens || die === null) return movable;
   for (const token of tokens) {
-    if (token.progress === YARD_PROGRESS) {
+    if (token.progress < 0 || token.progress === YARD_PROGRESS) {
       if (die === 6) movable.add(token.id);
       continue;
     }

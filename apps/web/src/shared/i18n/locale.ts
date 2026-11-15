@@ -46,7 +46,7 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 // `by` is our internal slug for the Belarusian locale, but it's an ISO
-// 3166 country code — not a valid BCP 47 language code. Lighthouse / GSC
+// 3166 country code: not a valid BCP 47 language code. Lighthouse / GSC
 // flag `hreflang="by"` as an unknown language. Map to `be` (ISO 639-1)
 // when emitting hreflang.
 const LOCALE_TO_HREFLANG: Record<Locale, string> = {

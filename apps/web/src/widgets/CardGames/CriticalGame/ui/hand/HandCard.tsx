@@ -9,7 +9,6 @@ import {
   ShieldIcon,
   SparklesIcon,
   SwordsIcon,
-  Typography,
 } from '@arcadeum/ui';
 import { useCallback, useRef, type FC } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
@@ -109,24 +108,33 @@ export function HandCard({
   const descriptionId = `hand-card-description-${card.uid}`;
   const linkDescription = showDescription && !!description;
 
-  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const pointerStart = useRef<{ x: number; y: number; moved: boolean } | null>(
+    null,
+  );
   const lastTapTime = useRef<number>(0);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    pointerStart.current = { x: e.clientX, y: e.clientY };
+    pointerStart.current = { x: e.clientX, y: e.clientY, moved: false };
+  }, []);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!pointerStart.current) return;
+    const dx = e.clientX - pointerStart.current.x;
+    const dy = e.clientY - pointerStart.current.y;
+    if (dx * dx + dy * dy > TAP_THRESHOLD * TAP_THRESHOLD) {
+      pointerStart.current.moved = true;
+    }
   }, []);
 
   const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
+    (_e: React.PointerEvent) => {
       if (!pointerStart.current || disabled) {
         pointerStart.current = null;
         return;
       }
-      const dx = e.clientX - pointerStart.current.x;
-      const dy = e.clientY - pointerStart.current.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+      const wasMoved = pointerStart.current.moved;
       pointerStart.current = null;
-      if (distance <= TAP_THRESHOLD) {
+      if (!wasMoved) {
         const now = Date.now();
         if (onDoubleClick && now - lastTapTime.current < DOUBLE_TAP_MS) {
           lastTapTime.current = 0;
@@ -140,23 +148,16 @@ export function HandCard({
     [disabled, onToggle, onDoubleClick],
   );
 
-  // Fixed card silhouette (~3:4) regardless of which text rows show —
-  // text overlays the art rather than pushing the cell taller. Cell
-  // dimensions stay constant across selection so the lift doesn't
-  // displace neighbouring cards in the fan; the translateY + border
-  // swap + glow are enough to read selection.
-
   return (
     <div
-      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] transition-all duration-150 ease-out select-none ${disabled ? '' : 'hover:translate-y-[-4px] active:scale-[0.97]'} ${isSelected ? 'ring-2 ring-[#34d399] shadow-[0_0_15px_rgba(52,211,153,0.5)]' : ''} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
+      className={`flex flex-col items-stretch rounded-[10px] border-[2px] bg-[rgba(8,12,20,0.85)] overflow-hidden relative shrink-0 w-[124px] h-[172px] max-[800px]:w-[92px] max-[800px]:h-[128px] max-[480px]:w-[80px] max-[480px]:h-[112px] transition-all duration-150 ease-out select-none ${disabled ? 'cursor-default opacity-70' : 'cursor-pointer hover:translate-y-[-4px] active:scale-[0.97]'} ${isSelected ? 'ring-2 ring-[#34d399] shadow-[0_0_15px_rgba(52,211,153,0.5)]' : ''} focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-[#34d399]`}
       style={{
         borderColor: borderColor,
         transform: isSelected ? 'translateY(-12px)' : undefined,
-        cursor: disabled ? 'default' : 'pointer',
-        opacity: disabled ? 0.7 : 1,
         touchAction: disabled ? 'auto' : 'manipulation',
       }}
       onPointerDown={disabled ? undefined : handlePointerDown}
+      onPointerMove={disabled ? undefined : handlePointerMove}
       onPointerUp={disabled ? undefined : handlePointerUp}
       onDoubleClick={disabled || !onDoubleClick ? undefined : onDoubleClick}
       data-testid={`hand-card-${card.uid}`}
@@ -188,7 +189,7 @@ export function HandCard({
       />
       {(showName || showDescription) && (
         <div
-          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-3 pb-3 pt-6 gap-1 pointer-events-none"
+          className="flex flex-col items-stretch absolute left-0 right-0 bottom-0 px-1.5 pb-1.5 pt-4 gap-0.5 pointer-events-none"
           style={{
             background:
               'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0) 100%)',
@@ -196,51 +197,47 @@ export function HandCard({
           data-testid={`hand-card-overlay-${card.uid}`}
         >
           {showName && (
-            <Typography
-              uiSize="xs"
-              weight="800"
-              className="text-[10px] tracking-[0.4px] uppercase text-center"
+            <span
+              className="text-[9px] font-extrabold tracking-[0.3px] uppercase text-center drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] line-clamp-1"
               style={{ color: borderColor }}
               data-testid={`hand-card-name-${card.uid}`}
             >
               {name}
-            </Typography>
+            </span>
           )}
           {showDescription && (
-            <Typography
-              uiSize="xs"
-              className="text-[9px] leading-[11px] font-semibold text-center text-[rgba(226,_232,_240,_0.92)]"
+            <span
+              className="text-[8px] leading-[10px] font-semibold text-center text-slate-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] line-clamp-2"
               id={descriptionId}
               data-testid={descriptionId}
             >
               {description}
-            </Typography>
+            </span>
           )}
         </div>
       )}
       {isSelected && (
         <div
-          className="flex flex-col absolute top-[4px] left-[4px] w-[20px] h-[20px] rounded-[9999px] bg-[#34d399] items-center justify-center shadow-[0_0_8px_rgba(52,211,153,0.8)] z-10"
+          className="flex flex-col absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-[9999px] bg-[#34d399] items-center justify-center shadow-[0_0_8px_rgba(52,211,153,0.8)] z-10"
           data-testid={`hand-card-selected-${card.uid}`}
         >
-          <Typography
-            uiSize="xs"
-            weight="800"
-            className="text-[#062317] text-[11px] leading-none"
-          >
+          <span className="text-[#062317] text-[10px] font-extrabold leading-none">
             ✓
-          </Typography>
+          </span>
         </div>
       )}
       {!!count && count > 1 && (
         <div
-          className="flex flex-col absolute top-[4px] right-[4px] min-w-[20px] h-[20px] px-4 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"
+          className="flex flex-col absolute top-[3px] right-[3px] min-w-[18px] h-[18px] px-1.5 rounded-[9999px] bg-[rgba(0,0,0,0.75)] border items-center justify-center"
           style={{ borderColor: borderColor }}
           data-testid={`hand-card-count-${card.uid}`}
         >
-          <Typography uiSize="xs" weight="800" style={{ color: borderColor }}>
+          <span
+            className="text-[10px] font-extrabold"
+            style={{ color: borderColor }}
+          >
             ×{count}
-          </Typography>
+          </span>
         </div>
       )}
     </div>

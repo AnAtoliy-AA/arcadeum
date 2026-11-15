@@ -7,13 +7,17 @@ export function boardVars(theme: ChessTheme): CSSProperties {
     '--chess-board-bg': theme.boardBackground,
     '--chess-square-light': theme.lightSquare,
     '--chess-square-dark': theme.darkSquare,
+    '--chess-light-square': theme.lightSquare,
+    '--chess-dark-square': theme.darkSquare,
     '--chess-piece-light': theme.lightPieceColor,
     '--chess-piece-dark': theme.darkPieceColor,
     '--chess-selected-square': theme.selectedSquare,
     '--chess-last-move': theme.lastMoveSquare,
     '--chess-valid-dot': theme.validMoveDot,
+    '--chess-legal-dot': theme.validMoveDot,
     '--chess-check-square': theme.checkSquare,
     '--chess-text-color': theme.textColor,
+    '--chess-coord': theme.textColor,
     '--chess-border-radius': theme.borderRadius,
   } as CSSProperties;
 }

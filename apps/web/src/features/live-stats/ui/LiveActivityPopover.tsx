@@ -66,7 +66,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
     <div
       ref={popoverRef}
       data-testid="live-activity-popover"
-      className="absolute right-0 top-12 z-50 w-[94vw] max-w-[440px] rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-4 text-[var(--color)] shadow-2xl backdrop-blur-xl animate-[fadeInUp_0.2s_ease-out]"
+      className="fixed inset-x-3 top-16 z-50 max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-2xl border border-[var(--glassBorderStrong)] bg-[var(--background)] p-4 text-[var(--color)] shadow-2xl backdrop-blur-xl animate-[fadeInUp_0.2s_ease-out] sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-[440px] sm:max-h-[calc(100vh-64px)]"
     >
       <div className="flex items-center justify-between border-b border-[var(--glassBorder)] pb-3">
         <div className="flex items-center gap-2">
@@ -100,12 +100,12 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
         </button>
       </div>
 
-      <div className="my-3 grid grid-cols-5 gap-1.5 text-center">
-        <div className="rounded-xl border border-emerald-500/30 bg-[var(--backgroundHover)] p-2">
+      <div className="my-3 grid grid-cols-2 min-[440px]:grid-cols-5 gap-1.5 text-center">
+        <div className="col-span-2 min-[440px]:col-span-1 rounded-xl border border-emerald-500/30 bg-[var(--backgroundHover)] p-2">
           <div className="font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
             {stats.onlineUsers}
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] leading-tight">
             {t('home.liveBadgeOnline')}
           </div>
         </div>
@@ -118,7 +118,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           <div className="font-mono text-sm font-extrabold text-amber-600 dark:text-amber-400">
             {stats.activeGames}
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] leading-tight">
             {t('home.liveBadgeActiveGames')}
           </div>
         </Link>
@@ -131,7 +131,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           <div className="font-mono text-sm font-extrabold text-indigo-600 dark:text-indigo-400">
             {stats.waitingRooms}
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] leading-tight">
             {t('home.liveBadgeWaitingRooms')}
           </div>
         </Link>
@@ -144,7 +144,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           <div className="font-mono text-sm font-extrabold text-fuchsia-600 dark:text-fuchsia-400">
             {stats.waitingPlayers}
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] leading-tight">
             {t('home.liveBadgeWaitingPlayers')}
           </div>
         </Link>
@@ -157,7 +157,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
           <div className="font-mono text-sm font-extrabold text-cyan-600 dark:text-cyan-400">
             {stats.matchesToday}
           </div>
-          <div className="text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)]">
+          <div className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-[var(--textSecondary)] leading-tight">
             {t('home.liveBadgeMatchesToday')}
           </div>
         </Link>
@@ -184,8 +184,8 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
                 key={room.id}
                 className="flex items-center justify-between rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-3 py-2 text-xs"
               >
-                <div className="flex flex-col">
-                  <span className="font-semibold text-[var(--color)] truncate max-w-[170px]">
+                <div className="flex flex-col min-w-0 flex-1 mr-2">
+                  <span className="font-semibold text-[var(--color)] truncate">
                     {room.name}
                   </span>
                   <span className="text-[11px] text-[var(--textSecondary)]">
@@ -195,7 +195,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
                 <Link
                   href={`${routes.rooms}/${room.id}`}
                   onClick={handleClose}
-                  className="rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-300 transition-colors hover:bg-emerald-500/40 hover:text-[var(--color)]"
+                  className="shrink-0 rounded-lg bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-300 transition-colors hover:bg-emerald-500/40 hover:text-[var(--color)]"
                 >
                   {room.status === 'in_progress'
                     ? t('home.liveSpectateAction')
@@ -215,7 +215,7 @@ export function LiveActivityPopover({ onClose }: LiveActivityPopoverProps) {
         <div className="mb-2 text-xs font-bold uppercase tracking-wider text-[var(--textSecondary)]">
           {t('home.livePopularGamesTitle')}
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2">
           {trendingGamesList.map((game) => {
             const cleanName = game.gameId.replace('_v1', '').replace('_', ' ');
             const landingUrl = getGameLandingUrl(game.gameId, routes);

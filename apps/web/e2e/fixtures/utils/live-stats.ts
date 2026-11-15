@@ -1,0 +1,22 @@
+export const LIVE_INFO_FIXTURE = {
+  onlineUsers: 128,
+  totalUsers: 4200,
+  totalMatches: 15800,
+  totalSubscribers: 320,
+  platformSubscribers: {},
+  activeGames: 12,
+  activeGamesByGame: {},
+  waitingRooms: 5,
+  waitingPlayers: 9,
+  waitingQueues: {},
+  matchesToday: 240,
+  popularGames: [],
+  openRooms: [],
+  recentActivity: [],
+  peaks: {
+    peakOnlineUsers: 900,
+    peakOnlineUsersAt: 0,
+    peakActiveRooms: 64,
+    peakActiveRoomsAt: 0,
+  },
+};

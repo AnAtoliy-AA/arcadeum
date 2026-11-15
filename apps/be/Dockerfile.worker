@@ -18,9 +18,9 @@ FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init curl
+RUN apk add --no-cache dumb-init curl gcompat
 
-# Stockfish 19 — detect arch at build time
+# Stockfish 19 - detect arch at build time
 RUN ARCH=$(uname -m) && \
     case "$ARCH" in \
       x86_64)  SF_ASSET="stockfish-linux-x86-64-universal.tar.gz" ;; \
@@ -31,7 +31,7 @@ RUN ARCH=$(uname -m) && \
       "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/$SF_ASSET" && \
     mkdir -p /tmp/sf19-extract && \
     tar -xzf /tmp/sf19.tar.gz -C /tmp/sf19-extract && \
-    find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} /usr/local/bin/stockfish \; && \
+    find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec cp {} /usr/local/bin/stockfish \; && \
     chmod +x /usr/local/bin/stockfish && \
     rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
 

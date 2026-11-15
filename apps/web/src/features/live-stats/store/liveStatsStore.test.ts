@@ -64,6 +64,14 @@ describe('liveStatsStore', () => {
     expect(stats.activeGames).toBe(18);
   });
 
+  it('should merge partial websocket payloads over existing stats', () => {
+    useLiveStatsStore.getState().applyWsStats({ onlineUsers: 7 });
+    const { stats } = useLiveStatsStore.getState();
+    expect(stats.onlineUsers).toBe(7);
+    expect(stats.totalUsers).toBe(10);
+    expect(stats.platformSubscribers).toEqual({ discord: 3 });
+  });
+
   it('should fetch live stats from endpoint', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,

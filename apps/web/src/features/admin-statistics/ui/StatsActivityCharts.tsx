@@ -164,7 +164,7 @@ export function StatsActivityCharts({
 
                 return (
                   <g key={slot.hour} className="cursor-pointer">
-                    <title>{`${slot.hour}:00 — ${slot.count} matches`}</title>
+                    <title>{`${slot.hour}:00: ${slot.count} matches`}</title>
                     <rect
                       x={xPos}
                       y={chartHeight - barH}

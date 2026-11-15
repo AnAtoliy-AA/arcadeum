@@ -61,7 +61,7 @@ export const roadmapEs = {
     planned: 'Planificado',
   },
   legal: {
-    title: '100% Legal — Todo de Dominio Público',
+    title: '100% Legal - Todo de Dominio Público',
     description:
       'Ajedrez, Damas, Go, Backgammon, Corazones, Picas, Pachisi: todos juegos de dominio público sin necesidad de licencias. Las reglas no pueden tener derechos de autor (Baker v. Selden, 1879). Creamos todo el arte e interfaz.',
   },

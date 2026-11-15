@@ -35,7 +35,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 15,
     complexity: 2,
     ageRating: 'PG-13',
-    thumbnail: '/games/critical.jpg',
+    thumbnail: '/games/critical.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'party', 'fun', 'strategy'],
@@ -53,7 +53,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 60,
     complexity: 4,
     ageRating: 'PG-16',
-    thumbnail: '/games/texas-holdem.jpg',
+    thumbnail: '/games/texas-holdem.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'poker', 'strategy', 'betting'],
@@ -83,14 +83,14 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'sea_battle_v1',
     name: 'Sea Battle',
     description:
-      'Classic naval combat game — FFA up to 6 players, team mode up to 8',
+      'Classic naval combat game - FFA up to 6 players, team mode up to 8',
     category: 'Strategy',
     minPlayers: 2,
     maxPlayers: 8,
     estimatedDuration: 20,
     complexity: 2,
     ageRating: 'PG',
-    thumbnail: '/games/sea-battle.jpg',
+    thumbnail: '/games/sea-battle.svg',
     version: '1.1.0',
     supportsAI: true,
     tags: ['strategy', 'classic', 'naval', 'multiplayer', 'salvo'],
@@ -109,7 +109,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 30,
     complexity: 5,
     ageRating: 'G',
-    thumbnail: '/games/chess.jpg',
+    thumbnail: '/games/chess.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['board', 'strategy', 'classic'],
@@ -127,7 +127,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 20,
     complexity: 3,
     ageRating: 'G',
-    thumbnail: '/games/checkers.jpg',
+    thumbnail: '/games/checkers.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['board', 'strategy', 'classic'],
@@ -146,7 +146,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 10,
     complexity: 2,
     ageRating: 'G',
-    thumbnail: '/games/cascade.jpg',
+    thumbnail: '/games/cascade.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'casual', 'family', 'matching', 'classic'],
@@ -164,7 +164,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 5,
     complexity: 1,
     ageRating: 'G',
-    thumbnail: '/games/tic-tac-toe.jpg',
+    thumbnail: '/games/tic-tac-toe.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['board', 'classic', 'casual', 'quick', 'strategy'],
@@ -219,7 +219,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 15,
     complexity: 1,
     ageRating: 'PG',
-    thumbnail: '/games/cat-dash.jpg',
+    thumbnail: '/games/cat-dash.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['cats', 'race', 'dice', 'family', 'fun'],
@@ -238,7 +238,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     estimatedDuration: 20,
     complexity: 3,
     ageRating: 'PG',
-    thumbnail: '/games/backgammon.jpg',
+    thumbnail: '/games/backgammon.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['backgammon', 'dice', 'board', 'classic', 'strategy'],
@@ -250,14 +250,14 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'hearts_v1',
     name: 'Hearts',
     description:
-      'Classic 4-player trick-taking card game — avoid penalty cards and shoot the moon',
+      'Classic 4-player trick-taking card game - avoid penalty cards and shoot the moon',
     category: 'Card Game',
     minPlayers: 4,
     maxPlayers: 4,
     estimatedDuration: 30,
     complexity: 3,
     ageRating: 'G',
-    thumbnail: '/games/hearts.jpg',
+    thumbnail: '/games/hearts.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'trick-taking', 'classic', 'strategy'],
@@ -269,14 +269,14 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'spades_v1',
     name: 'Spades',
     description:
-      'Classic 4-player partnership card game — bid your tricks and let spades trump',
+      'Classic 4-player partnership card game - bid your tricks and let spades trump',
     category: 'Card Game',
     minPlayers: 4,
     maxPlayers: 4,
     estimatedDuration: 35,
     complexity: 3,
     ageRating: 'G',
-    thumbnail: '/games/spades.jpg',
+    thumbnail: '/games/spades.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['cards', 'trick-taking', 'partnership', 'bidding', 'classic'],
@@ -288,14 +288,14 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'go_v1',
     name: 'Go',
     description:
-      'Classic Go on 9×9, 13×13 and 19×19 boards — captures, ko rule, area scoring, and AI opponents',
+      'Classic Go on 9×9, 13×13 and 19×19 boards - captures, ko rule, area scoring, and AI opponents',
     category: 'Board Game',
     minPlayers: 2,
     maxPlayers: 2,
     estimatedDuration: 25,
     complexity: 5,
     ageRating: 'G',
-    thumbnail: '/games/go.jpg',
+    thumbnail: '/games/go.svg',
     version: '1.0.0',
     supportsAI: true,
     tags: ['go', 'baduk', 'weiqi', 'board', 'classic', 'strategy'],
@@ -307,7 +307,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'pachisi_v1',
     name: 'Pachisi',
     description:
-      'Classic cross-and-circle race game for 2–4 players — roll a six, capture rivals, and bring all tokens home',
+      'Classic cross-and-circle race game for 2–4 players - roll a six, capture rivals, and bring all tokens home',
     category: 'Board Game',
     minPlayers: 2,
     maxPlayers: 4,
@@ -326,7 +326,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'solitaire_v1',
     name: 'Solitaire',
     description:
-      'Classic Klondike Solitaire — single-player card puzzle that runs entirely in your browser',
+      'Classic Klondike Solitaire - single-player card puzzle that runs entirely in your browser',
     category: 'Card Game',
     minPlayers: 1,
     maxPlayers: 1,
@@ -345,7 +345,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'minesweeper_v1',
     name: 'Minesweeper',
     description:
-      'Classic Minesweeper — clear beginner to expert grids without detonating a single mine, entirely in your browser',
+      'Classic Minesweeper - clear beginner to expert grids without detonating a single mine, entirely in your browser',
     category: 'Puzzle',
     minPlayers: 1,
     maxPlayers: 1,
@@ -364,7 +364,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'sudoku_v1',
     name: 'Sudoku',
     description:
-      'Classic Sudoku with unique-solution puzzles on easy, medium, and hard grids — pencil marks included',
+      'Classic Sudoku with unique-solution puzzles on easy, medium, and hard grids - pencil marks included',
     category: 'Puzzle',
     minPlayers: 1,
     maxPlayers: 1,
@@ -383,7 +383,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
     slug: 'game_2048_v1',
     name: '2048',
     description:
-      'The addictive tile-merging puzzle — slide and merge equal tiles across a 4×4 grid to reach 2048',
+      'The addictive tile-merging puzzle - slide and merge equal tiles across a 4×4 grid to reach 2048',
     category: 'Puzzle',
     minPlayers: 1,
     maxPlayers: 1,
@@ -402,7 +402,7 @@ export const gameMetadata: Partial<Record<GameSlug, GameMetadata>> = {
 
 /**
  * i18n key for a category label. Unknown categories fall back to the raw
- * string by returning `undefined` — callers must handle that.
+ * string by returning `undefined` - callers must handle that.
  */
 export const CATEGORY_LABEL_KEYS: Record<string, string> = {
   'Card Game': 'games.shared.category.cardGame',
@@ -432,7 +432,7 @@ const CATEGORY_ORDER = [
 
 /**
  * Derives the catalog category tabs from `gameMetadata`. A new game only
- * needs an entry in `gameMetadata` (+ `gameLoaders`) — its category appears
+ * needs an entry in `gameMetadata` (+ `gameLoaders`) - its category appears
  * here automatically. Coming-soon/deprecated games are excluded so their
  * genre does not create empty tabs.
  */

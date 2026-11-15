@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-pachisi',
   locale: 'fr',
   title:
-    'Comment jouer au Pachisi (Ludo) en ligne — règles, captures, stratégie',
+    'Comment jouer au Pachisi (Ludo) en ligne - règles, captures, stratégie',
   excerpt:
     'Guide complet : course de dés avec captures, cases sécurisées et blocages tactiques.',
   publishedAt: '2026-07-07',
@@ -45,7 +45,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/pachisi',
-      text: 'Jouez au Pachisi en ligne — gratuit',
+      text: 'Jouez au Pachisi en ligne - gratuit',
       description: 'Courses avec amis ou IA.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

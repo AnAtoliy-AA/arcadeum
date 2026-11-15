@@ -91,9 +91,6 @@ export function UsersTableRow({
             <span className="text-[#f76b15] text-[12px]">{' (removed)'}</span>
           )}
         </span>
-        <span className="opacity-[0.6] text-[12px] line-clamp-1">
-          {item.email}
-        </span>
         {item.displayName && (
           <span className="opacity-[0.5] text-[12px] line-clamp-1">
             {item.displayName}

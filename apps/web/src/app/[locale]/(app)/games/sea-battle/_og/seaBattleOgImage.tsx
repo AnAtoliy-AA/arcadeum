@@ -2,13 +2,13 @@ import { ImageResponse } from 'next/og';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'Sea Battle — free online Battleship on Arcadeum';
+export const alt = 'Sea Battle - free online Battleship on Arcadeum';
 
 const CELL = 36;
 const ROWS = 10;
 const COLS = 10;
 
-// The target cell is where the "active strike" happens — sonar rings
+// The target cell is where the "active strike" happens - sonar rings
 // emanate from here and the cell itself glows.
 const TARGET = { col: 7, row: 4 };
 
@@ -162,7 +162,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
         ))}
       </div>
 
-      {/* LEFT — copy column */}
+      {/* LEFT - copy column */}
       <div
         style={{
           display: 'flex',
@@ -240,7 +240,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
         </div>
       </div>
 
-      {/* RIGHT — board + sonar */}
+      {/* RIGHT - board + sonar */}
       <div
         style={{
           display: 'flex',

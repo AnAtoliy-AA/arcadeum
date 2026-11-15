@@ -7,6 +7,7 @@ import {
 } from './sea-battle.constants';
 import {
   ShipCell,
+  ScannedCell,
   SeaBattlePlayer,
   Ship,
   SeaBattleState,
@@ -175,6 +176,41 @@ export function sanitizeSeaBattleState(
     sanitized.specialWeaponUsage = myUsage ? { [playerId]: myUsage } : {};
   }
 
+  if (sanitized.scannedCells) {
+    const rawScanned = sanitized.scannedCells as Record<
+      string,
+      Record<string, Record<string, ScannedCell>>
+    >;
+    const targetMap: Record<string, ScannedCell[]> = {};
+
+    if (!isPlaying) {
+      for (const vKey of Object.keys(rawScanned)) {
+        for (const [targetId, cellMap] of Object.entries(
+          rawScanned[vKey] ?? {},
+        )) {
+          if (!targetMap[targetId]) targetMap[targetId] = [];
+          for (const cell of Object.values(cellMap)) {
+            if (
+              !targetMap[targetId].some(
+                (c) => c.row === cell.row && c.col === cell.col,
+              )
+            ) {
+              targetMap[targetId].push(cell);
+            }
+          }
+        }
+      }
+    } else {
+      const viewerKey = viewerTeamId || playerId;
+      const myScans = rawScanned[viewerKey] ?? {};
+      for (const [targetId, cellMap] of Object.entries(myScans)) {
+        targetMap[targetId] = Object.values(cellMap);
+      }
+    }
+
+    sanitized.scannedCells = targetMap;
+  }
+
   return sanitized;
 }
 
@@ -316,4 +352,41 @@ function canPlaceShipOnBoard(
     }
   }
   return true;
+}
+
+export function recordScannedCells(
+  state: SeaBattleState,
+  attackerId: string,
+  targetId: string,
+  cells: Array<{ row: number; col: number; state: CellState }>,
+  source: 'sonar' | 'radar' | 'ability',
+): void {
+  const viewerTeam = state.teams?.find((t) => t.playerIds.includes(attackerId));
+  const viewerKey = viewerTeam?.id || attackerId;
+
+  if (!state.scannedCells) {
+    state.scannedCells = {};
+  }
+
+  const rawScanned = state.scannedCells as Record<
+    string,
+    Record<string, Record<string, ScannedCell>>
+  >;
+
+  if (!rawScanned[viewerKey]) {
+    rawScanned[viewerKey] = {};
+  }
+  if (!rawScanned[viewerKey][targetId]) {
+    rawScanned[viewerKey][targetId] = {};
+  }
+
+  for (const c of cells) {
+    const key = `${c.row},${c.col}`;
+    rawScanned[viewerKey][targetId][key] = {
+      row: c.row,
+      col: c.col,
+      state: c.state,
+      source,
+    };
+  }
 }

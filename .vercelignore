@@ -27,7 +27,8 @@ apps/tg-bot/
 
 # Non-web root files
 bots/
-docs/
+docs/*
+!docs/ROADMAP.md
 /scripts/
 monitoring/
 .github/

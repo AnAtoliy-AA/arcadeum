@@ -333,7 +333,7 @@ export function AnalysisBoard() {
       ? `M${Math.abs(eval_.mate)}`
       : eval_ != null
         ? `${(evalCp / 100).toFixed(1)}`
-        : '—';
+        : '-';
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 w-full max-w-[1100px] mx-auto p-4">

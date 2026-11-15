@@ -246,9 +246,9 @@ export const en = {
         title: 'How We Use Cookies',
         intro: 'We use cookies for the following purposes:',
         items: [
-          'Essential cookies — required for the platform to function correctly (e.g., session management, authentication).',
-          'Preference cookies — remember your language, theme, and layout settings.',
-          'Analytics cookies — help us understand how players use the platform so we can improve it.',
+          'Essential cookies - required for the platform to function correctly (e.g., session management, authentication).',
+          'Preference cookies - remember your language, theme, and layout settings.',
+          'Analytics cookies - help us understand how players use the platform so we can improve it.',
         ],
       },
       thirdParty: {
@@ -324,6 +324,26 @@ export const en = {
         subtitle: 'Board strategy',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Hearts',
+        subtitle: 'Classic trick-taking',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Spades',
+        subtitle: 'Trump trick-taking',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Go',
+        subtitle: 'Territory strategy',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Pachisi',
+        subtitle: 'Classic cross & circle',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Tournament',
@@ -360,13 +380,18 @@ export const en = {
         month: 'Month',
         season: 'Season',
       },
+      opponentTypes: {
+        all: 'All Opponents',
+        pvp: 'PvP (Players)',
+        bot: 'vs Bots (AI)',
+      },
     },
     table: {
       rank: '#',
       player: 'Player',
       region: 'Region',
       rating: 'Rating',
-      record: 'W–L–D',
+      record: 'W-L-D',
       winrate: 'Winrate',
       form: 'Form',
       trend: 'Trend',
@@ -398,7 +423,7 @@ export const en = {
     },
     self: {
       pinned: 'Your rank',
-      unranked: 'Unranked — play 5 ranked games to appear',
+      unranked: 'Unranked - play 5 ranked games to appear',
       share: 'Share',
     },
     loadMore: 'Load more',

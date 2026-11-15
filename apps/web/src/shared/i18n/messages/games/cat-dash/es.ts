@@ -21,18 +21,18 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Cat Dash — juego de carrera de gatos con dados multijugador',
+        title: 'Cat Dash - juego de carrera de gatos con dados multijugador',
         description:
           'Juega Cat Dash online gratis. 2–6 jugadores, gatos únicos, dados + habilidades, cuatro pistas temáticas.',
         keywords:
           'juego de gatos, juego de dados, carrera, multijugador, juego familiar',
       },
       hero: {
-        title: 'Cat Dash — corre con tu gato hacia la victoria',
+        title: 'Cat Dash - corre con tu gato hacia la victoria',
         subtitle:
           'Lanza los dados, esquiva obstáculos y usa las habilidades de los gatos para llegar primero a la meta.',
         ctaQuickplay: 'Jugar vs IA',
-        ctaQuickplayError: 'No se pudo iniciar — intenta de nuevo',
+        ctaQuickplayError: 'No se pudo iniciar - intenta de nuevo',
         createRoom: 'Crear sala',
         browseRooms: 'Ver salas',
       },
@@ -67,18 +67,18 @@ export const esMessages = {
       },
       rules: {
         title: 'Reglas',
-        objective: 'Sé el primer gato en llegar al espacio 20 — la meta.',
+        objective: 'Sé el primer gato en llegar al espacio 20 - la meta.',
         howToPlay: 'En tu turno, haz clic en "Lanzar Dados".',
         abilities:
           'Cada gato tiene 2 habilidades únicas. Gasta tokens de poder (3 por partida).',
         trackSpaces:
-          '🟢 Normal — sin efecto. 🔴 Obstáculo — pierde tu próximo turno. 🟡 Bonusa — lanza de nuevo.',
+          '🟢 Normal - sin efecto. 🔴 Obstáculo - pierde tu próximo turno. 🟡 Bonusa - lanza de nuevo.',
       },
       faq: {
         abilities: {
           question: '¿Qué hacen las habilidades?',
           answer:
-            'Cada gato tiene dos habilidades únicas — una ofensiva y una defensiva.',
+            'Cada gato tiene dos habilidades únicas - una ofensiva y una defensiva.',
         },
         tokens: {
           question: '¿Cómo funcionan los tokens?',
@@ -137,6 +137,7 @@ export const esMessages = {
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando jugadores…',
       minPlayers: 'Mínimo 2 jugadores',
+      meetRacers: 'Conoce a los 6 corredores (Expediente y estadísticas)',
     },
     tutorial: {
       s1: {
@@ -149,7 +150,7 @@ export const esMessages = {
       },
       s3: {
         title: 'Gasta fichas con cabeza',
-        body: 'Cada gato tiene dos habilidades únicas — gasta tus tres fichas de poder en el momento justo.',
+        body: 'Cada gato tiene dos habilidades únicas - gasta tus tres fichas de poder en el momento justo.',
       },
       s4: {
         title: 'Final de foto',
@@ -165,7 +166,7 @@ export const esMessages = {
         'En tu turno, haz clic en "Lanzar Dados". Dado estándar de 6 caras.',
       trackSpacesTitle: 'Casillas de la Pista',
       trackSpaces:
-        '🟢 Normal. 🔴 Obstáculo — pierde turno. 🟡 Bonusa — lanza de nuevo. 🔵 Bifurcación — elige camino.',
+        '🟢 Normal. 🔴 Obstáculo - pierde turno. 🟡 Bonusa - lanza de nuevo. 🔵 Bifurcación - elige camino.',
       abilitiesTitle: 'Habilidades',
       abilities:
         'Cada gato tiene 2 habilidades. Usa tokens de poder (3 por partida).',
@@ -173,13 +174,14 @@ export const esMessages = {
       cats: '🐱 Gato Neón: Dash Digital + Escudo Neón. 🐱bigotes: Vida Extra + Poder de Ronroneo. 🐱 Polvo Estelar: Salto Warp + Escudo Estelar. 🐱 Felix: Camino de la Naturaleza + Carga Salvaje.',
       trackTypesTitle: 'Tipos de Pista',
       trackTypes:
-        'Lineal — carrera directa. Circular — atajos y obstáculos. Múltiples caminos — bifurcaciones.',
+        'Lineal - carrera directa. Circular - atajos y obstáculos. Múltiples caminos - bifurcaciones.',
     },
     gameOver: {
       won: '¡Ganaste!',
       lost: 'Perdiste.',
       draw: 'Empate.',
       you: 'Tú',
+      winnerIs: '¡{{name}} gana!',
       messages: {
         won: '¡Tu gato cruzó la meta primero! ¿Otra carrera?',
         lost: 'Otro gato ganó. ¿Revancha?',
@@ -193,6 +195,14 @@ export const esMessages = {
       rematch: 'Revancha',
       leave: 'Salir',
       forfeit: 'Rendirse',
+      catnap: 'Siesta',
+      pounce: 'Abalanzarse',
+      deployTrap: 'Trampa con hierba',
+      rollTitle: 'Lanzar y correr',
+      catnapDesc: 'Descansa para ganar +1 Poder y un Escudo protector',
+      pounceDesc: 'Salta 2 casillas con agilidad felina (Cuesta 1 Poder)',
+      deployTrapDesc:
+        'Coloca una trampa para ralentizar rivales (Cuesta 1 Poder)',
     },
     chat: {
       rolled: '{{name}} lanzó {{roll}} y avanzó {{move}} espacios.',
@@ -211,6 +221,46 @@ export const esMessages = {
       turn: '{{player}} lanzando…',
       winner: '¡{{name}} ganó la carrera!',
       draw: 'Empate',
+    },
+    dashboard: {
+      raceProgress: 'Progreso de carrera',
+      leaderboard: 'Clasificación',
+      finishLine: 'Meta',
+      leading: 'Líder',
+      leadsBy: '{{name}} lidera por {{count}} casillas',
+      inLead: '1.er lugar',
+      rank: 'Puesto {{rank}}',
+      spaceProgress: 'Casilla {{current}} / {{total}}',
+      powerTokens: '{{count}} Poder',
+      rollNow: 'Lanzar dado',
+      lastRoll: 'Último tiro: {{value}}',
+      rolledMoved: 'Tiró {{roll}} (+{{move}} casillas)',
+      yourTurnToRoll: '¡Tu turno de lanzar!',
+      waitingForPlayer: 'Esperando a que {{name}} lance...',
+      recentEvents: 'Eventos en vivo',
+      commandDeck: 'Consola de carrera',
+      tacticalDeck: 'Acciones tácticas',
+      activeBuffs: 'Modificadores activos',
+      shieldActive: 'Escudo activo',
+      speedPrimed: '+3 Velocidad lista',
+      apexPrimed: 'Precisión Apex (4)',
+      powerTokensCount: '{{count}}/3 Poder',
+      pressSpace: 'Presiona ESPACIO para lanzar',
+      distanceToFinish: '{{count}} casillas a la meta',
+      inspectRoster: 'Expediente de pilotos',
+      rolling: 'Tirando dados...',
+      used: 'Usado',
+      turnBadge: 'Turno',
+      raceInProgress: 'Carrera en progreso...',
+    },
+    board: {
+      start: 'Salida',
+      finish: 'Meta',
+      obstacle: 'Obstáculo',
+      bonus: 'Bonus',
+      trap: 'Trampa',
+      startUpper: 'SALIDA',
+      finishUpper: 'META',
     },
   },
 };

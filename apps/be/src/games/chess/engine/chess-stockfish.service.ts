@@ -125,10 +125,16 @@ export class ChessStockfishService implements OnModuleDestroy {
   onModuleDestroy() {
     for (const inst of this.instances) {
       try {
-        inst.process.stdin?.write('quit\n');
+        if (
+          !inst.process.killed &&
+          inst.process.stdin &&
+          !inst.process.stdin.destroyed
+        ) {
+          inst.process.stdin.write('quit\n', () => {});
+        }
         inst.process.kill();
-      } catch {
-        // ignore
+      } catch (err) {
+        void err;
       }
     }
     this.instances.length = 0;
@@ -265,6 +271,7 @@ export class ChessStockfishService implements OnModuleDestroy {
       const proc = spawn(this.binaryPath, [], {
         stdio: ['pipe', 'pipe', 'pipe'],
       });
+      proc.stdin?.on('error', () => {});
 
       const instance: EngineInstance = {
         process: proc,

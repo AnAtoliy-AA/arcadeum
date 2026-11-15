@@ -26,6 +26,9 @@ import {
 } from './schemas/tournament.schema';
 import type { PublicTournamentsListResponse } from './interfaces/tournament.interface';
 
+import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
+import type { SeaBattleBlitzCupResponse } from './sea-battle-blitz/sea-battle-blitz.types';
+
 interface RequestWithUser {
   user?: AuthenticatedUser | null;
 }
@@ -62,6 +65,7 @@ export class PublicTournamentsController {
   constructor(
     private readonly service: TournamentsService,
     private readonly bracketsService: TournamentsBracketsService,
+    private readonly blitzService: SeaBattleBlitzService,
   ) {}
 
   @Get()
@@ -79,6 +83,28 @@ export class PublicTournamentsController {
       'public, max-age=60, stale-while-revalidate=300',
     );
     return this.service.listPublic(
+      locale,
+      isAuthenticated,
+      isAuthenticated ? req.user?.userId : undefined,
+      query.gameType,
+    );
+  }
+
+  @Get('sea-battle/blitz-cup')
+  @UseGuards(JwtOptionalAuthGuard)
+  async getSeaBattleBlitzCup(
+    @Query() query: ListPublicTournamentsDto,
+    @Headers('accept-language') acceptLanguage: string | undefined,
+    @Req() req: RequestWithUser,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<SeaBattleBlitzCupResponse> {
+    const locale = query.locale ?? pickLocaleFromHeader(acceptLanguage);
+    const isAuthenticated = isAuthenticatedUser(req.user);
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=15, stale-while-revalidate=60',
+    );
+    return this.blitzService.getSeaBattleBlitzCup(
       locale,
       isAuthenticated,
       isAuthenticated ? req.user?.userId : undefined,

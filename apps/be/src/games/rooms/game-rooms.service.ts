@@ -140,6 +140,7 @@ export class GameRoomsService {
     const page = filters.page || 0;
     const limit = filters.limit || 10;
 
+    void this.gameRoomsRematchService.expireStaleRematches();
     const query = GameRoomsQueryBuilder.buildListQuery(filters);
 
     // Cursor-based pagination: use _id as cursor for O(1) page lookups
@@ -239,6 +240,10 @@ export class GameRoomsService {
     if (!room) {
       throw new NotFoundException(`Room not found: ${dto.roomId}`);
     }
+    if (
+      ((room.gameOptions?.rematchInvitedIds as string[]) || []).includes(userId)
+    )
+      throw new ForbiddenException('Accept the rematch invitation first');
 
     // Check if already a participant (allow rejoining even if game started)
     const isParticipant = isRoomParticipant(room.participants, userId);
@@ -347,7 +352,6 @@ export class GameRoomsService {
       kicked: !!dto.kickedBy,
     };
   }
-
   async deleteRoom(
     dto: DeleteGameRoomDto,
     userId: string,
@@ -373,7 +377,6 @@ export class GameRoomsService {
       deleted: true,
     };
   }
-
   async updateRoomStatus(
     roomId: string,
     status: GameRoomStatus,
@@ -391,14 +394,12 @@ export class GameRoomsService {
 
     return room;
   }
-
   async getRoomParticipants(roomId: string): Promise<string[]> {
     const room = await loadRoomEntity(this.ociRoomModel, roomId, {
       lean: true,
     });
     return getRoomParticipantIds(room);
   }
-
   async getRoomRaw(roomId: string): Promise<GameRoom | null> {
     return this.ociRoomModel
       .findById(roomId)
@@ -425,7 +426,6 @@ export class GameRoomsService {
     await room.save();
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
-
   async reorderParticipants(
     roomId: string,
     userId: string,
@@ -439,36 +439,6 @@ export class GameRoomsService {
     await room.save();
     return this.gameRoomsMapper.prepareRoomSummary(room, userId);
   }
-
-  async declineRematchInvitation(
-    roomId: string,
-    userId: string,
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.declineRematchInvitation(
-      roomId,
-      userId,
-    );
-  }
-
-  async blockRematchRoom(
-    roomId: string,
-    userId: string,
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.blockRematchRoom(roomId, userId);
-  }
-
-  async reinviteRematchPlayers(
-    roomId: string,
-    hostId: string,
-    userIds: string[],
-  ): Promise<GameRoomSummary> {
-    return this.gameRoomsRematchService.reinviteRematchPlayers(
-      roomId,
-      hostId,
-      userIds,
-    );
-  }
-
   async postRoomChat(
     roomId: string,
     userId: string,
@@ -484,7 +454,6 @@ export class GameRoomsService {
       scope,
     );
   }
-
   async deleteRoomChatMessage(
     roomId: string,
     callerId: string,

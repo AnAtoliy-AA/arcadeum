@@ -1,8 +1,8 @@
 export type PlayerAvatarSize = 'icon' | 'sm' | 'md' | 'lg' | 'card' | 'profile';
 
 export const DISC_SIZE: Record<PlayerAvatarSize, number> = {
-  icon: 28,
-  sm: 40,
+  icon: 32,
+  sm: 44,
   md: 72,
   lg: 140,
   card: 140,
@@ -10,8 +10,8 @@ export const DISC_SIZE: Record<PlayerAvatarSize, number> = {
 };
 
 export const BADGE_SIZE: Record<PlayerAvatarSize, number> = {
-  icon: 12,
-  sm: 14,
+  icon: 14,
+  sm: 16,
   md: 24,
   lg: 44,
   card: 44,

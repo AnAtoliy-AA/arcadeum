@@ -161,7 +161,6 @@ export class GamesService {
   async leaveRoom(dto: LeaveGameRoomDto, userId: string) {
     const result = await this.roomsService.leaveRoom(dto, userId);
 
-    // Remove player from session if exists
     if (!result.deleted) {
       const session = await this.sessionsService.findSessionByRoom(dto.roomId);
       if (session) {
@@ -169,26 +168,21 @@ export class GamesService {
           session.id,
           userId,
         );
-        // Sync status if game completed via leave/forfeit
         if (updatedSession.status === 'completed') {
           await this.roomsService.updateRoomStatus(dto.roomId, 'completed');
           const remaining = await this.roomsService.getRoomParticipants(
             dto.roomId,
           );
           await this.leaderboardSync.syncInMatch(remaining, false);
-          // Archive completed session to Atlas
           await this.archiveService.archiveSessionToAtlas(updatedSession);
         } else if (updatedSession.status === 'active') {
-          // Archive active session to Atlas before player exit
           await this.archiveService.archiveSessionToAtlas(updatedSession);
-          // Delete from OCI (free up resources, player can rejoin from Atlas)
           await this.archiveService.deleteSessionFromOci(updatedSession.id);
         }
       }
     }
     await this.leaderboardSync.syncInMatch([userId], false);
 
-    // Emit real-time event
     this.realtimeService.emitPlayerLeft(
       result.room,
       userId,
@@ -201,10 +195,7 @@ export class GamesService {
 
   async deleteRoom(dto: DeleteGameRoomDto, userId: string) {
     const result = await this.roomsService.deleteRoom(dto, userId);
-
-    // Emit real-time event
     this.realtimeService.emitRoomDeleted(dto.roomId);
-
     return result;
   }
 
@@ -213,7 +204,6 @@ export class GamesService {
     userId: string,
   ): Promise<StartGameSessionResult> {
     const { roomId } = dto;
-
     const room = await this.roomsService.getRoom(roomId, userId);
 
     if (room.hostId !== userId) {
@@ -232,10 +222,8 @@ export class GamesService {
     await this.roomsService.updateRoomStatus(roomId, 'in_progress');
     const updatedRoom = { ...room, status: 'in_progress' as const };
 
-    // Mark players as in-match for the leaderboard LIVE chip.
     await this.leaderboardSync.syncInMatch(playerIds, true);
 
-    // Emit real-time event
     await this.realtimeService.emitGameStarted(updatedRoom, session, (s, pId) =>
       sanitizeSessionForPlayer(this.sessionsService, s, pId),
     );
@@ -343,8 +331,18 @@ export class GamesService {
     return this.historyFacade.syncPlayerStats(userId, records);
   }
 
-  async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
-    return this.historyFacade.getLeaderboard(limit, offset, gameId);
+  async getLeaderboard(
+    limit?: number,
+    offset?: number,
+    gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
+  ) {
+    return this.historyFacade.getLeaderboard(
+      limit,
+      offset,
+      gameId,
+      opponentType,
+    );
   }
 
   async getHeadToHead(userId1: string, userId2: string, gameId?: string) {
@@ -360,29 +358,13 @@ export class GamesService {
     roomId: string,
     participantIds: string[],
     options?: RematchHistoryOptions,
-  ) {
+  ): Promise<{ id: string; pending: boolean; pendingUserIds: string[] }> {
     return this.historyFacade.createRematchFromHistory(
       userId,
       roomId,
       participantIds,
       options,
     );
-  }
-
-  async declineInvitation(roomId: string, userId: string): Promise<void> {
-    return this.historyFacade.declineInvitation(roomId, userId);
-  }
-
-  async blockRematchRoom(roomId: string, userId: string): Promise<void> {
-    return this.historyFacade.blockRematchRoom(roomId, userId);
-  }
-
-  async reinvitePlayers(
-    roomId: string,
-    hostId: string,
-    userIds: string[],
-  ): Promise<void> {
-    return this.historyFacade.reinvitePlayers(roomId, hostId, userIds);
   }
 
   async postHistoryNote(

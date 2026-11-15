@@ -1,4 +1,4 @@
-import { CardsIcon, SkullIcon, IdleBadge, Typography } from '@arcadeum/ui';
+import { CardsIcon, SkullIcon, IdleBadge } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalPlayerTableState, CriticalLogEntry } from '../../types';
 import { getPlayerColor } from '@/shared/lib/playerColors';
@@ -135,11 +135,8 @@ export function OpponentTile({
   // to its natural content height (see `flex={0}` below) so a larger disc
   // grows the card instead of overflowing it.
   const avatarSizeName: 'sm' | 'md' = isMobile ? 'sm' : 'md';
-  const discSize = avatarSizeName === 'md' ? 72 : 40;
-  const bubbleSize = discSize + 8;
-  // Keep `playerColor` on the avatar border at low opacity when dead so
-  // the eliminated seat still reads as that player rather than a generic
-  // grey pill. `66` ≈ 40% alpha against the hex base.
+  const discSize = isMobile ? 36 : 48;
+  const bubbleSize = discSize + 6;
   const avatarBorderColor = alive ? playerColor : `${playerColor}66`;
   const interactive = alive && !!onSelect;
   const handleKeyDown = interactive
@@ -151,11 +148,6 @@ export function OpponentTile({
       }
     : undefined;
 
-  // Outer non-interactive wrapper hosts the chat bubble + Sea Battle
-  // popup, so clicking the popup's Challenge button isn't nested inside
-  // the inner `role="button"` tile (which steals the click via `onPress`
-  // and blocks the popup's `router.push` from firing). The tile itself
-  // is the only press target.
   return (
     <div
       className="flex flex-col items-stretch relative shrink-0"
@@ -178,15 +170,15 @@ export function OpponentTile({
         </>
       )}
       <div
-        className={`flex flex-col relative items-center gap-1 px-2 py-2 rounded-[12px] border bg-[rgba(12,17,28,0.92)] z-[100] flex-[0] shrink-0 ${interactive ? 'transition-colors duration-150 hover:border-[#f472b6]' : ''}`}
+        className={`flex flex-col relative items-center gap-0.5 px-2 py-1.5 rounded-[12px] border bg-[rgba(12,17,28,0.92)] z-[100] flex-[0] shrink-0 ${interactive ? 'transition-colors duration-150 hover:border-[#f472b6]' : ''}`}
         style={{
           cursor: interactive ? 'pointer' : 'default',
           borderStyle: ringStyle,
           borderColor: ringColor,
-          width: isDuel ? (isMobile ? 180 : 240) : '100%',
-          maxWidth: isDuel ? (isMobile ? 180 : 240) : 180,
-          minWidth: isMobile ? 96 : 120,
-          minHeight: bubbleSize + 64,
+          width: isDuel ? (isMobile ? 120 : 160) : '100%',
+          maxWidth: isDuel ? (isMobile ? 120 : 160) : isMobile ? 104 : 140,
+          minWidth: isMobile ? 76 : 100,
+          minHeight: bubbleSize + 40,
           opacity: alive ? 1 : 0.6,
         }}
         onClick={interactive ? onSelect : undefined}
@@ -226,38 +218,34 @@ export function OpponentTile({
             <SkullIcon size={Math.round(discSize * 0.55)} />
           )}
         </div>
-        <div className="flex flex-row items-center gap-4 max-w-full">
-          <Typography
-            uiSize="xs"
-            weight="700"
-            className="tracking-[0.3px] line-clamp-1"
+        <div className="flex flex-row items-center gap-1 max-w-full">
+          <span
+            className="text-xs font-bold tracking-[0.3px] line-clamp-1 text-slate-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
             style={{ maxWidth: isMobile ? 80 : 100 }}
             data-testid={`player-name-${player.playerId}`}
           >
             {displayName}
-          </Typography>
+          </span>
           {isIdle && <IdleBadge />}
         </div>
         {alive ? (
           <div
-            className="flex flex-row items-center gap-4 opacity-[0.85]"
+            className="flex flex-row items-center gap-1 text-slate-200"
             data-testid={`player-stats-count-${player.playerId}`}
           >
             <CardsIcon size={11} />
-            <Typography uiSize="xs" weight="800" className="tracking-[0.4px]">
+            <span className="text-xs font-extrabold tracking-[0.4px] text-slate-200">
               {player.hand.length}
-            </Typography>
+            </span>
           </div>
         ) : (
-          <Typography
-            uiSize="xs"
-            weight="800"
-            className="uppercase tracking-[1px]"
+          <span
+            className="text-xs font-extrabold uppercase tracking-[1px]"
             style={{ color: ELIMINATED_RING }}
             data-testid={`player-eliminated-label-${player.playerId}`}
           >
             {t('games.table.players.eliminated')}
-          </Typography>
+          </span>
         )}
       </div>
     </div>

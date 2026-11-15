@@ -4,7 +4,7 @@ export const esMessages = {
     description:
       'Damas clásicas 8×8 con capturas obligatorias, salto múltiple y promoción de rey',
     summary:
-      'Juego de mesa estratégico — ¡captura las piezas del oponente y llega al otro lado para convertirte en rey!',
+      'Juego de mesa estratégico - ¡captura las piezas del oponente y llega al otro lado para convertirte en rey!',
     variants: {
       classic: { name: 'Clásico', description: 'Tablero de damas tradicional' },
       neon: { name: 'Neón', description: 'Estética neón brillante' },
@@ -14,7 +14,7 @@ export const esMessages = {
     },
     landing: {
       meta: {
-        title: 'Damas — Juego de Mesa Multijugador Gratis | Arcadeum',
+        title: 'Damas - Juego de Mesa Multijugador Gratis | Arcadeum',
         description:
           'Juega damas online gratis en Arcadeum. Tablero clásico 8×8 con capturas obligatorias, salto múltiple, promoción de rey y oponentes IA.',
         keywords:
@@ -175,7 +175,7 @@ export const esMessages = {
       backwardCaptures:
         'En algunos conjuntos de reglas, las piezas normales (damas) pueden capturar piezas del oponente detrás de ellas.\nLas damas siempre se mueven hacia adelante, pero pueden capturar en cualquier dirección diagonal cuando las capturas hacia atrás están habilitadas.\nEsta opción siempre está activa en las reglas internacionales y se puede configurar en otras variantes.',
       forcedCaptures:
-        'Si hay una captura disponible, el jugador debe tomarla.\nSi hay múltiples capturas disponibles, el jugador debe elegir una.\nUna cadena de saltos múltiples debe completarse en su totalidad — no puedes detenerte si hay más capturas disponibles.',
+        'Si hay una captura disponible, el jugador debe tomarla.\nSi hay múltiples capturas disponibles, el jugador debe elegir una.\nUna cadena de saltos múltiples debe completarse en su totalidad - no puedes detenerte si hay más capturas disponibles.',
       winConditions:
         'Ganas cuando:\n• Capturas todas las piezas del oponente\n• El oponente no tiene movimientos legales en su turno\n\nPierdes cuando:\n• Todas tus piezas son capturadas\n• No tienes movimientos legales en tu turno\n\nEl juego es EMPATE cuando ambos jugadores solo tienen reyes con material igual y ninguno puede forzar una victoria.',
     },

@@ -240,9 +240,9 @@ export const es = {
         title: 'Cómo Usamos las Cookies',
         intro: 'Utilizamos cookies para los siguientes fines:',
         items: [
-          'Cookies esenciales — necesarias para el correcto funcionamiento de la plataforma.',
-          'Cookies de preferencias — recuerdan tu idioma, tema y configuración.',
-          'Cookies analíticas — nos ayudan a mejorar la plataforma.',
+          'Cookies esenciales - necesarias para el correcto funcionamiento de la plataforma.',
+          'Cookies de preferencias - recuerdan tu idioma, tema y configuración.',
+          'Cookies analíticas - nos ayudan a mejorar la plataforma.',
         ],
       },
       thirdParty: {
@@ -322,6 +322,26 @@ export const es = {
         subtitle: 'Estrategia de tablero',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Corazones',
+        subtitle: 'Juego de cartas',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Picas',
+        subtitle: 'Juego de bazas',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Go',
+        subtitle: 'Estrategia de tablero',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Pachisi',
+        subtitle: 'Carrera de fichas',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Torneo',
@@ -359,13 +379,18 @@ export const es = {
         month: 'Mes',
         season: 'Temporada',
       },
+      opponentTypes: {
+        all: 'Todos los rivales',
+        pvp: 'PvP (Jugadores)',
+        bot: 'vs Bots (IA)',
+      },
     },
     table: {
       rank: '#',
       player: 'Jugador',
       region: 'Región',
       rating: 'Puntuación',
-      record: 'V–D–E',
+      record: 'V-D-E',
       winrate: 'Ratio',
       form: 'Forma',
       trend: 'Tendencia',
@@ -397,7 +422,7 @@ export const es = {
     },
     self: {
       pinned: 'Tu rango',
-      unranked: 'Sin clasificar — juega 5 partidas clasificadas para aparecer',
+      unranked: 'Sin clasificar - juega 5 partidas clasificadas para aparecer',
       share: 'Compartir',
     },
     loadMore: 'Cargar más',

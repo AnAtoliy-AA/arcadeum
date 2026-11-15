@@ -9,7 +9,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 export const alt =
-  'Cascade — multiplayer shedding card game with stacking penalty chains on Arcadeum';
+  'Cascade - multiplayer shedding card game with stacking penalty chains on Arcadeum';
 
 type Props = { params: Promise<{ locale: string }> };
 

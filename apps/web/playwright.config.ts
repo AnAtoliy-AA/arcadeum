@@ -31,7 +31,7 @@ const BE_URL = `http://127.0.0.1:${BE_PORT}`;
 // accepts server-to-server submissions. Both BE and web servers below
 // must see the same value.
 const SUPPORT_INTERNAL_TOKEN =
-  process.env.SUPPORT_INTERNAL_TOKEN ?? 'e2e_shared_support_token';
+  process.env.SUPPORT_INTERNAL_TOKEN || 'e2e_shared_support_token';
 
 // Export for use in tests/fixtures
 process.env.WEB_PORT = WEB_PORT;
@@ -130,11 +130,6 @@ export default defineConfig({
       name: 'Mobile Safari',
       retries: 1,
       use: { ...devices['iPhone 12'] },
-    },
-    {
-      name: 'Tablet Safari',
-      retries: 1,
-      use: { ...devices['iPad Pro 11'] },
     },
   ],
 

@@ -6,8 +6,8 @@ const APP = appConfig.appName;
 
 export const es: DeepPartial<SeoMessages> = {
   home: {
-    title: `${APP} — Juegos de mesa, cartas y minijuegos gratis online`,
-    description: `Juega gratis a juegos de mesa, juegos de cartas y minijuegos multijugador con amigos en ${APP}. Ajedrez, Batalla Naval, Damas, Cascade, 2048 y más — crea una sala y juega en tu navegador. Sin descargas.`,
+    title: `${APP} - Juegos de mesa, cartas y minijuegos gratis online`,
+    description: `Juega gratis a juegos de mesa, juegos de cartas y minijuegos multijugador con amigos en ${APP}. Ajedrez, Batalla Naval, Damas, Cascade, 2048 y más - crea una sala y juega en tu navegador. Sin descargas.`,
     badge: 'Juega con amigos o con IA',
   },
   games: {
@@ -24,84 +24,84 @@ export const es: DeepPartial<SeoMessages> = {
   },
   gameRoom: {
     title: `Sala de juego · ${APP}`,
-    description: `Únete a una sala en vivo en ${APP}, toma asiento y empieza a jugar — o conviértete en espectador.`,
+    description: `Únete a una sala en vivo en ${APP}, toma asiento y empieza a jugar - o conviértete en espectador.`,
   },
   criticalLanding: {
     title: `Critical · Juego de cartas explosivo gratis en línea · ${APP}`,
-    description: `Juega gratis a Critical en línea en ${APP} — un juego de cartas estratégico donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos. Sin descarga, sin registro.`,
+    description: `Juega gratis a Critical en línea en ${APP} - un juego de cartas estratégico donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos. Sin descarga, sin registro.`,
   },
   glimwormLanding: {
     title: `Glimworm · Juego de serpientes en arena gratis · ${APP}`,
-    description: `Juega gratis a Glimworm en línea en ${APP} — un juego de arena de gusanos luminosos en tiempo real para hasta 10 jugadores. Desliza, sobrevive, come las luces. Desde el navegador, sin descarga.`,
+    description: `Juega gratis a Glimworm en línea en ${APP} - un juego de arena de gusanos luminosos en tiempo real para hasta 10 jugadores. Desliza, sobrevive, come las luces. Desde el navegador, sin descarga.`,
   },
   ticTacToeLanding: {
     title: `Tres en raya · Multijugador · Tableros 3×3 – 9×9 · ${APP}`,
-    description: `Juega al tres en raya multijugador en ${APP} — seis variantes temáticas, 2–4 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin descarga.`,
+    description: `Juega al tres en raya multijugador en ${APP} - seis variantes temáticas, 2–4 jugadores, modo equipos opcional, bots desde el primer día. Gratis, salas instantáneas, sin descarga.`,
   },
   cascadeLanding: {
     title: `Cascade · Juego de cartas multijugador de descarte · ${APP}`,
-    description: `Juega a Cascade en ${APP} — un juego de cartas de descarte con cadenas de Roba-Dos y Comodín +4 y cuatro temas visuales. 2–10 jugadores, salas instantáneas gratis, sin descarga.`,
+    description: `Juega a Cascade en ${APP} - un juego de cartas de descarte con cadenas de Roba-Dos y Comodín +4 y cuatro temas visuales. 2–10 jugadores, salas instantáneas gratis, sin descarga.`,
   },
   chessLanding: {
     title: `Ajedrez · Multijugador · Estándar y Chess960 · ${APP}`,
-    description: `Juega ajedrez en ${APP} — variantes estándar y Chess960, controles de tiempo, bots IA. Gratis, salas instantáneas, sin descargas.`,
+    description: `Juega ajedrez en ${APP} - variantes estándar y Chess960, controles de tiempo, bots IA. Gratis, salas instantáneas, sin descargas.`,
   },
   checkersLanding: {
     title: `Damas · Multijugador · ${APP}`,
-    description: `Juega damas en ${APP} — tablero 8×8 con capturas forzadas, saltos múltiples y promoción a rey. Gratis, salas instantáneas.`,
+    description: `Juega damas en ${APP} - tablero 8×8 con capturas forzadas, saltos múltiples y promoción a rey. Gratis, salas instantáneas.`,
   },
   catDashLanding: {
     title: `Cat Dash · Carrera de gatos multijugador · ${APP}`,
-    description: `Juega Cat Dash en ${APP} — carreras de gatos con dados, habilidades únicas y pistas temáticas. 2–6 jugadores, gratis.`,
+    description: `Juega Cat Dash en ${APP} - carreras de gatos con dados, habilidades únicas y pistas temáticas. 2–6 jugadores, gratis.`,
   },
   pachisiLanding: {
     title: `Pachisi (Ludo) · Juego de mesa de carrera gratis · ${APP}`,
-    description: `Juega Pachisi en línea en ${APP} — saca un seis, captura rivales, esquiva peligros y lleva tus cuatro fichas a casa. 2–4 jugadores, bots IA, salas gratis.`,
+    description: `Juega Pachisi en línea en ${APP} - saca un seis, captura rivales, esquiva peligros y lleva tus cuatro fichas a casa. 2–4 jugadores, bots IA, salas gratis.`,
   },
   backgammonLanding: {
     title: `Backgammon · Juego de mesa multijugador gratis · ${APP}`,
-    description: `Juega Backgammon en línea en ${APP} — tablero clásico de 24 puntos, dados, capturas al bar y bots IA. Gratis, sin descargas.`,
+    description: `Juega Backgammon en línea en ${APP} - tablero clásico de 24 puntos, dados, capturas al bar y bots IA. Gratis, sin descargas.`,
   },
   heartsLanding: {
     title: `Corazones · Juego de cartas multijugador gratis · ${APP}`,
-    description: `Juega Corazones en línea en ${APP} — clásico juego de cartas de 4 jugadores con pass, Corazones, Reina de Espadas y oponentes IA. Gratis.`,
+    description: `Juega Corazones en línea en ${APP} - clásico juego de cartas de 4 jugadores con pass, Corazones, Reina de Espadas y oponentes IA. Gratis.`,
   },
   spadesLanding: {
     title: `Espadas · Juego de cartas multijugador gratis · ${APP}`,
-    description: `Juega Espadas en línea en ${APP} — clásico juego de cartas por parejas de 4 jugadores con apuestas, Nil, bolsas y oponentes IA. Gratis.`,
+    description: `Juega Espadas en línea en ${APP} - clásico juego de cartas por parejas de 4 jugadores con apuestas, Nil, bolsas y oponentes IA. Gratis.`,
   },
   seaBattleLanding: {
     title: `Batalla Naval Online Gratis (Hundir la Flota) · ${APP}`,
     description: `Juega a Batalla Naval online gratis en ${APP}. Partida rápida contra el bot, busca oponente o invita a tus amigos a una sala privada sin descargas.`,
   },
   battleshipLanding: {
-    title: `Batalla Naval Online — Juega Gratis con Amigos o IA · ${APP}`,
+    title: `Batalla Naval Online - Juega Gratis con Amigos o IA · ${APP}`,
     description: `Juega a Batalla Naval online gratis en ${APP}. Partida rápida contra el bot, encuentra un oponente o invita a amigos a una sala privada en una cuadrícula 10×10.`,
   },
   goLanding: {
     title: `Go · Juego de Tablero Multijugador Online Gratis · ${APP}`,
-    description: `Juega al Go online en ${APP} — Baduk/Weiqi clásico en tableros de 9×9, 13×13 y 19×19 con capturas, regla de ko, puntuación por área e IA. Salas instantáneas gratis.`,
+    description: `Juega al Go online en ${APP} - Baduk/Weiqi clásico en tableros de 9×9, 13×13 y 19×19 con capturas, regla de ko, puntuación por área e IA. Salas instantáneas gratis.`,
   },
 
   solitaireLanding: {
     title: `Solitario · Juego de Cartas Klondike Gratis Online · ${APP}`,
-    description: `Juega al Solitario (Klondike) online en ${APP} — el rompecabezas de cartas clásico para un jugador con puntuación, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
+    description: `Juega al Solitario (Klondike) online en ${APP} - el rompecabezas de cartas clásico para un jugador con puntuación, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
   },
   minesweeperLanding: {
     title: `Buscaminas · Juego de Rompecabezas Clásico Gratis Online · ${APP}`,
-    description: `Juega al Buscaminas online en ${APP} — tableros de principiante a experto con banderas, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
+    description: `Juega al Buscaminas online en ${APP} - tableros de principiante a experto con banderas, cronómetro y progreso guardado. Gratis, instantáneo, sin descarga.`,
   },
   minesweeperPlay: {
     title: `Jugar Buscaminas · ${APP}`,
-    description: `Juega al Buscaminas en ${APP} — revela casillas seguras, marca minas y limpia el tablero. De principiante a experto, gratis.`,
+    description: `Juega al Buscaminas en ${APP} - revela casillas seguras, marca minas y limpia el tablero. De principiante a experto, gratis.`,
   },
   sudokuLanding: {
     title: `Sudoku · Juego de Rompecabezas Numérico Gratis Online · ${APP}`,
-    description: `Juega al Sudoku online en ${APP} — niveles fácil, medio y difícil con solución única, notas a lápiz y progreso guardado. Gratis, instantáneo, sin descarga.`,
+    description: `Juega al Sudoku online en ${APP} - niveles fácil, medio y difícil con solución única, notas a lápiz y progreso guardado. Gratis, instantáneo, sin descarga.`,
   },
   game2048Landing: {
     title: `2048 · Juego de Rompecabezas de Fichas Gratis Online · ${APP}`,
-    description: `Juega al 2048 online en ${APP} — desliza y fusiona fichas numeradas en una cuadrícula 4×4, bate tu récord y sigue más allá del 2048. Gratis, instantáneo, sin descarga.`,
+    description: `Juega al 2048 online en ${APP} - desliza y fusiona fichas numeradas en una cuadrícula 4×4, bate tu récord y sigue más allá del 2048. Gratis, instantáneo, sin descarga.`,
   },
   settings: {
     title: `Ajustes · ${APP}`,
@@ -169,7 +169,7 @@ export const es: DeepPartial<SeoMessages> = {
   },
   notes: {
     title: `Mensajes de la comunidad · ${APP}`,
-    description: `Lee los mensajes de apoyo de la comunidad de ${APP} — y añade el tuyo si has contribuido al proyecto.`,
+    description: `Lee los mensajes de apoyo de la comunidad de ${APP} - y añade el tuyo si has contribuido al proyecto.`,
   },
   chats: {
     title: `Chats · ${APP}`,
@@ -229,7 +229,7 @@ export const es: DeepPartial<SeoMessages> = {
   },
   features: {
     title: `Características de la Plataforma · ${APP}`,
-    description: `Descubre todas las características de ${APP} — 20+ juegos multijugador, rankings, funciones sociales, economía, seguridad y SEO.`,
+    description: `Descubre todas las características de ${APP} - 20+ juegos multijugador, rankings, funciones sociales, economía, seguridad y SEO.`,
   },
   admin: {
     title: `Admin · ${APP}`,

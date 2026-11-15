@@ -42,7 +42,7 @@ export function validatePlaceStone(
   if (!legality.ok) {
     const messages: Record<string, string> = {
       occupied: 'That intersection is already occupied.',
-      ko: 'Ko rule — that recapture must wait one turn.',
+      ko: 'Ko rule: that recapture must wait one turn.',
       suicide: 'Suicide moves are not allowed.',
     };
     return {

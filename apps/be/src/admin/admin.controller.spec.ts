@@ -6,6 +6,7 @@ import { App } from 'supertest/types';
 import { AdminController } from './admin.controller';
 import { AdminStatisticsService } from './admin-statistics.service';
 import { GamesRealtimeService } from '../games/games.realtime.service';
+import { AdminClusterService } from './admin-cluster.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
@@ -22,6 +23,19 @@ describe('AdminController (integration)', () => {
     getStatistics: jest.fn().mockResolvedValue({
       timestamp: '2026-08-24T00:00:00.000Z',
       users: { totalUsers: 50 },
+    }),
+  };
+  const mockClusterService = {
+    getClusterStatus: jest.fn().mockResolvedValue({
+      isPm2: true,
+      targetApp: 'arcadeum-be',
+      instances: [],
+      timestamp: 123456,
+    }),
+    reloadCluster: jest.fn().mockResolvedValue({
+      ok: true,
+      message: 'Reloaded',
+      timestamp: 123456,
     }),
   };
 
@@ -47,6 +61,10 @@ describe('AdminController (integration)', () => {
         {
           provide: AdminStatisticsService,
           useValue: mockStatisticsService,
+        },
+        {
+          provide: AdminClusterService,
+          useValue: mockClusterService,
         },
         {
           provide: GamesRealtimeService,
@@ -106,14 +124,22 @@ describe('AdminController (integration)', () => {
     expect(res.body).toEqual({ ok: true });
   });
 
-  it('returns 200 and statistics payload for GET /admin/statistics', async () => {
+  it('returns 200 and cluster status for GET /admin/cluster-status', async () => {
     mockRole('admin');
     const res = await request(app.getHttpServer())
-      .get('/admin/statistics')
+      .get('/admin/cluster-status')
       .expect(200);
-    expect(res.body).toEqual({
-      timestamp: '2026-08-24T00:00:00.000Z',
-      users: { totalUsers: 50 },
-    });
+    const body = res.body as { isPm2: boolean; targetApp: string };
+    expect(body.isPm2).toBe(true);
+    expect(body.targetApp).toBe('arcadeum-be');
+  });
+
+  it('returns 200 for POST /admin/cluster-reload', async () => {
+    mockRole('admin');
+    const res = await request(app.getHttpServer())
+      .post('/admin/cluster-reload')
+      .expect(201);
+    const body = res.body as { ok: boolean };
+    expect(body.ok).toBe(true);
   });
 });

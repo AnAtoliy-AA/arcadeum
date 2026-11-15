@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useEffect, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { Typography } from '@arcadeum/ui';
 import { Button } from '@arcadeum/ui/components/Button/Button';
@@ -8,8 +8,11 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n/useLanguage';
+import { formatDateTime, formatRelative } from '@/shared/i18n/formatters';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useNotificationSocket } from '@/shared/lib/socket';
+import { useLiveStatsStore } from '@/features/live-stats';
 import { useNotificationsStore } from './notifications.store';
 import type { NotificationDto } from './notifications.types';
 
@@ -52,6 +55,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
     (s) => s.onSocketUnreadCount,
   );
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (token) {
@@ -59,6 +63,41 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
       void fetchUnreadCount(token);
     }
   }, [token, initialize, fetchUnreadCount]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    return useLiveStatsStore.subscribe((state) => {
+      if (state.isPopoverOpen) {
+        setOpen(false);
+      }
+    });
+  }, []);
 
   const handleNewNotification = useCallback(
     (payload: unknown) => {
@@ -83,7 +122,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
   if (!token) return null;
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <Button
         variant="icon"
         size="md"
@@ -93,6 +132,7 @@ export function NotificationBell({ testId = 'notification-bell' }: Props) {
           setOpen((o) => {
             const next = !o;
             if (next) {
+              useLiveStatsStore.getState().setPopoverOpen(false);
               void initialize(token);
               void loadInbox(token);
             }
@@ -182,8 +222,19 @@ const NotificationRow = memo(function NotificationRow({
 }) {
   const { t: rawT } = useTranslation();
   const t: T = rawT as unknown as T;
+  const { locale } = useLanguage();
   const markRead = useNotificationsStore((s) => s.markRead);
   const deleteNotification = useNotificationsStore((s) => s.deleteNotification);
+
+  const formattedDate = useMemo(() => {
+    if (!item.createdAt) return '';
+    return formatRelative(item.createdAt, locale || 'en');
+  }, [item.createdAt, locale]);
+
+  const fullDate = useMemo(() => {
+    if (!item.createdAt) return '';
+    return formatDateTime(item.createdAt, locale || 'en');
+  }, [item.createdAt, locale]);
 
   const gameId = item.i18nParams?.gameId;
   const resolvedGameId = gameId
@@ -257,6 +308,16 @@ const NotificationRow = memo(function NotificationRow({
           </button>
         </div>
         <Typography className="line-clamp-2 text-secondary">{body}</Typography>
+        {formattedDate && (
+          <time
+            dateTime={item.createdAt}
+            title={fullDate}
+            data-testid="notification-date"
+            className="text-[11px] text-secondary tabular-nums mt-0.5"
+          >
+            {formattedDate}
+          </time>
+        )}
       </div>
     </Link>
   );

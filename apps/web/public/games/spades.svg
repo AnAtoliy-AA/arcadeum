@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#111c38"/>
+      <stop offset="100%" stop-color="#040712"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <!-- Spade symbol -->
+    <path d="M0 -38 C 22 -14, 42 12, 18 24 C 6 29, 0 16, 0 16 C 0 16, -6 29, -18 24 C -42 12, -22 -14, 0 -38 Z"
+          fill="#3b82f6" stroke="#dbeafe" stroke-width="3"/>
+    <path d="M -5 18 L -10 34 H 10 L 5 18 Z" fill="#3b82f6"/>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="28" font-weight="900" letter-spacing="6" fill="url(#title)">SPADES</text>
+</svg>

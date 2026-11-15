@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-hearts',
   locale: 'fr',
   title:
-    'Comment jouer aux Cœurs en ligne — règles, Dame de Pique, Tir à la Lune',
+    'Comment jouer aux Cœurs en ligne - règles, Dame de Pique, Tir à la Lune',
   excerpt:
     "Guide complet pour débutants : règles d'évitement de plis, stratégie de passage, tactiques avec la Dame de Pique et comment tirer à la Lune sans se faire prendre.",
   publishedAt: '2026-07-14',
@@ -34,7 +34,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Avant chaque main, chaque joueur passe trois cartes. La direction tourne : gauche, droite, en face, puis sans passe. Passe tes hautes cartes de la couleur que tu veux vider, mais attention — la Dame de Pique peut revenir. Une tactique courante est de passer des basses cartes d'une couleur où tu en as peu, créant un vide pour décharger les cœurs plus tard.",
+      text: "Avant chaque main, chaque joueur passe trois cartes. La direction tourne : gauche, droite, en face, puis sans passe. Passe tes hautes cartes de la couleur que tu veux vider, mais attention - la Dame de Pique peut revenir. Une tactique courante est de passer des basses cartes d'une couleur où tu en as peu, créant un vide pour décharger les cœurs plus tard.",
     },
     {
       type: 'heading',
@@ -64,7 +64,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Si tu recueilles TOUS les 13 cœurs ET la Dame de Pique (26 points), tu tires à la Lune — au lieu de gagner 26 points, chaque adversaire reçoit 26. C'est risqué. Si un seul cœur s'échappe, tu prends les 26. Cela nécessite un timing précis et la confiance que les adversaires ne peuvent pas bloquer.",
+      text: "Si tu recueilles TOUS les 13 cœurs ET la Dame de Pique (26 points), tu tires à la Lune - au lieu de gagner 26 points, chaque adversaire reçoit 26. C'est risqué. Si un seul cœur s'échappe, tu prends les 26. Cela nécessite un timing précis et la confiance que les adversaires ne peuvent pas bloquer.",
     },
     {
       type: 'heading',
@@ -91,7 +91,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Esquive le premier pli. Si tu as le 2 de Trèfle, mène bas — le premier pli ne compte pas.',
+        'Esquive le premier pli. Si tu as le 2 de Trèfle, mène bas - le premier pli ne compte pas.',
         "Surveille les tireurs. Si un joueur prend l'As de Pique puis mène haut, il tire peut-être à la Lune.",
         'Maths de fin. Quand il reste peu de plis, compte les points.',
         "Ne retiens pas la Dame. Plus tu la gardes, plus quelqu'un mènera piques.",
@@ -100,14 +100,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/hearts',
-      text: 'Jouez aux Cœurs en ligne — gratuit, dans votre navigateur',
+      text: 'Jouez aux Cœurs en ligne - gratuit, dans votre navigateur',
       description:
         'Ouvrez une salle de Cœurs, partagez le lien avec des amis ou jouez contre des bots IA.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'En résumé — quatre habitudes qui font gagner',
+      text: 'En résumé - quatre habitudes qui font gagner',
       id: 'tldr',
     },
     {

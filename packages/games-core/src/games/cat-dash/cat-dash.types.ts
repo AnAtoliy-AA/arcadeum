@@ -16,6 +16,11 @@ export interface SpaceEffect {
   value?: number;
 }
 
+export interface TrackTrap {
+  spaceId: number;
+  ownerId: string;
+}
+
 export interface CatDashPlayer {
   playerId: string;
   catId: CatId;
@@ -24,6 +29,9 @@ export interface CatDashPlayer {
   abilitiesUsed: string[];
   isReady: boolean;
   hasBonus: boolean;
+  shielded?: boolean;
+  speedBoostPending?: number;
+  extraRollPending?: boolean;
   [key: string]: unknown;
 }
 
@@ -43,6 +51,7 @@ export interface CatDashState extends BaseGameState {
   currentPlayerIndex: number;
   turnNumber: number;
   track: TrackSpace[];
+  traps?: TrackTrap[];
   winner?: string;
   gameOver: boolean;
   logs: GameLogEntry[];
@@ -52,4 +61,7 @@ export type CatDashAction =
   | { type: 'ROLL_DICE'; playerId: string }
   | { type: 'MOVE'; playerId: string; spaces: number }
   | { type: 'USE_ABILITY'; playerId: string; abilityId: string }
-  | { type: 'CHOOSE_PATH'; playerId: string; pathIndex: number };
+  | { type: 'CHOOSE_PATH'; playerId: string; pathIndex: number }
+  | { type: 'CATNAP'; playerId: string }
+  | { type: 'POUNCE'; playerId: string }
+  | { type: 'DEPLOY_TRAP'; playerId: string; spaceId?: number };

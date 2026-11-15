@@ -124,6 +124,7 @@ describe('LeaderboardsService', () => {
       expect.any(Number),
       0,
       'critical_v1',
+      'all',
     );
   });
 
@@ -134,6 +135,7 @@ describe('LeaderboardsService', () => {
       expect.any(Number),
       0,
       undefined,
+      'all',
     );
   });
 

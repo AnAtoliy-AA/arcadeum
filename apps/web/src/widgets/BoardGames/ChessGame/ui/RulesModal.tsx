@@ -20,7 +20,7 @@ export function RulesModal({ open, onClose }: RulesModalProps) {
     {
       badge: '👑',
       title: t('games.chess_v1.rules.pieces'),
-      body: '♔ King, ♕ Queen, ♖ Rook, ♗ Bishop, ♘ Knight, ♙ Pawn — each moves with distinct tactical movement patterns.',
+      body: '♔ King, ♕ Queen, ♖ Rook, ♗ Bishop, ♘ Knight, ♙ Pawn: each moves with distinct tactical movement patterns.',
     },
     {
       badge: '⚡',

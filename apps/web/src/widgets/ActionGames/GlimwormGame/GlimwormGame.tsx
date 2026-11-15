@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useGlimwormSocket } from './hooks/useGlimwormSocket';
 import { useGlimwormPixi } from './hooks/useGlimwormPixi';
 import { useGlimwormControls } from './hooks/useGlimwormControls';
@@ -13,9 +13,11 @@ import { GlimwormResultOverlay } from './ui/GlimwormResultOverlay';
 import { useGlimwormStore } from './store/glimwormStore';
 import { gameSocket } from '@/shared/lib/socket';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
 import type { BaseGameWidgetProps } from '@/features/games/types/base';
+import { useGameRoomActions } from '@/features/games/hooks';
 import { GlimwormThemeProvider } from './lib/GlimwormThemeContext';
 
 export default function GlimwormGame(
@@ -24,6 +26,13 @@ export default function GlimwormGame(
   const { roomId, currentUserId, isHost, room } = props;
   const { t } = useTranslation();
   const { play } = useGameSound('glimworm_v1');
+  const {
+    room: liveRoom,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, room);
 
   // State-backed callback ref: when the canvas div is mounted (after the
   // lobby branch ends), `setCanvasEl` flips the state and the pixi/controls
@@ -57,6 +66,28 @@ export default function GlimwormGame(
   const isCountdown = effectiveStatus === 'countdown';
   const isEnded = effectiveStatus === 'ended';
 
+  const discreteEvents = useGlimwormStore((s) => s.discreteEvents);
+  const prevEventCountRef = useRef(0);
+  useEffect(() => {
+    if (discreteEvents.length > prevEventCountRef.current) {
+      const newEvents = discreteEvents.slice(prevEventCountRef.current);
+      for (const ev of newEvents) {
+        if (ev.type === 'worm_died') {
+          if (ev.wormId === currentUserId) play('lose');
+          else if (ev.killerId === currentUserId) play('hit');
+        } else if (ev.type === 'powerup_picked') {
+          play('notification');
+        } else if (ev.type === 'round_started') {
+          play('tick');
+        } else if (ev.type === 'round_ended') {
+          if (ev.winner === currentUserId) play('win');
+          else play('lose');
+        }
+      }
+    }
+    prevEventCountRef.current = discreteEvents.length;
+  }, [discreteEvents, currentUserId, play]);
+
   // Restart = drop back to lobby (host can change settings before next start).
   const handleRestart = useCallback(() => {
     if (!currentUserId) return;
@@ -80,9 +111,13 @@ export default function GlimwormGame(
   if (isLobby && currentUserId) {
     return (
       <GlimwormLobby
-        room={room}
+        room={liveRoom ?? room}
         isHost={isHost}
         currentUserId={currentUserId}
+        onLeaveRoom={() => onLeaveRoom(currentUserId)}
+        onDeleteRoom={onDeleteRoom}
+        onKickPlayer={(targetId) => onKickPlayer(targetId, currentUserId)}
+        onReorderPlayers={onReorderPlayers}
       />
     );
   }
@@ -111,6 +146,7 @@ export default function GlimwormGame(
           variantEmoji: '🪱',
           title: t('games.glimworm_v1.name'),
           subtitle: room.name,
+          extraActions: <UndoButton disabled={isEnded} />,
           turnStatusVariant: isCountdown
             ? 'waiting'
             : isEnded

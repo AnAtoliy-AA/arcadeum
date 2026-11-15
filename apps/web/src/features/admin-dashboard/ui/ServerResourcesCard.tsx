@@ -17,13 +17,7 @@ function usageColor(percent: number): string {
   return 'bg-emerald-500';
 }
 
-function UsageBar({
-  percent,
-  label,
-}: {
-  percent: number;
-  label?: string;
-}) {
+function UsageBar({ percent, label }: { percent: number; label?: string }) {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between text-xs">
@@ -72,7 +66,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
         <div className="flex flex-col gap-4">
           <UsageBar
             percent={metrics.cpu.usagePercent}
-            label={`${t?.serverResources?.cpu ?? 'CPU'} — ${metrics.cpu.model} (${metrics.cpu.cores} ${t?.serverResources?.cores ?? 'cores'})`}
+            label={`${t?.serverResources?.cpu ?? 'CPU'}: ${metrics.cpu.model} (${metrics.cpu.cores} ${t?.serverResources?.cores ?? 'cores'})`}
           />
           {metrics.cpu.perCore.length > 1 && (
             <div className="flex flex-col gap-2 pl-3 border-l-2 border-[var(--borderColor)]">
@@ -101,7 +95,7 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
         <div className="flex flex-col gap-4">
           <UsageBar
             percent={metrics.ram.usagePercent}
-            label={`${t?.serverResources?.ram ?? 'RAM'} — ${metrics.ram.usedMB} / ${metrics.ram.totalMB} MB`}
+            label={`${t?.serverResources?.ram ?? 'RAM'}: ${metrics.ram.usedMB} / ${metrics.ram.totalMB} MB`}
           />
           <div className="flex flex-row gap-4 text-xs text-[var(--colorTextSecondary)]">
             <span>
@@ -192,18 +186,18 @@ export function ServerResourcesCard({ metrics, t }: ServerResourcesCardProps) {
             {t?.serverResources?.loadAvg ?? 'Load Average (1m / 5m / 15m)'}
           </Typography>
           <div className="flex flex-row gap-4 text-xs">
-            {(
-              metrics.system.loadAvg as [number, number, number]
-            ).map((val, i) => (
-              <div key={i} className="flex flex-col items-center gap-0.5">
-                <span className="text-lg font-bold text-[var(--colorText)]">
-                  {val.toFixed(2)}
-                </span>
-                <span className="text-[var(--colorTextSecondary)]">
-                  {i === 0 ? '1m' : i === 1 ? '5m' : '15m'}
-                </span>
-              </div>
-            ))}
+            {(metrics.system.loadAvg as [number, number, number]).map(
+              (val, i) => (
+                <div key={i} className="flex flex-col items-center gap-0.5">
+                  <span className="text-lg font-bold text-[var(--colorText)]">
+                    {val.toFixed(2)}
+                  </span>
+                  <span className="text-[var(--colorTextSecondary)]">
+                    {i === 0 ? '1m' : i === 1 ? '5m' : '15m'}
+                  </span>
+                </div>
+              ),
+            )}
           </div>
         </div>
       </div>

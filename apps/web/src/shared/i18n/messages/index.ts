@@ -1,6 +1,6 @@
 import type { Locale, TranslationBundle } from '../types';
 
-// Type-only import for TranslationKey inference — erased at compile time
+// Type-only import for TranslationKey inference - erased at compile time
 import type { en as authEn } from './auth';
 import type { en as pagesEn } from './pages';
 import type { en as commonEn } from './common';
@@ -22,7 +22,7 @@ import type { en as musicPlayerEn } from './music-player';
 import type { en as walletEn } from './wallet';
 import type { chatMessages, chatListMessages } from './chat';
 
-/** English translation type — used only for type inference, no runtime cost */
+/** English translation type - used only for type inference, no runtime cost */
 export type EnglishTranslations = {
   common: typeof commonEn;
   pages: typeof pagesEn;
@@ -94,15 +94,16 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./wallet'),
   ]);
 
-  const [gamesModule, authData, legalData, seoData, homeData] = await Promise.all([
-    import('./games/load-games').then(async (m) => ({
-      data: await m.loadGames(locale),
-    })),
-    authMod.loadAuthMessages(locale),
-    legalMod.loadLegalMessages(locale),
-    seoMod.loadSeoMessages(locale),
-    homeMod.loadHomeMessages(locale),
-  ]);
+  const [gamesModule, authData, legalData, seoData, homeData] =
+    await Promise.all([
+      import('./games/load-games').then(async (m) => ({
+        data: await m.loadGames(locale),
+      })),
+      authMod.loadAuthMessages(locale),
+      legalMod.loadLegalMessages(locale),
+      seoMod.loadSeoMessages(locale),
+      homeMod.loadHomeMessages(locale),
+    ]);
 
   return {
     common: common[locale],

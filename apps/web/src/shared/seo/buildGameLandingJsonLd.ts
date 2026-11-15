@@ -66,6 +66,7 @@ export function buildGameLandingJsonLd({
       genre,
       alternateName,
       featureList,
+      pageUrl,
       breadcrumb: {
         home: breadcrumb.home,
         games: breadcrumb.games,
@@ -93,6 +94,7 @@ export function buildGameLandingJsonLd({
         pageName: gameName,
         pageUrl,
         faqs,
+        includeBreadcrumb: false,
       }),
     );
   }

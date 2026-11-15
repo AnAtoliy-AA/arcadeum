@@ -170,7 +170,7 @@ export class RefreshTokenService {
       // Presenting an already-rotated/revoked token means it was copied —
       // assume theft and kill the whole token family for this user.
       this.logger.warn(
-        `Refresh token reuse detected for user ${String(stored.userId)} — revoking all sessions`,
+        `Refresh token reuse detected for user ${String(stored.userId)}: revoking all sessions`,
       );
       await this.revokeAllForUser(String(stored.userId));
       throw new UnauthorizedException('Refresh token revoked');

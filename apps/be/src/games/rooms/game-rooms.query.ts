@@ -50,6 +50,8 @@ export class GameRoomsQueryBuilder {
       query['gameOptions.aiVsAi'] = true;
     }
 
+    query['gameOptions.rematchCancelledAt'] = { $exists: false };
+
     let searchOr: FilterQuery<GameRoom>['$or'] | undefined;
     if (filters.search) {
       const escaped = escapeRegExp(filters.search);

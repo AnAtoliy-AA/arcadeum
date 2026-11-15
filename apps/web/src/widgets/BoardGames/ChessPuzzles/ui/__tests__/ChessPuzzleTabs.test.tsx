@@ -3,14 +3,25 @@ import { render, screen } from '@testing-library/react';
 import { ChessPuzzleTabs } from '../ChessPuzzleTabs';
 
 describe('ChessPuzzleTabs', () => {
-  it('renders all four training mode tabs', () => {
-    render(<ChessPuzzleTabs activeTab="daily" locale="en" />);
+  it('renders all training mode tabs including custom puzzles and duel', () => {
+    render(
+      <ChessPuzzleTabs
+        activeTab="daily"
+        locale="en"
+        onOpenAnalytics={() => {}}
+      />,
+    );
 
     expect(screen.getByTestId('chess-puzzle-tabs')).toBeInTheDocument();
     expect(screen.getByText('Daily Puzzle')).toBeInTheDocument();
     expect(screen.getByText('Rated Puzzles')).toBeInTheDocument();
     expect(screen.getByText('Puzzle Rush')).toBeInTheDocument();
+    expect(screen.getByText('Puzzle Duel')).toBeInTheDocument();
+    expect(screen.getByText('Custom Puzzles')).toBeInTheDocument();
     expect(screen.getByText('Coordinates')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('chess-puzzle-tab-analytics'),
+    ).toBeInTheDocument();
   });
 
   it('highlights the active tab with primary styling', () => {

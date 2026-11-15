@@ -68,14 +68,14 @@ interface ChessGameConsoleProps {
 }
 
 function formatNodes(nodes: number | null | undefined): string {
-  if (!nodes) return '—';
+  if (!nodes) return '-';
   if (nodes >= 1_000_000) return `${(nodes / 1_000_000).toFixed(1)}M`;
   if (nodes >= 1_000) return `${Math.round(nodes / 1_000)}k`;
   return String(nodes);
 }
 
 function formatNps(nps: number | null | undefined): string {
-  if (!nps) return '—';
+  if (!nps) return '-';
   if (nps >= 1_000_000) return `${(nps / 1_000_000).toFixed(1)}M n/s`;
   if (nps >= 1_000) return `${Math.round(nps / 1_000)}k n/s`;
   return `${nps} n/s`;
@@ -289,7 +289,7 @@ function ChessGameConsoleImpl({
                         ? `M${alt.mate}`
                         : alt.cp !== null
                           ? `${alt.cp > 0 ? '+' : ''}${(alt.cp / 100).toFixed(1)}`
-                          : '—'}
+                          : '-'}
                     </span>
                   </div>
                 ))}

@@ -5,6 +5,7 @@ export const dailyRewardsEs = {
   claim: 'Reclamar {n} monedas',
   gemBonusSuffix: ' + {n} 💎',
   claimed: 'Vuelve mañana',
+  signInToClaim: 'Inicia sesión para reclamar',
   nextResetIn: 'Se reinicia en {time}',
   streakLabel: 'Racha: {n} / 7',
   dayLabel: 'Día {n}',

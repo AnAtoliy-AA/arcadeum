@@ -35,6 +35,9 @@ import { IpBlockService } from '../common/guards/ip-block.guard';
 import { RateStateModule } from '../common/rate-state';
 import { GamesModule } from '../games/games.module';
 
+import { AdminClusterService } from './admin-cluster.service';
+import { EventLoopMonitorService } from '../common/services/event-loop-monitor.service';
+
 @Module({
   imports: [
     AuthModule,
@@ -62,7 +65,9 @@ import { GamesModule } from '../games/games.module';
     AdminUsersService,
     AdminStatisticsService,
     IpBlockService,
+    AdminClusterService,
+    EventLoopMonitorService,
   ],
-  exports: [IpBlockService, AdminStatisticsService],
+  exports: [IpBlockService, AdminStatisticsService, AdminClusterService],
 })
 export class AdminModule {}

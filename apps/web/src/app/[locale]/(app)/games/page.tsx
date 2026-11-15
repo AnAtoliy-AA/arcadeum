@@ -10,6 +10,7 @@ import { featuredGames } from '../../home/data/games';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { Container, PageLayout } from '@arcadeum/ui';
 import { GamesCatalogClient, type CatalogGameItem } from './GamesCatalogClient';
+import { GamesCatalogCard } from './components/GamesCatalogCard';
 import { OFFLINE_GAME_SLUGS } from '@/features/offline/lib/offline-capable';
 
 export const dynamic = 'force-static';
@@ -95,6 +96,8 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
     name: g.name,
     url: g.landingHref,
     description: g.description,
+    itemType: 'VideoGame',
+    image: `${appConfig.siteUrl}/${locale}/games/${g.id.replace(/_v\d+$/, '')}/opengraph-image`,
   }));
 
   const collectionPage = buildCollectionPageJsonLd({
@@ -127,7 +130,7 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
       <div className="box-border relative min-h-screen pb-16 overflow-hidden">
         {/* Ambient Top Glow */}
         <div
-          className="box-border pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-blue-600/15 via-indigo-500/10 to-transparent blur-3xl rounded-full"
+          className="box-border pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-blue-600/10 via-indigo-500/5 to-transparent rounded-full"
           aria-hidden="true"
         />
 
@@ -171,7 +174,23 @@ export default async function GamesCatalogRoute({ params }: PageProps) {
               offlineBadgeLabel={
                 messages.pwa?.offlineGame?.chip ?? 'Offline play'
               }
-            />
+            >
+              {catalogGames.map((game) => (
+                <div
+                  key={game.id}
+                  data-category={game.category}
+                  className="contents"
+                >
+                  <GamesCatalogCard
+                    game={game}
+                    locale={locale}
+                    offlineBadgeLabel={
+                      messages.pwa?.offlineGame?.chip ?? 'Offline play'
+                    }
+                  />
+                </div>
+              ))}
+            </GamesCatalogClient>
           </div>
         </Container>
       </div>

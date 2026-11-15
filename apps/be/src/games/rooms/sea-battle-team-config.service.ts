@@ -47,7 +47,7 @@ export class SeaBattleTeamConfigService {
     const maxTotal = resolveMaxTotalPlayers(opts);
     if (participants.length > maxTotal) {
       throw new BadRequestException(
-        `Too many players in room — kick excess players before enabling team mode (max ${maxTotal})`,
+        `Too many players in room: kick excess players before enabling team mode (max ${maxTotal})`,
       );
     }
     opts.teamMode = true;

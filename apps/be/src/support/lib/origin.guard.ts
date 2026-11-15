@@ -30,7 +30,7 @@ export class OriginGuard implements CanActivate {
       !process.env.SUPPORT_INTERNAL_TOKEN
     ) {
       new Logger(OriginGuard.name).warn(
-        'SUPPORT_INTERNAL_TOKEN is not set in production — contact form ' +
+        'SUPPORT_INTERNAL_TOKEN is not set in production: contact form ' +
           'submissions via the Next.js server action will be rejected by ' +
           'OriginGuard. Set the same value on both web and BE.',
       );

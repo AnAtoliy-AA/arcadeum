@@ -5,6 +5,7 @@ import {
   deal,
   draw,
   evaluateOutcome,
+  findHint,
   getSourceCards,
   hasAvailableMoves,
   isWon,
@@ -23,8 +24,13 @@ function seededRng(seed: number): () => number {
 }
 
 function card(state: SolitaireState, suit: string, rank: number) {
-  const found = [...state.stock, ...state.waste, ...state.foundations.flat(), ...state.tableau.flat()]
-    .find((c) => c.suit === suit && c.rank === rank);
+  const all = [
+    ...state.stock,
+    ...state.waste,
+    ...state.foundations.flat(),
+    ...state.tableau.flat(),
+  ];
+  const found = all.find((c) => c.suit === suit && c.rank === rank);
   if (!found) throw new Error(`card ${suit}-${rank} not found`);
   return found;
 }
@@ -73,10 +79,18 @@ describe('deal', () => {
 
 describe('cardColor', () => {
   it('maps suits correctly', () => {
-    expect(cardColor({ id: 'x', suit: 'hearts', rank: 5, faceUp: true })).toBe('red');
-    expect(cardColor({ id: 'x', suit: 'diamonds', rank: 5, faceUp: true })).toBe('red');
-    expect(cardColor({ id: 'x', suit: 'spades', rank: 5, faceUp: true })).toBe('black');
-    expect(cardColor({ id: 'x', suit: 'clubs', rank: 5, faceUp: true })).toBe('black');
+    expect(cardColor({ id: 'x', suit: 'hearts', rank: 5, faceUp: true })).toBe(
+      'red',
+    );
+    expect(
+      cardColor({ id: 'x', suit: 'diamonds', rank: 5, faceUp: true }),
+    ).toBe('red');
+    expect(cardColor({ id: 'x', suit: 'spades', rank: 5, faceUp: true })).toBe(
+      'black',
+    );
+    expect(cardColor({ id: 'x', suit: 'clubs', rank: 5, faceUp: true })).toBe(
+      'black',
+    );
   });
 });
 
@@ -110,11 +124,7 @@ describe('isValidMove / applyMove — tableau', () => {
     state.waste = [sixDiamonds];
 
     expect(
-      isValidMove(
-        state,
-        { kind: 'waste' },
-        { kind: 'tableau', pileIndex: 0 },
-      ),
+      isValidMove(state, { kind: 'waste' }, { kind: 'tableau', pileIndex: 0 }),
     ).toBe(false);
   });
 
@@ -152,10 +162,14 @@ describe('isValidMove / applyMove — tableau', () => {
     });
     expect(cards).toHaveLength(3);
 
-    const next = applyMove(state, { kind: 'tableau', pileIndex: 0, cardIndex: 0 }, {
-      kind: 'tableau',
-      pileIndex: 1,
-    });
+    const next = applyMove(
+      state,
+      { kind: 'tableau', pileIndex: 0, cardIndex: 0 },
+      {
+        kind: 'tableau',
+        pileIndex: 1,
+      },
+    );
     expect(next.tableau[0]).toHaveLength(0);
     expect(next.tableau[1]).toHaveLength(4);
   });
@@ -179,7 +193,10 @@ describe('foundations', () => {
     const two = card(state, 'diamonds', 2);
     state.waste = [ace];
 
-    const target = { kind: 'foundation' as const, foundationIndex: SUITS.indexOf('diamonds') };
+    const target = {
+      kind: 'foundation' as const,
+      foundationIndex: SUITS.indexOf('diamonds'),
+    };
 
     expect(isValidMove(state, { kind: 'waste' }, target)).toBe(true);
     const afterAce = applyMove(state, { kind: 'waste' }, target);
@@ -330,5 +347,58 @@ describe('win & stuck detection', () => {
   it('treats a drawable stock as an available move', () => {
     const state = deal(seededRng(18));
     expect(hasAvailableMoves(state)).toBe(true);
+  });
+});
+
+describe('drawMode draw3', () => {
+  it('draws up to three cards into waste per draw action', () => {
+    const state = deal(seededRng(5), 'draw3');
+    expect(state.stock).toHaveLength(24);
+    expect(state.waste).toHaveLength(0);
+
+    const step1 = draw(state);
+    expect(step1.stock).toHaveLength(21);
+    expect(step1.waste).toHaveLength(3);
+    expect(step1.waste.every((c) => c.faceUp)).toBe(true);
+
+    const step2 = draw(step1);
+    expect(step2.stock).toHaveLength(18);
+    expect(step2.waste).toHaveLength(6);
+  });
+});
+
+describe('findHint', () => {
+  it('identifies waste to foundation moves', () => {
+    const state = deal(seededRng(1));
+    state.waste = [{ id: 's1', suit: 'spades', rank: 1, faceUp: true }];
+    const hint = findHint(state);
+    expect(hint).not.toBeNull();
+    expect(hint?.source).toEqual({ kind: 'waste' });
+    expect(hint?.target).toEqual({ kind: 'foundation', foundationIndex: 0 });
+  });
+
+  it('identifies tableau run moves that reveal cards', () => {
+    const state = deal(seededRng(2));
+    state.waste = [];
+    state.tableau = [
+      [
+        { id: 'h2', suit: 'hearts', rank: 2, faceUp: false },
+        { id: 'c5', suit: 'clubs', rank: 5, faceUp: true },
+      ],
+      [{ id: 'd6', suit: 'diamonds', rank: 6, faceUp: true }],
+      [],
+      [],
+      [],
+      [],
+      [],
+    ];
+    const hint = findHint(state);
+    expect(hint).not.toBeNull();
+    expect(hint?.source).toEqual({
+      kind: 'tableau',
+      pileIndex: 0,
+      cardIndex: 1,
+    });
+    expect(hint?.target).toEqual({ kind: 'tableau', pileIndex: 1 });
   });
 });

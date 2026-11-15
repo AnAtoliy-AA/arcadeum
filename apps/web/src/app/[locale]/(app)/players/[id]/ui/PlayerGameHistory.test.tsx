@@ -28,4 +28,28 @@ describe('PlayerGameHistory', () => {
       screen.getByText(/No recent matches found for GhostRoot/),
     ).toBeInTheDocument();
   });
+
+  it('filters out all mode and formats versioned game keys to friendly names', () => {
+    render(
+      <PlayerGameHistory
+        recentForm={['W', 'L', 'D']}
+        playerName="Nightblade"
+        modes={['all', 'tic_tac_toe_v1', 'go_v1', 'pachisi_v1']}
+      />,
+    );
+
+    expect(screen.getByTestId('match-item-0')).toHaveTextContent('Tic-Tac-Toe');
+    expect(screen.getByTestId('match-item-0')).not.toHaveTextContent(
+      'tic_tac_toe_v1',
+    );
+    expect(screen.getByTestId('match-item-0')).not.toHaveTextContent('all');
+
+    expect(screen.getByTestId('match-item-1')).toHaveTextContent('Go');
+    expect(screen.getByTestId('match-item-1')).not.toHaveTextContent('go_v1');
+
+    expect(screen.getByTestId('match-item-2')).toHaveTextContent('Pachisi');
+    expect(screen.getByTestId('match-item-2')).not.toHaveTextContent(
+      'pachisi_v1',
+    );
+  });
 });

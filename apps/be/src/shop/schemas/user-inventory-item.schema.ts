@@ -66,9 +66,13 @@ export const UserInventoryItemSchema =
 UserInventoryItemSchema.index({ userId: 1, purchaseId: 1 }, { unique: true });
 UserInventoryItemSchema.index({ userId: 1, itemId: 1, soldAt: 1 });
 // One on-chain payment may ever be redeemed once, regardless of which user
-// or item it is claimed against. Sparse: only ARC-funded rows carry a
-// signature.
+// or item it is claimed against. Partial index: only rows that actually have
+// a walletSignature are indexed, so the many null-valued rows from regular
+// (coin/gem) purchases never participate in the uniqueness check.
 UserInventoryItemSchema.index(
   { walletSignature: 1 },
-  { unique: true, sparse: true },
+  {
+    unique: true,
+    partialFilterExpression: { walletSignature: { $type: 'string' } },
+  },
 );

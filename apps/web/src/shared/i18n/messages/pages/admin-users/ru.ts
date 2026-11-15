@@ -1,7 +1,7 @@
 export const adminUsersRu = {
   title: 'Пользователи',
   search: {
-    placeholder: 'Поиск по имени, email или отображаемому имени',
+    placeholder: 'Поиск по имени или отображаемому имени',
   },
   filter: {
     role: { all: 'Все роли', placeholder: 'Фильтр по роли' },

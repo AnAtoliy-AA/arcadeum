@@ -36,7 +36,7 @@ export const communityRu = {
       title: 'GitHub',
       subtitle: 'Открытый код',
       description:
-        'Arcadeum — это проект с открытым исходным кодом. Изучайте код и вносите свой вклад на GitHub.',
+        'Arcadeum - это проект с открытым исходным кодом. Изучайте код и вносите свой вклад на GitHub.',
     },
     youtube: {
       title: 'YouTube',

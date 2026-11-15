@@ -1,22 +1,44 @@
 @keyframes breathe {
   0%,
   100% {
-    opacity: 0.85;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.15);
   }
 
   50% {
-    opacity: 1;
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+  }
+}
+
+@keyframes danger-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+  }
+}
+
+@keyframes badge-danger-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
   }
 }
 
 @keyframes turn-pulse {
   0%,
   100% {
-    opacity: 1;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.2);
   }
 
-  70% {
-    opacity: 0.6;
+  50% {
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
   }
 }
 
@@ -141,11 +163,11 @@
 }
 
 .sb-section-danger-breathe {
-  animation: breathe 3s ease-in-out infinite;
+  animation: danger-breathe 3s ease-in-out infinite;
 }
 
 .sb-badge-danger-breathe {
-  animation: breathe 2s ease-in-out infinite;
+  animation: badge-danger-breathe 2s ease-in-out infinite;
 }
 
 .sb-glow-hit {
@@ -422,6 +444,11 @@
 .sb-board-grid {
   &.sb-my-turn .sb-cell.sb-attackable {
     cursor: crosshair;
+
+    &:hover {
+      box-shadow: inset 0 0 0 1.5px #38bdf8, 0 0 8px rgba(56, 189, 248, 0.5);
+      z-index: 1;
+    }
   }
 
   &:not(.sb-my-turn) .sb-cell {

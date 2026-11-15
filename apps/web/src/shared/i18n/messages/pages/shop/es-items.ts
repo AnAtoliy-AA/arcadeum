@@ -220,6 +220,36 @@ export const shopItemsEs = {
   },
   game_skin: {
     default: { name: 'Predeterminado', desc: 'El tema de juego inicial.' },
+    adventure: {
+      name: 'Aventura',
+      desc: 'Un tema de exploración en la naturaleza.',
+    },
+    cyberpunk: { name: 'Cyberpunk', desc: 'Un tema futurista de neón.' },
+    underwater: { name: 'Submarino', desc: 'Un tema oceánico profundo.' },
+    crime: {
+      name: 'Crimen',
+      desc: 'Un tema noir de investigación detectivesca.',
+    },
+    horror: {
+      name: 'Terror',
+      desc: 'Un tema oscuro y espeluznante sobrenatural.',
+    },
+    high_altitude_hike: {
+      name: 'Excursión de Alta Montaña',
+      desc: 'Un tema de expedición montañera.',
+    },
+    galaxy: { name: 'Galaxia', desc: 'Un tema cósmico interestelar.' },
+    fantasy: { name: 'Fantasía', desc: 'Un tema de dragones y magia mítica.' },
+    western: { name: 'Vaquero', desc: 'Un tema del viejo oeste polvoriento.' },
+    egypt: {
+      name: 'Egipto',
+      desc: 'Un tema del antiguo Egipto y el desierto.',
+    },
+    steampunk: {
+      name: 'Steampunk',
+      desc: 'Un tema victoriano de latón y engranajes.',
+    },
+    zen: { name: 'Zen', desc: 'Un tema tranquilo y sereno de meditación.' },
   },
   banner: {
     default: { name: 'Predeterminado', desc: 'El fondo inicial.' },

@@ -91,7 +91,7 @@ export function AIvsAIViewer({
   };
 
   const label = errored
-    ? t('games.aiVsAi.error') || "Couldn't start — try again"
+    ? t('games.aiVsAi.error') || "Couldn't start - try again"
     : t('games.aiVsAi.watchCta') || 'Watch AI vs AI';
 
   return (
@@ -155,7 +155,7 @@ export function AIvsAIViewer({
                 <option value="">Random</option>
                 {personalities.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} ({p.rating}) — {p.style}
+                    {p.name} ({p.rating}) - {p.style}
                   </option>
                 ))}
               </select>
@@ -176,7 +176,7 @@ export function AIvsAIViewer({
                 <option value="">Random</option>
                 {personalities.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} ({p.rating}) — {p.style}
+                    {p.name} ({p.rating}) - {p.style}
                   </option>
                 ))}
               </select>

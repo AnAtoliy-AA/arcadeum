@@ -18,6 +18,7 @@ interface GoBoardProps {
   myColor: StoneColor | null;
   ariaLabel?: string;
   showTerritory?: boolean;
+  highlightedCells?: { row: number; col: number }[];
   onCellClick: (row: number, col: number) => void;
 }
 
@@ -32,6 +33,7 @@ interface CellProps {
   disabled: boolean;
   myColor: StoneColor | null;
   focusProps: Record<string, unknown>;
+  isHighlighted: boolean;
   onCellClick: (row: number, col: number) => void;
   onHover: (row: number, col: number) => void;
   onHoverEnd: () => void;
@@ -51,6 +53,7 @@ const CellRenderer = memo(function CellRenderer({
   disabled,
   myColor,
   focusProps,
+  isHighlighted,
   onCellClick,
   onHover,
   onHoverEnd,
@@ -84,12 +87,9 @@ const CellRenderer = memo(function CellRenderer({
         : null
     : null;
 
-  const territoryColor =
-    territory && territory.owner !== 'neutral' && !cell
-      ? territory.owner === 'black'
-        ? 'rgba(0,0,0,0.18)'
-        : 'rgba(255,255,255,0.35)'
-      : undefined;
+  const isTerritory = Boolean(
+    territory && territory.owner !== 'neutral' && !cell,
+  );
 
   return (
     <button
@@ -108,11 +108,14 @@ const CellRenderer = memo(function CellRenderer({
       )}
       {...focusProps}
     >
-      {territoryColor ? (
+      {isTerritory && territory ? (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute inset-[6%] rounded-sm z-[1]"
-          style={{ backgroundColor: territoryColor }}
+          data-testid={`go-territory-${territory.owner}`}
+          className={cx(
+            'pointer-events-none absolute inset-[6%] rounded-sm z-[1]',
+            territory.owner === 'black' ? 'bg-black/20' : 'bg-white/40',
+          )}
         />
       ) : null}
 
@@ -190,6 +193,13 @@ const CellRenderer = memo(function CellRenderer({
         />
       ) : null}
 
+      {isHighlighted ? (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[90%] w-[90%] rounded-full border-[3px] border-indigo-400/80 bg-indigo-500/20 z-15 animate-pulse"
+        />
+      ) : null}
+
       {warningText && preview ? (
         <span
           aria-hidden="true"
@@ -216,6 +226,7 @@ function GoBoardImpl({
   myColor,
   ariaLabel = 'Go board',
   showTerritory = false,
+  highlightedCells = [],
   onCellClick,
 }: GoBoardProps) {
   const [hoveredCell, setHoveredCell] = useState<Point | null>(null);
@@ -325,6 +336,9 @@ function GoBoardImpl({
                   disabled={disabled}
                   myColor={myColor}
                   focusProps={getCellProps(rowIdx, colIdx)}
+                  isHighlighted={highlightedCells.some(
+                    (c) => c.row === rowIdx && c.col === colIdx,
+                  )}
                   onCellClick={onCellClick}
                   onHover={handleHover}
                   onHoverEnd={handleHoverEnd}

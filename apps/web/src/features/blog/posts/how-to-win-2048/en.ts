@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-2048',
   locale: 'en',
   title:
-    'How to Win at 2048 Online — Strategy, Tile Management, Corner Technique',
+    'How to Win at 2048 Online - Strategy, Tile Management, Corner Technique',
   excerpt:
     'A complete strategy guide to 2048: the corner technique, tile chaining, swipe discipline, and the habits that consistently reach 2048 and beyond.',
   publishedAt: '2026-06-19',
@@ -94,14 +94,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/2048',
-      text: 'Play 2048 online — free, in your browser',
+      text: 'Play 2048 online - free, in your browser',
       description:
         'Classic 2048 with smooth animations. Challenge yourself to beat your high score.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win games',
+      text: 'TL;DR - the four habits that win games',
       id: 'tldr',
     },
     {

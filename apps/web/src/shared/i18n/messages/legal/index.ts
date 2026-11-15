@@ -1,5 +1,3 @@
-import type { en } from './en';
-
 export type { en } from './en';
 
 export type {
@@ -9,7 +7,7 @@ export type {
   ContactMessages,
 } from './types';
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadLegalMessages(locale: string) {
   switch (locale) {
     case 'en':

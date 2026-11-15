@@ -1,8 +1,9 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@arcadeum/ui';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -11,6 +12,7 @@ import {
   useGameResult,
   useGameRoomActions,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -38,8 +40,14 @@ function GoGameImpl({
   onShowRulesClose,
 }: GoGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -56,6 +64,23 @@ function GoGameImpl({
   });
 
   const { play } = useGameSound('go_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevCapturesRef = useRef<number>(0);
+  useEffect(() => {
+    if (!snapshot?.captures) return;
+    const total =
+      (snapshot.captures.black ?? 0) + (snapshot.captures.white ?? 0);
+    if (total > prevCapturesRef.current && prevCapturesRef.current > 0) {
+      play('capture');
+    }
+    prevCapturesRef.current = total;
+  }, [snapshot?.captures, play]);
 
   const [showResignDialog, setShowResignDialog] = useState(false);
   const [showTerritory, setShowTerritory] = useState(false);
@@ -87,6 +112,11 @@ function GoGameImpl({
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'go_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -231,6 +261,7 @@ function GoGameImpl({
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />
@@ -258,6 +289,7 @@ function GoGameImpl({
               koPoint={snapshot.koPoint}
               myColor={myColor}
               showTerritory={showTerritory || isGameOver}
+              highlightedCells={chatHighlightCells}
               ariaLabel={t('games.go_v1.board.ariaLabel', {
                 size: snapshot.boardSize ?? snapshot.options.boardSize ?? 9,
               })}
@@ -274,11 +306,12 @@ function GoGameImpl({
                   {t('games.go_v1.game.pass')}
                 </Button>
               ) : null}
-              {!isGameOver && myTurn ? (
+              {!isGameOver ? (
                 <Button
                   variant="secondary"
                   size="md"
                   data-testid="go-territory-toggle"
+                  aria-pressed={showTerritory}
                   onClick={() => setShowTerritory((v) => !v)}
                   className={
                     showTerritory ? 'ring-2 ring-[var(--primary)]' : ''
@@ -378,6 +411,7 @@ function GoGameImpl({
           title: 'Go',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentPlayerId,
             isMyTurn: myTurn,

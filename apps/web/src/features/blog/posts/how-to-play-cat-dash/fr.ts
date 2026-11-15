@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-cat-dash',
   locale: 'fr',
-  title: 'Comment jouer à Cat Dash en ligne — courses de dés, talents de chats',
+  title: 'Comment jouer à Cat Dash en ligne - courses de dés, talents de chats',
   excerpt:
     'Guide complet : jeu de courses de chats avec dés, talents, obstacles et boosts stratégiques.',
   publishedAt: '2026-08-25',
@@ -49,7 +49,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/cat-dash',
-      text: 'Jouez à Cat Dash en ligne — gratuit',
+      text: 'Jouez à Cat Dash en ligne - gratuit',
       description: 'Courses avec amis ou IA.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

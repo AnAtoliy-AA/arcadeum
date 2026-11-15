@@ -9,7 +9,7 @@ export const adminXpBackfillRu = {
   },
   result: {
     success: 'Backfill успешно завершён!',
-    dryRun: 'Пробный запуск завершён — изменения не внесены.',
+    dryRun: 'Пробный запуск завершён - изменения не внесены.',
     affected: 'Пользователей обновлено',
     skipped: 'Пользователей пропущено',
     details: 'Детали',

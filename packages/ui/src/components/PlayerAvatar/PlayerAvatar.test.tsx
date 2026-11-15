@@ -281,4 +281,28 @@ describe('PlayerAvatar', () => {
     );
     expect(screen.getByTestId('overlay')).toBeInTheDocument();
   });
+
+  it('falls back to initials when avatar image emits an error', () => {
+    render(<PlayerAvatar name="Jane Doe" avatarUrl="/invalid.png" />);
+    const img = screen.getByRole('img');
+    fireEvent.error(img);
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
+
+  it('falls back to initials when avatarUrl is empty or null string', () => {
+    render(<PlayerAvatar name="Jane Doe" avatarUrl="   " />);
+    expect(screen.getByText('JD')).toBeInTheDocument();
+  });
+
+  it('renders a level pill at the bottom of the disc', () => {
+    render(<PlayerAvatar name="Jane" size="md" level={7} data-testid="pa" />);
+    expect(screen.getByTestId('pa-level')).toHaveTextContent('7');
+  });
+
+  it('omits the level pill without a level or at icon size', () => {
+    const { rerender } = render(<PlayerAvatar name="Jane" data-testid="pa" />);
+    expect(screen.queryByTestId('pa-level')).toBeNull();
+    rerender(<PlayerAvatar name="Jane" size="icon" level={7} data-testid="pa" />);
+    expect(screen.queryByTestId('pa-level')).toBeNull();
+  });
 });

@@ -18,6 +18,7 @@ const SKIP_PREFIXES = [
   '/_next',
   '/_vercel',
   '/api',
+  '/.well-known',
   '/sw.js',
   '/offline',
   '/manifest',

@@ -189,9 +189,11 @@ export const shopEs = {
     free: 'Gratis',
     successTitle: 'Equipado',
     successBody: '{name} ha sido equipado.',
+    signIn: 'Iniciar sesión',
     errors: {
       insufficientFunds: 'No tienes suficiente para comprar esto.',
       unavailable: 'Este artículo no está disponible actualmente.',
+      unauthorized: 'Por favor inicia sesión para completar la compra.',
       generic: 'No se pudo completar la compra. Inténtalo de nuevo.',
     },
   },

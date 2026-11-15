@@ -77,7 +77,7 @@ describe('AIvsAIViewer', () => {
     await waitFor(() => {
       expect(
         screen.getByText('games.aiVsAi.error') ||
-          screen.getByText("Couldn't start — try again"),
+          screen.getByText("Couldn't start - try again"),
       ).toBeInTheDocument();
     });
     expect(push).not.toHaveBeenCalled();

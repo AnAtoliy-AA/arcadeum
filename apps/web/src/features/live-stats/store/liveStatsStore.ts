@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { create } from 'zustand';
 import { resolveApiUrl } from '@/shared/lib/api-base';
 import { useSocket } from '@/shared/lib/socket-hooks';
@@ -75,7 +75,7 @@ interface LiveStatsState {
   fetchLiveStats: (force?: boolean) => Promise<void>;
   togglePopover: () => void;
   setPopoverOpen: (open: boolean) => void;
-  applyWsStats: (data: LiveStatsData) => void;
+  applyWsStats: (data: Partial<LiveStatsData>) => void;
 }
 
 export const useLiveStatsStore = create<LiveStatsState>((set, get) => ({
@@ -101,14 +101,11 @@ export const useLiveStatsStore = create<LiveStatsState>((set, get) => ({
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
       });
       if (response.ok) {
-        const data = (await response.json()) as LiveStatsData;
-        set({
-          stats: {
-            ...DEFAULT_STATS,
-            ...data,
-          },
+        const data = (await response.json()) as Partial<LiveStatsData>;
+        set((state) => ({
+          stats: { ...state.stats, ...data },
           lastFetchedAt: Date.now(),
-        });
+        }));
       }
     } catch {
       // Graceful fallback to existing or default stats
@@ -125,24 +122,25 @@ export const useLiveStatsStore = create<LiveStatsState>((set, get) => ({
     set({ isPopoverOpen: open });
   },
 
-  applyWsStats: (data: LiveStatsData) => {
-    set({
-      stats: { ...DEFAULT_STATS, ...data },
-      lastFetchedAt: Date.now(),
+  applyWsStats: (data: Partial<LiveStatsData>) => {
+    set((state) => {
+      const stats = { ...state.stats, ...data };
+      const changed = (Object.keys(data) as (keyof LiveStatsData)[]).some(
+        (key) => stats[key] !== state.stats[key],
+      );
+      if (!changed) return state;
+      return { stats, lastFetchedAt: Date.now() };
     });
   },
 }));
 
 export function useLiveStatsWs(): void {
   const applyWsStats = useLiveStatsStore((s) => s.applyWsStats);
-  const lastCountRef = useRef<number>(0);
 
   const handler = useCallback(
     (payload: unknown) => {
-      const data = payload as LiveStatsData;
+      const data = payload as Partial<LiveStatsData> | null;
       if (!data || typeof data.onlineUsers !== 'number') return;
-      if (data.onlineUsers === lastCountRef.current) return;
-      lastCountRef.current = data.onlineUsers;
       applyWsStats(data);
     },
     [applyWsStats],

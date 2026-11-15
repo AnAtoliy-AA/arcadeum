@@ -161,7 +161,7 @@ export function EconomyRow({
             ? new Date(setting.updatedAt).toLocaleString()
             : setting.updatedByLabel
               ? setting.updatedByLabel
-              : '—'}
+              : '-'}
         </td>
         <td style={{ padding: '12px 16px' }}>
           <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>

@@ -10,6 +10,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 import { getServerAccessToken } from '@/entities/session/api/serverTokens';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import type { Metadata } from 'next';
+import { getLeaderboard } from '@/shared/api/leaderboard';
 import LeaderboardsClient from './LeaderboardsClient';
 
 export async function generateMetadata({
@@ -60,6 +61,20 @@ export default async function LeaderboardsPage({
     ],
   });
 
+  let initialData = null;
+  try {
+    initialData = await getLeaderboard({
+      mode: 'all',
+      page: 1,
+      pageSize: 50,
+      selfId,
+      accessToken,
+      range: 'week',
+    });
+  } catch {
+    initialData = null;
+  }
+
   return (
     <>
       <JsonLd
@@ -71,6 +86,7 @@ export default async function LeaderboardsPage({
           t={t}
           selfId={selfId}
           accessToken={accessToken ?? undefined}
+          initialData={initialData}
         />
       </Suspense>
     </>

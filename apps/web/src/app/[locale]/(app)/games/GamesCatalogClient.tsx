@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import {
+  useState,
+  useMemo,
+  Children,
+  isValidElement,
+  type ReactNode,
+} from 'react';
 import Link from 'next/link';
 import { FilterChip } from '@arcadeum/ui';
 import type { Locale } from '@/shared/i18n';
-import { GamesCatalogCard } from './components/GamesCatalogCard';
 
 export interface CatalogGameItem {
   id: string;
@@ -38,6 +43,7 @@ interface Props {
   playLabel?: string;
   detailsLabel?: string;
   offlineBadgeLabel?: string;
+  children?: ReactNode;
 }
 
 const CATEGORIES: Array<{
@@ -53,18 +59,13 @@ const CATEGORIES: Array<{
 ];
 
 export function GamesCatalogClient({
-  locale,
   games,
   roomsHref,
   allLabel = 'All Games',
   boardLabel = 'Board Games',
   cardLabel = 'Card Games',
   casualLabel = 'Action & Casual',
-  unavailableLabel = 'Disabled',
-  demoBadgeLabel = 'Demo',
-  playLabel = 'Play Now',
-  detailsLabel = 'Rules',
-  offlineBadgeLabel,
+  children,
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<
     'all' | 'board' | 'card' | 'casual' | 'puzzle'
@@ -93,15 +94,20 @@ export function GamesCatalogClient({
     return counts;
   }, [games]);
 
-  const filteredGames = useMemo(() => {
-    return games.filter((game) => {
-      return selectedCategory === 'all' || game.category === selectedCategory;
+  const filteredChildren = useMemo(() => {
+    if (selectedCategory === 'all') return children;
+    return Children.toArray(children).filter((child) => {
+      if (!isValidElement(child)) return false;
+      const category = (child.props as { 'data-category'?: string })[
+        'data-category'
+      ];
+      return category === selectedCategory;
     });
-  }, [games, selectedCategory]);
+  }, [children, selectedCategory]);
 
   return (
     <div className="box-border flex flex-col gap-8">
-      <div className="box-border flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] backdrop-blur-md shadow-lg">
+      <div className="box-border flex flex-wrap items-center gap-2 p-4 rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)] shadow-lg">
         {CATEGORIES.map((cat) => {
           const isSelected = selectedCategory === cat.key;
           const count = categoryCounts[cat.key] ?? 0;
@@ -122,20 +128,9 @@ export function GamesCatalogClient({
         })}
       </div>
 
-      {filteredGames.length > 0 ? (
+      {Children.count(filteredChildren) > 0 ? (
         <div className="box-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredGames.map((game) => (
-            <GamesCatalogCard
-              key={game.id}
-              game={game}
-              locale={locale}
-              playLabel={playLabel}
-              offlineBadgeLabel={offlineBadgeLabel}
-              demoBadgeLabel={demoBadgeLabel}
-              unavailableLabel={unavailableLabel}
-              detailsLabel={detailsLabel}
-            />
-          ))}
+          {filteredChildren}
         </div>
       ) : (
         <div className="box-border flex flex-col items-center justify-center p-12 text-center rounded-2xl bg-[var(--glassBg)] border border-[var(--borderColor)]">
@@ -150,7 +145,7 @@ export function GamesCatalogClient({
         </div>
       )}
 
-      <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-md shadow-xl">
+      <div className="box-border p-6 rounded-2xl bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-purple-600/20 border border-blue-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="box-border flex flex-col gap-1 text-center sm:text-left">
           <h2 className="box-border m-0 text-base sm:text-lg font-bold text-[var(--foreground)]">
             Looking for live multiplayer action?

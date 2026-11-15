@@ -1,6 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import { getClansSocketRef, useFriendsSocket } from '@/shared/lib/socket';
+import {
+  getClansSocketRef,
+  useClansSocket,
+  useFriendsSocket,
+} from '@/shared/lib/socket';
 import { useClansStore } from '../store/clansStore';
+import type { ClanWar } from '../model/types';
 
 interface ClanMemberJoinedPayload {
   userId: string;
@@ -14,14 +19,15 @@ interface ClanMemberLeftPayload {
 }
 
 export function useClanSocket() {
-  // Actions are stable references; myClan is the only reactive slice.
   const addMember = useClansStore((s) => s.addMember);
   const removeMemberById = useClansStore((s) => s.removeMemberById);
+  const updateClanWar = useClansStore((s) => s.updateClanWar);
   const myClan = useClansStore((s) => s.myClan);
 
   const handleMemberJoined = useCallback(
     (payload: unknown) => {
       const data = payload as ClanMemberJoinedPayload;
+      if (!data?.userId) return;
       addMember({
         id: data.userId,
         userId: data.userId,
@@ -41,24 +47,38 @@ export function useClanSocket() {
   const handleMemberLeft = useCallback(
     (payload: unknown) => {
       const data = payload as ClanMemberLeftPayload;
-      removeMemberById(data.userId);
+      if (data?.userId) {
+        removeMemberById(data.userId);
+      }
     },
     [removeMemberById],
   );
 
+  const handleWarUpdated = useCallback(
+    (payload: unknown) => {
+      const data = payload as ClanWar;
+      if (data?.id) {
+        updateClanWar(data);
+      }
+    },
+    [updateClanWar],
+  );
+
+  useClansSocket('clan:member-joined', handleMemberJoined);
+  useClansSocket('clan:member-left', handleMemberLeft);
+  useClansSocket('clan:war-updated', handleWarUpdated);
+
   useFriendsSocket('clan:member-joined', handleMemberJoined);
   useFriendsSocket('clan:member-left', handleMemberLeft);
-
-  const connectToClanRoom = useCallback(() => {
-    if (myClan) {
-      const socket = getClansSocketRef();
-      socket.emit('clans.join-room', { clanId: myClan.id });
-    }
-  }, [myClan]);
+  useFriendsSocket('clan:war-updated', handleWarUpdated);
 
   useEffect(() => {
-    if (myClan) {
-      connectToClanRoom();
-    }
-  }, [myClan, connectToClanRoom]);
+    if (!myClan?.id) return;
+    const socket = getClansSocketRef();
+    socket.emit('clans.join-room', { clanId: myClan.id });
+
+    return () => {
+      socket.emit('clans.leave-room', { clanId: myClan.id });
+    };
+  }, [myClan?.id]);
 }

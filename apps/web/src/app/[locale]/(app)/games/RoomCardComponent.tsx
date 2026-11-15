@@ -266,7 +266,8 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                           equippedAuraId={member.equippedAuraId}
                           equippedBannerId={member.equippedBannerId}
                           fallbackAvatarUrl={
-                            member.id.startsWith('anon_')
+                            member.id.startsWith('anon_') ||
+                            member.id.startsWith('bot-')
                               ? '/shop/avatars/default-01.png'
                               : undefined
                           }
@@ -309,7 +310,8 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
                       equippedAuraId={member.equippedAuraId}
                       equippedBannerId={member.equippedBannerId}
                       fallbackAvatarUrl={
-                        member.id.startsWith('anon_')
+                        member.id.startsWith('anon_') ||
+                        member.id.startsWith('bot-')
                           ? '/shop/avatars/default-01.png'
                           : undefined
                       }

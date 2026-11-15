@@ -10,7 +10,7 @@ export const frMessages = {
       recycle: 'Recycler la défausse',
       foundation: 'Fondation',
       pile: 'Colonne',
-      selectedHint: 'Carte sélectionnée — choisissez une destination',
+      selectedHint: 'Carte sélectionnée - choisissez une destination',
       loading: 'Mélange…',
     },
     hud: {
@@ -18,13 +18,40 @@ export const frMessages = {
       moves: 'Coups',
       time: 'Temps',
       newGame: 'Nouvelle partie',
+      autoPlace: 'Placement auto',
+      draw1: 'Tirer 1',
+      draw3: 'Tirer 3',
+      switchToDraw1: 'Passer au tirage par 1 carte',
+      switchToDraw3: 'Passer au tirage par 3 cartes',
+      hint: 'Indice',
+      hintHint: 'Suggérer un coup légal optimal',
+      applyHint: 'Appliquer',
+      dismissHint: 'Fermer',
+    },
+    hint: {
+      wasteToFoundation: 'Déplacez la carte du talon vers la fondation',
+      tableauToFoundation: 'Déplacez la carte de la colonne vers la fondation',
+      wasteToTableau: 'Déplacez la carte du talon vers une colonne',
+      tableauToTableau:
+        'Déplacez des cartes entre colonnes pour révéler une carte cachée',
     },
     result: {
       wonTitle: 'Gagné !',
       wonBody: 'Les quatre fondations sont complètes. Partie brillante !',
       lostTitle: 'Plus aucun coup',
-      lostBody: 'La position est bloquée — mélangez et réessayez !',
+      lostBody: 'La position est bloquée - mélangez et réessayez !',
       playAgain: 'Rejouer',
+    },
+    milestone: {
+      title: 'Étape franchie !',
+      title_26: 'À mi-chemin !',
+      title_39: 'Presque réussi : 39 cartes !',
+      badge: 'Étape',
+      badge_26: 'Mi-chemin',
+      badge_39: 'Presque réussi',
+      body_26: '26 cartes placées sur les fondations.',
+      body_39: 'Les trois quarts du jeu sont rangés !',
+      keepGoing: 'Continuer',
     },
     rules: {
       objective:
@@ -37,7 +64,7 @@ export const frMessages = {
     landing: {
       tagline: 'Solo · Sans inscription',
       meta: {
-        title: 'Solitaire — Jeu de cartes Klondike gratuit en ligne | Arcadeum',
+        title: 'Solitaire - Jeu de cartes Klondike gratuit en ligne | Arcadeum',
         description:
           'Jouez au solitaire Klondike classique gratuitement sur Arcadeum. Sans téléchargement ni inscription : casse-tête solo avec score, chronomètre et progression sauvegardée.',
         keywords:
@@ -67,12 +94,12 @@ export const frMessages = {
         q1: {
           question: 'Le solitaire est-il gratuit ?',
           answer:
-            'Oui — le solitaire sur Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
+            'Oui - le solitaire sur Arcadeum est entièrement gratuit, sans téléchargement et sans compte pour commencer.',
         },
         q2: {
           question: 'Faut-il un adversaire ?',
           answer:
-            'Non. Le solitaire est un jeu solo qui tourne entièrement dans votre navigateur — parfait pour une petite pause.',
+            'Non. Le solitaire est un jeu solo qui tourne entièrement dans votre navigateur - parfait pour une petite pause.',
         },
         q3: {
           question: 'Ma progression est-elle sauvegardée ?',

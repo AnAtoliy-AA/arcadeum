@@ -53,7 +53,7 @@ export default async function GameDetailRoute({
   const locale = isLocale(rawLocale) ? rawLocale : 'en';
   const resolvedSearchParams = await searchParams;
 
-  // Skip the sea-battle landing — it has its own richer VideoGame +
+  // Skip the sea-battle landing - it has its own richer VideoGame +
   // FAQPage schema at /games/sea-battle.
   const includeJsonLd = gameId !== 'sea_battle_v1';
 

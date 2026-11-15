@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { ModalButton } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Modal, ModalContent, ModalTitle, ModalActions } from './SharedModal';
+import { InGameAvatar } from './InGameAvatar';
 import { TranslationKey } from '@/shared/i18n/useTranslation';
 
 interface PlayerInfo {
@@ -206,6 +207,12 @@ export function RematchModal({
                   <span className="text-[white] text-[12px]">✓</span>
                 )}
               </CheckboxCircle>
+              <InGameAvatar
+                playerId={player.playerId}
+                name={player.displayName}
+                size="sm"
+                data-testid={`rematch-player-avatar-${player.playerId}`}
+              />
               <PlayerName>
                 {player.displayName}
                 {!player.alive && <EliminatedBadge>💀</EliminatedBadge>}

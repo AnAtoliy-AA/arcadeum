@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-pachisi',
   locale: 'en',
-  title: 'How to Play Pachisi (Ludo) Online — Rules, Captures, Strategy',
+  title: 'How to Play Pachisi (Ludo) Online - Rules, Captures, Strategy',
   excerpt:
     'A complete beginner-friendly guide to Pachisi and Ludo: the cross-and-circle race game with dice, captures, safe squares, and tactical blocking.',
   publishedAt: '2026-07-07',
@@ -13,7 +13,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: 'Pachisi — known internationally as Ludo — is a classic cross-and-circle board game for 2-4 players. Each player races four tokens from their home base around the board and into their home column. Roll dice, capture opponents, block paths, and be the first to bring all four tokens home. The rules are simple enough for children, but the dice luck is balanced by genuine tactical decisions.',
+      text: 'Pachisi - known internationally as Ludo - is a classic cross-and-circle board game for 2-4 players. Each player races four tokens from their home base around the board and into their home column. Roll dice, capture opponents, block paths, and be the first to bring all four tokens home. The rules are simple enough for children, but the dice luck is balanced by genuine tactical decisions.',
     },
     {
       type: 'heading',
@@ -43,7 +43,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Certain squares are marked as safe (often starred or coloured). Tokens on safe squares cannot be captured. Each player has a home column — a final stretch of squares leading into the finish. Only your tokens can enter your home column. You must roll the exact number to land on the final home square.',
+      text: 'Certain squares are marked as safe (often starred or coloured). Tokens on safe squares cannot be captured. Each player has a home column - a final stretch of squares leading into the finish. Only your tokens can enter your home column. You must roll the exact number to land on the final home square.',
     },
     {
       type: 'heading',
@@ -56,7 +56,7 @@ export const post: BlogPost = {
       items: [
         "Spread your tokens. Don't stack all four on one square. Spread them around the track to maintain flexibility and reduce the risk of losing everything to one capture.",
         'Use safe squares. Park tokens on safe squares when possible. They serve as resting points and staging areas.',
-        "Capture when it gains tempo. Capturing gives you an extra roll and sets the opponent back. But don't chase captures recklessly — the dice might not cooperate.",
+        "Capture when it gains tempo. Capturing gives you an extra roll and sets the opponent back. But don't chase captures recklessly - the dice might not cooperate.",
         'Prioritise getting tokens home. As the game progresses, focus on bringing tokens into the home column. A token in the home column is safe and counts toward victory.',
         'Block opponents. If you have two tokens on the same square, opponents cannot pass. Create blockades on key paths, especially near opponent entry points.',
       ],
@@ -73,26 +73,26 @@ export const post: BlogPost = {
         'Stacking all tokens. One lucky capture from an opponent wipes you out.',
         'Chasing captures too aggressively. If you roll badly after a capture, your token is exposed.',
         'Ignoring the home column. Tokens stuck on the track are vulnerable. Get them home.',
-        'Forgetting the exact roll requirement. You need the exact number to finish — plan for it.',
+        'Forgetting the exact roll requirement. You need the exact number to finish - plan for it.',
       ],
     },
     {
       type: 'cta',
       href: '/games/pachisi',
-      text: 'Play Pachisi online — free, in your browser',
+      text: 'Play Pachisi online - free, in your browser',
       description:
         'Open a Pachisi room, race friends or AI. Classic rules with multiple board themes.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win races',
+      text: 'TL;DR - the four habits that win races',
       id: 'tldr',
     },
     {
       type: 'list',
       items: [
-        "Spread tokens around the track — don't stack them.",
+        "Spread tokens around the track - don't stack them.",
         'Use safe squares as resting points.',
         "Capture for tempo but don't chase recklessly.",
         'Prioritise bringing tokens home as the game progresses.',

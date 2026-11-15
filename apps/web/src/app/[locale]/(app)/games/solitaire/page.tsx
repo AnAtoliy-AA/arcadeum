@@ -60,7 +60,7 @@ export default async function SolitaireLandingRoute({ params }: PageProps) {
     },
     howTo: {
       name: `How to Play Solitaire on ${appConfig.appName}`,
-      description: 'Play Solitaire online free — no signup, no download.',
+      description: 'Play Solitaire online free - no signup, no download.',
       steps: [
         {
           name: 'Start',
@@ -99,7 +99,7 @@ export default async function SolitaireLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, [
+        posts={await getPostsByTag(locale, [
           'Solitaire',
           'Klondike',
           'Card Game',

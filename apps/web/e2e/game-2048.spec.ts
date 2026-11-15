@@ -27,12 +27,67 @@ test.describe('2048 Puzzle Game', () => {
     await expect(board).toBeVisible();
   });
 
-  test('displays GameResultModal upon win or lose state in store', async ({
+  test('displays GameResultModal upon win with finish and continue buttons, and continues playing', async ({
     page,
   }) => {
     await navigateTo(page, '/en/games/2048/play');
 
-    await expect(page.getByTestId('game-2048-board')).toBeVisible();
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [1024, 1024, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 1024,
+          best: 1024,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 50,
+          startedAt: Date.now() - 30000,
+          finishedAt: null,
+          finished: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    await page.keyboard.press('ArrowLeft');
+
+    const resultModal = page.getByTestId('game-result-modal');
+    await expect(resultModal).toBeVisible();
+    await expect(resultModal).toHaveAttribute('data-tone', 'victory');
+
+    const finishButton = page.getByTestId('finish-button');
+    await expect(finishButton).toBeVisible();
+
+    const continueButton = page.getByTestId('continue-button');
+    await expect(continueButton).toBeVisible();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(resultModal).toBeVisible();
+
+    await continueButton.click();
+    await expect(resultModal).not.toBeVisible();
+
+    await page.keyboard.press('ArrowDown');
+    await expect(resultModal).not.toBeVisible();
+  });
+
+  test('clicking finish button on win screen starts a new game', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
 
     await page.evaluate(() => {
       const persistedState = {
@@ -64,12 +119,226 @@ test.describe('2048 Puzzle Game', () => {
 
     const resultModal = page.getByTestId('game-result-modal');
     await expect(resultModal).toBeVisible();
-    await expect(resultModal).toHaveAttribute('data-tone', 'victory');
 
-    const keepGoingButton = page.getByTestId('keep-going-button');
-    await expect(keepGoingButton).toBeVisible();
-    await keepGoingButton.click();
+    const finishButton = page.getByTestId('finish-button');
+    await expect(finishButton).toBeVisible();
+    await finishButton.click();
 
     await expect(resultModal).not.toBeVisible();
+    await expect(page.getByTestId('game-2048-score')).toContainText('0');
+  });
+
+  test('slides tiles via touch swipe on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await navigateTo(page, '/en/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 0,
+          best: 0,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 0,
+          startedAt: Date.now() - 30000,
+          finishedAt: null,
+          finished: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const board = document.querySelector('[data-testid="game-2048-board"]');
+      if (!board) return;
+
+      const createTouchPoint = (x: number, y: number) => {
+        if (typeof Touch !== 'undefined') {
+          try {
+            return new Touch({
+              identifier: 1,
+              target: board,
+              clientX: x,
+              clientY: y,
+            });
+          } catch {
+            return {
+              identifier: 1,
+              target: board,
+              clientX: x,
+              clientY: y,
+            };
+          }
+        }
+        return {
+          identifier: 1,
+          target: board,
+          clientX: x,
+          clientY: y,
+        };
+      };
+
+      const dispatchTouch = (type: string, touch: unknown) => {
+        if (typeof TouchEvent !== 'undefined') {
+          try {
+            const event = new TouchEvent(type, {
+              touches: [touch as Touch],
+              bubbles: true,
+              cancelable: true,
+            });
+            board.dispatchEvent(event);
+            return;
+          } catch {
+            const event = new CustomEvent(type, {
+              bubbles: true,
+              cancelable: true,
+            });
+            Object.defineProperty(event, 'touches', { value: [touch] });
+            board.dispatchEvent(event);
+            return;
+          }
+        }
+        const event = new CustomEvent(type, {
+          bubbles: true,
+          cancelable: true,
+        });
+        Object.defineProperty(event, 'touches', { value: [touch] });
+        board.dispatchEvent(event);
+      };
+
+      const t1 = createTouchPoint(200, 200);
+      dispatchTouch('touchstart', t1);
+      const t2 = createTouchPoint(100, 200);
+      dispatchTouch('touchmove', t2);
+    });
+
+    await expect(page.getByTestId('game-2048-score')).toContainText('4');
+  });
+
+  test('1024 milestone popup does not shift game board position and dismisses cleanly', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/en/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    const initialBox = await board.boundingBox();
+    expect(initialBox).not.toBeNull();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [512, 512, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 1024,
+          best: 1024,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 40,
+          startedAt: Date.now() - 30000,
+          finishedAt: null,
+          finished: null,
+          reachedMilestones: [],
+          activeMilestone: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    const boxBeforeSlide = await board.boundingBox();
+    expect(boxBeforeSlide?.y).toBe(initialBox?.y);
+
+    await page.keyboard.press('ArrowLeft');
+
+    const toast = page.getByTestId('game-2048-milestone-toast');
+    await expect(toast).toBeVisible();
+    await expect(toast).toContainText('Halfway');
+
+    const toastBox = await toast.boundingBox();
+    expect(toastBox).not.toBeNull();
+
+    const boxWithToast = await board.boundingBox();
+    expect(boxWithToast?.y).toBe(boxBeforeSlide?.y);
+
+    const overlaps =
+      toastBox!.x < boxWithToast!.x + boxWithToast!.width &&
+      toastBox!.x + toastBox!.width > boxWithToast!.x &&
+      toastBox!.y < boxWithToast!.y + boxWithToast!.height &&
+      toastBox!.y + toastBox!.height > boxWithToast!.y;
+    expect(overlaps).toBe(false);
+
+    const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
+    await expect(dismissButton).toBeVisible();
+    await dismissButton.click();
+
+    await expect(toast).not.toBeVisible();
+
+    const boxAfterDismiss = await board.boundingBox();
+    expect(boxAfterDismiss?.y).toBe(boxBeforeSlide?.y);
+  });
+
+  test('displays translated milestone toast content in non-English locale', async ({
+    page,
+  }) => {
+    await navigateTo(page, '/ru/games/2048/play');
+
+    const board = page.getByTestId('game-2048-board');
+    await expect(board).toBeVisible();
+
+    await page.evaluate(() => {
+      const persistedState = {
+        state: {
+          grid: [256, 256, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 512,
+          best: 512,
+          status: 'playing',
+          keepPlayingFlag: false,
+          moves: 10,
+          startedAt: Date.now() - 5000,
+          finishedAt: null,
+          finished: null,
+          reachedMilestones: [],
+          activeMilestone: null,
+        },
+        version: 0,
+      };
+      localStorage.setItem(
+        'arcadeum_game_2048_v1',
+        JSON.stringify(persistedState),
+      );
+    });
+
+    await page.reload({ waitUntil: 'load' });
+    await expect(board).toBeVisible();
+
+    await page.keyboard.press('ArrowLeft');
+
+    const toast = page.getByTestId('game-2048-milestone-toast');
+    await expect(toast).toBeVisible();
+    await expect(toast).toContainText('Разогрев');
+    await expect(toast).toContainText('Разогрев: 512!');
+
+    const dismissButton = page.getByTestId('game-2048-milestone-dismiss');
+    await expect(dismissButton).toBeVisible();
+    await dismissButton.click();
+    await expect(toast).not.toBeVisible();
   });
 });

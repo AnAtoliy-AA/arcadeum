@@ -18,6 +18,7 @@ import {
 } from '@/shared/i18n/useTranslation';
 import { GameResultModal } from '@/features/games/ui/GameResultModal';
 import { GameRulesModal } from '@/features/games/ui/GameRulesModal';
+import { getSoloRules, getRulesIcon } from './soloRulesHelper';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
@@ -30,11 +31,17 @@ import {
   type SoloControlPanelProps,
 } from './SoloControlPanel';
 import { SoloLeaderboardPanel } from './solo-leaderboard/SoloLeaderboardPanel';
-import { formatDuration, useSoloTimer, StatCard } from './SoloGameStats';
+import {
+  formatDuration,
+  useSoloTimer,
+  useSoloTimerBlocked,
+  StatCard,
+} from './SoloGameStats';
 import {
   SoloActionButton,
   type SoloActionButtonProps,
 } from './SoloActionButton';
+import { SoloUndoButton } from './SoloUndoButton';
 
 export {
   formatDuration,
@@ -43,8 +50,10 @@ export {
   useSoloPause,
   SoloControlPanel,
   SoloActionButton,
+  type SoloPauseState,
+  type SoloControlPanelProps,
+  type SoloActionButtonProps,
 };
-export type { SoloPauseState, SoloControlPanelProps, SoloActionButtonProps };
 
 const SoloFullscreenContext = createContext<boolean>(false);
 
@@ -83,10 +92,16 @@ export interface SoloGameContainerProps {
   actions?: ReactNode;
   children: ReactNode;
   controls?: ReactNode;
+  undo?: {
+    onUndo: () => void;
+    canUndo: boolean;
+    disabled?: boolean;
+  };
   modal: {
     result: 'victory' | 'defeat' | null;
     gameName: string;
     rematchLabel: string;
+    rematchTestId?: string;
     theme?: string;
     stats: GameResultStats | null;
     messages: { title: string; message: string };
@@ -119,6 +134,7 @@ export function SoloGameContainer({
   actions,
   children,
   controls,
+  undo,
   modal,
   loadingMessage,
 }: SoloGameContainerProps) {
@@ -139,6 +155,9 @@ export function SoloGameContainer({
   const [showThemePicker, setShowThemePicker] = useState(false);
   const defaultPause = useSoloPause(isRunning, finishedAt);
   const resolvedPause = pause ?? defaultPause;
+  // Reading the rules is not active play: freeze the shared timer while the
+  // overlay is open so HUD and recorded durations stay in sync.
+  useSoloTimerBlocked(showRules);
 
   const [isDismissed, setIsDismissed] = useState(false);
   const handleCloseModal = useCallback(() => {
@@ -159,32 +178,8 @@ export function SoloGameContainer({
     t(theme.nameKey as TranslationKey) ||
     theme.id.charAt(0).toUpperCase() + theme.id.slice(1).replace(/-/g, ' ');
 
-  const rules = [
-    {
-      badge: '🎯',
-      title: t('games.soloControls.objective') || 'Objective',
-      body: t(`games.${gameId}.rules.objective` as TranslationKey) || '',
-    },
-    {
-      badge: '🎮',
-      title: t('games.soloControls.howToPlay') || 'How to Play',
-      body: t(`games.${gameId}.rules.gameplay` as TranslationKey) || '',
-    },
-    {
-      badge: '🏆',
-      title: t('games.soloControls.scoring') || 'Scoring',
-      body: t(`games.${gameId}.rules.scoring` as TranslationKey) || '',
-    },
-  ].filter((r) => Boolean(r.body));
-
-  const rulesIcon =
-    modal.gameName === '2048'
-      ? '🔢'
-      : modal.gameName === 'Minesweeper'
-        ? '💣'
-        : modal.gameName === 'Solitaire'
-          ? '🃏'
-          : '🧩';
+  const rules = getSoloRules(gameId, t);
+  const rulesIcon = getRulesIcon(modal.gameName);
 
   const renderedHud =
     hud ??
@@ -303,7 +298,18 @@ export function SoloGameContainer({
         pause={resolvedPause}
         finishedAt={finishedAt}
         controls={controls}
-        actions={actions}
+        actions={
+          <>
+            {undo && (
+              <SoloUndoButton
+                onUndo={undo.onUndo}
+                canUndo={undo.canUndo}
+                disabled={undo.disabled}
+              />
+            )}
+            {actions}
+          </>
+        }
         isFullscreen={isFullscreen}
         showLeaderboard={showLeaderboard}
         onToggleLeaderboard={() => setShowLeaderboard((prev) => !prev)}
@@ -364,12 +370,12 @@ export function SoloGameContainer({
               className={cx(
                 'object-cover object-center transition-opacity duration-300',
                 isFullscreen
-                  ? 'opacity-50 sm:opacity-60'
-                  : 'opacity-40 sm:opacity-50',
+                  ? 'opacity-35 sm:opacity-45'
+                  : 'opacity-30 sm:opacity-40',
               )}
             />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/20 via-transparent to-black/40 pointer-events-none" />
-            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,var(--tw-gradient-stops))] from-[var(--primary)]/15 via-transparent to-black/60 pointer-events-none" />
+            <div className="absolute inset-0 bg-black/50 pointer-events-none" />
           </div>
         )}
 
@@ -459,6 +465,7 @@ export function SoloGameContainer({
           gameName={modal.gameName}
           onRematch={handleNewGame}
           rematchLabel={modal.rematchLabel}
+          rematchTestId={modal.rematchTestId}
           secondaryAction={modal.secondaryAction}
           onClose={handleCloseModal}
           t={t}

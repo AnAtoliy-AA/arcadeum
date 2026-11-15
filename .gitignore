@@ -57,3 +57,4 @@ raw_captures/
 .env.monitoring
 apps/be/bin/stockfish
 apps/web/.lighthouseci/
+scripts/data/

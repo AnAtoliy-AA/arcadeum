@@ -35,10 +35,15 @@ export class GameHistoryRematchService {
   async createRematchFromHistory(
     dto: HistoryRematchDto,
     userId: string,
-  ): Promise<{ id: string; invitedIds: string[] }> {
+  ): Promise<{
+    id: string;
+    invitedIds: string[];
+    pending: boolean;
+    pendingUserIds: string[];
+  }> {
     const { roomId: originalRoomId, participantIds } = dto;
 
-    // Atomically claim the rematch lock — only one player can create a
+    // Atomically claim the rematch lock - only one player can create a
     // rematch from a given room at a time.  If rematchPending is already
     // true we reject immediately instead of creating duplicate rooms.
     const lockedRoom = await this.primary
@@ -71,22 +76,49 @@ export class GameHistoryRematchService {
             { $set: { rematchPending: true } },
           );
         } catch {
-          // Best-effort mirror — game works from mirror if primary fails
+          // Best-effort mirror - game works from mirror if primary fails
         }
       }
     }
 
     if (!originalRoom) {
-      // Either room doesn't exist or rematch is already in progress
-      const exists = await this.primary
-        .findById(originalRoomId)
-        .select('_id')
-        .lean()
-        .exec();
+      const exists = await this.primary.findById(originalRoomId).lean().exec();
       if (!exists) {
         throw new NotFoundException(
           `Original room not found: ${originalRoomId}`,
         );
+      }
+      const existingRematchRoomId = (
+        exists.gameOptions as Record<string, unknown> | undefined
+      )?.rematchRoomId as string | undefined;
+
+      const existingRoom = existingRematchRoomId
+        ? await this.primary.findById(existingRematchRoomId).exec()
+        : await this.primary
+            .findOne({
+              'gameOptions.rematchPreviousRoomId': originalRoomId,
+              status: { $in: ['lobby', 'active'] },
+            })
+            .sort({ createdAt: -1 })
+            .exec();
+
+      if (
+        existingRoom &&
+        (existingRoom.status === 'lobby' ||
+          existingRoom.status === 'in_progress')
+      ) {
+        // A second click is not consent. The invited player must use the
+        // explicit accept endpoint before joining the rematch lobby.
+        return {
+          id: existingRoom._id.toString(),
+          invitedIds:
+            (existingRoom.gameOptions?.rematchInvitedIds as string[]) || [],
+          pending: (
+            (existingRoom.gameOptions?.rematchInvitedIds as string[]) || []
+          ).includes(userId),
+          pendingUserIds:
+            (existingRoom.gameOptions?.rematchInvitedIds as string[]) || [],
+        };
       }
       throw new BadRequestException('Rematch already in progress');
     }
@@ -106,15 +138,19 @@ export class GameHistoryRematchService {
         .map((p) => p.userId)
         .filter((id) => id !== userId);
 
-      const invitedIds =
+      const rawInvitedIds =
         participantIds && participantIds.length > 0
           ? participantIds.filter((id) => id !== userId)
           : originalParticipantIds;
 
+      const invitedIds = rawInvitedIds.filter((id) => !id.startsWith('bot-'));
+
       const now = new Date();
+      const rematchExpiresAt = new Date(now.getTime() + 30_000).toISOString();
       const participants: { userId: string; joinedAt: Date }[] = [
         { userId, joinedAt: now },
       ];
+      const seen = new Set<string>([userId]);
       const carriedOptions = dto.gameOptions || originalRoom.gameOptions || {};
       const carriedTeams = (
         carriedOptions as {
@@ -122,7 +158,6 @@ export class GameHistoryRematchService {
         }
       ).teams;
       if (Array.isArray(carriedTeams)) {
-        const seen = new Set<string>([userId]);
         for (const team of carriedTeams) {
           if (!Array.isArray(team.playerIds)) continue;
           for (const pid of team.playerIds) {
@@ -132,6 +167,18 @@ export class GameHistoryRematchService {
             seen.add(pid);
             participants.push({ userId: pid, joinedAt: now });
           }
+        }
+      } else {
+        const botSources = [
+          ...originalRoom.participants.map((p) => p.userId),
+          ...(participantIds || []),
+        ];
+        for (const pid of botSources) {
+          if (typeof pid !== 'string') continue;
+          if (!pid.startsWith('bot-')) continue;
+          if (seen.has(pid)) continue;
+          seen.add(pid);
+          participants.push({ userId: pid, joinedAt: now });
         }
       }
 
@@ -189,8 +236,11 @@ export class GameHistoryRematchService {
         gameOptions: {
           ...(dto.gameOptions || originalRoom.gameOptions || {}),
           rematchInvitedIds: invitedIds,
+          rematchAcceptedIds: [userId],
+          rematchExpiresAt,
           rematchMessage: dto.message,
           rematchPreviousRoomId: originalRoomId,
+          rematchNumber,
         },
       });
 
@@ -202,11 +252,41 @@ export class GameHistoryRematchService {
             { upsert: true },
           );
         } catch {
-          // Mirror is best-effort; game works from primary
+          void 0;
         }
       }
 
-      return { id: newRoom._id.toString(), invitedIds };
+      await this.primary
+        .updateOne(
+          { _id: originalRoomId },
+          {
+            $set: {
+              'gameOptions.rematchRoomId': newRoom._id.toString(),
+              rematchPending: true,
+            },
+          },
+        )
+        .catch(() => {});
+      if (this.mirror) {
+        await this.mirror
+          .updateOne(
+            { _id: originalRoomId },
+            {
+              $set: {
+                'gameOptions.rematchRoomId': newRoom._id.toString(),
+                rematchPending: true,
+              },
+            },
+          )
+          .catch(() => {});
+      }
+
+      return {
+        id: newRoom._id.toString(),
+        invitedIds,
+        pending: invitedIds.length > 0,
+        pendingUserIds: invitedIds,
+      };
     } catch (err) {
       // Release the lock on failure so the other player can retry
       await this.primary

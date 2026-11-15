@@ -22,6 +22,7 @@ import { PendingRequestNotice } from '@/components/ui/PendingRequestNotice';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useIsTV } from '@/hooks/useTVFocus';
+import { useRematchDeepLink } from '@/hooks/useRematchDeepLink';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -55,6 +56,7 @@ function NavigationRoot() {
   const router = useRouter();
   const appName = useAppName();
   const isTV = useIsTV();
+  useRematchDeepLink();
 
   useEffect(() => {
     if (isTV) {

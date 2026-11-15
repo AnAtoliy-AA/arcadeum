@@ -90,18 +90,33 @@ export class SeaBattleGateway extends BaseGameGateway<Record<string, unknown>> {
     emitExtra?: Record<string, unknown>,
   ): Promise<void> {
     const { roomId, userId } = extractRoomAndUser(payload);
-    const targetPlayerId = extractString(payload, 'targetPlayerId');
-    if (!targetPlayerId) throw new WsException('targetPlayerId is required');
+    const targetPlayerId =
+      typeof payload?.targetPlayerId === 'string'
+        ? payload.targetPlayerId.trim()
+        : '';
+    if (!targetPlayerId && action !== 'useShipAbility') {
+      throw new WsException('targetPlayerId is required');
+    }
+    const abilityId =
+      typeof payload?.abilityId === 'string'
+        ? payload.abilityId.trim()
+        : undefined;
     validatePayloadUserId(client, userId);
     try {
       await this.gameService.executeActionByRoom(userId, roomId, action, {
-        targetPlayerId,
+        abilityId,
+        targetPlayerId: targetPlayerId || undefined,
         row: payload.row,
         col: payload.col,
       });
       client.emit(
         ackEvent,
-        maybeEncrypt({ roomId, userId, targetPlayerId, ...emitExtra }),
+        maybeEncrypt({
+          roomId,
+          userId,
+          ...(targetPlayerId ? { targetPlayerId } : {}),
+          ...emitExtra,
+        }),
       );
     } catch (error) {
       handleError(
@@ -228,6 +243,19 @@ export class SeaBattleGateway extends BaseGameGateway<Record<string, unknown>> {
           'useRadar',
           'seaBattle.session.radar_result',
           { row: payload.row, col: payload.col },
+        ),
+      'seaBattle.session.use_ship_ability': (client, payload) =>
+        this.dispatchAction(
+          client,
+          payload,
+          'useShipAbility',
+          'seaBattle.session.ship_ability_result',
+          {
+            abilityId: payload.abilityId,
+            targetPlayerId: payload.targetPlayerId,
+            row: payload.row,
+            col: payload.col,
+          },
         ),
       'seaBattle.session.history_note': this.wrapHandler(
         'post history note',

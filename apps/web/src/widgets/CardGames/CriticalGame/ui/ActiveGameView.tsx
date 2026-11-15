@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useGameChatIntegration } from '@/features/games/hooks';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
@@ -28,6 +28,7 @@ import { useGameHandlers } from '../hooks/useGameHandlers';
 import { GameStatusMessage } from './GameStatusMessage';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { MatchWidget } from './MatchWidget';
 import { ActiveGameModals } from './ActiveGameModals';
 import { getVariantStyles } from './styles/variants';
@@ -36,7 +37,7 @@ import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
-import type { RematchInvitation } from '@/features/games/hooks/useRematch';
+import type { useRematch } from '@/features/games/hooks/useRematch';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useGameSound } from '@/shared/lib/game-sounds';
 
@@ -57,26 +58,7 @@ interface ActiveGameViewProps {
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
   onOpenRules: () => void;
-  // Rematch props
-  rematch: {
-    rematchLoading: boolean;
-    rematchError: string | null;
-    showRematchModal: boolean;
-    openRematchModal: () => void;
-    closeRematchModal: () => void;
-    handleRematch: (
-      participantIds: string[],
-      message?: string,
-    ) => Promise<void>;
-    invitation: RematchInvitation | null;
-    invitationTimeLeft: number;
-    handleAcceptInvitation: () => void;
-    handleDeclineInvitation: () => void;
-    isAcceptingInvitation: boolean;
-    handleReinvite: (userIds: string[]) => void;
-    handleBlockRematch: (roomId: string) => void;
-    handleBlockUser: (userId: string) => void;
-  };
+  rematch: ReturnType<typeof useRematch>;
 }
 
 export function ActiveGameView({
@@ -113,14 +95,18 @@ export function ActiveGameView({
     () => CRITICAL_VARIANTS.find((v) => v.id === cardVariant),
     [cardVariant],
   );
+  const isRanked = room.gameOptions?.ranked === true;
   const headerTitle = variantMeta
     ? `${t('games.critical_v1.name')} · ${t(variantMeta.name as TranslationKey)}`
     : t('games.critical_v1.name');
+  const headerSubtitle = isRanked
+    ? room.name
+      ? `${room.name} • ⚔️ ${t('games.rooms.ranked')}`
+      : `⚔️ ${t('games.rooms.ranked')}`
+    : room.name;
   const turnPlayerId = snapshot.playerOrder[snapshot.currentTurnIndex] ?? null;
 
-  // Sync modal dismissal state with game over state
   const [modalDismissed, setModalDismissed] = useState(false);
-
   const [wasAlreadyOverOnMount] = useState(() => isGameOver === true);
   const [hasSeenActiveGame, setHasSeenActiveGame] = useState(false);
 
@@ -128,10 +114,7 @@ export function ActiveGameView({
     setHasSeenActiveGame(true);
   }
 
-  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   const [prevIsGameOver, setPrevIsGameOver] = useState(isGameOver);
-
-  // Reset modal dismissal when game over state changes (e.g. new game starts or current game ends)
   if (isGameOver !== prevIsGameOver) {
     setPrevIsGameOver(isGameOver);
     setModalDismissed(false);
@@ -140,6 +123,11 @@ export function ActiveGameView({
   const showResultModal = isGameOver && !modalDismissed && hasSeenActiveGame;
   useWebGameHaptics(isMyTurn);
   const { play } = useGameSound('critical_v1');
+  const prevMyTurnRef = useRef(isMyTurn);
+  useEffect(() => {
+    if (isMyTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = isMyTurn;
+  }, [isMyTurn, isGameOver, play]);
 
   // Record game result to local stats
   const criticalResult = useMemo(() => {
@@ -200,7 +188,6 @@ export function ActiveGameView({
     omniscienceModal,
     setOmniscienceModal,
     handleCloseOmniscienceModal,
-    handleConfirmEventCombo,
     favorModal,
   } = useCriticalModals({
     playFavor: actions.playFavor,
@@ -264,6 +251,7 @@ export function ActiveGameView({
 
   const {
     handleOpenFiverCombo,
+    handleConfirmEventCombo,
     handleConfirmStash,
     handleConfirmMark,
     handleConfirmStealDraw,
@@ -314,7 +302,8 @@ export function ActiveGameView({
         headerProps={{
           variantEmoji: variantMeta?.emoji ?? '🎴',
           title: headerTitle,
-          subtitle: room.name,
+          subtitle: headerSubtitle,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: { onClockUserId: turnPlayerId, isMyTurn, isGameOver },
         }}
         board={
@@ -443,6 +432,11 @@ export function ActiveGameView({
                 handleReinvite: rematch.handleReinvite,
                 handleBlockRematch: rematch.handleBlockRematch,
                 handleBlockUser: rematch.handleBlockUser,
+                waiting: rematch.waiting,
+                waitingTimeLeft: rematch.waitingTimeLeft,
+                cancelRematch: rematch.cancelRematch,
+                joinRematchRoom: rematch.joinRematchRoom,
+                dismissWaiting: rematch.dismissWaiting,
                 resultMessages: undefined,
                 ratingDelta: null,
               }}

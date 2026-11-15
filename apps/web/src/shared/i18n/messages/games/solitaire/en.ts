@@ -2,7 +2,7 @@ export const enMessages = {
   solitaire_v1: {
     name: 'Solitaire',
     description:
-      'Classic Klondike Solitaire — build the four foundations straight up from Ace to King',
+      'Classic Klondike Solitaire - build the four foundations straight up from Ace to King',
     summary:
       'The timeless card puzzle: uncover the tableau, alternate colors down the columns, and stack every suit from Ace to King.',
     board: {
@@ -10,7 +10,7 @@ export const enMessages = {
       recycle: 'Recycle the waste pile',
       foundation: 'Foundation',
       pile: 'Tableau pile',
-      selectedHint: 'Card selected — tap a destination pile',
+      selectedHint: 'Card selected - tap a destination pile',
       loading: 'Shuffling…',
     },
     hud: {
@@ -18,13 +18,40 @@ export const enMessages = {
       moves: 'Moves',
       time: 'Time',
       newGame: 'New game',
+      autoPlace: 'Auto-place',
+      draw1: 'Turn 1',
+      draw3: 'Turn 3',
+      switchToDraw1: 'Switch to Turn 1 mode',
+      switchToDraw3: 'Switch to Turn 3 mode',
+      hint: 'Hint',
+      hintHint: 'Suggest a smart legal move',
+      applyHint: 'Apply move',
+      dismissHint: 'Dismiss',
+    },
+    hint: {
+      wasteToFoundation: 'Move card from waste to foundation',
+      tableauToFoundation: 'Move card from tableau to foundation',
+      wasteToTableau: 'Move card from waste to tableau column',
+      tableauToTableau:
+        'Move card run between tableau columns to reveal hidden cards',
     },
     result: {
       wonTitle: 'You win!',
       wonBody: 'All four foundations are complete. Brilliantly played.',
       lostTitle: 'No moves left',
-      lostBody: 'The board is stuck — shuffle up and try again!',
+      lostBody: 'The board is stuck - shuffle up and try again!',
       playAgain: 'Play again',
+    },
+    milestone: {
+      title: 'Milestone Reached!',
+      title_26: 'Halfway Home!',
+      title_39: 'Almost There: 39 Cards!',
+      badge: 'Milestone',
+      badge_26: 'Halfway',
+      badge_39: 'Almost There',
+      body_26: '26 cards placed on the foundations.',
+      body_39: 'Three quarters of the deck is home!',
+      keepGoing: 'Keep Going',
     },
     rules: {
       objective:
@@ -37,9 +64,9 @@ export const enMessages = {
     landing: {
       tagline: 'Single-player · No signup',
       meta: {
-        title: 'Solitaire — Free Online Klondike Card Game | Arcadeum',
+        title: 'Solitaire - Free Online Klondike Card Game | Arcadeum',
         description:
-          'Play classic Klondike Solitaire free online at Arcadeum. No download, no signup — instant single-player card puzzles with scoring, timer, and saved progress.',
+          'Play classic Klondike Solitaire free online at Arcadeum. No download, no signup - instant single-player card puzzles with scoring, timer, and saved progress.',
         keywords:
           'solitaire, klondike, patience, card game, single player, free, online, browser game, no download',
       },
@@ -52,7 +79,7 @@ export const enMessages = {
       features: {
         solo: {
           title: 'Truly single-player',
-          body: 'No accounts, no waiting rooms — deal instantly and play at your own pace.',
+          body: 'No accounts, no waiting rooms - deal instantly and play at your own pace.',
         },
         progress: {
           title: 'Progress is saved',
@@ -67,12 +94,12 @@ export const enMessages = {
         q1: {
           question: 'Is Solitaire free to play?',
           answer:
-            'Yes — Solitaire on Arcadeum is completely free, requires no download, and needs no account to start playing.',
+            'Yes - Solitaire on Arcadeum is completely free, requires no download, and needs no account to start playing.',
         },
         q2: {
           question: 'Do I need an opponent?',
           answer:
-            'No. Solitaire is a single-player game that runs entirely in your browser — perfect for a quick break.',
+            'No. Solitaire is a single-player game that runs entirely in your browser - perfect for a quick break.',
         },
         q3: {
           question: 'Is my progress saved?',
@@ -118,7 +145,7 @@ export const enMessages = {
       steps: {
         create: {
           title: 'Deal the cards',
-          body: 'Open the game and the tableau is dealt instantly — seven columns with the top card revealed.',
+          body: 'Open the game and the tableau is dealt instantly - seven columns with the top card revealed.',
         },
         join: {
           title: 'Learn the moves',

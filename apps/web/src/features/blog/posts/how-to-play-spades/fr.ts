@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-spades',
   locale: 'fr',
   title:
-    'Comment jouer aux Piques (Spades) en ligne — Règles, enchères, Nil et stratégie',
+    'Comment jouer aux Piques (Spades) en ligne - Règles, enchères, Nil et stratégie',
   excerpt:
     'Guide complet pour débutants aux Piques : partenariats, donnes, enchères avec Nil, jeu de la carte, pénalités de plis excédentaires et tactiques d’équipe gagnantes.',
   publishedAt: '2026-07-21',
@@ -128,7 +128,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/spades',
-      text: 'Jouer aux Piques en ligne — Gratuit dans votre navigateur',
+      text: 'Jouer aux Piques en ligne - Gratuit dans votre navigateur',
       description:
         'Rejoignez des parties instantanées contre d’autres passionnés ou affrontez des bots sans inscription.',
     },

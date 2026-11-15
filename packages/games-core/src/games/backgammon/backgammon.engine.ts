@@ -35,6 +35,20 @@ function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/** Map Backgammon point identifiers to grid cell coordinates for chat highlighting. */
+function bgPointToCell(
+  point: number | 'bar' | 'off',
+): { row: number; col: number } {
+  if (point === 'bar') return { row: 3, col: 6 };
+  if (point === 'off') return { row: 3, col: 7 };
+  const p = point as number;
+  if (p >= 0 && p <= 5) return { row: 5 - p, col: 0 };
+  if (p >= 6 && p <= 11) return { row: 11 - p, col: 1 };
+  if (p >= 12 && p <= 17) return { row: 17 - p, col: 2 };
+  if (p >= 18 && p <= 23) return { row: 23 - p, col: 3 };
+  return { row: 0, col: 0 };
+}
+
 /** Source of dice rolls. Injected so tests can force deterministic rolls — the payload is NEVER trusted for randomness (anti-cheat). */
 export type DiceRoller = () => [number, number];
 
@@ -82,7 +96,13 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         color: 'white',
         bar: 0,
         borneOff: 0,
-        pipCount: calculatePipCount(player0Id, playerIds, points, 0),
+        pipCount: calculatePipCount(
+          player0Id,
+          playerIds,
+          points,
+          0,
+          options.mode,
+        ),
         alive: true,
       },
       {
@@ -90,7 +110,13 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
         color: 'black',
         bar: 0,
         borneOff: 0,
-        pipCount: calculatePipCount(player1Id, playerIds, points, 0),
+        pipCount: calculatePipCount(
+          player1Id,
+          playerIds,
+          points,
+          0,
+          options.mode,
+        ),
         alive: true,
       },
     ];
@@ -261,13 +287,16 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
           newState.playerOrder,
           newState.points,
           pl.bar,
+          newState.options.mode,
         );
       }
 
+      const fromCoords = bgPointToCell(p.from);
+      const toCoords = bgPointToCell(p.to);
       newState.logs.push(
         this.createLogEntry(
           'action',
-          `Moved checker from ${p.from} to ${p.to}.`,
+          `Move from (${fromCoords.row}, ${fromCoords.col}) to (${toCoords.row}, ${toCoords.col}).`,
           { senderId: playerId },
         ),
       );
@@ -283,6 +312,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
           newState.points,
           newState.bar,
           newState.borneOff,
+          newState.options.mode,
         );
         newState.logs.push(
           this.createLogEntry(
@@ -320,7 +350,7 @@ export class BackgammonEngine extends BaseGameEngine<BackgammonState> {
       newState.dice = [];
       newState.phase = GAME_PHASE.ROLL;
       newState.logs.push(
-        this.createLogEntry('action', 'No legal moves — turn passed.', {
+        this.createLogEntry('action', 'No legal moves - turn passed.', {
           senderId: context.userId,
         }),
       );

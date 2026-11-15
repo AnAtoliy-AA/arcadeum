@@ -97,9 +97,6 @@ export function RoomDetails({ gameId, form, labels, onChange }: Props) {
           onChange={(e) =>
             onChange({ roomName: e.target.value, preset: 'custom' })
           }
-          onFocus={() => {
-            onChange({ roomName: form.roomName });
-          }}
         />
       </div>
 

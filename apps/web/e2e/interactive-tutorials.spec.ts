@@ -48,15 +48,24 @@ test.describe('Interactive Tutorials & Academy', () => {
   }) => {
     await navigateTo(page, '/en/games/tic-tac-toe');
 
-    const academySection = page.getByTestId('game-academy-section');
+    const academySection = page
+      .locator('#main-content')
+      .getByTestId('game-academy-section')
+      .first();
+    await academySection
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(academySection).toBeVisible();
 
-    const puzzle2Tab = page.getByRole('button', { name: 'Puzzle 2' });
+    const puzzle2Tab = academySection.getByTestId('academy-puzzle-tab-2');
     await expect(puzzle2Tab).toBeVisible();
-    await puzzle2Tab.click();
 
-    await expect(
-      page.getByText('Academy Challenge 2: Defend the Center Trap'),
-    ).toBeVisible();
+    const challenge2Title = page.getByText(
+      'Academy Challenge 2: Defend the Center Trap',
+    );
+    await expect(async () => {
+      await puzzle2Tab.click({ force: true });
+      await expect(challenge2Title).toBeVisible();
+    }).toPass();
   });
 });

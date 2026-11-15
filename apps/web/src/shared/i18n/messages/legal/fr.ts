@@ -274,7 +274,7 @@ export const fr: LegalMessages = {
         eyebrow: 'Support joueurs',
         title: 'Nous sommes dans la même équipe.',
         tagline:
-          "Posez une question, signalez un bug, partagez une idée — nous lisons chaque message et toute l'équipe joue aux jeux que nous publions.",
+          "Posez une question, signalez un bug, partagez une idée - nous lisons chaque message et toute l'équipe joue aux jeux que nous publions.",
         statusOk: 'Tous les systèmes opérationnels',
         medianReply: '~ {{hours}} h de réponse médiane',
         humansOnline: '{{count}} personnes en ligne',
@@ -321,7 +321,7 @@ export const fr: LegalMessages = {
         email: 'Email',
         subject: 'Sujet',
         message: 'Message',
-        privacy: 'Confidentiel — nous ne partageons jamais votre email.',
+        privacy: 'Confidentiel - nous ne partageons jamais votre email.',
         submit: 'Lancer le message',
         submitting: 'Envoi…',
         successTitle: 'Message parti.',
@@ -365,18 +365,18 @@ export const fr: LegalMessages = {
         label: 'Réponses plus rapides',
         title: 'Aidez-nous à vous répondre plus vite',
         orderId:
-          'Indiquez votre numéro de commande pour les remboursements ou paiements — on retrouve le reçu instantanément.',
+          'Indiquez votre numéro de commande pour les remboursements ou paiements - on retrouve le reçu instantanément.',
         bugs: 'Pour les bugs : étapes de reproduction, navigateur et appareil. Plus c’est précis, plus on triage vite.',
         screenshots:
-          'Les captures d’écran sont les bienvenues — collez-les directement dans le message, pas besoin de pièces jointes.',
+          'Les captures d’écran sont les bienvenues - collez-les directement dans le message, pas besoin de pièces jointes.',
         account:
-          "Pour les soucis de connexion ou de compte — indiquez l'email d'inscription pour qu'on retrouve votre compte.",
+          "Pour les soucis de connexion ou de compte - indiquez l'email d'inscription pour qu'on retrouve votre compte.",
         urgent:
           "Urgent ? Ajoutez « urgent » à l'objet et on l'envoie à l'équipe de garde.",
         language:
-          'Écrivez dans la langue de votre choix — on répond en EN, RU, ES, FR, BY.',
+          'Écrivez dans la langue de votre choix - on répond en EN, RU, ES, FR, BY.',
         footer:
-          'Chaque message est lu par un humain de notre équipe — pas de chatbot, pas de réponse auto.',
+          'Chaque message est lu par un humain de notre équipe - pas de chatbot, pas de réponse auto.',
       },
       ticker: {
         label: 'Flux QG en direct',
@@ -392,7 +392,7 @@ export const fr: LegalMessages = {
         password: {
           question: 'Comment réinitialiser mon mot de passe ?',
           answer:
-            "Utilisez le lien « Mot de passe oublié » sur l'écran de connexion. L'email arrive en environ une minute — vérifiez les spams. Si votre email a changé, contactez le support.",
+            "Utilisez le lien « Mot de passe oublié » sur l'écran de connexion. L'email arrive en environ une minute - vérifiez les spams. Si votre email a changé, contactez le support.",
         },
         deleteAccount: {
           question: 'Comment supprimer mon compte ?',

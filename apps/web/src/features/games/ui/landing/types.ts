@@ -25,6 +25,13 @@ export interface GameLandingLayoutProps {
     | 'blue';
 }
 
+export interface QuickNavItem {
+  id: string;
+  label: string;
+  badge?: string;
+  href?: string;
+}
+
 export interface GameLandingHeroProps {
   gameId: string;
   title: string;
@@ -48,6 +55,7 @@ export interface GameLandingHeroProps {
   heroVisual?: ReactNode;
   initialTheme?: string;
   comingSoon?: boolean;
+  quickNavItems?: QuickNavItem[];
 }
 
 export interface GameHighlightItem {
@@ -184,6 +192,8 @@ export interface UnifiedGameLandingProps {
     | 'orange'
     | 'blue';
   hero: GameLandingHeroProps;
+  quickNavItems?: QuickNavItem[];
+  topSection?: ReactNode;
   specifications?: GameSpecTableProps;
   comparison?: PlatformComparisonTableProps;
   highlights?: GameHighlightsGridProps;

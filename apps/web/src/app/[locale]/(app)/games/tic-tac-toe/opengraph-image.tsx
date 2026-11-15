@@ -9,7 +9,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 export const alt =
-  'Tic-Tac-Toe — free online 2-player multiplayer on Arcadeum Games';
+  'Tic-Tac-Toe - free online 2-player multiplayer on Arcadeum Games';
 
 type Props = { params: Promise<{ locale: string }> };
 

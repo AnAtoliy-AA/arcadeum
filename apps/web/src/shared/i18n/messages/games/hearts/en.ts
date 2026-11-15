@@ -2,13 +2,13 @@ export const enMessages = {
   hearts_v1: {
     name: 'Hearts',
     description:
-      'Classic 4-player trick-taking card game — avoid penalty cards and shoot the moon',
+      'Classic 4-player trick-taking card game - avoid penalty cards and shoot the moon',
     summary:
       'Pass cards strategically, follow suit, dump Hearts and the Queen of Spades, and try to shoot the moon!',
     variants: {},
     landing: {
       meta: {
-        title: 'Hearts — Free Multiplayer Card Game | Arcadeum',
+        title: 'Hearts - Free Multiplayer Card Game | Arcadeum',
         description:
           'Play Hearts online for free on Arcadeum. Classic 4-player trick-taking card game with passing, Hearts, Queen of Spades, and AI opponents.',
         keywords:
@@ -30,7 +30,7 @@ export const enMessages = {
         },
         passing: {
           title: 'Card Passing',
-          body: 'Pass 3 cards each hand — Left, Right, Across, then Hold',
+          body: 'Pass 3 cards each hand - Left, Right, Across, then Hold',
         },
         shooting: {
           title: 'Shoot the Moon',
@@ -104,7 +104,7 @@ export const enMessages = {
         breaking: {
           question: 'When can you lead Hearts?',
           answer:
-            'Hearts cannot lead a trick until they have been "broken" — meaning a Heart has been discarded on a previous trick. Once broken, any Heart may lead.',
+            'Hearts cannot lead a trick until they have been "broken" - meaning a Heart has been discarded on a previous trick. Once broken, any Heart may lead.',
         },
         queenStrategy: {
           question: 'How should I handle the Queen of Spades?',
@@ -157,7 +157,7 @@ export const enMessages = {
       lost: 'You lost.',
       draw: 'It is a draw.',
       messages: {
-        won: 'Lowest score at the table — well played!',
+        won: 'Lowest score at the table - well played!',
         lost: 'Someone else kept a cleaner sheet. Want a rematch?',
         draw: 'Tied on points. Try another?',
       },
@@ -202,7 +202,7 @@ export const enMessages = {
     tutorial: {
       s1: {
         title: 'Dodge the points',
-        body: 'Follow suit when you can; the highest card of the lead suit takes the trick — and every penalty card in it.',
+        body: 'Follow suit when you can; the highest card of the lead suit takes the trick - and every penalty card in it.',
       },
       s2: {
         title: 'Fear the Queen',

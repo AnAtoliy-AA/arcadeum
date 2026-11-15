@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -68,8 +69,14 @@ function CascadeGameImpl({
   onShowRulesClose,
 }: CascadeGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
   const isLobby = room?.status === 'lobby';
 
   const {
@@ -174,6 +181,7 @@ function CascadeGameImpl({
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />
@@ -265,6 +273,7 @@ function CascadeGameImpl({
           variantEmoji: variantTokens.emoji,
           title: 'Cascade',
           subtitle: room?.name,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentEntryId ?? null,
             isMyTurn: myTurn,

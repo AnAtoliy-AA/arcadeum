@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -15,11 +16,16 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
-import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';
+import type {
+  PachisiGameProps,
+  PachisiOptions,
+  PachisiTheme,
+  PachisiToken,
+} from '../types';
 import { usePachisiState } from '../hooks/usePachisiState';
 import { usePachisiActions } from '../hooks/usePachisiActions';
 import { PachisiThemeProvider } from '../lib/PachisiThemeContext';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { PachisiLobby } from './PachisiLobby';
 import { PachisiBoard } from './PachisiBoard';
 import { RulesModal } from './RulesModal';
@@ -45,13 +51,18 @@ function PachisiGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: PachisiGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -78,6 +89,63 @@ function PachisiGameImpl({
   });
 
   const { play } = useGameSound('pachisi_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevFinishedCountRef = useRef(0);
+  useEffect(() => {
+    if (!snapshot?.tokens) return;
+    const finished = Object.values(snapshot.tokens).reduce(
+      (acc, tokens) => acc + tokens.filter((t) => t.progress === 56).length,
+      0,
+    );
+    if (
+      finished > prevFinishedCountRef.current &&
+      prevFinishedCountRef.current > 0
+    ) {
+      play('success');
+    }
+    prevFinishedCountRef.current = finished;
+  }, [snapshot?.tokens, play]);
+
+  const prevTokensRef = useRef<Record<string, PachisiToken[]>>({});
+  useEffect(() => {
+    if (!snapshot?.tokens) return;
+    let hasCapture = false;
+    for (const [playerId, tokens] of Object.entries(snapshot.tokens)) {
+      const prevTokens = prevTokensRef.current[playerId];
+      if (prevTokens) {
+        for (const t of tokens) {
+          const prev = prevTokens.find((pt) => pt.id === t.id);
+          if (prev && prev.progress >= 0 && t.progress === -1) {
+            hasCapture = true;
+            break;
+          }
+        }
+      }
+      if (hasCapture) break;
+    }
+    if (hasCapture) {
+      play('capture');
+    }
+    prevTokensRef.current = snapshot.tokens;
+  }, [snapshot?.tokens, play]);
+
+  const prevGameOverRef = useRef(isGameOver);
+  useEffect(() => {
+    if (isGameOver && !prevGameOverRef.current) {
+      if (snapshot?.winnerId && snapshot.winnerId === currentUserId) {
+        play('win');
+      } else if (snapshot?.winnerId) {
+        play('lose');
+      }
+    }
+    prevGameOverRef.current = isGameOver;
+  }, [isGameOver, snapshot?.winnerId, currentUserId, play]);
 
   const handleRoll = useCallback(() => {
     play('roll');
@@ -110,15 +178,10 @@ function PachisiGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'pachisi_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -196,7 +259,7 @@ function PachisiGameImpl({
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onRefresh={onRefresh}
-          onReorderPlayers={handleReorderPlayers}
+          onReorderPlayers={onReorderPlayers}
           onShowRulesClose={onShowRulesClose}
           onStartGame={handleStartGame}
           room={room}
@@ -219,6 +282,7 @@ function PachisiGameImpl({
           onPassTurn={handlePass}
           onRoll={handleRoll}
           snapshot={snapshot}
+          highlightedCells={chatHighlightCells}
         />
       ) : null}
     </div>
@@ -266,6 +330,7 @@ function PachisiGameImpl({
           title: t('games.pachisi_v1.name'),
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

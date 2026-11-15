@@ -46,7 +46,7 @@ describe('Game2048 UI', () => {
     expect(useGame2048Store.getState().score).toBe(0);
   });
 
-  it('shows GameResultModal when game finishes as victory', () => {
+  it('shows GameResultModal when game finishes as victory with finish and continue buttons', () => {
     useGame2048Store.setState({
       finished: {
         won: true,
@@ -55,6 +55,8 @@ describe('Game2048 UI', () => {
         durationMs: 120000,
       },
       finishedAt: Date.now(),
+      status: 'won',
+      keepPlayingFlag: false,
     });
 
     render(<Game2048 />);
@@ -62,8 +64,32 @@ describe('Game2048 UI', () => {
     const modal = screen.getByTestId('game-result-modal');
     expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('data-tone', 'victory');
-    expect(screen.getByTestId('keep-going-button')).toBeInTheDocument();
-    expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
+    expect(screen.getByTestId('continue-button')).toBeInTheDocument();
+    expect(screen.getByTestId('finish-button')).toBeInTheDocument();
+  });
+
+  it('resets board when finish button is clicked on win modal', () => {
+    useGame2048Store.setState({
+      finished: {
+        won: true,
+        score: 20480,
+        moves: 950,
+        durationMs: 120000,
+      },
+      finishedAt: Date.now(),
+      status: 'won',
+      keepPlayingFlag: false,
+    });
+
+    render(<Game2048 />);
+
+    const finishBtn = screen.getByTestId('finish-button');
+    expect(finishBtn).toBeInTheDocument();
+    fireEvent.click(finishBtn);
+
+    expect(useGame2048Store.getState().score).toBe(0);
+    expect(useGame2048Store.getState().finishedAt).toBeNull();
+    expect(useGame2048Store.getState().status).toBe('playing');
   });
 
   it('shows GameResultModal when game finishes as defeat', () => {
@@ -75,6 +101,7 @@ describe('Game2048 UI', () => {
         durationMs: 45000,
       },
       finishedAt: Date.now(),
+      status: 'lost',
     });
 
     render(<Game2048 />);
@@ -82,7 +109,7 @@ describe('Game2048 UI', () => {
     const modal = screen.getByTestId('game-result-modal');
     expect(modal).toBeInTheDocument();
     expect(modal).toHaveAttribute('data-tone', 'defeat');
-    expect(screen.queryByTestId('keep-going-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('continue-button')).not.toBeInTheDocument();
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
 
@@ -102,9 +129,9 @@ describe('Game2048 UI', () => {
 
     const { rerender } = render(<Game2048 />);
 
-    const keepGoingBtn = screen.getByTestId('keep-going-button');
-    expect(keepGoingBtn).toBeInTheDocument();
-    fireEvent.click(keepGoingBtn);
+    const continueBtn = screen.getByTestId('continue-button');
+    expect(continueBtn).toBeInTheDocument();
+    fireEvent.click(continueBtn);
 
     expect(useGame2048Store.getState().keepPlayingFlag).toBe(true);
     expect(useGame2048Store.getState().finishedAt).toBeNull();
@@ -122,5 +149,168 @@ describe('Game2048 UI', () => {
 
     rerender(<Game2048 />);
     expect(screen.queryByTestId('game-result-modal')).not.toBeInTheDocument();
+  });
+
+  it('blocks moves while win modal is displayed until continue is clicked', () => {
+    useGame2048Store.setState({
+      grid: [1024, 1024, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      score: 1024,
+      status: 'playing',
+      keepPlayingFlag: false,
+      finishedAt: null,
+      finished: null,
+    });
+
+    act(() => {
+      useGame2048Store.getState().move('left');
+    });
+
+    expect(useGame2048Store.getState().status).toBe('won');
+    expect(useGame2048Store.getState().finishedAt).not.toBeNull();
+    expect(useGame2048Store.getState().keepPlayingFlag).toBe(false);
+
+    const gridBefore = [...useGame2048Store.getState().grid];
+
+    act(() => {
+      useGame2048Store.getState().move('down');
+    });
+
+    expect(useGame2048Store.getState().grid).toEqual(gridBefore);
+    expect(useGame2048Store.getState().status).toBe('won');
+    expect(useGame2048Store.getState().finishedAt).not.toBeNull();
+
+    act(() => {
+      useGame2048Store.getState().continuePlaying();
+    });
+
+    expect(useGame2048Store.getState().keepPlayingFlag).toBe(true);
+    expect(useGame2048Store.getState().finishedAt).toBeNull();
+  });
+
+  it('triggers slide on touchmove without waiting for touchend', () => {
+    useGame2048Store.setState({
+      grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      score: 0,
+      moves: 0,
+    });
+
+    render(<Game2048 />);
+
+    const board = screen.getByTestId('game-2048-board');
+
+    fireEvent.touchStart(board, {
+      touches: [{ clientX: 100, clientY: 100 }],
+    });
+
+    fireEvent.touchMove(board, {
+      touches: [{ clientX: 50, clientY: 100 }],
+    });
+
+    expect(useGame2048Store.getState().moves).toBe(1);
+    expect(useGame2048Store.getState().score).toBe(4);
+  });
+
+  it('renders milestone celebration toast and dismisses it', () => {
+    useGame2048Store.setState({
+      activeMilestone: 1024,
+      reachedMilestones: [1024],
+    });
+
+    render(<Game2048 />);
+
+    const toast = screen.getByTestId('game-2048-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(toast).toHaveClass('fixed');
+    const dismissBtn = screen.getByTestId('game-2048-milestone-dismiss');
+    fireEvent.click(dismissBtn);
+    expect(useGame2048Store.getState().activeMilestone).toBeNull();
+  });
+
+  it('dismisses milestone celebration toast on animation end', () => {
+    useGame2048Store.setState({
+      activeMilestone: 1024,
+      reachedMilestones: [1024],
+    });
+
+    render(<Game2048 />);
+
+    const toast = screen.getByTestId('game-2048-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    fireEvent.animationEnd(toast);
+    expect(useGame2048Store.getState().activeMilestone).toBeNull();
+  });
+
+  it('renders milestone celebration tiers with distinct badges for 512, 2048, 4096, and 8192', () => {
+    useGame2048Store.setState({
+      activeMilestone: 512,
+      reachedMilestones: [512],
+    });
+    const { unmount } = render(<Game2048 />);
+    expect(
+      screen.getByText('games.game_2048_v1.milestone.badge_512'),
+    ).toBeInTheDocument();
+    unmount();
+
+    useGame2048Store.setState({
+      activeMilestone: 2048,
+      reachedMilestones: [2048],
+    });
+    const { unmount: unmount2048 } = render(<Game2048 />);
+    expect(
+      screen.getByText('games.game_2048_v1.milestone.badge_2048'),
+    ).toBeInTheDocument();
+    unmount2048();
+
+    useGame2048Store.setState({
+      activeMilestone: 4096,
+      reachedMilestones: [4096],
+    });
+    const { unmount: unmount4096 } = render(<Game2048 />);
+    expect(
+      screen.getByText('games.game_2048_v1.milestone.badge_4096'),
+    ).toBeInTheDocument();
+    unmount4096();
+
+    useGame2048Store.setState({
+      activeMilestone: 8192,
+      reachedMilestones: [8192],
+    });
+    render(<Game2048 />);
+    expect(
+      screen.getByText('games.game_2048_v1.milestone.badge_8192'),
+    ).toBeInTheDocument();
+  });
+
+  it('displays undos counter when history is present and supports pointer drag swipe', () => {
+    useGame2048Store.setState({
+      grid: [2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      history: [
+        {
+          grid: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          score: 0,
+          moves: 0,
+        },
+      ],
+    });
+
+    render(<Game2048 />);
+
+    const undosCounter = screen.getByTestId('game-2048-undos-counter');
+    expect(undosCounter).toBeInTheDocument();
+    expect(undosCounter).toHaveTextContent('1');
+
+    const board = screen.getByTestId('game-2048-board');
+    fireEvent.pointerDown(board, {
+      pointerType: 'mouse',
+      clientX: 100,
+      clientY: 100,
+    });
+    fireEvent.pointerUp(board, {
+      pointerType: 'mouse',
+      clientX: 50,
+      clientY: 100,
+    });
+
+    expect(useGame2048Store.getState().moves).toBe(1);
   });
 });

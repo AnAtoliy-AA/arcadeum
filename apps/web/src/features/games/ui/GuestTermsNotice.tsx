@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { appConfig } from '@/shared/config/app-config';
 
 export function GuestTermsNotice() {
   const { t } = useTranslation();
+  const routes = useRoutes();
   const appName = appConfig.appName;
 
   return (
@@ -18,7 +20,7 @@ export function GuestTermsNotice() {
       <span>
         {t('games.guestDisclaimer.agreementPrefix', { appName })}
         <Link
-          href="/terms"
+          href={routes.terms}
           className="underline text-[var(--textSecondary)] font-semibold hover:text-white"
           target="_blank"
           rel="noreferrer"

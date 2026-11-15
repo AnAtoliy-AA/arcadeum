@@ -25,7 +25,6 @@ interface ListArgs {
 
 interface UserDocLean {
   _id: Types.ObjectId;
-  email: string;
   username: string;
   displayName?: string | null;
   role: UserRole;
@@ -61,7 +60,6 @@ export class AdminUsersService {
       const escaped = escapeRegExp(args.q.trim());
       filter.$or = [
         { username: { $regex: escaped, $options: 'i' } },
-        { email: { $regex: escaped, $options: 'i' } },
         { displayName: { $regex: escaped, $options: 'i' } },
       ];
     }
@@ -84,7 +82,7 @@ export class AdminUsersService {
       this.userModel
         .find(filter)
         .select(
-          '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers',
+          '-passwordHash -referralCode -referredBy -usernameNormalized -blockedUsers -emailEncrypted -emailBlindIndex -email',
         )
         .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
@@ -139,9 +137,6 @@ export class AdminUsersService {
     if (!updated) {
       throw new NotFoundException({ code: 'USER_NOT_FOUND' });
     }
-    // Cast: Mongoose's findByIdAndUpdate with `lean: true` returns a
-    // Document-shaped type that doesn't expose lean fields cleanly; the
-    // cast is the simplest path. Verified at runtime by toAdminUserItem.
     return this.toAdminUserItem(updated as unknown as UserDocLean);
   }
 
@@ -358,7 +353,6 @@ export class AdminUsersService {
   private toAdminUserItem(doc: UserDocLean): AdminUserItem {
     return {
       id: doc._id.toString(),
-      email: doc.email,
       username: doc.username,
       displayName: doc.displayName ?? null,
       role: doc.role,

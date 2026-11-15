@@ -3,7 +3,7 @@ import type { enMessages } from './en';
 export type { enMessages as en } from './en';
 export type Game2048Messages = typeof enMessages;
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadGame2048Messages(locale: string) {
   switch (locale) {
     case 'en':

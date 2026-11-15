@@ -12,7 +12,7 @@ interface Game2048BoardProps {
   onMove: (direction: Direction) => void;
 }
 
-const SWIPE_THRESHOLD = 24;
+const SWIPE_THRESHOLD = 20;
 
 const TILE_STYLE_MAP: Record<number, string> = {
   2: 'bg-[#eee4da] text-[#776e65] shadow-sm text-2xl sm:text-3xl',
@@ -24,13 +24,15 @@ const TILE_STYLE_MAP: Record<number, string> = {
   128: 'bg-[#edcf72] text-[#f9f6f2] shadow-lg shadow-amber-500/30 ring-1 ring-amber-300/40 text-lg sm:text-xl',
   256: 'bg-[#edcc61] text-[#f9f6f2] shadow-lg shadow-amber-500/40 ring-2 ring-amber-300/50 text-lg sm:text-xl',
   512: 'bg-[#edc850] text-[#f9f6f2] shadow-xl shadow-amber-500/50 ring-2 ring-yellow-300/60 text-lg sm:text-xl',
-  1024: 'bg-[#edc53f] text-[#f9f6f2] shadow-xl shadow-amber-400/60 ring-2 ring-yellow-200/70 text-base sm:text-lg',
-  2048: 'bg-gradient-to-br from-[#edc22e] via-amber-400 to-yellow-300 text-white shadow-[0_0_24px_rgba(251,191,36,0.65)] ring-2 ring-yellow-200 animate-pulse text-base sm:text-lg',
+  1024: 'bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-500 text-white shadow-xl shadow-amber-500/50 ring-2 ring-amber-300/70 text-base sm:text-lg font-black',
+  2048: 'bg-gradient-to-br from-[#edc22e] via-amber-400 to-yellow-300 text-white shadow-[0_0_24px_rgba(251,191,36,0.65)] ring-2 ring-yellow-200 animate-pulse text-base sm:text-lg font-black',
+  4096: 'bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 text-white shadow-[0_0_24px_rgba(168,85,247,0.7)] ring-2 ring-purple-300 text-base sm:text-lg animate-pulse font-black',
+  8192: 'bg-gradient-to-br from-cyan-500 via-teal-500 to-emerald-400 text-white shadow-[0_0_24px_rgba(20,184,166,0.7)] ring-2 ring-cyan-200 text-sm sm:text-base animate-pulse font-black',
 };
 
 function getTileClasses(value: number): string {
   if (value === 0) {
-    return 'bg-[var(--g2048-empty-cell)] border border-[var(--g2048-board-border)]/40';
+    return 'bg-[var(--g2048-empty-cell)] border border-white/5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.4)]';
   }
   return (
     TILE_STYLE_MAP[value] ??
@@ -51,28 +53,90 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
   const theme = useGame2048Theme();
   const isFullscreen = useSoloFullscreen();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const pointerStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
 
   const handleTouchStart = (event: React.TouchEvent) => {
     const touch = event.touches[0];
     touchStart.current = { x: touch.clientX, y: touch.clientY };
+    swiped.current = false;
   };
 
-  const handleTouchEnd = (event: React.TouchEvent) => {
+  const handleTouchMove = (event: React.TouchEvent) => {
     const start = touchStart.current;
-    if (!start) return;
-    touchStart.current = null;
+    if (!start || swiped.current) return;
 
-    const touch = event.changedTouches[0];
+    const touch = event.touches[0];
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
-    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD)
-      return;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
 
-    if (Math.abs(dx) > Math.abs(dy)) {
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+    swiped.current = true;
+    if (absX > absY) {
       onMove(dx > 0 ? 'right' : 'left');
     } else {
       onMove(dy > 0 ? 'down' : 'up');
     }
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    const start = touchStart.current;
+    const hadSwiped = swiped.current;
+    touchStart.current = null;
+    swiped.current = false;
+
+    if (!start || hadSwiped) return;
+
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+    if (absX > absY) {
+      onMove(dx > 0 ? 'right' : 'left');
+    } else {
+      onMove(dy > 0 ? 'down' : 'up');
+    }
+  };
+
+  const handleTouchCancel = () => {
+    touchStart.current = null;
+    swiped.current = false;
+  };
+
+  const handlePointerDown = (event: React.PointerEvent) => {
+    if (event.pointerType === 'mouse') {
+      pointerStart.current = { x: event.clientX, y: event.clientY };
+    }
+  };
+
+  const handlePointerUp = (event: React.PointerEvent) => {
+    const start = pointerStart.current;
+    pointerStart.current = null;
+    if (!start) return;
+
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (absX < SWIPE_THRESHOLD && absY < SWIPE_THRESHOLD) return;
+
+    if (absX > absY) {
+      onMove(dx > 0 ? 'right' : 'left');
+    } else {
+      onMove(dy > 0 ? 'down' : 'up');
+    }
+  };
+
+  const handlePointerCancel = () => {
+    pointerStart.current = null;
   };
 
   return (
@@ -80,13 +144,18 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
       data-testid="game-2048-board"
       style={boardVars(theme)}
       className={cx(
-        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border border-[var(--g2048-board-border)] bg-black/20 p-2 sm:p-3 shadow-2xl select-none transition-all duration-200',
+        'mx-auto aspect-square w-full touch-none rounded-2xl sm:rounded-3xl border-2 border-[var(--g2048-board-border)] bg-[var(--g2048-board-bg)] p-2 sm:p-3 shadow-2xl backdrop-blur-2xl ring-1 ring-white/10 select-none transition-colors duration-200 overflow-hidden',
         isFullscreen
           ? 'max-w-[min(94vw,min(calc(100dvh-12rem),40rem))]'
           : 'max-w-[min(100vw-1rem,min(50vh,25.5rem))] sm:max-w-[min(100vw-2rem,min(52vh,26.5rem))]',
       )}
       onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchCancel}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
     >
       <div
         role="grid"
@@ -104,9 +173,15 @@ export function Game2048Board({ grid, onMove }: Game2048BoardProps) {
                   aria-label={value !== 0 ? String(value) : undefined}
                   data-testid={`tile-${index}`}
                   className={cx(
-                    'flex select-none items-center justify-center rounded-2xl font-black transition-all duration-150',
+                    'flex select-none items-center justify-center rounded-2xl font-black transform-gpu',
+                    value !== 0
+                      ? 'transition-all duration-150 active:scale-95 animate-in zoom-in-90'
+                      : 'transition-colors duration-100',
                     getTileClasses(value),
-                    isFullscreen && 'md:text-4xl',
+                    isFullscreen &&
+                      (value >= 1024
+                        ? 'md:text-2xl lg:text-3xl'
+                        : 'md:text-4xl'),
                   )}
                 >
                   {value !== 0 && value}

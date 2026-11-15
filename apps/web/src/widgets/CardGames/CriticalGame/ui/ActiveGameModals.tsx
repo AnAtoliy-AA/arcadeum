@@ -8,7 +8,6 @@ import type {
   CriticalCard,
   EventComboModalState,
   OmniscienceModalState,
-  CriticalComboCard,
 } from '../types';
 import { GameModals } from './GameModals';
 import { MobileActionSheet } from './MobileActionSheet';
@@ -44,7 +43,7 @@ interface ActiveGameModalsProps {
   };
   handlers: {
     handleCloseEventComboModal: () => void;
-    handleSelectComboCard: (card: CriticalComboCard) => void;
+    handleSelectComboCard: (card: CriticalCard) => void;
     setSelectedMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
     setSelectedTarget: (id: string | null) => void;
     setSelectedCard: (card: CriticalCard | null) => void;

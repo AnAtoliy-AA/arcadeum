@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { buildVideoGameJsonLd } from '../videoGameJsonLd';
 import { buildFaqPageJsonLd } from '../faqPageJsonLd';
 import { buildGameLandingJsonLd } from '../buildGameLandingJsonLd';
+import { buildBlogPostJsonLd } from '../blogPostJsonLd';
 
 describe('SEO JSON-LD builders', () => {
   it('builds comprehensive VideoGame schema with features and platforms', () => {
@@ -62,6 +63,7 @@ describe('SEO JSON-LD builders', () => {
     expect(mainEntity[0]['@type']).toBe('Question');
     expect(mainEntity[0]['name']).toBe('Is Chess free?');
   });
+
   it('builds full landing schemas with VideoGame, SoftwareApplication, HowTo, and FAQPage', () => {
     const schemas = buildGameLandingJsonLd({
       gameId: 'backgammon_v1',
@@ -87,5 +89,37 @@ describe('SEO JSON-LD builders', () => {
     expect(types).toContain('BreadcrumbList');
     expect(types).toContain('HowTo');
     expect(types).toContain('FAQPage');
+
+    const breadcrumbs = schemas.filter((s) => s['@type'] === 'BreadcrumbList');
+    expect(breadcrumbs).toHaveLength(1);
+
+    const videoGame = schemas.find((s) => s['@type'] === 'VideoGame');
+    expect(videoGame?.['url']).toContain('/en/games/backgammon');
+    expect(videoGame?.['url']).not.toContain('backgammon_v1');
+    expect(videoGame?.['@id']).toContain('/en/games/backgammon#game');
+    expect(videoGame?.['inLanguage']).toBe('en-US');
+  });
+
+  it('builds BlogPosting schema with @id, localized language, and dynamic image', () => {
+    const postLd = buildBlogPostJsonLd({
+      locale: 'en',
+      pageUrl: '/en/blog/how-to-win-spades',
+      title: 'How to Win at Spades',
+      excerpt: 'Master bids, bags, and nil play.',
+      publishedAt: '2026-09-18',
+      author: 'Arcadeum Team',
+      tags: ['Spades', 'Card Game', 'Strategy'],
+      readingTimeMinutes: 8,
+      wordCount: 1650,
+    });
+
+    expect(postLd['@type']).toBe('BlogPosting');
+    expect(postLd['@id']).toContain('/en/blog/how-to-win-spades#article');
+    expect(postLd['headline']).toBe('How to Win at Spades');
+    expect(postLd['inLanguage']).toBe('en-US');
+    expect(postLd['image']).toContain(
+      '/en/blog/how-to-win-spades/opengraph-image',
+    );
+    expect(postLd['wordCount']).toBe(1650);
   });
 });

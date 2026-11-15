@@ -10,3 +10,4 @@ export { PasswordResetService } from './password-reset.service';
 export { SignupRewardService } from './signup-reward.service';
 export { LoginLockoutService } from './login-lockout.service';
 export { MagicLinkService } from './magic-link.service';
+export { UserDataSegregationService } from './user-data-segregation.service';

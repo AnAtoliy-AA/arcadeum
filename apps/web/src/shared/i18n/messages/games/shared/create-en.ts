@@ -44,7 +44,7 @@ export const createEn = {
   cascadeModePure: 'Pure',
   cascadeModeSpeed: 'Speed',
   cascadeModeClassicHint: 'Full ruleset with stacking',
-  cascadeModePureHint: 'No stacking — draw cards resolve immediately',
+  cascadeModePureHint: 'No stacking - draw cards resolve immediately',
   cascadeModeSpeedHint: 'Stacking enabled with per-turn timer',
   cascadeLastCardCall: 'Last-Card Cascade Call',
   cascadeLastCardCallHint: 'Race to call when at 1 card',
@@ -95,7 +95,7 @@ export const createEn = {
     },
     teams: {
       title: 'Team mode',
-      desc: 'Pair players into fleets — 2v2 or 3v3.',
+      desc: 'Pair players into fleets - 2v2 or 3v3.',
     },
     spectators: {
       title: 'Allow spectators',

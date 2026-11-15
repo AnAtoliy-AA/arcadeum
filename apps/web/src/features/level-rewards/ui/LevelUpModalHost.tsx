@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useGameStore } from '@/features/games/store/gameStore';
 import {
   getCoinsForLevel,
   getRewardForLevel,
@@ -16,10 +17,11 @@ export function LevelUpModalHost() {
   const { snapshot } = useSessionTokens();
   const openModal = useLevelUpModalStore((s) => s.openModal);
   const isOpen = useLevelUpModalStore((s) => s.isOpen);
+  const room = useGameStore((s) => s.room);
   const checkedRef = useRef(false);
 
   useEffect(() => {
-    if (!snapshot.accessToken || isOpen) return;
+    if (!snapshot.accessToken || isOpen || room) return;
 
     const currentLevel = snapshot.level || 1;
     const stored = window.localStorage.getItem(LAST_SEEN_LEVEL_KEY);
@@ -53,7 +55,7 @@ export function LevelUpModalHost() {
         })
         .catch(() => {});
     }
-  }, [snapshot.accessToken, snapshot.level, isOpen, openModal]);
+  }, [snapshot.accessToken, snapshot.level, isOpen, openModal, room]);
 
   return <LevelUpModal />;
 }

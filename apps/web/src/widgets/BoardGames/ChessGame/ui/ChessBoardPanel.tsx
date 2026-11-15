@@ -85,6 +85,7 @@ interface ChessBoardPanelProps {
   onToggleBestMove?: () => void;
   onToggleThreats?: () => void;
   spectatorCount?: number;
+  chatHighlightCells?: { row: number; col: number }[];
 }
 
 function ChessBoardPanelImpl({
@@ -129,6 +130,7 @@ function ChessBoardPanelImpl({
   onToggleBestMove,
   onToggleThreats,
   spectatorCount = 0,
+  chatHighlightCells = [],
 }: ChessBoardPanelProps) {
   const [hoveredMoveIdx, setHoveredMoveIdx] = useState<number | null>(null);
   const { pieceStyle, setPieceStyle } = useChessPieceStylePreference();
@@ -153,10 +155,21 @@ function ChessBoardPanelImpl({
     return lastMove;
   }, [hoveredMoveIdx, snapshot?.moveHistory, lastMove]);
 
-  const hintMove = useMemo(
-    () => (coach.hint ? { from: coach.hint.from, to: coach.hint.to } : null),
-    [coach.hint],
-  );
+  const hintMove = useMemo(() => {
+    if (coach.hint) return { from: coach.hint.from, to: coach.hint.to };
+    if (chatHighlightCells.length >= 2) {
+      const FILES_ARR = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'] as const;
+      const fromCell = chatHighlightCells[0];
+      const toCell = chatHighlightCells[1];
+      const fromFile = FILES_ARR[fromCell.col] ?? 'a';
+      const toFile = FILES_ARR[toCell.col] ?? 'a';
+      return {
+        from: { file: fromFile, rank: (8 - fromCell.row) as Rank },
+        to: { file: toFile, rank: (8 - toCell.row) as Rank },
+      };
+    }
+    return null;
+  }, [coach.hint, chatHighlightCells]);
 
   const boardThemeVars = useMemo(
     () => getBoardThemeCssVars(activeBoardTheme),

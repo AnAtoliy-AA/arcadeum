@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -15,7 +16,6 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type {
   BackgammonGameProps,
   BackgammonOptions,
@@ -24,6 +24,7 @@ import type {
 import { useBackgammonState } from '../hooks/useBackgammonState';
 import { useBackgammonActions } from '../hooks/useBackgammonActions';
 import { BackgammonThemeProvider } from '../lib/BackgammonThemeContext';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { BackgammonLobby } from './BackgammonLobby';
 import { BackgammonBoard } from './BackgammonBoard';
 import { RulesModal } from './RulesModal';
@@ -53,13 +54,18 @@ function BackgammonGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: BackgammonGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -84,17 +90,37 @@ function BackgammonGameImpl({
 
   const { play } = useGameSound('backgammon_v1');
 
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
   const handleRoll = useCallback(() => {
+    play('shake');
     play('roll');
     rollDice();
   }, [rollDice, play]);
 
   const handleMove = useCallback(
     (...args: Parameters<typeof moveChecker>) => {
-      play('move');
+      const payload = args[0];
+      if (payload && payload.to === 'off') {
+        play('success');
+      } else if (
+        payload &&
+        typeof payload.to === 'number' &&
+        snapshot?.points[payload.to]?.count === 1 &&
+        snapshot?.points[payload.to]?.playerId &&
+        snapshot?.points[payload.to]?.playerId !== currentUserId
+      ) {
+        play('capture');
+      } else {
+        play('move');
+      }
       return moveChecker(...args);
     },
-    [moveChecker, play],
+    [moveChecker, play, snapshot, currentUserId],
   );
 
   const resolveDisplayNameBound = useCallback(
@@ -110,15 +136,10 @@ function BackgammonGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'backgammon_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -201,7 +222,7 @@ function BackgammonGameImpl({
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onRefresh={onRefresh}
-          onReorderPlayers={handleReorderPlayers}
+          onReorderPlayers={onReorderPlayers}
           onShowRulesClose={onShowRulesClose}
           onStartGame={handleStartGame}
           room={room}
@@ -222,6 +243,7 @@ function BackgammonGameImpl({
           onMove={handleMove}
           onRoll={handleRoll}
           snapshot={snapshot}
+          highlightedCells={chatHighlightCells}
         />
       ) : null}
     </div>
@@ -274,6 +296,7 @@ function BackgammonGameImpl({
           title: t('games.backgammon_v1.name'),
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

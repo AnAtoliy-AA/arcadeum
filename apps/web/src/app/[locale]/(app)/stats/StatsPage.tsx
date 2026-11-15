@@ -166,6 +166,10 @@ export default function StatsPage({
     }
   }, [isLoggedIn, snapshot.accessToken, records]);
 
+  const [opponentType, setOpponentType] = useState<'all' | 'pvp' | 'bot'>(
+    'all',
+  );
+
   const {
     leaderboard,
     loading: leaderboardLoading,
@@ -173,7 +177,11 @@ export default function StatsPage({
     hasMore,
     loadMore,
     refresh: refreshLeaderboard,
-  } = useLeaderboard(selectedGame || undefined, initialLeaderboard);
+  } = useLeaderboard(
+    selectedGame || undefined,
+    initialLeaderboard,
+    opponentType,
+  );
 
   const gameOptions = useMemo(() => {
     const supportedGames = getAllSupportedGameIds();
@@ -185,6 +193,15 @@ export default function StatsPage({
       })),
     ];
   }, [t]);
+
+  const opponentOptions = useMemo(
+    () => [
+      { value: 'all', label: t('stats.allOpponents') },
+      { value: 'pvp', label: t('stats.pvpOnly') },
+      { value: 'bot', label: t('stats.botOnly') },
+    ],
+    [t],
+  );
 
   const updateParams = useCallback(
     (gameId: string) => {
@@ -338,16 +355,32 @@ export default function StatsPage({
           )
         ) : (
           <div className="flex flex-col gap-4 sm:gap-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3.5 px-4 rounded-xl border border-[var(--borderColor)]/70 bg-[var(--surfaceSecondary)]/40">
-              <span className="text-[13px] sm:text-[14px] font-bold text-[var(--color)] whitespace-nowrap">
-                {t('stats.filterByGame')}
-              </span>
-              <div className="w-full sm:w-64">
-                <Select
-                  value={selectedGame}
-                  onValueChange={updateParams}
-                  options={gameOptions}
-                />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 px-4 rounded-xl border border-[var(--borderColor)]/70 bg-[var(--surfaceSecondary)]/40 flex-wrap">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                <span className="text-[13px] sm:text-[14px] font-bold text-[var(--color)] whitespace-nowrap">
+                  {t('stats.filterByGame')}
+                </span>
+                <div className="w-full sm:w-64">
+                  <Select
+                    value={selectedGame}
+                    onValueChange={updateParams}
+                    options={gameOptions}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                <span className="text-[13px] sm:text-[14px] font-bold text-[var(--color)] whitespace-nowrap">
+                  {t('stats.filterByOpponent')}
+                </span>
+                <div className="w-full sm:w-56">
+                  <Select
+                    value={opponentType}
+                    onValueChange={(val) =>
+                      setOpponentType(val as 'all' | 'pvp' | 'bot')
+                    }
+                    options={opponentOptions}
+                  />
+                </div>
               </div>
             </div>
             <Leaderboard

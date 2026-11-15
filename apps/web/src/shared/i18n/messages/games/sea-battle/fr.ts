@@ -16,11 +16,11 @@ export const frMessages = {
     tutorial: {
       s1: {
         title: 'Cachez votre flotte',
-        body: 'Placez vos cinq navires sur votre grille avant la bataille. Ils ne peuvent ni se chevaucher ni se toucher — cliquez pour placer, pivotez avec le bouton.',
+        body: 'Placez vos cinq navires sur votre grille avant la bataille. Ils ne peuvent ni se chevaucher ni se toucher - cliquez pour placer, pivotez avec le bouton.',
       },
       s2: {
         title: 'Feu à volonté',
-        body: 'À votre tour, cliquez sur une case des eaux adverses. Les touches sont marquées en rouge, les ratés en blanc — triangulez et traquez-les.',
+        body: 'À votre tour, cliquez sur une case des eaux adverses. Les touches sont marquées en rouge, les ratés en blanc - triangulez et traquez-les.',
       },
       s3: {
         title: 'Coulez pour gagner',
@@ -205,7 +205,7 @@ export const frMessages = {
       teammateBadge: 'Coéquipier',
       cannotAttackTeammate: 'Impossible d’attaquer un coéquipier',
       description:
-        'Jouez en équipes. Définissez le nombre d’équipes et leurs tailles — les joueurs peuvent choisir ou être assignés par l’hôte.',
+        'Jouez en équipes. Définissez le nombre d’équipes et leurs tailles - les joueurs peuvent choisir ou être assignés par l’hôte.',
       setup: {
         title: 'Configuration des équipes',
         teamNamePlaceholder: 'Nom de l’équipe',
@@ -256,10 +256,10 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title: `Bataille Navale en Ligne Gratuite (Touché-Coulé) — Jouer à 2 avec un Ami ou IA | ${APP}`,
+        title: `Bataille Navale en Ligne Gratuite (Touché-Coulé) - Jouer à 2 avec un Ami ou IA | ${APP}`,
         description: `Jouez à la Bataille Navale (touché-coulé) en ligne multijoueur gratuit sur ${APP}. Créez une salle pour 2 à 4 joueurs avec un ami ou affrontez l’ordinateur (IA) sur grille 10x10. Sans inscription.`,
         ogTitle:
-          'Bataille Navale en Ligne Gratuite (Touché-Coulé) — Multijoueur sans inscription',
+          'Bataille Navale en Ligne Gratuite (Touché-Coulé) - Multijoueur sans inscription',
         ogDescription:
           'Placez votre flotte, tirez sur les grilles ennemies et coulez tous leurs navires. Jouez en ligne gratuitement avec un ami ou contre l’IA.',
         keywords:
@@ -267,12 +267,12 @@ export const frMessages = {
       },
       hero: {
         title: 'Bataille Navale',
-        tagline: 'Jouez à la Bataille Navale en ligne — gratuit et multijoueur',
-        intro: `La Bataille Navale est le jeu de combat naval intemporel où deux amiraux ou plus placent secrètement leurs flottes sur une grille 10×10 et échangent des salves jusqu’à ce qu’une seule flotte reste à flot. Sur ${APP}, vous pouvez jouer à la Bataille Navale directement dans votre navigateur — sans téléchargement, sans inscription — avec des amis, des inconnus ou des bots IA.`,
+        tagline: 'Jouez à la Bataille Navale en ligne - gratuit et multijoueur',
+        intro: `La Bataille Navale est le jeu de combat naval intemporel où deux amiraux ou plus placent secrètement leurs flottes sur une grille 10×10 et échangent des salves jusqu’à ce qu’une seule flotte reste à flot. Sur ${APP}, vous pouvez jouer à la Bataille Navale directement dans votre navigateur - sans téléchargement, sans inscription - avec des amis, des inconnus ou des bots IA.`,
         ctaPlay: 'Créer une salle de Bataille Navale',
         ctaRooms: 'Voir les salles ouvertes',
         ctaQuickplay: 'Jouer contre l’IA maintenant',
-        ctaQuickplayError: 'Impossible de lancer la partie — réessayez',
+        ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
         ctaPlayHuman: 'Trouver un adversaire',
         ctaGroupLabel: 'Démarrage rapide de Bataille Navale',
         eyebrow: 'Gratuit · 2–4 joueurs · Sans inscription',
@@ -289,7 +289,7 @@ export const frMessages = {
         themesKicker: 'Choisissez votre flotte',
         themesTitle: '10+ thèmes, un seul jeu',
         themesLead:
-          'Dix styles de plateau, à vous de choisir. Même jeu, ambiance différente — changez à tout moment dans le lobby.',
+          'Dix styles de plateau, à vous de choisir. Même jeu, ambiance différente - changez à tout moment dans le lobby.',
         rulesKicker: 'Référence',
         strategyKicker: 'Affûtez votre visée',
         aboutKicker: 'À propos du jeu',
@@ -326,7 +326,7 @@ export const frMessages = {
         title: 'À propos de la Bataille Navale',
         paragraphs: [
           'La Bataille Navale, connue dans le monde sous le nom de Battleship, est l’un des plus anciens jeux de stratégie sur grille encore joués. Bien avant les plateaux en plastique, les règles se dessinaient sur des cahiers à carreaux : deux adversaires, deux grilles secrètes de 10×10, et le simple frisson d’annoncer une coordonnée à la fois.',
-          'Au milieu du XXᵉ siècle, le jeu est passé du papier au plastique et est devenu un classique des soirées familiales, avant de migrer sur les écrans — versions électroniques de poche, adaptations PC, et désormais multijoueur natif au navigateur.',
+          'Au milieu du XXᵉ siècle, le jeu est passé du papier au plastique et est devenu un classique des soirées familiales, avant de migrer sur les écrans - versions électroniques de poche, adaptations PC, et désormais multijoueur natif au navigateur.',
           `${APP} conserve la grille originale de 10×10 et la flotte de cinq navires, puis ajoute ce que la version papier n’a jamais eu : matchmaking instantané, adversaires IA, mode équipe, dix thèmes visuels et liens de lobby partageables. Que vous cherchiez une partie rapide contre l’ordinateur ou un duel plus long contre un humain, les règles restent celles que les amiraux discutent depuis un siècle.`,
         ],
       },
@@ -435,7 +435,7 @@ export const frMessages = {
       finalCta: {
         title: 'Prêt à jouer ?',
         subtitle:
-          'Ouvrez une salle et partagez le lien — votre flotte vous attend.',
+          'Ouvrez une salle et partagez le lien - votre flotte vous attend.',
       },
       breadcrumb: {
         home: 'Accueil',

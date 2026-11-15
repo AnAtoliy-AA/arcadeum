@@ -23,6 +23,7 @@ import { SelectedGameCard } from './SelectedGameCard';
 import { RoomDetails } from './RoomDetails';
 import { PreviewRail } from './PreviewRail';
 import { VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
+import { skinIdToThemeId } from '@/features/games/lib/shared-themes';
 import {
   ROOM_NAME_MAX,
   type CreateRoomForm,
@@ -62,11 +63,17 @@ function defaultThemeFor(gameId: GameId): string {
 function initialForm(
   gameId: GameId,
   themeId: string | undefined,
+  equippedSkinId: string | null,
 ): CreateRoomForm {
   const themes = themesFor(gameId);
   const defaultTheme = defaultThemeFor(gameId);
+  const equippedTheme = skinIdToThemeId(equippedSkinId);
   const resolvedTheme =
-    themeId && themes.some((t) => t.id === themeId) ? themeId : defaultTheme;
+    (themeId && themes.some((t) => t.id === themeId)
+      ? themeId
+      : equippedTheme && themes.some((t) => t.id === equippedTheme)
+        ? equippedTheme
+        : defaultTheme) ?? defaultTheme;
   return {
     gameId,
     themeId: resolvedTheme,
@@ -200,7 +207,7 @@ export function GameCreateView() {
   ]);
 
   const [form, setForm] = useState<CreateRoomForm>(() =>
-    initialForm(urlGameId, urlVariant),
+    initialForm(urlGameId, urlVariant, snapshot.equippedGameSkinId),
   );
   const [customRoomName, setCustomRoomName] = useState<string | null>(null);
 
@@ -283,7 +290,7 @@ export function GameCreateView() {
   useEffect(() => {
     let cancelled = false;
     gamesApi
-      .getCatalog()
+      .getCatalog({ token: snapshot.accessToken || undefined })
       .then((d) => {
         if (!cancelled) setCatalog(d);
       })
@@ -291,7 +298,7 @@ export function GameCreateView() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [snapshot.accessToken]);
   const { gameComingSoon, variantComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],

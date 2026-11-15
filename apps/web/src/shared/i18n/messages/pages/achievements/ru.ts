@@ -28,7 +28,7 @@ export const achievementsRu = {
     claimed: 'Вы получили {n} XP!',
     unlocked: 'Достижение открыто: {name}!',
   },
-  lockedTooltip: 'Заблокировано — продолжайте играть, чтобы открыть',
+  lockedTooltip: 'Заблокировано - продолжайте играть, чтобы открыть',
   rewards: {
     xp: 'XP',
     coins: 'Монеты',

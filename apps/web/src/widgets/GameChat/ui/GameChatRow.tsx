@@ -19,8 +19,11 @@ interface GameChatRowProps {
   isOwn: boolean;
   resolveEquipped?: EquippedResolver;
   moveCell?: { row: number; col: number } | null;
+  moveCells?: { row: number; col: number }[];
   onMoveHover?: (cell: { row: number; col: number } | null) => void;
   onMoveClick?: (cell: { row: number; col: number }) => void;
+  onMoveCellsHover?: (cells: { row: number; col: number }[]) => void;
+  onMoveCellsClick?: (cells: { row: number; col: number }[]) => void;
 }
 
 export function GameChatRow({
@@ -35,10 +38,14 @@ export function GameChatRow({
   isOwn,
   resolveEquipped,
   moveCell,
+  moveCells,
   onMoveHover,
   onMoveClick,
+  onMoveCellsHover,
+  onMoveCellsClick,
 }: GameChatRowProps) {
-  const isMove = !!moveCell;
+  const isMove =
+    !!moveCell || (moveCells !== undefined && moveCells.length > 0);
 
   const resolved = senderId ? (resolveEquipped?.(senderId) ?? null) : null;
   const { nameColor } = useEquippedCosmetics({
@@ -51,13 +58,43 @@ export function GameChatRow({
   });
   const nameStyleProps = nameColorRenderProps(nameColor);
 
+  const effectiveCells = moveCells ?? (moveCell ? [moveCell] : []);
+
   return (
     <div
       onMouseEnter={
-        isMove && onMoveHover ? () => onMoveHover(moveCell) : undefined
+        isMove
+          ? () => {
+              if (onMoveCellsHover && effectiveCells.length > 1) {
+                onMoveCellsHover(effectiveCells);
+              } else if (onMoveHover && moveCell) {
+                onMoveHover(moveCell);
+              }
+            }
+          : undefined
       }
-      onMouseLeave={isMove && onMoveHover ? () => onMoveHover(null) : undefined}
-      onClick={isMove && onMoveClick ? () => onMoveClick(moveCell!) : undefined}
+      onMouseLeave={
+        isMove
+          ? () => {
+              if (onMoveCellsHover && effectiveCells.length > 1) {
+                onMoveCellsHover([]);
+              } else if (onMoveHover) {
+                onMoveHover(null);
+              }
+            }
+          : undefined
+      }
+      onClick={
+        isMove
+          ? () => {
+              if (onMoveCellsClick && effectiveCells.length > 1) {
+                onMoveCellsClick(effectiveCells);
+              } else if (onMoveClick && moveCell) {
+                onMoveClick(moveCell);
+              }
+            }
+          : undefined
+      }
       style={
         isMove
           ? {

@@ -18,8 +18,10 @@ interface Props {
   mode: Mode;
   variant?: string;
   theme?: string;
+  ranked?: boolean;
   errorLabel?: string;
   buttonVariant?: ButtonProps['variant'];
+  size?: ButtonProps['size'];
   disabled?: boolean;
 }
 
@@ -29,8 +31,10 @@ export function QuickplayButton({
   mode,
   variant,
   theme,
+  ranked,
   errorLabel,
   buttonVariant,
+  size = 'lg',
   disabled = false,
 }: Props) {
   const router = useRouter();
@@ -48,7 +52,11 @@ export function QuickplayButton({
     if (disabled) return;
     setErrored(false);
     if (mode === 'human') {
-      joinQueue(gameId, variant);
+      if (ranked !== undefined) {
+        joinQueue(gameId, variant, ranked);
+      } else {
+        joinQueue(gameId, variant);
+      }
       return;
     }
     setLoading(true);
@@ -72,7 +80,7 @@ export function QuickplayButton({
   return (
     <Button
       variant={resolvedVariant}
-      size="lg"
+      size={size}
       onClick={handleClick}
       loading={loading}
       disabled={disabled}

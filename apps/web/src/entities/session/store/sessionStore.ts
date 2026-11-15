@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { LoginResponse } from '../api/authApi';
 import { refreshSession } from '../api/authApi';
 import { acquireRefreshLock } from '../lib/refreshLock';
+import { levelFromXp } from '@/shared/lib/xp-level';
 import type {
   SessionProviderId,
   SessionTokensSnapshot,
@@ -79,7 +80,7 @@ function buildSnapshot(
     displayName: input.displayName ?? current.displayName ?? null,
     role: input.role ?? current.role ?? null,
     xp: input.xp ?? current.xp ?? 0,
-    level: input.level ?? current.level ?? 1,
+    level: levelFromXp(input.xp ?? current.xp ?? 0),
     prestige: input.prestige ?? current.prestige ?? 0,
     equippedAvatarId:
       input.equippedAvatarId === undefined
@@ -134,7 +135,7 @@ function enrichWithResponse(
       null,
     role: response.user?.role ?? snapshot.role ?? null,
     xp: response.user?.xp ?? snapshot.xp ?? 0,
-    level: response.user?.level ?? snapshot.level ?? 1,
+    level: levelFromXp(response.user?.xp ?? snapshot.xp ?? 0),
     prestige: response.user?.prestige ?? snapshot.prestige ?? 0,
     equippedAvatarId:
       response.user?.equippedAvatarId ?? snapshot.equippedAvatarId ?? null,
@@ -250,7 +251,6 @@ export const useSessionStore = create<SessionState>()(
             refreshToken: null,
             accessTokenExpiresAt: null,
             refreshTokenExpiresAt: null,
-            // Clear profile fields when logged out to prevent stale display
             ...(hasToken
               ? {}
               : {
@@ -259,6 +259,13 @@ export const useSessionStore = create<SessionState>()(
                   username: null,
                   displayName: null,
                   role: null,
+                  equippedAvatarId: null,
+                  equippedBadgeId: null,
+                  equippedNameColorId: null,
+                  equippedFrameId: null,
+                  equippedAuraId: null,
+                  equippedBannerId: null,
+                  equippedGameSkinId: null,
                 }),
           },
           mode: s.mode,
@@ -271,6 +278,14 @@ export const useSessionStore = create<SessionState>()(
         return (_state, error) => {
           if (error) return;
 
+          const hydrated = useSessionStore.getState().snapshot;
+          const derivedLevel = levelFromXp(hydrated.xp ?? 0);
+          if (hydrated.level !== derivedLevel) {
+            useSessionStore.setState({
+              snapshot: { ...hydrated, level: derivedLevel },
+            });
+          }
+
           const ANON_KEY = 'arcadeum_anon_id';
           const stored = localStorage.getItem(ANON_KEY);
           const current = useSessionStore.getState();
@@ -281,8 +296,9 @@ export const useSessionStore = create<SessionState>()(
           const handleStorage = (e: StorageEvent) => {
             if (e.key !== 'web_session_tokens_v1') return;
             if (e.newValue) return;
-            if (current.snapshot.userId) {
-              current.clearTokens();
+            const live = useSessionStore.getState();
+            if (live.snapshot.userId) {
+              live.clearTokens();
             }
           };
 

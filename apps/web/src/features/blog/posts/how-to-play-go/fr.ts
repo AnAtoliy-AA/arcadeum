@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-go',
   locale: 'fr',
   title:
-    'Comment jouer au Go (Baduk, Weiqi) en ligne — règles, vie et mort, stratégie',
+    'Comment jouer au Go (Baduk, Weiqi) en ligne - règles, vie et mort, stratégie',
   excerpt:
     'Guide complet du Go : setup, libertés, captures, ko, territoire et concepts stratégiques.',
   publishedAt: '2026-06-23',
@@ -26,7 +26,7 @@ export const post: BlogPost = {
     { type: 'heading', level: 2, text: 'Le plateau', id: 'basics' },
     {
       type: 'paragraph',
-      text: 'Joué sur grille 19x19 (9x9 et 13x13 pour débutants). Noir commence, une pierre par tour sur intersection vide. Les pierres ne bougent plus — seulement capturées.',
+      text: 'Joué sur grille 19x19 (9x9 et 13x13 pour débutants). Noir commence, une pierre par tour sur intersection vide. Les pierres ne bougent plus - seulement capturées.',
     },
     {
       type: 'heading',
@@ -38,6 +38,30 @@ export const post: BlogPost = {
       type: 'paragraph',
       text: 'Les libertés sont les intersections vides adjacentes. Un groupe partage ses libertés. Zéro liberté = capturé et retiré.',
     },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-go-atari',
+      gameId: 'go',
+      title: 'Exercice pratique : Exécuter la capture en atari',
+      prompt:
+        "Aux Noirs de jouer : trouvez l'intersection critique pour capturer la pierre blanche en atari.",
+      grid: [
+        '.........',
+        '.........',
+        '.........',
+        '....B....',
+        '...BWB...',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+      ],
+      solutionIndex: 49,
+      solutionValue: 'B',
+      explanation:
+        'Jouer en E4 retire la dernière liberté de la pierre blanche et la capture du goban !',
+      playHref: '/games/go',
+    },
     { type: 'heading', level: 2, text: 'Règle du ko', id: 'ko' },
     {
       type: 'paragraph',
@@ -46,7 +70,7 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'Vie et mort — deux yeux',
+      text: 'Vie et mort - deux yeux',
       id: 'life-death',
     },
     {
@@ -67,7 +91,7 @@ export const post: BlogPost = {
     {
       type: 'list',
       items: [
-        'Atari. Une seule liberté — un coup de la capture.',
+        'Atari. Une seule liberté - un coup de la capture.',
         'Échelles. Motif de poursuite.',
         'Filets. Piège sans attaque directe.',
         'Couper et connecter. Couper affaiblit, connecter renforce.',
@@ -87,7 +111,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/go',
-      text: 'Jouez au Go en ligne — gratuit',
+      text: 'Jouez au Go en ligne - gratuit',
       description: 'Grilles 9x9, 13x13, 19x19. Handicap disponible.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

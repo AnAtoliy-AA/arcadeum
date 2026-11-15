@@ -14,7 +14,6 @@ const SUIT_SYMBOLS: Record<string, string> = {
   C: '♣',
 };
 
-/** Rank symbol → i18n key under `games.hearts_v1.card.ranks`. */
 const RANK_KEYS: Record<string, string> = {
   '2': 'two',
   '3': 'three',
@@ -31,7 +30,6 @@ const RANK_KEYS: Record<string, string> = {
   A: 'ace',
 };
 
-/** Suit symbol → i18n key under `games.hearts_v1.card.suits`. */
 const SUIT_KEYS: Record<string, string> = {
   S: 'spades',
   H: 'hearts',
@@ -63,7 +61,6 @@ export const HeartsCard = memo(function HeartsCard({
   const { t } = useTranslation();
   const { rank, suit } = parseCard(cardId);
   const symbol = SUIT_SYMBOLS[suit] ?? '?';
-  const isRed = suit === 'H' || suit === 'D';
   const interactive = Boolean(onClick);
 
   const rankName = RANK_KEYS[rank]
@@ -85,54 +82,82 @@ export const HeartsCard = memo(function HeartsCard({
     suit: suitName,
   });
 
+  const suitColorClass =
+    suit === 'H'
+      ? 'text-[var(--heartColor)]'
+      : suit === 'D'
+        ? 'text-[var(--diamondColor)]'
+        : suit === 'S'
+          ? 'text-[var(--spadeColor)]'
+          : 'text-[var(--clubColor)]';
+
   return (
     <button
       type="button"
       data-testid={`hearts-card-${cardId}`}
       aria-label={label}
       onClick={onClick}
-      disabled={!interactive}
-      tabIndex={interactive ? 0 : -1}
+      disabled={!interactive || (!playable && !selected)}
+      tabIndex={interactive && (playable || selected) ? 0 : -1}
       className={cx(
-        'group relative flex select-none flex-col items-center justify-center rounded-xl border font-bold shadow-md transition-all duration-200',
-        size === 'md' ? 'h-[76px] w-[54px] sm:h-20 sm:w-14' : 'h-14 w-10',
-        isRed ? 'text-[var(--heartColor)]' : 'text-[var(--spadeColor)]',
-        interactive && playable
-          ? 'cursor-pointer border-[var(--hCardBorder)] bg-gradient-to-b from-white to-slate-100 hover:-translate-y-2 hover:shadow-[0_8px_24px_-6px_rgba(var(--accentRGB),0.55)]'
+        'group relative flex shrink-0 select-none flex-col items-center justify-center rounded-lg sm:rounded-xl border font-bold shadow-md transition-all duration-200',
+        'bg-gradient-to-b from-white via-slate-50 to-slate-100 dark:from-white dark:to-slate-100',
+        suitColorClass,
+        size === 'md'
+          ? 'h-[68px] w-[42px] sm:h-20 sm:w-14'
+          : 'h-12 w-9 sm:h-14 sm:w-10',
+        interactive && playable && !selected
+          ? 'cursor-pointer border-slate-300 hover:-translate-y-3.5 hover:shadow-xl hover:ring-2 hover:ring-[var(--accent)] hover:z-30 active:translate-y-0'
           : null,
         selected
-          ? '-translate-y-3 border-[var(--accent)] shadow-[0_0_0_2px_var(--accent),0_10px_20px_-6px_rgba(var(--accentRGB),0.6)]'
+          ? '-translate-y-4 sm:-translate-y-5 border-[var(--accent)] ring-2 ring-[var(--accent)] shadow-xl shadow-[rgba(var(--accentRGB),0.4)] z-30'
           : null,
-        !playable && !selected ? 'opacity-45 saturate-50' : null,
-        !interactive
-          ? 'border-[var(--hCardBorder)] bg-[var(--hSurface)]'
+        interactive && !playable && !selected
+          ? 'cursor-not-allowed border-slate-300/60 bg-slate-200/90 text-slate-400 opacity-60 saturate-50'
           : null,
+        !interactive ? 'border-slate-300 shadow-md cursor-default' : null,
       )}
     >
       <span
         className={cx(
-          'absolute top-1 left-1.5 leading-none',
-          size === 'md' ? 'text-xs' : 'text-[9px]',
+          'absolute top-1 left-1 flex flex-col items-center leading-none pointer-events-none',
+          size === 'md' ? 'text-[11px] sm:text-xs' : 'text-[9px]',
         )}
       >
-        {rank}
+        <span className="font-black tracking-tight">{rank}</span>
+        <span
+          className={size === 'md' ? 'text-[9px] sm:text-[10px]' : 'text-[7px]'}
+        >
+          {symbol}
+        </span>
       </span>
-      <span className={size === 'md' ? 'text-2xl' : 'text-lg leading-none'}>
-        {symbol}
-      </span>
+
       <span
         className={cx(
-          'absolute right-1.5 bottom-1 rotate-180 leading-none',
-          size === 'md' ? 'text-xs' : 'text-[9px]',
+          'leading-none select-none pointer-events-none',
+          size === 'md' ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base',
         )}
       >
-        {rank}
+        {symbol}
+      </span>
+
+      <span
+        className={cx(
+          'absolute bottom-1 right-1 flex flex-col items-center leading-none rotate-180 pointer-events-none',
+          size === 'md' ? 'text-[11px] sm:text-xs' : 'text-[9px]',
+        )}
+      >
+        <span className="font-black tracking-tight">{rank}</span>
+        <span
+          className={size === 'md' ? 'text-[9px] sm:text-[10px]' : 'text-[7px]'}
+        >
+          {symbol}
+        </span>
       </span>
     </button>
   );
 });
 
-/** Face-down card back used for opponents' hands. */
 export const HeartsCardBack = memo(function HeartsCardBack({
   index = 0,
 }: {
@@ -141,11 +166,12 @@ export const HeartsCardBack = memo(function HeartsCardBack({
   return (
     <div
       aria-hidden="true"
-      className="-ml-2 h-11 w-8 rounded-md border border-[var(--hCardBorder)] shadow first:ml-0"
-      style={{
-        background: `linear-gradient(135deg, rgba(var(--accentRGB),0.35) 0%, var(--hSurface) 55%, rgba(var(--accentRGB),0.25) 100%)`,
-        transform: `rotate(${(index % 3) - 1}deg)`,
-      }}
-    />
+      className={cx(
+        '-ml-2.5 h-10 w-7 shrink-0 rounded-md border border-[var(--hCardBorder)] shadow-md first:ml-0 bg-gradient-to-br from-[var(--hSurface)] via-[rgba(var(--accentRGB),0.3)] to-[rgba(var(--accentRGB),0.15)] flex items-center justify-center backdrop-blur-sm sm:h-11 sm:w-8',
+        index % 2 === 0 ? 'rotate-1' : '-rotate-1',
+      )}
+    >
+      <span className="text-[10px] text-[var(--accent)] opacity-40">♥</span>
+    </div>
   );
 });

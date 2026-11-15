@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
@@ -31,6 +31,7 @@ import {
   LivePulseBadge,
   LiveActivityPopover,
   useLiveStatsWs,
+  useLiveStatsStore,
 } from '@/features/live-stats';
 
 import {
@@ -59,12 +60,28 @@ export function HeaderInteractive({
   const isAuthenticated = hydrated ? authStatus : false;
   const { t } = useTranslation();
   const routes = useRoutes();
-  const { isOpen: isMobileMenuOpen, toggle: toggleMobileMenu } =
-    useMobileMenu();
+  const {
+    isOpen: isMobileMenuOpen,
+    toggle: toggleMobileMenu,
+    close: closeMobileMenu,
+  } = useMobileMenu();
   const pendingFriendCount = usePendingFriendRequestCount();
   const { snapshot } = useSessionTokens();
 
   useLiveStatsWs();
+
+  useEffect(() => {
+    return useLiveStatsStore.subscribe((state) => {
+      if (state.isPopoverOpen) {
+        closeMobileMenu();
+      }
+    });
+  }, [closeMobileMenu]);
+
+  const handleToggleMobileMenu = useCallback(() => {
+    useLiveStatsStore.getState().setPopoverOpen(false);
+    toggleMobileMenu();
+  }, [toggleMobileMenu]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -181,7 +198,7 @@ export function HeaderInteractive({
               <Button
                 variant="icon"
                 size="md"
-                onClick={toggleMobileMenu}
+                onClick={handleToggleMobileMenu}
                 aria-label="Toggle menu"
                 aria-expanded={isMobileMenuOpen}
                 data-mobile-menu-button

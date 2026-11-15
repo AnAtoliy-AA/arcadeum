@@ -141,7 +141,7 @@ export default function BackgammonLanding({
         intro:
           'A game of skill and strategy with checker moves, dice rolling, and bearing off.',
         directAnswer:
-          'Arcadeum Backgammon is a free online 24-point board game featuring authentic dice rolling, hitting blots, bearing off, and heuristic AI opponents—play instantly with friends or bots without downloads or registration.',
+          'Arcadeum Backgammon is a free online 24-point board game featuring authentic dice rolling, hitting blots, bearing off, and heuristic AI opponents, play instantly with friends or bots without downloads or registration.',
         category: 'Board Game',
         playersBadge: '2 Players',
         durationBadge: '15–25 min',

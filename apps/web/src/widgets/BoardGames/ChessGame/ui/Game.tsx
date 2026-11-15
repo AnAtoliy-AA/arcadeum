@@ -1,6 +1,7 @@
 'use client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -9,8 +10,8 @@ import {
   useGameResultModal,
   useGameResult,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import {
   FILES,
   type ChessGameProps,
@@ -49,13 +50,18 @@ function ChessGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: ChessGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
   const isLobby = room?.status === 'lobby';
   const {
     snapshot,
@@ -149,6 +155,11 @@ function ChessGameImpl({
   );
   const sendChat = useGameChatSend(roomId, currentUserId, 'chess_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
+
+  const highlightedCells = useGameChatStore((s) => s.highlightedCells);
+  const persistedCells = useGameChatStore((s) => s.persistedCells);
+  const chatHighlightCells =
+    highlightedCells.length > 0 ? highlightedCells : persistedCells;
   const {
     rematchLoading,
     handleRematch,
@@ -156,15 +167,6 @@ function ChessGameImpl({
     handleAcceptInvitation,
     handleDeclineInvitation,
   } = useRematch({ roomId });
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
   const winnerId =
     displaySnapshot?.players.find(
       (p) => p.color === displaySnapshot.winnerColor,
@@ -357,7 +359,7 @@ function ChessGameImpl({
         userId={currentUserId ?? ''}
         isHost={isHost}
         startBusy={startBusy}
-        onReorderPlayers={handleReorderPlayers}
+        onReorderPlayers={onReorderPlayers}
         onStartGame={(opts) => {
           setStartBusy(true);
           startSession({
@@ -425,6 +427,7 @@ function ChessGameImpl({
       onToggleBestMove={streamer.toggleBestMove}
       onToggleThreats={streamer.toggleThreats}
       spectatorCount={spectatorCount}
+      chatHighlightCells={chatHighlightCells}
     />
   );
   const themeVariant =
@@ -472,6 +475,7 @@ function ChessGameImpl({
           title: t('games.chess_v1.name'),
           subtitle: room?.name,
           onToggleResult: toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId:
               displaySnapshot?.players.find(

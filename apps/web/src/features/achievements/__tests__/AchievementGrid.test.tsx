@@ -65,7 +65,7 @@ import type { AchievementGridLabels } from '../ui/AchievementGrid';
 const LABELS: AchievementGridLabels = {
   claim: 'Claim',
   claimed: '✓ Claimed',
-  lockedTooltip: 'Locked — keep playing to unlock',
+  lockedTooltip: 'Locked: keep playing to unlock',
   error: "Couldn't claim. Please try again.",
   categories: {
     gameplay: 'Gameplay',

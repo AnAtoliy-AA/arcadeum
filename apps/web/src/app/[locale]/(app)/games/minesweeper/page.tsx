@@ -60,7 +60,7 @@ export default async function MinesweeperLandingRoute({ params }: PageProps) {
     },
     howTo: {
       name: `How to Play Minesweeper on ${appConfig.appName}`,
-      description: 'Play Minesweeper online free — no signup, no download.',
+      description: 'Play Minesweeper online free - no signup, no download.',
       steps: [
         {
           name: 'Choose difficulty',
@@ -97,7 +97,7 @@ export default async function MinesweeperLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Minesweeper', 'Puzzle', 'Сапёр'])}
+        posts={await getPostsByTag(locale, ['Minesweeper', 'Puzzle', 'Сапёр'])}
       />
     </>
   );

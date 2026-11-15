@@ -166,4 +166,133 @@ describe('CatDashEngine', () => {
       expect(result.isDraw).toBe(false);
     });
   });
+
+  describe('tactical mechanics: abilities, collision bumping, drafting', () => {
+    it('applies speed boost and burns power token', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      expect(state.players[0].powerTokens).toBe(3);
+
+      const abilityRes = engine.executeAction(state, 'useAbility', ctx('p1'), {
+        abilityId: 'neon_boost',
+      });
+      expect(abilityRes.success).toBe(true);
+      const s1 = abilityRes.state as CatDashState;
+      expect(s1.players[0].powerTokens).toBe(2);
+      expect(s1.players[0].speedBoostPending).toBe(3);
+
+      const rollRes = engine.executeAction(s1, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s2 = rollRes.state as CatDashState;
+      expect(s2.players[0].position).toBeGreaterThanOrEqual(4);
+    });
+
+    it('activates shield and absorbs obstacle', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      const abilityRes = engine.executeAction(state, 'useAbility', ctx('p1'), {
+        abilityId: 'neon_shield',
+      });
+      expect(abilityRes.success).toBe(true);
+      const s1 = abilityRes.state as CatDashState;
+      expect(s1.players[0].shielded).toBe(true);
+    });
+
+    it('slingshots player ahead of nearest rival', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].catId = 'whiskers';
+      state.players[0].position = 2;
+      state.players[1].position = 6;
+
+      const abilityRes = engine.executeAction(state, 'useAbility', ctx('p1'), {
+        abilityId: 'whiskers_slingshot',
+      });
+      expect(abilityRes.success).toBe(true);
+      const s1 = abilityRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(8);
+    });
+
+    it('bumps non-shielded rival back 1 space on collision', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 0;
+      state.players[0].speedBoostPending = 999; // exact roll 4
+      state.players[1].position = 4; // rival waiting at 4
+      state.players[1].shielded = false;
+
+      const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s1 = rollRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(4);
+      expect(s1.players[1].position).toBe(3); // rival bumped back
+    });
+
+    it('absorbs bump if rival is shielded', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 0;
+      state.players[0].speedBoostPending = 999; // exact roll 4
+      state.players[1].position = 4;
+      state.players[1].shielded = true;
+
+      const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s1 = rollRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(4);
+      expect(s1.players[1].position).toBe(4); // not bumped
+      expect(s1.players[1].shielded).toBe(false); // shield consumed
+    });
+
+    it('grants drafting slipstream +1 boost when stopping directly behind rival', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 0;
+      state.players[0].speedBoostPending = 999; // rolls 4
+      state.players[1].position = 5; // rival at 5, so landing on 4 is directly behind
+
+      const rollRes = engine.executeAction(state, 'rollDice', ctx('p1'));
+      expect(rollRes.success).toBe(true);
+      const s1 = rollRes.state as CatDashState;
+      expect(s1.players[0].position).toBe(5);
+      expect(s1.players[1].position).toBe(4);
+    });
+
+    it('allows player to take a catnap, gaining power token and shield', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].powerTokens = 1;
+      state.players[0].shielded = false;
+
+      const res = engine.executeAction(state, 'catnap', ctx('p1'));
+      expect(res.success).toBe(true);
+      const s1 = res.state as CatDashState;
+      expect(s1.players[0].powerTokens).toBe(2);
+      expect(s1.players[0].shielded).toBe(true);
+      expect(s1.currentPlayerIndex).toBe(1);
+    });
+
+    it('executes pounce, spending power token and leaping 2 spaces', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 3;
+      state.players[0].powerTokens = 2;
+
+      const res = engine.executeAction(state, 'pounce', ctx('p1'));
+      expect(res.success).toBe(true);
+      const s1 = res.state as CatDashState;
+      expect(s1.players[0].position).toBe(5);
+      expect(s1.players[0].powerTokens).toBe(1);
+      expect(s1.currentPlayerIndex).toBe(1);
+    });
+
+    it('deploys a trap ahead and consumes a token', () => {
+      const state = engine.initializeState(['p1', 'p2']);
+      state.players[0].position = 4;
+      state.players[0].powerTokens = 3;
+
+      const res = engine.executeAction(state, 'deployTrap', ctx('p1'), {
+        spaceId: 7,
+      });
+      expect(res.success).toBe(true);
+      const s1 = res.state as CatDashState;
+      expect(s1.players[0].powerTokens).toBe(2);
+      expect(s1.traps?.some((t) => t.spaceId === 7 && t.ownerId === 'p1')).toBe(
+        true,
+      );
+      expect(s1.currentPlayerIndex).toBe(1);
+    });
+  });
 });

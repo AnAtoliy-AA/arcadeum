@@ -16,7 +16,6 @@ interface SpadesBoardProps {
   snapshot: SpadesClientState;
   currentUserId?: string | null;
   myHand: string[];
-  /** Cards I may legally play right now. */
   legalIds: string[];
   canAct: boolean;
   canBid: boolean;
@@ -26,17 +25,15 @@ interface SpadesBoardProps {
   onBid: (amount: number) => void;
 }
 
-/** Seat order relative to me around the table (clockwise). Partner sits top. */
 const SEATS: SeatSide[] = ['bottom', 'left', 'top', 'right'];
 
 const TRICK_SLOT: Record<SeatSide, string> = {
-  bottom: 'bottom-1 left-1/2 -translate-x-1/2',
-  left: 'left-2 top-1/2 -translate-y-1/2',
-  top: 'top-1 left-1/2 -translate-x-1/2',
-  right: 'right-2 top-1/2 -translate-y-1/2',
+  bottom: 'bottom-0 left-1/2 -translate-x-1/2',
+  left: 'left-0 top-1/2 -translate-y-1/2',
+  top: 'top-0 left-1/2 -translate-x-1/2',
+  right: 'right-0 top-1/2 -translate-y-1/2',
 };
 
-/** Mint the spades game tokens as scoped CSS vars for the board subtree. */
 function boardVars(theme: SpadesThemeTokens): CSSProperties {
   return {
     '--spadeColor': theme.spadeColor,
@@ -81,8 +78,6 @@ export const SpadesBoard = memo(function SpadesBoard({
   const seatId = (offset: number) =>
     order[(meIdx + offset) % Math.max(1, order.length)] ?? null;
 
-  // Team score/bags are mirrored onto both partners; read via my side's
-  // anchor seat (first player of my parity in the seating order).
   const teamScoreKey = meIdx % 2 === 0 ? (order[0] ?? '') : (order[1] ?? '');
 
   const buildSeat = (offset: number) => {
@@ -132,11 +127,10 @@ export const SpadesBoard = memo(function SpadesBoard({
   return (
     <div
       data-testid="spades-board"
-      className="flex w-full flex-col gap-4 rounded-3xl border border-[var(--sCardBorder)] p-4 shadow-inner sm:p-6"
+      className="flex w-full flex-col gap-3 rounded-3xl border border-[var(--sCardBorder)] p-3 shadow-2xl sm:p-5"
       style={boardVars(theme)}
     >
-      {/* Status chips */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <Chip>
           {t('games.spades_v1.game.handLabel', {
             n: snapshot.handNumber + 1,
@@ -155,64 +149,68 @@ export const SpadesBoard = memo(function SpadesBoard({
         )}
       </div>
 
-      {/* Table */}
-      <div className="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto] items-center gap-x-3 gap-y-2 sm:gap-x-5">
-        <div className="col-start-2 row-start-1 flex justify-center">
+      <div className="relative mx-auto flex w-full max-w-xl flex-col justify-between rounded-3xl border border-[var(--sCardBorder)] bg-[radial-gradient(ellipse_at_center,rgba(var(--accentRGB),0.12)_0%,rgba(0,0,0,0.45)_100%)] p-3 shadow-inner sm:p-4 min-h-[290px] sm:min-h-[350px]">
+        <div className="flex justify-center">
           {topSeat && (
             <SeatPanel seat={topSeat} side="top" bidding={isBidding} />
           )}
         </div>
-        <div className="col-start-1 row-start-2 self-center">
-          {leftSeat && (
-            <SeatPanel seat={leftSeat} side="left" bidding={isBidding} />
-          )}
-        </div>
-        <div className="col-start-3 row-start-2 self-center justify-self-end">
-          {rightSeat && (
-            <SeatPanel seat={rightSeat} side="right" bidding={isBidding} />
-          )}
-        </div>
 
-        {/* Center trick area — played cards sit near the seat that played them */}
-        <div className="relative col-start-2 row-start-2 mx-auto h-44 w-full max-w-md rounded-2xl border border-[var(--sCardBorder)] bg-black/10 sm:h-48">
-          {SEATS.map((side) => {
-            const playerId = seatId(SEATS.indexOf(side));
-            const card = playerId ? playBySeat.get(playerId) : undefined;
-            return (
-              <div
-                key={side}
-                className={`absolute ${TRICK_SLOT[side]} flex flex-col items-center gap-1`}
-              >
-                {card ? (
-                  <>
-                    <SpadesCard cardId={card} />
-                    <span className="max-w-[80px] truncate rounded-full bg-black/45 px-2 py-0.5 text-[10px] text-white/90">
-                      {playerName(playerId)}
+        <div className="flex items-center justify-between gap-2 my-auto">
+          <div className="shrink-0">
+            {leftSeat && (
+              <SeatPanel seat={leftSeat} side="left" bidding={isBidding} />
+            )}
+          </div>
+
+          <div className="relative mx-auto h-36 w-36 sm:h-44 sm:w-44 shrink-0 rounded-full border border-white/10 bg-black/25 shadow-inner backdrop-blur-sm flex items-center justify-center">
+            <span className="text-3xl sm:text-4xl text-[var(--spadeColor)] opacity-20 pointer-events-none select-none">
+              ♠
+            </span>
+
+            {SEATS.map((side) => {
+              const playerId = seatId(SEATS.indexOf(side));
+              const card = playerId ? playBySeat.get(playerId) : undefined;
+              return (
+                <div
+                  key={side}
+                  className={`absolute ${TRICK_SLOT[side]} flex flex-col items-center gap-0.5 z-10`}
+                >
+                  {card ? (
+                    <>
+                      <SpadesCard cardId={card} size="sm" />
+                      <span className="max-w-[70px] truncate rounded-full bg-black/60 px-1.5 py-0.2 text-[9px] font-bold text-white/95 shadow">
+                        {playerName(playerId)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="flex h-10 w-7 sm:h-12 sm:w-9 items-center justify-center rounded-md border border-dashed border-white/15 text-xs opacity-25">
+                      ♠
                     </span>
-                  </>
-                ) : (
-                  <span className="flex h-[76px] w-[54px] items-center justify-center rounded-xl border border-dashed border-[var(--sCardBorder)] text-lg opacity-30 sm:h-20 sm:w-14">
-                    ♠
-                  </span>
-                )}
-              </div>
-            );
-          })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="shrink-0">
+            {rightSeat && (
+              <SeatPanel seat={rightSeat} side="right" bidding={isBidding} />
+            )}
+          </div>
         </div>
 
-        {/* My seat plaque */}
-        <div className="col-span-3 row-start-3 flex justify-center">
+        <div className="flex justify-center">
           {bottomSeat && (
             <SeatPanel seat={bottomSeat} side="bottom" bidding={isBidding} />
           )}
         </div>
       </div>
 
-      {/* Last hand result strip */}
       {!isBidding && lastHandLabel && summary && (
         <div className="flex justify-center">
           <span
-            className="rounded-full bg-[var(--sSurface)] px-4 py-1 text-xs text-[var(--muted-foreground)]"
+            className="rounded-full border border-[var(--sCardBorder)] bg-[var(--sSurface)] px-4 py-1 text-xs font-semibold text-[var(--muted-foreground)] shadow-sm"
             data-testid="spades-last-hand"
           >
             {lastHandLabel}
@@ -220,7 +218,6 @@ export const SpadesBoard = memo(function SpadesBoard({
         </div>
       )}
 
-      {/* Bidding panel */}
       {isBidding && !hasBid && (
         <BidPanel
           myBid={myBid}
@@ -230,20 +227,26 @@ export const SpadesBoard = memo(function SpadesBoard({
         />
       )}
 
-      {/* My hand */}
-      <div className="flex min-h-[92px] items-end justify-center gap-1 pt-1 sm:gap-1.5">
-        {myHand.map((cardId) => {
-          const playable =
-            !isGameOver && !isBidding && canAct && legalSet.has(cardId);
-          return (
-            <SpadesCard
-              key={cardId}
-              cardId={cardId}
-              playable={playable}
-              onClick={playable ? () => onPlayCard(cardId) : undefined}
-            />
-          );
-        })}
+      <div className="relative w-full overflow-x-auto no-scrollbar pt-6 pb-2">
+        <div className="flex items-end justify-start min-w-max mx-auto px-3 sm:justify-center">
+          {myHand.map((cardId) => {
+            const playable =
+              !isGameOver && !isBidding && canAct && legalSet.has(cardId);
+            return (
+              <div
+                key={cardId}
+                className="shrink-0 -ml-5 sm:-ml-3.5 first:ml-0 transition-transform duration-200"
+              >
+                <SpadesCard
+                  key={cardId}
+                  cardId={cardId}
+                  playable={playable}
+                  onClick={playable ? () => onPlayCard(cardId) : undefined}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

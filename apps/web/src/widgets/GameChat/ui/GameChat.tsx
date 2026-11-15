@@ -110,7 +110,7 @@ export function GameChat({
   isHost,
   onDeleteMessage,
   signInPlaceholder = 'Sign in to chat',
-  isSpectating = false,
+  isSpectating: _isSpectating = false,
 }: GameChatProps) {
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
@@ -230,7 +230,7 @@ export function GameChat({
             title="Minimize"
             aria-label="Minimize chat"
           >
-            <span className="text-[14px]">—</span>
+            <span className="text-[14px]">−</span>
           </IconButton>
           {onClose ? (
             <IconButton
@@ -348,7 +348,7 @@ export function GameChat({
 
       <Foot>
         <ChatQuickBar
-          onEmote={isSpectating ? undefined : onEmote}
+          onEmote={onEmote}
           onQuickPhrase={(p) => setDraft((d) => (d ? `${d} ${p}` : p))}
           canSend={canSend}
         />
@@ -376,6 +376,7 @@ export function GameChat({
             placeholder={canSend ? SCOPE_PLACEHOLDER[scope] : signInPlaceholder}
             disabled={!canSend}
             aria-label="Message"
+            data-testid="chat-input"
             style={{
               flex: 1,
               background: 'transparent',
@@ -399,6 +400,7 @@ export function GameChat({
             onClick={send}
             disabled={!draft.trim() || !canSend}
             aria-label="Send message"
+            data-testid="chat-send-btn"
           >
             <span className="text-[14px] text-[#06011b] font-bold">↑</span>
           </IconButton>

@@ -39,19 +39,16 @@ export function SeaBattleThemePreview({
 
   return (
     <div
-      className="sb-preview-board sb-preview-fade select-none"
+      className="sb-preview-board select-none w-full max-w-[250px] mx-auto"
       key={selectedVariant}
       data-testid="color-preview-container"
     >
-      <div className="sb-board-with-labels-layout">
+      <div className="grid grid-cols-[16px_minmax(0,1fr)] grid-rows-[16px_minmax(0,1fr)] gap-0 m-0 w-full aspect-square justify-center items-stretch">
         <div />
-        <div
-          className="sb-col-labels"
-          style={{ '--sb-grid-size': 10 } as React.CSSProperties}
-        >
+        <div className="grid grid-cols-10 px-[3px] gap-[1px]">
           {COL_LABELS.map((l) => (
             <div
-              className="sb-label"
+              className="text-[9px] flex items-center justify-center font-semibold"
               key={l}
               style={{ color: theme.textSecondaryColor }}
             >
@@ -59,13 +56,10 @@ export function SeaBattleThemePreview({
             </div>
           ))}
         </div>
-        <div
-          className="sb-row-labels"
-          style={{ '--sb-grid-size': 10 } as React.CSSProperties}
-        >
+        <div className="grid grid-rows-10 py-[3px] gap-[1px]">
           {ROW_LABELS.map((l) => (
             <div
-              className="sb-label"
+              className="text-[9px] flex items-center justify-center font-semibold"
               key={l}
               style={{ color: theme.textSecondaryColor }}
             >
@@ -74,14 +68,11 @@ export function SeaBattleThemePreview({
           ))}
         </div>
         <div
-          className="sb-board-grid-layout"
-          style={
-            {
-              '--sb-grid-size': 10,
-              backgroundColor: theme.boardBackground,
-              borderColor: theme.cellBorder,
-            } as React.CSSProperties
-          }
+          className="grid grid-cols-10 grid-rows-10 min-w-0 min-h-0 p-[3px] gap-[1px] rounded-[8px] border"
+          style={{
+            backgroundColor: theme.boardBackground,
+            borderColor: theme.cellBorder,
+          }}
         >
           {Array.from({ length: 100 }, (_, idx) => {
             const rIndex = Math.floor(idx / 10);
@@ -105,11 +96,11 @@ export function SeaBattleThemePreview({
             return (
               <div
                 key={`${rIndex}-${cIndex}`}
-                className="sb-cell flex items-center justify-center relative"
+                className="flex items-center justify-center relative min-w-0 min-h-0 border"
                 style={{
                   backgroundColor: getCellColor(state ?? 0),
                   borderColor: isShip ? '#64748b' : theme.cellBorder,
-                  borderRadius: parseInt(theme.borderRadius) || 2,
+                  borderRadius: parseInt(theme.borderRadius, 10) || 2,
                   boxShadow: isShip
                     ? 'inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 3px rgba(0,0,0,0.5)'
                     : undefined,

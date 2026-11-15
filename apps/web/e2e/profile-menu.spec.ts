@@ -65,13 +65,19 @@ test.describe('Profile Menu Modernization', () => {
     // Already logged in as admin in beforeEach
     const trigger = page.locator('[data-profile-menu] button').first();
     await expect(trigger).toBeVisible();
-    if (browserName === 'webkit') {
-      await trigger.dispatchEvent('click');
-    } else {
-      await trigger.click();
-    }
     const dropdown = page.getByTestId('profile-dropdown');
-    await dropdown.waitFor({ state: 'visible' });
+    // Retry the click: it can land before React hydrates (and a retry that
+    // toggles an already-open menu closed is avoided by checking first).
+    await expect(async () => {
+      if (!(await dropdown.isVisible())) {
+        if (browserName === 'webkit') {
+          await trigger.dispatchEvent('click');
+        } else {
+          await trigger.click();
+        }
+      }
+      await expect(dropdown).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
     const adminLink = page.getByTestId('header-admin-link');
     await adminLink.waitFor({ state: 'visible' });
     await expect(adminLink).toBeVisible();

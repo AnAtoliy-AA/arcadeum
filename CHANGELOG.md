@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.30.112] - 2026-11-15
 
-- cap the e2e rules-modal wait so WebKit room specs no longer burn the test timeout
+### Fixed
+- cap rules modal wait that exhausted WebKit test timeouts
+
 
 ## [1.30.111] - 2026-11-15
 

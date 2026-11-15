@@ -1,6 +1,7 @@
 import type { DeepPartial } from '../base-types';
 
 export const en = {
+  collectionEmpty: 'No pets yet. Adopt your first companion!',
   registerForPet: 'Register for Pet',
   mystery: 'Mystery',
   registerTitle: 'Registration Required',
@@ -46,6 +47,7 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  collectionEmpty: 'Aún no tienes mascotas. ¡Adopta a tu primer compañero!',
   registerForPet: 'Registrarse para mascota',
   mystery: 'Misterio',
   registerTitle: 'Registro obligatorio',
@@ -90,6 +92,7 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  collectionEmpty: "Pas encore d'animal. Adopte ton premier compagnon !",
   registerForPet: "S'inscrire pour un animal",
   mystery: 'Mystère',
   registerTitle: 'Inscription requise',
@@ -134,6 +137,7 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  collectionEmpty: 'Питомцев пока нет. Заведите первого компаньона!',
   registerForPet: 'Регистрация для питомца',
   mystery: 'Тайна',
   registerTitle: 'Требуется регистрация',
@@ -177,6 +181,7 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  collectionEmpty: 'Пітомцаў пакуль няма. Завядзіце першага кампаньёна!',
   registerForPet: 'Рэгістрацыя для пітомца',
   mystery: 'Таямніца',
   registerTitle: 'Патрабуецца рэгістрацыя',

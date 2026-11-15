@@ -47,6 +47,7 @@ export const ArcadePetCompanionWidget: React.FC<
     dailyStreak,
     lastDailyClaimDay,
     claimDailyBonus,
+    renamePet,
     presents,
     isWidgetOpen,
     isAtHome,
@@ -211,6 +212,7 @@ export const ArcadePetCompanionWidget: React.FC<
               coinBalance={coinBalance}
               gemBalance={gemBalance}
               onClose={toggleWidget}
+              onRename={(name) => renamePet(pet.id, name)}
             />
 
             {pets.length > 1 && (

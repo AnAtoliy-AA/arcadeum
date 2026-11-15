@@ -15,6 +15,12 @@ import {
 } from './arcade-pet-companion-adoption';
 
 export const en = {
+  rename: {
+    edit: 'Rename pet',
+    label: 'Pet name',
+    save: 'Save name',
+    invalid: 'Name must be 2 to 24 characters.',
+  },
   homeBadge: '💤 Home',
   attentionAria: 'Needs attention: {{needs}}',
   attention: {
@@ -86,6 +92,12 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  rename: {
+    edit: 'Renombrar mascota',
+    label: 'Nombre de la mascota',
+    save: 'Guardar nombre',
+    invalid: 'El nombre debe tener de 2 a 24 caracteres.',
+  },
   homeBadge: '💤 En casa',
   attentionAria: 'Necesita atención: {{needs}}',
   attention: {
@@ -156,6 +168,12 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  rename: {
+    edit: "Renommer l'animal",
+    label: "Nom de l'animal",
+    save: 'Enregistrer le nom',
+    invalid: 'Le nom doit contenir de 2 à 24 caractères.',
+  },
   homeBadge: '💤 Maison',
   attentionAria: "Besoin d'attention : {{needs}}",
   attention: {
@@ -226,6 +244,12 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  rename: {
+    edit: 'Переименовать питомца',
+    label: 'Имя питомца',
+    save: 'Сохранить имя',
+    invalid: 'Имя должно содержать от 2 до 24 символов.',
+  },
   homeBadge: '💤 Дома',
   attentionAria: 'Нужно внимание: {{needs}}',
   attention: {
@@ -295,6 +319,12 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  rename: {
+    edit: 'Перайменаваць пітомца',
+    label: 'Імя пітомца',
+    save: 'Захаваць імя',
+    invalid: 'Імя павінна змяшчаць ад 2 да 24 сімвалаў.',
+  },
   homeBadge: '💤 Дома',
   attentionAria: 'Патрэбна ўвага: {{needs}}',
   attention: {

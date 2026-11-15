@@ -64,6 +64,10 @@ export interface ArcadePetStoreState {
   buyGameTheme: (themeId: string) => void;
   addGems: (amount: number) => void;
   addCoins: (amount: number) => void;
+  renamePet: (
+    petId: string,
+    name: string,
+  ) => { success: boolean; error?: 'INVALID_NAME' | 'NOT_FOUND' };
   clearActionError: () => void;
   toggleWidget: () => void;
   setWidgetOpen: (open: boolean) => void;

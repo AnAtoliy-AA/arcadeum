@@ -19,6 +19,7 @@ import {
   DEFAULT_WELCOME_PRESENT,
 } from './arcade-pet-storage';
 import { claimDailyBonus } from './arcade-pet-daily-claim';
+import { renamePet } from './arcade-pet-rename';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
@@ -360,6 +361,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   },
 
   claimDailyBonus: () => claimDailyBonus(get, set),
+
+  renamePet: (petId, name) => renamePet(get, set, petId, name),
 
   clearActionError: () => set({ actionError: null }),
 

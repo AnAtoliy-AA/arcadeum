@@ -2,6 +2,7 @@ import React from 'react';
 import type { PetState } from '@arcadeum/games-core';
 import { stageTranslationKey } from '../lib/arcade-pet-stage-key';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { ArcadePetRenameField } from './ArcadePetRenameField';
 import type { ThemePetPalette } from '../lib/arcade-pet-economy';
 
 interface ArcadePetCompanionHeaderProps {
@@ -12,6 +13,7 @@ interface ArcadePetCompanionHeaderProps {
   coinBalance: number;
   gemBalance: number;
   onClose: () => void;
+  onRename: (name: string) => { success: boolean };
 }
 
 export const ArcadePetCompanionHeader: React.FC<
@@ -24,6 +26,7 @@ export const ArcadePetCompanionHeader: React.FC<
   coinBalance,
   gemBalance,
   onClose,
+  onRename,
 }) => {
   const { t } = useTranslation();
   return (
@@ -32,11 +35,13 @@ export const ArcadePetCompanionHeader: React.FC<
         <span className="text-2xl">{speciesEmoji}</span>
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold leading-tight">
-              {pet.stage === 'egg'
-                ? t('arcadePetCompanion.mysteryEgg')
-                : pet.name}
-            </span>
+            {pet.stage === 'egg' ? (
+              <span className="text-sm font-bold leading-tight">
+                {t('arcadePetCompanion.mysteryEgg')}
+              </span>
+            ) : (
+              <ArcadePetRenameField name={pet.name} onRename={onRename} />
+            )}
             {pet.stage === 'egg' ? (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-amber-300">
                 🥚 {t('arcadePetCompanion.mystery')}

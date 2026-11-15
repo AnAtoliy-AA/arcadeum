@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import {
   getHomeUpgradeCost,
@@ -23,6 +24,7 @@ export function ArcadePetAdoptionModal({
   open,
   onClose,
 }: ArcadePetAdoptionModalProps) {
+  const { t } = useTranslation();
   const {
     gemBalance,
     adoptionCount,
@@ -59,15 +61,25 @@ export function ArcadePetAdoptionModal({
     const result = upgradeHome(currency);
     if (!result.success) {
       if (result.error === 'INSUFFICIENT_COINS') {
-        setErrorMsg(`Need 🪙 ${upgradeCost.coinCost} Coins to upgrade Home!`);
+        setErrorMsg(
+          t('arcadePetCompanion.adoption.errCoins', {
+            cost: upgradeCost.coinCost,
+          }),
+        );
       } else if (result.error === 'INSUFFICIENT_GEMS') {
-        setErrorMsg(`Need 💎 ${upgradeCost.gemCost} Gems to upgrade Home!`);
+        setErrorMsg(
+          t('arcadePetCompanion.adoption.errGemsUpgrade', {
+            cost: upgradeCost.gemCost,
+          }),
+        );
       } else {
-        setErrorMsg('Could not upgrade Home.');
+        setErrorMsg(t('arcadePetCompanion.adoption.errUpgrade'));
       }
       return;
     }
-    setSuccessMsg(`Upgraded Home capacity to ${homeCapacity + 1} places! 🏠`);
+    setSuccessMsg(
+      t('arcadePetCompanion.adoption.okUpgrade', { places: homeCapacity + 1 }),
+    );
   };
 
   const handleAdoptRandom = () => {
@@ -77,19 +89,27 @@ export function ArcadePetAdoptionModal({
     if (!result.success) {
       if (result.error === 'HOME_FULL') {
         setErrorMsg(
-          `Home is full (${pets.length}/${homeCapacity})! Upgrade Home to adopt more pets.`,
+          t('arcadePetCompanion.adoption.errHomeFull', {
+            used: pets.length,
+            total: homeCapacity,
+          }),
         );
       } else if (result.error === 'INSUFFICIENT_GEMS') {
         setErrorMsg(
-          `Need 💎 ${nextCost} gems to adopt. You have 💎 ${gemBalance}.`,
+          t('arcadePetCompanion.adoption.errGemsAdopt', {
+            cost: nextCost,
+            gems: gemBalance,
+          }),
         );
       } else {
-        setErrorMsg('Could not adopt pet. Please try again.');
+        setErrorMsg(t('arcadePetCompanion.adoption.errAdopt'));
       }
       return;
     }
     setSuccessMsg(
-      `Adopted ${result.pet?.name}! Check your collection to walk together.`,
+      t('arcadePetCompanion.adoption.okAdopted', {
+        name: result.pet?.name ?? '',
+      }),
     );
   };
 
@@ -107,23 +127,39 @@ export function ArcadePetAdoptionModal({
     if (!result.success) {
       if (result.error === 'HOME_FULL') {
         setErrorMsg(
-          `Home is full (${pets.length}/${homeCapacity})! Upgrade Home to adopt more pets.`,
+          t('arcadePetCompanion.adoption.errHomeFull', {
+            used: pets.length,
+            total: homeCapacity,
+          }),
         );
       } else if (result.error === 'INSUFFICIENT_GEMS') {
         setErrorMsg(
-          `Need 💎 ${SELECT_PET_COST} gems. You have 💎 ${gemBalance}.`,
+          t('arcadePetCompanion.adoption.errGemsSelect', {
+            cost: SELECT_PET_COST,
+            gems: gemBalance,
+          }),
         );
       } else {
-        setErrorMsg('Could not select pet.');
+        setErrorMsg(t('arcadePetCompanion.adoption.errSelect'));
       }
       return;
     }
-    setSuccessMsg(`VIP Pet ${result.pet?.name} selected and equipped!`);
+    setSuccessMsg(
+      t('arcadePetCompanion.adoption.okSelected', {
+        name: result.pet?.name ?? '',
+      }),
+    );
   };
 
   return (
     <div
       data-testid="arcade-pet-adoption-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('arcadePetCompanion.adoption.title')}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
     >
       <div className="relative w-full max-w-lg rounded-2xl bg-neutral-900 border border-neutral-700 shadow-2xl text-white font-sans flex flex-col max-h-[90vh] overflow-hidden">
@@ -132,22 +168,25 @@ export function ArcadePetAdoptionModal({
             <span className="text-2xl">🥚</span>
             <div className="flex flex-col">
               <span className="text-base font-bold text-white">
-                Companion Mount Nursery
+                {t('arcadePetCompanion.adoption.title')}
               </span>
               <span className="text-xs text-neutral-400">
-                Random rolls, theme guarantees, and VIP pet selection
+                {t('arcadePetCompanion.adoption.subtitle')}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <div
               className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-xs font-bold text-emerald-300"
-              title="Home Places"
+              title={t('arcadePetCompanion.adoption.placesTitle')}
               data-testid="home-places-badge"
             >
               <span>🏠</span>
               <span>
-                {pets.length}/{homeCapacity} Places
+                {t('arcadePetCompanion.adoption.placesTag', {
+                  used: pets.length,
+                  total: homeCapacity,
+                })}
               </span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-xs font-bold text-indigo-300">
@@ -159,7 +198,7 @@ export function ArcadePetAdoptionModal({
               data-testid="close-adoption-modal-btn"
               onClick={onClose}
               className="text-neutral-400 hover:text-white p-1 text-sm"
-              aria-label="Close"
+              aria-label={t('arcadePetCompanion.close')}
             >
               ✕
             </button>
@@ -177,7 +216,11 @@ export function ArcadePetAdoptionModal({
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            Random Mount ({isFirstMountFree ? 'FREE' : `💎 ${nextCost}`})
+            {t('arcadePetCompanion.adoption.tabRandom', {
+              price: isFirstMountFree
+                ? t('arcadePetCompanion.adoption.tierFree')
+                : `💎 ${nextCost}`,
+            })}
           </button>
           <button
             type="button"
@@ -189,7 +232,9 @@ export function ArcadePetAdoptionModal({
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            Select Pet (💎 {SELECT_PET_COST})
+            {t('arcadePetCompanion.adoption.tabSelect', {
+              cost: SELECT_PET_COST,
+            })}
           </button>
           <button
             type="button"
@@ -201,7 +246,9 @@ export function ArcadePetAdoptionModal({
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
-            My Pets ({pets.length})
+            {t('arcadePetCompanion.adoption.tabCollection', {
+              count: pets.length,
+            })}
           </button>
         </div>
 
@@ -221,12 +268,11 @@ export function ArcadePetAdoptionModal({
             <div className="flex items-center gap-2 p-3 rounded-xl bg-indigo-900/40 border border-indigo-500/40 text-xs text-indigo-300">
               <span className="text-base">✨</span>
               <span>
-                Theme Guaranteed: Next pet will emerge with{' '}
-                <strong className="text-white uppercase font-bold">
-                  {THEME_PET_PALETTES[queuedThemeForNextPet]?.title ??
-                    queuedThemeForNextPet}
-                </strong>{' '}
-                theme!
+                {t('arcadePetCompanion.adoption.themeGuaranteed', {
+                  theme:
+                    THEME_PET_PALETTES[queuedThemeForNextPet]?.title ??
+                    queuedThemeForNextPet,
+                })}
               </span>
             </div>
           )}
@@ -239,12 +285,14 @@ export function ArcadePetAdoptionModal({
               <div className="text-xs text-amber-300 font-bold flex items-center justify-center gap-1.5">
                 <span>🏠</span>
                 <span>
-                  Home is Full ({pets.length}/{homeCapacity} Places)
+                  {t('arcadePetCompanion.adoption.homeFull', {
+                    used: pets.length,
+                    total: homeCapacity,
+                  })}
                 </span>
               </div>
               <p className="text-[11px] text-neutral-300">
-                To adopt a pet, your home needs enough place! Upgrade with Coins
-                or Gems:
+                {t('arcadePetCompanion.adoption.homeFullHint')}
               </p>
               <div className="flex items-center justify-center gap-2">
                 <button
@@ -253,7 +301,10 @@ export function ArcadePetAdoptionModal({
                   onClick={() => handleUpgradeHome('coins')}
                   className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1 shadow"
                 >
-                  <span>🪙</span> Upgrade (🪙 {upgradeCost.coinCost})
+                  <span>🪙</span>{' '}
+                  {t('arcadePetCompanion.adoption.upgradeCoins', {
+                    cost: upgradeCost.coinCost,
+                  })}
                 </button>
                 <button
                   type="button"
@@ -261,7 +312,10 @@ export function ArcadePetAdoptionModal({
                   onClick={() => handleUpgradeHome('gems')}
                   className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1 shadow"
                 >
-                  <span>💎</span> Upgrade (💎 {upgradeCost.gemCost})
+                  <span>💎</span>{' '}
+                  {t('arcadePetCompanion.adoption.upgradeGems', {
+                    cost: upgradeCost.gemCost,
+                  })}
                 </button>
               </div>
             </div>
@@ -276,13 +330,17 @@ export function ArcadePetAdoptionModal({
                 <div className="space-y-1">
                   <h3 className="text-base font-bold text-white">
                     {isFirstMountFree
-                      ? 'Adopt Your First Companion (Free!)'
-                      : `Summon Random Mount (💎 ${nextCost} Gems)`}
+                      ? t('arcadePetCompanion.adoption.firstTitle')
+                      : t('arcadePetCompanion.adoption.nextTitle', {
+                          cost: nextCost,
+                        })}
                   </h3>
                   <p className="text-xs text-neutral-400 max-w-sm mx-auto">
                     {isFirstMountFree
-                      ? 'Your very first companion mount is free! Rolls a random theme and species to walk on your screen.'
-                      : `Each next mount escalates in gem cost. Current price: 💎 ${nextCost} gems.`}
+                      ? t('arcadePetCompanion.adoption.firstBody')
+                      : t('arcadePetCompanion.adoption.nextBody', {
+                          cost: nextCost,
+                        })}
                   </p>
                 </div>
 
@@ -298,25 +356,43 @@ export function ArcadePetAdoptionModal({
                   }`}
                 >
                   {isHomeFull
-                    ? '🏠 Upgrade Home to Adopt'
+                    ? t('arcadePetCompanion.adoption.upgradeToAdopt')
                     : isFirstMountFree
-                      ? 'Roll First Mount (FREE)'
-                      : `Roll Random Pet (💎 ${nextCost} Gems)`}
+                      ? t('arcadePetCompanion.adoption.rollFirst')
+                      : t('arcadePetCompanion.adoption.rollRandom', {
+                          cost: nextCost,
+                        })}
                 </button>
               </div>
 
               <div className="p-4 rounded-xl bg-neutral-950/60 border border-neutral-800 text-xs text-neutral-400 space-y-2">
                 <span className="font-bold text-neutral-300 block">
-                  Mount Cost Progression
+                  {t('arcadePetCompanion.adoption.progressionTitle')}
                 </span>
                 <div className="grid grid-cols-5 gap-2 text-center text-[11px]">
                   {[
-                    { label: '1st', cost: 'FREE', color: 'text-emerald-400' },
-                    { label: '2nd', cost: '💎 50', color: 'text-indigo-300' },
-                    { label: '3rd', cost: '💎 150', color: 'text-indigo-300' },
-                    { label: '4th', cost: '💎 300', color: 'text-indigo-300' },
                     {
-                      label: '5th+',
+                      label: t('arcadePetCompanion.adoption.tier1'),
+                      cost: t('arcadePetCompanion.adoption.tierFree'),
+                      color: 'text-emerald-400',
+                    },
+                    {
+                      label: t('arcadePetCompanion.adoption.tier2'),
+                      cost: '💎 50',
+                      color: 'text-indigo-300',
+                    },
+                    {
+                      label: t('arcadePetCompanion.adoption.tier3'),
+                      cost: '💎 150',
+                      color: 'text-indigo-300',
+                    },
+                    {
+                      label: t('arcadePetCompanion.adoption.tier4'),
+                      cost: '💎 300',
+                      color: 'text-indigo-300',
+                    },
+                    {
+                      label: t('arcadePetCompanion.adoption.tier5'),
                       cost: '💎 500+',
                       color: 'text-indigo-300',
                     },
@@ -339,10 +415,10 @@ export function ArcadePetAdoptionModal({
               <div className="p-4 rounded-xl bg-neutral-950/60 border border-neutral-800 text-xs text-neutral-400 space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-neutral-300 block">
-                    Game Theme Pets (5 Pets per Theme)
+                    {t('arcadePetCompanion.adoption.themesTitle')}
                   </span>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300 font-semibold">
-                    13 Themes • 65 Total Pets
+                    {t('arcadePetCompanion.adoption.themesBadge')}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-44 overflow-y-auto p-1">
@@ -373,14 +449,14 @@ export function ArcadePetAdoptionModal({
               </div>
 
               <div className="flex items-center justify-between text-xs text-neutral-400 pt-1">
-                <span>Need gems for companion pets?</span>
+                <span>{t('arcadePetCompanion.adoption.needGems')}</span>
                 <button
                   type="button"
                   data-testid="add-bonus-gems-btn"
                   onClick={() => addGems(100)}
                   className="px-3 py-1 rounded-lg bg-indigo-900/50 hover:bg-indigo-800 border border-indigo-500/40 text-indigo-300 font-semibold"
                 >
-                  +100 Bonus 💎
+                  {t('arcadePetCompanion.adoption.bonusGems')}
                 </button>
               </div>
             </div>

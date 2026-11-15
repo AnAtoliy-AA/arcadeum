@@ -14,6 +14,8 @@ import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
 import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { THEME_PET_PALETTES, getPetFoodCost } from '../lib/arcade-pet-economy';
 import { gamesApi } from '@/features/games/api';
+import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
+import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
 import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
 
 interface ArcadePetCompanionWidgetProps {
@@ -35,6 +37,8 @@ export const ArcadePetCompanionWidget: React.FC<
     gemBalance,
     coinBalance,
     actionError,
+    awaySummary,
+    dismissAwaySummary,
     presents,
     isWidgetOpen,
     isAtHome,
@@ -82,35 +86,10 @@ export const ArcadePetCompanionWidget: React.FC<
     return (
       <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
         {showRegisterPrompt && (
-          <div
-            data-testid="arcade-pet-register-prompt"
-            className="mb-3 w-72 rounded-2xl bg-neutral-900/95 border border-amber-500/50 p-4 shadow-2xl backdrop-blur-md text-white font-sans flex flex-col gap-2.5 text-center"
-          >
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
-                <span>🔒</span>
-                <span>Registration Required</span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowRegisterPrompt(false)}
-                className="text-neutral-400 hover:text-white p-1 text-xs"
-                aria-label="Close prompt"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-xs text-neutral-300 leading-relaxed">
-              Only registered players can adopt ArcadePets! Register or log in
-              to unlock your free pet companion.
-            </p>
-            <Link
-              href={`/${locale}/auth`}
-              className="w-full py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs uppercase text-center shadow-md transition-transform transform hover:scale-105"
-            >
-              Register / Log In →
-            </Link>
-          </div>
+          <ArcadePetRegisterPrompt
+            locale={locale}
+            onClose={() => setShowRegisterPrompt(false)}
+          />
         )}
 
         <button
@@ -391,8 +370,16 @@ export const ArcadePetCompanionWidget: React.FC<
                   </div>
                 </div>
 
+                {awaySummary && (
+                  <ArcadePetAwayBanner
+                    summary={awaySummary}
+                    onDismiss={dismissAwaySummary}
+                  />
+                )}
+
                 {actionError && (
                   <div
+                    role="alert"
                     data-testid="pet-action-error"
                     className="text-[11px] text-amber-400 font-semibold text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2"
                   >

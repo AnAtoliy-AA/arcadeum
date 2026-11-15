@@ -5,6 +5,7 @@ import type {
   PetState,
 } from '@arcadeum/games-core';
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
+import type { AwaySummary } from '../lib/arcade-pet-away-summary';
 
 export interface ArcadePetStoreState {
   pet: PetState | null;
@@ -21,6 +22,8 @@ export interface ArcadePetStoreState {
   activeTreat: GameTreatId | null;
   hasConfirmedCare: boolean;
   actionError: string | null;
+  awaySummary: AwaySummary | null;
+  dismissAwaySummary: () => void;
   initialize: (userId?: string, theme?: string) => void;
   performAction: (
     action: PetActionType,

@@ -35,6 +35,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   activeTreat: null,
   hasConfirmedCare: false,
   actionError: null,
+  awaySummary: null,
+  dismissAwaySummary: () => set({ awaySummary: null }),
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
@@ -66,6 +68,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       set({
         ...common,
         hasConfirmedCare: true,
+        awaySummary: stored.awaySummary,
         pets: stored.pets,
         activePetId: active?.id ?? null,
         pet: active,

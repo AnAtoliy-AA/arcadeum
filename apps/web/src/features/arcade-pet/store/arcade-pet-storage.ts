@@ -1,5 +1,9 @@
 import { applyDeterministicDecay, type PetState } from '@arcadeum/games-core';
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
+import {
+  buildAwaySummary,
+  type AwaySummary,
+} from '../lib/arcade-pet-away-summary';
 
 export const STORAGE_KEY = 'arcadeum_pet_collection_v2';
 export const LEGACY_STORAGE_KEY = 'arcadeum_pet_state';
@@ -15,6 +19,10 @@ export interface StoredCollection {
   hasConfirmedCare?: boolean;
   isAtHome?: boolean;
   homeCapacity?: number;
+}
+
+export interface LoadedCollection extends StoredCollection {
+  awaySummary: AwaySummary | null;
 }
 
 export const DEFAULT_WELCOME_PRESENT: PetGiftPresent = {
@@ -89,7 +97,7 @@ export function parseStoredCollection(raw: unknown): StoredCollection | null {
   };
 }
 
-export function loadStoredCollection(): StoredCollection | null {
+export function loadStoredCollection(): LoadedCollection | null {
   if (typeof window === 'undefined') return null;
   try {
     localStorage.removeItem(LEGACY_STORAGE_KEY);
@@ -98,10 +106,21 @@ export function loadStoredCollection(): StoredCollection | null {
     const parsed = parseStoredCollection(JSON.parse(raw) as unknown);
     if (!parsed) return null;
     const isHome = parsed.isAtHome ?? false;
+    const now = Date.now();
+    const pets = parsed.pets.map((p) =>
+      applyDeterministicDecay(p, now, { isAtHome: isHome }),
+    );
+    const activeIndex = Math.max(
+      0,
+      parsed.pets.findIndex((p) => p.id === parsed.activePetId),
+    );
     return {
       ...parsed,
-      pets: parsed.pets.map((p) =>
-        applyDeterministicDecay(p, undefined, { isAtHome: isHome }),
+      pets,
+      awaySummary: buildAwaySummary(
+        parsed.pets[activeIndex],
+        pets[activeIndex],
+        now,
       ),
     };
   } catch {

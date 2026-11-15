@@ -18,6 +18,14 @@ export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+/** Longest offline gap counted for decay/growth; guards against clock changes. */
+export const MAX_ELAPSED_MS = 30 * 24 * 60 * 60 * 1000;
+
+export function clampElapsedMs(elapsedMs: number): number {
+  if (!Number.isFinite(elapsedMs)) return 0;
+  return clamp(elapsedMs, 0, MAX_ELAPSED_MS);
+}
+
 export const PET_XP_PER_LEVEL = 100;
 
 export function levelFromPetXp(xp: number): number {
@@ -72,7 +80,7 @@ export function applyDeterministicDecay(
   options?: DecayOptions,
 ): PetState {
   if (state.stage === 'egg') {
-    const elapsedMs = Math.max(0, now - state.timestamps.lastInteractedAt);
+    const elapsedMs = clampElapsedMs(now - state.timestamps.lastInteractedAt);
     const elapsedHours = elapsedMs / (1000 * 60 * 60);
     const isAtHome = Boolean(options?.isAtHome);
     const growthMultiplier = isAtHome
@@ -106,7 +114,7 @@ export function applyDeterministicDecay(
     };
   }
 
-  const elapsedMs = Math.max(0, now - state.timestamps.lastInteractedAt);
+  const elapsedMs = clampElapsedMs(now - state.timestamps.lastInteractedAt);
   const elapsedHours = elapsedMs / (1000 * 60 * 60);
 
   if (elapsedHours <= 0) return state;

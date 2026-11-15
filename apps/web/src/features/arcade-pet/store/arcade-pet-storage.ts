@@ -25,40 +25,85 @@ export const DEFAULT_WELCOME_PRESENT: PetGiftPresent = {
   theme: 'galaxy',
   petName: 'Starling Dragon',
   message: 'Welcome to Arcadeum! Here is a special cosmic companion gift.',
-  createdAt: Date.now(),
+  // Fixed value so SSR and client render the same present.
+  createdAt: 0,
   isOpened: false,
 };
+
+export const STORAGE_SCHEMA_VERSION = 2;
+const MAX_STORED_BALANCE = 1_000_000;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isValidPet(value: unknown): value is PetState {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.stage === 'string' &&
+    isRecord(value.stats) &&
+    isRecord(value.timestamps) &&
+    typeof value.timestamps.lastInteractedAt === 'number' &&
+    typeof value.timestamps.bornAt === 'number'
+  );
+}
+
+function sanitizeBalance(value: unknown, fallback: number): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.min(MAX_STORED_BALANCE, Math.max(0, Math.floor(value)));
+}
+
+function sanitizePresents(value: unknown): PetGiftPresent[] {
+  if (!Array.isArray(value)) return [DEFAULT_WELCOME_PRESENT];
+  return value.filter(
+    (p): p is PetGiftPresent =>
+      isRecord(p) &&
+      typeof p.id === 'string' &&
+      typeof p.isOpened === 'boolean',
+  );
+}
+
+/** Validates untrusted persisted data; returns null when it is unusable. */
+export function parseStoredCollection(raw: unknown): StoredCollection | null {
+  if (!isRecord(raw) || !raw.hasConfirmedCare) return null;
+  const pets = Array.isArray(raw.pets) ? raw.pets.filter(isValidPet) : [];
+  if (pets.length === 0) return null;
+  const activePetId =
+    typeof raw.activePetId === 'string' ? raw.activePetId : null;
+  return {
+    pets,
+    activePetId,
+    gemBalance: sanitizeBalance(raw.gemBalance, 300),
+    coinBalance: sanitizeBalance(raw.coinBalance, 50),
+    adoptionCount: sanitizeBalance(raw.adoptionCount, pets.length),
+    queuedThemeForNextPet:
+      typeof raw.queuedThemeForNextPet === 'string'
+        ? raw.queuedThemeForNextPet
+        : null,
+    presents: sanitizePresents(raw.presents),
+    hasConfirmedCare: true,
+    isAtHome: raw.isAtHome === true,
+    homeCapacity: Math.max(1, sanitizeBalance(raw.homeCapacity, pets.length)),
+  };
+}
 
 export function loadStoredCollection(): StoredCollection | null {
   if (typeof window === 'undefined') return null;
   try {
     localStorage.removeItem(LEGACY_STORAGE_KEY);
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as StoredCollection;
-      if (!parsed.hasConfirmedCare) {
-        return null;
-      }
-      const validPets = (parsed.pets || []).filter(
-        (p) => p.name !== 'ArcadePet' || parsed.hasConfirmedCare,
-      );
-      if (validPets.length === 0) {
-        return null;
-      }
-      const isHome = parsed.isAtHome ?? false;
-      const refreshedPets = validPets.map((p) =>
+    if (!raw) return null;
+    const parsed = parseStoredCollection(JSON.parse(raw) as unknown);
+    if (!parsed) return null;
+    const isHome = parsed.isAtHome ?? false;
+    return {
+      ...parsed,
+      pets: parsed.pets.map((p) =>
         applyDeterministicDecay(p, undefined, { isAtHome: isHome }),
-      );
-      return {
-        ...parsed,
-        coinBalance: parsed.coinBalance ?? 50,
-        hasConfirmedCare: true,
-        isAtHome: isHome,
-        homeCapacity: parsed.homeCapacity ?? Math.max(1, validPets.length),
-        pets: refreshedPets,
-      };
-    }
-    return null;
+      ),
+    };
   } catch {
     return null;
   }
@@ -67,7 +112,10 @@ export function loadStoredCollection(): StoredCollection | null {
 export function saveStoredCollection(state: StoredCollection): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...state, version: STORAGE_SCHEMA_VERSION }),
+    );
   } catch {}
 }
 

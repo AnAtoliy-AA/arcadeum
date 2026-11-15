@@ -151,4 +151,40 @@ describe('ArcadePetHomeBooth', () => {
     fireEvent.click(screen.getByTestId('arcade-pet-house-structure'));
     expect(handleToggle).not.toHaveBeenCalled();
   });
+
+  it('moves the booth with arrow keys from the drag handle', () => {
+    localStorage.clear();
+    render(
+      <ArcadePetHomeBooth
+        isAtHome={true}
+        onToggleHome={vi.fn()}
+        localPetName="Cyber Drake"
+        localPetSpecies="dragon"
+        localPetTheme="cyberpunk"
+        isKnocked={false}
+        onOpenDoor={vi.fn()}
+      />,
+    );
+
+    const booth = screen.getByTestId('arcade-pet-home-booth');
+    const handle = screen.getByTestId('arcade-pet-home-drag-handle');
+    expect(handle).toHaveAttribute('aria-label');
+
+    vi.spyOn(booth, 'getBoundingClientRect').mockReturnValue({
+      left: 200,
+      top: 200,
+      width: 100,
+      height: 100,
+      right: 300,
+      bottom: 300,
+      x: 200,
+      y: 200,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.keyDown(handle, { key: 'ArrowRight' });
+    expect(booth.style.getPropertyValue('--home-drag-x')).toBe('16px');
+    fireEvent.keyDown(handle, { key: 'ArrowDown', shiftKey: true });
+    expect(booth.style.getPropertyValue('--home-drag-y')).toBe('64px');
+  });
 });

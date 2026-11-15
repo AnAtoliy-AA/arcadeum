@@ -17,6 +17,7 @@ interface ArcadePetHomeBoothProps {
   pets?: PetState[];
   homeCapacity?: number;
   onUpgradeHome?: (currency: 'coins' | 'gems') => void;
+  moveHomeLabel?: string;
 }
 
 export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
@@ -31,6 +32,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
   onOpenDoor,
   pets,
   homeCapacity = 1,
+  moveHomeLabel = 'Move pet home (arrow keys, hold Shift for larger steps)',
 }) => {
   const placesCount = Math.max(1, homeCapacity);
   const {
@@ -40,6 +42,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
     onPointerMove,
     onPointerUp,
     handleHouseClick,
+    onMoveKeyDown,
   } = useDraggableHome();
 
   return (
@@ -94,15 +97,20 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           isKnocked ? styles.houseKnockWobble : ''
         }`}
       >
-        <div
+        <button
+          type="button"
           data-testid="arcade-pet-home-drag-handle"
-          className="flex items-center gap-1 text-[8px] text-amber-400/80 font-bold tracking-wider select-none mb-0.5"
-          title="Drag to move pet home"
+          data-drag-handle
+          onKeyDown={onMoveKeyDown}
+          onClick={(e) => e.stopPropagation()}
+          aria-label={moveHomeLabel}
+          className="flex items-center gap-1 text-[8px] text-amber-400/80 font-bold tracking-wider select-none mb-0.5 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300"
+          title={moveHomeLabel}
         >
-          <span>⠿</span>
-          <span>DRAG</span>
-          <span>⠿</span>
-        </div>
+          <span aria-hidden="true">⠿</span>
+          <span aria-hidden="true">DRAG</span>
+          <span aria-hidden="true">⠿</span>
+        </button>
         <div className="absolute -top-3 right-2 flex flex-col items-center pointer-events-none">
           <span className={`text-[10px] text-neutral-400 ${styles.smokePuff}`}>
             💨

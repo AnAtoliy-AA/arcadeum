@@ -3,6 +3,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'arcadeum_pet_home_pos';
+const KEYBOARD_STEP_PX = 16;
+const KEYBOARD_STEP_LARGE_PX = 64;
+
+const ARROW_DIRECTIONS: Record<string, Position> = {
+  ArrowLeft: { x: -1, y: 0 },
+  ArrowRight: { x: 1, y: 0 },
+  ArrowUp: { x: 0, y: -1 },
+  ArrowDown: { x: 0, y: 1 },
+};
 
 interface Position {
   x: number;
@@ -44,7 +53,10 @@ export function useDraggableHome() {
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.button !== 0) return;
     const target = e.target as HTMLElement;
-    if (target.closest('button, input, a, select, textarea, [role="button"]')) {
+    const isInteractive = target.closest(
+      'button, input, a, select, textarea, [role="button"]',
+    );
+    if (isInteractive && !isInteractive.hasAttribute('data-drag-handle')) {
       return;
     }
     const el = boothRef.current;
@@ -117,6 +129,43 @@ export function useDraggableHome() {
     }
   }, []);
 
+  const moveBy = useCallback((dx: number, dy: number) => {
+    const el = boothRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const left = Math.max(
+      10,
+      Math.min(window.innerWidth - rect.width - 10, rect.left + dx),
+    );
+    const top = Math.max(
+      10,
+      Math.min(window.innerHeight - rect.height - 10, rect.top + dy),
+    );
+    const next = {
+      x: Math.round(currentOffset.current.x + (left - rect.left)),
+      y: Math.round(currentOffset.current.y + (top - rect.top)),
+    };
+    currentOffset.current = next;
+    el.style.setProperty('--home-drag-x', `${next.x}px`);
+    el.style.setProperty('--home-drag-y', `${next.y}px`);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {}
+  }, []);
+
+  /** Keyboard alternative to dragging: arrow keys move, Shift moves farther. */
+  const onMoveKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLElement>) => {
+      const dir = ARROW_DIRECTIONS[e.key];
+      if (!dir) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const step = e.shiftKey ? KEYBOARD_STEP_LARGE_PX : KEYBOARD_STEP_PX;
+      moveBy(dir.x * step, dir.y * step);
+    },
+    [moveBy],
+  );
+
   const handleHouseClick = useCallback((onToggle: () => void) => {
     if (hasMoved.current) {
       hasMoved.current = false;
@@ -167,5 +216,6 @@ export function useDraggableHome() {
     onPointerMove,
     onPointerUp,
     handleHouseClick,
+    onMoveKeyDown,
   };
 }

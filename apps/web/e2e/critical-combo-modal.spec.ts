@@ -101,10 +101,12 @@ test.describe('Critical Combo Modal', () => {
       .first();
     await expect(playButton).toBeVisible();
     await expect(playButton).toBeEnabled();
-    await playButton.click();
-
     const modal = page.getByTestId('combo-modal');
-    await expect(modal).toBeVisible();
+    // Retry the click: on WebKit it can land before handlers are attached.
+    await expect(async () => {
+      await playButton.click();
+      await expect(modal).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
 
     const blindPicker = page.getByTestId('blind-card-picker');
     await expect(blindPicker).toBeVisible();

@@ -18,6 +18,7 @@ import {
   persistStore,
   DEFAULT_WELCOME_PRESENT,
 } from './arcade-pet-storage';
+import { claimDailyBonus } from './arcade-pet-daily-claim';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
@@ -36,6 +37,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   hasConfirmedCare: false,
   actionError: null,
   awaySummary: null,
+  dailyStreak: 0,
+  lastDailyClaimDay: null,
   dismissAwaySummary: () => set({ awaySummary: null }),
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
@@ -57,6 +60,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       presents: stored?.presents ?? [DEFAULT_WELCOME_PRESENT],
       isAtHome: stored?.isAtHome ?? false,
       homeCapacity: stored?.homeCapacity ?? 1,
+      dailyStreak: stored?.dailyStreak ?? 0,
+      lastDailyClaimDay: stored?.lastDailyClaimDay ?? null,
       actionError: null,
     };
 
@@ -353,6 +358,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       coinBalance: nextCoins,
     });
   },
+
+  claimDailyBonus: () => claimDailyBonus(get, set),
 
   clearActionError: () => set({ actionError: null }),
 

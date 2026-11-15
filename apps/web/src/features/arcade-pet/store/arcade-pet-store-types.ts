@@ -23,6 +23,9 @@ export interface ArcadePetStoreState {
   hasConfirmedCare: boolean;
   actionError: string | null;
   awaySummary: AwaySummary | null;
+  dailyStreak: number;
+  lastDailyClaimDay: string | null;
+  claimDailyBonus: () => { success: boolean; coins: number; streak: number };
   dismissAwaySummary: () => void;
   initialize: (userId?: string, theme?: string) => void;
   performAction: (

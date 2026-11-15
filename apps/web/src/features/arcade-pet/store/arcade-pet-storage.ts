@@ -19,6 +19,8 @@ export interface StoredCollection {
   hasConfirmedCare?: boolean;
   isAtHome?: boolean;
   homeCapacity?: number;
+  dailyStreak?: number;
+  lastDailyClaimDay?: string | null;
 }
 
 export interface LoadedCollection extends StoredCollection {
@@ -92,6 +94,9 @@ export function parseStoredCollection(raw: unknown): StoredCollection | null {
         : null,
     presents: sanitizePresents(raw.presents),
     hasConfirmedCare: true,
+    dailyStreak: Math.min(7, sanitizeBalance(raw.dailyStreak, 0)),
+    lastDailyClaimDay:
+      typeof raw.lastDailyClaimDay === 'string' ? raw.lastDailyClaimDay : null,
     isAtHome: raw.isAtHome === true,
     homeCapacity: Math.max(1, sanitizeBalance(raw.homeCapacity, pets.length)),
   };
@@ -154,6 +159,8 @@ export function persistStore(state: {
   hasConfirmedCare: boolean;
   isAtHome: boolean;
   homeCapacity: number;
+  dailyStreak?: number;
+  lastDailyClaimDay?: string | null;
 }): void {
   saveStoredCollection({
     hasConfirmedCare: state.hasConfirmedCare,
@@ -166,5 +173,7 @@ export function persistStore(state: {
     presents: state.presents,
     isAtHome: state.isAtHome,
     homeCapacity: state.homeCapacity,
+    dailyStreak: state.dailyStreak,
+    lastDailyClaimDay: state.lastDailyClaimDay,
   });
 }

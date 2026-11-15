@@ -15,6 +15,7 @@ import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { THEME_PET_PALETTES, getPetFoodCost } from '../lib/arcade-pet-economy';
 import { gamesApi } from '@/features/games/api';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
+import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
 import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
 
@@ -39,6 +40,9 @@ export const ArcadePetCompanionWidget: React.FC<
     actionError,
     awaySummary,
     dismissAwaySummary,
+    dailyStreak,
+    lastDailyClaimDay,
+    claimDailyBonus,
     presents,
     isWidgetOpen,
     isAtHome,
@@ -376,6 +380,12 @@ export const ArcadePetCompanionWidget: React.FC<
                     onDismiss={dismissAwaySummary}
                   />
                 )}
+
+                <ArcadePetDailyBonus
+                  lastClaimDay={lastDailyClaimDay}
+                  streak={dailyStreak}
+                  onClaim={claimDailyBonus}
+                />
 
                 {actionError && (
                   <div

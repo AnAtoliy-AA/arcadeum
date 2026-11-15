@@ -15,6 +15,13 @@ import {
 } from './arcade-pet-companion-adoption';
 
 export const en = {
+  homeBadge: '💤 Home',
+  attentionAria: 'Needs attention: {{needs}}',
+  attention: {
+    sick: 'sick',
+    hungry: 'hungry',
+    dirty: 'dirty',
+  },
   gifts: giftsEn,
   adoption: adoptionEn,
   commitTitle: 'Adopt Your First Companion',
@@ -79,6 +86,13 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  homeBadge: '💤 En casa',
+  attentionAria: 'Necesita atención: {{needs}}',
+  attention: {
+    sick: 'enfermo',
+    hungry: 'hambriento',
+    dirty: 'sucio',
+  },
   gifts: giftsEs,
   adoption: adoptionEs,
   commitTitle: 'Adopta a tu primer compañero',
@@ -142,6 +156,13 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  homeBadge: '💤 Maison',
+  attentionAria: "Besoin d'attention : {{needs}}",
+  attention: {
+    sick: 'malade',
+    hungry: 'affamé',
+    dirty: 'sale',
+  },
   gifts: giftsFr,
   adoption: adoptionFr,
   commitTitle: 'Adopte ton premier compagnon',
@@ -205,6 +226,13 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  homeBadge: '💤 Дома',
+  attentionAria: 'Нужно внимание: {{needs}}',
+  attention: {
+    sick: 'болен',
+    hungry: 'голоден',
+    dirty: 'грязный',
+  },
   gifts: giftsRu,
   adoption: adoptionRu,
   commitTitle: 'Заведите первого компаньона',
@@ -267,6 +295,13 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  homeBadge: '💤 Дома',
+  attentionAria: 'Патрэбна ўвага: {{needs}}',
+  attention: {
+    sick: 'хворы',
+    hungry: 'галодны',
+    dirty: 'брудны',
+  },
   gifts: giftsBy,
   adoption: adoptionBy,
   commitTitle: 'Завядзіце першага кампаньёна',

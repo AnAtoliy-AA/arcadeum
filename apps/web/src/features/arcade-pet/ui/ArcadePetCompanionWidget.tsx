@@ -15,6 +15,7 @@ import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { THEME_PET_PALETTES, getPetFoodCost } from '../lib/arcade-pet-economy';
 import { gamesApi } from '@/features/games/api';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
+import { getPetAttention } from '../lib/arcade-pet-attention';
 import { ArcadePetCompanionHeader } from './ArcadePetCompanionHeader';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
@@ -145,6 +146,18 @@ export const ArcadePetCompanionWidget: React.FC<
   }
 
   const unopenedCount = presents.filter((p) => !p.isOpened).length;
+  const attention = getPetAttention(pet, isAtHome);
+  const triggerLabel =
+    attention.length > 0
+      ? `${t('arcadePetCompanion.toggleCompanion')}. ${t(
+          'arcadePetCompanion.attentionAria',
+          {
+            needs: attention
+              .map((r) => t(`arcadePetCompanion.attention.${r}`))
+              .join(', '),
+          },
+        )}`
+      : t('arcadePetCompanion.toggleCompanion');
   const themePalette = THEME_PET_PALETTES[pet.theme];
 
   const speciesEmoji =
@@ -434,7 +447,7 @@ export const ArcadePetCompanionWidget: React.FC<
           data-testid="arcade-pet-companion-trigger"
           onClick={toggleWidget}
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-indigo-500/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          aria-label={t('arcadePetCompanion.toggleCompanion')}
+          aria-label={triggerLabel}
         >
           <span className="text-lg">{speciesEmoji}</span>
           <span className="text-xs font-bold hidden sm:inline">
@@ -444,13 +457,19 @@ export const ArcadePetCompanionWidget: React.FC<
           </span>
           {isAtHome && (
             <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-[10px] text-amber-200 font-semibold">
-              💤 Home
+              {t('arcadePetCompanion.homeBadge')}
             </span>
           )}
           {unopenedCount > 0 ? (
             <span className="px-1.5 py-0.2 rounded-full bg-pink-500 text-white text-[10px] font-bold">
               🎁 {unopenedCount}
             </span>
+          ) : attention.length > 0 ? (
+            <span
+              data-testid="pet-attention-indicator"
+              aria-hidden="true"
+              className="w-2 h-2 rounded-full bg-red-500 animate-pulse"
+            />
           ) : !isAtHome ? (
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           ) : null}

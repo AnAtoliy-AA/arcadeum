@@ -1,5 +1,6 @@
 import React from 'react';
 import type { PetState } from '@arcadeum/games-core';
+import { stageTranslationKey } from '../lib/arcade-pet-stage-key';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { ThemePetPalette } from '../lib/arcade-pet-economy';
 
@@ -53,7 +54,7 @@ export const ArcadePetCompanionHeader: React.FC<
               ? t('arcadePetCompanion.incubating')
               : t('arcadePetCompanion.levelOwned', {
                   level: pet.stats.level,
-                  stage: pet.stage,
+                  stage: t(stageTranslationKey(pet.stage)),
                   count: petCount,
                 })}
           </span>

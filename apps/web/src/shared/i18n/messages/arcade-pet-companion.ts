@@ -1,6 +1,22 @@
 import type { DeepPartial } from '../base-types';
 
 export const en = {
+  commitTitle: 'Adopt Your First Companion',
+  commitFree: '100% Free First Mount 🎁',
+  close: 'Close',
+  commitIntro:
+    'A pet is a faithful buddy on your gaming journey. Before bringing your new companion home, please confirm your commitment.',
+  commitPledge:
+    'I confirm that I want this pet and will care for it, feed it, and play with it!',
+  cancel: 'Cancel',
+  stage: {
+    egg: 'Egg',
+    baby: 'Baby',
+    child: 'Child',
+    teen: 'Teen',
+    adult: 'Adult',
+    senior: 'Senior',
+  },
   collectionEmpty: 'No pets yet. Adopt your first companion!',
   registerForPet: 'Register for Pet',
   mystery: 'Mystery',
@@ -47,6 +63,22 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  commitTitle: 'Adopta a tu primer compañero',
+  commitFree: 'Primera mascota 100% gratis 🎁',
+  close: 'Cerrar',
+  commitIntro:
+    'Una mascota es un fiel compañero en tu aventura de juego. Antes de llevar a casa a tu nuevo compañero, confirma tu compromiso.',
+  commitPledge:
+    'Confirmo que quiero esta mascota y la cuidaré, la alimentaré y jugaré con ella.',
+  cancel: 'Cancelar',
+  stage: {
+    egg: 'Huevo',
+    baby: 'Bebé',
+    child: 'Niño',
+    teen: 'Adolescente',
+    adult: 'Adulto',
+    senior: 'Anciano',
+  },
   collectionEmpty: 'Aún no tienes mascotas. ¡Adopta a tu primer compañero!',
   registerForPet: 'Registrarse para mascota',
   mystery: 'Misterio',
@@ -92,6 +124,22 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  commitTitle: 'Adopte ton premier compagnon',
+  commitFree: 'Première monture 100 % gratuite 🎁',
+  close: 'Fermer',
+  commitIntro:
+    "Un animal est un fidèle compagnon dans ton aventure de jeu. Avant d'accueillir ton nouveau compagnon, confirme ton engagement.",
+  commitPledge:
+    "Je confirme vouloir cet animal et m'engage à le soigner, le nourrir et jouer avec lui !",
+  cancel: 'Annuler',
+  stage: {
+    egg: 'Œuf',
+    baby: 'Bébé',
+    child: 'Enfant',
+    teen: 'Ado',
+    adult: 'Adulte',
+    senior: 'Senior',
+  },
   collectionEmpty: "Pas encore d'animal. Adopte ton premier compagnon !",
   registerForPet: "S'inscrire pour un animal",
   mystery: 'Mystère',
@@ -137,6 +185,22 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  commitTitle: 'Заведите первого компаньона',
+  commitFree: 'Первый питомец совершенно бесплатно 🎁',
+  close: 'Закрыть',
+  commitIntro:
+    'Питомец - верный друг в вашем игровом пути. Прежде чем забрать нового компаньона домой, подтвердите свою ответственность.',
+  commitPledge:
+    'Подтверждаю, что хочу этого питомца, буду о нём заботиться, кормить и играть с ним!',
+  cancel: 'Отмена',
+  stage: {
+    egg: 'Яйцо',
+    baby: 'Малыш',
+    child: 'Ребёнок',
+    teen: 'Подросток',
+    adult: 'Взрослый',
+    senior: 'Старейшина',
+  },
   collectionEmpty: 'Питомцев пока нет. Заведите первого компаньона!',
   registerForPet: 'Регистрация для питомца',
   mystery: 'Тайна',
@@ -181,6 +245,22 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  commitTitle: 'Завядзіце першага кампаньёна',
+  commitFree: 'Першы пітомец цалкам бясплатна 🎁',
+  close: 'Закрыць',
+  commitIntro:
+    'Пітомец - верны сябар у вашым гульнявым шляху. Перад тым як забраць новага кампаньёна дадому, пацвердзіце сваю адказнасць.',
+  commitPledge:
+    'Пацвярджаю, што хачу гэтага пітомца, буду клапаціцца пра яго, карміць і гуляць з ім!',
+  cancel: 'Скасаваць',
+  stage: {
+    egg: 'Яйка',
+    baby: 'Малы',
+    child: 'Дзіця',
+    teen: 'Падлетак',
+    adult: 'Дарослы',
+    senior: 'Старэйшына',
+  },
   collectionEmpty: 'Пітомцаў пакуль няма. Завядзіце першага кампаньёна!',
   registerForPet: 'Рэгістрацыя для пітомца',
   mystery: 'Таямніца',

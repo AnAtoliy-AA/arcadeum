@@ -3,6 +3,7 @@ import {
   formatAwayDuration,
   type AwaySummary,
 } from '../lib/arcade-pet-away-summary';
+import { stageTranslationKey } from '../lib/arcade-pet-stage-key';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetAwayBannerProps {
@@ -29,7 +30,7 @@ export const ArcadePetAwayBanner: React.FC<ArcadePetAwayBannerProps> = ({
           hours: summary.growthHoursGained,
         })}
         {summary.stageBefore !== summary.stageAfter
-          ? ` ${t('arcadePetCompanion.awayEvolved', { stage: summary.stageAfter })}`
+          ? ` ${t('arcadePetCompanion.awayEvolved', { stage: t(stageTranslationKey(summary.stageAfter)) })}`
           : ''}
       </span>
       <button

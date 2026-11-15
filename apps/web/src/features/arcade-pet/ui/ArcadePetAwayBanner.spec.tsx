@@ -26,7 +26,7 @@ describe('ArcadePetAwayBanner', () => {
     );
     const banner = screen.getByRole('status');
     expect(banner).toHaveTextContent('Bit lost 20 hunger');
-    expect(banner).toHaveTextContent('Now a baby!');
+    expect(banner).toHaveTextContent('Now a Baby!');
     fireEvent.click(screen.getByTestId('pet-away-summary-dismiss'));
     expect(onDismiss).toHaveBeenCalled();
   });

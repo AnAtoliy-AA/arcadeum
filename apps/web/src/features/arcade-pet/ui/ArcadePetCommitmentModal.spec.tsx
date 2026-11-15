@@ -1,7 +1,12 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { mockUseTranslation } from '../test/mock-translation';
 import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 describe('ArcadePetCommitmentModal', () => {
   it('renders modal with title, pledge checkbox, and disabled adopt button initially', () => {
@@ -61,5 +66,21 @@ describe('ArcadePetCommitmentModal', () => {
     const cancelBtn = screen.getByRole('button', { name: 'Cancel' });
     fireEvent.click(cancelBtn);
     expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('is an accessible dialog that closes on Escape', () => {
+    const onClose = vi.fn();
+    render(
+      <ArcadePetCommitmentModal
+        open={true}
+        onClose={onClose}
+        onConfirm={vi.fn()}
+      />,
+    );
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(dialog).toHaveAccessibleName('Adopt Your First Companion');
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

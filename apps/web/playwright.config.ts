@@ -112,12 +112,8 @@ export default defineConfig({
       // Safari + Next.js 16 dev server cold compile is reliably slow on the
       // first navigation. A second attempt against the now-warm cache passes
       // — same pattern as the CI-wide retries=1.
-      // WebKit hydrates slower under dev-server load, so interactions that
-      // fire right after navigation can be dropped. Give it a longer
-      // expect/action budget and a second retry.
       retries: 2,
-      expect: { timeout: 20000 },
-      use: { ...devices['Desktop Safari'], actionTimeout: 20000 },
+      use: { ...devices['Desktop Safari'] },
     },
     {
       name: 'Mobile Chrome',
@@ -132,10 +128,8 @@ export default defineConfig({
     },
     {
       name: 'Mobile Safari',
-      // Same WebKit hydration/dev-server slowness as the desktop project.
       retries: 2,
-      expect: { timeout: 20000 },
-      use: { ...devices['iPhone 12'], actionTimeout: 20000 },
+      use: { ...devices['iPhone 12'] },
     },
   ],
 

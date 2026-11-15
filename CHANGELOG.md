@@ -7,14 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- cap the e2e rules-modal wait so WebKit room specs no longer burn the test timeout
+
 ## [1.30.111] - 2026-11-15
 
 ### Fixed
+
 - stabilize WebKit and Mobile Safari specs (ARC-1046) (ARC-1046)
 
 ### Documentation
-- drop unrelated ticket reference from e2e fix entry
 
+- drop unrelated ticket reference from e2e fix entry
 
 ## [1.30.110] - 2026-11-01
 

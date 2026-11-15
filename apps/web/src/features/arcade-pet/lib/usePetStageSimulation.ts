@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { usePageVisible } from './usePageVisible';
 import type { PetSpecies } from '@arcadeum/games-core';
 import {
   computeNextStep,
@@ -46,6 +47,7 @@ export function usePetStageSimulation({
   const localBehavior = getSpeciesBehavior(localSpecies);
   const remoteBehavior = getSpeciesBehavior(remoteSpecies);
 
+  const isPageVisible = usePageVisible();
   const [sim, setSim] = useState<PetSimState>(() => {
     const initialLocalTarget = pickSpeciesTarget(localSpecies, 2, 1);
     const initialRemoteTarget = pickSpeciesTarget(remoteSpecies, 6, 2);
@@ -76,6 +78,7 @@ export function usePetStageSimulation({
   });
 
   useEffect(() => {
+    if (!isPageVisible) return;
     const localTimer = setInterval(() => {
       setSim((prev) => {
         if (isAtHome) return prev;
@@ -121,10 +124,10 @@ export function usePetStageSimulation({
     }, localBehavior.cadenceMs);
 
     return () => clearInterval(localTimer);
-  }, [localSpecies, localBehavior.cadenceMs, isAtHome]);
+  }, [localSpecies, localBehavior.cadenceMs, isAtHome, isPageVisible]);
 
   useEffect(() => {
-    if (!hasFriend) return;
+    if (!hasFriend || !isPageVisible) return;
 
     const remoteTimer = setInterval(() => {
       setSim((prev) => {
@@ -239,6 +242,7 @@ export function usePetStageSimulation({
 
     return () => clearInterval(remoteTimer);
   }, [
+    isPageVisible,
     remoteSpecies,
     remoteBehavior.cadenceMs,
     localSpecies,

@@ -470,3 +470,11 @@
     transform: translateY(-14px) scale(1.3);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .stageContainer,
+  .stageContainer * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

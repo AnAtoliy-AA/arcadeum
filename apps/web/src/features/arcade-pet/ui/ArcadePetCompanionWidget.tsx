@@ -3,8 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ProgressBar } from '@arcadeum/ui';
-import { getGrowthSpeedPercent } from '@arcadeum/games-core';
 import { useLanguage } from '@/shared/i18n/useLanguage';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useArcadePetStore } from '../store/useArcadePetStore';
@@ -17,6 +15,7 @@ import { gamesApi } from '@/features/games/api';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
 import { getPetAttention } from '../lib/arcade-pet-attention';
 import { ArcadePetCompanionHeader } from './ArcadePetCompanionHeader';
+import { ArcadePetStatusPanel } from './ArcadePetStatusPanel';
 import { ArcadePetMilestoneToast } from './ArcadePetMilestoneToast';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
@@ -290,78 +289,7 @@ export const ArcadePetCompanionWidget: React.FC<
               </div>
             ) : (
               <>
-                {isAtHome ? (
-                  <div
-                    data-testid="pet-home-resting-banner"
-                    className="text-[11px] text-amber-200 font-medium text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
-                  >
-                    <span>🏠</span>
-                    <span>
-                      Resting at Home • Growth paused (counts only running
-                      hours)
-                    </span>
-                  </div>
-                ) : (
-                  <div
-                    data-testid="pet-running-banner"
-                    className="text-[11px] text-emerald-300 font-medium text-center bg-emerald-950/30 border border-emerald-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
-                  >
-                    <span>⚡</span>
-                    <span>
-                      Running on Screen • Fast growth! Keep fed to grow faster.
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-2 text-xs">
-                  <div className="flex justify-between text-[11px] text-neutral-400">
-                    <span>{t('arcadePetCompanion.hunger')}</span>
-                    <span className="font-bold text-neutral-200">
-                      {pet.stats.hunger}%
-                    </span>
-                  </div>
-                  <ProgressBar
-                    value={pet.stats.hunger}
-                    height={6}
-                    color="#f59e0b"
-                  />
-
-                  <div className="flex justify-between text-[11px] text-neutral-400 pt-1">
-                    <span>{t('arcadePetCompanion.happiness')}</span>
-                    <span className="font-bold text-neutral-200">
-                      {pet.stats.happiness}%
-                    </span>
-                  </div>
-                  <ProgressBar
-                    value={pet.stats.happiness}
-                    height={6}
-                    color="#f43f5e"
-                  />
-
-                  <div
-                    data-testid="pet-growth-rate-badge"
-                    className="flex items-center justify-between text-[11px] px-2 py-1 rounded bg-neutral-950/70 border border-neutral-800"
-                  >
-                    <span className="text-neutral-400">Growth Speed</span>
-                    <span
-                      className={`font-bold ${
-                        isAtHome
-                          ? 'text-neutral-400'
-                          : getGrowthSpeedPercent(pet.stats.hunger, isAtHome) >=
-                              70
-                            ? 'text-emerald-400'
-                            : 'text-amber-400'
-                      }`}
-                    >
-                      {isAtHome
-                        ? t('arcadePetCompanion.pausedAtHome')
-                        : `${getGrowthSpeedPercent(pet.stats.hunger, isAtHome)}%`}
-                      {!isAtHome && pet.stats.hunger < 25
-                        ? t('arcadePetCompanion.hungryWarning')
-                        : ''}
-                    </span>
-                  </div>
-                </div>
+                <ArcadePetStatusPanel pet={pet} isAtHome={isAtHome} />
 
                 {awaySummary && (
                   <ArcadePetAwayBanner

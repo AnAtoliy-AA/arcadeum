@@ -15,6 +15,9 @@ import {
 } from './arcade-pet-companion-adoption';
 
 export const en = {
+  restingBanner: 'Resting at Home • Growth paused (counts only running hours)',
+  runningBanner: 'Running on Screen • Fast growth! Keep fed to grow faster.',
+  growthSpeed: 'Growth Speed',
   milestones: {
     first_hatch: 'First hatch',
     level_5: 'Reached level 5',
@@ -105,6 +108,11 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  restingBanner:
+    'Descansando en casa • Crecimiento en pausa (solo cuentan las horas en pantalla)',
+  runningBanner:
+    'En pantalla • ¡Crecimiento rápido! Aliméntala para crecer más rápido.',
+  growthSpeed: 'Velocidad de crecimiento',
   milestones: {
     first_hatch: 'Primera eclosión',
     level_5: 'Nivel 5 alcanzado',
@@ -196,6 +204,11 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  restingBanner:
+    "Au repos à la maison • Croissance en pause (seules les heures à l'écran comptent)",
+  runningBanner:
+    "À l'écran • Croissance rapide ! Nourris-le pour grandir plus vite.",
+  growthSpeed: 'Vitesse de croissance',
   milestones: {
     first_hatch: 'Première éclosion',
     level_5: 'Niveau 5 atteint',
@@ -286,6 +299,10 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  restingBanner:
+    'Отдыхает дома • Рост приостановлен (считаются только часы на экране)',
+  runningBanner: 'На экране • Быстрый рост! Кормите, чтобы рос ещё быстрее.',
+  growthSpeed: 'Скорость роста',
   milestones: {
     first_hatch: 'Первое вылупление',
     level_5: 'Достигнут 5-й уровень',
@@ -376,6 +393,10 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  restingBanner:
+    'Адпачывае дома • Рост прыпынены (лічацца толькі гадзіны на экране)',
+  runningBanner: 'На экране • Хуткі рост! Карміце, каб рос яшчэ хутчэй.',
+  growthSpeed: 'Хуткасць росту',
   milestones: {
     first_hatch: 'Першае вылупленне',
     level_5: 'Дасягнуты 5-ы ўзровень',

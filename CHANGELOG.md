@@ -7,32 +7,168 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.110] - 2026-11-01
+
+### Added
+- show level pill under avatar and highlight prestige rows in leaderboard (ARC-1048) (ARC-1048)
+
+
+## [1.30.109] - 2026-11-01
+
+### Fixed
+- derive player level from xp so stats never show stale level (ARC-1047) (ARC-1047)
+
+
+## [1.30.108] - 2026-11-01
+
+### Fixed
+- scroll theme showcase card into view before click in chess landing (ARC-1030) (ARC-1030)
+- enable 2 workers for webkit and stabilize safari locators (ARC-1030) (ARC-1030)
+
+
+## [1.30.107] - 2026-11-01
+
+### Fixed
+- use swapfile2 with cleanup to prevent text file busy (ARC-1029) (ARC-1029)
+- configure swap space on e2e runners to prevent oom (ARC-1029) (ARC-1029)
+
+
+## [1.30.106] - 2026-11-01
+
+### Fixed
+- reduce e2e shards to 3 and skip axe audit in regular runs (ARC-1028) (ARC-1028)
+
+
+## [1.30.105] - 2026-11-01
+
+### Fixed
+- sanitize and single quote secret values in fetch-secrets (ARC-1027) (ARC-1027)
+- mock puzzle-api in online puzzle duel test (ARC-1027) (ARC-1027)
+- improve oci vault secrets sync and deploy resilience (ARC-1027) (ARC-1027)
+
+
+## [1.30.104] - 2026-11-01
+
+### Fixed
+- stabilize combo modal, chess themes locator, and view mode clicks (ARC-1026) (ARC-1026)
+- optimize workflow jobs and fix webkit e2e stability (ARC-1026) (ARC-1026)
+
+
+## [1.30.103] - 2026-11-01
+
+### Added
+- implement rematch consent flow, UI/UX waiting modal, and notifications (ARC-1045) (ARC-1045)
+
+### Fixed
+- require rematch consent and notify players (ARC-1045)
+
+
+## [1.30.102] - 2026-11-01
+
+### Fixed
+- expand ci sharding to 8 shards and scroll elements before click (ARC-1025) (ARC-1025)
+
+
+## [1.30.101] - 2026-10-31
+
+### Fixed
+- fix game mode keys, player name visibility, thumbnails and form sync (ARC-1024) (ARC-1024)
+
+### Improved
+- eliminate layout shift and fix hydration in leaderboard page (ARC-1024) (ARC-1024)
+
+
+## [1.30.100] - 2026-10-31
+
+### Added
+
+- add capture and game over audio cues and multi-token depth styling (ARC-1022) (ARC-1022)
+
+## [1.30.99] - 2026-10-31
+
+### Added
+
+- rework Cat Dash playfield (ARC-938)
+
+### Fixed
+
+- show Cat Dash racer cards on desktop (ARC-938)
+
+## [1.30.98] - 2026-10-31
+
+### Documentation
+
+- sync generated-roadmap.json with Phase 14 updates (ARC-1000) (ARC-1000)
+- mark phase 14 and strategy guide drills as 100% completed (ARC-1000) (ARC-1000)
+
+## [1.30.97] - 2026-10-31
+
+### Added
+
+- add interactive practice drills to Go and Sudoku guides (ARC-980) (ARC-980)
+
+## [1.30.96] - 2026-10-31
+
+### Added
+
+- modularize board components, add landing animation, and auto-pass timer (ARC-1021) (ARC-1021)
+
+## [1.30.95] - 2026-10-31
+
+### Improved
+
+- lazy load in-game chat overlay (ARC-938)
+
+## [1.30.94] - 2026-10-31
+
+### Fixed
+
+- eliminate board jump by consolidating status strip (ARC-1020) (ARC-1020)
+
+## [1.30.93] - 2026-10-31
+
+### Fixed
+
+- guard options access and mock player 2 session in e2e (ARC-1005) (ARC-1005)
+- ensure opposite corners stay unflipped in long mode (ARC-1005) (ARC-1005)
+
+## [1.30.92] - 2026-10-31
+
+### Fixed
+
+- assert game-main-area visibility directly to prevent strict mode violation (ARC-1019) (ARC-1019)
+- update battle assertion and rules button selector in sea battle tests (ARC-1019) (ARC-1019)
+- make ship placement client-side draft to prevent network resets (ARC-1019) (ARC-1019)
+- prevent ship placement reset on opponent confirmation (ARC-1019) (ARC-1019)
+
 ## [1.30.91] - 2026-10-25
 
 ### Fixed
-- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
 
+- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
 
 ## [1.30.90] - 2026-10-25
 
 ### Fixed
+
 - resolve chromium live-info navigation and level-badges strict mode (ARC-1018) (ARC-1018)
 - resolve webkit e2e stability timeouts in shard 2 (ARC-1018) (ARC-1018)
-
 
 ## [1.30.89] - 2026-10-25
 
 ### Fixed
-- resolve webkit e2e test flakes for academy, matchmaking, and logout (ARC-1017) (ARC-1017)
 
+- resolve webkit e2e test flakes for academy, matchmaking, and logout (ARC-1017) (ARC-1017)
 
 ## [1.30.88] - 2026-10-25
 
 ### Added
+
 - enlarge avatar and profile menu button in header (ARC-1016) (ARC-1016)
 - enlarge profile menu avatar and button in header (ARC-1016) (ARC-1016)
 
 ### Fixed
+
 - support guest and bot ids in participant reorder dto (ARC-1016) (ARC-1016)
 - exempt loopback addresses from IP blocking guard (ARC-1016) (ARC-1016)
 - allow anonymous host to reorder participants (ARC-1016) (ARC-1016)
@@ -46,10 +182,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - seat bots in rematch room and render member avatars (ARC-1016) (ARC-1016)
 - allow cloudflare analytics in csp and prevent unauth errors (ARC-1016) (ARC-1016)
 
-
 ## [1.30.87] - 2026-10-24
 
 ### Fixed
+
 - stabilize solitaire hint engine and shop slot tile interaction (ARC-1015) (ARC-1015)
 - prevent console errors from daily-rewards and sockets during audits (ARC-1015) (ARC-1015)
 - provide descriptive link text and aria-label for Go game links (ARC-1015) (ARC-1015)
@@ -58,35 +194,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - fix rooms filter input hydration and mock auth/me on logout (ARC-1015) (ARC-1015)
 
 ### Improved
-- optimize image caching, hero LCP delivery, and modern JS baseline (ARC-1015) (ARC-1015)
 
+- optimize image caching, hero LCP delivery, and modern JS baseline (ARC-1015) (ARC-1015)
 
 ## [1.30.86] - 2026-10-24
 
 ### Fixed
-- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
 
+- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
 
 ## [1.30.85] - 2026-10-24
 
 ### Fixed
+
 - prevent event loop monitor exit and add scroll into view for safari (ARC-1013) (ARC-1013)
 - fix GH_REPO and issue write permissions in issue workflows (ARC-1013) (ARC-1013)
 - resolve mobile safari landing navigation and freshness pulse (ARC-1013) (ARC-1013)
 
-
 ## [1.30.84] - 2026-10-24
 
 ### Added
+
 - ensure user avatars are visible across game seats and rematch modals (ARC-1012) (ARC-1012)
 
 ### Fixed
+
 - use compact sm avatar size in lobby player list (ARC-1012) (ARC-1012)
 
 ### Improved
+
 - eliminate dynamic loading fallback shift on client page (ARC-1012) (ARC-1012)
 - prevent cumulative layout shift on ticker and freshness indicator (ARC-1012) (ARC-1012)
-
 
 ## [1.30.83] - 2026-10-23
 

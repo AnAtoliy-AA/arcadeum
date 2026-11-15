@@ -18,11 +18,7 @@ export class ApiError extends Error {
 }
 
 export type HistoryStatus =
-  | 'lobby'
-  | 'in_progress'
-  | 'completed'
-  | 'waiting'
-  | 'active';
+  'lobby' | 'in_progress' | 'completed' | 'waiting' | 'active';
 
 export interface HistoryParticipant {
   id: string;
@@ -216,7 +212,10 @@ export async function requestRematch(
   payload: RematchPayload,
   accessToken: string,
   options?: FetchWithRefreshOptions,
-): Promise<{ room: GameRoomSummary }> {
+): Promise<{
+  room: GameRoomSummary | string;
+  pending?: boolean;
+}> {
   if (!roomId || !accessToken) {
     throw new Error('Room identifier and access token are required.');
   }

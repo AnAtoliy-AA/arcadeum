@@ -45,7 +45,13 @@ export async function finalizeCompletedSession(
 
   try {
     const winners = await deps.sessionsService.getWinners(session.id);
-    await deps.postMatch.onGameCompleted(players, session.gameId, winners, {});
+    await deps.postMatch.onGameCompleted(
+      players,
+      session.gameId,
+      winners,
+      {},
+      session.id,
+    );
   } catch (err) {
     deps.logger.warn(
       `Post-match processing failed for session ${session.id}: ${(err as Error).message}`,

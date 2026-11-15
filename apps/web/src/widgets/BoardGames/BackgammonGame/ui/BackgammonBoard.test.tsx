@@ -230,4 +230,32 @@ describe('BackgammonBoard', () => {
     fireEvent.keyDown(window, { code: 'Space', key: ' ' });
     expect(handleMove).toHaveBeenCalledWith({ from: 23, to: 20 });
   });
+
+  it('keeps opposite corner layout unflipped for player 2 in long backgammon mode', () => {
+    const longState: BackgammonClientState = {
+      ...mockState,
+      options: { theme: 'cyberpunk', mode: 'long', aiDifficulty: 'medium' },
+      points: Array.from({ length: 24 }, (_, i) => {
+        if (i === 23) return { playerId: 'p1', count: 15 };
+        if (i === 11) return { playerId: 'p2', count: 15 };
+        return { playerId: null, count: 0 };
+      }),
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p2"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={longState}
+      />,
+    );
+
+    const point23 = screen.getByTestId('point-23');
+    const point11 = screen.getByTestId('point-11');
+    expect(point23).toBeInTheDocument();
+    expect(point11).toBeInTheDocument();
+    expect(screen.getByText('Home: 13-18')).toBeInTheDocument();
+  });
 });

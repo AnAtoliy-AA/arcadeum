@@ -23,4 +23,18 @@ describe('FormPips', () => {
       0,
     );
   });
+
+  it('renders first recent items in order with letter variant', () => {
+    const { container } = render(
+      <FormPips
+        results={['W', 'D', 'L', 'L', 'L', 'W']}
+        max={3}
+        variant="letter"
+      />,
+    );
+    const letters = Array.from(container.querySelectorAll('span span')).map(
+      (el) => el.textContent,
+    );
+    expect(letters).toEqual(['W', 'D', 'L']);
+  });
 });

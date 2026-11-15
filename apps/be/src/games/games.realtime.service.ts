@@ -289,6 +289,35 @@ export class GamesRealtimeService implements OnModuleDestroy {
       }),
     );
   }
+
+  emitRematchStatus(
+    oldRoomId: string,
+    newRoomId: string,
+    status: 'accepted' | 'declined' | 'cancelled' | 'expired',
+    userId?: string,
+    pendingUserIds: string[] = [],
+    acceptedUserIds: string[] = [],
+    declinedUserIds: string[] = [],
+  ): void {
+    if (!this.server) return;
+    const payload = maybeEncrypt({
+      oldRoomId,
+      newRoomId,
+      status,
+      userId,
+      pendingUserIds,
+      acceptedUserIds,
+      declinedUserIds,
+    });
+    this.server
+      .to(this.roomChannel(oldRoomId))
+      .emit('games.rematch.status', payload);
+    if (newRoomId && newRoomId !== oldRoomId) {
+      this.server
+        .to(this.roomChannel(newRoomId))
+        .emit('games.rematch.status', payload);
+    }
+  }
   emitUndoRequest(roomId: string, requesterId: string): void {
     if (!this.server) return;
     this.server

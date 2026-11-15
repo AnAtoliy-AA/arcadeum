@@ -327,6 +327,26 @@ export const ru = {
         subtitle: 'Настольная стратегия',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Червы',
+        subtitle: 'Взятки и червы',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Пики',
+        subtitle: 'Козырные взятки',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Го',
+        subtitle: 'Древняя стратегия',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Пачиси',
+        subtitle: 'Гонка фишек',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Турнир',
@@ -363,13 +383,18 @@ export const ru = {
         month: 'Месяц',
         season: 'Сезон',
       },
+      opponentTypes: {
+        all: 'Все соперники',
+        pvp: 'PvP (Игроки)',
+        bot: 'Против ботов (AI)',
+      },
     },
     table: {
       rank: '#',
       player: 'Игрок',
       region: 'Регион',
       rating: 'Рейтинг',
-      record: 'П–П–Н',
+      record: 'В-П-Н',
       winrate: 'Винрейт',
       form: 'Форма',
       trend: 'Тренд',

@@ -59,6 +59,11 @@ jobs:
             exec 200>/tmp/arcadeum-dev-deploy.lock
             flock -x 200
             DEPLOY_DIR="/opt/arcadeum-dev"
+            if [ ! -d "$DEPLOY_DIR/.git" ]; then
+              sudo mkdir -p "$DEPLOY_DIR"
+              sudo chown -R ubuntu:ubuntu "$DEPLOY_DIR"
+              git clone --depth 1 -b staging https://github.com/AnAtoliy-AA/arcadeum.git "$DEPLOY_DIR"
+            fi
             cd "$DEPLOY_DIR"
 
             rm -f "$DEPLOY_DIR/.git/index.lock"

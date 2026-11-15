@@ -16,6 +16,7 @@ interface BackgammonHudProps {
   myTurn: boolean;
   isDoubles: boolean;
   rolledVal?: number;
+  mode?: string;
 }
 
 export const BackgammonHud = memo(function BackgammonHud({
@@ -30,6 +31,7 @@ export const BackgammonHud = memo(function BackgammonHud({
   myTurn,
   isDoubles,
   rolledVal,
+  mode,
 }: BackgammonHudProps) {
   const { t } = useTranslation();
 
@@ -82,11 +84,15 @@ export const BackgammonHud = memo(function BackgammonHud({
         </div>
 
         <span className="text-[10px] text-white/50 hidden md:inline font-mono">
-          {isP0
-            ? 'Home: 1-6'
-            : isFlipped
-              ? 'Home: 19-24 (Bottom)'
-              : 'Home: 19-24'}
+          {mode === 'long' || mode === 'gulbara'
+            ? isP0
+              ? 'Home: 1-6'
+              : 'Home: 13-18'
+            : isP0
+              ? 'Home: 1-6'
+              : isFlipped
+                ? 'Home: 19-24 (Bottom)'
+                : 'Home: 19-24'}
         </span>
       </div>
     </div>

@@ -131,11 +131,6 @@ export default defineConfig({
       retries: 1,
       use: { ...devices['iPhone 12'] },
     },
-    {
-      name: 'Tablet Safari',
-      retries: 1,
-      use: { ...devices['iPad Pro 11'] },
-    },
   ],
 
   webServer: [

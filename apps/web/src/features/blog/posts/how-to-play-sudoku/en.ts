@@ -46,6 +46,30 @@ export const post: BlogPost = {
       text: 'When scanning cannot place a digit directly, write small candidate numbers (pencil marks) in each empty cell listing all digits that could legally go there. As more digits are placed, pencil marks shrink. A cell with only one remaining candidate must contain that digit (naked single). A digit that appears in only one cell within a row, column, or box must go there (hidden single).',
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-sudoku-naked-single',
+      gameId: 'sudoku',
+      title: 'Practice Drill: Spot the Last Single Digit',
+      prompt:
+        'Find the single remaining cell in the bottom row and 3x3 box where exactly one digit is missing.',
+      grid: [
+        '534678912',
+        '672195348',
+        '198342567',
+        '859761423',
+        '426853791',
+        '713924856',
+        '961537284',
+        '287419635',
+        '34528617.',
+      ],
+      solutionIndex: 80,
+      solutionValue: '9',
+      explanation:
+        'Cell I9 (Row 9, Column 9) has every other digit 1-8 placed in its row, column, and box. Placing 9 completes the constraint!',
+      playHref: '/games/sudoku',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Intermediate techniques',

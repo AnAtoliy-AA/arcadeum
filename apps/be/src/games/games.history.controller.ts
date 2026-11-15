@@ -123,7 +123,9 @@ export class GamesHistoryController {
     @Param('roomId') roomId: string,
     @Body() dto: HistoryRematchDto,
   ): Promise<{
-    room: Awaited<ReturnType<GamesService['createRematchFromHistory']>>;
+    room: string;
+    pending: boolean;
+    pendingUserIds: string[];
   }> {
     const user = req.user as AuthenticatedUser | undefined;
     if (!user) {
@@ -147,7 +149,11 @@ export class GamesHistoryController {
       },
     );
 
-    return { room };
+    return {
+      room: room.id,
+      pending: room.pending,
+      pendingUserIds: room.pendingUserIds,
+    };
   }
 
   @UseGuards(JwtAuthGuard)

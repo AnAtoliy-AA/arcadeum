@@ -37,7 +37,7 @@ import { ScenePaletteProvider } from './ScenePaletteContext';
 import { SceneBackdrop } from './SceneBackdrop';
 import type { GameVariant } from '@arcadeum/ui';
 import type { UseGameActionsReturn } from '@/features/games/hooks/useGameActions';
-import type { RematchInvitation } from '@/features/games/hooks/useRematch';
+import type { useRematch } from '@/features/games/hooks/useRematch';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 import { useGameSound } from '@/shared/lib/game-sounds';
 
@@ -58,26 +58,7 @@ interface ActiveGameViewProps {
   showRulesOpen: boolean;
   onShowRulesClose: () => void;
   onOpenRules: () => void;
-  // Rematch props
-  rematch: {
-    rematchLoading: boolean;
-    rematchError: string | null;
-    showRematchModal: boolean;
-    openRematchModal: () => void;
-    closeRematchModal: () => void;
-    handleRematch: (
-      participantIds: string[],
-      message?: string,
-    ) => Promise<void>;
-    invitation: RematchInvitation | null;
-    invitationTimeLeft: number;
-    handleAcceptInvitation: () => void;
-    handleDeclineInvitation: () => void;
-    isAcceptingInvitation: boolean;
-    handleReinvite: (userIds: string[]) => void;
-    handleBlockRematch: (roomId: string) => void;
-    handleBlockUser: (userId: string) => void;
-  };
+  rematch: ReturnType<typeof useRematch>;
 }
 
 export function ActiveGameView({
@@ -451,6 +432,11 @@ export function ActiveGameView({
                 handleReinvite: rematch.handleReinvite,
                 handleBlockRematch: rematch.handleBlockRematch,
                 handleBlockUser: rematch.handleBlockUser,
+                waiting: rematch.waiting,
+                waitingTimeLeft: rematch.waitingTimeLeft,
+                cancelRematch: rematch.cancelRematch,
+                joinRematchRoom: rematch.joinRematchRoom,
+                dismissWaiting: rematch.dismissWaiting,
                 resultMessages: undefined,
                 ratingDelta: null,
               }}

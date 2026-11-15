@@ -16,7 +16,12 @@ import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useGameSound } from '@/shared/lib/game-sounds';
-import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';
+import type {
+  PachisiGameProps,
+  PachisiOptions,
+  PachisiTheme,
+  PachisiToken,
+} from '../types';
 import { usePachisiState } from '../hooks/usePachisiState';
 import { usePachisiActions } from '../hooks/usePachisiActions';
 import { PachisiThemeProvider } from '../lib/PachisiThemeContext';
@@ -106,6 +111,41 @@ function PachisiGameImpl({
     }
     prevFinishedCountRef.current = finished;
   }, [snapshot?.tokens, play]);
+
+  const prevTokensRef = useRef<Record<string, PachisiToken[]>>({});
+  useEffect(() => {
+    if (!snapshot?.tokens) return;
+    let hasCapture = false;
+    for (const [playerId, tokens] of Object.entries(snapshot.tokens)) {
+      const prevTokens = prevTokensRef.current[playerId];
+      if (prevTokens) {
+        for (const t of tokens) {
+          const prev = prevTokens.find((pt) => pt.id === t.id);
+          if (prev && prev.progress >= 0 && t.progress === -1) {
+            hasCapture = true;
+            break;
+          }
+        }
+      }
+      if (hasCapture) break;
+    }
+    if (hasCapture) {
+      play('capture');
+    }
+    prevTokensRef.current = snapshot.tokens;
+  }, [snapshot?.tokens, play]);
+
+  const prevGameOverRef = useRef(isGameOver);
+  useEffect(() => {
+    if (isGameOver && !prevGameOverRef.current) {
+      if (snapshot?.winnerId && snapshot.winnerId === currentUserId) {
+        play('win');
+      } else if (snapshot?.winnerId) {
+        play('lose');
+      }
+    }
+    prevGameOverRef.current = isGameOver;
+  }, [isGameOver, snapshot?.winnerId, currentUserId, play]);
 
   const handleRoll = useCallback(() => {
     play('roll');

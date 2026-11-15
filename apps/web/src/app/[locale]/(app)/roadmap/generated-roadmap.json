@@ -557,78 +557,99 @@
           "title": "Universal Avatar Visibility & Sizing Audit",
           "desc": "Fix missing user and bot avatars across multiple views (room headers, player lists, notifications, leaderboards, clan roster, chat headers). Increase avatar size where space permits to improve visual hierarchy and readability on desktop and mobile. Provide consistent fallback initials or generated SVG avatars when profile image URL is absent or fails to load.",
           "effort": "1-2 days",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1001"
         },
         {
           "title": "Notification Timestamp & Date Formatting",
           "desc": "Display creation date and relative time (e.g., \"Just now\", \"5m ago\", \"Yesterday at 14:30\") on notification list items and dropdown cards. Add full locale-aware tooltip on hover for exact timestamp. Ensure notification DTOs include standard `createdAt` field and i18n relative time formatting.",
           "effort": "1 day",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1002"
         },
         {
           "title": "Keyboard Accessibility: Make Turn on Spacebar in Dice Games",
           "desc": "Allow players to roll dice and confirm standard dice actions by pressing the `Space` keyboard shortcut in Backgammon, Pachisi, and other dice games. Ensure focus handling ignores `Space` when player is typing in chat or input modals. Provide on-screen visual tooltip badge (\"Press Space to Roll\") during the active player's turn.",
           "effort": "1 day",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1003"
         },
         {
           "title": "Dice State & Re-Roll Display Fix After Rolling a 6",
           "desc": "Fix dice UI state synchronization bug where rolling a 6 in games with bonus turns (such as Pachisi) erroneously displays opponent's previous dice value instead of prompting the current player's next move. Maintain active player turns when rules grant a subsequent roll on a 6.",
           "effort": "1-2 days",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1004"
         },
         {
           "title": "Long Backgammon: Opposite Corner Player Setup",
           "desc": "Fix initial checker arrangement in Long Backgammon (Narde) so both players' initial heads correctly start in opposite corners according to standard rules. Ensure board orientation rules adhere to local player bottom view.",
           "effort": "1 day",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1005"
         },
         {
           "title": "Play Again & Rematch Flow Overhaul",
           "desc": "Audit room lifecycle when players click \"Play Again\" or request a rematch. Prevent room state desync, stuck loading indicators, or unseated players when re-entering game room. Ensure bot fallback triggers seamlessly if opponent leaves or declines rematch.",
           "effort": "2 days",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1006"
         },
         {
           "title": "Fair Random First-Move Selection",
           "desc": "Audit first-move determination in two-player games (Checkers, Connect Four/Cascade, Tic-Tac-Toe, Backgammon) to guarantee unbiased 50/50 starting turn assignment. Clear visual indicator of who goes first during room countdown.",
           "effort": "1 day",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1007"
         },
         {
           "title": "Lobby Player Seat Order Parity",
           "desc": "Standardize player ordering and seat swapping logic across all multiplayer game lobbies. Ensure host actions, team slots, and guest ordering behave consistently regardless of selected game mode.",
           "effort": "1-2 days",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1008"
         },
         {
           "title": "In-Game Chat Text Sending & Display Fix",
           "desc": "Fix bug preventing text chat messages from being submitted or rendered in real-time rooms. Verify socket event handling for `chat.message` and client-side chat bubble feeds.",
           "effort": "1-2 days",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1009"
         },
         {
           "title": "Modern Game Lobby UX/UI Redesign",
           "desc": "Redesign game room lobby interface for cleaner layout, higher clarity, and modern glassmorphism aesthetic. Improve player readiness indicators, game settings overview, and start match visibility.",
           "effort": "3 days",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1010"
         },
         {
           "title": "Lobby Field / Board Size Option Discoverability",
           "desc": "Make board/grid size configuration options prominent and easy to find when configuring game rooms (e.g. Go board size, Tic-Tac-Toe grid, etc.). Add clear segmented controls or badge selectors in room setup modal.",
           "effort": "1 day",
-          "status": "not_started",
+          "status": "implemented",
           "arc": "ARC-1011"
+        },
+        {
+          "title": "Sea Battle Ship Placement Client-Side Draft",
+          "desc": "Keep ship placement operations in a local client-side draft until final confirmation. Prevent ship positions from unexpectedly resetting when an opponent confirms their fleet first or triggers room events.",
+          "effort": "1 day",
+          "status": "implemented",
+          "arc": "ARC-1019"
+        },
+        {
+          "title": "Pachisi Board Layout Stabilization",
+          "desc": "Eliminate board jumping and vertical layout shifts by consolidating the turn and phase indicator into a dedicated fixed-height status strip above the board.",
+          "effort": "1 day",
+          "status": "implemented",
+          "arc": "ARC-1020"
+        },
+        {
+          "title": "Pachisi Board Modularization & Auto-Pass Timer",
+          "desc": "Deconstruct monolithic PachisiBoard into focused subcomponents (PachisiCenterHome, PachisiTokenStack, usePachisiDiceState). Add pulse landing animation for captured tokens and an automated countdown indicator when no valid moves are possible.",
+          "effort": "2 days",
+          "status": "implemented",
+          "arc": "ARC-1021"
         },
         {
           "title": "Platform Strengths to Protect",
@@ -680,13 +701,13 @@
         },
         {
           "title": "Summary of Completed vs. Outstanding Tasks",
-          "desc": "**Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), Dedicated Floating Spectator Reactions (ARC-889 - floating reaction bubbles and quick action dock), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls), Sea Battle Weekly Blitz Cups (ARC-966 - automated scheduled bracket tournaments, SeaBattleBlitzService & Cron, SeaBattleBlitzBanner on landing page), Strategy Guides & SEO Cluster (ARC-952 - 9 pillar strategy guides across 5 locales, bidirectional internal cross-linking, schema markup, and hreflang validation), Critical Ranked ELO Mode (ARC-971 - dedicated competitive 1v1 matchmaking queue, 6-tier rating ladder, seasonal leaderboard showcase, and in-game ranked status indicators), Sea Battle Weekly Blitz Cups UI (ARC-972 - in-place interactive tournament bracket viewer, countdown, captains fleet roster, and tactical rules modal on Sea Battle landing page), Tactical Puzzle Rush & Daily Streak Expansion (ARC-973 - global puzzle rush leaderboard, run scoring and ranking engine, streak bonus multipliers, and shareable tactical brag card), Solitaire Auto-Place (ARC-975 - instant smart auto-place for revealed tableaus), Interactive Player Profile & Match Showcase (ARC-976 - public match history feed, head-to-head rival records, win rate trends, and shareable achievement badges), Solo Games Intelligent Assistants & QoL (ARC-977 - Solitaire Klondike Draw 3 mode, smart hint engine, and fanned waste; Sudoku digit-first speed mode, candidate auto-fill, error highlighting, and smart hints; Minesweeper personal bests, flagless NF speedrun mode, tactile chord feedback, remaining safe cells HUD, and quick R restart; 2048 pointer swipe engine, milestone celebration toasts, and undo allowance counter), Clan Leaderboards & Community Challenges (ARC-978 - global clan rankings ladder by wins/members/winRate, weekly clan MVP member showcase, and cooperative platform community challenge milestones with progressive rewards), Clan Wars & Inter-Clan Tournaments (ARC-979 - direct clan challenges, victory win races, match result reporting, and interactive clan wars hub).",
+          "desc": "**Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), Dedicated Floating Spectator Reactions (ARC-889 - floating reaction bubbles and quick action dock), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls), Sea Battle Weekly Blitz Cups (ARC-966 - automated scheduled bracket tournaments, SeaBattleBlitzService & Cron, SeaBattleBlitzBanner on landing page), Strategy Guides & SEO Cluster (ARC-952 - 9 pillar strategy guides across 5 locales, bidirectional internal cross-linking, schema markup, and hreflang validation), Critical Ranked ELO Mode (ARC-971 - dedicated competitive 1v1 matchmaking queue, 6-tier rating ladder, seasonal leaderboard showcase, and in-game ranked status indicators), Sea Battle Weekly Blitz Cups UI (ARC-972 - in-place interactive tournament bracket viewer, countdown, captains fleet roster, and tactical rules modal on Sea Battle landing page), Tactical Puzzle Rush & Daily Streak Expansion (ARC-973 - global puzzle rush leaderboard, run scoring and ranking engine, streak bonus multipliers, and shareable tactical brag card), Solitaire Auto-Place (ARC-975 - instant smart auto-place for revealed tableaus), Interactive Player Profile & Match Showcase (ARC-976 - public match history feed, head-to-head rival records, win rate trends, and shareable achievement badges), Solo Games Intelligent Assistants & QoL (ARC-977 - Solitaire Klondike Draw 3 mode, smart hint engine, and fanned waste; Sudoku digit-first speed mode, candidate auto-fill, error highlighting, and smart hints; Minesweeper personal bests, flagless NF speedrun mode, tactile chord feedback, remaining safe cells HUD, and quick R restart; 2048 pointer swipe engine, milestone celebration toasts, and undo allowance counter), Clan Leaderboards & Community Challenges (ARC-978 - global clan rankings ladder by wins/members/winRate, weekly clan MVP member showcase, and cooperative platform community challenge milestones with progressive rewards), Clan Wars & Inter-Clan Tournaments (ARC-979 - direct clan challenges, victory win races, match result reporting, and interactive clan wars hub), Strategy Guide Practice Drills (ARC-980 - interactive mini-boards for Go and Sudoku guides across 5 locales), Phase 14 \"We Will Fix It\" Sprint (ARC-1000 through ARC-1021 - avatar visibility & sizing audit, notification timestamps, spacebar dice roll shortcut, dice re-roll state sync on 6, Long Backgammon opposite corners, rematch & smart play again lifecycle stability, fair 50/50 starting turn selection, lobby seat parity, chat text delivery fix, modern lobby UX rework, board size options discoverability, Sea Battle ship draft placement fix, Pachisi layout shift elimination, and Pachisi board modularization with auto-pass countdown).",
           "effort": "1-3 days",
           "status": "not_started"
         },
         {
           "title": "Remaining Priorities & Next Steps",
-          "desc": "1. **Phase 14 Quality & Polish (\"We Will Fix It\" Sprint - ARC-1000 through ARC-1012)**:",
+          "desc": "1. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.",
           "effort": "1-3 days",
           "status": "not_started"
         }
@@ -801,21 +822,21 @@
     {
       "phase": 14,
       "title": "Community Feedback & Polish",
-      "features": "Universal avatar visibility + Notification dates + Dice spacebar + Dice re-roll on 6 + Long backgammon corners + Rematch overhaul + Chat fixes + Lobby redesign (ARC-1000-ARC-1012)",
+      "features": "Universal avatar visibility + Notification dates + Dice spacebar + Dice re-roll on 6 + Long backgammon corners + Rematch overhaul + Chat fixes + Lobby redesign + Sea Battle ship placement draft + Pachisi layout stabilization & auto-pass (ARC-1000-ARC-1021)",
       "days": "10",
-      "status": "In Planning / In Progress",
+      "status": "100% Completed",
       "color": "#22c55e"
     }
   ],
   "stats": [
     {
       "label": "Features",
-      "value": "90",
+      "value": "93",
       "icon": "📋"
     },
     {
       "label": "Implemented",
-      "value": "45",
+      "value": "59",
       "icon": "✅"
     },
     {
@@ -825,7 +846,7 @@
     },
     {
       "label": "Planned",
-      "value": "45",
+      "value": "34",
       "icon": "🗺️"
     }
   ]

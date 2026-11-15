@@ -1,15 +1,21 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, type PipelineStage } from 'mongoose';
 import { PlayerStats } from './schemas/player-stats.schema';
 import { PlayerStatRecord } from './schemas/player-stat-record.schema';
 import { validateGameId } from './game-validation.util';
+import {
+  executeHeadToHead,
+  executePlayerStats,
+  executeTrends,
+} from './player-stats-trends.util';
 
 interface SyncRecord {
   gameId: string;
   result: 'won' | 'lost' | 'draw';
   timestamp: number;
   sessionId: string;
+  hasBots?: boolean;
 }
 
 @Injectable()
@@ -35,8 +41,12 @@ export class PlayerStatsService {
     playerIds: string[],
     gameId: string,
     winners: string[],
+    hasBots = false,
+    sessionId?: string,
   ): Promise<void> {
-    const humanIds = playerIds.filter((id) => !id.startsWith('anon_'));
+    const humanIds = playerIds.filter(
+      (id) => !id.startsWith('anon_') && !id.startsWith('bot-'),
+    );
 
     const bulkOps = humanIds.map((userId) => {
       const isWinner = winners.includes(userId);
@@ -51,6 +61,14 @@ export class PlayerStatsService {
               wins: isWinner ? 1 : 0,
               losses: isLoser ? 1 : 0,
               draws: isDraw ? 1 : 0,
+              pvpGames: !hasBots ? 1 : 0,
+              pvpWins: !hasBots && isWinner ? 1 : 0,
+              pvpLosses: !hasBots && isLoser ? 1 : 0,
+              pvpDraws: !hasBots && isDraw ? 1 : 0,
+              botGames: hasBots ? 1 : 0,
+              botWins: hasBots && isWinner ? 1 : 0,
+              botLosses: hasBots && isLoser ? 1 : 0,
+              botDraws: hasBots && isDraw ? 1 : 0,
             },
           },
           upsert: true,
@@ -65,127 +83,52 @@ export class PlayerStatsService {
         `Failed to record stats in batch: ${(err as Error).message}`,
       );
     }
+
+    if (sessionId) {
+      const timestamp = Date.now();
+      const recordOps = humanIds.map((userId) => {
+        const isWinner = winners.includes(userId);
+        const result = isWinner
+          ? 'won'
+          : winners.length === 0
+            ? 'draw'
+            : 'lost';
+        return {
+          updateOne: {
+            filter: { userId: { $eq: userId }, sessionId: { $eq: sessionId } },
+            update: {
+              $set: {
+                userId,
+                gameId,
+                result,
+                sessionId,
+                timestamp,
+                hasBots,
+              },
+            },
+            upsert: true,
+          },
+        };
+      });
+      try {
+        await this.recordModel.bulkWrite(recordOps);
+      } catch (err) {
+        this.logger.warn(
+          `Failed to record player stat records in batch: ${(err as Error).message}`,
+        );
+      }
+    }
   }
 
-  async getPlayerStats(userId: string): Promise<{
-    totalGames: number;
-    wins: number;
-    losses: number;
-    winRate: number;
-    byGameType: Array<{
-      gameId: string;
-      totalGames: number;
-      wins: number;
-      winRate: number;
-    }>;
-    currentStreak: number;
-    currentStreakType: 'won' | 'lost' | null;
-    bestWinStreak: number;
-    favoriteGame: string | null;
-  }> {
-    if (userId.startsWith('anon_')) {
-      return {
-        totalGames: 0,
-        wins: 0,
-        losses: 0,
-        winRate: 0,
-        byGameType: [],
-        currentStreak: 0,
-        currentStreakType: null,
-        bestWinStreak: 0,
-        favoriteGame: null,
-      };
-    }
-
-    const docs = await this.statsModel
-      .find({ userId: { $eq: userId } })
-      .lean<
-        {
-          gameId: string;
-          totalGames: number;
-          wins: number;
-          losses: number;
-          elo?: number;
-        }[]
-      >()
-      .exec();
-
-    const byGameType = docs.map((d) => ({
-      gameId: d.gameId,
-      totalGames: d.totalGames,
-      wins: d.wins,
-      elo: d.elo ?? 1200,
-      winRate:
-        d.totalGames > 0
-          ? Math.round((d.wins / d.totalGames) * 10000) / 100
-          : 0,
-    }));
-
-    const totalGames = docs.reduce((s, d) => s + d.totalGames, 0);
-    const totalWins = docs.reduce((s, d) => s + d.wins, 0);
-
-    const records = await this.recordModel
-      .find({ userId: { $eq: userId } })
-      .sort({ timestamp: -1 })
-      .limit(200)
-      .lean<{ result: string; gameId: string }[]>()
-      .exec();
-
-    let currentStreak = 0;
-    let currentStreakType: 'won' | 'lost' | null = null;
-    let bestWinStreak = 0;
-    let tempWinStreak = 0;
-    const gameCounts = new Map<string, number>();
-
-    for (const record of records) {
-      const r = record.result as 'won' | 'lost' | 'draw';
-      gameCounts.set(record.gameId, (gameCounts.get(record.gameId) ?? 0) + 1);
-
-      if (r === 'won') {
-        tempWinStreak++;
-        if (tempWinStreak > bestWinStreak) {
-          bestWinStreak = tempWinStreak;
-        }
-      } else {
-        tempWinStreak = 0;
-      }
-
-      if (currentStreakType === null && r !== 'draw') {
-        currentStreakType = r;
-        currentStreak = 1;
-      } else if (currentStreakType === r) {
-        currentStreak++;
-      } else if (currentStreakType !== null) {
-        break;
-      }
-    }
-
-    let favoriteGame: string | null = null;
-    let maxCount = 0;
-    for (const [gameId, count] of gameCounts) {
-      if (count > maxCount) {
-        maxCount = count;
-        favoriteGame = gameId;
-      }
-    }
-
-    return {
-      totalGames,
-      wins: totalWins,
-      losses: totalGames - totalWins,
-      winRate: totalGames > 0 ? (totalWins / totalGames) * 100 : 0,
-      byGameType,
-      currentStreak,
-      currentStreakType,
-      bestWinStreak,
-      favoriteGame,
-    };
+  async getPlayerStats(userId: string) {
+    return executePlayerStats(this.statsModel, this.recordModel, userId);
   }
 
   async getLeaderboard(
     limit: number,
     offset: number,
     gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
   ): Promise<{
     entries: Array<{
       playerId: string;
@@ -199,17 +142,59 @@ export class PlayerStatsService {
     const match: Record<string, unknown> = {};
     if (gameId) match.gameId = gameId;
 
+    const isPvp = opponentType === 'pvp';
+    const isBot = opponentType === 'bot';
+
+    const gamesExpr = isPvp
+      ? {
+          $cond: [
+            { $gt: ['$pvpGames', 0] },
+            '$pvpGames',
+            { $cond: [{ $eq: ['$botGames', 0] }, '$totalGames', 0] },
+          ],
+        }
+      : isBot
+        ? '$botGames'
+        : '$totalGames';
+
+    const winsExpr = isPvp
+      ? {
+          $cond: [
+            { $gt: ['$pvpWins', 0] },
+            '$pvpWins',
+            { $cond: [{ $eq: ['$botGames', 0] }, '$wins', 0] },
+          ],
+        }
+      : isBot
+        ? '$botWins'
+        : '$wins';
+
+    const lossesExpr = isPvp
+      ? {
+          $cond: [
+            { $gt: ['$pvpLosses', 0] },
+            '$pvpLosses',
+            { $cond: [{ $eq: ['$botGames', 0] }, '$losses', 0] },
+          ],
+        }
+      : isBot
+        ? '$botLosses'
+        : '$losses';
+
     const pipeline: PipelineStage[] = [
       ...(Object.keys(match).length > 0 ? [{ $match: match }] : []),
       {
         $group: {
           _id: '$userId',
-          totalGames: { $sum: '$totalGames' },
-          wins: { $sum: '$wins' },
-          losses: { $sum: '$losses' },
+          totalGames: { $sum: gamesExpr },
+          wins: { $sum: winsExpr },
+          losses: { $sum: lossesExpr },
           elo: { $max: '$elo' },
         },
       },
+      ...(opponentType !== 'all'
+        ? [{ $match: { totalGames: { $gt: 0 } } }]
+        : []),
       {
         $addFields: {
           winRate: {
@@ -270,6 +255,55 @@ export class PlayerStatsService {
     };
   }
 
+  async getRecentForms(
+    userIds: string[],
+    gameId?: string,
+  ): Promise<
+    Map<string, { recentForm: Array<'W' | 'L' | 'D'>; currentStreak: number }>
+  > {
+    const map = new Map<
+      string,
+      { recentForm: Array<'W' | 'L' | 'D'>; currentStreak: number }
+    >();
+    if (userIds.length === 0) return map;
+
+    const match: Record<string, unknown> = { userId: { $in: userIds } };
+    if (gameId) {
+      const sanitized = this.sanitizeGameIdFilter(gameId);
+      if (sanitized) match.gameId = sanitized;
+    }
+
+    const records = await this.recordModel
+      .find(match)
+      .sort({ timestamp: -1 })
+      .limit(userIds.length * 15)
+      .lean<Array<{ userId: string; result: string }>>()
+      .exec();
+
+    const byUser = new Map<string, Array<'W' | 'L' | 'D'>>();
+    for (const rec of records) {
+      const list = byUser.get(rec.userId) ?? [];
+      if (list.length < 12) {
+        const res: 'W' | 'L' | 'D' =
+          rec.result === 'won' ? 'W' : rec.result === 'draw' ? 'D' : 'L';
+        list.push(res);
+        byUser.set(rec.userId, list);
+      }
+    }
+
+    for (const userId of userIds) {
+      const form = byUser.get(userId) ?? [];
+      let streak = 0;
+      for (const r of form) {
+        if (r === 'W') streak++;
+        else break;
+      }
+      map.set(userId, { recentForm: form, currentStreak: streak });
+    }
+
+    return map;
+  }
+
   async getHeadToHead(
     userId1: string,
     userId2: string,
@@ -279,54 +313,12 @@ export class PlayerStatsService {
     player2: { wins: number; losses: number; draws: number };
     totalGames: number;
   }> {
-    if (typeof userId2 !== 'string' || !userId2) {
-      throw new BadRequestException('userId2 is required');
-    }
-    const gameIdFilter = this.sanitizeGameIdFilter(gameId);
-    const match: Record<string, unknown> = {
-      userId: { $in: [userId1, userId2] },
-    };
-    if (gameIdFilter) match.gameId = gameIdFilter;
-
-    // Group counts in the database instead of pulling every record for both
-    // players into memory.
-    const buckets = await this.recordModel
-      .aggregate<{ _id: { userId: string; result: string }; count: number }>([
-        { $match: match },
-        {
-          $group: {
-            _id: { userId: '$userId', result: '$result' },
-            count: { $sum: 1 },
-          },
-        },
-      ])
-      .exec();
-
-    const player1 = { wins: 0, losses: 0, draws: 0 };
-    const player2 = { wins: 0, losses: 0, draws: 0 };
-
-    for (const bucket of buckets) {
-      const r = bucket._id.result as 'won' | 'lost' | 'draw';
-      const target =
-        bucket._id.userId === userId1
-          ? player1
-          : bucket._id.userId === userId2
-            ? player2
-            : null;
-      if (!target) continue;
-      if (r === 'won') target.wins += bucket.count;
-      else if (r === 'lost') target.losses += bucket.count;
-      else target.draws += bucket.count;
-    }
-
-    return {
-      player1,
-      player2,
-      totalGames: Math.min(
-        player1.wins + player1.losses + player1.draws,
-        player2.wins + player2.losses + player2.draws,
-      ),
-    };
+    return executeHeadToHead(
+      this.recordModel,
+      userId1,
+      userId2,
+      this.sanitizeGameIdFilter(gameId),
+    );
   }
 
   async getTrends(
@@ -343,51 +335,12 @@ export class PlayerStatsService {
     currentStreak: number;
     currentStreakType: 'won' | 'lost' | null;
   }> {
-    if (userId.startsWith('anon_')) {
-      return {
-        records: [],
-        winRate: 0,
-        currentStreak: 0,
-        currentStreakType: null,
-      };
-    }
-
-    const gameIdFilter = this.sanitizeGameIdFilter(gameId);
-    const match: Record<string, unknown> = { userId: { $eq: userId } };
-    if (gameIdFilter) match.gameId = gameIdFilter;
-
-    const records = await this.recordModel
-      .find(match)
-      .sort({ timestamp: -1 })
-      .limit(limit)
-      .lean<{ result: string; timestamp: number; sessionId: string }[]>()
-      .exec();
-
-    const mapped = records.map((r) => ({
-      result: r.result as 'won' | 'lost' | 'draw',
-      timestamp: r.timestamp,
-      sessionId: r.sessionId,
-    }));
-
-    const wins = mapped.filter((r) => r.result === 'won').length;
-    const winRate =
-      mapped.length > 0 ? Math.round((wins / mapped.length) * 100) : 0;
-
-    let currentStreak = 0;
-    let currentStreakType: 'won' | 'lost' | null = null;
-    for (const record of mapped) {
-      if (record.result === 'draw') break;
-      if (currentStreakType === null) {
-        currentStreakType = record.result;
-        currentStreak = 1;
-      } else if (record.result === currentStreakType) {
-        currentStreak++;
-      } else {
-        break;
-      }
-    }
-
-    return { records: mapped, winRate, currentStreak, currentStreakType };
+    return executeTrends(
+      this.recordModel,
+      userId,
+      this.sanitizeGameIdFilter(gameId),
+      limit,
+    );
   }
 
   async syncRecords(
@@ -420,6 +373,7 @@ export class PlayerStatsService {
           result: r.result,
           sessionId: r.sessionId,
           timestamp: r.timestamp,
+          hasBots: r.hasBots ?? false,
         },
       },
     }));
@@ -433,6 +387,14 @@ export class PlayerStatsService {
             wins: r.result === 'won' ? 1 : 0,
             losses: r.result === 'lost' ? 1 : 0,
             draws: r.result === 'draw' ? 1 : 0,
+            pvpGames: !r.hasBots ? 1 : 0,
+            pvpWins: !r.hasBots && r.result === 'won' ? 1 : 0,
+            pvpLosses: !r.hasBots && r.result === 'lost' ? 1 : 0,
+            pvpDraws: !r.hasBots && r.result === 'draw' ? 1 : 0,
+            botGames: r.hasBots ? 1 : 0,
+            botWins: r.hasBots && r.result === 'won' ? 1 : 0,
+            botLosses: r.hasBots && r.result === 'lost' ? 1 : 0,
+            botDraws: r.hasBots && r.result === 'draw' ? 1 : 0,
           },
         },
         upsert: true,

@@ -53,6 +53,7 @@ export function useGameEndState({
   }, [session?.state, currentUserId]);
 
   const handleResultRematchClick = useCallback(() => {
+    dismiss();
     if (players.length === 2) {
       const opponent = players.find((p) => p.playerId !== currentUserId);
       if (opponent) {
@@ -65,7 +66,7 @@ export function useGameEndState({
     } else {
       void rematch.handleRematch([], undefined);
     }
-  }, [players, currentUserId, rematch]);
+  }, [players, currentUserId, rematch, dismiss]);
 
   return useMemo(
     () => ({
@@ -94,6 +95,11 @@ export function useGameEndState({
       handleReinvite: rematch.handleReinvite,
       handleBlockRematch: rematch.handleBlockRematch,
       handleBlockUser: rematch.handleBlockUser,
+      waiting: rematch.waiting,
+      waitingTimeLeft: rematch.waitingTimeLeft,
+      cancelRematch: rematch.cancelRematch,
+      joinRematchRoom: rematch.joinRematchRoom,
+      dismissWaiting: rematch.dismissWaiting,
     }),
     [
       showResultModal,
@@ -119,6 +125,11 @@ export function useGameEndState({
       rematch.handleReinvite,
       rematch.handleBlockRematch,
       rematch.handleBlockUser,
+      rematch.waiting,
+      rematch.waitingTimeLeft,
+      rematch.cancelRematch,
+      rematch.joinRematchRoom,
+      rematch.dismissWaiting,
     ],
   );
 }

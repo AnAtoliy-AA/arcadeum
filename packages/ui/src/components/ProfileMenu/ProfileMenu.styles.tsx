@@ -65,11 +65,12 @@ export const UserNameEllipsis = ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        maxWidth: 140,
+        maxWidth: 240,
       }
     }
     className={className}
     data-testid={dataTestId}
+    title={typeof children === 'string' ? children : undefined}
   >
     {children}
   </Typography>

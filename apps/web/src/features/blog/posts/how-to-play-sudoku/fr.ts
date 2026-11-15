@@ -31,6 +31,30 @@ export const post: BlogPost = {
       text: "Écrivez les candidats possibles dans chaque case vide. Un seul candidat = solution (nu). Un chiffre dans une seule case d'un groupe = solution cachée.",
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-sudoku-naked-single',
+      gameId: 'sudoku',
+      title: 'Exercice pratique : Trouver le chiffre unique manquant',
+      prompt:
+        "Trouvez la case vide sur la dernière ligne et dans le bloc 3×3 où il ne manque qu'un seul chiffre.",
+      grid: [
+        '534678912',
+        '672195348',
+        '198342567',
+        '859761423',
+        '426853791',
+        '713924856',
+        '961537284',
+        '287419635',
+        '34528617.',
+      ],
+      solutionIndex: 80,
+      solutionValue: '9',
+      explanation:
+        'Dans la case I9 (ligne 9, colonne 9), tous les chiffres de 1 à 8 sont déjà présents dans sa ligne, colonne et région. Placer le 9 résout la contrainte !',
+      playHref: '/games/sudoku',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Techniques intermédiaires',

@@ -47,6 +47,30 @@ export const post: BlogPost = {
       text: 'Cuando el escaneo no funciona directamente, escribe candidatos pequeños en cada celda vacía. Una celda con un solo candidato debe contener ese dígito (solo desnudo). Un dígito que aparece en una sola celda de un grupo debe ir ahí (solo oculto).',
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-sudoku-naked-single',
+      gameId: 'sudoku',
+      title: 'Ejercicio práctico: Encuentra el único número restante',
+      prompt:
+        'Encuentra la casilla vacía en la fila inferior y cuadrante 3×3 donde falta exactamente un dígito.',
+      grid: [
+        '534678912',
+        '672195348',
+        '198342567',
+        '859761423',
+        '426853791',
+        '713924856',
+        '961537284',
+        '287419635',
+        '34528617.',
+      ],
+      solutionIndex: 80,
+      solutionValue: '9',
+      explanation:
+        '¡En la casilla I9 (fila 9, columna 9) todos los demás dígitos del 1 al 8 ya están en su fila, columna y bloque. Colocar el 9 completa la regla!',
+      playHref: '/games/sudoku',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Técnicas intermedias',

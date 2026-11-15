@@ -180,6 +180,7 @@ export const GAME_SOUND_TYPES: Record<string, readonly GameSoundId[]> = {
     'move',
     'capture',
     'success',
+    'notification',
     'win',
     'lose',
   ],

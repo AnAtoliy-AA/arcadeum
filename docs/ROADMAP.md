@@ -117,19 +117,23 @@
 | Clan Wars & Tournaments     | ARC-979  | `feat/ARC-979-clan-wars-tournaments`                  | **Implemented** |
 | Clan Wars Worker Automation | ARC-981  | `feat/ARC-981-clan-wars-worker-automation`            | **Implemented** |
 | Clan Wars Real-Time Sync    | ARC-982  | `feat/ARC-982-clan-wars-realtime-sync`                | **Implemented** |
-| We Will Fix It QoL Sprint   | ARC-1000 | `feat/ARC-1000-we-will-fix-it-roadmap`                | **In Progress** |
-| Avatars Visibility & Scale  | ARC-1001 | `feat/ARC-1001-avatar-visibility-and-sizing`          | **Planned**     |
-| Notification Dates & Time   | ARC-1002 | `feat/ARC-1002-notification-dates`                    | **Planned**     |
-| Dice Spacebar Roll & Turn   | ARC-1003 | `feat/ARC-1003-dice-spacebar-turn`                    | **Planned**     |
-| Dice Turn & Re-Roll on 6    | ARC-1004 | `feat/ARC-1004-dice-after-6-re-roll`                  | **Planned**     |
-| Long Backgammon Corners     | ARC-1005 | `feat/ARC-1005-long-backgammon-corners`               | **Planned**     |
-| Play Again Logic Overhaul   | ARC-1006 | `feat/ARC-1006-review-play-again-logic`               | **Planned**     |
-| First Move Random Fair Pick | ARC-1007 | `feat/ARC-1007-first-move-random-selection`           | **Planned**     |
-| Lobby Player Order Parity   | ARC-1008 | `feat/ARC-1008-lobby-change-player-order`             | **Planned**     |
-| Chat Text Send & Render Fix | ARC-1009 | `feat/ARC-1009-text-chat-fixes`                       | **Planned**     |
-| Lobby UI & UX Rework        | ARC-1010 | `feat/ARC-1010-rework-lobby-ui`                       | **Planned**     |
-| Lobby Field Size Setting    | ARC-1011 | `feat/ARC-1011-lobby-field-size-discoverability`      | **Planned**     |
-| Maximize Avatar Visibility  | ARC-1012 | `feat/ARC-1012-avatars-visible-everywhere`            | **Planned**     |
+| Strategy Guide Drills       | ARC-980  | `feat/ARC-980-strategy-guide-drills-expansion`        | **Implemented** |
+| We Will Fix It QoL Sprint   | ARC-1000 | `feat/ARC-1000-we-will-fix-it-roadmap`                | **Implemented** |
+| Avatars Visibility & Scale  | ARC-1001 | `feat/ARC-1001-avatar-visibility-and-sizing`          | **Implemented** |
+| Notification Dates & Time   | ARC-1002 | `feat/ARC-1002-notification-dates`                    | **Implemented** |
+| Dice Spacebar Roll & Turn   | ARC-1003 | `feat/ARC-1003-dice-spacebar-turn`                    | **Implemented** |
+| Dice Turn & Re-Roll on 6    | ARC-1004 | `feat/ARC-1004-dice-after-6-re-roll`                  | **Implemented** |
+| Long Backgammon Corners     | ARC-1005 | `feat/ARC-1005-long-backgammon-corners`               | **Implemented** |
+| Play Again Logic Overhaul   | ARC-1006 | `feat/ARC-1006-review-play-again-logic`               | **Implemented** |
+| First Move Random Fair Pick | ARC-1007 | `feat/ARC-1007-first-move-random-selection`           | **Implemented** |
+| Lobby Player Order Parity   | ARC-1008 | `feat/ARC-1008-lobby-change-player-order`             | **Implemented** |
+| Chat Text Send & Render Fix | ARC-1009 | `feat/ARC-1009-text-chat-fixes`                       | **Implemented** |
+| Lobby UI & UX Rework        | ARC-1010 | `feat/ARC-1010-rework-lobby-ui`                       | **Implemented** |
+| Lobby Field Size Setting    | ARC-1011 | `feat/ARC-1011-lobby-field-size-discoverability`      | **Implemented** |
+| Maximize Avatar Visibility  | ARC-1012 | `feat/ARC-1012-avatars-visible-everywhere`            | **Implemented** |
+| Sea Battle Ships Draft      | ARC-1019 | `fix/ARC-1019-sea-battle-ships-placement-reset`       | **Implemented** |
+| Pachisi Screen Jump Fix     | ARC-1020 | `fix/ARC-1020-pachisi-screen-jump-layout`             | **Implemented** |
+| Pachisi Improvements        | ARC-1021 | `feat/ARC-1021-pachisi-improvements`                  | **Implemented** |
 
 ---
 
@@ -1918,6 +1922,43 @@ Make board/grid size configuration options prominent and easy to find when confi
 
 ---
 
+#### 14L. Sea Battle Ship Placement Client-Side Draft `ARC-1019`
+
+**Effort: Easy-Medium (1 day)**
+
+Keep ship placement operations in a local client-side draft until final confirmation. Prevent ship positions from unexpectedly resetting when an opponent confirms their fleet first or triggers room events.
+
+**Files to create/modify:**
+
+- `apps/web/src/features/games/sea-battle/` - client draft state management and confirmation sync
+
+---
+
+#### 14M. Pachisi Board Layout Stabilization `ARC-1020`
+
+**Effort: Easy (1 day)**
+
+Eliminate board jumping and vertical layout shifts by consolidating the turn and phase indicator into a dedicated fixed-height status strip above the board.
+
+**Files to create/modify:**
+
+- `apps/web/src/widgets/BoardGames/PachisiGame/ui/PachisiBoard.tsx` - consolidated status banner layout
+
+---
+
+#### 14N. Pachisi Board Modularization & Auto-Pass Timer `ARC-1021`
+
+**Effort: Medium (2 days)**
+
+Deconstruct monolithic PachisiBoard into focused subcomponents (PachisiCenterHome, PachisiTokenStack, usePachisiDiceState). Add pulse landing animation for captured tokens and an automated countdown indicator when no valid moves are possible.
+
+**Files to create/modify:**
+
+- `apps/web/src/widgets/BoardGames/PachisiGame/ui/` - modularized components and custom hooks
+- `apps/web/src/widgets/BoardGames/PachisiGame/model/usePachisiDiceState.ts` - dice roll logic
+
+---
+
 ## Growth, SEO and Platform Improvements
 
 ### 1. Platform Strengths to Protect
@@ -1977,46 +2018,34 @@ Automated workflows executing in CI or scheduled runs:
 
 The platform core infrastructure is highly mature. Phases 1-13 are complete or active in production:
 
-| Phase / Focus                             | Features & Ticket Scope                                                                                                                                                             | Est. Days | Status / Progress                                            |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
-| **Phase 1: Core UX**                      | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                                                                                           | 10        | **100% Completed**                                           |
-| **Phase 2: Growth & SEO**                 | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning                                                                   | 12        | **100% Completed**                                           |
-| **Phase 3: Classic Games**                | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                                                                                           | 15        | **100% Completed**                                           |
-| **Phase 4: Competitive**                  | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                                                                                         | 20        | **100% Completed**                                           |
-| **Phase 5: Retention**                    | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                                                                                  | 15        | **100% Completed**                                           |
-| **Phase 6: Card & Board**                 | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                                                                                           | 25        | **100% Completed**                                           |
-| **Phase 7: Advanced Social**              | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                                                                                   | 25        | **100% Completed**                                           |
-| **Phase 8: Platform Growth**              | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                                                                                           | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)    |
-| **Phase 9: Creator Tools**                | Visual Board Game Creator                                                                                                                                                           | 20        | **Deferred** (revisit with larger community)                 |
-| **Phase 10: Single-Player**               | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                                                      | 12        | **100% Completed**                                           |
-| **Phase 11: Growth Acceleration**         | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality                         | 30        | **Code Complete** (marketing execution ongoing)              |
-| **Phase 12: Player Retention Loops**      | Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930-ARC-934)                                                                   | 20        | **100% Completed** (Streaks, Winback & Challenges shipped)   |
-| **Phase 13: High-Performance Engine**     | Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935-ARC-938)                                                                | 15        | **100% Completed** (Workers, Skeletons & Delta Sync shipped) |
-| **Phase 14: Community Feedback & Polish** | Universal avatar visibility + Notification dates + Dice spacebar + Dice re-roll on 6 + Long backgammon corners + Rematch overhaul + Chat fixes + Lobby redesign (ARC-1000-ARC-1012) | 10        | **In Planning / In Progress**                                |
+| Phase / Focus                             | Features & Ticket Scope                                                                                                                                                                                                                                          | Est. Days | Status / Progress                                            |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------------------------------------------ |
+| **Phase 1: Core UX**                      | Stats tracking + Emotes + House rules + Dark mode + Undo + Password rooms                                                                                                                                                                                        | 10        | **100% Completed**                                           |
+| **Phase 2: Growth & SEO**                 | Viral invite loops, QR codes, game SEO landing pages, schema markup, funnel analytics, and homepage repositioning                                                                                                                                                | 12        | **100% Completed**                                           |
+| **Phase 3: Classic Games**                | Chess Engine + Checkers Engine + Audio Cues + Chess Clock                                                                                                                                                                                                        | 15        | **100% Completed**                                           |
+| **Phase 4: Competitive**                  | Achievements + Daily Challenges + Tournaments + Leaderboards + Monetization                                                                                                                                                                                      | 20        | **100% Completed**                                           |
+| **Phase 5: Retention**                    | Matchmaking Queue + AI Difficulty Tiers + Ranked/ELO Skill Ratings                                                                                                                                                                                               | 15        | **100% Completed**                                           |
+| **Phase 6: Card & Board**                 | Hearts + Spades + Backgammon + Pachisi + Post-Game Analysis + Hints/Coach                                                                                                                                                                                        | 25        | **100% Completed**                                           |
+| **Phase 7: Advanced Social**              | Go Engine + Clans/Groups + Game Nights + Replays + Spectator Mode                                                                                                                                                                                                | 25        | **100% Completed**                                           |
+| **Phase 8: Platform Growth**              | PWA Support + Push Notifications + Offline Mode + Share + Mobile App Port                                                                                                                                                                                        | 30        | **PWA, Push, Share + Offline Completed** (Mobile Partial)    |
+| **Phase 9: Creator Tools**                | Visual Board Game Creator                                                                                                                                                                                                                                        | 20        | **Deferred** (revisit with larger community)                 |
+| **Phase 10: Single-Player**               | Solitaire + Minesweeper + Sudoku + 2048 (client-side, ARC-924)                                                                                                                                                                                                   | 12        | **100% Completed**                                           |
+| **Phase 11: Growth Acceleration**         | 30-day execution plan: funnel measurement, Sea Battle spearhead, viral challenge flow, live activity, Reddit/TikTok/SEO/Discord/LinkedIn, technical quality                                                                                                      | 30        | **Code Complete** (marketing execution ongoing)              |
+| **Phase 12: Player Retention Loops**      | Daily Challenges + Streaks + Async Turn-Based + Quests & Battle Pass + Social Leagues + Winback (ARC-930-ARC-934)                                                                                                                                                | 20        | **100% Completed** (Streaks, Winback & Challenges shipped)   |
+| **Phase 13: High-Performance Engine**     | Web Worker AI Offloading + Instant Room Boot + WebSocket Delta Sync + Core Web Vitals (INP < 50ms) (ARC-935-ARC-938)                                                                                                                                             | 15        | **100% Completed** (Workers, Skeletons & Delta Sync shipped) |
+| **Phase 14: Community Feedback & Polish** | Universal avatar visibility + Notification dates + Dice spacebar + Dice re-roll on 6 + Long backgammon corners + Rematch overhaul + Chat fixes + Lobby redesign + Sea Battle ship placement draft + Pachisi layout stabilization & auto-pass (ARC-1000-ARC-1021) | 10        | **100% Completed**                                           |
 
 ### Summary of Completed vs. Outstanding Tasks
 
-- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), Dedicated Floating Spectator Reactions (ARC-889 - floating reaction bubbles and quick action dock), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls), Sea Battle Weekly Blitz Cups (ARC-966 - automated scheduled bracket tournaments, SeaBattleBlitzService & Cron, SeaBattleBlitzBanner on landing page), Strategy Guides & SEO Cluster (ARC-952 - 9 pillar strategy guides across 5 locales, bidirectional internal cross-linking, schema markup, and hreflang validation), Critical Ranked ELO Mode (ARC-971 - dedicated competitive 1v1 matchmaking queue, 6-tier rating ladder, seasonal leaderboard showcase, and in-game ranked status indicators), Sea Battle Weekly Blitz Cups UI (ARC-972 - in-place interactive tournament bracket viewer, countdown, captains fleet roster, and tactical rules modal on Sea Battle landing page), Tactical Puzzle Rush & Daily Streak Expansion (ARC-973 - global puzzle rush leaderboard, run scoring and ranking engine, streak bonus multipliers, and shareable tactical brag card), Solitaire Auto-Place (ARC-975 - instant smart auto-place for revealed tableaus), Interactive Player Profile & Match Showcase (ARC-976 - public match history feed, head-to-head rival records, win rate trends, and shareable achievement badges), Solo Games Intelligent Assistants & QoL (ARC-977 - Solitaire Klondike Draw 3 mode, smart hint engine, and fanned waste; Sudoku digit-first speed mode, candidate auto-fill, error highlighting, and smart hints; Minesweeper personal bests, flagless NF speedrun mode, tactile chord feedback, remaining safe cells HUD, and quick R restart; 2048 pointer swipe engine, milestone celebration toasts, and undo allowance counter), Clan Leaderboards & Community Challenges (ARC-978 - global clan rankings ladder by wins/members/winRate, weekly clan MVP member showcase, and cooperative platform community challenge milestones with progressive rewards), Clan Wars & Inter-Clan Tournaments (ARC-979 - direct clan challenges, victory win races, match result reporting, and interactive clan wars hub).
+- **Completed**: Stat Tracking (1A), Emotes (1B), House Rules (1C), Dark Mode (1D), Undo/Take-Back (1E), Password Rooms (1F), Chess Engine (2B), Checkers Engine (2C), Audio Cues (2D), Achievements (2G - popup host & profile grid), Hearts & Spades (3A), Backgammon (3B), Pachisi (3C), Go (3D), Game Replays (3F), Spectator Mode (3G), Dedicated Floating Spectator Reactions (ARC-889 - floating reaction bubbles and quick action dock), AI-vs-AI Spectator Rooms (3H), Clans/Groups (3I), Game Nights (3J), Chess Clock (4A), Stats Dashboard (4B), Daily Challenges (4G), Screen Reader (4E), PWA Support (4I), Offline Mode (4J - service worker caching & offline game routes), Web Share (4K), Push Notifications (4L), Tournaments (4M - bracket generator & BracketView), Leaderboards (4N), Single-Player Games (4Q), Monetization (5B), Matchmaking Queue (2A), AI Difficulty Tiers (2E), Ranked/ELO Skill Ratings (2F), Post-Game Analysis (2H), Rematch & Smart Play Again flow, Season System (4H), Colorblind Modes (4F), Daily Habit & Streak System (8A), Winback Engine (8E), Web Worker AI (9A), Instant Room Boot (9B), State Delta Sync (9C), Core Web Vitals (9D), Shared Checkerboard field across Chess and Checkers, Level Badges catalog order, Coach Mode Server Hints (2I - Checkers & Backgammon gateway heuristics and client coach controls), Sea Battle Weekly Blitz Cups (ARC-966 - automated scheduled bracket tournaments, SeaBattleBlitzService & Cron, SeaBattleBlitzBanner on landing page), Strategy Guides & SEO Cluster (ARC-952 - 9 pillar strategy guides across 5 locales, bidirectional internal cross-linking, schema markup, and hreflang validation), Critical Ranked ELO Mode (ARC-971 - dedicated competitive 1v1 matchmaking queue, 6-tier rating ladder, seasonal leaderboard showcase, and in-game ranked status indicators), Sea Battle Weekly Blitz Cups UI (ARC-972 - in-place interactive tournament bracket viewer, countdown, captains fleet roster, and tactical rules modal on Sea Battle landing page), Tactical Puzzle Rush & Daily Streak Expansion (ARC-973 - global puzzle rush leaderboard, run scoring and ranking engine, streak bonus multipliers, and shareable tactical brag card), Solitaire Auto-Place (ARC-975 - instant smart auto-place for revealed tableaus), Interactive Player Profile & Match Showcase (ARC-976 - public match history feed, head-to-head rival records, win rate trends, and shareable achievement badges), Solo Games Intelligent Assistants & QoL (ARC-977 - Solitaire Klondike Draw 3 mode, smart hint engine, and fanned waste; Sudoku digit-first speed mode, candidate auto-fill, error highlighting, and smart hints; Minesweeper personal bests, flagless NF speedrun mode, tactile chord feedback, remaining safe cells HUD, and quick R restart; 2048 pointer swipe engine, milestone celebration toasts, and undo allowance counter), Clan Leaderboards & Community Challenges (ARC-978 - global clan rankings ladder by wins/members/winRate, weekly clan MVP member showcase, and cooperative platform community challenge milestones with progressive rewards), Clan Wars & Inter-Clan Tournaments (ARC-979 - direct clan challenges, victory win races, match result reporting, and interactive clan wars hub), Strategy Guide Practice Drills (ARC-980 - interactive mini-boards for Go and Sudoku guides across 5 locales), Phase 14 "We Will Fix It" Sprint (ARC-1000 through ARC-1021 - avatar visibility & sizing audit, notification timestamps, spacebar dice roll shortcut, dice re-roll state sync on 6, Long Backgammon opposite corners, rematch & smart play again lifecycle stability, fair 50/50 starting turn selection, lobby seat parity, chat text delivery fix, modern lobby UX rework, board size options discoverability, Sea Battle ship draft placement fix, Pachisi layout shift elimination, and Pachisi board modularization with auto-pass countdown).
 - **Phase 6 Tier (Growth & Marketing) - Completed**: Funnel tracking split by Solo vs. Social, homepage CTAs featuring AI/Solo play, SEO landing pages for all 18 games, QR code and share sheet invite upgrades, blog SEO content, post-game analytics (ARC-925).
 - **Phase 11 (Growth Acceleration) - Code Complete, Marketing Execution Ongoing**: Funnel tracking, Sea Battle spearhead, viral challenge flow, and live activity social proof.
 - **Phase 12 (Player Retention Loops) - Completed**: Daily challenge rotation, streaks, habit multipliers, winback triggers, and seasonal quest progression shipped.
 - **Phase 13 (High-Performance Engine) - Completed**: Web Worker AI offloading for 120 FPS stutter-free play, sub-100ms instant room initialization, and binary WebSocket delta compression shipped.
-- **Phase 14 (Community Feedback & Polish) - In Planning / In Progress**: Fixing issues ARC-1000 through ARC-1012 (avatars visibility & sizing, notification timestamps, keyboard dice roll shortcuts, dice state synchronization, Long Backgammon layout, lobby overhaul, and rematch stability).
+- **Phase 14 (Community Feedback & Polish) - 100% Completed**: All 14 quality-of-life and community bug fix tickets (ARC-1000 through ARC-1021) along with strategy guide interactive drills (ARC-980) successfully implemented, verified with comprehensive Vitest and Playwright E2E suites, and merged to develop.
 
 ### Remaining Priorities & Next Steps
 
-1. **Phase 14 Quality & Polish ("We Will Fix It" Sprint - ARC-1000 through ARC-1012)**:
-   - Avatar visibility and sizing audit across all components (ARC-1001, ARC-1012)
-   - Add timestamps and dates to notifications (ARC-1002)
-   - Spacebar turn/roll in dice games (ARC-1003)
-   - Dice state synchronization on roll of 6 (ARC-1004)
-   - Long Backgammon opposite corner setup (ARC-1005)
-   - Rematch / Play Again lifecycle stability (ARC-1006)
-   - Fair 50/50 starting turn selection (ARC-1007)
-   - Lobby player ordering consistency across games (ARC-1008)
-   - In-game text chat delivery fix (ARC-1009)
-   - Lobby UI rework & field size setting discoverability (ARC-1010, ARC-1011)
-2. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
-3. **Strategy Guide Practice Drills (ARC-980)**: Interactive mini-boards and tactical exercises directly inside pillar guides.
-
-Board Game Creator (4O) stays **deferred** until community scale.
+1. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
+2. **Weekly Scheduled Tournament Cups Expansion**: Extending automated bracket tournament mechanics from Sea Battle Blitz Cups to Checkers and Connect Four.
+3. **Board Game Creator (4O)**: Visual board game editor (deferred until community scale).

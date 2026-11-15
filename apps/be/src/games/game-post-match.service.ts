@@ -43,6 +43,7 @@ export class GamePostMatchService {
     gameId: string,
     winners: string[],
     stats: { shots?: number; shipsSunk?: number },
+    sessionId?: string,
   ): Promise<void> {
     try {
       await this.dailyChallenges.onGameCompleted(
@@ -75,7 +76,14 @@ export class GamePostMatchService {
     }
 
     try {
-      await this.playerStats.recordGameResult(playerIds, gameId, winners);
+      const hasBots = playerIds.some((id) => id.startsWith('bot-'));
+      await this.playerStats.recordGameResult(
+        playerIds,
+        gameId,
+        winners,
+        hasBots,
+        sessionId,
+      );
     } catch (err) {
       this.logger.warn(
         `Player stats recording failed: ${(err as Error).message}`,

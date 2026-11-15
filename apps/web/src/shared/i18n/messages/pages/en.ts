@@ -324,6 +324,26 @@ export const en = {
         subtitle: 'Board strategy',
         icon: '🎲',
       },
+      hearts_v1: {
+        name: 'Hearts',
+        subtitle: 'Classic trick-taking',
+        icon: '♥',
+      },
+      spades_v1: {
+        name: 'Spades',
+        subtitle: 'Trump trick-taking',
+        icon: '♠',
+      },
+      go_v1: {
+        name: 'Go',
+        subtitle: 'Territory strategy',
+        icon: '⚪',
+      },
+      pachisi_v1: {
+        name: 'Pachisi',
+        subtitle: 'Classic cross & circle',
+        icon: '🎯',
+      },
     },
     cup: {
       eyebrow: 'Tournament',
@@ -360,13 +380,18 @@ export const en = {
         month: 'Month',
         season: 'Season',
       },
+      opponentTypes: {
+        all: 'All Opponents',
+        pvp: 'PvP (Players)',
+        bot: 'vs Bots (AI)',
+      },
     },
     table: {
       rank: '#',
       player: 'Player',
       region: 'Region',
       rating: 'Rating',
-      record: 'W–L–D',
+      record: 'W-L-D',
       winrate: 'Winrate',
       form: 'Form',
       trend: 'Trend',

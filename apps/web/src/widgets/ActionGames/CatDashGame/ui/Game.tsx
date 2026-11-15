@@ -28,7 +28,6 @@ import { useTimedTrue } from '@/shared/hooks/useTimedTrue';
 import { CatDashLobby } from './Lobby';
 import { CatDashBoard } from './Board';
 import { RealisticCat } from './RealisticCat';
-import { CatDashTurnBadge } from './TurnBadge';
 import { CatDashDashboard } from './CatDashDashboard';
 import { CatDashRulesModal } from './RulesModal';
 import { RacerBioModal } from './RacerBioModal';
@@ -212,53 +211,57 @@ function CatDashGameImpl({
   }
 
   const board = (
-    <div className="flex flex-col gap-4 items-stretch p-3 w-full max-w-5xl mx-auto">
+    <div className="flex w-full max-w-6xl flex-col items-stretch gap-4 p-2 md:p-3 mx-auto">
       {snapshot ? (
         <>
-          <CatDashTurnBadge
-            snapshot={snapshot}
-            currentEntryId={currentEntryId}
-            myTurn={myTurn}
-            resolveName={resolveDisplayNameBound}
-          />
-          <CatDashBoard
-            snapshot={snapshot}
-            disabled={!myTurn || isGameOver}
-            resolveName={resolveDisplayNameBound}
-            highlightedCells={chatHighlightCells}
-          />
-          {isGameOver && snapshot?.winner && (
-            <div className="flex flex-col items-center gap-2 p-4 bg-emerald-500/15 rounded-3xl border border-emerald-500/40 shadow-2xl shadow-emerald-500/20 backdrop-blur-md max-w-md mx-auto">
-              <RealisticCat
-                catId={
-                  snapshot.players.find((p) => p.playerId === snapshot.winner)
-                    ?.catId ?? 'neon'
-                }
-                size={72}
-                variant="card"
-                showGlow={true}
+          <div className="flex flex-col gap-3 lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] lg:items-start lg:gap-4">
+            <div className="order-2 min-w-0 lg:order-1">
+              <CatDashBoard
+                snapshot={snapshot}
+                disabled={!myTurn || isGameOver}
+                resolveName={resolveDisplayNameBound}
+                highlightedCells={chatHighlightCells}
               />
-              <span className="text-lg font-extrabold text-emerald-400">
-                {t('games.cat_dash_v1.gameOver.winnerIs' as TranslationKey, {
-                  name: resolveDisplayNameBound(snapshot.winner),
-                })}
-              </span>
+              {isGameOver && snapshot?.winner && (
+                <div className="mx-auto mt-4 flex max-w-md flex-col items-center gap-2 rounded-3xl border border-emerald-500/40 bg-emerald-500/15 p-4 shadow-2xl shadow-emerald-500/20 backdrop-blur-md">
+                  <RealisticCat
+                    catId={
+                      snapshot.players.find(
+                        (p) => p.playerId === snapshot.winner,
+                      )?.catId ?? 'neon'
+                    }
+                    size={72}
+                    variant="card"
+                    showGlow={true}
+                  />
+                  <span className="text-lg font-extrabold text-emerald-400">
+                    {t(
+                      'games.cat_dash_v1.gameOver.winnerIs' as TranslationKey,
+                      {
+                        name: resolveDisplayNameBound(snapshot.winner),
+                      },
+                    )}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-          <CatDashDashboard
-            snapshot={snapshot}
-            currentUserId={currentUserId}
-            myTurn={myTurn}
-            isGameOver={isGameOver}
-            isRolling={isRolling}
-            onRollDice={handleRollDice}
-            onCatnap={handleCatnap}
-            onPounce={handlePounce}
-            onDeployTrap={handleDeployTrap}
-            resolveName={resolveDisplayNameBound}
-            onInspectCat={setInspectedCatId}
-            onUseAbility={handleUseAbility}
-          />
+            <div className="order-1 min-w-0 lg:order-2">
+              <CatDashDashboard
+                snapshot={snapshot}
+                currentUserId={currentUserId}
+                myTurn={myTurn}
+                isGameOver={isGameOver}
+                isRolling={isRolling}
+                onRollDice={handleRollDice}
+                onCatnap={handleCatnap}
+                onPounce={handlePounce}
+                onDeployTrap={handleDeployTrap}
+                resolveName={resolveDisplayNameBound}
+                onInspectCat={setInspectedCatId}
+                onUseAbility={handleUseAbility}
+              />
+            </div>
+          </div>
         </>
       ) : null}
     </div>
@@ -329,6 +332,7 @@ function CatDashGameImpl({
             isMyTurn: myTurn,
             isGameOver,
           },
+          compact: true,
         }}
       />
     </CatDashThemeProvider>

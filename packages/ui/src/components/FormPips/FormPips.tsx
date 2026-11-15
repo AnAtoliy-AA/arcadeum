@@ -35,7 +35,7 @@ export function FormPips({
   variant = 'dot',
   className,
 }: FormPipsProps) {
-  const sliced = results.slice(-max);
+  const sliced = results.slice(0, max);
   const dotSize = size ?? 10;
 
   return (
@@ -47,6 +47,7 @@ export function FormPips({
         variant === 'letter' ? (
           <span
             key={i}
+            title={r === 'W' ? 'Victory' : r === 'L' ? 'Defeat' : 'Draw'}
             className={cx(
               'flex h-4 w-4 items-center justify-center rounded-[4px] border',
               letterTileClasses[r],
@@ -65,6 +66,7 @@ export function FormPips({
           <span
             key={i}
             data-testid="form-pip"
+            title={r === 'W' ? 'Victory' : r === 'L' ? 'Defeat' : 'Draw'}
             className={cx('border', pipResultClasses[r])}
             style={{
               width: dotSize,

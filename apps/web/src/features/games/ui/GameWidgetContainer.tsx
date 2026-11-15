@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { MaximizeIcon, MinimizeIcon } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { useAutoExitFullscreen } from '../hooks/useAutoExitFullscreen';
-import { GameChatPopupOverlay } from '@/widgets/GameChat';
 import { SubtitleText } from './SubtitleText';
 import { TurnIndicator, resolveTurnStatus } from './TurnIndicator';
 import { EmoteBubble } from './EmoteBubble';
@@ -29,6 +29,16 @@ import {
   type SharedHeaderProps,
   type TurnStatusVariant,
 } from './GameWidgetContainer.styles';
+
+// Chat is an optional in-game surface. Keep its popup and message formatting
+// out of the initial game bundle until a game actually enables the overlay.
+const GameChatPopupOverlay = dynamic(
+  () =>
+    import('@/widgets/GameChat').then(
+      ({ GameChatPopupOverlay: PopupOverlay }) => PopupOverlay,
+    ),
+  { ssr: false },
+);
 
 export {
   useWidgetFullscreen,
@@ -107,7 +117,11 @@ export const GameWidgetContainer = React.memo(function GameWidgetContainer({
   const renderedHeader =
     header ??
     (headerProps ? (
-      <GameHeader>
+      <GameHeader
+        className={
+          headerProps.compact ? 'gap-2 px-4 py-1 max-[800px]:px-2' : undefined
+        }
+      >
         <GameInfo>
           <VariantIconBadge>
             <span className="text-[15px]">{headerProps.variantEmoji}</span>

@@ -211,4 +211,56 @@ test.describe('Blog Interactive Strategy Guide Practice Drills', () => {
       russianChessDrill.getByRole('button', { name: 'Играть сейчас' }),
     ).toBeVisible();
   });
+
+  test('solves go atari capture tactical drill', async ({ page }) => {
+    await page.goto('/en/blog/how-to-play-go', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    const goDrill = page.locator('#drill-go-atari');
+    await expect(goDrill).toBeVisible();
+    await goDrill.scrollIntoViewIfNeeded();
+
+    const captureCell = goDrill.getByTestId('puzzle-cell-49');
+    const correctFeedback = goDrill.getByTestId('puzzle-feedback-correct');
+
+    await expect
+      .poll(async () => {
+        await captureCell.click();
+        return correctFeedback.isVisible();
+      })
+      .toBe(true);
+
+    await expect(correctFeedback).toBeVisible();
+    await expect(goDrill.getByText('Correct Move!')).toBeVisible();
+    await expect(
+      goDrill.getByText('Playing at E4 removes the last remaining liberty'),
+    ).toBeVisible();
+  });
+
+  test('solves sudoku naked single logic drill', async ({ page }) => {
+    await page.goto('/en/blog/how-to-play-sudoku', {
+      waitUntil: 'domcontentloaded',
+    });
+
+    const sudokuDrill = page.locator('#drill-sudoku-naked-single');
+    await expect(sudokuDrill).toBeVisible();
+    await sudokuDrill.scrollIntoViewIfNeeded();
+
+    const lastSingleCell = sudokuDrill.getByTestId('puzzle-cell-80');
+    const correctFeedback = sudokuDrill.getByTestId('puzzle-feedback-correct');
+
+    await expect
+      .poll(async () => {
+        await lastSingleCell.click();
+        return correctFeedback.isVisible();
+      })
+      .toBe(true);
+
+    await expect(correctFeedback).toBeVisible();
+    await expect(sudokuDrill.getByText('Correct Move!')).toBeVisible();
+    await expect(
+      sudokuDrill.getByText('Cell I9 (Row 9, Column 9) has every other digit'),
+    ).toBeVisible();
+  });
 });

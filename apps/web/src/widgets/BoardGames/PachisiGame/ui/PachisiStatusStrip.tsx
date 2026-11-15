@@ -71,80 +71,49 @@ export function PachisiStatusStrip({
     : (myLastDie ?? lastDie ?? snapshot.die ?? snapshot.lastDie ?? null);
 
   return (
-    <div className="flex w-full flex-col gap-2">
-      <div className="flex flex-row flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/50 px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-md">
-        <div className="flex flex-wrap items-center gap-2">
-          {snapshot.playerOrder.map((pid) => {
-            const seat = seatOf(pid);
-            const finished = finishedCounts.get(pid) ?? 0;
-            const total = snapshot.tokens[pid]?.length ?? 4;
-            const isMe = pid === currentUserId;
-            return (
-              <span
-                key={`score-${pid}`}
-                className={`pachisi-score-pill-seat-${seat} flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
-                  isMe ? 'ring-1 ring-white/60' : ''
-                }`}
-              >
-                <PachisiTokenView
-                  seat={seat}
-                  className="h-3.5 w-3.5 shrink-0 shadow-sm"
-                />
-                <HomeIcon className="h-3 w-3 opacity-70" />
-                {finished}/{total}
-              </span>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {isExtraRoll && (
+    <div className="flex w-full flex-row flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/50 px-3 py-1.5 text-xs font-semibold shadow-lg backdrop-blur-md shrink-0">
+      <div className="flex flex-wrap items-center gap-2">
+        {snapshot.playerOrder.map((pid) => {
+          const seat = seatOf(pid);
+          const finished = finishedCounts.get(pid) ?? 0;
+          const total = snapshot.tokens[pid]?.length ?? 4;
+          const isMe = pid === currentUserId;
+          return (
             <span
-              className="flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 ring-1 ring-amber-400/40"
-              data-testid="pachisi-extra-roll-badge"
+              key={`score-${pid}`}
+              className={`pachisi-score-pill-seat-${seat} flex items-center gap-1.5 rounded-md px-1.5 py-0.5 text-[11px] font-bold ${
+                isMe ? 'ring-1 ring-white/60' : ''
+              }`}
             >
-              <SparkleIcon className="h-3 w-3" />
-              {t('games.pachisi_v1.game.extraRoll')}
+              <PachisiTokenView
+                seat={seat}
+                className="h-3.5 w-3.5 shrink-0 shadow-sm"
+              />
+              <HomeIcon className="h-3 w-3 opacity-70" />
+              {finished}/{total}
             </span>
-          )}
-
-          {displayLastDie != null && !isGameOver && (
-            <span
-              className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-bold text-white/90 shadow-sm"
-              data-testid="pachisi-status-last-roll"
-            >
-              <span className="text-[10px] text-emerald-400">🎲</span>
-              <span className="font-black text-emerald-300">
-                {displayLastDie}
-              </span>
-              <span className="text-white/80">
-                {t('games.pachisi_v1.game.lastRoll', { value: displayLastDie })}
-              </span>
-            </span>
-          )}
-        </div>
+          );
+        })}
       </div>
 
-      {canMove && movableCount > 0 && (
-        <div
-          className="text-center text-[12px] font-bold text-emerald-300"
-          data-testid="pachisi-move-hint"
-        >
-          {t('games.pachisi_v1.game.yourTurnToMove')}
-          <span className="mt-0.5 block text-[11px] text-emerald-200/80">
-            {t('games.pachisi_v1.game.tapToken')}
+      <div className="flex flex-wrap items-center gap-2">
+        {isExtraRoll && (
+          <span
+            className="flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 ring-1 ring-amber-400/40"
+            data-testid="pachisi-extra-roll-badge"
+          >
+            <SparkleIcon className="h-3 w-3" />
+            {t('games.pachisi_v1.game.extraRoll')}
           </span>
-        </div>
-      )}
+        )}
 
-      {canMove && movableCount === 0 && (
-        <div
-          className="flex flex-col items-center gap-1.5"
-          data-testid="pachisi-no-moves"
-        >
-          <div className="flex items-center gap-2 rounded-lg border border-amber-500/40 bg-amber-950/60 px-3 py-1 text-center text-[12px] font-bold text-amber-300 shadow-md">
+        {canMove && movableCount === 0 && (
+          <div
+            className="flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-950/60 px-2 py-0.5 text-[11px] font-bold text-amber-300 shadow-md"
+            data-testid="pachisi-no-moves"
+          >
             {displayLastDie != null && (
-              <span className="flex items-center gap-1 rounded bg-amber-500/20 px-1.5 py-0.5 text-amber-200">
+              <span className="flex items-center gap-1 rounded bg-amber-500/20 px-1 py-0.2 text-amber-200">
                 <span>🎲</span>
                 <span className="font-black text-amber-100">
                   {displayLastDie}
@@ -158,27 +127,33 @@ export function PachisiStatusStrip({
                   })
                 : t('games.pachisi_v1.game.noLegalMoves')}
             </span>
+            {onPassTurn && (
+              <button
+                aria-label={t('games.pachisi_v1.game.passTurn')}
+                className="relative cursor-pointer overflow-hidden rounded border border-amber-500/40 bg-amber-950/80 px-2 py-0.5 text-[10px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95 disabled:opacity-50"
+                data-testid="pachisi-pass-button"
+                disabled={actionBusy}
+                onClick={onPassTurn}
+                type="button"
+              >
+                <span
+                  className="pachisi-auto-pass-timer pointer-events-none absolute inset-0 bg-amber-400/20"
+                  onAnimationEnd={onPassTurn}
+                />
+                <span className="relative z-10">
+                  {t('games.pachisi_v1.game.passTurn')}
+                </span>
+              </button>
+            )}
           </div>
-          {onPassTurn && (
-            <button
-              aria-label={t('games.pachisi_v1.game.passTurn')}
-              className="cursor-pointer rounded-lg border border-amber-500/40 bg-amber-950/50 px-3 py-1 text-[11px] font-semibold text-amber-300 transition-colors hover:bg-amber-900/60 active:scale-95 disabled:opacity-50"
-              data-testid="pachisi-pass-button"
-              disabled={actionBusy}
-              onClick={onPassTurn}
-              type="button"
-            >
-              {t('games.pachisi_v1.game.passTurn')}
-            </button>
-          )}
-        </div>
-      )}
+        )}
 
-      {!myTurn && !isGameOver && (
-        <div className="flex flex-col items-center gap-1">
-          {isLastRollNoMoves && displayLastDie != null && (
+        {!myTurn &&
+          !isGameOver &&
+          isLastRollNoMoves &&
+          displayLastDie != null && (
             <div
-              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-950/40 px-2.5 py-1 text-[11px] font-bold text-amber-300 shadow-sm"
+              className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-950/40 px-2 py-0.5 text-[11px] font-bold text-amber-300 shadow-sm"
               data-testid="pachisi-no-moves-banner"
             >
               <span className="rounded bg-amber-500/20 px-1 font-black text-amber-200">
@@ -195,16 +170,22 @@ export function PachisiStatusStrip({
               </span>
             </div>
           )}
-          <div
-            className="text-center text-[12px] font-semibold text-white/50"
-            data-testid="pachisi-waiting"
+
+        {displayLastDie != null && !isGameOver && (
+          <span
+            className="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-bold text-white/90 shadow-sm"
+            data-testid="pachisi-status-last-roll"
           >
-            {snapshot.phase === 'roll'
-              ? t('games.pachisi_v1.game.waitingForOpponentRoll')
-              : t('games.pachisi_v1.game.waitingForOpponentMove')}
-          </div>
-        </div>
-      )}
+            <span className="text-[10px] text-emerald-400">🎲</span>
+            <span className="font-black text-emerald-300">
+              {displayLastDie}
+            </span>
+            <span className="text-white/80">
+              {t('games.pachisi_v1.game.lastRoll', { value: displayLastDie })}
+            </span>
+          </span>
+        )}
+      </div>
     </div>
   );
 }

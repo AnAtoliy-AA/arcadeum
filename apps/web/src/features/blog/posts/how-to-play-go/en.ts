@@ -60,6 +60,30 @@ export const post: BlogPost = {
       ],
     },
     {
+      type: 'interactive-puzzle',
+      id: 'drill-go-atari',
+      gameId: 'go',
+      title: 'Practice Drill: Execute the Atari Capture',
+      prompt:
+        'Black to play: find the critical intersection to capture the surrounded White stone in atari.',
+      grid: [
+        '.........',
+        '.........',
+        '.........',
+        '....B....',
+        '...BWB...',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+      ],
+      solutionIndex: 49,
+      solutionValue: 'B',
+      explanation:
+        'Playing at E4 removes the last remaining liberty of the White stone, capturing it from the board!',
+      playHref: '/games/go',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Ko rule',

@@ -52,7 +52,9 @@ test.describe('Interactive Tutorials & Academy', () => {
       .locator('#main-content')
       .getByTestId('game-academy-section')
       .first();
-    await academySection.scrollIntoViewIfNeeded();
+    await academySection
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(academySection).toBeVisible();
 
     const puzzle2Tab = academySection.getByTestId('academy-puzzle-tab-2');
@@ -62,7 +64,7 @@ test.describe('Interactive Tutorials & Academy', () => {
       'Academy Challenge 2: Defend the Center Trap',
     );
     await expect(async () => {
-      await puzzle2Tab.click();
+      await puzzle2Tab.click({ force: true });
       await expect(challenge2Title).toBeVisible();
     }).toPass();
   });

@@ -3,12 +3,16 @@
  * treatment (aura tint, nameplate color, glyph); everyday roles render normally.
  */
 const ROLE_TIER_COLOR: Record<string, string> = {
+  admin: '#ef4444',
+  developer: '#10b981',
   premium: '#fbbf24',
   vip: '#e879f9',
   supporter: '#f472b6',
 };
 
 const ROLE_GLYPH: Record<string, string> = {
+  admin: '🛡️',
+  developer: '⚙️',
   premium: '👑',
   vip: '💎',
   supporter: '🌟',

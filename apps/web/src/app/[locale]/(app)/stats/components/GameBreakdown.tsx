@@ -16,6 +16,66 @@ interface GameBreakdownProps {
   loading: boolean;
 }
 
+function getGameEmoji(gameId: string): string {
+  const lower = gameId.toLowerCase();
+  if (lower.includes('chess')) return '♟️';
+  if (lower.includes('checkers')) return '⚪';
+  if (lower.includes('sea_battle') || lower.includes('sea-battle')) return '🚢';
+  if (lower.includes('backgammon')) return '🎲';
+  if (lower.includes('tic_tac_toe') || lower.includes('tic-tac-toe'))
+    return '❌';
+  if (lower.includes('cat_dash') || lower.includes('cat-dash')) return '🐾';
+  if (lower.includes('glimworm')) return '🐛';
+  if (lower.includes('poker') || lower.includes('holdem')) return '♣️';
+  if (lower.includes('hearts')) return '♥️';
+  if (lower.includes('spades')) return '♠️';
+  if (lower.includes('go')) return '⚪';
+  if (lower.includes('pachisi')) return '🎯';
+  if (lower.includes('2048')) return '🔢';
+  if (lower.includes('minesweeper')) return '💣';
+  if (lower.includes('solitaire') || lower.includes('cascade')) return '🃏';
+  if (lower.includes('sudoku')) return '🧩';
+  return '🎮';
+}
+
+function resolveGameMetadata(rawId: string) {
+  if (gameMetadata[rawId as GameSlug]) return gameMetadata[rawId as GameSlug];
+  const withV1 = `${rawId.replace(/-/g, '_')}_v1` as GameSlug;
+  if (gameMetadata[withV1]) return gameMetadata[withV1];
+  const normalized = rawId.replace(/_v\d+$/, '').replace(/-/g, '_');
+  for (const [key, val] of Object.entries(gameMetadata)) {
+    if (key.replace(/_v\d+$/, '') === normalized) return val;
+  }
+  return undefined;
+}
+
+function GameThumbnail({
+  src,
+  alt,
+  fallbackEmoji,
+}: {
+  src?: string;
+  alt: string;
+  fallbackEmoji: string;
+}) {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (!src || hasError) {
+    return <span className="text-[18px]">{fallbackEmoji}</span>;
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={40}
+      height={40}
+      className="w-full h-full object-cover"
+      onError={() => setHasError(true)}
+    />
+  );
+}
+
 export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
   const { t } = useTranslation();
 
@@ -83,11 +143,26 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
 
         <div className="divide-y divide-[var(--borderColor)]/30">
           {stats.byGameType.map((game) => {
-            const meta = gameMetadata[game.gameId as GameSlug];
+            const meta = resolveGameMetadata(game.gameId);
+            const translationVal = t(
+              `games.${game.gameId}.name` as TranslationKey,
+            );
+            const hasValidTranslation =
+              translationVal &&
+              !translationVal.startsWith('games.') &&
+              translationVal !== game.gameId;
+
+            const fallbackFormatted = game.gameId
+              .replace(/[-_]v\d+$/i, '')
+              .replace(/[-_]/g, ' ')
+              .replace(/\b\w/g, (c) => c.toUpperCase());
+
             const gameTitle =
-              t(`games.${game.gameId}.name` as TranslationKey) ||
+              (hasValidTranslation ? translationVal : null) ||
               meta?.name ||
-              game.gameId;
+              fallbackFormatted;
+
+            const fallbackEmoji = getGameEmoji(game.gameId);
 
             return (
               <div
@@ -96,20 +171,17 @@ export function GameBreakdown({ stats, loading }: GameBreakdownProps) {
               >
                 <div className="flex items-center gap-3">
                   <div className="relative flex items-center justify-center w-10 h-10 rounded-xl overflow-hidden bg-[var(--surfaceTertiary)] border border-[var(--borderColor)]/60 shadow-sm flex-shrink-0">
-                    {meta?.thumbnail ? (
-                      <Image
-                        src={meta.thumbnail}
-                        alt={gameTitle}
-                        width={40}
-                        height={40}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-[18px]">🎲</span>
-                    )}
+                    <GameThumbnail
+                      src={meta?.thumbnail}
+                      alt={gameTitle}
+                      fallbackEmoji={fallbackEmoji}
+                    />
                   </div>
                   <div className="flex flex-col min-w-0">
-                    <span className="text-[14px] font-bold text-[var(--color)] truncate">
+                    <span
+                      className="text-[14px] font-bold text-[var(--color)] break-words"
+                      title={gameTitle}
+                    >
                       {gameTitle}
                     </span>
                     {meta?.category && (

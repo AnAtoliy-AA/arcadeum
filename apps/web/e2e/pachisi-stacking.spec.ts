@@ -105,7 +105,103 @@ test.describe('Pachisi Multi-Token Stacking and Visibility', () => {
     const trackToken1 = page.getByTestId('token-cell-5-3');
     await expect(trackToken1).toBeVisible();
 
-    const trackCell = page.getByTestId('cell-5');
-    await expect(trackCell).toContainText('2');
+    const stackBadge = page.getByTestId('stack-count-5');
+    await expect(stackBadge).toBeVisible();
+    await expect(stackBadge).toHaveText('2');
+
+    await expect(trackToken0).toHaveClass(/pachisi-token-blockade/);
+    await expect(trackToken1).toHaveClass(/pachisi-token-blockade/);
+    await expect(trackToken0).toHaveClass(/pachisi-token-stacked/);
+    await expect(trackToken1).toHaveClass(/pachisi-token-stacked/);
+  });
+
+  test('renders star cell multi-player stack with layered depth and standard counter', async ({
+    page,
+  }) => {
+    const roomId = MOCK_OBJECT_ID;
+    const userId = '507f191e810c19729de860ea';
+    const oppId = '507f191e810c19729de860eb';
+
+    await mockRoomInfo(page, {
+      room: {
+        id: roomId,
+        name: 'Pachisi Star Sanctuary Room',
+        gameId: 'pachisi_v1',
+        gameOptions: {
+          variant: 'cyberpunk',
+          theme: 'cyberpunk',
+          mode: 'standard',
+        },
+        status: 'active',
+        playerCount: 2,
+      },
+    });
+
+    await mockGameSocket(page, roomId, userId, {
+      gameId: 'pachisi_v1',
+      roomJoinedPayload: {
+        status: 'active',
+        gameOptions: {
+          variant: 'cyberpunk',
+          theme: 'cyberpunk',
+          mode: 'standard',
+        },
+        session: {
+          id: 'sess-pachisi-star',
+          status: 'active',
+          state: {
+            phase: 'move',
+            options: {
+              theme: 'cyberpunk',
+              variant: 'cyberpunk',
+              mode: 'standard',
+            },
+            seats: { [userId]: 0, [oppId]: 2 },
+            tokens: {
+              [userId]: [
+                { id: 0, progress: 8 },
+                { id: 1, progress: -1 },
+                { id: 2, progress: -1 },
+                { id: 3, progress: -1 },
+              ],
+              [oppId]: [
+                { id: 0, progress: 34 },
+                { id: 1, progress: -1 },
+                { id: 2, progress: -1 },
+                { id: 3, progress: -1 },
+              ],
+            },
+            die: 3,
+            lastDie: 3,
+            lastRollerId: userId,
+            consecutiveSixes: 0,
+            currentTurnIndex: 0,
+            playerOrder: [userId, oppId],
+            players: [
+              { playerId: userId, seat: 0, color: 'red', alive: true },
+              { playerId: oppId, seat: 2, color: 'yellow', alive: true },
+            ],
+            winnerId: null,
+            winnerIds: [],
+            isDraw: false,
+            logs: [],
+          },
+        },
+      },
+    });
+
+    await navigateTo(page, routes.gameRoom(roomId));
+    await waitForRoomReady(page);
+
+    const starTokens = page.getByTestId('token-cell-8-0');
+    await expect(starTokens.nth(0)).toBeVisible();
+    await expect(starTokens.nth(0)).toHaveClass(/pachisi-token-stacked/);
+    await expect(starTokens.nth(0)).toHaveClass(/pachisi-token-layer-0/);
+    await expect(starTokens.nth(0)).not.toHaveClass(/pachisi-token-blockade/);
+
+    await expect(starTokens.nth(1)).toBeVisible();
+    await expect(starTokens.nth(1)).toHaveClass(/pachisi-token-stacked/);
+    await expect(starTokens.nth(1)).toHaveClass(/pachisi-token-layer-1/);
+    await expect(starTokens.nth(1)).not.toHaveClass(/pachisi-token-blockade/);
   });
 });

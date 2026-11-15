@@ -72,13 +72,17 @@ test.describe('Chess Landing Rework & Hierarchy', () => {
   }) => {
     await navigateTo(page, '/en/games/chess');
 
-    const themesSection = page.locator('#themes');
+    const themesSection = page.locator('#themes').first();
+    await themesSection
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(themesSection).toBeVisible();
 
     const cyberpunkCard = page.getByTestId('theme-card-cyberpunk');
+    await cyberpunkCard
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(cyberpunkCard).toBeVisible();
-
-    await cyberpunkCard.scrollIntoViewIfNeeded();
     await cyberpunkCard.click();
     await expect(cyberpunkCard.getByText('Previewing')).toBeVisible();
   });

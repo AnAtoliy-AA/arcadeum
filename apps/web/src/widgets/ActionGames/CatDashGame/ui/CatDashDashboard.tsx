@@ -1,13 +1,13 @@
 'use client';
 
-import { memo, useMemo, useEffect, useCallback, useState } from 'react';
+import { memo, useMemo, useEffect, useCallback, useId, useState } from 'react';
 import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
-import type { CatDashClientState, CatDashPlayer, CatId } from '../types';
+import type { CatDashClientState, CatId } from '../types';
 import { RealisticCat } from './RealisticCat';
-import { CAT_PROFILES } from './catData';
+import { CatDashMobileRaceInfo } from './CatDashMobileRaceInfo';
 import { RacerBioModal } from './RacerBioModal';
 import { CenterActionConsole } from './CenterActionConsole';
 
@@ -41,6 +41,7 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   onInspectCat,
 }: CatDashDashboardProps) {
   const { t } = useTranslation();
+  const progressGradientId = `catdash-track-${useId().replace(/:/g, '')}`;
   const [inspectedCatId, setInspectedCatId] = useState<CatId | null>(null);
 
   const handleInspect = useCallback(
@@ -101,6 +102,11 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   const leadMargin =
     leader && secondPlayer ? leader.position - secondPlayer.position : 0;
 
+  const racePercent = Math.round(
+    ((myPlayer?.position ?? leader?.position ?? 0) / maxPosition) * 100,
+  );
+  const spacesToFinish = Math.max(maxPosition - (myPlayer?.position ?? 0), 0);
+
   const currentPlayer = snapshot.players[snapshot.currentPlayerIndex];
 
   const lastRollLog = useMemo(() => {
@@ -109,7 +115,7 @@ export const CatDashDashboard = memo(function CatDashDashboard({
   }, [snapshot.logs]);
 
   const recentLogs = useMemo(() => {
-    return snapshot.logs.slice(-3).reverse();
+    return snapshot.logs.slice(-2).reverse();
   }, [snapshot.logs]);
 
   const lastRollValue = useMemo(() => {
@@ -120,283 +126,272 @@ export const CatDashDashboard = memo(function CatDashDashboard({
 
   return (
     <div
-      className="flex flex-col gap-4 w-full max-w-4xl mx-auto px-2"
+      className="flex w-full max-w-4xl flex-col gap-3 px-0 lg:max-w-none lg:gap-2"
       data-testid="catdash-dashboard"
     >
-      <div className="flex flex-col gap-2.5 p-4 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl">
-        <div className="flex flex-row items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <span className="text-base">🚩</span>
-            <span>
-              {t('games.cat_dash_v1.dashboard.raceProgress' as TranslationKey)}
-            </span>
-          </div>
-          {leadMargin > 0 && leader && (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-extrabold normal-case">
-              <span>👑</span>
-              <span>
-                {t('games.cat_dash_v1.dashboard.leadsBy' as TranslationKey, {
-                  name: resolveName(leader.playerId),
-                  count: leadMargin,
-                })}
+      <div className="relative flex flex-col gap-2 overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-3 shadow-2xl shadow-black/20 md:p-4 lg:gap-2 lg:p-3">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-fuchsia-500/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 left-1/3 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
+
+        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 text-white shadow-lg shadow-fuchsia-500/25">
+              <span className="text-xl" aria-hidden="true">
+                ✦
               </span>
             </div>
-          )}
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <span>
-              {t('games.cat_dash_v1.dashboard.finishLine' as TranslationKey)}
-            </span>
-            <span className="text-base">🏁</span>
-          </div>
-        </div>
-
-        <svg
-          viewBox="0 0 1000 70"
-          className="w-full h-14 rounded-2xl bg-slate-950/60 border border-white/5 overflow-visible"
-        >
-          <defs>
-            <linearGradient
-              id="track-grad-dash"
-              x1="0%"
-              y1="0%"
-              x2="100%"
-              y2="0%"
-            >
-              <stop offset="0%" stopColor="#10b981" />
-              <stop offset="50%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#f59e0b" />
-            </linearGradient>
-          </defs>
-          <line
-            x1="40"
-            y1="35"
-            x2="960"
-            y2="35"
-            stroke="#1e293b"
-            strokeWidth="10"
-            strokeLinecap="round"
-          />
-          <line
-            x1="40"
-            y1="35"
-            x2="960"
-            y2="35"
-            stroke="url(#track-grad-dash)"
-            strokeWidth="8"
-            strokeLinecap="round"
-            opacity="0.6"
-          />
-
-          {snapshot.players.map((player) => {
-            const fraction = Math.min(
-              Math.max(player.position / maxPosition, 0),
-              1,
-            );
-            const x = 40 + fraction * (960 - 40);
-            const isMe = player.playerId === currentUserId;
-            const isLeader = player.playerId === leader?.playerId;
-
-            return (
-              <g
-                key={player.playerId}
-                transform={`translate(${x}, 35)`}
-                data-testid={`progress-cat-${player.catId}`}
-                className="cursor-pointer"
-                onClick={() => handleInspect(player.catId)}
-              >
-                <circle
-                  cx="0"
-                  cy="0"
-                  r="18"
-                  fill={isMe ? '#3b0764' : isLeader ? '#451a03' : '#0f172a'}
-                  stroke={isMe ? '#c084fc' : isLeader ? '#fbbf24' : '#64748b'}
-                  strokeWidth="2"
-                />
-                <g transform="translate(-14, -14)">
-                  <RealisticCat catId={player.catId} size={28} />
-                </g>
-                <rect
-                  x="-12"
-                  y="18"
-                  width="24"
-                  height="14"
-                  rx="4"
-                  fill="#0f172a"
-                  stroke="#334155"
-                  strokeWidth="1"
-                />
-                <text
-                  x="0"
-                  y="28"
-                  textAnchor="middle"
-                  fontSize="9"
-                  fontWeight="bold"
-                  fill="#e2e8f0"
-                >
-                  {player.position}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      <CenterActionConsole
-        myTurn={myTurn}
-        isGameOver={isGameOver}
-        isRolling={isRolling}
-        onRollDice={onRollDice}
-        onCatnap={onCatnap}
-        onPounce={onPounce}
-        onDeployTrap={onDeployTrap}
-        onUseAbility={onUseAbility}
-        myPlayer={myPlayer}
-        currentPlayer={currentPlayer}
-        resolveName={resolveName}
-        lastRollValue={lastRollValue}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-        <div className="md:col-span-2 flex flex-col gap-2.5 p-4 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl">
-          <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
-            <div className="flex items-center gap-2">
-              <span className="text-lg">🏎️</span>
-              <span className="text-sm font-extrabold tracking-wide uppercase text-slate-200">
-                {t('games.cat_dash_v1.dashboard.leaderboard' as TranslationKey)}
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] font-black uppercase tracking-[0.24em] text-fuchsia-300">
+                {t('games.cat_dash_v1.name' as TranslationKey)}
               </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleInspect(leader?.catId ?? 'neon')}
-                className="px-2.5 py-1 rounded-xl bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/40 text-purple-300 hover:text-purple-100 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                data-testid="inspect-racers-btn"
-              >
-                <span>🔍</span>
-                <span>
-                  {t(
-                    'games.cat_dash_v1.dashboard.inspectRoster' as TranslationKey,
-                  )}
-                </span>
-              </button>
-              <span className="text-xs font-semibold text-slate-400">
-                {snapshot.players.length}{' '}
+              <span className="text-base font-black tracking-tight text-white">
                 {t(
-                  'games.cat_dash_v1.landing.highlights.players.title' as TranslationKey,
+                  'games.cat_dash_v1.dashboard.raceProgress' as TranslationKey,
                 )}
               </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {sortedPlayers.map((player: CatDashPlayer, index: number) => {
-              const isCurrentTurn = player.playerId === currentPlayer?.playerId;
+          <div
+            className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] ${
+              myTurn
+                ? 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300'
+                : 'border-amber-400/25 bg-amber-400/10 text-amber-200'
+            }`}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                myTurn
+                  ? 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]'
+                  : 'bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.9)]'
+              }`}
+            />
+            <span>
+              {myTurn
+                ? t(
+                    'games.cat_dash_v1.dashboard.yourTurnToRoll' as TranslationKey,
+                  )
+                : currentPlayer
+                  ? t(
+                      'games.cat_dash_v1.dashboard.waitingForPlayer' as TranslationKey,
+                      { name: resolveName(currentPlayer.playerId) },
+                    )
+                  : t(
+                      'games.cat_dash_v1.dashboard.raceInProgress' as TranslationKey,
+                    )}
+            </span>
+          </div>
+        </div>
+
+        <div className="relative flex flex-col gap-2 lg:grid lg:grid-cols-[74px_minmax(0,1fr)] lg:items-center lg:gap-2">
+          <div className="flex items-end justify-between gap-3">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                {t(
+                  'games.cat_dash_v1.dashboard.spaceProgress' as TranslationKey,
+                  {
+                    current: myPlayer?.position ?? 0,
+                    total: maxPosition,
+                  },
+                )}
+              </span>
+              <span className="text-2xl font-black tracking-tight text-white tabular-nums lg:text-xl">
+                {racePercent}%
+              </span>
+            </div>
+            {leadMargin > 0 && leader && (
+              <div className="flex items-center gap-2 rounded-2xl border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-right">
+                <span className="text-lg text-amber-300" aria-hidden="true">
+                  ◆
+                </span>
+                <span className="text-xs font-extrabold text-amber-200">
+                  {t('games.cat_dash_v1.dashboard.leadsBy' as TranslationKey, {
+                    name: resolveName(leader.playerId),
+                    count: leadMargin,
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <svg
+            viewBox="0 0 1000 70"
+            className="h-10 w-full overflow-visible rounded-2xl border border-white/5 bg-slate-950/70"
+            role="img"
+            aria-label={t(
+              'games.cat_dash_v1.dashboard.raceProgress' as TranslationKey,
+            )}
+          >
+            <title>
+              {t('games.cat_dash_v1.dashboard.raceProgress' as TranslationKey)}
+            </title>
+            <defs>
+              <linearGradient
+                id={progressGradientId}
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#10b981" />
+                <stop offset="50%" stopColor="#8b5cf6" />
+                <stop offset="100%" stopColor="#f59e0b" />
+              </linearGradient>
+            </defs>
+            <line
+              x1="40"
+              y1="35"
+              x2="960"
+              y2="35"
+              stroke="#1e293b"
+              strokeWidth="10"
+              strokeLinecap="round"
+            />
+            <line
+              x1="40"
+              y1="35"
+              x2="960"
+              y2="35"
+              stroke={`url(#${progressGradientId})`}
+              strokeWidth="8"
+              strokeLinecap="round"
+              opacity="0.6"
+            />
+
+            {snapshot.players.map((player) => {
+              const fraction = Math.min(
+                Math.max(player.position / maxPosition, 0),
+                1,
+              );
+              const x = 40 + fraction * (960 - 40);
               const isMe = player.playerId === currentUserId;
-              const profile = CAT_PROFILES[player.catId];
+              const isLeader = player.playerId === leader?.playerId;
 
               return (
-                <button
+                <g
                   key={player.playerId}
-                  type="button"
+                  transform={`translate(${x}, 35)`}
+                  data-testid={`progress-cat-${player.catId}`}
+                  className="cursor-pointer transition-transform duration-500 ease-out focus:outline-none"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={resolveName(player.playerId)}
                   onClick={() => handleInspect(player.catId)}
-                  className={`flex flex-row items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
-                    isCurrentTurn
-                      ? 'bg-purple-900/30 border-purple-500/60 ring-2 ring-purple-400/40 shadow-lg shadow-purple-500/20'
-                      : 'bg-slate-950/40 border-white/10 hover:border-purple-400/40 hover:bg-slate-900/60'
-                  }`}
-                  data-testid={`player-card-${player.playerId}`}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handleInspect(player.catId);
+                    }
+                  }}
                 >
-                  <div className="relative flex-shrink-0">
-                    <RealisticCat
-                      catId={player.catId}
-                      size={54}
-                      variant="card"
-                      showGlow={isCurrentTurn}
-                    />
-                    <span
-                      className={`absolute -bottom-1 -left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black border ${
-                        index === 0
-                          ? 'bg-amber-400 text-slate-950 border-amber-200'
-                          : index === 1
-                            ? 'bg-slate-300 text-slate-950 border-white'
-                            : index === 2
-                              ? 'bg-amber-700 text-white border-amber-600'
-                              : 'bg-slate-800 text-slate-300 border-slate-700'
-                      }`}
-                    >
-                      {index + 1}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-sm font-extrabold text-slate-100 truncate">
-                        {resolveName(player.playerId)}
-                      </span>
-                      {isMe && (
-                        <span className="px-1.5 py-0.2 rounded-md bg-purple-500/30 text-purple-300 border border-purple-400/40 text-[10px] font-bold">
-                          {t(
-                            'games.cat_dash_v1.gameOver.you' as TranslationKey,
-                          )}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] font-semibold text-slate-400 truncate">
-                      {profile?.breedTitle ?? player.catId}
-                    </span>
-                    <div className="flex items-center gap-3 mt-1 text-xs">
-                      <span className="font-bold text-slate-300">
-                        📍 {player.position} / {maxPosition}
-                      </span>
-                      <span className="font-bold text-amber-400">
-                        ⚡ {player.powerTokens}
-                      </span>
-                    </div>
-                  </div>
-
-                  {isCurrentTurn && (
-                    <div className="flex flex-col items-center justify-center flex-shrink-0 px-2 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30 text-[10px] font-extrabold uppercase animate-pulse">
-                      {t(
-                        'games.cat_dash_v1.dashboard.turnBadge' as TranslationKey,
-                      )}
-                    </div>
-                  )}
-                </button>
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r="18"
+                    fill={isMe ? '#3b0764' : isLeader ? '#451a03' : '#0f172a'}
+                    stroke={isMe ? '#c084fc' : isLeader ? '#fbbf24' : '#64748b'}
+                    strokeWidth="2"
+                  />
+                  <g transform="translate(-14, -14)">
+                    <RealisticCat catId={player.catId} size={28} />
+                  </g>
+                  <rect
+                    x="-12"
+                    y="18"
+                    width="24"
+                    height="14"
+                    rx="4"
+                    fill="#0f172a"
+                    stroke="#334155"
+                    strokeWidth="1"
+                  />
+                  <text
+                    x="0"
+                    y="28"
+                    textAnchor="middle"
+                    fontSize="9"
+                    fontWeight="bold"
+                    fill="#e2e8f0"
+                  >
+                    {player.position}
+                  </text>
+                </g>
               );
             })}
-          </div>
+          </svg>
         </div>
 
-        <div className="md:col-span-1 flex flex-col gap-2.5 p-4 rounded-3xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl">
-          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-white/10 pb-2">
-            <span>⚡</span>
-            <span>
-              {t('games.cat_dash_v1.dashboard.recentEvents' as TranslationKey)}
+        <div className="relative grid grid-cols-2 gap-2 md:grid-cols-4 lg:gap-1.5">
+          <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              {t('games.cat_dash_v1.dashboard.finishLine' as TranslationKey)}
+            </span>
+            <span className="text-sm font-black text-white tabular-nums">
+              {maxPosition}
             </span>
           </div>
-          {recentLogs.length > 0 ? (
-            <div className="flex flex-col gap-1.5">
-              {recentLogs.map((log) => (
-                <div
-                  key={log.id}
-                  className="flex items-start gap-2 text-xs text-slate-300 px-2.5 py-1.5 rounded-xl bg-slate-950/50 border border-white/5"
-                >
-                  <span className="text-slate-500 mt-0.5">🐾</span>
-                  <span className="leading-snug break-words">
-                    {log.message}
-                  </span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <span className="text-xs text-slate-500 italic py-2">
+          <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">
               {t(
-                'games.cat_dash_v1.dashboard.raceInProgress' as TranslationKey,
+                'games.cat_dash_v1.dashboard.distanceToFinish' as TranslationKey,
+                { count: spacesToFinish },
               )}
             </span>
-          )}
+            <span className="text-sm font-black text-cyan-300 tabular-nums">
+              {spacesToFinish}
+            </span>
+          </div>
+          <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              {t('games.cat_dash_v1.dashboard.powerTokens' as TranslationKey, {
+                count: myPlayer?.powerTokens ?? 0,
+              })}
+            </span>
+            <span className="text-sm font-black text-amber-300 tabular-nums">
+              {myPlayer?.powerTokens ?? 0} / 3
+            </span>
+          </div>
+          <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-3 py-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">
+              {t('games.cat_dash_v1.dashboard.leaderboard' as TranslationKey)}
+            </span>
+            <span className="text-sm font-black text-fuchsia-300 tabular-nums">
+              {sortedPlayers.findIndex((p) => p.playerId === currentUserId) +
+                1 || '-'}
+              /{snapshot.players.length}
+            </span>
+          </div>
         </div>
       </div>
+
+      <div className="order-first lg:order-first">
+        <CenterActionConsole
+          myTurn={myTurn}
+          isGameOver={isGameOver}
+          isRolling={isRolling}
+          onRollDice={onRollDice}
+          onCatnap={onCatnap}
+          onPounce={onPounce}
+          onDeployTrap={onDeployTrap}
+          onUseAbility={onUseAbility}
+          myPlayer={myPlayer}
+          currentPlayer={currentPlayer}
+          resolveName={resolveName}
+          lastRollValue={lastRollValue}
+        />
+      </div>
+
+      <CatDashMobileRaceInfo
+        snapshot={snapshot}
+        currentUserId={currentUserId}
+        currentPlayerId={currentPlayer?.playerId}
+        sortedPlayers={sortedPlayers}
+        leader={leader}
+        recentLogs={recentLogs}
+        maxPosition={maxPosition}
+        resolveName={resolveName}
+        onInspect={handleInspect}
+      />
 
       {!onInspectCat && inspectedCatId && (
         <RacerBioModal

@@ -13,13 +13,40 @@ const GAME_INFO: Record<string, { name: string; icon: string }> = {
   critical_v1: { name: 'Critical', icon: '💥' },
   sea_battle: { name: 'Sea Battle', icon: '🚢' },
   sea_battle_v1: { name: 'Sea Battle', icon: '🚢' },
+  'sea-battle': { name: 'Sea Battle', icon: '🚢' },
   checkers: { name: 'Checkers', icon: '⚪' },
   checkers_v1: { name: 'Checkers', icon: '⚪' },
   backgammon: { name: 'Backgammon', icon: '🎲' },
+  backgammon_v1: { name: 'Backgammon', icon: '🎲' },
   cat_dash: { name: 'Cat Dash', icon: '🐾' },
   cat_dash_v1: { name: 'Cat Dash', icon: '🐾' },
+  'cat-dash': { name: 'Cat Dash', icon: '🐾' },
   cascade: { name: 'Cascade', icon: '🃏' },
   cascade_v1: { name: 'Cascade', icon: '🃏' },
+  tic_tac_toe: { name: 'Tic-Tac-Toe', icon: '❌' },
+  tic_tac_toe_v1: { name: 'Tic-Tac-Toe', icon: '❌' },
+  'tic-tac-toe': { name: 'Tic-Tac-Toe', icon: '❌' },
+  glimworm: { name: 'Glimworm', icon: '🐍' },
+  glimworm_v1: { name: 'Glimworm', icon: '🐍' },
+  texas_holdem: { name: "Texas Hold'em Poker", icon: '♣️' },
+  texas_holdem_v1: { name: "Texas Hold'em Poker", icon: '♣️' },
+  'texas-holdem': { name: "Texas Hold'em Poker", icon: '♣️' },
+  hearts: { name: 'Hearts', icon: '♥️' },
+  hearts_v1: { name: 'Hearts', icon: '♥️' },
+  spades: { name: 'Spades', icon: '♠️' },
+  spades_v1: { name: 'Spades', icon: '♠️' },
+  go: { name: 'Go', icon: '⚪' },
+  go_v1: { name: 'Go', icon: '⚪' },
+  pachisi: { name: 'Pachisi', icon: '🎯' },
+  pachisi_v1: { name: 'Pachisi', icon: '🎯' },
+  game_2048: { name: '2048', icon: '🔢' },
+  '2048': { name: '2048', icon: '🔢' },
+  minesweeper: { name: 'Minesweeper', icon: '💣' },
+  minesweeper_v1: { name: 'Minesweeper', icon: '💣' },
+  solitaire: { name: 'Solitaire', icon: '🎴' },
+  solitaire_v1: { name: 'Solitaire', icon: '🎴' },
+  sudoku: { name: 'Sudoku', icon: '🧩' },
+  sudoku_v1: { name: 'Sudoku', icon: '🧩' },
 };
 
 const DEFAULT_GAMES = [
@@ -30,12 +57,20 @@ const DEFAULT_GAMES = [
   'checkers',
 ];
 
+function getGameInfo(modeKey: string): { name: string; icon: string } {
+  if (GAME_INFO[modeKey]) return GAME_INFO[modeKey];
+  const cleaned = modeKey.replace(/[-_]v\d+$/i, '').replace(/[-_]/g, ' ');
+  const formatted = cleaned.replace(/\b\w/g, (c) => c.toUpperCase());
+  return { name: formatted, icon: '🎮' };
+}
+
 export function PlayerGameHistory({
   recentForm,
   playerName,
   modes,
 }: PlayerGameHistoryProps) {
-  const activeModes = modes && modes.length > 0 ? modes : DEFAULT_GAMES;
+  const filteredModes = modes ? modes.filter((m) => m && m !== 'all') : [];
+  const activeModes = filteredModes.length > 0 ? filteredModes : DEFAULT_GAMES;
 
   if (!recentForm || recentForm.length === 0) {
     return (
@@ -70,7 +105,7 @@ export function PlayerGameHistory({
       <div className="flex flex-col gap-2">
         {recentForm.map((result, index) => {
           const modeKey = activeModes[index % activeModes.length] ?? 'chess';
-          const game = GAME_INFO[modeKey] ?? { name: modeKey, icon: '🎮' };
+          const game = getGameInfo(modeKey);
           const isWin = result === 'W';
           const isLoss = result === 'L';
           const resultLabel = isWin ? 'Victory' : isLoss ? 'Defeat' : 'Draw';

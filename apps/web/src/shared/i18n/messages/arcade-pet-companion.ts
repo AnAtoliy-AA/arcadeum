@@ -1,6 +1,14 @@
 import type { DeepPartial } from '../base-types';
+import {
+  giftsEn,
+  giftsEs,
+  giftsFr,
+  giftsRu,
+  giftsBy,
+} from './arcade-pet-companion-gifts';
 
 export const en = {
+  gifts: giftsEn,
   commitTitle: 'Adopt Your First Companion',
   commitFree: '100% Free First Mount 🎁',
   close: 'Close',
@@ -63,6 +71,7 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  gifts: giftsEs,
   commitTitle: 'Adopta a tu primer compañero',
   commitFree: 'Primera mascota 100% gratis 🎁',
   close: 'Cerrar',
@@ -124,6 +133,7 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  gifts: giftsFr,
   commitTitle: 'Adopte ton premier compagnon',
   commitFree: 'Première monture 100 % gratuite 🎁',
   close: 'Fermer',
@@ -185,6 +195,7 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  gifts: giftsRu,
   commitTitle: 'Заведите первого компаньона',
   commitFree: 'Первый питомец совершенно бесплатно 🎁',
   close: 'Закрыть',
@@ -245,6 +256,7 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  gifts: giftsBy,
   commitTitle: 'Завядзіце першага кампаньёна',
   commitFree: 'Першы пітомец цалкам бясплатна 🎁',
   close: 'Закрыць',

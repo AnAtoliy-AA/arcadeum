@@ -156,3 +156,12 @@ export const VipVip: Story = {
     presenceLine: 'Online',
   },
 };
+
+export const WithLevel: Story = {
+  args: {
+    name: 'Jane Doe',
+    size: 'md',
+    level: 42,
+    role: 'vip',
+  },
+};

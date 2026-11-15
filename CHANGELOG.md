@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.110] - 2026-11-01
+
+### Added
+- show level pill under avatar and highlight prestige rows in leaderboard (ARC-1048) (ARC-1048)
+
+
+## [1.30.109] - 2026-11-01
+
+### Fixed
+- derive player level from xp so stats never show stale level (ARC-1047) (ARC-1047)
+
+
+## [1.30.108] - 2026-11-01
+
+### Fixed
+- scroll theme showcase card into view before click in chess landing (ARC-1030) (ARC-1030)
+- enable 2 workers for webkit and stabilize safari locators (ARC-1030) (ARC-1030)
+
+
+## [1.30.107] - 2026-11-01
+
+### Fixed
+- use swapfile2 with cleanup to prevent text file busy (ARC-1029) (ARC-1029)
+- configure swap space on e2e runners to prevent oom (ARC-1029) (ARC-1029)
+
+
 ## [1.30.106] - 2026-11-01
 
 ### Fixed

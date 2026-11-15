@@ -9,7 +9,7 @@ import {
 test.describe('Level Badge Rewards', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page, {
-      xp: 250,
+      xp: 5800,
       level: 5,
       role: 'free',
     });

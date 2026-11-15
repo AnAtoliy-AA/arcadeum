@@ -293,4 +293,16 @@ describe('PlayerAvatar', () => {
     render(<PlayerAvatar name="Jane Doe" avatarUrl="   " />);
     expect(screen.getByText('JD')).toBeInTheDocument();
   });
+
+  it('renders a level pill at the bottom of the disc', () => {
+    render(<PlayerAvatar name="Jane" size="md" level={7} data-testid="pa" />);
+    expect(screen.getByTestId('pa-level')).toHaveTextContent('7');
+  });
+
+  it('omits the level pill without a level or at icon size', () => {
+    const { rerender } = render(<PlayerAvatar name="Jane" data-testid="pa" />);
+    expect(screen.queryByTestId('pa-level')).toBeNull();
+    rerender(<PlayerAvatar name="Jane" size="icon" level={7} data-testid="pa" />);
+    expect(screen.queryByTestId('pa-level')).toBeNull();
+  });
 });

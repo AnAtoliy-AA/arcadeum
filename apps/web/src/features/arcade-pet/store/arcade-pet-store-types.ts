@@ -5,6 +5,7 @@ import type {
   PetState,
 } from '@arcadeum/games-core';
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
+import type { MilestoneId } from '../lib/arcade-pet-milestones';
 import type { AwaySummary } from '../lib/arcade-pet-away-summary';
 
 export type ArcadePetErrorCode =
@@ -14,6 +15,11 @@ export type ArcadePetErrorCode =
 export interface ArcadePetActionError {
   code: ArcadePetErrorCode;
   params?: Record<string, string | number>;
+}
+
+export interface MilestoneNotice {
+  id: MilestoneId;
+  rewardCoins: number;
 }
 
 export interface ArcadePetStoreState {
@@ -33,6 +39,10 @@ export interface ArcadePetStoreState {
   actionError: ArcadePetActionError | null;
   awaySummary: AwaySummary | null;
   dailyStreak: number;
+  claimedMilestones: string[];
+  newMilestones: MilestoneNotice[];
+  checkMilestones: () => void;
+  dismissMilestones: () => void;
   lastDailyClaimDay: string | null;
   claimDailyBonus: () => { success: boolean; coins: number; streak: number };
   dismissAwaySummary: () => void;

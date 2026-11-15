@@ -18,6 +18,7 @@ import {
   DEFAULT_WELCOME_PRESENT,
 } from './arcade-pet-storage';
 import { claimDailyBonus } from './arcade-pet-daily-claim';
+import { checkMilestones } from './arcade-pet-milestone-claim';
 import { renamePet } from './arcade-pet-rename';
 import { upgradeHome } from './arcade-pet-upgrade-home';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
@@ -40,6 +41,10 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   awaySummary: null,
   dailyStreak: 0,
   lastDailyClaimDay: null,
+  claimedMilestones: [],
+  newMilestones: [],
+  checkMilestones: () => checkMilestones(get, set),
+  dismissMilestones: () => set({ newMilestones: [] }),
   dismissAwaySummary: () => set({ awaySummary: null }),
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
@@ -62,6 +67,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       isAtHome: stored?.isAtHome ?? false,
       homeCapacity: stored?.homeCapacity ?? 1,
       dailyStreak: stored?.dailyStreak ?? 0,
+      claimedMilestones: stored?.claimedMilestones ?? [],
       lastDailyClaimDay: stored?.lastDailyClaimDay ?? null,
       actionError: null,
     };

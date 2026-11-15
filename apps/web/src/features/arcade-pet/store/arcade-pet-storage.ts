@@ -21,6 +21,7 @@ export interface StoredCollection {
   homeCapacity?: number;
   dailyStreak?: number;
   lastDailyClaimDay?: string | null;
+  claimedMilestones?: string[];
 }
 
 export interface LoadedCollection extends StoredCollection {
@@ -97,6 +98,9 @@ export function parseStoredCollection(raw: unknown): StoredCollection | null {
     dailyStreak: Math.min(7, sanitizeBalance(raw.dailyStreak, 0)),
     lastDailyClaimDay:
       typeof raw.lastDailyClaimDay === 'string' ? raw.lastDailyClaimDay : null,
+    claimedMilestones: Array.isArray(raw.claimedMilestones)
+      ? raw.claimedMilestones.filter((m): m is string => typeof m === 'string')
+      : [],
     isAtHome: raw.isAtHome === true,
     homeCapacity: Math.max(1, sanitizeBalance(raw.homeCapacity, pets.length)),
   };
@@ -161,6 +165,7 @@ export function persistStore(state: {
   homeCapacity: number;
   dailyStreak?: number;
   lastDailyClaimDay?: string | null;
+  claimedMilestones?: string[];
 }): void {
   saveStoredCollection({
     hasConfirmedCare: state.hasConfirmedCare,
@@ -175,5 +180,6 @@ export function persistStore(state: {
     homeCapacity: state.homeCapacity,
     dailyStreak: state.dailyStreak,
     lastDailyClaimDay: state.lastDailyClaimDay,
+    claimedMilestones: state.claimedMilestones,
   });
 }

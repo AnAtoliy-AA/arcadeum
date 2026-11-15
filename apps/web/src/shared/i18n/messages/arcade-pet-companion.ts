@@ -15,6 +15,13 @@ import {
 } from './arcade-pet-companion-adoption';
 
 export const en = {
+  milestones: {
+    first_hatch: 'First hatch',
+    level_5: 'Reached level 5',
+    level_10: 'Reached level 10',
+    collector_3: 'Collected 3 pets',
+    streak_7: '7-day care streak',
+  },
   errors: {
     HOME_FULL: 'Home is full! Upgrade your Home to have place for more pets.',
     NEED_COINS_UPGRADE: 'Need 🪙 {{cost}} Coins to upgrade Home place!',
@@ -98,6 +105,13 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  milestones: {
+    first_hatch: 'Primera eclosión',
+    level_5: 'Nivel 5 alcanzado',
+    level_10: 'Nivel 10 alcanzado',
+    collector_3: '3 mascotas reunidas',
+    streak_7: 'Racha de 7 días de cuidados',
+  },
   errors: {
     HOME_FULL:
       '¡Hogar lleno! Mejora tu hogar para tener sitio para más mascotas.',
@@ -182,6 +196,13 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  milestones: {
+    first_hatch: 'Première éclosion',
+    level_5: 'Niveau 5 atteint',
+    level_10: 'Niveau 10 atteint',
+    collector_3: '3 animaux collectionnés',
+    streak_7: 'Série de soins de 7 jours',
+  },
   errors: {
     HOME_FULL:
       "Maison pleine ! Améliore ta maison pour accueillir plus d'animaux.",
@@ -265,6 +286,13 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  milestones: {
+    first_hatch: 'Первое вылупление',
+    level_5: 'Достигнут 5-й уровень',
+    level_10: 'Достигнут 10-й уровень',
+    collector_3: 'Собрано 3 питомца',
+    streak_7: '7 дней ухода подряд',
+  },
   errors: {
     HOME_FULL:
       'Дом заполнен! Улучшите дом, чтобы было место для новых питомцев.',
@@ -348,6 +376,13 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  milestones: {
+    first_hatch: 'Першае вылупленне',
+    level_5: 'Дасягнуты 5-ы ўзровень',
+    level_10: 'Дасягнуты 10-ы ўзровень',
+    collector_3: 'Сабрана 3 пітомцы',
+    streak_7: '7 дзён догляду запар',
+  },
   errors: {
     HOME_FULL:
       'Дом запоўнены! Палепшыце дом, каб было месца для новых пітомцаў.',

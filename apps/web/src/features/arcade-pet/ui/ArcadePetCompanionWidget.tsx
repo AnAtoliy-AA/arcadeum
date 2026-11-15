@@ -17,6 +17,7 @@ import { gamesApi } from '@/features/games/api';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
 import { getPetAttention } from '../lib/arcade-pet-attention';
 import { ArcadePetCompanionHeader } from './ArcadePetCompanionHeader';
+import { ArcadePetMilestoneToast } from './ArcadePetMilestoneToast';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
 import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
@@ -48,6 +49,9 @@ export const ArcadePetCompanionWidget: React.FC<
     lastDailyClaimDay,
     claimDailyBonus,
     renamePet,
+    newMilestones,
+    dismissMilestones,
+    checkMilestones,
     presents,
     isWidgetOpen,
     isAtHome,
@@ -70,6 +74,10 @@ export const ArcadePetCompanionWidget: React.FC<
   useEffect(() => {
     initialize(currentUserId, theme);
   }, [currentUserId, theme, initialize]);
+
+  useEffect(() => {
+    checkMilestones();
+  }, [pets, dailyStreak, checkMilestones]);
 
   useEffect(() => {
     let cancelled = false;
@@ -361,6 +369,11 @@ export const ArcadePetCompanionWidget: React.FC<
                     onDismiss={dismissAwaySummary}
                   />
                 )}
+
+                <ArcadePetMilestoneToast
+                  notices={newMilestones}
+                  onDismiss={dismissMilestones}
+                />
 
                 <ArcadePetDailyBonus
                   lastClaimDay={lastDailyClaimDay}

@@ -278,13 +278,13 @@ export const ArcadePetCompanionWidget: React.FC<
             {pet.stage === 'egg' ? (
               <div className="flex flex-col items-center py-2 text-center gap-2">
                 <span className="text-xs text-neutral-300">
-                  Your ArcadePet is resting in its egg!
+                  {t('arcadePetCompanion.eggResting')}
                 </span>
                 <Link
                   href={petGameHref}
                   className="w-full py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase text-center"
                 >
-                  Hatch in Game Room
+                  {t('arcadePetCompanion.hatchCta')}
                 </Link>
               </div>
             ) : (
@@ -329,7 +329,10 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => performAction('feed_snack')}
                     className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
                   >
-                    <span>🍰</span> Snack (🪙 {currentFoodCost})
+                    <span>🍰</span>{' '}
+                    {t('arcadePetCompanion.snackBtn', {
+                      cost: currentFoodCost,
+                    })}
                   </button>
                   <button
                     type="button"
@@ -337,7 +340,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => performAction('praise')}
                     className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
                   >
-                    <span>❤️</span> Pet
+                    <span>❤️</span> {t('arcadePetCompanion.petBtn')}
                   </button>
                 </div>
 
@@ -348,7 +351,11 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => setShowAdoptionModal(true)}
                     className="py-1.5 px-2 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-300 text-xs font-semibold text-center flex items-center justify-center gap-1"
                   >
-                    <span>🥚</span> Mounts ({pets.length}/{homeCapacity})
+                    <span>🥚</span>{' '}
+                    {t('arcadePetCompanion.mountsBtn', {
+                      used: pets.length,
+                      total: homeCapacity,
+                    })}
                   </button>
                   <button
                     type="button"
@@ -356,7 +363,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     onClick={() => setShowGiftsModal(true)}
                     className="py-1.5 px-2 rounded-lg bg-pink-950/80 hover:bg-pink-900 border border-pink-500/40 text-pink-300 text-xs font-semibold text-center flex items-center justify-center gap-1 relative"
                   >
-                    <span>🎁</span> Presents
+                    <span>🎁</span> {t('arcadePetCompanion.presentsBtn')}
                     {unopenedCount > 0 && (
                       <span className="w-2 h-2 rounded-full bg-pink-500 animate-ping absolute top-1 right-1" />
                     )}

@@ -4,6 +4,11 @@ import React from 'react';
 import { ArcadePetSocialStage } from './ArcadePetSocialStage';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { useGameStore } from '@/features/games/store/gameStore';
+import { mockUseTranslation } from '../test/mock-translation';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 describe('ArcadePetSocialStage', () => {
   const onOpenCare = vi.fn();

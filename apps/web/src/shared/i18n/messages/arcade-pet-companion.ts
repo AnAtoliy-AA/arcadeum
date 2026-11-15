@@ -1,5 +1,12 @@
 import type { DeepPartial } from '../base-types';
 import {
+  miscEn,
+  miscEs,
+  miscFr,
+  miscRu,
+  miscBy,
+} from './arcade-pet-companion-misc';
+import {
   giftsEn,
   giftsEs,
   giftsFr,
@@ -15,35 +22,20 @@ import {
 } from './arcade-pet-companion-adoption';
 
 export const en = {
+  ...miscEn,
+  snackBtn: 'Snack (🪙 {{cost}})',
+  petBtn: 'Pet',
+  mountsBtn: 'Mounts ({{used}}/{{total}})',
+  presentsBtn: 'Presents',
+  eggResting: 'Your ArcadePet is resting in its egg!',
+  hatchCta: 'Hatch in Game Room',
+  opponentPet: 'Opponent Pet',
+  opponentPetOf: "{{name}}'s Pet",
   restingBanner: 'Resting at Home • Growth paused (counts only running hours)',
   runningBanner: 'Running on Screen • Fast growth! Keep fed to grow faster.',
   growthSpeed: 'Growth Speed',
-  milestones: {
-    first_hatch: 'First hatch',
-    level_5: 'Reached level 5',
-    level_10: 'Reached level 10',
-    collector_3: 'Collected 3 pets',
-    streak_7: '7-day care streak',
-  },
-  errors: {
-    HOME_FULL: 'Home is full! Upgrade your Home to have place for more pets.',
-    NEED_COINS_UPGRADE: 'Need 🪙 {{cost}} Coins to upgrade Home place!',
-    NEED_GEMS_UPGRADE: 'Need 💎 {{cost}} Gems to upgrade Home place!',
-    NEED_COINS_FEED: 'Need 🪙 {{cost}} coins to feed {{name}}!',
-  },
-  rename: {
-    edit: 'Rename pet',
-    label: 'Pet name',
-    save: 'Save name',
-    invalid: 'Name must be 2 to 24 characters.',
-  },
   homeBadge: '💤 Home',
   attentionAria: 'Needs attention: {{needs}}',
-  attention: {
-    sick: 'sick',
-    hungry: 'hungry',
-    dirty: 'dirty',
-  },
   gifts: giftsEn,
   adoption: adoptionEn,
   commitTitle: 'Adopt Your First Companion',
@@ -54,14 +46,6 @@ export const en = {
   commitPledge:
     'I confirm that I want this pet and will care for it, feed it, and play with it!',
   cancel: 'Cancel',
-  stage: {
-    egg: 'Egg',
-    baby: 'Baby',
-    child: 'Child',
-    teen: 'Teen',
-    adult: 'Adult',
-    senior: 'Senior',
-  },
   collectionEmpty: 'No pets yet. Adopt your first companion!',
   registerForPet: 'Register for Pet',
   mystery: 'Mystery',
@@ -108,39 +92,22 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  ...miscEs,
+  snackBtn: 'Snack (🪙 {{cost}})',
+  petBtn: 'Acariciar',
+  mountsBtn: 'Compañeros ({{used}}/{{total}})',
+  presentsBtn: 'Presentes',
+  eggResting: '¡Tu ArcadePet descansa en su huevo!',
+  hatchCta: 'Eclosionar en la sala de juego',
+  opponentPet: 'Mascota rival',
+  opponentPetOf: 'Mascota de {{name}}',
   restingBanner:
     'Descansando en casa • Crecimiento en pausa (solo cuentan las horas en pantalla)',
   runningBanner:
     'En pantalla • ¡Crecimiento rápido! Aliméntala para crecer más rápido.',
   growthSpeed: 'Velocidad de crecimiento',
-  milestones: {
-    first_hatch: 'Primera eclosión',
-    level_5: 'Nivel 5 alcanzado',
-    level_10: 'Nivel 10 alcanzado',
-    collector_3: '3 mascotas reunidas',
-    streak_7: 'Racha de 7 días de cuidados',
-  },
-  errors: {
-    HOME_FULL:
-      '¡Hogar lleno! Mejora tu hogar para tener sitio para más mascotas.',
-    NEED_COINS_UPGRADE: '¡Necesitas 🪙 {{cost}} monedas para mejorar el hogar!',
-    NEED_GEMS_UPGRADE: '¡Necesitas 💎 {{cost}} gemas para mejorar el hogar!',
-    NEED_COINS_FEED:
-      '¡Necesitas 🪙 {{cost}} monedas para alimentar a {{name}}!',
-  },
-  rename: {
-    edit: 'Renombrar mascota',
-    label: 'Nombre de la mascota',
-    save: 'Guardar nombre',
-    invalid: 'El nombre debe tener de 2 a 24 caracteres.',
-  },
   homeBadge: '💤 En casa',
   attentionAria: 'Necesita atención: {{needs}}',
-  attention: {
-    sick: 'enfermo',
-    hungry: 'hambriento',
-    dirty: 'sucio',
-  },
   gifts: giftsEs,
   adoption: adoptionEs,
   commitTitle: 'Adopta a tu primer compañero',
@@ -151,14 +118,6 @@ export const es: ArcadePetCompanionMessages = {
   commitPledge:
     'Confirmo que quiero esta mascota y la cuidaré, la alimentaré y jugaré con ella.',
   cancel: 'Cancelar',
-  stage: {
-    egg: 'Huevo',
-    baby: 'Bebé',
-    child: 'Niño',
-    teen: 'Adolescente',
-    adult: 'Adulto',
-    senior: 'Anciano',
-  },
   collectionEmpty: 'Aún no tienes mascotas. ¡Adopta a tu primer compañero!',
   registerForPet: 'Registrarse para mascota',
   mystery: 'Misterio',
@@ -204,38 +163,22 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  ...miscFr,
+  snackBtn: 'Friandise (🪙 {{cost}})',
+  petBtn: 'Caresser',
+  mountsBtn: 'Montures ({{used}}/{{total}})',
+  presentsBtn: 'Présents',
+  eggResting: 'Ton ArcadePet se repose dans son œuf !',
+  hatchCta: 'Éclore dans la salle de jeu',
+  opponentPet: 'Animal adverse',
+  opponentPetOf: 'Animal de {{name}}',
   restingBanner:
     "Au repos à la maison • Croissance en pause (seules les heures à l'écran comptent)",
   runningBanner:
     "À l'écran • Croissance rapide ! Nourris-le pour grandir plus vite.",
   growthSpeed: 'Vitesse de croissance',
-  milestones: {
-    first_hatch: 'Première éclosion',
-    level_5: 'Niveau 5 atteint',
-    level_10: 'Niveau 10 atteint',
-    collector_3: '3 animaux collectionnés',
-    streak_7: 'Série de soins de 7 jours',
-  },
-  errors: {
-    HOME_FULL:
-      "Maison pleine ! Améliore ta maison pour accueillir plus d'animaux.",
-    NEED_COINS_UPGRADE: 'Il faut 🪙 {{cost}} pièces pour améliorer la maison !',
-    NEED_GEMS_UPGRADE: 'Il faut 💎 {{cost}} gemmes pour améliorer la maison !',
-    NEED_COINS_FEED: 'Il faut 🪙 {{cost}} pièces pour nourrir {{name}} !',
-  },
-  rename: {
-    edit: "Renommer l'animal",
-    label: "Nom de l'animal",
-    save: 'Enregistrer le nom',
-    invalid: 'Le nom doit contenir de 2 à 24 caractères.',
-  },
   homeBadge: '💤 Maison',
   attentionAria: "Besoin d'attention : {{needs}}",
-  attention: {
-    sick: 'malade',
-    hungry: 'affamé',
-    dirty: 'sale',
-  },
   gifts: giftsFr,
   adoption: adoptionFr,
   commitTitle: 'Adopte ton premier compagnon',
@@ -246,14 +189,6 @@ export const fr: ArcadePetCompanionMessages = {
   commitPledge:
     "Je confirme vouloir cet animal et m'engage à le soigner, le nourrir et jouer avec lui !",
   cancel: 'Annuler',
-  stage: {
-    egg: 'Œuf',
-    baby: 'Bébé',
-    child: 'Enfant',
-    teen: 'Ado',
-    adult: 'Adulte',
-    senior: 'Senior',
-  },
   collectionEmpty: "Pas encore d'animal. Adopte ton premier compagnon !",
   registerForPet: "S'inscrire pour un animal",
   mystery: 'Mystère',
@@ -299,38 +234,21 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  ...miscRu,
+  snackBtn: 'Лакомство (🪙 {{cost}})',
+  petBtn: 'Погладить',
+  mountsBtn: 'Питомцы ({{used}}/{{total}})',
+  presentsBtn: 'Презенты',
+  eggResting: 'Ваш ArcadePet отдыхает в яйце!',
+  hatchCta: 'Вылупить в игровой комнате',
+  opponentPet: 'Питомец соперника',
+  opponentPetOf: 'Питомец игрока {{name}}',
   restingBanner:
     'Отдыхает дома • Рост приостановлен (считаются только часы на экране)',
   runningBanner: 'На экране • Быстрый рост! Кормите, чтобы рос ещё быстрее.',
   growthSpeed: 'Скорость роста',
-  milestones: {
-    first_hatch: 'Первое вылупление',
-    level_5: 'Достигнут 5-й уровень',
-    level_10: 'Достигнут 10-й уровень',
-    collector_3: 'Собрано 3 питомца',
-    streak_7: '7 дней ухода подряд',
-  },
-  errors: {
-    HOME_FULL:
-      'Дом заполнен! Улучшите дом, чтобы было место для новых питомцев.',
-    NEED_COINS_UPGRADE: 'Нужно 🪙 {{cost}} монет, чтобы улучшить дом!',
-    NEED_GEMS_UPGRADE: 'Нужно 💎 {{cost}} кристаллов, чтобы улучшить дом!',
-    NEED_COINS_FEED:
-      'Нужно 🪙 {{cost}} монет, чтобы покормить питомца {{name}}!',
-  },
-  rename: {
-    edit: 'Переименовать питомца',
-    label: 'Имя питомца',
-    save: 'Сохранить имя',
-    invalid: 'Имя должно содержать от 2 до 24 символов.',
-  },
   homeBadge: '💤 Дома',
   attentionAria: 'Нужно внимание: {{needs}}',
-  attention: {
-    sick: 'болен',
-    hungry: 'голоден',
-    dirty: 'грязный',
-  },
   gifts: giftsRu,
   adoption: adoptionRu,
   commitTitle: 'Заведите первого компаньона',
@@ -341,14 +259,6 @@ export const ru: ArcadePetCompanionMessages = {
   commitPledge:
     'Подтверждаю, что хочу этого питомца, буду о нём заботиться, кормить и играть с ним!',
   cancel: 'Отмена',
-  stage: {
-    egg: 'Яйцо',
-    baby: 'Малыш',
-    child: 'Ребёнок',
-    teen: 'Подросток',
-    adult: 'Взрослый',
-    senior: 'Старейшина',
-  },
   collectionEmpty: 'Питомцев пока нет. Заведите первого компаньона!',
   registerForPet: 'Регистрация для питомца',
   mystery: 'Тайна',
@@ -393,38 +303,21 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  ...miscBy,
+  snackBtn: 'Ласунак (🪙 {{cost}})',
+  petBtn: 'Пагладзіць',
+  mountsBtn: 'Пітомцы ({{used}}/{{total}})',
+  presentsBtn: 'Прэзенты',
+  eggResting: 'Ваш ArcadePet адпачывае ў яйку!',
+  hatchCta: 'Вылупіць у гульнявым пакоі',
+  opponentPet: 'Пітомец суперніка',
+  opponentPetOf: 'Пітомец гульца {{name}}',
   restingBanner:
     'Адпачывае дома • Рост прыпынены (лічацца толькі гадзіны на экране)',
   runningBanner: 'На экране • Хуткі рост! Карміце, каб рос яшчэ хутчэй.',
   growthSpeed: 'Хуткасць росту',
-  milestones: {
-    first_hatch: 'Першае вылупленне',
-    level_5: 'Дасягнуты 5-ы ўзровень',
-    level_10: 'Дасягнуты 10-ы ўзровень',
-    collector_3: 'Сабрана 3 пітомцы',
-    streak_7: '7 дзён догляду запар',
-  },
-  errors: {
-    HOME_FULL:
-      'Дом запоўнены! Палепшыце дом, каб было месца для новых пітомцаў.',
-    NEED_COINS_UPGRADE: 'Патрэбна 🪙 {{cost}} манет, каб палепшыць дом!',
-    NEED_GEMS_UPGRADE: 'Патрэбна 💎 {{cost}} крышталёў, каб палепшыць дом!',
-    NEED_COINS_FEED:
-      'Патрэбна 🪙 {{cost}} манет, каб пакарміць пітомца {{name}}!',
-  },
-  rename: {
-    edit: 'Перайменаваць пітомца',
-    label: 'Імя пітомца',
-    save: 'Захаваць імя',
-    invalid: 'Імя павінна змяшчаць ад 2 да 24 сімвалаў.',
-  },
   homeBadge: '💤 Дома',
   attentionAria: 'Патрэбна ўвага: {{needs}}',
-  attention: {
-    sick: 'хворы',
-    hungry: 'галодны',
-    dirty: 'брудны',
-  },
   gifts: giftsBy,
   adoption: adoptionBy,
   commitTitle: 'Завядзіце першага кампаньёна',
@@ -435,14 +328,6 @@ export const by: ArcadePetCompanionMessages = {
   commitPledge:
     'Пацвярджаю, што хачу гэтага пітомца, буду клапаціцца пра яго, карміць і гуляць з ім!',
   cancel: 'Скасаваць',
-  stage: {
-    egg: 'Яйка',
-    baby: 'Малы',
-    child: 'Дзіця',
-    teen: 'Падлетак',
-    adult: 'Дарослы',
-    senior: 'Старэйшына',
-  },
   collectionEmpty: 'Пітомцаў пакуль няма. Завядзіце першага кампаньёна!',
   registerForPet: 'Рэгістрацыя для пітомца',
   mystery: 'Таямніца',

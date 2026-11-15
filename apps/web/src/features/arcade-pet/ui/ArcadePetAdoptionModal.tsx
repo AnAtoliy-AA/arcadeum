@@ -15,6 +15,9 @@ import {
 import { ArcadePetCollectionList } from './ArcadePetCollectionList';
 import { ArcadePetVipSelectionTab } from './ArcadePetVipSelectionTab';
 
+/** Free gems are a development convenience only; never shown in production. */
+const SHOW_DEV_GEM_GRANT = process.env.NODE_ENV !== 'production';
+
 interface ArcadePetAdoptionModalProps {
   open: boolean;
   onClose: () => void;
@@ -448,17 +451,19 @@ export function ArcadePetAdoptionModal({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-neutral-400 pt-1">
-                <span>{t('arcadePetCompanion.adoption.needGems')}</span>
-                <button
-                  type="button"
-                  data-testid="add-bonus-gems-btn"
-                  onClick={() => addGems(100)}
-                  className="px-3 py-1 rounded-lg bg-indigo-900/50 hover:bg-indigo-800 border border-indigo-500/40 text-indigo-300 font-semibold"
-                >
-                  {t('arcadePetCompanion.adoption.bonusGems')}
-                </button>
-              </div>
+              {SHOW_DEV_GEM_GRANT && (
+                <div className="flex items-center justify-between text-xs text-neutral-400 pt-1">
+                  <span>{t('arcadePetCompanion.adoption.needGems')}</span>
+                  <button
+                    type="button"
+                    data-testid="add-bonus-gems-btn"
+                    onClick={() => addGems(100)}
+                    className="px-3 py-1 rounded-lg bg-indigo-900/50 hover:bg-indigo-800 border border-indigo-500/40 text-indigo-300 font-semibold"
+                  >
+                    {t('arcadePetCompanion.adoption.bonusGems')}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

@@ -83,4 +83,9 @@ describe('ArcadePetAdoptionModal', () => {
     fireEvent.keyDown(dialog, { key: 'Escape' });
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('shows the dev-only bonus gems button outside production', () => {
+    render(<ArcadePetAdoptionModal open onClose={onClose} />);
+    expect(screen.getByTestId('add-bonus-gems-btn')).toBeInTheDocument();
+  });
 });

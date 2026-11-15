@@ -2,6 +2,11 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
+import { mockUseTranslation } from '../test/mock-translation';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 describe('ArcadePetAwayBanner', () => {
   it('announces the summary and can be dismissed', () => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PetSpecies, PetStage, PetState } from '@arcadeum/games-core';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useDraggableHome } from './useDraggableHome';
 import styles from './arcade-pet-companion.module.scss';
 
@@ -32,8 +33,10 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
   onOpenDoor,
   pets,
   homeCapacity = 1,
-  moveHomeLabel = 'Move pet home (arrow keys, hold Shift for larger steps)',
+  moveHomeLabel,
 }) => {
+  const { t } = useTranslation();
+  const moveLabel = moveHomeLabel ?? t('arcadePetCompanion.moveHome');
   const placesCount = Math.max(1, homeCapacity);
   const {
     boothRef,
@@ -63,11 +66,13 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
         >
           <div className="flex items-center gap-1 text-xs font-black text-amber-300">
             <span>✊</span>
-            <span>KNOCK KNOCK!</span>
+            <span>{t('arcadePetCompanion.knockTitle')}</span>
             <span>🚪</span>
           </div>
           <span className="text-[10px] text-neutral-200 font-medium">
-            {knockerName || "Friend's Pet"}: &ldquo;Come out and play! 🎾&rdquo;
+            {t('arcadePetCompanion.knockLine', {
+              name: knockerName || t('arcadePetCompanion.friendPet'),
+            })}
           </span>
           <button
             type="button"
@@ -75,7 +80,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
             onClick={onOpenDoor}
             className="mt-0.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-[10px] uppercase shadow-md transition-transform transform hover:scale-105 active:scale-95"
           >
-            Open Door &amp; Play 🎾
+            {t('arcadePetCompanion.openDoor')}
           </button>
         </div>
       )}
@@ -86,7 +91,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           className={`mb-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-amber-500/40 text-[10px] text-amber-200 flex items-center gap-1 shadow ${styles.sleepingZzz}`}
         >
           <span>💤</span>
-          <span>Resting</span>
+          <span>{t('arcadePetCompanion.resting')}</span>
         </div>
       )}
 
@@ -103,12 +108,12 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           data-drag-handle
           onKeyDown={onMoveKeyDown}
           onClick={(e) => e.stopPropagation()}
-          aria-label={moveHomeLabel}
+          aria-label={moveLabel}
           className="flex items-center gap-1 text-[8px] text-amber-400/80 font-bold tracking-wider select-none mb-0.5 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300"
-          title={moveHomeLabel}
+          title={moveLabel}
         >
           <span aria-hidden="true">⠿</span>
-          <span aria-hidden="true">DRAG</span>
+          <span aria-hidden="true">{t('arcadePetCompanion.drag')}</span>
           <span aria-hidden="true">⠿</span>
         </button>
         <div className="absolute -top-3 right-2 flex flex-col items-center pointer-events-none">
@@ -162,7 +167,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
               className="w-full flex flex-col gap-1 border-t border-amber-800/40 pt-1"
             >
               <div className="flex items-center justify-between text-[8px] text-amber-300 font-bold px-0.5">
-                <span>Places</span>
+                <span>{t('arcadePetCompanion.places')}</span>
                 <span data-testid="booth-capacity-tag">
                   {pets?.length ?? 1}/{placesCount}
                 </span>
@@ -188,9 +193,9 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
                       <span className="truncate">
                         {occupant
                           ? occupant.stage === 'egg'
-                            ? 'Mystery Egg'
+                            ? t('arcadePetCompanion.mysteryEgg')
                             : occupant.name
-                          : 'Empty Place'}
+                          : t('arcadePetCompanion.emptyPlace')}
                       </span>
                     </div>
                   );
@@ -200,7 +205,9 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           )}
 
           <span className="text-[8px] text-neutral-400 font-medium">
-            {isAtHome ? 'Click to wake ☀️' : 'Cozy Crib 🏠'}
+            {isAtHome
+              ? t('arcadePetCompanion.wakeHint')
+              : t('arcadePetCompanion.cozyCrib')}
           </span>
         </div>
       </div>

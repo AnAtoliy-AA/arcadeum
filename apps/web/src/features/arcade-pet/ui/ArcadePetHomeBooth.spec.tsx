@@ -2,6 +2,11 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ArcadePetHomeBooth } from './ArcadePetHomeBooth';
+import { mockUseTranslation } from '../test/mock-translation';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 describe('ArcadePetHomeBooth', () => {
   it('renders house structure and pet name', () => {

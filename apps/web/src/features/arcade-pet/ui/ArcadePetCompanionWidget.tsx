@@ -15,9 +15,11 @@ import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { THEME_PET_PALETTES, getPetFoodCost } from '../lib/arcade-pet-economy';
 import { gamesApi } from '@/features/games/api';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
+import { ArcadePetCompanionHeader } from './ArcadePetCompanionHeader';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
 import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetCompanionWidgetProps {
   currentUserId?: string;
@@ -27,6 +29,7 @@ interface ArcadePetCompanionWidgetProps {
 export const ArcadePetCompanionWidget: React.FC<
   ArcadePetCompanionWidgetProps
 > = ({ currentUserId, theme }) => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { locale } = useLanguage();
   const { snapshot } = useSessionTokens();
@@ -101,12 +104,14 @@ export const ArcadePetCompanionWidget: React.FC<
           aria-disabled="true"
           data-testid="arcade-pet-companion-trigger"
           onClick={() => setShowRegisterPrompt((prev) => !prev)}
-          title="Only registered players can have pets. Register to adopt!"
+          title={t('arcadePetCompanion.registerTriggerTitle')}
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 border border-neutral-700/80 shadow-lg backdrop-blur-md text-neutral-400 opacity-80 cursor-pointer hover:border-amber-500/60 transition-all"
-          aria-label="Register to adopt pet"
+          aria-label={t('arcadePetCompanion.registerTriggerAria')}
         >
           <span className="text-lg">🔒</span>
-          <span className="text-xs font-bold">Register for Pet</span>
+          <span className="text-xs font-bold">
+            {t('arcadePetCompanion.registerForPet')}
+          </span>
         </button>
       </div>
     );
@@ -127,10 +132,12 @@ export const ArcadePetCompanionWidget: React.FC<
             data-testid="arcade-pet-companion-trigger"
             onClick={() => setShowCommitmentModal(true)}
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            aria-label="Adopt Free Pet"
+            aria-label={t('arcadePetCompanion.adoptFreeAria')}
           >
             <span className="text-lg">🥚</span>
-            <span className="text-xs font-bold">Adopt Free Pet 🐾</span>
+            <span className="text-xs font-bold">
+              {t('arcadePetCompanion.adoptFreeAria')} 🐾
+            </span>
           </button>
         </div>
       </>
@@ -183,60 +190,15 @@ export const ArcadePetCompanionWidget: React.FC<
             data-testid="arcade-pet-companion-modal"
             className="mb-3 w-80 rounded-2xl bg-neutral-900/95 border border-neutral-700/80 p-4 shadow-2xl backdrop-blur-md text-white font-sans flex flex-col gap-3"
           >
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{speciesEmoji}</span>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-bold leading-tight">
-                      {pet.stage === 'egg' ? 'Mystery Egg' : pet.name}
-                    </span>
-                    {pet.stage === 'egg' ? (
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-amber-300">
-                        🥚 Mystery
-                      </span>
-                    ) : (
-                      themePalette && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
-                          {themePalette.emoji} {themePalette.title}
-                        </span>
-                      )
-                    )}
-                  </div>
-                  <span className="text-[10px] text-neutral-400 uppercase tracking-wider">
-                    {pet.stage === 'egg'
-                      ? 'Incubating Egg • Grows to reveal'
-                      : `Level ${pet.stats.level} ${pet.stage} • ${pets.length} Owned`}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-950 border border-amber-500/40 text-[11px] font-bold text-amber-300"
-                  title="Coins"
-                >
-                  <span>🪙</span>
-                  <span data-testid="companion-coin-balance">
-                    {coinBalance}
-                  </span>
-                </div>
-                <div
-                  className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-[11px] font-bold text-indigo-300"
-                  title="Gems"
-                >
-                  <span>💎</span>
-                  <span>{gemBalance}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={toggleWidget}
-                  className="text-neutral-400 hover:text-white p-1 text-xs"
-                  aria-label="Close companion"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
+            <ArcadePetCompanionHeader
+              pet={pet}
+              petCount={pets.length}
+              speciesEmoji={speciesEmoji}
+              themePalette={themePalette}
+              coinBalance={coinBalance}
+              gemBalance={gemBalance}
+              onClose={toggleWidget}
+            />
 
             {pets.length > 1 && (
               <div
@@ -272,7 +234,9 @@ export const ArcadePetCompanionWidget: React.FC<
                     >
                       <span>{icon}</span>
                       <span className="truncate max-w-[80px]">
-                        {p.stage === 'egg' ? 'Mystery Egg' : p.name}
+                        {p.stage === 'egg'
+                          ? t('arcadePetCompanion.mysteryEgg')
+                          : p.name}
                       </span>
                       <span
                         className={`text-[10px] px-1 rounded ${
@@ -328,7 +292,7 @@ export const ArcadePetCompanionWidget: React.FC<
 
                 <div className="flex flex-col gap-2 text-xs">
                   <div className="flex justify-between text-[11px] text-neutral-400">
-                    <span>Hunger</span>
+                    <span>{t('arcadePetCompanion.hunger')}</span>
                     <span className="font-bold text-neutral-200">
                       {pet.stats.hunger}%
                     </span>
@@ -340,7 +304,7 @@ export const ArcadePetCompanionWidget: React.FC<
                   />
 
                   <div className="flex justify-between text-[11px] text-neutral-400 pt-1">
-                    <span>Happiness</span>
+                    <span>{t('arcadePetCompanion.happiness')}</span>
                     <span className="font-bold text-neutral-200">
                       {pet.stats.happiness}%
                     </span>
@@ -367,9 +331,11 @@ export const ArcadePetCompanionWidget: React.FC<
                       }`}
                     >
                       {isAtHome
-                        ? '0% (Paused at Home)'
+                        ? t('arcadePetCompanion.pausedAtHome')
                         : `${getGrowthSpeedPercent(pet.stats.hunger, isAtHome)}%`}
-                      {!isAtHome && pet.stats.hunger < 25 ? ' (⚠️ Hungry)' : ''}
+                      {!isAtHome && pet.stats.hunger < 25
+                        ? t('arcadePetCompanion.hungryWarning')
+                        : ''}
                     </span>
                   </div>
                 </div>
@@ -447,8 +413,8 @@ export const ArcadePetCompanionWidget: React.FC<
                   <span>🏠</span>
                   <span>
                     {isAtHome
-                      ? 'Call Pets Outside (Fast Growth)'
-                      : 'Send Pets to Home (Slow Growth & Hunger)'}
+                      ? t('arcadePetCompanion.callOutside')
+                      : t('arcadePetCompanion.sendHome')}
                   </span>
                 </button>
 
@@ -468,11 +434,13 @@ export const ArcadePetCompanionWidget: React.FC<
           data-testid="arcade-pet-companion-trigger"
           onClick={toggleWidget}
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-indigo-500/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          aria-label="Toggle ArcadePet Companion"
+          aria-label={t('arcadePetCompanion.toggleCompanion')}
         >
           <span className="text-lg">{speciesEmoji}</span>
           <span className="text-xs font-bold hidden sm:inline">
-            {pet.stage === 'egg' ? 'Mystery Egg' : pet.name}
+            {pet.stage === 'egg'
+              ? t('arcadePetCompanion.mysteryEgg')
+              : pet.name}
           </span>
           {isAtHome && (
             <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-[10px] text-amber-200 font-semibold">

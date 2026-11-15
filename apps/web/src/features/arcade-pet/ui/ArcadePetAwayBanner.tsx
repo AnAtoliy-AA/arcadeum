@@ -3,6 +3,7 @@ import {
   formatAwayDuration,
   type AwaySummary,
 } from '../lib/arcade-pet-away-summary';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetAwayBannerProps {
   summary: AwaySummary;
@@ -12,25 +13,33 @@ interface ArcadePetAwayBannerProps {
 export const ArcadePetAwayBanner: React.FC<ArcadePetAwayBannerProps> = ({
   summary,
   onDismiss,
-}) => (
-  <div
-    role="status"
-    data-testid="pet-away-summary"
-    className="text-[11px] text-sky-200 text-center bg-sky-950/40 border border-sky-500/30 rounded py-1.5 px-2 flex flex-col gap-1"
-  >
-    <span>
-      {`While you were away (${formatAwayDuration(summary.awayMs)}), ${summary.petName} lost ${summary.hungerDrop} hunger and grew ${summary.growthHoursGained}h.`}
-      {summary.stageBefore !== summary.stageAfter
-        ? ` Now a ${summary.stageAfter}!`
-        : ''}
-    </span>
-    <button
-      type="button"
-      data-testid="pet-away-summary-dismiss"
-      onClick={onDismiss}
-      className="self-center px-2 py-0.5 rounded-full border border-sky-400/50 font-bold text-[10px] uppercase"
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      role="status"
+      data-testid="pet-away-summary"
+      className="text-[11px] text-sky-200 text-center bg-sky-950/40 border border-sky-500/30 rounded py-1.5 px-2 flex flex-col gap-1"
     >
-      Got it
-    </button>
-  </div>
-);
+      <span>
+        {t('arcadePetCompanion.awaySummary', {
+          duration: formatAwayDuration(summary.awayMs),
+          name: summary.petName,
+          hunger: summary.hungerDrop,
+          hours: summary.growthHoursGained,
+        })}
+        {summary.stageBefore !== summary.stageAfter
+          ? ` ${t('arcadePetCompanion.awayEvolved', { stage: summary.stageAfter })}`
+          : ''}
+      </span>
+      <button
+        type="button"
+        data-testid="pet-away-summary-dismiss"
+        onClick={onDismiss}
+        className="self-center px-2 py-0.5 rounded-full border border-sky-400/50 font-bold text-[10px] uppercase"
+      >
+        {t('arcadePetCompanion.awayDismiss')}
+      </button>
+    </div>
+  );
+};

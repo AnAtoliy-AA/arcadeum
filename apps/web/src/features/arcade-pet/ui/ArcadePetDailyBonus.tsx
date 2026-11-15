@@ -4,6 +4,7 @@ import {
   getDailyBonusCoins,
   nextDailyStreak,
 } from '../lib/arcade-pet-daily-bonus';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetDailyBonusProps {
   lastClaimDay: string | null;
@@ -16,6 +17,7 @@ export const ArcadePetDailyBonus: React.FC<ArcadePetDailyBonusProps> = ({
   streak,
   onClaim,
 }) => {
+  const { t } = useTranslation();
   const state = { lastClaimDay, streak };
   const [now] = useState(() => Date.now());
   if (!canClaimDailyBonus(state, now)) return null;
@@ -28,7 +30,7 @@ export const ArcadePetDailyBonus: React.FC<ArcadePetDailyBonusProps> = ({
       onClick={onClaim}
       className="w-full py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-[11px] uppercase shadow-md"
     >
-      {`Claim daily bonus: +${coins} coins`}
+      {t('arcadePetCompanion.dailyBonus', { coins })}
     </button>
   );
 };

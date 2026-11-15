@@ -15,6 +15,12 @@ import {
 } from './arcade-pet-companion-adoption';
 
 export const en = {
+  errors: {
+    HOME_FULL: 'Home is full! Upgrade your Home to have place for more pets.',
+    NEED_COINS_UPGRADE: 'Need 🪙 {{cost}} Coins to upgrade Home place!',
+    NEED_GEMS_UPGRADE: 'Need 💎 {{cost}} Gems to upgrade Home place!',
+    NEED_COINS_FEED: 'Need 🪙 {{cost}} coins to feed {{name}}!',
+  },
   rename: {
     edit: 'Rename pet',
     label: 'Pet name',
@@ -92,6 +98,14 @@ export const en = {
 export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
+  errors: {
+    HOME_FULL:
+      '¡Hogar lleno! Mejora tu hogar para tener sitio para más mascotas.',
+    NEED_COINS_UPGRADE: '¡Necesitas 🪙 {{cost}} monedas para mejorar el hogar!',
+    NEED_GEMS_UPGRADE: '¡Necesitas 💎 {{cost}} gemas para mejorar el hogar!',
+    NEED_COINS_FEED:
+      '¡Necesitas 🪙 {{cost}} monedas para alimentar a {{name}}!',
+  },
   rename: {
     edit: 'Renombrar mascota',
     label: 'Nombre de la mascota',
@@ -168,6 +182,13 @@ export const es: ArcadePetCompanionMessages = {
 };
 
 export const fr: ArcadePetCompanionMessages = {
+  errors: {
+    HOME_FULL:
+      "Maison pleine ! Améliore ta maison pour accueillir plus d'animaux.",
+    NEED_COINS_UPGRADE: 'Il faut 🪙 {{cost}} pièces pour améliorer la maison !',
+    NEED_GEMS_UPGRADE: 'Il faut 💎 {{cost}} gemmes pour améliorer la maison !',
+    NEED_COINS_FEED: 'Il faut 🪙 {{cost}} pièces pour nourrir {{name}} !',
+  },
   rename: {
     edit: "Renommer l'animal",
     label: "Nom de l'animal",
@@ -244,6 +265,14 @@ export const fr: ArcadePetCompanionMessages = {
 };
 
 export const ru: ArcadePetCompanionMessages = {
+  errors: {
+    HOME_FULL:
+      'Дом заполнен! Улучшите дом, чтобы было место для новых питомцев.',
+    NEED_COINS_UPGRADE: 'Нужно 🪙 {{cost}} монет, чтобы улучшить дом!',
+    NEED_GEMS_UPGRADE: 'Нужно 💎 {{cost}} кристаллов, чтобы улучшить дом!',
+    NEED_COINS_FEED:
+      'Нужно 🪙 {{cost}} монет, чтобы покормить питомца {{name}}!',
+  },
   rename: {
     edit: 'Переименовать питомца',
     label: 'Имя питомца',
@@ -319,6 +348,14 @@ export const ru: ArcadePetCompanionMessages = {
 };
 
 export const by: ArcadePetCompanionMessages = {
+  errors: {
+    HOME_FULL:
+      'Дом запоўнены! Палепшыце дом, каб было месца для новых пітомцаў.',
+    NEED_COINS_UPGRADE: 'Патрэбна 🪙 {{cost}} манет, каб палепшыць дом!',
+    NEED_GEMS_UPGRADE: 'Патрэбна 💎 {{cost}} крышталёў, каб палепшыць дом!',
+    NEED_COINS_FEED:
+      'Патрэбна 🪙 {{cost}} манет, каб пакарміць пітомца {{name}}!',
+  },
   rename: {
     edit: 'Перайменаваць пітомца',
     label: 'Імя пітомца',

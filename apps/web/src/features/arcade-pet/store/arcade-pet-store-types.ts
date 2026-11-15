@@ -7,6 +7,15 @@ import type {
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
 import type { AwaySummary } from '../lib/arcade-pet-away-summary';
 
+export type ArcadePetErrorCode =
+  'HOME_FULL' | 'NEED_COINS_UPGRADE' | 'NEED_GEMS_UPGRADE' | 'NEED_COINS_FEED';
+
+/** Locale-independent error; the UI translates it from `code` and `params`. */
+export interface ArcadePetActionError {
+  code: ArcadePetErrorCode;
+  params?: Record<string, string | number>;
+}
+
 export interface ArcadePetStoreState {
   pet: PetState | null;
   pets: PetState[];
@@ -21,7 +30,7 @@ export interface ArcadePetStoreState {
   isAtHome: boolean;
   activeTreat: GameTreatId | null;
   hasConfirmedCare: boolean;
-  actionError: string | null;
+  actionError: ArcadePetActionError | null;
   awaySummary: AwaySummary | null;
   dailyStreak: number;
   lastDailyClaimDay: string | null;

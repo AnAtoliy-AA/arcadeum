@@ -374,7 +374,10 @@ export const ArcadePetCompanionWidget: React.FC<
                     data-testid="pet-action-error"
                     className="text-[11px] text-amber-400 font-semibold text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2"
                   >
-                    {actionError}
+                    {t(
+                      `arcadePetCompanion.errors.${actionError.code}`,
+                      actionError.params,
+                    )}
                   </div>
                 )}
 

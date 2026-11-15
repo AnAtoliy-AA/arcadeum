@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.30.111] - 2026-11-15
 
-- stabilize WebKit and Mobile Safari e2e specs by retrying pre-hydration interactions and widening timeouts
+### Fixed
+- stabilize WebKit and Mobile Safari specs (ARC-1046) (ARC-1046)
+
+### Documentation
+- drop unrelated ticket reference from e2e fix entry
+
 
 ## [1.30.110] - 2026-11-01
 

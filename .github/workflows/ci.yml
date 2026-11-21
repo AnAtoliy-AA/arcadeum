@@ -159,9 +159,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # PRs into develop run chromium only (fast feedback); every other
-        # trigger (staging/main PRs, pushes) runs the full browser matrix.
-        project: ${{ fromJSON(github.event_name == 'pull_request' && github.base_ref == 'develop' && '["chromium"]' || '["chromium","firefox","webkit","Mobile Chrome","Mobile Safari"]') }}
+        # Every PR and push runs the full browser matrix, so engine-specific
+        # (WebKit / Mobile Safari / Firefox) failures surface on the develop PR
+        # instead of later on the staging and main promotion PRs.
+        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari"]
         shard: [1, 2, 3]
     services:
       mongodb:

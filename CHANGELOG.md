@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - stop the checkers/backgammon landing e2e spec failing on Linux WebKit, which reports its heading and spec table as hidden
 - force the remaining unstable clicks on Linux WebKit (invite/share modal buttons, matchmaking cancel and expand)
+- run the full browser matrix (chromium, firefox, webkit, Mobile Chrome, Mobile Safari) on every PR, including PRs into develop, so engine-specific failures surface before the staging and main promotion PRs
 
 ## [1.30.114] - 2026-11-21
 

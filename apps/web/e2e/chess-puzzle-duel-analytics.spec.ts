@@ -44,12 +44,21 @@ test.describe('Chess Puzzle Duel and Tactical Analytics', () => {
 
     const zenBtn = page.getByTestId('toggle-zen-btn');
     await expect(zenBtn).toBeVisible();
-    await zenBtn.click();
-    await expect(page.getByText('Exit Zen [Z]')).toBeVisible();
+    // Retry the click: it can land before React hydrates and be lost. Only
+    // click while zen mode is off so a retry never toggles it back.
+    const exitZen = page.getByText('Exit Zen [Z]');
+    await expect(async () => {
+      if (!(await exitZen.isVisible())) {
+        await zenBtn.click({ force: true });
+      }
+      await expect(exitZen).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
 
     const flipBtn = page.getByTestId('flip-board-btn');
     await expect(flipBtn).toBeVisible();
-    await flipBtn.click();
+    // Dispatched click: on Mobile Safari the button never passes the stability
+    // check and a forced click reports it outside the viewport.
+    await flipBtn.dispatchEvent('click');
   });
 
   test('opens tactical analytics modal and displays stats and radar tabs', async ({

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - run the full browser matrix (chromium, firefox, webkit, Mobile Chrome, Mobile Safari) on every PR, including PRs into develop, so engine-specific failures surface before the staging and main promotion PRs
 - harden the Web E2E CI job against runners dying mid-run: 45 minute job timeout, free preinstalled toolchains to reclaim disk before creating the swap file, and log memory and disk every 30 seconds while tests run
 - run WebKit and Mobile Safari e2e jobs with a single worker (measured memory peaked at 14.5 GB of 15 GB with two, which shut the runner down) and raise the job timeout to 60 minutes
+- speed up e2e: chromium runs the whole suite, while firefox, webkit, Mobile Chrome and Mobile Safari run only engine-sensitive specs and every spec that has failed on a specific engine (3,390 test runs per PR down to 1,350); cap the rules-modal wait at 1.5s instead of 5s on every room test (chromium 567s to 361s); stub audio, video and tracking requests in e2e instead of fetching them
+- stop chess puzzle zen-mode e2e spec flaking on Mobile Safari
 
 ## [1.30.114] - 2026-11-21
 

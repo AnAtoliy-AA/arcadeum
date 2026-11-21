@@ -147,7 +147,8 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
 
     const shareAppsBtn = modalContent.getByTestId('share-via-apps-button');
     await expect(shareAppsBtn).toBeVisible();
-    await shareAppsBtn.click();
+    // force: modal buttons never pass the stability check on Linux WebKit.
+    await shareAppsBtn.click({ force: true });
 
     const popover = modalContent.getByTestId('share-game-popover');
     await expect(popover).toBeVisible();
@@ -158,7 +159,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await expect(modalContent.getByTestId('share-via-copy')).toBeVisible();
     await expect(modalContent.getByTestId('share-via-qr')).toBeVisible();
 
-    await shareAppsBtn.click();
+    await shareAppsBtn.click({ force: true });
     await expect(popover).not.toBeVisible();
 
     const closeBtn = modalContent.getByRole('button', {
@@ -166,7 +167,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
       exact: true,
     });
     await expect(closeBtn).toBeVisible();
-    await closeBtn.click();
+    await closeBtn.click({ force: true });
     await expect(modalContent).not.toBeVisible();
   });
 

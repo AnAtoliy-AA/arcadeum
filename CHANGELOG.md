@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - stop the checkers/backgammon landing e2e spec failing on Linux WebKit, which reports its heading and spec table as hidden
+- force the remaining unstable clicks on Linux WebKit (invite/share modal buttons, matchmaking cancel and expand)
 
 ## [1.30.114] - 2026-11-21
 

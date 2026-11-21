@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- stop the checkers/backgammon landing e2e spec failing on Linux WebKit, which reports its heading and spec table as hidden
+
 ## [1.30.114] - 2026-11-21
 
 ### Fixed
-- fix hydration mismatches and clear e2e flakes and console noise
 
+- fix hydration mismatches and clear e2e flakes and console noise
 
 ## [1.30.113] - 2026-11-21
 

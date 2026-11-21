@@ -45,7 +45,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
   }) => {
     await navigateTo(page, routes.checkersLanding);
     const checkersHeading = page.locator('h1').first();
-    await expect(checkersHeading).toBeVisible();
+    // Attached + text instead of visible: Linux WebKit reports these landing
+    // elements as hidden even though they are rendered with their content.
+    await expect(checkersHeading).toBeAttached();
     await expect(checkersHeading).toContainText('Checkers');
 
     const checkersSpec = page
@@ -54,7 +56,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await checkersSpec
       .evaluate((el) => el.scrollIntoView({ block: 'center' }))
       .catch(() => {});
-    await expect(checkersSpec).toBeVisible();
+    await expect(checkersSpec).toBeAttached();
     await expect(checkersSpec).toContainText('American Draughts');
 
     await navigateTo(page, routes.backgammonLanding);
@@ -68,7 +70,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await bgSpec
       .evaluate((el) => el.scrollIntoView({ block: 'center' }))
       .catch(() => {});
-    await expect(bgSpec).toBeVisible();
+    await expect(bgSpec).toBeAttached();
     await expect(bgSpec).toContainText('24 Points');
   });
 

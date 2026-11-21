@@ -18,6 +18,7 @@ import {
   persistStore,
   DEFAULT_WELCOME_PRESENT,
 } from './arcade-pet-storage';
+import { buildServerPatch } from '../lib/arcade-pet-sync';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
@@ -34,6 +35,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   isAtHome: false,
   activeTreat: null,
   hasConfirmedCare: false,
+  syncRevision: null,
   actionError: null,
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
@@ -55,6 +57,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       presents: stored?.presents ?? [DEFAULT_WELCOME_PRESENT],
       isAtHome: stored?.isAtHome ?? false,
       homeCapacity: stored?.homeCapacity ?? 1,
+      syncRevision: stored?.syncRevision ?? null,
       actionError: null,
     };
 
@@ -349,6 +352,11 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       ...get(),
       coinBalance: nextCoins,
     });
+  },
+
+  applyServerCollection: (server) => {
+    set(buildServerPatch(get(), server));
+    persistStore(get());
   },
 
   clearActionError: () => set({ actionError: null }),

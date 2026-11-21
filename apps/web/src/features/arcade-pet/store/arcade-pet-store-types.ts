@@ -4,6 +4,7 @@ import type {
   PetSpecies,
   PetState,
 } from '@arcadeum/games-core';
+import type { ArcadePetCollectionResponse } from '@arcadeum/games-core';
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
 
 export interface ArcadePetStoreState {
@@ -20,6 +21,8 @@ export interface ArcadePetStoreState {
   isAtHome: boolean;
   activeTreat: GameTreatId | null;
   hasConfirmedCare: boolean;
+  /** Last server revision this state was synced with; null if never synced. */
+  syncRevision: number | null;
   actionError: string | null;
   initialize: (userId?: string, theme?: string) => void;
   performAction: (
@@ -58,6 +61,7 @@ export interface ArcadePetStoreState {
   buyGameTheme: (themeId: string) => void;
   addGems: (amount: number) => void;
   addCoins: (amount: number) => void;
+  applyServerCollection: (server: ArcadePetCollectionResponse) => void;
   clearActionError: () => void;
   toggleWidget: () => void;
   setWidgetOpen: (open: boolean) => void;

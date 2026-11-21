@@ -8,6 +8,7 @@ import { getGrowthSpeedPercent } from '@arcadeum/games-core';
 import { useLanguage } from '@/shared/i18n/useLanguage';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useArcadePetStore } from '../store/useArcadePetStore';
+import { useArcadePetSync } from '../hooks/useArcadePetSync';
 import { ArcadePetSocialStage } from './ArcadePetSocialStage';
 import { ArcadePetAdoptionModal } from './ArcadePetAdoptionModal';
 import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
@@ -57,6 +58,8 @@ export const ArcadePetCompanionWidget: React.FC<
   useEffect(() => {
     initialize(currentUserId, theme);
   }, [currentUserId, theme, initialize]);
+
+  useArcadePetSync(Boolean(snapshot.accessToken));
 
   useEffect(() => {
     let cancelled = false;

@@ -13,5 +13,6 @@ export * from './lib/logger';
 export * from './lib/random';
 export * from './lib/shared-theme-id';
 export * from './games/arcade-pet/arcade-pet.types';
+export * from './games/arcade-pet/arcade-pet-collection.types';
 export * from './games/arcade-pet/arcade-pet.constants';
 export * from './games/arcade-pet/arcade-pet.utils';

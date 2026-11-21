@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -11,11 +12,32 @@ import type { Request } from 'express';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
 import { ArcadePetService } from './arcade-pet.service';
+import { ArcadePetCollectionService } from './arcade-pet-collection.service';
+import { SyncCollectionDto } from './dto/arcade-pet-collection.dto';
 import { HatchPetDto, PetActionDto } from './dto/arcade-pet.dto';
 
 @Controller('arcade-pet')
 export class ArcadePetController {
-  constructor(private readonly service: ArcadePetService) {}
+  constructor(
+    private readonly service: ArcadePetService,
+    private readonly collections: ArcadePetCollectionService,
+  ) {}
+
+  @Get('collection')
+  @UseGuards(JwtAuthGuard)
+  async getCollection(@Req() req: Request) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    return this.collections.getCollection(user.userId);
+  }
+
+  @Put('collection')
+  @UseGuards(JwtAuthGuard)
+  async syncCollection(@Req() req: Request, @Body() dto: SyncCollectionDto) {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    return this.collections.syncCollection(user.userId, dto);
+  }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)

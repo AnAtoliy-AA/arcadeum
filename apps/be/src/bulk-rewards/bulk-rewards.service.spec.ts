@@ -6,6 +6,7 @@ import { BulkRewardType } from './dto/bulk-reward.dto';
 import { User } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
 import { InventoryService } from '../shop/services/inventory.service';
+import { ArcadePetCollectionService } from '../arcade-pet/arcade-pet-collection.service';
 
 describe('BulkRewardsService', () => {
   let service: BulkRewardsService;
@@ -17,6 +18,9 @@ describe('BulkRewardsService', () => {
   };
   let mockInventoryService: {
     grant: jest.Mock;
+  };
+  let mockPetCollections: {
+    grantPresent: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -38,6 +42,10 @@ describe('BulkRewardsService', () => {
       grant: jest.fn().mockResolvedValue(undefined),
     };
 
+    mockPetCollections = {
+      grantPresent: jest.fn().mockResolvedValue(true),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         BulkRewardsService,
@@ -52,6 +60,10 @@ describe('BulkRewardsService', () => {
         {
           provide: InventoryService,
           useValue: mockInventoryService,
+        },
+        {
+          provide: ArcadePetCollectionService,
+          useValue: mockPetCollections,
         },
       ],
     }).compile();
@@ -82,6 +94,34 @@ describe('BulkRewardsService', () => {
       'user-2',
       'pet:cyber_cat',
       expect.stringContaining('bulk-reward-pet-1-cyber_cat'),
+    );
+  });
+
+  it('delivers a claimable present into each user pet collection', async () => {
+    await service.rewardAllUsers(
+      { type: BulkRewardType.PET, amount: 1, itemId: 'cyber_cat' },
+      'admin-1',
+    );
+    expect(mockPetCollections.grantPresent).toHaveBeenCalledTimes(2);
+    expect(mockPetCollections.grantPresent).toHaveBeenCalledWith(
+      'user-1',
+      expect.objectContaining({
+        species: 'cyber_cat',
+        petName: 'Cyber Cat',
+        isOpened: false,
+        id: expect.stringMatching(/^admin-gift-[0-9a-f]{16}$/) as string,
+      }),
+    );
+  });
+
+  it('falls back to dragon for an unknown species in the present', async () => {
+    await service.rewardAllUsers(
+      { type: BulkRewardType.PET, amount: 1, itemId: 'unicorn' },
+      'admin-1',
+    );
+    expect(mockPetCollections.grantPresent).toHaveBeenCalledWith(
+      'user-1',
+      expect.objectContaining({ species: 'dragon' }),
     );
   });
 

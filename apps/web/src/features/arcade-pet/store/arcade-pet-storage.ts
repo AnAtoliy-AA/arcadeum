@@ -15,6 +15,7 @@ export interface StoredCollection {
   hasConfirmedCare?: boolean;
   isAtHome?: boolean;
   homeCapacity?: number;
+  syncRevision?: number | null;
 }
 
 export const DEFAULT_WELCOME_PRESENT: PetGiftPresent = {
@@ -55,6 +56,7 @@ export function loadStoredCollection(): StoredCollection | null {
         hasConfirmedCare: true,
         isAtHome: isHome,
         homeCapacity: parsed.homeCapacity ?? Math.max(1, validPets.length),
+        syncRevision: parsed.syncRevision ?? null,
         pets: refreshedPets,
       };
     }
@@ -87,6 +89,7 @@ export function persistStore(state: {
   hasConfirmedCare: boolean;
   isAtHome: boolean;
   homeCapacity: number;
+  syncRevision?: number | null;
 }): void {
   saveStoredCollection({
     hasConfirmedCare: state.hasConfirmedCare,
@@ -99,5 +102,6 @@ export function persistStore(state: {
     presents: state.presents,
     isAtHome: state.isAtHome,
     homeCapacity: state.homeCapacity,
+    syncRevision: state.syncRevision ?? null,
   });
 }

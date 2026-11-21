@@ -41,8 +41,11 @@ test.describe('Support Page', () => {
       'section[aria-labelledby="support-actions-heading"] a[href*="/community"]',
     );
     await expect(communityLink).toBeVisible();
-    await communityLink.click();
-    await expect(page).toHaveURL(/\/community/);
+    // Retry the click: on WebKit it can land before React hydrates.
+    await expect(async () => {
+      await communityLink.click();
+      await expect(page).toHaveURL(/\/community/, { timeout: 3000 });
+    }).toPass({ timeout: 20000 });
   });
 
   test('should have working external links', async ({ page }) => {

@@ -71,11 +71,13 @@ test.describe('Home Page Games Grid Refinement', () => {
     await expect(questionIcon).toBeVisible();
 
     await questionIcon.scrollIntoViewIfNeeded();
-    await questionIcon.click();
-
-    await expect(
-      page.locator('[role="dialog"][data-state="open"]'),
-    ).toBeVisible();
+    // Retry the click: it can land before React hydrates and be lost.
+    await expect(async () => {
+      await questionIcon.click();
+      await expect(
+        page.locator('[role="dialog"][data-state="open"]'),
+      ).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
     await expect(
       page.getByRole('heading', { name: /Objective/i }),
     ).toBeVisible();
@@ -92,9 +94,11 @@ test.describe('Home Page Games Grid Refinement', () => {
     const playNowButton = criticalCard.getByTestId('game-play-button').first();
 
     await playNowButton.scrollIntoViewIfNeeded();
-    await playNowButton.click();
-
-    // Should be on the game landing page
-    await expect(page).toHaveURL(/\/games\/critical/);
+    // Retry the click: it can land before React hydrates and be lost.
+    await expect(async () => {
+      await playNowButton.click();
+      // Should be on the game landing page
+      await expect(page).toHaveURL(/\/games\/critical/, { timeout: 3000 });
+    }).toPass({ timeout: 20000 });
   });
 });

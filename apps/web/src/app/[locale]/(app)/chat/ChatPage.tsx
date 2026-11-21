@@ -11,10 +11,12 @@ import {
   Button,
   Spinner,
 } from '@arcadeum/ui';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useLanguage } from '@/shared/i18n';
 import {
   chatApi,
   type ChatMessage as ChatMessageData,
@@ -26,7 +28,21 @@ import { nameColorRenderProps } from '@/features/shop/lib/nameColor';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { formatSafeTime } from '@/shared/lib/date';
 
+/**
+ * The chat route is statically prerendered, so the server never sees the URL
+ * query (chatId/title) or the stored session. Render the page only after
+ * hydration so the first client render matches the server HTML (avoids React
+ * hydration error #418).
+ */
 export default function ChatPage() {
+  const { isReady } = useLanguage();
+  if (!isReady) {
+    return <PageLoading layout="standard" />;
+  }
+  return <ChatPageContent />;
+}
+
+function ChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { snapshot } = useSessionTokens();

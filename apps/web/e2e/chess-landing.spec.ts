@@ -83,7 +83,14 @@ test.describe('Chess Landing Rework & Hierarchy', () => {
       .evaluate((el) => el.scrollIntoView({ block: 'center' }))
       .catch(() => {});
     await expect(cyberpunkCard).toBeVisible();
-    await cyberpunkCard.click();
-    await expect(cyberpunkCard.getByText('Previewing')).toBeVisible();
+    // Retry the click: on WebKit it can land before React hydrates.
+    await expect(async () => {
+      // force: sections use content-visibility:auto, so on Linux WebKit the
+      // card keeps resizing and never passes Playwright's stability check.
+      await cyberpunkCard.click({ force: true });
+      await expect(cyberpunkCard.getByText('Previewing')).toBeVisible({
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
   });
 });

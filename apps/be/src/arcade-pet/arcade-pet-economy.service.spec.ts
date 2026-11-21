@@ -108,7 +108,7 @@ describe('ArcadePetEconomyService', () => {
     expect(res.collection.coinBalance).toBe(0);
     expect(res.collection.revision).toBe(2);
     const [filter] = model.findOneAndUpdate.mock.calls[0] as [object];
-    expect(filter).toMatchObject({ revision: 1 });
+    expect(filter).toMatchObject({ revision: { $eq: 1 } });
   });
 
   it('creates the record on the first action', async () => {

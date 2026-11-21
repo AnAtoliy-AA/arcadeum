@@ -115,7 +115,9 @@ export class ArcadePetEconomyService {
     }
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
-      const current = await this.model.findOne({ userId: userObjectId });
+      const current = await this.model.findOne({
+        userId: { $eq: userObjectId },
+      });
       const collection = this.collections.toResponse(current);
       const { revision, ...state } = collection;
 
@@ -156,7 +158,7 @@ export class ArcadePetEconomyService {
     try {
       if (exists) {
         return await this.model.findOneAndUpdate(
-          { userId, revision },
+          { userId: { $eq: userId }, revision: { $eq: revision } },
           { $set: state, $inc: { revision: 1 } },
           { new: true },
         );

@@ -72,7 +72,7 @@ export class ArcadePetCollectionService {
 
   async getCollection(userId: string): Promise<ArcadePetCollectionResponse> {
     const doc = await this.model.findOne({
-      userId: new Types.ObjectId(userId),
+      userId: { $eq: new Types.ObjectId(userId) },
     });
     return this.toResponse(doc);
   }
@@ -86,7 +86,7 @@ export class ArcadePetCollectionService {
     dto: SyncCollectionDto,
   ): Promise<SyncArcadePetCollectionResult> {
     const userObjectId = new Types.ObjectId(userId);
-    const current = await this.model.findOne({ userId: userObjectId });
+    const current = await this.model.findOne({ userId: { $eq: userObjectId } });
     const currentRevision = current?.revision ?? 0;
 
     if (dto.baseRevision !== currentRevision) {
@@ -111,18 +111,22 @@ export class ArcadePetCollectionService {
 
     try {
       const saved = await this.model.findOneAndUpdate(
-        { userId: userObjectId, revision: currentRevision },
+        { userId: { $eq: userObjectId }, revision: { $eq: currentRevision } },
         { $set: fields, $inc: { revision: 1 } },
         { new: true },
       );
       if (!saved) {
-        const latest = await this.model.findOne({ userId: userObjectId });
+        const latest = await this.model.findOne({
+          userId: { $eq: userObjectId },
+        });
         return { status: 'conflict', collection: this.toResponse(latest) };
       }
       return { status: 'ok', collection: this.toResponse(saved) };
     } catch (error) {
       if (!isDuplicateKey(error)) throw error;
-      const latest = await this.model.findOne({ userId: userObjectId });
+      const latest = await this.model.findOne({
+        userId: { $eq: userObjectId },
+      });
       return { status: 'conflict', collection: this.toResponse(latest) };
     }
   }
@@ -138,7 +142,7 @@ export class ArcadePetCollectionService {
     try {
       const result = await this.model.findOneAndUpdate(
         {
-          userId: new Types.ObjectId(userId),
+          userId: { $eq: new Types.ObjectId(userId) },
           'presents.id': { $ne: present.id },
         },
         { $push: { presents: present }, $inc: { revision: 1 } },

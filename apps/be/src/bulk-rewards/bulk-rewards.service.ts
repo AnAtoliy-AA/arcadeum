@@ -129,7 +129,7 @@ export class BulkRewardsService {
           ? (petSpecies as PetSpecies)
           : 'dragon';
         await this.petCollections.grantPresent(userId, {
-          id: `admin-gift-${createHash('sha1').update(idempotencyKey).digest('hex').slice(0, 16)}`,
+          id: `admin-gift-${createHash('sha256').update(idempotencyKey).digest('hex').slice(0, 16)}`,
           senderId: 'admin',
           senderName: 'Arcadeum Admin',
           species,

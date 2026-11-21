@@ -7,50 +7,101 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.113] - 2026-11-21
+
+### Fixed
+- force unstable WebKit clicks in landing and matchmaking specs
+- stop WebKit specs failing on unstable elements
+
+
+## [1.30.112] - 2026-11-15
+
+### Fixed
+
+- cap rules modal wait that exhausted WebKit test timeouts
+
+## [1.30.111] - 2026-11-15
+
+### Fixed
+
+- stabilize WebKit and Mobile Safari specs (ARC-1046) (ARC-1046)
+
+### Documentation
+
+- drop unrelated ticket reference from e2e fix entry
+
+## [1.30.110] - 2026-11-01
+
+### Added
+
+- show level pill under avatar and highlight prestige rows in leaderboard (ARC-1048) (ARC-1048)
+
+## [1.30.109] - 2026-11-01
+
+### Fixed
+
+- derive player level from xp so stats never show stale level (ARC-1047) (ARC-1047)
+
+## [1.30.108] - 2026-11-01
+
+### Fixed
+
+- scroll theme showcase card into view before click in chess landing (ARC-1030) (ARC-1030)
+- enable 2 workers for webkit and stabilize safari locators (ARC-1030) (ARC-1030)
+
+## [1.30.107] - 2026-11-01
+
+### Fixed
+
+- use swapfile2 with cleanup to prevent text file busy (ARC-1029) (ARC-1029)
+- configure swap space on e2e runners to prevent oom (ARC-1029) (ARC-1029)
+
 ## [1.30.106] - 2026-11-01
 
 ### Fixed
-- reduce e2e shards to 3 and skip axe audit in regular runs (ARC-1028) (ARC-1028)
 
+- reduce e2e shards to 3 and skip axe audit in regular runs (ARC-1028) (ARC-1028)
 
 ## [1.30.105] - 2026-11-01
 
 ### Fixed
+
 - sanitize and single quote secret values in fetch-secrets (ARC-1027) (ARC-1027)
 - mock puzzle-api in online puzzle duel test (ARC-1027) (ARC-1027)
 - improve oci vault secrets sync and deploy resilience (ARC-1027) (ARC-1027)
 
-
 ## [1.30.104] - 2026-11-01
 
 ### Fixed
+
 - stabilize combo modal, chess themes locator, and view mode clicks (ARC-1026) (ARC-1026)
 - optimize workflow jobs and fix webkit e2e stability (ARC-1026) (ARC-1026)
-
 
 ## [1.30.103] - 2026-11-01
 
 ### Added
+
 - implement rematch consent flow, UI/UX waiting modal, and notifications (ARC-1045) (ARC-1045)
 
 ### Fixed
-- require rematch consent and notify players (ARC-1045)
 
+- require rematch consent and notify players (ARC-1045)
 
 ## [1.30.102] - 2026-11-01
 
 ### Fixed
-- expand ci sharding to 8 shards and scroll elements before click (ARC-1025) (ARC-1025)
 
+- expand ci sharding to 8 shards and scroll elements before click (ARC-1025) (ARC-1025)
 
 ## [1.30.101] - 2026-10-31
 
 ### Fixed
+
 - fix game mode keys, player name visibility, thumbnails and form sync (ARC-1024) (ARC-1024)
 
 ### Improved
-- eliminate layout shift and fix hydration in leaderboard page (ARC-1024) (ARC-1024)
 
+- eliminate layout shift and fix hydration in leaderboard page (ARC-1024) (ARC-1024)
 
 ## [1.30.100] - 2026-10-31
 

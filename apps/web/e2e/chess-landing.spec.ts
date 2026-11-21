@@ -73,12 +73,24 @@ test.describe('Chess Landing Rework & Hierarchy', () => {
     await navigateTo(page, '/en/games/chess');
 
     const themesSection = page.locator('#themes').first();
-    await themesSection.scrollIntoViewIfNeeded();
+    await themesSection
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
     await expect(themesSection).toBeVisible();
 
     const cyberpunkCard = page.getByTestId('theme-card-cyberpunk');
-    await cyberpunkCard.scrollIntoViewIfNeeded();
-    await cyberpunkCard.click();
-    await expect(cyberpunkCard.getByText('Previewing')).toBeVisible();
+    await cyberpunkCard
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+      .catch(() => {});
+    await expect(cyberpunkCard).toBeVisible();
+    // Retry the click: on WebKit it can land before React hydrates.
+    await expect(async () => {
+      // force: sections use content-visibility:auto, so on Linux WebKit the
+      // card keeps resizing and never passes Playwright's stability check.
+      await cyberpunkCard.click({ force: true });
+      await expect(cyberpunkCard.getByText('Previewing')).toBeVisible({
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
   });
 });

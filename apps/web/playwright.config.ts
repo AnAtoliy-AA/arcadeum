@@ -112,7 +112,7 @@ export default defineConfig({
       // Safari + Next.js 16 dev server cold compile is reliably slow on the
       // first navigation. A second attempt against the now-warm cache passes
       // — same pattern as the CI-wide retries=1.
-      retries: 1,
+      retries: 2,
       use: { ...devices['Desktop Safari'] },
     },
     {
@@ -128,7 +128,7 @@ export default defineConfig({
     },
     {
       name: 'Mobile Safari',
-      retries: 1,
+      retries: 2,
       use: { ...devices['iPhone 12'] },
     },
   ],

@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.30.113] - 2026-11-21
 
-- stop WebKit e2e specs failing on unstable elements (chess landing, combo modal, discord link, invite modal, matchmaking) and a falsely hidden landing heading
+### Fixed
+- force unstable WebKit clicks in landing and matchmaking specs
+- stop WebKit specs failing on unstable elements
+
 
 ## [1.30.112] - 2026-11-15
 

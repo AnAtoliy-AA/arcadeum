@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { useGameStore } from '@/features/games/store/gameStore';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
@@ -41,6 +42,7 @@ export function ArcadePetSocialStage({
   currentUserId?: string;
   onOpenCare: () => void;
 }) {
+  const { t } = useTranslation();
   const { snapshot } = useSessionTokens();
   const effectiveUserId = currentUserId || snapshot.userId;
   const localPet = useArcadePetStore((s) => s.pet);
@@ -88,8 +90,8 @@ export function ArcadePetSocialStage({
   const isKnocked =
     hasFriend && isAtHome && sim.remoteCol === 7 && sim.remoteRow === 1;
   const knockerName = otherPlayer?.displayName
-    ? `${otherPlayer.displayName}'s Pet`
-    : 'Opponent Pet';
+    ? t('arcadePetCompanion.opponentPetOf', { name: otherPlayer.displayName })
+    : t('arcadePetCompanion.opponentPet');
   const hasRemotePet = hasFriend;
 
   return (
@@ -103,7 +105,9 @@ export function ArcadePetSocialStage({
             isAtHome={isAtHome}
             onToggleHome={toggleHome}
             localPetName={
-              localPet.stage === 'egg' ? 'Mystery Egg' : localPet.name
+              localPet.stage === 'egg'
+                ? t('arcadePetCompanion.mysteryEgg')
+                : localPet.name
             }
             localPetSpecies={localSpecies}
             localPetTheme={localPet.theme}
@@ -147,7 +151,9 @@ export function ArcadePetSocialStage({
             </div>
 
             <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none select-none">
-              {localPet.stage === 'egg' ? 'Mystery Egg' : localPet.name}
+              {localPet.stage === 'egg'
+                ? t('arcadePetCompanion.mysteryEgg')
+                : localPet.name}
             </span>
           </div>
         )}

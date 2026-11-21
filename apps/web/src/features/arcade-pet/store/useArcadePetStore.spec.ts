@@ -280,7 +280,10 @@ describe('useArcadePetStore', () => {
     const result = useArcadePetStore.getState().performAction('feed_snack');
     expect(result.success).toBe(false);
     expect(result.error).toBe('INSUFFICIENT_COINS');
-    expect(useArcadePetStore.getState().actionError).toContain('1 Coin');
+    expect(useArcadePetStore.getState().actionError).toEqual({
+      code: 'NEED_COINS_FEED',
+      params: { cost: 1, name: expect.any(String) },
+    });
   });
 
   it('charges escalating food cost based on pet collection index (1, 5, 20)', () => {
@@ -340,7 +343,10 @@ describe('useArcadePetStore', () => {
     const res = useArcadePetStore.getState().performAction('feed_snack');
     expect(res.success).toBe(false);
     expect(res.error).toBe('INSUFFICIENT_COINS');
-    expect(useArcadePetStore.getState().actionError).toContain('5 Coins');
+    expect(useArcadePetStore.getState().actionError).toMatchObject({
+      code: 'NEED_COINS_FEED',
+      params: { cost: 5 },
+    });
   });
 
   it('enforces home capacity when adopting pets', () => {
@@ -359,7 +365,9 @@ describe('useArcadePetStore', () => {
     const second = useArcadePetStore.getState().adoptRandomPet();
     expect(second.success).toBe(false);
     expect(second.error).toBe('HOME_FULL');
-    expect(useArcadePetStore.getState().actionError).toContain('Home is full');
+    expect(useArcadePetStore.getState().actionError).toEqual({
+      code: 'HOME_FULL',
+    });
   });
 
   it('upgrades home capacity using coins and allows adopting another pet', () => {

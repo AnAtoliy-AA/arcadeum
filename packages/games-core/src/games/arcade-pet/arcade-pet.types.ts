@@ -1,13 +1,9 @@
 export type PetStage = 'egg' | 'baby' | 'child' | 'teen' | 'adult' | 'senior';
 
-export type PetSpecies =
-  | 'slime'
-  | 'dragon'
-  | 'cyber_cat'
-  | 'dino'
-  | 'blob';
+export type PetSpecies = 'slime' | 'dragon' | 'cyber_cat' | 'dino' | 'blob';
 
-export type PetMood = 'happy' | 'neutral' | 'sad' | 'sleeping' | 'sick' | 'hungry';
+export type PetMood =
+  'happy' | 'neutral' | 'sad' | 'sleeping' | 'sick' | 'hungry';
 
 export type PetActionType =
   | 'hatch'

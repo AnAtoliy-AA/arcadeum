@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PetState } from '@arcadeum/games-core';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
 
 export function ArcadePetCollectionList({
@@ -12,6 +13,17 @@ export function ArcadePetCollectionList({
   activePetId: string | null;
   onSelectPet: (id: string) => void;
 }) {
+  const { t } = useTranslation();
+  if (pets.length === 0) {
+    return (
+      <p
+        data-testid="pet-collection-empty"
+        className="text-xs text-neutral-400 text-center py-4"
+      >
+        {t('arcadePetCompanion.collectionEmpty')}
+      </p>
+    );
+  }
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">

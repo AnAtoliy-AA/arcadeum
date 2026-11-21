@@ -3,17 +3,17 @@
 import React from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import { SELECT_PET_COST, THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export const SPECIES_OPTIONS: readonly {
   id: PetSpecies;
-  label: string;
   emoji: string;
 }[] = [
-  { id: 'cyber_cat', label: 'Cyber Cat', emoji: '🐱' },
-  { id: 'dragon', label: 'Dragon', emoji: '🐲' },
-  { id: 'dino', label: 'Dino', emoji: '🦖' },
-  { id: 'blob', label: 'Blob', emoji: '🐡' },
-  { id: 'slime', label: 'Slime', emoji: '👾' },
+  { id: 'cyber_cat', emoji: '🐱' },
+  { id: 'dragon', emoji: '🐲' },
+  { id: 'dino', emoji: '🦖' },
+  { id: 'blob', emoji: '🐡' },
+  { id: 'slime', emoji: '👾' },
 ];
 
 interface ArcadePetVipSelectionTabProps {
@@ -37,16 +37,21 @@ export function ArcadePetVipSelectionTab({
   isHomeFull,
   onAdoptSelected,
 }: ArcadePetVipSelectionTabProps) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
       <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200">
-        <strong>VIP Pet Crafting (💎 {SELECT_PET_COST} Gems):</strong> Directly
-        choose species and visual theme for your companion.
+        <strong>
+          {t('arcadePetCompanion.adoption.vipTitle', {
+            cost: SELECT_PET_COST,
+          })}
+        </strong>{' '}
+        {t('arcadePetCompanion.adoption.vipBody')}
       </div>
 
       <div className="space-y-2">
         <span className="text-xs font-bold text-neutral-300 block">
-          Choose Species
+          {t('arcadePetCompanion.adoption.chooseSpecies')}
         </span>
         <div className="grid grid-cols-5 gap-2">
           {SPECIES_OPTIONS.map((spec) => (
@@ -62,7 +67,9 @@ export function ArcadePetVipSelectionTab({
               }`}
             >
               <span className="text-2xl">{spec.emoji}</span>
-              <span className="text-[10px]">{spec.label}</span>
+              <span className="text-[10px]">
+                {t(`arcadePetCompanion.gifts.species.${spec.id}`)}
+              </span>
             </button>
           ))}
         </div>
@@ -70,7 +77,7 @@ export function ArcadePetVipSelectionTab({
 
       <div className="space-y-2">
         <span className="text-xs font-bold text-neutral-300 block">
-          Choose Game Theme
+          {t('arcadePetCompanion.adoption.chooseTheme')}
         </span>
         <div className="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1">
           {Object.values(THEME_PET_PALETTES).map((theme) => (
@@ -94,14 +101,14 @@ export function ArcadePetVipSelectionTab({
 
       <div className="space-y-1">
         <span className="text-xs font-bold text-neutral-300 block">
-          Companion Name
+          {t('arcadePetCompanion.adoption.companionName')}
         </span>
         <input
           type="text"
           data-testid="custom-pet-name-input"
           value={customName}
           onChange={(e) => onChangeCustomName(e.target.value)}
-          placeholder="e.g. Neon Phantom, Solis, Jade..."
+          placeholder={t('arcadePetCompanion.adoption.companionPlaceholder')}
           className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-white focus:outline-none focus:border-amber-400"
         />
       </div>
@@ -118,8 +125,10 @@ export function ArcadePetVipSelectionTab({
         }`}
       >
         {isHomeFull
-          ? '🏠 Upgrade Home to Adopt'
-          : `Select & Equip (💎 ${SELECT_PET_COST} Gems)`}
+          ? t('arcadePetCompanion.adoption.upgradeToAdopt')
+          : t('arcadePetCompanion.adoption.selectEquip', {
+              cost: SELECT_PET_COST,
+            })}
       </button>
     </div>
   );

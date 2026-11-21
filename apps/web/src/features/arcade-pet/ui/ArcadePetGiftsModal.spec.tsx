@@ -3,6 +3,11 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
 import { useArcadePetStore } from '../store/useArcadePetStore';
+import { mockUseTranslation } from '../test/mock-translation';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 const mockSessionState = { role: 'user', userId: 'player-1' };
 
@@ -118,5 +123,14 @@ describe('ArcadePetGiftsModal', () => {
     ).toBeInTheDocument();
     const presents = useArcadePetStore.getState().presents;
     expect(presents[0]?.senderId).toBe('admin');
+  });
+
+  it('is an accessible dialog that closes on Escape', () => {
+    const onClose = vi.fn();
+    render(<ArcadePetGiftsModal open onClose={onClose} />);
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });

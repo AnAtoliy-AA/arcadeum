@@ -3,6 +3,11 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ArcadePetAdoptionModal } from './ArcadePetAdoptionModal';
 import { useArcadePetStore } from '../store/useArcadePetStore';
+import { mockUseTranslation } from '../test/mock-translation';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 describe('ArcadePetAdoptionModal', () => {
   const onClose = vi.fn();
@@ -69,5 +74,18 @@ describe('ArcadePetAdoptionModal', () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId('theme-pet-card-cyberpunk')).toBeInTheDocument();
     expect(screen.getByText('⭐ Neon Cyber Cat')).toBeInTheDocument();
+  });
+
+  it('is an accessible dialog that closes on Escape', () => {
+    render(<ArcadePetAdoptionModal open onClose={onClose} />);
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    fireEvent.keyDown(dialog, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('shows the dev-only bonus gems button outside production', () => {
+    render(<ArcadePetAdoptionModal open onClose={onClose} />);
+    expect(screen.getByTestId('add-bonus-gems-btn')).toBeInTheDocument();
   });
 });

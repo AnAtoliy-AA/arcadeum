@@ -6,7 +6,6 @@ import {
   type PetState,
 } from '@arcadeum/games-core';
 import {
-  getHomeUpgradeCost,
   getPetAdoptionCost,
   getPetFoodCost,
   getRandomPetSpec,
@@ -19,6 +18,10 @@ import {
   DEFAULT_WELCOME_PRESENT,
 } from './arcade-pet-storage';
 import { buildServerPatch } from '../lib/arcade-pet-sync';
+import { claimDailyBonus } from './arcade-pet-daily-claim';
+import { checkMilestones } from './arcade-pet-milestone-claim';
+import { renamePet } from './arcade-pet-rename';
+import { upgradeHome } from './arcade-pet-upgrade-home';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
@@ -37,6 +40,14 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   hasConfirmedCare: false,
   syncRevision: null,
   actionError: null,
+  awaySummary: null,
+  dailyStreak: 0,
+  lastDailyClaimDay: null,
+  claimedMilestones: [],
+  newMilestones: [],
+  checkMilestones: () => checkMilestones(get, set),
+  dismissMilestones: () => set({ newMilestones: [] }),
+  dismissAwaySummary: () => set({ awaySummary: null }),
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
@@ -58,6 +69,9 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       isAtHome: stored?.isAtHome ?? false,
       homeCapacity: stored?.homeCapacity ?? 1,
       syncRevision: stored?.syncRevision ?? null,
+      dailyStreak: stored?.dailyStreak ?? 0,
+      claimedMilestones: stored?.claimedMilestones ?? [],
+      lastDailyClaimDay: stored?.lastDailyClaimDay ?? null,
       actionError: null,
     };
 
@@ -69,6 +83,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       set({
         ...common,
         hasConfirmedCare: true,
+        awaySummary: stored.awaySummary,
         pets: stored.pets,
         activePetId: active?.id ?? null,
         pet: active,
@@ -97,8 +112,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
     if (pets.length >= homeCapacity) {
       set({
-        actionError:
-          'Home is full! Upgrade your Home to have place for more pets.',
+        actionError: { code: 'HOME_FULL' },
       });
       return { success: false, error: 'HOME_FULL' };
     }
@@ -150,8 +164,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
     if (pets.length >= homeCapacity) {
       set({
-        actionError:
-          'Home is full! Upgrade your Home to have place for more pets.',
+        actionError: { code: 'HOME_FULL' },
       });
       return { success: false, error: 'HOME_FULL' };
     }
@@ -196,38 +209,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     return { success: true, pet: newPet };
   },
 
-  upgradeHome: (currency) => {
-    const { homeCapacity, coinBalance, gemBalance } = get();
-    const cost = getHomeUpgradeCost(homeCapacity);
-    if (currency === 'coins') {
-      if (coinBalance < cost.coinCost) {
-        set({
-          actionError: `Need 🪙 ${cost.coinCost} Coins to upgrade Home place!`,
-        });
-        return { success: false, error: 'INSUFFICIENT_COINS' };
-      }
-      const nextCoins = coinBalance - cost.coinCost;
-      const nextCap = homeCapacity + 1;
-      set({
-        coinBalance: nextCoins,
-        homeCapacity: nextCap,
-        actionError: null,
-      });
-      persistStore({ ...get(), coinBalance: nextCoins, homeCapacity: nextCap });
-      return { success: true };
-    }
-    if (gemBalance < cost.gemCost) {
-      set({
-        actionError: `Need 💎 ${cost.gemCost} Gems to upgrade Home place!`,
-      });
-      return { success: false, error: 'INSUFFICIENT_GEMS' };
-    }
-    const nextGems = gemBalance - cost.gemCost;
-    const nextCap = homeCapacity + 1;
-    set({ gemBalance: nextGems, homeCapacity: nextCap, actionError: null });
-    persistStore({ ...get(), gemBalance: nextGems, homeCapacity: nextCap });
-    return { success: true };
-  },
+  upgradeHome: (currency) => upgradeHome(get, set, currency),
 
   selectActivePet: (petId) => {
     const { pets } = get();
@@ -252,8 +234,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
     if (pets.length >= homeCapacity) {
       set({
-        actionError:
-          'Home is full! Upgrade your Home to have place for more pets.',
+        actionError: { code: 'HOME_FULL' },
       });
       return { success: false, error: 'HOME_FULL' };
     }
@@ -358,6 +339,9 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     set(buildServerPatch(get(), server));
     persistStore(get());
   },
+  claimDailyBonus: () => claimDailyBonus(get, set),
+
+  renamePet: (petId, name) => renamePet(get, set, petId, name),
 
   clearActionError: () => set({ actionError: null }),
 
@@ -376,7 +360,10 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       const foodCost = getPetFoodCost(petIndex);
       if (coinBalance < foodCost) {
         set({
-          actionError: `Need 🪙 ${foodCost} Coin${foodCost > 1 ? 's' : ''} to feed ${target.name}!`,
+          actionError: {
+            code: 'NEED_COINS_FEED',
+            params: { cost: foodCost, name: target.name },
+          },
         });
         return { success: false, error: 'INSUFFICIENT_COINS' };
       }

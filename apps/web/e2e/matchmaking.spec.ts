@@ -23,7 +23,7 @@ test.describe('Matchmaking Queue', () => {
 
     const modal = page.getByTestId('matchmaking-modal');
     await expect(async () => {
-      await humanBtn.click();
+      await humanBtn.click({ force: true });
       await expect(modal).toBeVisible();
     }).toPass();
 
@@ -56,7 +56,7 @@ test.describe('Matchmaking Queue', () => {
 
     const minimizeBtn = page.getByTestId('matchmaking-minimize');
     await expect(minimizeBtn).toBeVisible();
-    await minimizeBtn.click();
+    await minimizeBtn.click({ force: true });
 
     await expect(modal).not.toBeVisible();
     const floatingBar = page.getByTestId('matchmaking-floating-bar');

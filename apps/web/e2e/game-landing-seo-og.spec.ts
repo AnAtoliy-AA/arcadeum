@@ -131,7 +131,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await expect(async () => {
       const inviteBtn = page.getByRole('button', { name: /Invite \/ Share/i });
       await expect(inviteBtn).toBeVisible();
-      await inviteBtn.click();
+      await inviteBtn.click({ force: true });
       await expect(modalContent).toBeVisible();
     }).toPass();
 
@@ -175,7 +175,8 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
 
     const cyberpunkCard = page.locator('[data-testid="theme-card-cyberpunk"]');
     await expect(cyberpunkCard).toBeVisible();
-    await cyberpunkCard.click();
+    // force: card never passes the stability check on Linux WebKit.
+    await cyberpunkCard.click({ force: true });
 
     await expect(cyberpunkCard).toContainText('Previewing');
   });

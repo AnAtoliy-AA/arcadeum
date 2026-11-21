@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- stop WebKit e2e specs failing on unstable elements and a falsely hidden landing heading
+
 ## [1.30.112] - 2026-11-15
 
 ### Fixed
-- cap rules modal wait that exhausted WebKit test timeouts
 
+- cap rules modal wait that exhausted WebKit test timeouts
 
 ## [1.30.111] - 2026-11-15
 

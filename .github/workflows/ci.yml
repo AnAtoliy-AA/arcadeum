@@ -156,8 +156,9 @@ jobs:
     needs: build
     if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
-    # A hung shard otherwise runs for 50-70 min before the runner dies.
-    timeout-minutes: 45
+    # A hung shard otherwise runs for 50-70 min before the runner dies. WebKit
+    # and Mobile Safari run a single worker, so they need the extra headroom.
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -234,8 +235,10 @@ jobs:
             echo "browser=firefox" >> $GITHUB_OUTPUT
             echo "workers=2" >> $GITHUB_OUTPUT
           else
+            # One worker: Linux WebKit renders in software and two parallel
+            # workers spike past the runner's 15 GB RAM, which kills the runner.
             echo "browser=webkit" >> $GITHUB_OUTPUT
-            echo "workers=2" >> $GITHUB_OUTPUT
+            echo "workers=1" >> $GITHUB_OUTPUT
           fi
 
       - name: Cache Playwright Browsers

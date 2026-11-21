@@ -1,44 +1,28 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { Socket } from 'socket.io';
 import type {
   GameMessageHandler,
   GameMessageHandlerFn,
 } from './game-message-handler.interface';
-import { ArcadePetService } from '../arcade-pet/arcade-pet.service';
-import type { GameTreatId, PetActionType } from '@arcadeum/games-core';
+import { ArcadePetCollectionService } from '../arcade-pet/arcade-pet-collection.service';
 
+/**
+ * Socket entry point for the ArcadePet game. All mutations go through the
+ * authenticated REST economy endpoints; the socket only delivers the
+ * collection of the connection's authenticated user.
+ */
 @Injectable()
 export class ArcadePetGateway implements GameMessageHandler {
-  private readonly logger = new Logger(ArcadePetGateway.name);
-
-  constructor(private readonly petService: ArcadePetService) {}
+  constructor(private readonly collections: ArcadePetCollectionService) {}
 
   get handlers(): Record<string, GameMessageHandlerFn> {
     return {
-      'arcadePet.session.start': async (
-        client: Socket,
-        payload: Record<string, unknown>,
-      ) => {
-        const userId =
-          typeof payload?.userId === 'string' ? payload.userId : '';
-        if (!userId) return;
-        const pet = await this.petService.getOrCreatePet(userId);
-        client.emit('arcadePet.session.started', pet);
-      },
-      'arcadePet.session.action': async (
-        client: Socket,
-        payload: Record<string, unknown>,
-      ) => {
-        const userId =
-          typeof payload?.userId === 'string' ? payload.userId : '';
-        if (!userId) return;
-        const action = payload?.action as PetActionType;
-        const treatId = payload?.treatId as GameTreatId | undefined;
-        const result = await this.petService.executeAction(userId, {
-          action,
-          treatId,
-        });
-        client.emit('arcadePet.session.action_result', result);
+      'arcadePet.session.start': async (client: Socket) => {
+        const data = client.data as Record<string, unknown>;
+        const userId = typeof data?.userId === 'string' ? data.userId : '';
+        if (!userId || data.authenticated !== true) return;
+        const collection = await this.collections.getCollection(userId);
+        client.emit('arcadePet.session.started', collection);
       },
     };
   }

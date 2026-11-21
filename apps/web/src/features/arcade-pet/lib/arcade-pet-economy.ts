@@ -160,44 +160,6 @@ export const THEME_PET_PALETTES: Record<string, ThemePetPalette> = {
 
 export const ALL_THEME_IDS = Object.keys(THEME_PET_PALETTES);
 
-export const SELECT_PET_COST = 750;
-
-export function getPetAdoptionCost(count: number): number {
-  if (count <= 0) return 0;
-  if (count === 1) return 50;
-  if (count === 2) return 150;
-  if (count === 3) return 300;
-  if (count === 4) return 500;
-  return 500 + (count - 4) * 250;
-}
-
-export const PET_FOOD_COSTS = [1, 5, 20, 50, 100] as const;
-
-export function getPetFoodCost(petIndex: number): number {
-  if (petIndex <= 0) return 1;
-  if (petIndex === 1) return 5;
-  if (petIndex === 2) return 20;
-  if (petIndex === 3) return 50;
-  if (petIndex === 4) return 100;
-  return 100 + (petIndex - 4) * 50;
-}
-
-export const DEFAULT_HOME_CAPACITY = 1;
-
-export function getHomeUpgradeCost(currentCapacity: number): {
-  coinCost: number;
-  gemCost: number;
-} {
-  if (currentCapacity <= 1) return { coinCost: 50, gemCost: 100 };
-  if (currentCapacity === 2) return { coinCost: 150, gemCost: 250 };
-  if (currentCapacity === 3) return { coinCost: 300, gemCost: 450 };
-  if (currentCapacity === 4) return { coinCost: 500, gemCost: 700 };
-  return {
-    coinCost: currentCapacity * 150,
-    gemCost: currentCapacity * 200,
-  };
-}
-
 export interface PetGiftPresent {
   id: string;
   senderId: string;
@@ -210,46 +172,18 @@ export interface PetGiftPresent {
   isOpened: boolean;
 }
 
-import {
-  type ThemePetDefinition,
-  THEME_PET_ROSTER,
-  GAME_THEME_IDS,
-  getThemePets,
-  getSignaturePet,
-  getPetByThemeAndSpecies,
-} from './arcade-pet-theme-roster';
-
 export {
-  type ThemePetDefinition,
-  THEME_PET_ROSTER,
+  DEFAULT_HOME_CAPACITY,
   GAME_THEME_IDS,
-  getThemePets,
-  getSignaturePet,
+  PET_FOOD_COSTS,
+  SELECT_PET_COST,
+  THEME_PET_ROSTER,
+  getHomeUpgradeCost,
+  getPetAdoptionCost,
   getPetByThemeAndSpecies,
-};
-
-export function getRandomPetSpec(queuedTheme?: string | null): {
-  species: PetSpecies;
-  theme: string;
-  name: string;
-  tagline?: string;
-} {
-  const themePool = GAME_THEME_IDS.filter((t) => t !== 'retro');
-  const chosenTheme =
-    queuedTheme && THEME_PET_ROSTER[queuedTheme]
-      ? queuedTheme
-      : (themePool[Math.floor(Math.random() * themePool.length)] ??
-        'cyberpunk');
-
-  const themePets = getThemePets(chosenTheme);
-  const chosenPet =
-    themePets[Math.floor(Math.random() * themePets.length)] ??
-    getSignaturePet(chosenTheme);
-
-  return {
-    species: chosenPet.species,
-    theme: chosenTheme,
-    name: chosenPet.name,
-    tagline: chosenPet.tagline,
-  };
-}
+  getPetFoodCost,
+  getRandomPetSpec,
+  getSignaturePet,
+  getThemePets,
+  type ThemePetDefinition,
+} from '@arcadeum/games-core';

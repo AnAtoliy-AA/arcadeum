@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { toDayKey } from '../lib/arcade-pet-daily-bonus';
+import { toDayKey } from '@arcadeum/games-core';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 
 describe('ArcadePetDailyBonus', () => {

@@ -107,14 +107,16 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().gemBalance).toBe(50);
   });
 
-  it('sends pet gift to friend and deducts 50 gemBalance', () => {
+  it('sends pet gift to friend and deducts 50 gemBalance', async () => {
     useArcadePetStore.setState({ gemBalance: 100 });
-    const result = useArcadePetStore.getState().sendGiftPet('friend-2', 'Bob', {
-      species: 'dino',
-      theme: 'western',
-      petName: 'Sheriff Rex',
-      message: 'Happy gaming!',
-    });
+    const result = await useArcadePetStore
+      .getState()
+      .sendGiftPet('friend-2', 'Bob', {
+        species: 'dino',
+        theme: 'western',
+        petName: 'Sheriff Rex',
+        message: 'Happy gaming!',
+      });
 
     expect(result.success).toBe(true);
     expect(useArcadePetStore.getState().gemBalance).toBe(50);
@@ -165,9 +167,9 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().isAtHome).toBe(false);
   });
 
-  it('allows admin to gift pet for 0 gems with official admin attribution', () => {
+  it('allows admin to gift pet for 0 gems with official admin attribution', async () => {
     useArcadePetStore.setState({ gemBalance: 0, presents: [] });
-    const result = useArcadePetStore.getState().sendGiftPet(
+    const result = await useArcadePetStore.getState().sendGiftPet(
       'lucky-player',
       'Lucky',
       {

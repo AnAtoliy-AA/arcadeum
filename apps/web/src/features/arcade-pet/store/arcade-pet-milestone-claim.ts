@@ -1,5 +1,6 @@
-import { getNewMilestones } from '../lib/arcade-pet-milestones';
+import { getNewMilestones } from '@arcadeum/games-core';
 import { persistStore } from './arcade-pet-storage';
+import { sendEconomyAction } from './arcade-pet-server-actions';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 type Getter = () => ArcadePetStoreState;
@@ -25,4 +26,5 @@ export function checkMilestones(get: Getter, set: Setter): void {
   };
   set(next);
   persistStore({ ...get(), ...next });
+  void sendEconomyAction(get, set, { type: 'claim_milestones' });
 }

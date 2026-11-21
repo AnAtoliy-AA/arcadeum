@@ -7,17 +7,17 @@ export interface DailyBonusState {
   streak: number;
 }
 
-/** Local calendar day key, e.g. 2026-11-15. */
+/** UTC calendar day key, e.g. 2026-11-15 (server and client agree). */
 export function toDayKey(timestamp: number): string {
   const d = new Date(timestamp);
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${month}-${day}`;
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${month}-${day}`;
 }
 
 function previousDayKey(timestamp: number): string {
   const d = new Date(timestamp);
-  d.setDate(d.getDate() - 1);
+  d.setUTCDate(d.getUTCDate() - 1);
   return toDayKey(d.getTime());
 }
 

@@ -1,5 +1,6 @@
 import { getHomeUpgradeCost } from '../lib/arcade-pet-economy';
 import { persistStore } from './arcade-pet-storage';
+import { sendEconomyAction } from './arcade-pet-server-actions';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 type Getter = () => ArcadePetStoreState;
@@ -30,6 +31,7 @@ export function upgradeHome(
       actionError: null,
     });
     persistStore({ ...get(), coinBalance: nextCoins, homeCapacity: nextCap });
+    void sendEconomyAction(get, set, { type: 'upgrade_home', currency });
     return { success: true };
   }
   if (gemBalance < cost.gemCost) {
@@ -45,5 +47,6 @@ export function upgradeHome(
   const nextCap = homeCapacity + 1;
   set({ gemBalance: nextGems, homeCapacity: nextCap, actionError: null });
   persistStore({ ...get(), gemBalance: nextGems, homeCapacity: nextCap });
+  void sendEconomyAction(get, set, { type: 'upgrade_home', currency });
   return { success: true };
 }

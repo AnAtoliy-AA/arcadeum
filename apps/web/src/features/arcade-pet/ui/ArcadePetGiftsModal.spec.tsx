@@ -83,7 +83,7 @@ describe('ArcadePetGiftsModal', () => {
     expect(useArcadePetStore.getState().gemBalance).toBe(250);
   });
 
-  it('allows sending pet gift to another player', () => {
+  it('allows sending pet gift to another player', async () => {
     render(<ArcadePetGiftsModal open onClose={onClose} />);
     const sendTab = screen.getByTestId('tab-send-gift');
     fireEvent.click(sendTab);
@@ -94,11 +94,13 @@ describe('ArcadePetGiftsModal', () => {
     const sendBtn = screen.getByTestId('send-pet-gift-btn');
     fireEvent.click(sendBtn);
 
+    expect(
+      await screen.findByText(/Pet gift sent to Dave/i),
+    ).toBeInTheDocument();
     expect(useArcadePetStore.getState().gemBalance).toBe(150);
-    expect(screen.getByText(/Pet gift sent to Dave/i)).toBeInTheDocument();
   });
 
-  it('displays admin authority callout and grants gift for 0 gems when user is admin', () => {
+  it('displays admin authority callout and grants gift for 0 gems when user is admin', async () => {
     mockSessionState.role = 'admin';
     useArcadePetStore.setState({ gemBalance: 0 });
 
@@ -117,10 +119,10 @@ describe('ArcadePetGiftsModal', () => {
     fireEvent.change(recipientInput, { target: { value: 'WinnerUser' } });
     fireEvent.click(sendBtn);
 
-    expect(useArcadePetStore.getState().gemBalance).toBe(0);
     expect(
-      screen.getByText(/Pet gift sent to WinnerUser/i),
+      await screen.findByText(/Pet gift sent to WinnerUser/i),
     ).toBeInTheDocument();
+    expect(useArcadePetStore.getState().gemBalance).toBe(0);
     const presents = useArcadePetStore.getState().presents;
     expect(presents[0]?.senderId).toBe('admin');
   });

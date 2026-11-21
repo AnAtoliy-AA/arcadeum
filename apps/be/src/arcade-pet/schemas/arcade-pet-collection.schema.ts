@@ -47,6 +47,15 @@ export class ArcadePetCollection extends Document {
 
   @Prop({ type: Boolean, default: false })
   isAtHome: boolean;
+
+  @Prop({ type: Number, default: 0, min: 0 })
+  dailyStreak: number;
+
+  @Prop({ type: String, default: null })
+  lastDailyClaimDay: string | null;
+
+  @Prop({ type: [String], default: [] })
+  claimedMilestones: string[];
 }
 
 export type ArcadePetCollectionDocument = ArcadePetCollection;

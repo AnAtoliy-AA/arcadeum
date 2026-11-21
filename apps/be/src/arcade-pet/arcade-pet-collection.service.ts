@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import type {
-  ArcadePetCollectionResponse,
-  PetGiftPresentPayload,
-  SyncArcadePetCollectionResult,
+import {
+  createWelcomePresent,
+  type ArcadePetCollectionResponse,
+  type PetGiftPresentPayload,
+  type SyncArcadePetCollectionResult,
 } from '@arcadeum/games-core';
 import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
 import type { SyncCollectionDto } from './dto/arcade-pet-collection.dto';
@@ -23,27 +24,6 @@ function isDuplicateKey(error: unknown): boolean {
   );
 }
 
-/**
- * Union of server and client presents by id. Presents only the server knows
- * about (e.g. admin gifts delivered between syncs) are preserved, and a
- * present opened on either side stays opened.
- */
-export function mergePresents(
-  server: PetGiftPresentPayload[],
-  client: PetGiftPresentPayload[],
-): PetGiftPresentPayload[] {
-  const serverById = new Map(server.map((p) => [p.id, p]));
-  const merged = client.map((p) => ({
-    ...p,
-    isOpened: p.isOpened || serverById.get(p.id)?.isOpened === true,
-  }));
-  const clientIds = new Set(client.map((p) => p.id));
-  for (const p of server) {
-    if (!clientIds.has(p.id)) merged.push(p);
-  }
-  return merged;
-}
-
 @Injectable()
 export class ArcadePetCollectionService {
   constructor(
@@ -51,7 +31,7 @@ export class ArcadePetCollectionService {
     private readonly model: Model<ArcadePetCollectionDocument>,
   ) {}
 
-  private toResponse(
+  toResponse(
     doc: ArcadePetCollectionDocument | null,
   ): ArcadePetCollectionResponse {
     if (!doc) {
@@ -64,9 +44,12 @@ export class ArcadePetCollectionService {
         adoptionCount: 0,
         homeCapacity: 1,
         queuedThemeForNextPet: null,
-        presents: [],
+        presents: [createWelcomePresent(Date.now())],
         hasConfirmedCare: false,
         isAtHome: false,
+        dailyStreak: 0,
+        lastDailyClaimDay: null,
+        claimedMilestones: [],
       };
     }
     return {
@@ -81,6 +64,9 @@ export class ArcadePetCollectionService {
       presents: doc.presents,
       hasConfirmedCare: doc.hasConfirmedCare,
       isAtHome: doc.isAtHome,
+      dailyStreak: doc.dailyStreak ?? 0,
+      lastDailyClaimDay: doc.lastDailyClaimDay ?? null,
+      claimedMilestones: doc.claimedMilestones ?? [],
     };
   }
 
@@ -107,26 +93,28 @@ export class ArcadePetCollectionService {
       return { status: 'conflict', collection: this.toResponse(current) };
     }
 
-    const { baseRevision: _baseRevision, ...snapshot } = dto;
-    const fields = {
-      ...snapshot,
-      activePetId: snapshot.activePetId ?? null,
-      queuedThemeForNextPet: snapshot.queuedThemeForNextPet ?? null,
-      presents: mergePresents(current?.presents ?? [], snapshot.presents),
-    };
+    // Pets can only be created through economy actions, so a client write may
+    // only update pets the server already knows. Balances, capacity, presents
+    // and rewards are server-owned and never taken from the client.
+    const serverPets = current?.pets ?? [];
+    const clientById = new Map(dto.pets.map((p) => [p.id, p]));
+    const pets = serverPets.map((p) => clientById.get(p.id) ?? p);
+    const activePetId = pets.some((p) => p.id === dto.activePetId)
+      ? dto.activePetId
+      : (current?.activePetId ?? null);
+
+    if (!current) {
+      return { status: 'conflict', collection: this.toResponse(null) };
+    }
+
+    const fields = { pets, activePetId, isAtHome: dto.isAtHome };
 
     try {
-      const saved = current
-        ? await this.model.findOneAndUpdate(
-            { userId: userObjectId, revision: currentRevision },
-            { $set: fields, $inc: { revision: 1 } },
-            { new: true },
-          )
-        : await this.model.create({
-            userId: userObjectId,
-            ...fields,
-            revision: 1,
-          });
+      const saved = await this.model.findOneAndUpdate(
+        { userId: userObjectId, revision: currentRevision },
+        { $set: fields, $inc: { revision: 1 } },
+        { new: true },
+      );
       if (!saved) {
         const latest = await this.model.findOne({ userId: userObjectId });
         return { status: 'conflict', collection: this.toResponse(latest) };

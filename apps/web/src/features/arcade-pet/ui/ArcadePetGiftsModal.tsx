@@ -60,7 +60,7 @@ export function ArcadePetGiftsModal({
     }
   };
 
-  const handleSendGift = () => {
+  const handleSendGift = async () => {
     setErrorMsg(null);
     setSuccessMsg(null);
     if (!recipient.trim()) {
@@ -68,7 +68,7 @@ export function ArcadePetGiftsModal({
       return;
     }
 
-    const result = sendGiftPet(
+    const result = await sendGiftPet(
       recipient.trim(),
       recipient.trim(),
       {
@@ -91,6 +91,8 @@ export function ArcadePetGiftsModal({
         setErrorMsg(
           t('arcadePetCompanion.gifts.errGems', { gems: gemBalance }),
         );
+      } else if (result.error === 'RECIPIENT_NOT_FOUND') {
+        setErrorMsg(t('arcadePetCompanion.gifts.errRecipient'));
       } else {
         setErrorMsg(t('arcadePetCompanion.gifts.errSend'));
       }

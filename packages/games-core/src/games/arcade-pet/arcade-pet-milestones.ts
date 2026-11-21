@@ -1,4 +1,4 @@
-import type { PetState } from '@arcadeum/games-core';
+import type { PetState } from './arcade-pet.types';
 
 export type MilestoneId =
   'first_hatch' | 'level_5' | 'level_10' | 'collector_3' | 'streak_7';

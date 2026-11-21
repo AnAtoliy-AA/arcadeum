@@ -40,6 +40,7 @@ export function ArcadePetAdoptionModal({
     upgradeHome,
     selectActivePet,
     addGems,
+    serverBacked,
   } = useArcadePetStore();
 
   const [activeTab, setActiveTab] = useState<
@@ -451,7 +452,7 @@ export function ArcadePetAdoptionModal({
                 </div>
               </div>
 
-              {SHOW_DEV_GEM_GRANT && (
+              {SHOW_DEV_GEM_GRANT && !serverBacked && (
                 <div className="flex items-center justify-between text-xs text-neutral-400 pt-1">
                   <span>{t('arcadePetCompanion.adoption.needGems')}</span>
                   <button

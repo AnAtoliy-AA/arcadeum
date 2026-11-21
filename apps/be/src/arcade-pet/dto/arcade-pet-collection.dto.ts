@@ -13,9 +13,11 @@ import {
   Max,
   MaxLength,
   Min,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import type {
+  ArcadePetEconomyActionType,
   GameTreatId,
   PetMood,
   PetSpecies,
@@ -40,8 +42,6 @@ export const VALID_MOODS: readonly PetMood[] = [
   'hungry',
 ];
 export const MAX_PETS = 20;
-export const MAX_PRESENTS = 200;
-const MAX_CURRENCY = 1_000_000_000;
 
 export class PetStatsDto {
   @IsNumber() @Min(0) @Max(100) hunger: number;
@@ -85,18 +85,6 @@ export class CollectionPetDto {
   @IsIn(VALID_MOODS) mood: PetMood;
 }
 
-export class PetPresentDto {
-  @IsString() @IsNotEmpty() @MaxLength(80) id: string;
-  @IsString() @MaxLength(80) senderId: string;
-  @IsString() @MaxLength(80) senderName: string;
-  @IsIn(VALID_SPECIES) species: PetSpecies;
-  @IsString() @IsNotEmpty() @MaxLength(40) theme: string;
-  @IsString() @IsNotEmpty() @MaxLength(40) petName: string;
-  @IsOptional() @IsString() @MaxLength(300) message?: string;
-  @IsNumber() @Min(0) createdAt: number;
-  @IsBoolean() isOpened: boolean;
-}
-
 export class SyncCollectionDto {
   @IsInt() @Min(0) baseRevision: number;
 
@@ -108,18 +96,91 @@ export class SyncCollectionDto {
 
   @IsOptional() @IsString() @MaxLength(64) activePetId: string | null;
 
-  @IsInt() @Min(0) @Max(MAX_CURRENCY) gemBalance: number;
-  @IsInt() @Min(0) @Max(MAX_CURRENCY) coinBalance: number;
-  @IsInt() @Min(0) @Max(1000) adoptionCount: number;
-  @IsInt() @Min(1) @Max(MAX_PETS) homeCapacity: number;
-  @IsOptional() @IsString() @MaxLength(40) queuedThemeForNextPet: string | null;
-
-  @IsArray()
-  @ArrayMaxSize(MAX_PRESENTS)
-  @ValidateNested({ each: true })
-  @Type(() => PetPresentDto)
-  presents: PetPresentDto[];
-
-  @IsBoolean() hasConfirmedCare: boolean;
   @IsBoolean() isAtHome: boolean;
+}
+
+export const ECONOMY_ACTION_TYPES: readonly ArcadePetEconomyActionType[] = [
+  'adopt_random',
+  'adopt_selected',
+  'upgrade_home',
+  'feed_snack',
+  'claim_present',
+  'send_gift',
+  'claim_daily',
+  'claim_milestones',
+  'queue_theme',
+];
+
+/**
+ * Flat DTO for every economy action; per-type required fields are enforced
+ * with ValidateIf so unrelated fields stay optional.
+ */
+export class EconomyActionDto {
+  @IsIn(ECONOMY_ACTION_TYPES) type: ArcadePetEconomyActionType;
+
+  @ValidateIf((o: EconomyActionDto) =>
+    ['adopt_random', 'adopt_selected', 'feed_snack', 'claim_present'].includes(
+      o.type,
+    ),
+  )
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(64)
+  petId?: string;
+
+  @ValidateIf((o: EconomyActionDto) =>
+    ['adopt_random', 'adopt_selected', 'send_gift'].includes(o.type),
+  )
+  @IsIn(VALID_SPECIES)
+  species?: PetSpecies;
+
+  @ValidateIf((o: EconomyActionDto) =>
+    ['adopt_random', 'adopt_selected', 'send_gift'].includes(o.type),
+  )
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(40)
+  theme?: string;
+
+  @ValidateIf((o: EconomyActionDto) =>
+    ['adopt_random', 'adopt_selected'].includes(o.type),
+  )
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(60)
+  name?: string;
+
+  @ValidateIf((o: EconomyActionDto) => o.type === 'upgrade_home')
+  @IsIn(['coins', 'gems'])
+  currency?: 'coins' | 'gems';
+
+  @ValidateIf((o: EconomyActionDto) => o.type === 'claim_present')
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(80)
+  presentId?: string;
+
+  @ValidateIf((o: EconomyActionDto) => o.type === 'send_gift')
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(64)
+  recipientUsername?: string;
+
+  @ValidateIf((o: EconomyActionDto) => o.type === 'send_gift')
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(60)
+  petName?: string;
+
+  @ValidateIf((o: EconomyActionDto) => o.type === 'send_gift')
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  message?: string;
+
+  @ValidateIf((o: EconomyActionDto) => o.type === 'queue_theme')
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(40)
+  themeId?: string;
 }

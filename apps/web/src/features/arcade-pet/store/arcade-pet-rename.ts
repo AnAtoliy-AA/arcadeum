@@ -1,4 +1,4 @@
-import { sanitizePetName } from '../lib/arcade-pet-name';
+import { sanitizePetName } from '@arcadeum/games-core';
 import { persistStore } from './arcade-pet-storage';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 

@@ -2,99 +2,60 @@
 
 import { useEffect } from 'react';
 import { useArcadePetStore } from '../store/useArcadePetStore';
+import { decidePull, fetchServerCollection } from '../lib/arcade-pet-sync';
 import {
-  buildCollectionPayload,
-  collectionSignature,
-  decidePull,
-  fetchServerCollection,
-  mergePresentLists,
-  pushServerCollection,
-} from '../lib/arcade-pet-sync';
+  enqueueServerTask,
+  isPetStateDirty,
+  markPetsSynced,
+  pushPetState,
+} from '../store/arcade-pet-server-actions';
+import { persistStore } from '../store/arcade-pet-storage';
 
 const PUSH_DEBOUNCE_MS = 1500;
 
 /**
  * Keeps the local pet collection in sync with the server for signed-in
- * users: pulls once on mount (server wins when it is newer), then pushes
- * local changes with optimistic concurrency. Failures are silent because
- * the localStorage copy remains the source of truth until the next sync.
+ * users. The server is the source of truth: it is pulled once on mount and
+ * whenever its revision differs. Pet care state is pushed (debounced) with
+ * optimistic concurrency; balances and rewards only change through the
+ * economy actions in `arcade-pet-server-actions`. Failures are silent: the
+ * localStorage copy keeps the UI working until the next successful sync.
  */
 export function useArcadePetSync(enabled: boolean): void {
   useEffect(() => {
     if (!enabled) return;
 
     let cancelled = false;
-    let ready = false;
-    let inFlight = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
-    let lastSignature = '';
-
     const store = useArcadePetStore;
-
-    const push = async () => {
-      const state = store.getState();
-      if (!ready || inFlight || !state.hasConfirmedCare) return;
-      const signature = collectionSignature(state);
-      if (signature === lastSignature) return;
-      inFlight = true;
-      try {
-        const result = await pushServerCollection({
-          ...buildCollectionPayload(state),
-          baseRevision: state.syncRevision ?? 0,
-        });
-        if (cancelled) return;
-        if (result.status === 'conflict') {
-          store.getState().applyServerCollection(result.collection);
-        } else {
-          // Keep edits made while the request was in flight; only adopt the
-          // new revision and any presents delivered server-side.
-          const current = store.getState();
-          store.setState({
-            syncRevision: result.collection.revision,
-            presents: mergePresentLists(
-              current.presents,
-              result.collection.presents,
-            ),
-          });
-        }
-        lastSignature = collectionSignature(store.getState());
-      } catch {
-        // Offline or transient failure: retried on the next local change.
-      } finally {
-        inFlight = false;
-      }
-    };
+    const get = store.getState;
+    const set = store.setState;
 
     const schedulePush = () => {
       if (timer) clearTimeout(timer);
-      timer = setTimeout(() => void push(), PUSH_DEBOUNCE_MS);
+      timer = setTimeout(() => {
+        void enqueueServerTask(() => pushPetState(get, set));
+      }, PUSH_DEBOUNCE_MS);
     };
 
     const unsubscribe = store.subscribe(() => {
-      if (ready) schedulePush();
+      if (get().serverBacked && isPetStateDirty(get)) schedulePush();
     });
 
     void (async () => {
       try {
-        const server = await fetchServerCollection();
+        const server = await enqueueServerTask(fetchServerCollection);
         if (cancelled) return;
-        const decision = decidePull(store.getState(), server);
-        if (decision === 'apply-server') {
-          store.getState().applyServerCollection(server);
+        if (decidePull(get(), server) === 'apply-server') {
+          get().applyServerCollection(server);
+          markPetsSynced(get);
         } else {
-          store.setState({
-            syncRevision: server.revision,
-            presents: mergePresentLists(
-              store.getState().presents,
-              server.presents,
-            ),
-          });
+          // Same revision: local pet edits may still be unsynced, push them.
+          set({ syncRevision: server.revision });
+          persistStore(get());
         }
-        if (decision !== 'push-local') {
-          lastSignature = collectionSignature(store.getState());
-        }
-        ready = true;
-        if (decision === 'push-local') schedulePush();
+        set({ serverBacked: true });
+        if (isPetStateDirty(get)) schedulePush();
       } catch {
         // Stay local-only until the next mount.
       }
@@ -104,6 +65,7 @@ export function useArcadePetSync(enabled: boolean): void {
       cancelled = true;
       unsubscribe();
       if (timer) clearTimeout(timer);
+      set({ serverBacked: false });
     };
   }, [enabled]);
 }

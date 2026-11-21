@@ -3,8 +3,9 @@ import {
   getDailyBonusCoins,
   nextDailyStreak,
   toDayKey,
-} from '../lib/arcade-pet-daily-bonus';
+} from '@arcadeum/games-core';
 import { persistStore } from './arcade-pet-storage';
+import { sendEconomyAction } from './arcade-pet-server-actions';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 type Getter = () => ArcadePetStoreState;
@@ -29,5 +30,6 @@ export function claimDailyBonus(
   };
   set(next);
   persistStore({ ...get(), ...next });
+  void sendEconomyAction(get, set, { type: 'claim_daily' });
   return { success: true, coins, streak };
 }

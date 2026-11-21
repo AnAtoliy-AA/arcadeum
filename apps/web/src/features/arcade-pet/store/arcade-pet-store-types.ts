@@ -5,8 +5,9 @@ import type {
   PetState,
 } from '@arcadeum/games-core';
 import type { ArcadePetCollectionResponse } from '@arcadeum/games-core';
+import type { SendGiftResult } from './arcade-pet-send-gift';
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
-import type { MilestoneId } from '../lib/arcade-pet-milestones';
+import type { MilestoneId } from '@arcadeum/games-core';
 import type { AwaySummary } from '../lib/arcade-pet-away-summary';
 
 export type ArcadePetErrorCode =
@@ -39,6 +40,8 @@ export interface ArcadePetStoreState {
   hasConfirmedCare: boolean;
   /** Last server revision this state was synced with; null if never synced. */
   syncRevision: number | null;
+  /** True once the server collection was loaded; economy then runs on the server. */
+  serverBacked: boolean;
   actionError: ArcadePetActionError | null;
   awaySummary: AwaySummary | null;
   dailyStreak: number;
@@ -82,7 +85,7 @@ export interface ArcadePetStoreState {
       message?: string;
     },
     isAdmin?: boolean,
-  ) => { success: boolean; error?: string };
+  ) => Promise<SendGiftResult>;
   buyGameTheme: (themeId: string) => void;
   addGems: (amount: number) => void;
   addCoins: (amount: number) => void;

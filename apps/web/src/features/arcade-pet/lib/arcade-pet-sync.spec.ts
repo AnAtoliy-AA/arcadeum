@@ -1,27 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialPet } from '@arcadeum/games-core';
-import type {
-  ArcadePetCollectionResponse,
-  PetGiftPresentPayload,
-} from '@arcadeum/games-core';
+import type { ArcadePetCollectionResponse } from '@arcadeum/games-core';
 import {
-  buildCollectionPayload,
+  buildEconomyPatch,
+  buildRollbackPatch,
   buildServerPatch,
-  collectionSignature,
+  buildSyncPayload,
   decidePull,
-  mergePresentLists,
+  syncSignature,
 } from './arcade-pet-sync';
-
-const present = (id: string, isOpened = false): PetGiftPresentPayload => ({
-  id,
-  senderId: 'admin',
-  senderName: 'Admin',
-  species: 'dragon',
-  theme: 'retro',
-  petName: 'Dragon',
-  createdAt: 1,
-  isOpened,
-});
 
 const server = (
   over: Partial<ArcadePetCollectionResponse> = {},
@@ -33,100 +20,110 @@ const server = (
   coinBalance: 30,
   adoptionCount: 1,
   homeCapacity: 2,
-  queuedThemeForNextPet: null,
+  queuedThemeForNextPet: 'steampunk',
   presents: [],
   hasConfirmedCare: true,
   isAtHome: false,
+  dailyStreak: 3,
+  lastDailyClaimDay: '2026-11-15',
+  claimedMilestones: ['first_hatch'],
   ...over,
 });
 
-describe('mergePresentLists', () => {
-  it('unions by id and keeps opened state from either side', () => {
-    const merged = mergePresentLists(
-      [present('a', true), present('local-only')],
-      [present('a', false), present('server-only')],
-    );
-    expect(merged.map((p) => p.id).sort()).toEqual([
-      'a',
-      'local-only',
-      'server-only',
-    ]);
-    expect(merged.find((p) => p.id === 'a')?.isOpened).toBe(true);
+describe('decidePull', () => {
+  it('adopts the server unless the local revision matches', () => {
+    expect(decidePull({ syncRevision: null }, server())).toBe('apply-server');
+    expect(decidePull({ syncRevision: 2 }, server())).toBe('apply-server');
+    expect(decidePull({ syncRevision: 4 }, server())).toBe('in-sync');
+  });
+
+  it('adopts an empty server record for a never-synced client', () => {
+    expect(
+      decidePull({ syncRevision: null }, server({ revision: 0, pets: [] })),
+    ).toBe('apply-server');
   });
 });
 
-describe('decidePull', () => {
-  it('seeds an empty server record from confirmed local state', () => {
-    expect(
-      decidePull(
-        { hasConfirmedCare: true, syncRevision: null },
-        server({ revision: 0, pets: [], hasConfirmedCare: false }),
-      ),
-    ).toBe('push-local');
-  });
-
-  it('does nothing when both sides are empty', () => {
-    expect(
-      decidePull(
-        { hasConfirmedCare: false, syncRevision: null },
-        server({ revision: 0, pets: [], hasConfirmedCare: false }),
-      ),
-    ).toBe('in-sync');
-  });
-
-  it('applies the server copy when local was never synced or is stale', () => {
-    expect(
-      decidePull({ hasConfirmedCare: true, syncRevision: null }, server()),
-    ).toBe('apply-server');
-    expect(
-      decidePull({ hasConfirmedCare: true, syncRevision: 2 }, server()),
-    ).toBe('apply-server');
-  });
-
-  it('keeps local when it matches the server revision', () => {
-    expect(
-      decidePull({ hasConfirmedCare: true, syncRevision: 4 }, server()),
-    ).toBe('in-sync');
+describe('buildEconomyPatch', () => {
+  it('copies every server-owned field and the revision, but not pets', () => {
+    const patch = buildEconomyPatch(server());
+    expect(patch).toMatchObject({
+      gemBalance: 120,
+      coinBalance: 30,
+      adoptionCount: 1,
+      homeCapacity: 2,
+      queuedThemeForNextPet: 'steampunk',
+      dailyStreak: 3,
+      lastDailyClaimDay: '2026-11-15',
+      claimedMilestones: ['first_hatch'],
+      syncRevision: 4,
+    });
+    expect(patch).not.toHaveProperty('pets');
   });
 });
 
 describe('buildServerPatch', () => {
-  it('adopts server state, picks the active pet and records the revision', () => {
+  it('adopts the whole server collection including pets and presents', () => {
+    const present = {
+      id: 's',
+      senderId: 'admin',
+      senderName: 'Admin',
+      species: 'dragon' as const,
+      theme: 'retro',
+      petName: 'D',
+      createdAt: 1,
+      isOpened: false,
+    };
     const patch = buildServerPatch(
-      { presents: [present('local')], activePetId: null },
-      server({ presents: [present('s')] }),
+      { activePetId: null },
+      server({ presents: [present] }),
     );
     expect(patch.pet?.id).toBe('p1');
-    expect(patch.gemBalance).toBe(120);
+    expect(patch.activePetId).toBe('p1');
+    expect(patch.presents).toEqual([present]);
     expect(patch.syncRevision).toBe(4);
-    expect(patch.presents?.map((p) => p.id).sort()).toEqual(['local', 's']);
+  });
+
+  it('yields no active pet for an empty server collection', () => {
+    const patch = buildServerPatch(
+      { activePetId: 'x' },
+      server({ pets: [], activePetId: null, hasConfirmedCare: false }),
+    );
+    expect(patch.pet).toBeNull();
+    expect(patch.hasConfirmedCare).toBe(false);
   });
 });
 
-describe('collection payload', () => {
-  const base = {
-    pets: [],
-    activePetId: null,
-    gemBalance: 10.7,
-    coinBalance: -3,
-    adoptionCount: 0,
-    homeCapacity: 1,
-    queuedThemeForNextPet: null,
-    presents: [],
-    hasConfirmedCare: true,
-    isAtHome: false,
-  };
+describe('buildRollbackPatch', () => {
+  it('drops unknown optimistic pets but keeps local edits of known pets', () => {
+    const known = { ...createInitialPet({ id: 'p1', name: 'Local Name' }) };
+    const optimistic = createInitialPet({ id: 'ghost', name: 'Ghost' });
+    const patch = buildRollbackPatch(
+      { pets: [known, optimistic], activePetId: 'ghost' },
+      server(),
+    );
+    expect(patch.pets?.map((p) => p.id)).toEqual(['p1']);
+    expect(patch.pets?.[0].name).toBe('Local Name');
+    expect(patch.activePetId).toBe('p1');
+    expect(patch.gemBalance).toBe(120);
+  });
+});
 
-  it('floors and clamps balances to integers >= 0', () => {
-    const payload = buildCollectionPayload(base);
-    expect(payload.gemBalance).toBe(10);
-    expect(payload.coinBalance).toBe(0);
+describe('sync payload', () => {
+  const base = { pets: [], activePetId: null, isAtHome: false };
+
+  it('contains only client-writable fields', () => {
+    expect(Object.keys(buildSyncPayload(base)).sort()).toEqual([
+      'activePetId',
+      'isAtHome',
+      'pets',
+    ]);
   });
 
   it('changes signature only when synced data changes', () => {
-    expect(collectionSignature(base)).toBe(collectionSignature({ ...base }));
-    expect(collectionSignature(base)).not.toBe(
-      collectionSignature({ ...base, homeCapacity: 2 }),
+    expect(syncSignature(base)).toBe(syncSignature({ ...base }));
+    expect(syncSignature(base)).not.toBe(
+      syncSignature({ ...base, isAtHome: true }),
     );
   });
 });

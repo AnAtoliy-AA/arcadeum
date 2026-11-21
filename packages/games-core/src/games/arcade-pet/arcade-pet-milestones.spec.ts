@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createInitialPet, type PetState } from '@arcadeum/games-core';
+import { createInitialPet } from './arcade-pet.utils';
+import type { PetState } from './arcade-pet.types';
 import { getNewMilestones } from './arcade-pet-milestones';
 
 function makePet(id: string, overrides: Partial<PetState> = {}): PetState {

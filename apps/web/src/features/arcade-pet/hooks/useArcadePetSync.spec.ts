@@ -4,6 +4,7 @@ import { act } from 'react';
 import { createInitialPet } from '@arcadeum/games-core';
 import type { ArcadePetCollectionResponse } from '@arcadeum/games-core';
 import { useArcadePetStore } from '../store/useArcadePetStore';
+import { resetServerQueue } from '../store/arcade-pet-server-actions';
 import { useArcadePetSync } from './useArcadePetSync';
 
 const fetchServerCollection = vi.fn();
@@ -32,19 +33,22 @@ const serverCollection = (
   presents: [],
   hasConfirmedCare: false,
   isAtHome: false,
+  dailyStreak: 0,
+  lastDailyClaimDay: null,
+  claimedMilestones: [],
   ...over,
 });
 
 const flush = async () => {
   await act(async () => {
-    await Promise.resolve();
-    await Promise.resolve();
+    await vi.advanceTimersByTimeAsync(0);
   });
 };
 
 describe('useArcadePetSync', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    resetServerQueue();
     fetchServerCollection.mockReset();
     pushServerCollection.mockReset();
     useArcadePetStore.setState({
@@ -53,9 +57,11 @@ describe('useArcadePetSync', () => {
       activePetId: null,
       hasConfirmedCare: false,
       syncRevision: null,
+      serverBacked: false,
       presents: [],
       gemBalance: 300,
       coinBalance: 50,
+      isAtHome: false,
     });
   });
 
@@ -65,9 +71,10 @@ describe('useArcadePetSync', () => {
     renderHook(() => useArcadePetSync(false));
     await flush();
     expect(fetchServerCollection).not.toHaveBeenCalled();
+    expect(useArcadePetStore.getState().serverBacked).toBe(false);
   });
 
-  it('adopts the server collection when it holds pets', async () => {
+  it('adopts the server collection and becomes server-backed', async () => {
     const pet = createInitialPet({ id: 'srv', name: 'Srv' });
     fetchServerCollection.mockResolvedValue(
       serverCollection({
@@ -84,80 +91,87 @@ describe('useArcadePetSync', () => {
     expect(state.pets).toHaveLength(1);
     expect(state.gemBalance).toBe(999);
     expect(state.syncRevision).toBe(3);
+    expect(state.serverBacked).toBe(true);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
     expect(pushServerCollection).not.toHaveBeenCalled();
   });
 
-  it('seeds an empty server record from local state after the debounce', async () => {
-    const pet = createInitialPet({ id: 'loc', name: 'Loc' });
+  it('discards stale local pets when the server has none', async () => {
+    const stale = createInitialPet({ id: 'old', name: 'Old' });
     useArcadePetStore.setState({
-      pets: [pet],
-      pet,
-      activePetId: 'loc',
+      pets: [stale],
+      pet: stale,
+      activePetId: 'old',
       hasConfirmedCare: true,
     });
-    fetchServerCollection.mockResolvedValue(serverCollection());
-    pushServerCollection.mockImplementation(async () => ({
-      status: 'ok',
-      collection: serverCollection({ revision: 1 }),
-    }));
+    fetchServerCollection.mockResolvedValue(serverCollection({ revision: 0 }));
     renderHook(() => useArcadePetSync(true));
     await flush();
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1600);
-    });
-    expect(pushServerCollection).toHaveBeenCalledTimes(1);
-    expect(pushServerCollection.mock.calls[0][0]).toMatchObject({
-      baseRevision: 0,
-      hasConfirmedCare: true,
-    });
-    expect(useArcadePetStore.getState().syncRevision).toBe(1);
+    const state = useArcadePetStore.getState();
+    expect(state.pets).toEqual([]);
+    expect(state.hasConfirmedCare).toBe(false);
   });
 
-  it('pushes local edits and takes the server copy on conflict', async () => {
+  it('pushes only pet state, debounced, after a local change', async () => {
     const pet = createInitialPet({ id: 'p', name: 'P' });
-    useArcadePetStore.setState({
-      pets: [pet],
-      pet,
-      activePetId: 'p',
-      hasConfirmedCare: true,
-      syncRevision: 2,
-    });
     fetchServerCollection.mockResolvedValue(
       serverCollection({
         revision: 2,
         pets: [pet],
         activePetId: 'p',
         hasConfirmedCare: true,
-        gemBalance: 300,
       }),
     );
     pushServerCollection.mockResolvedValue({
-      status: 'conflict',
-      collection: serverCollection({
-        revision: 5,
-        pets: [pet],
-        activePetId: 'p',
-        hasConfirmedCare: true,
-        gemBalance: 777,
-      }),
+      status: 'ok',
+      collection: serverCollection({ revision: 3 }),
     });
     renderHook(() => useArcadePetSync(true));
     await flush();
-    expect(pushServerCollection).not.toHaveBeenCalled();
 
     await act(async () => {
-      useArcadePetStore.setState({ gemBalance: 1 });
+      useArcadePetStore.setState({ isAtHome: true });
       await vi.advanceTimersByTimeAsync(1600);
     });
     expect(pushServerCollection).toHaveBeenCalledTimes(1);
-    expect(useArcadePetStore.getState().gemBalance).toBe(777);
-    expect(useArcadePetStore.getState().syncRevision).toBe(5);
+    const payload = pushServerCollection.mock.calls[0][0] as object;
+    expect(Object.keys(payload).sort()).toEqual([
+      'activePetId',
+      'baseRevision',
+      'isAtHome',
+      'pets',
+    ]);
+    expect(useArcadePetStore.getState().syncRevision).toBe(3);
   });
 
-  it('stays local when the pull fails', async () => {
-    fetchServerCollection.mockRejectedValue(new Error('offline'));
+  it('does not push for balance-only changes', async () => {
+    const pet = createInitialPet({ id: 'p', name: 'P' });
+    fetchServerCollection.mockResolvedValue(
+      serverCollection({
+        revision: 2,
+        pets: [pet],
+        activePetId: 'p',
+        hasConfirmedCare: true,
+      }),
+    );
     renderHook(() => useArcadePetSync(true));
     await flush();
+    await act(async () => {
+      useArcadePetStore.setState({ gemBalance: 1 });
+      await vi.advanceTimersByTimeAsync(2000);
+    });
     expect(pushServerCollection).not.toHaveBeenCalled();
+  });
+
+  it('stays local when the pull fails and resets on unmount', async () => {
+    fetchServerCollection.mockRejectedValue(new Error('offline'));
+    const { unmount } = renderHook(() => useArcadePetSync(true));
+    await flush();
+    expect(useArcadePetStore.getState().serverBacked).toBe(false);
+    useArcadePetStore.setState({ serverBacked: true });
+    unmount();
+    expect(useArcadePetStore.getState().serverBacked).toBe(false);
   });
 });

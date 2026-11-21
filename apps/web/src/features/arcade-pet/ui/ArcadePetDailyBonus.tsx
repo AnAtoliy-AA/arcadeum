@@ -3,7 +3,7 @@ import {
   canClaimDailyBonus,
   getDailyBonusCoins,
   nextDailyStreak,
-} from '../lib/arcade-pet-daily-bonus';
+} from '@arcadeum/games-core';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetDailyBonusProps {

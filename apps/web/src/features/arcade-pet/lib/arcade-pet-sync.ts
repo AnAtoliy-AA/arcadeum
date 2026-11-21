@@ -1,8 +1,8 @@
 import { applyDeterministicDecay } from '@arcadeum/games-core';
 import type {
-  ArcadePetCollectionPayload,
   ArcadePetCollectionResponse,
-  PetGiftPresentPayload,
+  ArcadePetEconomyAction,
+  ArcadePetEconomyResult,
   SyncArcadePetCollectionRequest,
   SyncArcadePetCollectionResult,
 } from '@arcadeum/games-core';
@@ -13,16 +13,7 @@ const COLLECTION_PATH = '/arcade-pet/collection';
 
 export type SyncableState = Pick<
   ArcadePetStoreState,
-  | 'pets'
-  | 'activePetId'
-  | 'gemBalance'
-  | 'coinBalance'
-  | 'adoptionCount'
-  | 'homeCapacity'
-  | 'queuedThemeForNextPet'
-  | 'presents'
-  | 'hasConfirmedCare'
-  | 'isAtHome'
+  'pets' | 'activePetId' | 'isAtHome'
 >;
 
 export function fetchServerCollection(): Promise<ArcadePetCollectionResponse> {
@@ -38,67 +29,63 @@ export function pushServerCollection(
   });
 }
 
-export function buildCollectionPayload(
+export function performServerAction(
+  action: ArcadePetEconomyAction,
+): Promise<ArcadePetEconomyResult> {
+  return apiClient.fetch<ArcadePetEconomyResult>(`${COLLECTION_PATH}/action`, {
+    method: 'POST',
+    data: action,
+  });
+}
+
+/** Client-writable part of the collection; everything else is server-owned. */
+export function buildSyncPayload(
   state: SyncableState,
-): ArcadePetCollectionPayload {
+): Omit<SyncArcadePetCollectionRequest, 'baseRevision'> {
   return {
     pets: state.pets,
     activePetId: state.activePetId,
-    gemBalance: Math.max(0, Math.floor(state.gemBalance)),
-    coinBalance: Math.max(0, Math.floor(state.coinBalance)),
-    adoptionCount: state.adoptionCount,
-    homeCapacity: state.homeCapacity,
-    queuedThemeForNextPet: state.queuedThemeForNextPet,
-    presents: state.presents,
-    hasConfirmedCare: state.hasConfirmedCare,
     isAtHome: state.isAtHome,
   };
 }
 
 /** Stable fingerprint used to skip pushes when nothing changed. */
-export function collectionSignature(state: SyncableState): string {
-  return JSON.stringify(buildCollectionPayload(state));
+export function syncSignature(state: SyncableState): string {
+  return JSON.stringify(buildSyncPayload(state));
 }
 
-/** Union by id; a present opened on either side stays opened. */
-export function mergePresentLists(
-  local: PetGiftPresentPayload[],
-  server: PetGiftPresentPayload[],
-): PetGiftPresentPayload[] {
-  const localById = new Map(local.map((p) => [p.id, p]));
-  const merged = server.map((p) => ({
-    ...p,
-    isOpened: p.isOpened || localById.get(p.id)?.isOpened === true,
-  }));
-  const serverIds = new Set(server.map((p) => p.id));
-  for (const p of local) {
-    if (!serverIds.has(p.id)) merged.push(p);
-  }
-  return merged;
-}
+export type PullDecision = 'apply-server' | 'in-sync';
 
-export type PullDecision = 'push-local' | 'apply-server' | 'in-sync';
-
-/**
- * Decides how to reconcile local state with the server copy on load.
- * Server wins whenever it holds pets or a newer revision than the one the
- * local state was derived from; a never-synced local collection seeds an
- * empty server record.
- */
+/** Server is the source of truth: adopt it whenever the revision differs. */
 export function decidePull(
-  local: Pick<ArcadePetStoreState, 'hasConfirmedCare' | 'syncRevision'>,
+  local: Pick<ArcadePetStoreState, 'syncRevision'>,
   server: ArcadePetCollectionResponse,
 ): PullDecision {
-  const serverHasPets = server.hasConfirmedCare && server.pets.length > 0;
-  if (!serverHasPets) {
-    return local.hasConfirmedCare ? 'push-local' : 'in-sync';
-  }
   return local.syncRevision === server.revision ? 'in-sync' : 'apply-server';
 }
 
-/** State patch produced by adopting a server collection. */
+/** Server-owned fields only; pets are left to the caller. */
+export function buildEconomyPatch(
+  server: ArcadePetCollectionResponse,
+): Partial<ArcadePetStoreState> {
+  return {
+    gemBalance: server.gemBalance,
+    coinBalance: server.coinBalance,
+    adoptionCount: server.adoptionCount,
+    homeCapacity: server.homeCapacity,
+    queuedThemeForNextPet: server.queuedThemeForNextPet,
+    presents: server.presents,
+    hasConfirmedCare: server.hasConfirmedCare,
+    dailyStreak: server.dailyStreak,
+    lastDailyClaimDay: server.lastDailyClaimDay,
+    claimedMilestones: server.claimedMilestones,
+    syncRevision: server.revision,
+  };
+}
+
+/** Full state patch produced by adopting the server collection. */
 export function buildServerPatch(
-  local: Pick<ArcadePetStoreState, 'presents' | 'activePetId'>,
+  local: Pick<ArcadePetStoreState, 'activePetId'>,
   server: ArcadePetCollectionResponse,
 ): Partial<ArcadePetStoreState> {
   const pets = server.pets.map((p) =>
@@ -109,17 +96,34 @@ export function buildServerPatch(
     pets[0] ??
     null;
   return {
+    ...buildEconomyPatch(server),
     pets,
     pet: active,
     activePetId: active?.id ?? null,
-    gemBalance: server.gemBalance,
-    coinBalance: server.coinBalance,
-    adoptionCount: server.adoptionCount,
-    homeCapacity: server.homeCapacity,
-    queuedThemeForNextPet: server.queuedThemeForNextPet,
-    presents: mergePresentLists(local.presents, server.presents),
-    hasConfirmedCare: server.hasConfirmedCare,
     isAtHome: server.isAtHome,
-    syncRevision: server.revision,
+  };
+}
+
+/**
+ * Patch used when the server rejects an optimistic action: server-owned
+ * fields are reset to the server's truth and the pet list follows the server
+ * (unknown optimistic pets are dropped), but local state of pets the server
+ * knows is kept so unsynced care edits are not lost.
+ */
+export function buildRollbackPatch(
+  local: Pick<ArcadePetStoreState, 'pets' | 'activePetId'>,
+  server: ArcadePetCollectionResponse,
+): Partial<ArcadePetStoreState> {
+  const localById = new Map(local.pets.map((p) => [p.id, p]));
+  const pets = server.pets.map((p) => localById.get(p.id) ?? p);
+  const active =
+    pets.find((p) => p.id === (local.activePetId ?? server.activePetId)) ??
+    pets[0] ??
+    null;
+  return {
+    ...buildEconomyPatch(server),
+    pets,
+    pet: active,
+    activePetId: active?.id ?? null,
   };
 }

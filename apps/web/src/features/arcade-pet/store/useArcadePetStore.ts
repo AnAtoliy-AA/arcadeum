@@ -10,7 +10,6 @@ import {
   getPetFoodCost,
   getRandomPetSpec,
   SELECT_PET_COST,
-  type PetGiftPresent,
 } from '../lib/arcade-pet-economy';
 import {
   loadStoredCollection,
@@ -22,6 +21,8 @@ import { claimDailyBonus } from './arcade-pet-daily-claim';
 import { checkMilestones } from './arcade-pet-milestone-claim';
 import { renamePet } from './arcade-pet-rename';
 import { upgradeHome } from './arcade-pet-upgrade-home';
+import { sendGiftPet } from './arcade-pet-send-gift';
+import { sendEconomyAction } from './arcade-pet-server-actions';
 import type { ArcadePetStoreState } from './arcade-pet-store-types';
 
 export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
@@ -39,6 +40,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   activeTreat: null,
   hasConfirmedCare: false,
   syncRevision: null,
+  serverBacked: false,
   actionError: null,
   awaySummary: null,
   dailyStreak: 0,
@@ -156,6 +158,14 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       queuedThemeForNextPet: null,
     });
 
+    void sendEconomyAction(get, set, {
+      type: 'adopt_random',
+      petId: newId,
+      species: spec.species,
+      theme: spec.theme,
+      name: spec.name,
+    });
+
     return { success: true, pet: newPet };
   },
 
@@ -204,6 +214,14 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       gemBalance: nextGems,
       adoptionCount: nextCount,
       queuedThemeForNextPet: null,
+    });
+
+    void sendEconomyAction(get, set, {
+      type: 'adopt_selected',
+      petId: newId,
+      species,
+      theme,
+      name: newPet.name,
     });
 
     return { success: true, pet: newPet };
@@ -272,45 +290,21 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       gemBalance: nextGems,
     });
 
+    void sendEconomyAction(get, set, {
+      type: 'claim_present',
+      presentId,
+      petId: newId,
+    });
+
     return { success: true, present: target };
   },
 
-  sendGiftPet: (recipientId, _recipientName, gift, isAdmin = false) => {
-    const { gemBalance, presents } = get();
-    const giftCost = isAdmin ? 0 : 50;
-    if (gemBalance < giftCost) {
-      return { success: false, error: 'INSUFFICIENT_GEMS' };
-    }
-
-    const nextGems = gemBalance - giftCost;
-    const newPresent: PetGiftPresent = {
-      id: `gift-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      senderId: isAdmin ? 'admin' : 'friend',
-      senderName: isAdmin ? '👑 Arcadeum Admin' : 'Friend',
-      species: gift.species,
-      theme: gift.theme,
-      petName: gift.petName,
-      message:
-        gift.message ||
-        (isAdmin ? 'Official Administrator Gift' : 'A special gift!'),
-      createdAt: Date.now(),
-      isOpened: false,
-    };
-    const nextPresents = [newPresent, ...presents];
-
-    set({ gemBalance: nextGems, presents: nextPresents });
-
-    persistStore({
-      ...get(),
-      gemBalance: nextGems,
-      presents: nextPresents,
-    });
-
-    return { success: true };
-  },
+  sendGiftPet: (_recipientId, recipientName, gift, isAdmin = false) =>
+    sendGiftPet(get, set, recipientName, gift, isAdmin),
 
   buyGameTheme: (themeId) => {
     set({ queuedThemeForNextPet: themeId });
+    void sendEconomyAction(get, set, { type: 'queue_theme', themeId });
     persistStore({
       ...get(),
       queuedThemeForNextPet: themeId,
@@ -385,6 +379,10 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
           ...get(),
           pets: updatedPets,
           coinBalance: nextCoins,
+        });
+        void sendEconomyAction(get, set, {
+          type: 'feed_snack',
+          petId: target.id,
         });
         return { success: true };
       }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { PET_NAME_MAX_LENGTH, sanitizePetName } from '../lib/arcade-pet-name';
+import { PET_NAME_MAX_LENGTH, sanitizePetName } from '@arcadeum/games-core';
 
 interface ArcadePetRenameFieldProps {
   name: string;

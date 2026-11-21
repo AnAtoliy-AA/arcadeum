@@ -1,4 +1,4 @@
-import type { PetSpecies } from '@arcadeum/games-core';
+import type { PetSpecies } from './arcade-pet.types';
 
 export interface ThemePetDefinition {
   species: PetSpecies;

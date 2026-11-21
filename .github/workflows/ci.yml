@@ -265,7 +265,7 @@ jobs:
         run: |
           # Sample memory and disk into the job log so a killed runner leaves
           # evidence of what ran out.
-          (while true; do echo "[resource] $(date +%T) $(free -m | awk 'NR==2{print "mem_used="$3"MB mem_avail="$7"MB"}') $(df -h / | awk 'NR==2{print "disk_used="$3" disk_avail="$4}')"; sleep 30; done) &
+          (while true; do echo "[resource] $(date +%T) $(free -m | awk 'NR==2{print "mem_used="$3"MB mem_avail="$7"MB"}') $(df -h / | awk 'NR==2{print "disk_used="$3" disk_avail="$4}') top: $(ps -eo rss=,comm= --sort=-rss | head -5 | awk '{printf "%s=%dMB ", $2, $1/1024}')"; sleep 30; done) &
           pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3 --workers=${{ steps.engine.outputs.workers }}
 
       - name: Upload Test Report

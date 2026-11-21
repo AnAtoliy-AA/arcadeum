@@ -170,7 +170,13 @@ export default defineConfig({
       // — same pattern as the CI-wide retries=1.
       retries: 2,
       testMatch: CROSS_BROWSER_SPECS,
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+        // Linux WebKit rasterises in software; the 2x default density quadruples
+        // the pixels per page and was exhausting the CI runner's RAM. No spec
+        // compares screenshots, so density does not affect any assertion.
+        deviceScaleFactor: 1,
+      },
     },
     {
       name: 'Mobile Chrome',
@@ -188,7 +194,11 @@ export default defineConfig({
       name: 'Mobile Safari',
       retries: 2,
       testMatch: CROSS_BROWSER_SPECS,
-      use: { ...devices['iPhone 12'] },
+      use: {
+        ...devices['iPhone 12'],
+        // 3x density is nine times the pixels (see the webkit project above).
+        deviceScaleFactor: 1,
+      },
     },
   ],
 

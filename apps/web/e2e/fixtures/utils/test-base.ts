@@ -3,6 +3,7 @@ import { checkNoBackendErrors } from './backend';
 import { isExpectedConsoleNoise } from './console-noise';
 import { LIVE_INFO_FIXTURE } from './live-stats';
 import { handleRoute } from './network';
+import { applyTestSpeedups } from './test-speedups';
 
 // Chunk-load suppression notes:
 // Dev (Turbopack) occasionally truncates chunks; CI prod-build on WebKit
@@ -173,6 +174,8 @@ export const test = base.extend({
         `BROWSER [error] @ ${page.url()}: ${err.message}\n${err.stack || ''}`,
       );
     });
+
+    await applyTestSpeedups(page);
 
     await page.addInitScript(() => {
       window.isPlaywright = true;

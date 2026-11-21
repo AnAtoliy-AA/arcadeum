@@ -39,6 +39,61 @@ process.env.BE_PORT = BE_PORT;
 process.env.SUPPORT_INTERNAL_TOKEN = SUPPORT_INTERNAL_TOKEN;
 
 /**
+ * Specs that exercise layout, responsive behaviour, input handling or other
+ * engine-sensitive rendering, plus every spec that has ever failed or flaked
+ * on a specific engine. chromium runs the whole suite; the other engines run
+ * only these. Full-suite WebKit runs were also exhausting the CI runner's
+ * memory and killing it, and mocked-UI / SEO specs add nothing there over
+ * chromium. Add a spec here when a bug only reproduces in a given engine.
+ */
+const CROSS_BROWSER_SPECS = [
+  'accessibility',
+  'auth',
+  'chess-landing',
+  'chess-lobby-time-control',
+  'chess-puzzle-duel-analytics',
+  'contrast-hardened',
+  'critical-combo-modal',
+  'csp',
+  'discord-link',
+  'fullscreen-auto-exit',
+  'game-create',
+  'game-landing-seo-og',
+  'game-landings-structured-data',
+  'game-lobby',
+  'game-result-modal',
+  'game-room',
+  'games-description-pages',
+  'header-auth-declutter',
+  'header-responsive',
+  'home-games-slider',
+  'home-layout',
+  'home-order',
+  'homepage',
+  'idle-reconnect',
+  'language-switching',
+  'light-themes-contrast',
+  'live-info',
+  'lobby-first-player-random',
+  'locale-metadata',
+  'matchmaking',
+  'mobile-menu',
+  'navigation',
+  'pachisi-extra-roll',
+  'pachisi-stable-layout',
+  'profile-menu',
+  'pwa',
+  'responsive',
+  'sea-battle-tablet',
+  'settings',
+  'shorts-factory-anti-white-screen',
+  'signin',
+  'single-player-games',
+  'themes-and-variants',
+  'tutorial-overlay',
+].map((name) => new RegExp(`/${name}\\.spec\\.ts$`));
+
+/**
  * Playwright configuration for e2e tests
  * @see https://playwright.dev/docs/test-configuration
  */
@@ -94,6 +149,7 @@ export default defineConfig({
       // chunk-truncation flake without masking real regressions (a real bug
       // must fail twice in a row to mark the run red).
       retries: 1,
+      testMatch: CROSS_BROWSER_SPECS,
       use: {
         ...devices['Desktop Firefox'],
         launchOptions: {
@@ -113,6 +169,7 @@ export default defineConfig({
       // first navigation. A second attempt against the now-warm cache passes
       // — same pattern as the CI-wide retries=1.
       retries: 2,
+      testMatch: CROSS_BROWSER_SPECS,
       use: { ...devices['Desktop Safari'] },
     },
     {
@@ -124,11 +181,13 @@ export default defineConfig({
       // single-retry policy as Firefox/Safari — masks the dev-server flake
       // without hiding repeatable failures.
       retries: 1,
+      testMatch: CROSS_BROWSER_SPECS,
       use: { ...devices['Pixel 5'] },
     },
     {
       name: 'Mobile Safari',
       retries: 2,
+      testMatch: CROSS_BROWSER_SPECS,
       use: { ...devices['iPhone 12'] },
     },
   ],

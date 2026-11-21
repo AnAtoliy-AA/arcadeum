@@ -156,12 +156,16 @@ jobs:
     needs: build
     if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
+    # A hung shard otherwise runs for 50-70 min before the runner dies. WebKit
+    # and Mobile Safari run a single worker, so they need the extra headroom.
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        # PRs into develop run chromium only (fast feedback); every other
-        # trigger (staging/main PRs, pushes) runs the full browser matrix.
-        project: ${{ fromJSON(github.event_name == 'pull_request' && github.base_ref == 'develop' && '["chromium"]' || '["chromium","firefox","webkit","Mobile Chrome","Mobile Safari"]') }}
+        # Every PR and push runs the full browser matrix, so engine-specific
+        # (WebKit / Mobile Safari / Firefox) failures surface on the develop PR
+        # instead of later on the staging and main promotion PRs.
+        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari"]
         shard: [1, 2, 3]
     services:
       mongodb:
@@ -175,6 +179,14 @@ jobs:
       SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
       NODE_OPTIONS: '--max-old-space-size=2048'
     steps:
+      - name: Free Disk Space
+        # The 8G swapfile, build artifacts, browsers and test traces compete for
+        # the runner disk; drop preinstalled toolchains this job never uses.
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL || true
+          df -h /
+
       - name: Configure Swap Space
         run: |
           sudo swapoff /swapfile2 2>/dev/null || true
@@ -223,8 +235,10 @@ jobs:
             echo "browser=firefox" >> $GITHUB_OUTPUT
             echo "workers=2" >> $GITHUB_OUTPUT
           else
+            # One worker: Linux WebKit renders in software and two parallel
+            # workers spike past the runner's 15 GB RAM, which kills the runner.
             echo "browser=webkit" >> $GITHUB_OUTPUT
-            echo "workers=2" >> $GITHUB_OUTPUT
+            echo "workers=1" >> $GITHUB_OUTPUT
           fi
 
       - name: Cache Playwright Browsers
@@ -248,7 +262,11 @@ jobs:
         run: pnpm --filter web exec playwright install ${{ steps.engine.outputs.browser }}
 
       - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3 --workers=${{ steps.engine.outputs.workers }}
+        run: |
+          # Sample memory and disk into the job log so a killed runner leaves
+          # evidence of what ran out.
+          (while true; do echo "[resource] $(date +%T) $(free -m | awk 'NR==2{print "mem_used="$3"MB mem_avail="$7"MB"}') $(df -h / | awk 'NR==2{print "disk_used="$3" disk_avail="$4}')"; sleep 30; done) &
+          pnpm --filter web test:e2e --project="${{ matrix.project }}" --shard=${{ matrix.shard }}/3 --workers=${{ steps.engine.outputs.workers }}
 
       - name: Upload Test Report
         if: always()

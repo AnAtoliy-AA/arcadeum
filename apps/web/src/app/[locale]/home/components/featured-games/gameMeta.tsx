@@ -16,6 +16,7 @@ import { SolitaireSymbol } from './symbols/SolitaireSymbol';
 import { MinesweeperSymbol } from './symbols/MinesweeperSymbol';
 import { SudokuSymbol } from './symbols/SudokuSymbol';
 import { Game2048Symbol } from './symbols/Game2048Symbol';
+import { ArcadePetSymbol } from './symbols/ArcadePetSymbol';
 
 export const FALLBACK_ACCENT = '#38bdf8';
 
@@ -60,6 +61,8 @@ export function GameSymbol({ gameId, className }: GameSymbolProps) {
       return <SudokuSymbol className={className} />;
     case 'game_2048_v1':
       return <Game2048Symbol className={className} />;
+    case 'arcade_pet_v1':
+      return <ArcadePetSymbol className={className} />;
     default:
       return null;
   }

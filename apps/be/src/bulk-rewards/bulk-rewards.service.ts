@@ -1,9 +1,13 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { createHash } from 'node:crypto';
 import { Model } from 'mongoose';
+import type { PetSpecies } from '@arcadeum/games-core';
 import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
 import { InventoryService } from '../shop/services/inventory.service';
+import { ArcadePetCollectionService } from '../arcade-pet/arcade-pet-collection.service';
+import { VALID_SPECIES } from '../arcade-pet/dto/arcade-pet.dto';
 import { BulkRewardDto, BulkRewardType } from './dto/bulk-reward.dto';
 
 export interface BulkRewardResult {
@@ -21,6 +25,7 @@ export class BulkRewardsService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly walletService: WalletService,
     private readonly inventoryService: InventoryService,
+    private readonly petCollections: ArcadePetCollectionService,
   ) {}
 
   async rewardAllUsers(
@@ -108,6 +113,37 @@ export class BulkRewardsService {
         }
         await this.inventoryService.grant(userId, dto.itemId, idempotencyKey);
         break;
+
+      case BulkRewardType.PET: {
+        const petSpecies = dto.itemId || 'dragon';
+        await this.inventoryService.grant(
+          userId,
+          `pet:${petSpecies}`,
+          idempotencyKey,
+        );
+        // Also deliver a claimable present into the user's pet collection so
+        // the gift shows up in the companion. Idempotent per present id.
+        const species = (VALID_SPECIES as readonly string[]).includes(
+          petSpecies,
+        )
+          ? (petSpecies as PetSpecies)
+          : 'dragon';
+        await this.petCollections.grantPresent(userId, {
+          id: `admin-gift-${createHash('sha256').update(idempotencyKey).digest('hex').slice(0, 16)}`,
+          senderId: 'admin',
+          senderName: 'Arcadeum Admin',
+          species,
+          theme: 'retro',
+          petName: species
+            .split('_')
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' '),
+          message: dto.reason || 'Official Administrator Gift',
+          createdAt: Date.now(),
+          isOpened: false,
+        });
+        break;
+      }
 
       default:
         throw new BadRequestException('bulkRewards.invalidType');

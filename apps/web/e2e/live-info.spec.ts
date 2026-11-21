@@ -26,9 +26,12 @@ test.describe('Live Platform Info & Online Users', () => {
     const badge = page.getByTestId('header-live-pulse-badge');
     await expect(badge).toBeVisible();
 
-    await badge.click();
     const popover = page.getByTestId('live-activity-popover');
-    await expect(popover).toBeVisible();
+    // Retry the click: it can land before React hydrates and be lost.
+    await expect(async () => {
+      await badge.click();
+      await expect(popover).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
 
     const closeButton = popover.getByRole('button', { name: 'Close' });
     await closeButton.click();
@@ -132,9 +135,12 @@ test.describe('Live Platform Info & Online Users', () => {
     const badge = page.getByTestId('header-live-pulse-badge');
     await expect(badge).toBeVisible();
 
-    await badge.click();
     const popover = page.getByTestId('live-activity-popover');
-    await expect(popover).toBeVisible();
+    // Retry the click: it can land before React hydrates and be lost.
+    await expect(async () => {
+      await badge.click();
+      await expect(popover).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
 
     const box = await popover.boundingBox();
     expect(box).not.toBeNull();

@@ -175,9 +175,14 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
 
     const cyberpunkCard = page.locator('[data-testid="theme-card-cyberpunk"]');
     await expect(cyberpunkCard).toBeVisible();
-    // force: card never passes the stability check on Linux WebKit.
-    await cyberpunkCard.click({ force: true });
-
-    await expect(cyberpunkCard).toContainText('Previewing');
+    // Retry the click: the card never passes Playwright's stability/viewport
+    // checks on WebKit (content-visibility), and a click can land before React
+    // hydrates, so dispatch the click straight to the element until it sticks.
+    await expect(async () => {
+      await cyberpunkCard.dispatchEvent('click');
+      await expect(cyberpunkCard).toContainText('Previewing', {
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
   });
 });

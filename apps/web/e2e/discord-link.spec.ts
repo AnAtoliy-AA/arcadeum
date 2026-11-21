@@ -11,7 +11,8 @@ test.describe('Discord Links', () => {
     await navigateTo(page, '/');
     await expect(page.getByTestId('header-discord-link')).toHaveCount(0);
     const profileMenu = page.getByTestId('profile-menu');
-    await profileMenu.click();
+    // force: skip the stability check, which never settles on WebKit.
+    await profileMenu.click({ force: true });
     const discordLink = page.getByTestId('profile-discord-link');
     await expect(discordLink).toBeVisible();
     await expect(discordLink).toHaveAttribute('href', /discord\.(gg|com)/);

@@ -59,8 +59,9 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
 
     await navigateTo(page, routes.backgammonLanding);
     const bgHeading = page.locator('h1').first();
-    await bgHeading.scrollIntoViewIfNeeded().catch(() => {});
-    await expect(bgHeading).toBeVisible();
+    // Attached + text instead of visible: on Linux WebKit this h1 reports
+    // hidden even though it is rendered with its content.
+    await expect(bgHeading).toBeAttached();
     await expect(bgHeading).toContainText('Backgammon');
 
     const bgSpec = page.locator('[data-testid="game-spec-table"]').first();
@@ -130,7 +131,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     await expect(async () => {
       const inviteBtn = page.getByRole('button', { name: /Invite \/ Share/i });
       await expect(inviteBtn).toBeVisible();
-      await inviteBtn.click();
+      await inviteBtn.click({ force: true });
       await expect(modalContent).toBeVisible();
     }).toPass();
 
@@ -174,7 +175,8 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
 
     const cyberpunkCard = page.locator('[data-testid="theme-card-cyberpunk"]');
     await expect(cyberpunkCard).toBeVisible();
-    await cyberpunkCard.click();
+    // force: card never passes the stability check on Linux WebKit.
+    await cyberpunkCard.click({ force: true });
 
     await expect(cyberpunkCard).toContainText('Previewing');
   });

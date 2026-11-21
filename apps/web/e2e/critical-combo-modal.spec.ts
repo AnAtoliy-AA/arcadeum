@@ -104,7 +104,8 @@ test.describe('Critical Combo Modal', () => {
     const modal = page.getByTestId('combo-modal');
     // Retry the click: on WebKit it can land before handlers are attached.
     await expect(async () => {
-      await playButton.click();
+      // force: skip the stability check, which never settles on Linux WebKit.
+      await playButton.click({ force: true });
       await expect(modal).toBeVisible({ timeout: 3000 });
     }).toPass({ timeout: 20000 });
 

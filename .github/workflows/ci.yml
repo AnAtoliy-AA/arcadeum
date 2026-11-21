@@ -154,12 +154,14 @@ jobs:
   web-e2e:
     name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
     needs: build
-    if: "${{ (github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version'))) && (github.event_name != 'pull_request' || github.base_ref != 'develop') }}"
+    if: "${{ github.event_name != 'push' || (!startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version')) }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        project: ["chromium", "firefox", "webkit", "Mobile Chrome", "Mobile Safari"]
+        # PRs into develop run chromium only (fast feedback); every other
+        # trigger (staging/main PRs, pushes) runs the full browser matrix.
+        project: ${{ fromJSON(github.event_name == 'pull_request' && github.base_ref == 'develop' && '["chromium"]' || '["chromium","firefox","webkit","Mobile Chrome","Mobile Safari"]') }}
         shard: [1, 2, 3]
     services:
       mongodb:
@@ -253,98 +255,6 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: web-e2e-report-${{ matrix.project }}-${{ matrix.shard }}
-          path: |
-            apps/web/playwright-report/
-          retention-days: 30
-
-  web-e2e-develop:
-    name: Web E2E (${{ matrix.project }}, Shard ${{ matrix.shard }}/3)
-    needs: build
-    if: "${{ github.event_name == 'pull_request' && github.base_ref == 'develop' && !startsWith(github.event.head_commit.message, 'chore: bump version') && !startsWith(github.event.head_commit.message, 'chore: start next minor version') }}"
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: ['chromium']
-        shard: [1, 2, 3]
-    services:
-      mongodb:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-        options: >-
-          --memory 1g
-    env:
-      E2E_PROD: true
-      SUPPORT_INTERNAL_TOKEN: 'e2e_shared_support_token'
-      NODE_OPTIONS: '--max-old-space-size=2048'
-    steps:
-      - name: Configure Swap Space
-        run: |
-          sudo swapoff /swapfile2 2>/dev/null || true
-          sudo rm -f /swapfile2
-          sudo fallocate -l 8G /swapfile2 || sudo dd if=/dev/zero of=/swapfile2 bs=1M count=8192
-          sudo chmod 600 /swapfile2
-          sudo mkswap /swapfile2
-          sudo swapon /swapfile2
-          free -h
-
-      - name: Checkout Repository
-        uses: actions/checkout@v7
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-          cache: 'pnpm'
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: build-outputs
-
-      - name: Extract Build Artifacts
-        run: tar -xf build-artifacts.tar
-
-      - name: Verify Builds
-        run: |
-          ls -F apps/web/.next | head -n 5
-          ls -F apps/be/dist | head -n 5
-
-      - name: Cache Playwright Browsers
-        uses: actions/cache@v6
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-chromium-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-chromium-
-
-      - name: Disable Broken Microsoft Repos
-        run: |
-          sudo rm -f /etc/apt/sources.list.d/microsoft-*.list
-          sudo rm -f /etc/apt/sources.list.d/microsoft-*.sources
-          sudo apt-get update || true
-
-      - name: Install Playwright System Dependencies
-        run: pnpm --filter web exec playwright install-deps chromium
-
-      - name: Install Playwright Browsers
-        run: pnpm --filter web exec playwright install chromium
-
-      - name: Run Web E2E Tests
-        run: pnpm --filter web test:e2e --project=chromium --shard=${{ matrix.shard }}/3
-
-      - name: Upload Test Report
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: web-e2e-report-chromium-${{ matrix.shard }}
           path: |
             apps/web/playwright-report/
           retention-days: 30

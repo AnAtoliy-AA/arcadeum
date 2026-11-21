@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- fix React hydration mismatch (#418) on the password-reset, chat and create-room pages, which are statically prerendered but read the URL query on first render
+- retry hydration-sensitive e2e clicks (chess theme card, slider help/play, live badge, random first move) and silence expected e2e console noise (guest 401s, intentional 404s, Firefox-only warnings)
+- merge the develop-only chromium e2e job into the main Web E2E matrix (chosen by PR target) so PRs into develop no longer show a skipped `Web E2E (${{ matrix.project }}...)` placeholder check
+
 ## [1.30.113] - 2026-11-21
 
 ### Fixed
+
 - force unstable WebKit clicks in landing and matchmaking specs
 - stop WebKit specs failing on unstable elements
-
 
 ## [1.30.112] - 2026-11-15
 

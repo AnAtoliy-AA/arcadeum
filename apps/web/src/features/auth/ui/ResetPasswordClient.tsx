@@ -50,17 +50,19 @@ const FALLBACK: ResetCopy = {
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
 export default function ResetPasswordClient() {
-  const { messages } = useLanguage();
+  const { messages, isReady } = useLanguage();
   const copy = mergeCopy(messages.auth?.reset, FALLBACK);
   const searchParams = useSearchParams();
-  const token = searchParams?.get('token') ?? '';
+  // This route is statically prerendered, so the server never sees the URL
+  // token. Read it only after hydration so the first client render matches
+  // the server HTML (otherwise React throws hydration error #418).
+  const token = isReady ? (searchParams?.get('token') ?? '') : '';
 
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  // Initial state is derived from `token` so a missing-token URL renders the
-  // error inline on first paint — no useEffect/setState round-trip needed.
-  const [status, setStatus] = useState<Status>(token ? 'idle' : 'error');
-  const [errorText, setErrorText] = useState(token ? '' : copy.missingToken);
+  const [status, setStatus] = useState<Status>('idle');
+  const [errorText, setErrorText] = useState('');
+  const missingToken = isReady && !token;
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -145,14 +147,14 @@ export default function ResetPasswordClient() {
             disabled={!token}
             data-testid="reset-password-confirm"
           />
-          {status === 'error' && errorText ? (
+          {missingToken || (status === 'error' && errorText) ? (
             <Typography
               variant="body"
               uiSize="sm"
               color="var(--danger)"
               data-testid="reset-password-error"
             >
-              {errorText}
+              {missingToken ? copy.missingToken : errorText}
             </Typography>
           ) : null}
           <Button

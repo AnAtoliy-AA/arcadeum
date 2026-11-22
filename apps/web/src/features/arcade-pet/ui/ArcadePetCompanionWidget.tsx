@@ -144,17 +144,15 @@ export const ArcadePetCompanionWidget: React.FC<
           />
         )}
 
-        <Button
-          variant="glass"
-          size="sm"
-          shape="round"
+        <button
+          type="button"
           aria-disabled="true"
           data-testid="arcade-pet-companion-trigger"
           onClick={() => setShowRegisterPrompt((prev) => !prev)}
           title={t('arcadePetCompanion.registerTriggerTitle')}
           aria-label={t('arcadePetCompanion.registerTriggerAria')}
           aria-expanded={showRegisterPrompt}
-          className="gap-2 px-3"
+          className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] px-3 py-1.5 text-[var(--color)] opacity-80 shadow-lg backdrop-blur-md transition-all hover:border-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
         >
           <span aria-hidden="true" className="text-lg">
             🔒
@@ -162,7 +160,7 @@ export const ArcadePetCompanionWidget: React.FC<
           <span className="text-xs font-bold">
             {t('arcadePetCompanion.registerForPet')}
           </span>
-        </Button>
+        </button>
       </div>
     );
   }
@@ -256,7 +254,7 @@ export const ArcadePetCompanionWidget: React.FC<
         {isWidgetOpen && (
           <div
             data-testid="arcade-pet-companion-modal"
-            className="mb-3 w-80 rounded-2xl bg-[var(--glassBg)] border border-[var(--glassBorderStrong)] p-4 shadow-2xl backdrop-blur-md text-[var(--color)] font-sans flex flex-col gap-3"
+            className="mb-3 w-80 rounded-2xl bg-[var(--glassBg)] border border-[var(--glassBorderStrong)] p-4 shadow-2xl backdrop-blur-md text-[var(--color)] font-sans flex flex-col gap-3 max-h-[calc(100dvh-8rem)] overflow-y-auto"
           >
             <ArcadePetCompanionHeader
               pet={pet}

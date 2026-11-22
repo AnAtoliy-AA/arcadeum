@@ -46,7 +46,7 @@ test.describe('ArcadePet accessibility', () => {
     page,
   }) => {
     await page.getByTestId('open-adoption-modal-btn').click();
-    const dialog = page.getByRole('dialog', { name: /adopt/i });
+    const dialog = page.getByRole('dialog', { name: /nursery/i });
     await expect(dialog).toBeVisible();
     await expect(dialog).toHaveAttribute('aria-modal', 'true');
 

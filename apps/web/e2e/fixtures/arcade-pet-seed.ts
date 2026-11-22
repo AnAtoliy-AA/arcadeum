@@ -76,6 +76,18 @@ export async function seedPetCollection(
     presents: [],
     hasConfirmedCare: true,
   };
+  // The seed is local-only. Without a pet API stub the signed-in sync pulls
+  // the (empty) collection of the real BE for the fake token and replaces the
+  // seed, so the widget flips to the guest/empty state. Fail the pull instead:
+  // the store stays local. mockPetServer, registered later, takes precedence.
+  await page.route('**/arcade-pet/collection**', (route) =>
+    route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: '{}',
+      headers: { 'access-control-allow-origin': '*' },
+    }),
+  );
   await page.addInitScript(
     ([key, value]) => window.localStorage.setItem(key, value),
     [PET_COLLECTION_STORAGE_KEY, JSON.stringify(stored)] as const,

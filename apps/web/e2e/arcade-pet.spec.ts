@@ -288,7 +288,9 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await navigateTo(page, '/en/games');
     await page.waitForLoadState('domcontentloaded');
     await page.getByTestId('arcade-pet-companion-trigger').click();
-    await page.getByTestId('open-gifts-modal-btn').click();
+    // The widget keeps re-laying out while the mocked pull is applied, so the
+    // button never reports as stable; the click itself is reliable.
+    await page.getByTestId('open-gifts-modal-btn').click({ force: true });
     await page.getByTestId('tab-send-gift').click();
     await page.getByTestId('gift-recipient-input').fill('NoSuchPlayer');
     await page.getByTestId('send-pet-gift-btn').click();

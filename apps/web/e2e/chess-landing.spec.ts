@@ -26,7 +26,7 @@ test.describe('Chess Landing Rework & Hierarchy', () => {
     const quickPlayAiBtn = hero.locator('[data-testid="quickplay-ai-button"]');
     await expect(quickPlayAiBtn).toBeVisible();
 
-    const browseRoomsLink = hero.getByRole('link', { name: /browse/i });
+    const browseRoomsLink = hero.getByRole('link', { name: /browse/i }).first();
     await expect(browseRoomsLink).toBeVisible();
 
     const sectionNav = page.locator('[data-testid="game-section-nav"]');

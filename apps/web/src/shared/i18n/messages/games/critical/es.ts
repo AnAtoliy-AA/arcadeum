@@ -19,7 +19,7 @@ export const esMessages = {
       },
       s3: {
         title: 'Las salas rápidas corren',
-        body: 'En salas rápidas, un temporizador juega por ti cuando se acaba el tiempo — mantén el ritmo y planifica con antelación.',
+        body: 'En salas rápidas, un temporizador juega por ti cuando se acaba el tiempo - mantén el ritmo y planifica con antelación.',
       },
       s4: {
         title: 'Charla de mesa',
@@ -213,7 +213,7 @@ export const esMessages = {
       threat: {
         label: 'Amenaza',
         oddsTitle:
-          'Probabilidad mínima de robar una carta Crítica (solo cartas visibles — las ocultas pueden aumentarla)',
+          'Probabilidad mínima de robar una carta Crítica (solo cartas visibles - las ocultas pueden aumentarla)',
         oddsTitleServer: 'Probabilidad de robar una carta Crítica',
         defusesTitle: 'Cartas de Defusa que tienes',
         remainingTitle: 'Cartas peligrosas que quedan en el mazo',
@@ -238,7 +238,7 @@ export const esMessages = {
       flash: {
         draw: 'Robaste {{card}}',
         play: 'Jugaste {{card}}',
-        defuse: 'Defusada — {{card}} reinsertada',
+        defuse: 'Defusada - {{card}} reinsertada',
         eliminated: '{{name}} eliminado',
         critical: '⚠ Crítica robada',
       },

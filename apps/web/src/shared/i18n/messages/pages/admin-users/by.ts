@@ -1,6 +1,6 @@
 export const adminUsersBy = {
   title: 'Карыстальнікі',
-  search: { placeholder: 'Пошук па імі, email або псеўданіме' },
+  search: { placeholder: 'Пошук па імі або псеўданіме' },
   filter: {
     role: { all: 'Усе ролі', placeholder: 'Фільтр па ролі' },
     status: {

@@ -15,6 +15,7 @@ import {
 } from '../game-bot-watchdog';
 import { extractAiVsAiExtras } from './ai-vs-ai';
 import { DistributedRoomLock } from './distributed-room-lock';
+import { performFairCoinToss } from './coin-toss';
 
 /**
  * Shared base class for every game service. Encapsulates the session
@@ -143,6 +144,23 @@ export abstract class BaseGameService<
     }
 
     const config = this.buildSessionConfig(options, room.gameOptions);
+    const explicitFirstPlayer = ((options as Record<string, unknown>)
+      ?.firstPlayer ??
+      (room.gameOptions as Record<string, unknown>)?.firstPlayer) as
+      string | undefined;
+    const isRandomFirst = explicitFirstPlayer === 'random';
+
+    if (isRandomFirst && playerIds.length >= 2) {
+      const coinToss = performFairCoinToss(playerIds, 'random');
+      config.firstPlayer = 'random';
+      config.coinToss = coinToss;
+      (options as Record<string, unknown>).firstPlayer = 'random';
+      (options as Record<string, unknown>).coinToss = coinToss;
+    } else {
+      config.firstPlayer = explicitFirstPlayer ?? 'order';
+      (options as Record<string, unknown>).firstPlayer =
+        explicitFirstPlayer ?? 'order';
+    }
 
     const session = await this.sessionsService.createSession({
       roomId,

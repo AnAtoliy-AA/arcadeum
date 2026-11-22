@@ -8,6 +8,7 @@ import { LiveStatsController } from './live-stats/live-stats.controller';
 import { LiveStatsService } from './live-stats/live-stats.service';
 import { GamesCatalogService } from './games-catalog.service';
 import { GamesHistoryController } from './games.history.controller';
+import { GamesRematchController } from './games.rematch.controller';
 import { GamesService } from './games.service';
 import { GamesHistoryFacade } from './games-history.facade';
 import { GameRoom, GameRoomSchema } from './schemas/game-room.schema';
@@ -142,6 +143,7 @@ import { GameVisibilityModule } from '../admin/game-visibility/game-visibility.m
 import { GameRuleVisibilityModule } from '../admin/game-visibility/game-rule-visibility.module';
 import { XpModule } from '../xp/xp.module';
 import { FriendsModule } from '../friends/friends.module';
+import { ClansModule } from '../clans/clans.module';
 import { ActivityFeedModule } from './activity-feed/activity-feed.module';
 import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
 // Note: GamesModule ↔ LeaderboardsModule is a circular dep
@@ -208,6 +210,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
     NotificationsModule,
     XpModule,
     FriendsModule,
+    forwardRef(() => ClansModule),
     ActivityFeedModule,
     ChessStockfishModule,
     ChessPuzzlesModule,
@@ -224,6 +227,7 @@ import { resolveJwtSecret } from '../common/utils/jwt-secret.util';
   ],
   controllers: [
     GamesController,
+    GamesRematchController,
     GamesHistoryController,
     GameReplayController,
     LiveStatsController,

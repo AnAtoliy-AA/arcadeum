@@ -13,6 +13,7 @@ import {
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import type { BotDifficulty } from '@/features/games/ui/DifficultySelector';
 import type { ChessTheme, TimeControl } from '../types';
 import { RulesModal } from './RulesModal';
@@ -65,6 +66,7 @@ export function ChessLobby({
 }: ChessLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const equippedTheme = useEquippedGameTheme();
   const [selectedPersonality, setSelectedPersonality] = useState<string | null>(
     null,
   );
@@ -123,7 +125,7 @@ export function ChessLobby({
       ? (raw.variant as ChessTheme)
       : 'standard';
     return {
-      theme: (raw.theme as string) || 'adventure',
+      theme: (raw.theme as string) || equippedTheme || 'adventure',
       variant,
       timeControl: (raw.timeControl ?? {
         type: 'rapid',
@@ -131,7 +133,7 @@ export function ChessLobby({
         incrementSeconds: 0,
       }) as TimeControl | null,
     };
-  }, [room.gameOptions]);
+  }, [room.gameOptions, equippedTheme]);
 
   const variantLabel =
     options.variant === 'chess960'

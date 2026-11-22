@@ -2,7 +2,7 @@ export const enMessages = {
   minesweeper_v1: {
     name: 'Minesweeper',
     description:
-      'Classic Minesweeper — clear the grid without detonating a single mine',
+      'Classic Minesweeper - clear the grid without detonating a single mine',
     summary:
       'The iconic logic puzzle: reveal every safe square, flag the mines, and beat the clock.',
     board: {
@@ -18,8 +18,15 @@ export const enMessages = {
       time: 'Time',
       newGame: 'New game',
       flagMode: 'Flag mode',
-      flagModeHint: 'Toggle to plant flags with taps — ideal on touch screens',
+      flagModeHint: 'Toggle to plant flags with taps - ideal on touch screens',
       difficulty: 'Difficulty',
+      safeCells: 'Safe squares left',
+      personalBest: 'Personal best',
+      personalBestNf: 'NF Personal best',
+      flaglessMode: 'NF Mode',
+      flaglessModeHint:
+        'Flagless speedrun mode - Disables flagging for pure speed',
+      quickResetHint: 'Quick restart (R)',
     },
     difficulty: {
       beginner: 'Beginner (9×9 · 10 mines)',
@@ -28,10 +35,21 @@ export const enMessages = {
     },
     result: {
       wonTitle: 'Field cleared!',
-      wonBody: 'Every safe square revealed — flawless sweeping.',
+      wonBody: 'Every safe square revealed - flawless sweeping.',
       lostTitle: 'Boom!',
       lostBody: 'That one was a mine. Study the numbers and try again.',
       playAgain: 'Play again',
+    },
+    milestone: {
+      title: 'Milestone Reached!',
+      title_50: '50% Cleared!',
+      title_80: 'Danger Zone: 80% Safe!',
+      badge: 'Milestone',
+      badge_50: 'Halfway',
+      badge_80: 'Danger Zone',
+      body_50: 'Half of the minefield is safely uncovered.',
+      body_80: 'Only 20% of safe cells remain. Watch your step!',
+      keepGoing: 'Keep Going',
     },
     rules: {
       objective:
@@ -39,14 +57,14 @@ export const enMessages = {
       gameplay:
         'Numbers show how many of the eight surrounding cells hold mines. Flag suspected mines with a right click or long press; tap a satisfied number to chord-open its neighbors.',
       scoring:
-        'Your first click is always safe and starts the timer. Clear the field as fast as you can — time is your only score.',
+        'Your first click is always safe and starts the timer. Clear the field as fast as you can - time is your only score.',
     },
     landing: {
       tagline: 'Single-player · No signup',
       meta: {
-        title: 'Minesweeper — Free Online Classic Puzzle Game | Arcadeum',
+        title: 'Minesweeper - Free Online Classic Puzzle Game | Arcadeum',
         description:
-          'Play Minesweeper free online at Arcadeum. Beginner to expert grids, flags, chording, timer, and saved progress. No download, no signup — instant logic puzzles.',
+          'Play Minesweeper free online at Arcadeum. Beginner to expert grids, flags, chording, timer, and saved progress. No download, no signup - instant logic puzzles.',
         keywords:
           'minesweeper, mine sweeper, puzzle game, logic game, single player, free, online, browser game, no download',
       },
@@ -59,7 +77,7 @@ export const enMessages = {
       features: {
         solo: {
           title: 'Truly single-player',
-          body: 'No accounts, no waiting rooms — a fresh minefield is one click away.',
+          body: 'No accounts, no waiting rooms - a fresh minefield is one click away.',
         },
         progress: {
           title: 'Progress is saved',
@@ -74,7 +92,7 @@ export const enMessages = {
         q1: {
           question: 'Is Minesweeper free to play?',
           answer:
-            'Yes — Minesweeper on Arcadeum is completely free, requires no download, and needs no account to start playing.',
+            'Yes - Minesweeper on Arcadeum is completely free, requires no download, and needs no account to start playing.',
         },
         q2: {
           question: 'How do I place flags on mobile?',

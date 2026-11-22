@@ -2,13 +2,13 @@ export const enMessages = {
   spades_v1: {
     name: 'Spades',
     description:
-      'Classic 4-player partnership card game — bid your tricks and let spades trump',
+      'Classic 4-player partnership card game - bid your tricks and let spades trump',
     summary:
       'Bid how many tricks you will take, team up across the table, and let spades trump!',
     variants: {},
     landing: {
       meta: {
-        title: 'Spades — Free Multiplayer Card Game | Arcadeum',
+        title: 'Spades - Free Multiplayer Card Game | Arcadeum',
         description:
           'Play Spades online for free on Arcadeum. Classic 4-player partnership trick-taking card game with bidding, nil bids, bags, and AI opponents.',
         keywords:
@@ -30,7 +30,7 @@ export const enMessages = {
         },
         bidding: {
           title: 'Bidding & Nil',
-          body: 'Bid your tricks — or risk it all on a Nil bid',
+          body: 'Bid your tricks - or risk it all on a Nil bid',
         },
         sandbagging: {
           title: 'Sandbag Penalty',
@@ -88,7 +88,7 @@ export const enMessages = {
         rules: {
           question: 'How do you win at Spades?',
           answer:
-            'Teams score points by making their combined bid (10 points per bid trick plus one per overtrick). The first team to reach the target score — usually 500 — wins the game.',
+            'Teams score points by making their combined bid (10 points per bid trick plus one per overtrick). The first team to reach the target score - usually 500 - wins the game.',
         },
         nil: {
           question: 'What is a Nil bid?',
@@ -98,12 +98,12 @@ export const enMessages = {
         breaking: {
           question: 'When can you lead Spades?',
           answer:
-            'Spades cannot lead a trick until they have been "broken" — meaning a player who was void in the led suit discarded a spade. Once broken, any spade may lead.',
+            'Spades cannot lead a trick until they have been "broken" - meaning a player who was void in the led suit discarded a spade. Once broken, any spade may lead.',
         },
         bags: {
           question: 'What are bags?',
           answer:
-            'Each overtrick beyond your team bid counts as a bag. Every time a team accumulates 10 bags, 100 points are deducted from its score — so bidding accurately matters.',
+            'Each overtrick beyond your team bid counts as a bag. Every time a team accumulates 10 bags, 100 points are deducted from its score - so bidding accurately matters.',
         },
         blindNil: {
           question: 'What is a Blind Nil bid?',
@@ -150,7 +150,7 @@ export const enMessages = {
       lost: 'You lost.',
       draw: 'It is a draw.',
       messages: {
-        won: 'Your partnership took exactly what it promised — well played!',
+        won: 'Your partnership took exactly what it promised - well played!',
         lost: 'The other duo out-bid you this time. Want a rematch?',
         draw: 'Both teams finished level. Try another?',
       },
@@ -205,11 +205,11 @@ export const enMessages = {
       },
       s2: {
         title: 'Spades are trump',
-        body: "Follow suit if you can; if void, any card goes. Spades can't lead until broken — but once they do, they beat everything.",
+        body: "Follow suit if you can; if void, any card goes. Spades can't lead until broken - but once they do, they beat everything.",
       },
       s3: {
         title: 'Nil is a gamble',
-        body: 'Bid Nil to chase zero tricks for ±100 points — dump your spades early and duck everything.',
+        body: 'Bid Nil to chase zero tricks for ±100 points - dump your spades early and duck everything.',
       },
       s4: {
         title: 'Bags bite back',

@@ -198,7 +198,7 @@ export class ReferralService {
     });
     if (paidToday >= REFERRAL_DAILY_PAYOUT_CAP) {
       this.logger.warn(
-        `Referrer ${referrerId} hit daily referral payout cap (${REFERRAL_DAILY_PAYOUT_CAP}) — skipping payout`,
+        `Referrer ${referrerId} hit daily referral payout cap (${REFERRAL_DAILY_PAYOUT_CAP}): skipping payout`,
       );
       return referrerId;
     }

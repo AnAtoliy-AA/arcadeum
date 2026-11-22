@@ -181,6 +181,24 @@ export const shopItemsEn = {
   },
   game_skin: {
     default: { name: 'Default', desc: 'The starter game theme.' },
+    adventure: { name: 'Adventure', desc: 'An epic adventure theme.' },
+    cyberpunk: { name: 'Cyberpunk', desc: 'A neon-drenched cyberpunk theme.' },
+    underwater: { name: 'Underwater', desc: 'A deep ocean underwater theme.' },
+    crime: { name: 'Crime', desc: 'A noir crime investigation theme.' },
+    horror: { name: 'Horror', desc: 'A spooky horror theme.' },
+    high_altitude_hike: {
+      name: 'High-Altitude Hike',
+      desc: 'A mountain summit hiking theme.',
+    },
+    galaxy: { name: 'Galaxy', desc: 'A cosmic galaxy theme.' },
+    fantasy: { name: 'Fantasy', desc: 'A magical fantasy theme.' },
+    western: { name: 'Western', desc: 'A wild west western theme.' },
+    egypt: { name: 'Egypt', desc: 'An ancient egyptian theme.' },
+    steampunk: {
+      name: 'Steampunk',
+      desc: 'A retro-futuristic steampunk theme.',
+    },
+    zen: { name: 'Zen', desc: 'A calm and peaceful zen theme.' },
   },
   banner: {
     default: { name: 'Default', desc: 'The starter backdrop.' },

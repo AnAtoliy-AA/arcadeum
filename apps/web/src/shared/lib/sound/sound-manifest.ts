@@ -7,8 +7,7 @@
  * Next.js public directory — reducing deployment size and improving TTFB.
  */
 
-const CDN = (process.env.NEXT_PUBLIC_CDN_URL || '').replace(/\/+$/, '');
-const BASE = CDN ? `${CDN}/sounds` : '/sounds';
+const BASE = '/sounds';
 
 export const SOUNDS = {
   /** Game won — celebratory ascending arpeggio. */
@@ -31,6 +30,12 @@ export const SOUNDS = {
   sink: `${BASE}/sink.wav`,
   /** Audio cue: game session started. */
   gameStart: `${BASE}/game-start.wav`,
+  /** Audio cue: rematch invitation notification. */
+  notification: `${BASE}/shared/ding.wav`,
+  /** Audio cue: rematch accepted. */
+  rematchAccepted: `${BASE}/shared/success.wav`,
+  /** Audio cue: rematch declined. */
+  rematchDeclined: `${BASE}/shared/reject.wav`,
 } as const;
 
 export type SoundId = keyof typeof SOUNDS;

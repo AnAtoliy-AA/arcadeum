@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useCallback, useMemo, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -39,8 +40,14 @@ function SpadesGameImpl({
   onShowRulesClose,
 }: SpadesGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
   const isLobby = room?.status === 'lobby';
 
   const {
@@ -69,6 +76,25 @@ function SpadesGameImpl({
   useEffect(() => {
     if (!isLobby) clearPendingStart();
   }, [isLobby, clearPendingStart]);
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevTakenCountRef = useRef(0);
+  useEffect(() => {
+    if (!snapshot?.taken) return;
+    const count = Object.values(snapshot.taken).reduce(
+      (acc, arr) => acc + arr.length,
+      0,
+    );
+    if (count > prevTakenCountRef.current && prevTakenCountRef.current > 0) {
+      play('collect');
+    }
+    prevTakenCountRef.current = count;
+  }, [snapshot?.taken, play]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {
@@ -192,6 +218,7 @@ function SpadesGameImpl({
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
           accessToken={accessToken}
@@ -279,6 +306,7 @@ function SpadesGameImpl({
           variantEmoji: variantTokens.emoji,
           title: t('games.spades_v1.name'),
           subtitle: room?.name,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentEntryId ?? null,
             isMyTurn: myTurn,

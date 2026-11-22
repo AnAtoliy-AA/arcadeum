@@ -3,7 +3,7 @@ import type { enMessages } from './en';
 export type { enMessages as en } from './en';
 export type BackgammonMessages = typeof enMessages;
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadBackgammonMessages(locale: string) {
   switch (locale) {
     case 'en':

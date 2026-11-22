@@ -8,6 +8,8 @@ import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildVideoGameJsonLd } from '@/shared/seo/videoGameJsonLd';
 import { buildHowToJsonLd } from '@/shared/seo/howToJsonLd';
 import { buildFaqPageJsonLd } from '@/shared/seo/faqPageJsonLd';
+import { getPostsByTag } from '@/features/blog/registry';
+import { RelatedArticles } from '@/features/blog/RelatedArticles';
 import ChessLanding from './ChessLanding';
 import { isGameComingSoon } from '@/features/games/api.server';
 
@@ -46,7 +48,8 @@ export async function generateMetadata({
           width: 1200,
           height: 630,
           alt:
-            landingMeta?.title ?? 'Chess — free multiplayer on Arcadeum Games',
+            landingMeta?.title ??
+            'Chess: Free Online Multiplayer on Arcadeum Games',
         },
       ],
     },
@@ -61,7 +64,10 @@ export async function generateMetadata({
 export default async function ChessLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CHESS_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.chess_v1?.landing;
@@ -118,7 +124,7 @@ export default async function ChessLandingRoute({ params }: PageProps) {
       featureList: [
         'Stockfish 19 Engine with SFNNv16 NNUE',
         'Standard & Chess960 (Fischer Random)',
-        '20 AI Bot Personalities (250–3200 Elo)',
+        '20 AI Bot Personalities (250-3200 Elo)',
         'Bullet, Blitz, Rapid, and Daily Correspondence',
         'Puzzle Rush & Tactical Training',
         'Interactive Analysis Board with Engine Evaluation',
@@ -133,11 +139,12 @@ export default async function ChessLandingRoute({ params }: PageProps) {
         games: messages.navigation?.gamesTab ?? 'Games',
         game: gameName,
       },
+      pageUrl: chessPageUrl,
     }),
     buildHowToJsonLd({
       name: `How to Play Chess on ${appConfig.appName}`,
       description:
-        'Start playing chess online in seconds — create a room, invite a friend or add a bot, and play with full Stockfish 19 analysis.',
+        'Start playing chess online in seconds: create a room, invite a friend or add a bot, and play with full Stockfish 19 analysis.',
       steps: [
         {
           name: 'Create a room',
@@ -164,11 +171,10 @@ export default async function ChessLandingRoute({ params }: PageProps) {
             question: (f as { question: string; answer: string }).question,
             answer: (f as { question: string; answer: string }).answer,
           })),
+          includeBreadcrumb: false,
         })
       : []),
   ];
-
-  const comingSoon = await isGameComingSoon(CHESS_SLUG);
 
   return (
     <>
@@ -199,6 +205,17 @@ export default async function ChessLandingRoute({ params }: PageProps) {
           rush: routes.chessPuzzleRush,
           coordinates: routes.chessCoordinates,
         }}
+      />
+      <RelatedArticles
+        locale={locale}
+        posts={await getPostsByTag(locale, [
+          'Chess',
+          'Шахматы',
+          'Шахматы',
+          'Échecs',
+          'Ajedrez',
+        ])}
+        gameName={landing?.hero?.title ?? gameName}
       />
     </>
   );

@@ -1,11 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import type {
-  CriticalCard,
-  EventComboModalState,
-  CriticalComboCard,
-} from '../types';
+import type { CriticalCard, EventComboModalState } from '../types';
 import { FIVER_COMBO_SIZE } from '../types';
 import type { ChatScope } from '@/shared/types/games';
 
@@ -36,8 +32,11 @@ interface UseGameHandlersOptions {
   };
   handleCloseEventComboModal: () => void;
   handleOpenEventCombo: (
-    cards: CriticalComboCard[],
+    cards: CriticalCard[],
     hand: CriticalCard[],
+    initialMode?: 'pair' | 'trio' | 'fiver' | null,
+    initialTarget?: string | null,
+    initialFiverCards?: CriticalCard[],
   ) => void;
   setSelectedMode: (mode: 'pair' | 'trio' | 'fiver' | null) => void;
   setSelectedTarget: (target: string | null) => void;
@@ -113,14 +112,27 @@ export function useGameHandlers(options: UseGameHandlersOptions) {
     handleCloseEventComboModal,
   ]);
 
-  const handleOpenFiverCombo = useCallback(() => {
-    setSelectedMode('fiver');
-    const uniqueCards = new Set(currentPlayerHand);
-    if (uniqueCards.size >= FIVER_COMBO_SIZE) {
-      handleOpenEventCombo([], currentPlayerHand);
+  const handleOpenFiverCombo = useCallback(
+    (initialCards?: CriticalCard[]) => {
       setSelectedMode('fiver');
-    }
-  }, [currentPlayerHand, handleOpenEventCombo, setSelectedMode]);
+      const cardsToUse = initialCards ?? [];
+      const uniqueCards = new Set(currentPlayerHand);
+      if (
+        uniqueCards.size >= FIVER_COMBO_SIZE ||
+        cardsToUse.length === FIVER_COMBO_SIZE
+      ) {
+        handleOpenEventCombo(
+          [],
+          currentPlayerHand,
+          'fiver',
+          undefined,
+          cardsToUse.length > 0 ? cardsToUse : undefined,
+        );
+        setSelectedMode('fiver');
+      }
+    },
+    [currentPlayerHand, handleOpenEventCombo, setSelectedMode],
+  );
 
   const handleConfirmStash = useCallback(
     (cards: CriticalCard[]) => {

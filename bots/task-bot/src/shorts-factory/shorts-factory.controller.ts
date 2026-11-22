@@ -67,15 +67,33 @@ export class ShortsFactoryController {
   async handleResult(
     @Body()
     body: {
-      success: boolean;
-      message: string;
+      success?: boolean;
+      message?: string;
       platforms?: string[];
       failedPlatforms?: Array<string | { platform: string; error?: string }>;
       pendingId?: string;
+      id?: string;
+      result?: {
+        success?: boolean;
+        message?: string;
+        platforms?: string[];
+        failedPlatforms?: Array<string | { platform: string; error?: string }>;
+      };
     },
   ): Promise<{ success: boolean }> {
-    this.logger.log(`Shorts Factory result: ${body.message}`);
-    await this.service.sendResultMessage(body);
+    const payload = body.result ?? body;
+    const success = payload.success ?? body.success ?? false;
+    const message = payload.message ?? body.message ?? '';
+    const platforms = payload.platforms ?? body.platforms;
+    const failedPlatforms = payload.failedPlatforms ?? body.failedPlatforms;
+
+    this.logger.log(`Shorts Factory result: ${message}`);
+    await this.service.sendResultMessage({
+      success,
+      message,
+      platforms,
+      failedPlatforms,
+    });
     return { success: true };
   }
 }

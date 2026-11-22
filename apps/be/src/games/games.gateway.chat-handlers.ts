@@ -53,7 +53,9 @@ export function registerChatHandlers(
   registry.set('games.session.history_note', (socket, payload) =>
     handleHistoryNote(
       logger,
+      server,
       socket,
+      realtime,
       gamesService,
       deps.validateUserId,
       payload,

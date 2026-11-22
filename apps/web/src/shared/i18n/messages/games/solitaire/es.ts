@@ -18,6 +18,22 @@ export const esMessages = {
       moves: 'Movimientos',
       time: 'Tiempo',
       newGame: 'Nueva partida',
+      autoPlace: 'Auto-colocar',
+      draw1: 'Robar 1',
+      draw3: 'Robar 3',
+      switchToDraw1: 'Cambiar a modo robar 1 carta',
+      switchToDraw3: 'Cambiar a modo robar 3 cartas',
+      hint: 'Pista',
+      hintHint: 'Sugerir un movimiento legal óptimo',
+      applyHint: 'Mover',
+      dismissHint: 'Cerrar',
+    },
+    hint: {
+      wasteToFoundation: 'Mueve la carta del descarte a la base',
+      tableauToFoundation: 'Mueve la carta de la columna a la base',
+      wasteToTableau: 'Mueve la carta del descarte a una columna',
+      tableauToTableau:
+        'Mueve cartas entre columnas para descubrir una carta oculta',
     },
     result: {
       wonTitle: '¡Has ganado!',
@@ -25,6 +41,17 @@ export const esMessages = {
       lostTitle: 'Sin movimientos',
       lostBody: 'La mesa está bloqueada. ¡Baraja y prueba otra vez!',
       playAgain: 'Jugar otra vez',
+    },
+    milestone: {
+      title: '¡Hito alcanzado!',
+      title_26: '¡Mitad en casa!',
+      title_39: '¡Casi listo: 39 cartas!',
+      badge: 'Hito',
+      badge_26: 'Mitad',
+      badge_39: 'Casi listo',
+      body_26: '26 cartas colocadas en las bases.',
+      body_39: '¡Tres cuartas partes de la baraja están en casa!',
+      keepGoing: 'Continuar',
     },
     rules: {
       objective:
@@ -37,7 +64,7 @@ export const esMessages = {
     landing: {
       tagline: 'Un jugador · Sin registro',
       meta: {
-        title: 'Solitario — Juego de cartas Klondike gratis online | Arcadeum',
+        title: 'Solitario - Juego de cartas Klondike gratis online | Arcadeum',
         description:
           'Juega al solitario Klondike clásico gratis online en Arcadeum. Sin descargas ni registro: rompecabezas de cartas para un jugador con puntuación, cronómetro y progreso guardado.',
         keywords:

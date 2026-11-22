@@ -4,7 +4,7 @@ export const enMessages = {
     description:
       'Match by color or number, chain Draw-Two and Draw-Four cards to flood the next player, and empty your hand first to win.',
     summary:
-      'A shedding card game in the Crazy Eights family — eight selectable themes, 2–10 players, full stacking penalties.',
+      'A shedding card game in the Crazy Eights family - eight selectable themes, 2–10 players, full stacking penalties.',
     variants: {
       cosmic: {
         name: 'Cosmic',
@@ -12,7 +12,7 @@ export const enMessages = {
       },
       arcane: {
         name: 'Arcane',
-        description: 'Schools of magic — pyromancy, druidic, and more.',
+        description: 'Schools of magic - pyromancy, druidic, and more.',
       },
       cyberpunk: {
         name: 'Cyberpunk',
@@ -20,11 +20,11 @@ export const enMessages = {
       },
       elemental: {
         name: 'Elemental',
-        description: 'Fire, Stone, Leaf, and Tide — clean nature palette.',
+        description: 'Fire, Stone, Leaf, and Tide - clean nature palette.',
       },
       classic: {
         name: 'Classic',
-        description: 'Traditional card game colors — clean and timeless.',
+        description: 'Traditional card game colors - clean and timeless.',
       },
       neon: {
         name: 'Neon',
@@ -32,12 +32,12 @@ export const enMessages = {
       },
       tropical: {
         name: 'Tropical',
-        description: 'Hibiscus, Palm, Ocean — beach vibes and warm colors.',
+        description: 'Hibiscus, Palm, Ocean - beach vibes and warm colors.',
       },
       steampunk: {
         name: 'Steampunk',
         description:
-          'Brass, Boiler, Verdigris — Victorian mechanical aesthetic.',
+          'Brass, Boiler, Verdigris - Victorian mechanical aesthetic.',
       },
       adventure: {
         name: 'Adventure',
@@ -47,19 +47,19 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Cascade — multiplayer shedding card game online',
+        title: 'Cascade - multiplayer shedding card game online',
         description:
-          'Play Cascade online — a shedding card game with stacking Draw-Two / Wild +4 chains and four selectable visual themes. 2–10 players, free instant rooms, no install.',
+          'Play Cascade online - a shedding card game with stacking Draw-Two / Wild +4 chains and four selectable visual themes. 2–10 players, free instant rooms, no install.',
         keywords:
           'cascade, crazy eights, multiplayer card game, online card game, shedding card game, matching card game',
       },
       hero: {
-        title: 'Cascade — the stacking card game, reimagined',
+        title: 'Cascade - the stacking card game, reimagined',
         subtitle:
           'Match color or number. Chain penalties. Pick from eight distinct visual themes. 2–10 players.',
         createRoom: 'Create a room',
         ctaQuickplay: 'Play vs AI now',
-        ctaQuickplayError: "Couldn't start a game — try again",
+        ctaQuickplayError: "Couldn't start a game - try again",
         browseRooms: 'Browse rooms',
       },
       highlights: {
@@ -69,7 +69,7 @@ export const enMessages = {
         },
         themes: {
           title: '8 visual themes',
-          body: 'Cosmic, Arcane, Cyberpunk, Elemental, Classic, Neon, Tropical, Steampunk — the rules stay, the look changes.',
+          body: 'Cosmic, Arcane, Cyberpunk, Elemental, Classic, Neon, Tropical, Steampunk - the rules stay, the look changes.',
         },
         stacking: {
           title: 'Stacking penalties',
@@ -250,7 +250,7 @@ export const enMessages = {
       chooseColor: 'Choose a color',
       cards: '{{count}} cards',
       callCascade: 'Call Cascade',
-      callCascadeSelf: 'Call Cascade — save yourself',
+      callCascadeSelf: 'Call Cascade - save yourself',
       backToGames: '← Games',
     },
     tutorial: {
@@ -264,7 +264,7 @@ export const enMessages = {
       },
       s3: {
         title: 'Stack penalties',
-        body: 'Pass a Draw-Two along with another Draw-Two, or stack a Wild +4 — decline and pay the full price.',
+        body: 'Pass a Draw-Two along with another Draw-Two, or stack a Wild +4 - decline and pay the full price.',
       },
       s4: {
         title: 'No move? Draw',

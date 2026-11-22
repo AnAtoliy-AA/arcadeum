@@ -71,4 +71,59 @@ describe('SudokuGame UI', () => {
     expect(modal).toHaveAttribute('data-tone', 'victory');
     expect(screen.getByTestId('rematch-button')).toBeInTheDocument();
   });
+
+  it('toggles digit-first input mode when clicking the mode toggle button', () => {
+    render(<SudokuGame />);
+
+    const modeBtn = screen.getByTestId('sudoku-input-mode-button');
+    expect(modeBtn).toBeInTheDocument();
+
+    expect(useSudokuStore.getState().inputMode).toBe('cell_first');
+    fireEvent.click(modeBtn);
+    expect(useSudokuStore.getState().inputMode).toBe('digit_first');
+
+    const digit1 = screen.getByTestId('sudoku-digit-1');
+    fireEvent.click(digit1);
+    expect(useSudokuStore.getState().activeDigit).toBe(1);
+
+    fireEvent.click(modeBtn);
+    expect(useSudokuStore.getState().inputMode).toBe('cell_first');
+  });
+
+  it('renders milestone toast on 50% progress and dismisses on button click', () => {
+    useSudokuStore.setState({
+      activeMilestone: 50,
+      reachedMilestones: [50],
+    });
+
+    render(<SudokuGame />);
+
+    const toast = screen.getByTestId('sudoku-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.sudoku_v1.milestone.badge_50'),
+    ).toBeInTheDocument();
+
+    const dismissBtn = screen.getByTestId('sudoku-milestone-dismiss');
+    fireEvent.click(dismissBtn);
+    expect(useSudokuStore.getState().activeMilestone).toBeNull();
+  });
+
+  it('renders milestone toast on 75% progress with badge and auto-dismisses on animationEnd', () => {
+    useSudokuStore.setState({
+      activeMilestone: 75,
+      reachedMilestones: [75],
+    });
+
+    render(<SudokuGame />);
+
+    const toast = screen.getByTestId('sudoku-milestone-toast');
+    expect(toast).toBeInTheDocument();
+    expect(
+      screen.getByText('games.sudoku_v1.milestone.badge_75'),
+    ).toBeInTheDocument();
+
+    fireEvent.animationEnd(toast);
+    expect(useSudokuStore.getState().activeMilestone).toBeNull();
+  });
 });

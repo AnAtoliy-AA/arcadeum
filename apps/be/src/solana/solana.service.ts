@@ -67,7 +67,7 @@ export class SolanaService {
         mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
       if (!isValidMint && mintAddress) {
         this.logger.warn(
-          `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58 — using System Program fallback`,
+          `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58: using System Program fallback`,
         );
       }
       this.arcadeumMint = isValidMint
@@ -175,7 +175,7 @@ export class SolanaService {
         previous * SolanaService.ARCADEUM_PRICE_MIN_FRACTION_OF_PREVIOUS
     ) {
       this.logger.error(
-        `ARCADEUM price sanity check failed: candidate ${candidate} deviates too far from reference ${previous} — rejecting quote`,
+        `ARCADEUM price sanity check failed: candidate ${candidate} deviates too far from reference ${previous}: rejecting quote`,
       );
       return 0;
     }
@@ -315,7 +315,7 @@ export class SolanaService {
 
       if (mint.equals(PublicKey.default)) {
         this.logger.error(
-          'ARCADEUM_MINT_ADDRESS is not configured — refusing to verify deposits',
+          'ARCADEUM_MINT_ADDRESS is not configured: refusing to verify deposits',
         );
         return false;
       }
@@ -329,7 +329,7 @@ export class SolanaService {
         configuredTreasury !== treasuryPubkey.toBase58()
       ) {
         this.logger.error(
-          'SOLANA_TREASURY_ADDRESS does not match the platform keypair public key — refusing to verify deposits',
+          'SOLANA_TREASURY_ADDRESS does not match the platform keypair public key: refusing to verify deposits',
         );
         return false;
       }

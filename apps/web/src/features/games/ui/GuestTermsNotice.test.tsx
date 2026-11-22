@@ -24,6 +24,6 @@ describe('GuestTermsNotice', () => {
     expect(screen.getByText('Playing as Guest')).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: /Terms of Service/i }),
-    ).toHaveAttribute('href', '/terms');
+    ).toHaveAttribute('href', '/en/terms');
   });
 });

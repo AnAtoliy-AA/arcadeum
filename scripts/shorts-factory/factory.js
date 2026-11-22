@@ -100,12 +100,19 @@ const CONFIG = {
   factoryBotRefreshToken: process.env.SHORTS_FACTORY_BOT_REFRESH_TOKEN || '',
   factoryBotEmail: process.env.SHORTS_FACTORY_BOT_EMAIL || '',
   factoryBotPassword: process.env.SHORTS_FACTORY_BOT_PASSWORD || '',
-  factoryBeUrl: process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
+  factoryBeUrl:
+    process.env.BE_URL || process.env.BACKEND_URL || 'http://localhost:4000',
 
   // Approval settings
   approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
   pollIntervalMs: 30 * 1000, // 30 seconds
   enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
+  // TTS / Voice
+  edgeTtsBin:
+    process.env.EDGE_TTS_BIN ||
+    `${process.env.HOME || '/home/ubuntu'}/tts-venv/bin/edge-tts`,
+  ttsVoice: process.env.EDGE_TTS_VOICE || 'en-US-GuyNeural',
+  ttsEnabled: process.env.EDGE_TTS_ENABLED !== 'false',
 };
 
 const FALLBACK_GAME_SLUGS = [
@@ -169,10 +176,72 @@ async function ensurePendingDir() {
   await mkdir(CONFIG.pendingDir, { recursive: true });
 }
 
+async function resolveEdgeTtsBin() {
+  const { access } = require('fs/promises');
+  const candidates = [
+    CONFIG.edgeTtsBin,
+    '/usr/local/bin/edge-tts',
+    '/usr/bin/edge-tts',
+    '/home/ubuntu/tts-venv/bin/edge-tts',
+    path.join(process.env.HOME || '', 'tts-venv/bin/edge-tts'),
+  ].filter(Boolean);
+  for (const bin of candidates) {
+    try {
+      await access(bin);
+      return bin;
+    } catch {}
+  }
+  return null;
+}
+
+async function generateVoiceover(text, outputPath) {
+  if (!CONFIG.ttsEnabled) return null;
+  const bin = await resolveEdgeTtsBin();
+  if (!bin) {
+    log('warn', 'edge-tts binary not found - skipping voice');
+    return null;
+  }
+  try {
+    const cleanText = text
+      .replace(/[#\n]/g, ' ')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 300);
+    await new Promise((resolve, reject) => {
+      const proc = spawn(bin, [
+        '--voice',
+        CONFIG.ttsVoice,
+        '--text',
+        cleanText,
+        '--write-media',
+        outputPath,
+      ]);
+      let stderr = '';
+      proc.stderr.on('data', (d) => {
+        stderr += d.toString();
+      });
+      proc.on('close', (code) => {
+        if (code === 0) resolve();
+        else
+          reject(new Error(`edge-tts exited ${code}: ${stderr.slice(-200)}`));
+      });
+      proc.on('error', reject);
+    });
+    log('info', `Voiceover generated: ${outputPath}`);
+    return outputPath;
+  } catch (err) {
+    log('warn', 'edge-tts failed - video will have no voice', {
+      error: err.message,
+    });
+    return null;
+  }
+}
+
 /**
  * Saves video to pending directory and notifies Telegram bot
  */
-async function requestApproval(videoPath, caption, scenario) {
+async function requestApproval(videoPath, caption, scenario, options = {}) {
   if (!CONFIG.enableApproval) {
     log('info', 'Approval flow disabled, posting directly');
     return { approved: true, autoApproved: false, pendingId: null };
@@ -188,6 +257,10 @@ async function requestApproval(videoPath, caption, scenario) {
     scenario,
     status: 'pending',
     createdAt: new Date().toISOString(),
+    voiceUnavailable: options.voiceUnavailable || false,
+    note: options.voiceUnavailable
+      ? '⚠️ Voice unavailable (edge-tts offline)'
+      : undefined,
   };
 
   // Save pending metadata
@@ -274,16 +347,27 @@ async function pollForApproval(id, metadataPath) {
 /**
  * Reports the posting result to Telegram bot
  */
-async function reportResult(id, success, message, platforms) {
-  if (!CONFIG.enableApproval) return;
+async function reportResult(
+  id,
+  success,
+  message,
+  platforms,
+  failedPlatforms = [],
+) {
+  if (!CONFIG.enableApproval || !id) return;
 
   try {
     await axios.post(
       `${CONFIG.tgBotUrl}/shorts-factory/result`,
       {
         id,
+        pendingId: id,
+        success,
         status: success ? 'posted' : 'failed',
-        result: { success, message, platforms },
+        message,
+        platforms,
+        failedPlatforms,
+        result: { success, message, platforms, failedPlatforms },
       },
       { timeout: 120000 },
     );
@@ -301,21 +385,21 @@ const CAPTIONS = [
   'This is what next-gen gaming actually looks like 🎮⚡ 20+ games, ranked matchmaking, and real rewards',
   'Play games, win real rewards, no download needed 💰🏆 Instant browser play, no app store required',
   'The future of multiplayer gaming is live on Arcadeum Games ⚡ Real-time matchmaking, leaderboards, and daily challenges',
-  'POV: you just found the best gaming platform online 🕹️🔥 Chess, Sea Battle, Checkers, Poker, Go — all free',
+  'POV: you just found the best gaming platform online 🕹️🔥 Chess, Sea Battle, Checkers, Poker, Go - all free',
   'Free to play. Easy to win. Impossible to stop 🚀 20+ games with ranked seasons and unlockable rewards',
-  'Competitive gaming meets real rewards — and it slaps 🎯 ELO ratings, win streaks, and seasonal tournaments',
-  'Your next favorite game is one click away 🌟 No download, no signup friction — just play instantly',
+  'Competitive gaming meets real rewards - and it slaps 🎯 ELO ratings, win streaks, and seasonal tournaments',
+  'Your next favorite game is one click away 🌟 No download, no signup friction - just play instantly',
   'Play. Compete. Earn. Repeat! 🔄💎 Daily rewards, battle passes, and cosmetic unlocks',
   'Level up your gaming experience today! ⬆️ 40 AI bot difficulties, Puzzle Rush, and game analysis',
   'Where casual gamers become champions 👑 Ranked ladders, tournament brackets, and global leaderboards',
   'Unlock exclusive drops just by playing 🔓🎁 Avatar skins, board themes, and animated effects',
   'The ultimate gaming destination just dropped 🌟 20+ games across chess, cards, boards, and arcade',
   'Real multiplayer. Real stakes. Real fun 🏅 Play vs AI, friends, or ranked opponents worldwide',
-  'Competitive gaming that actually works — instant matchmaking 😤⚡ Under 3 second queue times',
+  'Competitive gaming that actually works - instant matchmaking 😤⚡ Under 3 second queue times',
   'Sink ships, climb ranks, collect rewards ⚓🏆 Sea Battle with ranked seasons and ship unlocks',
   'Chess with stakes? Sign me up 👑♟️ Stockfish 19, 40 AI bots, 6 variants, and Puzzle Rush',
-  'This snake game goes HARD 🐍🔥 Glimworm multiplayer — 8-player neon battles',
-  'Classic games, modern rewards — best combo ever 🎲💰 Backgammon, Checkers, Hearts, Spades — all ranked',
+  'This snake game goes HARD 🐍🔥 Glimworm multiplayer - 8-player neon battles',
+  'Classic games, modern rewards - best combo ever 🎲💰 Backgammon, Checkers, Hearts, Spades - all ranked',
   'Drop in, play a quick game, win something epic 🎮🏆 Quick play mode, daily challenges, and instant rewards',
   'Arcadeum Games just changed the game. Literally. 🚀 Browser-based, cross-platform, zero downloads',
 ];
@@ -332,20 +416,30 @@ const CAPTIONS = [
 async function getFactoryBotTokens() {
   if (CONFIG.factoryBotToken) {
     log('info', 'Using existing SHORTS_FACTORY_BOT_TOKEN from env');
-    return { accessToken: CONFIG.factoryBotToken, refreshToken: CONFIG.factoryBotRefreshToken };
+    return {
+      accessToken: CONFIG.factoryBotToken,
+      refreshToken: CONFIG.factoryBotRefreshToken,
+    };
   }
 
   if (!CONFIG.factoryBotEmail || !CONFIG.factoryBotPassword) {
-    log('warn', 'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)');
+    log(
+      'warn',
+      'No bot credentials configured (SHORTS_FACTORY_BOT_EMAIL/PASSWORD)',
+    );
     return null;
   }
 
   log('info', `Auto-login as bot user: ${CONFIG.factoryBotEmail}`);
   try {
-    const res = await axios.post(`${CONFIG.factoryBeUrl}/auth/login`, {
-      email: CONFIG.factoryBotEmail,
-      password: CONFIG.factoryBotPassword,
-    }, { timeout: 15000 });
+    const res = await axios.post(
+      `${CONFIG.factoryBeUrl}/auth/login`,
+      {
+        email: CONFIG.factoryBotEmail,
+        password: CONFIG.factoryBotPassword,
+      },
+      { timeout: 15000 },
+    );
 
     const { accessToken, refreshToken } = res.data || {};
     if (accessToken) {
@@ -355,7 +449,10 @@ async function getFactoryBotTokens() {
     log('warn', 'Bot login returned no accessToken');
     return null;
   } catch (err) {
-    log('warn', 'Bot login failed', { error: err.message, status: err.response?.status });
+    log('warn', 'Bot login failed', {
+      error: err.message,
+      status: err.response?.status,
+    });
     return null;
   }
 }
@@ -388,7 +485,7 @@ async function injectBotAuth(context, tokens) {
 }
 
 // ============================================================================
-// SCENARIOS — 50 pre-defined user journeys (one per day, no repeats)
+// SCENARIOS - 50 pre-defined user journeys (one per day, no repeats)
 // ============================================================================
 
 const SCENARIOS = [
@@ -419,7 +516,7 @@ const SCENARIOS = [
     name: 'chessGameplay',
     requiresAuth: true,
     caption:
-      'Chess powered by Stockfish 19 — the newest version deployed September 2026, the strongest engine ever built ♟️🧠 40 personalized AI bots of all difficulties, 6 variants, Puzzle Rush, game review with accuracy scores. Play free at arcadeum.games #chess #stockfish #stockfish19 #chessengine #onlinechess #chess960 #puzzlerush #arcadeumgames',
+      'Chess powered by Stockfish 19 - the newest version deployed September 2026, the strongest engine ever built ♟️🧠 40 personalized AI bots of all difficulties, 6 variants, Puzzle Rush, game review with accuracy scores. Play free at arcadeum.games #chess #stockfish #stockfish19 #chessengine #onlinechess #chess960 #puzzlerush #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2000 },
       {
@@ -440,7 +537,7 @@ const SCENARIOS = [
     name: 'ticTacToeGameplay',
     requiresAuth: true,
     caption:
-      'Tic-Tac-Toe with real stakes — can you beat the AI? ❌⭕🔥 #tictactoe #gaming',
+      'Tic-Tac-Toe with real stakes - can you beat the AI? ❌⭕🔥 #tictactoe #gaming',
     steps: [
       { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 2000 },
       {
@@ -460,7 +557,7 @@ const SCENARIOS = [
     name: 'criticalGameplay',
     requiresAuth: true,
     caption:
-      'Critical card game — high pressure, high reward ⚡🃏 20+ cards, deck building, combo chains — survive 10 rounds to win. #cardgame #arcade #multiplayer #arcadeumgames',
+      'Critical card game - high pressure, high reward ⚡🃏 20+ cards, deck building, combo chains - survive 10 rounds to win. #cardgame #arcade #multiplayer #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/critical', wait: 2000 },
       {
@@ -500,7 +597,7 @@ const SCENARIOS = [
     name: 'checkersGameplay',
     requiresAuth: true,
     caption:
-      'Checkers online for real rewards — can you dominate? 🔴⚫🏆 #checkers #boardgame',
+      'Checkers online for real rewards - can you dominate? 🔴⚫🏆 #checkers #boardgame',
     steps: [
       { type: 'navigate', url: '/en/games/checkers', wait: 2000 },
       {
@@ -520,7 +617,7 @@ const SCENARIOS = [
     name: 'cascadeGameplay',
     requiresAuth: true,
     caption:
-      'Cascade card game — the strategy is DEEP 🎴🏆 #cardgame #strategy #gaming',
+      'Cascade card game - the strategy is DEEP 🎴🏆 #cardgame #strategy #gaming',
     steps: [
       { type: 'navigate', url: '/en/games/cascade', wait: 2000 },
       {
@@ -537,7 +634,7 @@ const SCENARIOS = [
     ],
   },
 
-  // ─── GAME LANDINGS — rich scrolling demos ────────────────────────────────
+  // ─── GAME LANDINGS - rich scrolling demos ────────────────────────────────
 
   {
     name: 'gameExplorer',
@@ -563,7 +660,7 @@ const SCENARIOS = [
   {
     name: 'seaBattleIntro',
     caption:
-      'Sink enemy fleets & claim real rewards! ⚓ Play Sea Battle live on Arcadeum Games 🔥 Carrier, Battleship, Cruiser, Submarine, Destroyer — place them smart, sink them all. #seabattle #indiegames #arcadeumgames',
+      'Sink enemy fleets & claim real rewards! ⚓ Play Sea Battle live on Arcadeum Games 🔥 Carrier, Battleship, Cruiser, Submarine, Destroyer - place them smart, sink them all. #seabattle #indiegames #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/sea-battle', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -585,7 +682,7 @@ const SCENARIOS = [
   {
     name: 'chessLanding',
     caption:
-      'Chess on Arcadeum Games — Stockfish 19, the newest engine version deployed September 2026. 40 personalized AI bots from beginner to grandmaster, 6 variants, Puzzle Rush with 500+ tactics, game review with accuracy scores 🧠♟️ Try free at arcadeum.games #chess #stockfish #stockfish19 #chess960 #puzzlerush #chessanalysis #arcadeumgames',
+      'Chess on Arcadeum Games - Stockfish 19, the newest engine version deployed September 2026. 40 personalized AI bots from beginner to grandmaster, 6 variants, Puzzle Rush with 500+ tactics, game review with accuracy scores 🧠♟️ Try free at arcadeum.games #chess #stockfish #stockfish19 #chess960 #puzzlerush #chessanalysis #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -606,7 +703,7 @@ const SCENARIOS = [
   {
     name: 'glimwormLanding',
     caption:
-      'A snake game that went MULTIPLAYER 🐍⚡ Glimworm on Arcadeum Games is insane — neon grid, power-ups, 8-player battles #snakegame #arcade #arcadeumgames',
+      'A snake game that went MULTIPLAYER 🐍⚡ Glimworm on Arcadeum Games is insane - neon grid, power-ups, 8-player battles #snakegame #arcade #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/glimworm', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -690,7 +787,7 @@ const SCENARIOS = [
   {
     name: 'checkersLanding',
     caption:
-      'Classic checkers with a competitive edge 🔴⚫ Forced captures, king promotion, multi-jump combos — ranked online play on Arcadeum Games! #checkers #competitive #arcadeumgames',
+      'Classic checkers with a competitive edge 🔴⚫ Forced captures, king promotion, multi-jump combos - ranked online play on Arcadeum Games! #checkers #competitive #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/checkers', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -711,7 +808,7 @@ const SCENARIOS = [
   {
     name: 'backgammonLanding',
     caption:
-      'Backgammon online with real opponents — the OG strategy game is back 🎲♟️ Doubling cube, pip count, and prime formations. #backgammon #boardgame #strategy #arcadeumgames',
+      'Backgammon online with real opponents - the OG strategy game is back 🎲♟️ Doubling cube, pip count, and prime formations. #backgammon #boardgame #strategy #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/backgammon', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -732,7 +829,7 @@ const SCENARIOS = [
   {
     name: 'heartsLanding',
     caption:
-      'Hearts card game online — avoid the Queen, win the round! 🃏❤️ Pass cards, shoot the moon, and dodge the Queen of Spades. #cardgame #tricktaking #arcadeumgames',
+      'Hearts card game online - avoid the Queen, win the round! 🃏❤️ Pass cards, shoot the moon, and dodge the Queen of Spades. #cardgame #tricktaking #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/hearts', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -753,7 +850,7 @@ const SCENARIOS = [
   {
     name: 'spadesLanding',
     caption:
-      'Spades online — team up & dominate the table! 🃏♠️ Bid smart, play trump, and track bags. #spades #cardgame #multiplayer #arcadeumgames',
+      'Spades online - team up & dominate the table! 🃏♠️ Bid smart, play trump, and track bags. #spades #cardgame #multiplayer #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/spades', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -774,7 +871,7 @@ const SCENARIOS = [
   {
     name: 'catDashLanding',
     caption:
-      'Cat Dash — the most chaotic runner game on web 🐱💨 Endless runner, power-ups, and distance challenges. #catdash #arcade #gaming #arcadeumgames',
+      'Cat Dash - the most chaotic runner game on web 🐱💨 Endless runner, power-ups, and distance challenges. #catdash #arcade #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/cat-dash', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -795,7 +892,7 @@ const SCENARIOS = [
   {
     name: '2048Landing',
     caption:
-      '2048 online with multiplayer twist — how high can you score? 🧩🏆 Slide tiles, merge numbers, and chase 2048. #2048 #puzzle #arcadeumgames',
+      '2048 online with multiplayer twist - how high can you score? 🧩🏆 Slide tiles, merge numbers, and chase 2048. #2048 #puzzle #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/2048', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -840,7 +937,7 @@ const SCENARIOS = [
   {
     name: 'gamesCatalogFilter',
     caption:
-      'Strategy, action, cards — Arcadeum Games has it all 🎯🃏⚔️ #gaming #arcadeumgames',
+      'Strategy, action, cards - Arcadeum Games has it all 🎯🃏⚔️ #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       {
@@ -986,7 +1083,7 @@ const SCENARIOS = [
   {
     name: 'eventsPage',
     caption:
-      "Special events with exclusive rewards — don't miss out! 🎉🎁 Limited-time modes, holiday events, and rare cosmetics. #events #gaming #arcadeumgames",
+      "Special events with exclusive rewards - don't miss out! 🎉🎁 Limited-time modes, holiday events, and rare cosmetics. #events #gaming #arcadeumgames",
     steps: [
       { type: 'navigate', url: '/en/events', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1173,7 +1270,7 @@ const SCENARIOS = [
   {
     name: 'homepageTour',
     caption:
-      'Welcome to Arcadeum Games — the ultimate gaming playground! 🚀🎮 20+ games, ranked play, and real rewards. #gaming #arcadeumgames',
+      'Welcome to Arcadeum Games - the ultimate gaming playground! 🚀🎮 20+ games, ranked play, and real rewards. #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en', wait: 3000 },
       { type: 'scroll', y: 400, wait: 800 },
@@ -1306,7 +1403,8 @@ const SCENARIOS = [
   },
   {
     name: 'gameToLeaderboard',
-    caption:       'Play hard, rank high, and win prizes! 📈🏆 Seasonal rankings, promotion matches, and division tiers. #competitive #gaming #arcadeumgames',
+    caption:
+      'Play hard, rank high, and win prizes! 📈🏆 Seasonal rankings, promotion matches, and division tiers. #competitive #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1371,7 +1469,7 @@ const SCENARIOS = [
   {
     name: 'changelogPage',
     caption:
-      "Arcadeum Games ships fast — check out what's new! 🚢⚡ Patch notes, new games, and feature releases. #gaming #updates #arcadeumgames",
+      "Arcadeum Games ships fast - check out what's new! 🚢⚡ Patch notes, new games, and feature releases. #gaming #updates #arcadeumgames",
     steps: [
       { type: 'navigate', url: '/en/changelog', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1412,7 +1510,7 @@ const SCENARIOS = [
   {
     name: 'catalogToGameFlow',
     caption:
-      'Browse 20+ games and jump into action in seconds! 🎮⚡ Chess, Sea Battle, Checkers, Poker, Go — all free. #gaming #arcadeumgames',
+      'Browse 20+ games and jump into action in seconds! 🎮⚡ Chess, Sea Battle, Checkers, Poker, Go - all free. #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1442,7 +1540,7 @@ const SCENARIOS = [
   {
     name: 'catalogToSeaBattleFlow',
     caption:
-      'Found Sea Battle in the catalog — time to sink some ships! ⚓🔥 10x10 grid, 5 ships, and real-time naval combat. #seabattle #gaming #arcadeumgames',
+      'Found Sea Battle in the catalog - time to sink some ships! ⚓🔥 10x10 grid, 5 ships, and real-time naval combat. #seabattle #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1472,7 +1570,7 @@ const SCENARIOS = [
   {
     name: 'leaderboardToProfileFlow',
     caption:
-      'Spotted a top player on the leaderboard — checking out their profile! 🏆👤 Win rate, game history, and achievement badges. #competitive #gaming #arcadeumgames',
+      'Spotted a top player on the leaderboard - checking out their profile! 🏆👤 Win rate, game history, and achievement badges. #competitive #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 200, wait: 800 },
@@ -1500,7 +1598,7 @@ const SCENARIOS = [
   {
     name: 'themeShowcaseCyberpunk',
     caption:
-      'Cyberpunk vibes on Arcadeum Games — every game has themed skins! 🌆🎮 Neon boards, animated pieces, and custom effects. #cyberpunk #gaming #aesthetic #arcadeumgames',
+      'Cyberpunk vibes on Arcadeum Games - every game has themed skins! 🌆🎮 Neon boards, animated pieces, and custom effects. #cyberpunk #gaming #aesthetic #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 3000 },
       { type: 'scroll', y: 200, wait: 800 },
@@ -1536,12 +1634,602 @@ const SCENARIOS = [
     ],
   },
 
+  // ─── THEME SHOWCASE - ALL 12 THEMES ─────────────────────────────────────
+
+  {
+    name: 'themeShowcaseGalaxy',
+    caption:
+      'Galaxy theme on Chess - play among the stars! 🌌♟️ Cosmic boards, nebula backgrounds, and star-field animated pieces. #galaxy #chess #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=galaxy', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseFantasy',
+    caption:
+      'Fantasy theme on Checkers - battle through enchanted lands! 🧙✨ Dragon squares, wizard pieces, and mythical board designs. #fantasy #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/checkers?theme=fantasy', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseWestern',
+    caption:
+      'Wild West Pachisi - race through the frontier! 🤠🎲 Cowboy tokens, desert boards, and saloon vibes. #western #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi?theme=western', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseEgypt',
+    caption:
+      'Ancient Egypt meets Backgammon! 🏺🎲 Hieroglyphic boards, golden checkers, and pharaoh vibes. Play themed games on arcadeum.games #egypt #backgammon #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon?theme=egypt', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseSteampunk',
+    caption:
+      'Steampunk Sea Battle - Victorian naval warfare! ⚙️⚓ Brass cannons, gear-powered torpedoes, and clockwork fleet animations. #steampunk #seabattle #aesthetic #arcadeumgames',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/sea-battle?theme=steampunk',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseZen',
+    caption:
+      'Zen Go - find peace in every stone you place 🧘⬛⬜ Bamboo boards, calm water animations, and meditative soundscapes. #zen #go #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/go?theme=zen', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseAdventure',
+    caption:
+      'Adventure theme on Chess - conquer the mountain pass! ⛰️♟️ Rocky terrain boards, explorer pieces, and wilderness vibes. #adventure #chess #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=adventure', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseCrime',
+    caption:
+      "Crime theme on Texas Hold'em - bluff in the back alley! 🕵️🂠 Noir poker tables, detective chips, and underground casino vibes. #crime #poker #aesthetic #arcadeumgames",
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/texas-holdem?theme=crime',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseHorror',
+    caption:
+      'Horror Hearts - dodge the Queen of Death! 👻♥️ Haunted card designs, skull animations, and spooky ambiance. #horror #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts?theme=horror', wait: 3000 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+  {
+    name: 'themeShowcaseHighAltitude',
+    caption:
+      'High Altitude Checkers - battle on the mountain peak! 🏔️🔴⚫ Rocky terrain boards, snow-capped piece designs, and altitude vibes. #mountain #checkers #aesthetic #arcadeumgames',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/checkers?theme=high-altitude-hike',
+        wait: 3000,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1500,
+      },
+      { type: 'scroll', y: 400, wait: 800 },
+      { type: 'scroll', y: 300, wait: 600 },
+    ],
+  },
+
+  // ─── NEW GAMEPLAY ROOMS ────────────────────────────────────────────────────
+
+  {
+    name: 'pachisiGameplay',
+    requiresAuth: true,
+    caption:
+      'Pachisi - the ancient royal dice race goes online! 🎲👑 4 tokens, safe zones, captures, and home stretch - every roll is a new battle. #pachisi #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'backgammonGameplay',
+    requiresAuth: true,
+    caption:
+      'Backgammon online - roll dice, move checkers, bear off! 🎲🏆 Pip count, prime strategy, and doubling cube - the OG strategy game reborn. #backgammon #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'heartsGameplay',
+    requiresAuth: true,
+    caption:
+      'Hearts online - dodge the Queen of Spades or shoot the moon! ♥️♠ 4-player trick-taking at its finest on arcadeum.games #hearts #cardgame #tricktaking #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'spadesGameplay',
+    requiresAuth: true,
+    caption:
+      'Spades online - team up and dominate! ♠️🤝 Bid smart, play trump, and count bags - team trick-taking strategy at its best. #spades #cardgame #multiplayer #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/spades', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'goGameplay',
+    requiresAuth: true,
+    caption:
+      'Go online - surround, capture, conquer! ⚫⚪ 19x19 board, territory scoring, and life-and-death battles. The deepest strategy game ever made. #go #baduk #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/go', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'texasHoldemGameplay',
+    requiresAuth: true,
+    caption:
+      "Texas Hold'em poker - all in or fold? 🂠🔥 Preflop, flop, turn, river - bluff your way to the pot on arcadeum.games #poker #texasholdem #cardgame #arcadeumgames",
+    steps: [
+      { type: 'navigate', url: '/en/games/texas-holdem', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 150, wait: 600 },
+    ],
+  },
+  {
+    name: 'catDashGameplay',
+    requiresAuth: true,
+    caption:
+      'Cat Dash - run, jump, collect! 🐱💨 This endless runner is the most chaotic fun on the web. How far can you go? arcadeum.games #catdash #runner #arcade #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/cat-dash', wait: 2000 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 100, wait: 600 },
+    ],
+  },
+
+  // ─── MULTI-GAME THEME HOPS ────────────────────────────────────────────────
+
+  {
+    name: 'themeHopCyberpunkToGalaxy',
+    caption:
+      'Cyberpunk chess to Galaxy backgammon - two totally different vibes! 🌆🌌 Themed skins for every mood on arcadeum.games #gaming #themes #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      {
+        type: 'navigate',
+        url: '/en/games/backgammon?theme=galaxy',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'themeHopEgyptToZen',
+    caption:
+      'Ancient Egypt to peaceful Zen - Arcadeum has a theme for every vibe! 🏺🧘 Switch themes, same great games on arcadeum.games #egypt #zen #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon?theme=egypt', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/go?theme=zen', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'themeHopWesternToHorror',
+    caption:
+      'Wild West dice to Horror cards - Arcadeum themes are WILD! 🤠👻 12 themed skins to choose from on arcadeum.games #western #horror #gaming #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/pachisi?theme=western', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/hearts?theme=horror', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+  {
+    name: 'themeHopSteampunkToFantasy',
+    caption:
+      'Steampunk battleships to Fantasy checkers - the variety is insane! ⚙️🧙 Every game on arcadeum.games has stunning themed skins. #steampunk #fantasy #gaming #aesthetic',
+    steps: [
+      {
+        type: 'navigate',
+        url: '/en/games/sea-battle?theme=steampunk',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/checkers?theme=fantasy', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1200,
+      },
+    ],
+  },
+
+  // ─── ENGAGING STORY FLOWS ─────────────────────────────────────────────────
+
+  {
+    name: 'speedrunnerFlow',
+    caption:
+      'Speed-running all 20+ games on Arcadeum - which is your favorite? 🎮⚡ Chess, Sea Battle, Pachisi, Go, Poker, Hearts - all free! #gaming #speedrun #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/chess', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+      { type: 'navigate', url: '/en/games/sea-battle', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+      { type: 'navigate', url: '/en/games/pachisi', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+      { type: 'navigate', url: '/en/games/go', wait: 1500 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 800,
+      },
+    ],
+  },
+  {
+    name: 'epicBoardGamesShowcase',
+    caption:
+      'The greatest board games ever made - all in one place! 🎲♟️⚫ Chess, Backgammon, Go, Checkers, and Pachisi - all ranked, all free. arcadeum.games #boardgames #classic #strategy #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/backgammon?theme=egypt', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/chess?theme=galaxy', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/go?theme=zen', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'cardGamesShowcase',
+    caption:
+      'Hearts, Spades, Cascade, Critical, and Poker - all in one app! 🂳♥️♠️ Every card game you love, with ranked matchmaking. arcadeum.games #cardgames #multiplayer #gaming #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games/hearts', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/spades', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      {
+        type: 'hover',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 1000,
+      },
+      { type: 'navigate', url: '/en/games/cascade', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'catalogThemeDiscovery',
+    caption:
+      'Did you know Arcadeum Games has 12 visual themes? 🎨💀 Galaxy, Cyberpunk, Western, Egypt, Horror, Zen - pick your vibe! #gaming #themes #aesthetic #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-chess_v1"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+      { type: 'navigate', url: '/en/games/chess?theme=galaxy', wait: 2500 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'dailyChallengeFlow',
+    caption:
+      'Daily challenges with bonus rewards - play every day and level up! 🏆🔥 Login streaks, daily tokens, and challenge completions. #dailychallenge #gaming #rewards #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en', wait: 2500 },
+      { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="hero-cta-button"]',
+        wait: 1200,
+      },
+      { type: 'navigate', url: '/en/rewards', wait: 2500 },
+      { type: 'scroll', y: 300, wait: 800 },
+      { type: 'hover', selector: '[data-testid="daily-rewards"]', wait: 1500 },
+      { type: 'navigate', url: '/en/games/chess', wait: 2000 },
+      { type: 'scroll', y: 200, wait: 600 },
+    ],
+  },
+  {
+    name: 'catalogToPachisiFlow',
+    caption:
+      'Discovered Pachisi in the catalog - the ancient royal board game! 🎲👑 4 tokens, safe zones, and home stretch - classic Ludo evolved. arcadeum.games #pachisi #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 400, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-pachisi_v1"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="games-catalog-card-pachisi_v1"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
+      },
+    ],
+  },
+  {
+    name: 'catalogToBackgammonFlow',
+    caption:
+      'Found Backgammon in the catalog - time to roll! 🎲⚡ 24 points, 15 checkers, doubling cube - the OG strategy game. arcadeum.games #backgammon #boardgame #arcadeumgames',
+    steps: [
+      { type: 'navigate', url: '/en/games', wait: 2500 },
+      { type: 'scroll', y: 500, wait: 800 },
+      {
+        type: 'hover',
+        selector: '[data-testid="games-catalog-card-backgammon_v1"]',
+        wait: 1200,
+      },
+      {
+        type: 'click',
+        selector: '[data-testid="games-catalog-card-backgammon_v1"]',
+        wait: 2500,
+      },
+      { type: 'scroll', y: 300, wait: 800 },
+      {
+        type: 'click',
+        selector: '[data-testid="quickplay-ai-button"]',
+        wait: 3000,
+      },
+      {
+        type: 'hover',
+        selector: '[data-testid="game-board-area"]',
+        wait: 1500,
+      },
+    ],
+  },
+
   // ─── CHESS-SPECIFIC SCENARIOS ─────────────────────────────────────────────
 
   {
     name: 'chessBulletBlitz',
     caption:
-      'Bullet and blitz chess powered by Stockfish 19 — the newest engine version deployed September 2026. Fast moves, real-time eval ⚡🧠 Play at arcadeum.games #chess #bulletchess #blitzchess #stockfish19 #arcadeumgames',
+      'Bullet and blitz chess powered by Stockfish 19 - the newest engine version deployed September 2026. Fast moves, real-time eval ⚡🧠 Play at arcadeum.games #chess #bulletchess #blitzchess #stockfish19 #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1567,7 +2255,7 @@ const SCENARIOS = [
   {
     name: 'chess960Variant',
     caption:
-      'Chess960 (Fischer Random) — randomized starting positions, pure chess intuition ♟️🎲 Stockfish 19 powered at arcadeum.games #chess960 #fischerandom #chessvariant #stockfish19 #arcadeumgames',
+      'Chess960 (Fischer Random) - randomized starting positions, pure chess intuition ♟️🎲 Stockfish 19 powered at arcadeum.games #chess960 #fischerandom #chessvariant #stockfish19 #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1588,7 +2276,7 @@ const SCENARIOS = [
   {
     name: 'chessPuzzleRush',
     caption:
-      'Puzzle Rush — solve Stockfish 19-rated tactics as fast as you can! 🧩🔥 How many can you solve in 3 minutes? arcadeum.games #puzzlerush #chesstactics #stockfish19 #chesspuzzle #arcadeumgames',
+      'Puzzle Rush - solve Stockfish 19-rated tactics as fast as you can! 🧩🔥 How many can you solve in 3 minutes? arcadeum.games #puzzlerush #chesstactics #stockfish19 #chesspuzzle #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 400, wait: 800 },
@@ -1604,7 +2292,7 @@ const SCENARIOS = [
   {
     name: 'chessGameReview',
     caption:
-      'Stockfish 19 game review — see your accuracy score, best moves, and biggest blunders 📊🔍 The newest engine version, deployed September 2026. Review at arcadeum.games #chessanalysis #gamereview #stockfish19 #chessimprovement #arcadeumgames',
+      'Stockfish 19 game review - see your accuracy score, best moves, and biggest blunders 📊🔍 The newest engine version, deployed September 2026. Review at arcadeum.games #chessanalysis #gamereview #stockfish19 #chessimprovement #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1620,7 +2308,7 @@ const SCENARIOS = [
   {
     name: 'chessAIBots',
     caption:
-      '40 unique AI bot personalities powered by Stockfish 19 — from beginner to grandmaster level 🤖👑 Each bot has a unique name, avatar, and playstyle. Pick your opponent at arcadeum.games #chess #aichess #chessbot #stockfish19 #arcadeumgames',
+      '40 unique AI bot personalities powered by Stockfish 19 - from beginner to grandmaster level 🤖👑 Each bot has a unique name, avatar, and playstyle. Pick your opponent at arcadeum.games #chess #aichess #chessbot #stockfish19 #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1636,7 +2324,7 @@ const SCENARIOS = [
   {
     name: 'chessOpenings',
     caption:
-      'From Scholar\'s Mate to Queen\'s Gambit — Stockfish 19 analyzes every opening move ♟️📚 Learn the best openings at arcadeum.games #chessopening #queensgambit #stockfish19 #chessstrategy #arcadeumgames',
+      "From Scholar's Mate to Queen's Gambit - Stockfish 19 analyzes every opening move ♟️📚 Learn the best openings at arcadeum.games #chessopening #queensgambit #stockfish19 #chessstrategy #arcadeumgames",
     steps: [
       { type: 'navigate', url: '/en/games/chess', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1661,7 +2349,7 @@ const SCENARIOS = [
   {
     name: 'chessCyberpunkTheme',
     caption:
-      'Cyberpunk chess with Stockfish 19 — neon vibes meet grandmaster-level AI 🌆♟️ The strongest engine, the coolest theme. Play at arcadeum.games #chess #cyberpunk #stockfish19 #aesthetic #arcadeumgames',
+      'Cyberpunk chess with Stockfish 19 - neon vibes meet grandmaster-level AI 🌆♟️ The strongest engine, the coolest theme. Play at arcadeum.games #chess #cyberpunk #stockfish19 #aesthetic #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/chess?theme=cyberpunk', wait: 3000 },
       { type: 'scroll', y: 200, wait: 800 },
@@ -1687,7 +2375,7 @@ const SCENARIOS = [
   {
     name: 'chessCatalogToGame',
     caption:
-      'Found Chess in the catalog — Stockfish 19 awaits! The newest engine version, September 2026 ♟️⚡ Jump into a game at arcadeum.games #chess #stockfish19 #arcadeumgames',
+      'Found Chess in the catalog - Stockfish 19 awaits! The newest engine version, September 2026 ♟️⚡ Jump into a game at arcadeum.games #chess #stockfish19 #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games', wait: 2500 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1720,7 +2408,7 @@ const SCENARIOS = [
   {
     name: 'texasHoldemLanding',
     caption:
-      "Texas Hold'em poker with ranked matches — bluff your way to the top! 🃏♠️ Preflop, flop, turn, river — four betting rounds. #poker #texasholdem #arcadeumgames",
+      "Texas Hold'em poker with ranked matches - bluff your way to the top! 🃏♠️ Preflop, flop, turn, river - four betting rounds. #poker #texasholdem #arcadeumgames",
     steps: [
       { type: 'navigate', url: '/en/games/texas-holdem', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1737,7 +2425,7 @@ const SCENARIOS = [
   {
     name: 'pachisiLanding',
     caption:
-      'Pachisi — the ancient royal board game goes online! 🎲👑 4 tokens, safe zones, and home stretch — classic Ludo strategy. #pachisi #boardgame #arcadeumgames',
+      'Pachisi - the ancient royal board game goes online! 🎲👑 4 tokens, safe zones, and home stretch - classic Ludo strategy. #pachisi #boardgame #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/pachisi', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1754,7 +2442,7 @@ const SCENARIOS = [
   {
     name: 'goLanding',
     caption:
-      'Go — the deepest strategy game ever made, now online! ⚫⚪ 19x19 board, territory scoring, and life-and-death puzzles. #go #baduk #strategy #arcadeumgames',
+      'Go - the deepest strategy game ever made, now online! ⚫⚪ 19x19 board, territory scoring, and life-and-death puzzles. #go #baduk #strategy #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/go', wait: 3000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -1774,7 +2462,7 @@ const SCENARIOS = [
   {
     name: 'leaderboardToChallengeFlow',
     caption:
-      'Spotted a top player — checking their stats and sending a challenge! 🏆⚔️ ELO rating, game history, and head-to-head record. #competitive #gaming #arcadeumgames',
+      'Spotted a top player - checking their stats and sending a challenge! 🏆⚔️ ELO rating, game history, and head-to-head record. #competitive #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/leaderboards', wait: 2500 },
       { type: 'scroll', y: 200, wait: 800 },
@@ -1795,7 +2483,7 @@ const SCENARIOS = [
   {
     name: 'rewardClaimFlow',
     caption:
-      'Daily rewards are LIVE — claim your free tokens and streak bonus! 💰🎁 Login streaks, daily challenges, and bonus multipliers. #playtoearn #gaming #arcadeumgames',
+      'Daily rewards are LIVE - claim your free tokens and streak bonus! 💰🎁 Login streaks, daily challenges, and bonus multipliers. #playtoearn #gaming #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/rewards', wait: 2500 },
       { type: 'scroll', y: 200, wait: 800 },
@@ -1820,7 +2508,7 @@ const SCENARIOS = [
   {
     name: 'shopEquipFlow',
     caption:
-      'New avatar unlocked — equip it and show your style! 🛒🎨 Avatar collection, rarity tiers, and loadout presets. #gaming #customization #arcadeumgames',
+      'New avatar unlocked - equip it and show your style! 🛒🎨 Avatar collection, rarity tiers, and loadout presets. #gaming #customization #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/shop', wait: 2500 },
       { type: 'scroll', y: 300, wait: 800 },
@@ -1841,7 +2529,7 @@ const SCENARIOS = [
   {
     name: 'tournamentJoinFlow',
     caption:
-      'Daily tournament is starting — join now and compete for prizes! 🏅🔥 Bracket play, Swiss system, and free-for-all. #tournament #esports #arcadeumgames',
+      'Daily tournament is starting - join now and compete for prizes! 🏅🔥 Bracket play, Swiss system, and free-for-all. #tournament #esports #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/tournaments', wait: 2500 },
       { type: 'scroll', y: 200, wait: 800 },
@@ -1881,7 +2569,7 @@ const SCENARIOS = [
   {
     name: 'multiGameSpeedRun',
     caption:
-      'Speed-running every game on Arcadeum Games — which one is YOUR favorite? 🎮⚡ Chess, Sea Battle, Checkers, Poker, Go — all free. #gaming #speedrun #arcadeumgames',
+      'Speed-running every game on Arcadeum Games - which one is YOUR favorite? 🎮⚡ Chess, Sea Battle, Checkers, Poker, Go - all free. #gaming #speedrun #arcadeumgames',
     steps: [
       { type: 'navigate', url: '/en/games/tic-tac-toe', wait: 2000 },
       { type: 'scroll', y: 200, wait: 600 },
@@ -2078,7 +2766,7 @@ async function waitForContent(page, timeout = 10000) {
       { timeout },
     );
   } catch {
-    // Continue even if timeout — page might still be usable
+    // Continue even if timeout - page might still be usable
   }
 }
 
@@ -2115,6 +2803,122 @@ async function dismissAnyOverlays(page) {
   } catch {}
 }
 
+function getScenarioHook(scenario) {
+  const name = (scenario && scenario.name) || '';
+  if (name.includes('chess'))
+    return { text: '♟️ STOCKFISH 19 CHESS AI', color: '#6366f1' };
+  if (name.includes('seaBattle'))
+    return { text: '⚓ SINK ENEMY FLEETS LIVE', color: '#0ea5e9' };
+  if (name.includes('critical'))
+    return { text: '🃏 CRITICAL CARD SURVIVAL', color: '#f59e0b' };
+  if (name.includes('tournament'))
+    return { text: '🏆 GLOBAL TOURNAMENTS', color: '#ec4899' };
+  if (name.includes('leaderboard'))
+    return { text: '⚡ CLIMB GLOBAL RANKS', color: '#8b5cf6' };
+  if (name.includes('glimworm'))
+    return { text: '🐍 MULTIPLAYER GLIMWORM', color: '#10b981' };
+  if (name.includes('tictactoe') || name.includes('ticTacToe'))
+    return { text: '❌⭕ HIGH STAKES TIC-TAC-TOE', color: '#f43f5e' };
+  if (name.includes('checkers'))
+    return { text: '👑 MASTER THE CHECKERS BOARD', color: '#eab308' };
+  if (name.includes('backgammon'))
+    return { text: '🎲 ANCIENT TACTICS • BACKGAMMON', color: '#d97706' };
+  if (name.includes('shop') || name.includes('avatar'))
+    return { text: '✨ CUSTOM AVATARS & SKINS', color: '#06b6d4' };
+  if (name.includes('catalog') || name.includes('Explorer'))
+    return { text: '🎮 15+ FREE MULTIPLAYER GAMES', color: '#6366f1' };
+  return { text: '⚡ ARCADEUM • PLAY FREE NOW', color: '#6366f1' };
+}
+
+async function injectShowcaseHook(page, scenario) {
+  try {
+    const hook = getScenarioHook(scenario);
+    await page.evaluate(({ text, color }) => {
+      const existing = document.getElementById('arcadeum-showcase-hook');
+      if (existing) existing.remove();
+
+      const hookEl = document.createElement('div');
+      hookEl.id = 'arcadeum-showcase-hook';
+      hookEl.style.cssText = `
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-10px);
+        z-index: 2147483640;
+        pointer-events: none;
+        background: rgba(8, 12, 24, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1.5px solid ${color};
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.75), 0 0 24px ${color}55;
+        padding: 10px 24px;
+        border-radius: 9999px;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      `;
+      hookEl.textContent = text;
+      document.body.appendChild(hookEl);
+
+      requestAnimationFrame(() => {
+        hookEl.style.opacity = '1';
+        hookEl.style.transform = 'translateX(-50%) translateY(0)';
+      });
+
+      setTimeout(() => {
+        if (hookEl && hookEl.parentNode) {
+          hookEl.style.opacity = '0';
+          hookEl.style.transform = 'translateX(-50%) translateY(-10px)';
+          setTimeout(() => hookEl.remove(), 400);
+        }
+      }, 3500);
+    }, hook);
+  } catch {}
+}
+
+async function injectClickRipple(page, x, y) {
+  try {
+    await page.evaluate(
+      ({ px, py }) => {
+        const ripple = document.createElement('div');
+        ripple.style.cssText = `
+        position: fixed;
+        left: ${px}px;
+        top: ${py}px;
+        width: 28px;
+        height: 28px;
+        margin-left: -14px;
+        margin-top: -14px;
+        border-radius: 50%;
+        background: rgba(99, 102, 241, 0.35);
+        border: 2px solid #a5b4fc;
+        box-shadow: 0 0 16px rgba(99, 102, 241, 0.8);
+        pointer-events: none;
+        z-index: 2147483647;
+        transform: scale(0.3);
+        opacity: 1;
+        transition: transform 0.45s ease-out, opacity 0.45s ease-out;
+      `;
+        document.body.appendChild(ripple);
+        requestAnimationFrame(() => {
+          ripple.style.transform = 'scale(2.2)';
+          ripple.style.opacity = '0';
+          setTimeout(() => ripple.remove(), 450);
+        });
+      },
+      { px: Math.round(x), py: Math.round(y) },
+    );
+  } catch {}
+}
+
 /**
  * Executes a single scenario step
  */
@@ -2124,7 +2928,54 @@ async function executeStep(page, step) {
       const url = `${CONFIG.baseUrl}${step.url}`;
       log('info', `Step: Navigate to ${url}`);
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page
+        .evaluate(() => {
+          const existing = document.getElementById('arcadeum-factory-loader');
+          if (existing) existing.remove();
+          const style = document.createElement('style');
+          style.id = 'arcadeum-factory-loader-style';
+          style.textContent = `
+          @keyframes fLoaderSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+          @keyframes fLoaderPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+          @keyframes fLoaderDot { 0%,80%,100% { transform:scale(0.5);opacity:0.3; } 40% { transform:scale(1);opacity:1; } }
+          @keyframes fLoaderFadeOut { from { opacity:1; } to { opacity:0; pointer-events:none; } }
+        `;
+          document.head.appendChild(style);
+          const loader = document.createElement('div');
+          loader.id = 'arcadeum-factory-loader';
+          loader.style.cssText =
+            'position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,#080c18 0%,#0d1224 50%,#080c18 100%);font-family:-apple-system,BlinkMacSystemFont,sans-serif;pointer-events:none;';
+          const ring = document.createElement('div');
+          ring.style.cssText =
+            'width:48px;height:48px;border:3px solid rgba(99,102,241,0.15);border-top-color:#6366f1;border-right-color:#a5b4fc;border-radius:50%;animation:fLoaderSpin 0.85s linear infinite;';
+          const logo = document.createElement('div');
+          logo.style.cssText =
+            'font-size:18px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,#a5b4fc,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:fLoaderPulse 1.8s ease-in-out infinite;';
+          logo.textContent = 'arcadeum.games';
+          const dotsWrap = document.createElement('div');
+          dotsWrap.style.cssText = 'display:flex;gap:5px;';
+          [0, 0.2, 0.4].forEach((delay) => {
+            const d = document.createElement('div');
+            d.style.cssText = `width:6px;height:6px;background:#6366f1;border-radius:50%;animation:fLoaderDot 1.1s ease-in-out ${delay}s infinite;`;
+            dotsWrap.appendChild(d);
+          });
+          loader.appendChild(ring);
+          loader.appendChild(logo);
+          loader.appendChild(dotsWrap);
+          document.body.appendChild(loader);
+        })
+        .catch(() => {});
       await waitForContent(page);
+      await page
+        .evaluate(() => {
+          const loader = document.getElementById('arcadeum-factory-loader');
+          if (loader) {
+            loader.style.transition = 'opacity 0.35s ease';
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 350);
+          }
+        })
+        .catch(() => {});
       await dismissAnyOverlays(page);
       if (step.wait) await sleep(step.wait);
       break;
@@ -2148,9 +2999,12 @@ async function executeStep(page, step) {
           .boundingBox()
           .catch(() => null);
         if (box) {
-          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
+          const cx = box.x + box.width / 2;
+          const cy = box.y + box.height / 2;
+          await page.mouse.move(cx, cy, {
             steps: 10,
           });
+          await injectClickRipple(page, cx, cy);
         }
         await el
           .first()
@@ -2161,6 +3015,7 @@ async function executeStep(page, step) {
         log('info', `Step: Click at (${step.x}, ${step.y})`);
         await page.mouse.move(step.x, step.y, { steps: 5 });
         await sleep(200);
+        await injectClickRipple(page, step.x, step.y);
         await page.mouse.click(step.x, step.y);
         await dismissAnyOverlays(page);
       }
@@ -2213,6 +3068,8 @@ async function captureBrowsing() {
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
+        '--background-color=0xff080c18',
+        '--blink-settings=forceDarkModeEnabled=true',
       ],
     });
     log('info', 'Browser launched successfully');
@@ -2243,6 +3100,23 @@ async function captureBrowsing() {
     });
     log('info', 'Browser context created with video recording');
 
+    await context.addInitScript(() => {
+      try {
+        if (document.documentElement) {
+          document.documentElement.style.backgroundColor = '#080c18';
+        }
+        const style = document.createElement('style');
+        style.id = 'arcadeum-anti-white-screen';
+        style.textContent = `
+          html, body {
+            background-color: #080c18 !important;
+            color-scheme: dark !important;
+          }
+        `;
+        (document.head || document.documentElement).appendChild(style);
+      } catch {}
+    });
+
     await context.addInitScript(
       ({ gameSlugs }) => {
         try {
@@ -2269,11 +3143,19 @@ async function captureBrowsing() {
         'info',
         injected
           ? 'Bot auth tokens injected into browser context'
-          : 'Auth scenario selected but no token available — will record unauthenticated',
+          : 'Auth scenario selected but no token available - will record unauthenticated',
       );
     }
 
     const page = await context.newPage();
+    try {
+      const cdp = await context.newCDPSession(page);
+      await cdp.send('Emulation.setDefaultBackgroundColorOverride', {
+        color: { r: 8, g: 12, b: 24, a: 1 },
+      });
+    } catch (e) {
+      log('warn', `Failed to set CDP background override: ${e.message}`);
+    }
     log('info', 'New page created');
     log('info', `Running scenario: ${scenario.name}`);
     log('info', `Caption will be: "${scenario.caption}"`);
@@ -2296,6 +3178,7 @@ async function captureBrowsing() {
           'info',
           `Calculated startOffsetMs (trim offset for initial white screen): ${startOffsetMs}ms`,
         );
+        await injectShowcaseHook(page, scenario);
       }
     }
 
@@ -2425,9 +3308,35 @@ function getScenarioTags(scenarioName) {
     name.includes('spades') ||
     name.includes('catdash') ||
     name.includes('2048') ||
-    name.includes('sea')
+    name.includes('sea') ||
+    name.includes('pachisi') ||
+    name.includes('go') ||
+    name.includes('holdem') ||
+    name.includes('showcase') ||
+    name.includes('themehop') ||
+    name.includes('speedrunner')
   ) {
     tags.push('#gamers', '#p2e', '#onlinegaming');
+  }
+
+  if (
+    name.includes('theme') ||
+    name.includes('aesthetic') ||
+    name.includes('skin')
+  ) {
+    tags.push('#aesthetic', '#gamingaesthetic', '#themes');
+  }
+
+  if (
+    name.includes('pachisi') ||
+    name.includes('backgammon') ||
+    name.includes('go') ||
+    name.includes('checkers') ||
+    name.includes('boardgame') ||
+    name.includes('epic') ||
+    name.includes('catalog')
+  ) {
+    tags.push('#boardgame', '#classic', '#strategy');
   }
 
   if (name.includes('gameplay') || name.includes('room')) {
@@ -2475,19 +3384,21 @@ function getScenarioTags(scenarioName) {
 /**
  * Processes the raw video with FFmpeg: trim, add audio, append end card
  */
-async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
+async function processVideo(
+  rawVideoPath,
+  recordedDuration,
+  startOffsetMs = 0,
+  voiceoverPath = null,
+) {
   log('info', 'Starting FFmpeg video processing...');
 
-  // Ensure output directory exists
   await ensureDir(CONFIG.outputDir);
 
-  // Select a random audio track
   const tracks = await getAudioTracks();
   const audioTrack = randomElement(tracks);
   const trackVolume = getTrackVolume(audioTrack);
   log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
 
-  // Calculate trim duration (cap at 13 seconds for optimal 15s total duration with end card)
   const startOffsetSec = Math.max(0, startOffsetMs / 1000);
   const remainingDuration = Math.max(
     3,
@@ -2513,37 +3424,75 @@ async function processVideo(rawVideoPath, recordedDuration, startOffsetMs = 0) {
   );
   const outputPath = path.join(CONFIG.outputDir, `arcadeum-${timestamp}.mp4`);
 
-  // Step 1: Trim video and add audio
-  await runFFmpeg(
-    [
-      '-ss',
-      startOffsetSec.toFixed(3),
-      '-i',
-      rawVideoPath,
-      '-i',
-      audioTrack,
-      '-t',
-      trimDuration.toFixed(3),
-      '-vf',
-      `eq=contrast=1.05:saturation=1.15,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
-      '-af',
-      `volume=${trackVolume},afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
-      '-c:v',
-      'libx264',
-      '-preset',
-      'fast',
-      '-crf',
-      '23',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-y',
-      '-shortest',
-      mainVideoPath,
-    ],
-    'main video',
-  );
+  if (voiceoverPath) {
+    await runFFmpeg(
+      [
+        '-i',
+        rawVideoPath,
+        '-ss',
+        startOffsetSec.toFixed(3),
+        '-i',
+        audioTrack,
+        '-i',
+        voiceoverPath,
+        '-t',
+        trimDuration.toFixed(3),
+        '-filter_complex',
+        `[0:v]fade=t=in:st=0:d=0.35,eq=contrast=1.06:saturation=1.18,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration},format=yuv420p[v];` +
+          `[1:a]volume=${(trackVolume * 0.5).toFixed(2)}[bg];` +
+          `[2:a]adelay=500|500,volume=1.4[voice];` +
+          `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}[a]`,
+        '-map',
+        '[v]',
+        '-map',
+        '[a]',
+        '-c:v',
+        'libx264',
+        '-preset',
+        'fast',
+        '-crf',
+        '22',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '128k',
+        '-y',
+        mainVideoPath,
+      ],
+      'main video with voice',
+    );
+  } else {
+    await runFFmpeg(
+      [
+        '-i',
+        rawVideoPath,
+        '-ss',
+        startOffsetSec.toFixed(3),
+        '-i',
+        audioTrack,
+        '-t',
+        trimDuration.toFixed(3),
+        '-vf',
+        `fade=t=in:st=0:d=0.35,eq=contrast=1.06:saturation=1.18,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration},format=yuv420p`,
+        '-af',
+        `volume=${trackVolume},afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
+        '-c:v',
+        'libx264',
+        '-preset',
+        'fast',
+        '-crf',
+        '22',
+        '-c:a',
+        'aac',
+        '-b:a',
+        '128k',
+        '-y',
+        '-shortest',
+        mainVideoPath,
+      ],
+      'main video',
+    );
+  }
 
   // Step 2: Create end card (black background + logo.png overlay + random CTA + fade-in audio)
   const logoPath = path.join(
@@ -2841,9 +3790,17 @@ async function publishToSocials(videoPath, caption) {
 
   const successes = results.filter((r) => r.success);
   const failures = results.filter((r) => !r.success);
+  let message = '';
+  if (successes.length > 0 && failures.length === 0) {
+    message = `Published to ${successes.map((r) => r.platform).join(', ')}`;
+  } else if (successes.length > 0 && failures.length > 0) {
+    message = `Partial publish: passed [${successes.map((r) => r.platform).join(', ')}], failed [${failures.map((f) => f.platform).join(', ')}]`;
+  } else {
+    message = `Publish failed: ${failures.map((f) => `${f.platform} (${f.error})`).join(', ') || 'none'}`;
+  }
   return {
     success: successes.length > 0,
-    message: `Published to ${successes.map((r) => r.platform).join(', ') || 'none'}`,
+    message,
     platforms: successes.map((r) => r.platform),
     failedPlatforms: failures.map((r) => ({
       platform: r.platform,
@@ -2909,42 +3866,53 @@ async function main() {
       `Raw video captured at: ${rawVideoPath} (${captureResult.duration}ms)`,
     );
 
-    // Step 2: Process video with FFmpeg
-    log('info', 'Step 2: Processing video with FFmpeg...');
-    outputVideoPath = await processVideo(
-      rawVideoPath,
-      captureResult.duration,
-      captureResult.startOffsetMs,
-    );
-    log('info', `Processed video saved at: ${outputVideoPath}`);
-
-    // Step 3: Request approval (if enabled)
     const baseCaption = captureResult.caption || randomElement(CAPTIONS);
     const scenario = captureResult.scenario || 'unknown';
     const hashtags = getScenarioTags(scenario);
     const caption = `${baseCaption}\n\nPlay now: ${CONFIG.baseUrl}\n\n${hashtags}`;
     log('info', `Selected caption: "${caption}"`);
 
-    const approval = await requestApproval(outputVideoPath, caption, scenario);
+    const voiceoverPath = path.join(
+      CONFIG.rawCapturesDir,
+      `voice-${Date.now()}.mp3`,
+    );
+    const voicePath = await generateVoiceover(baseCaption, voiceoverPath);
+    const voiceUnavailable = !voicePath;
+    if (voiceUnavailable) {
+      log('warn', 'Voiceover unavailable - video will have no voice track');
+    }
+
+    log('info', 'Step 2: Processing video with FFmpeg...');
+    outputVideoPath = await processVideo(
+      rawVideoPath,
+      captureResult.duration,
+      captureResult.startOffsetMs,
+      voicePath,
+    );
+    log('info', `Processed video saved at: ${outputVideoPath}`);
+
+    const approval = await requestApproval(outputVideoPath, caption, scenario, {
+      voiceUnavailable,
+    });
 
     if (approval.approved) {
       // Step 4: Post to social media
       log('info', 'Step 3: Publishing to social platforms...');
       const result = await publishToSocials(outputVideoPath, caption);
 
-      // Report result if we have a pending ID
       if (approval.pendingId) {
         await reportResult(
           approval.pendingId,
           result.success,
           result.message,
           result.platforms,
+          result.failedPlatforms,
         );
       }
     } else if (approval.regenerated) {
       log(
         'info',
-        'Regeneration requested — task-bot spawns a fresh run with --test-scenario',
+        'Regeneration requested - task-bot spawns a fresh run with --test-scenario',
       );
       await cleanup();
       process.exit(0);

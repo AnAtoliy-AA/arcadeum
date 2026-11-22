@@ -1,5 +1,4 @@
-import { readFile } from 'fs/promises';
-import { join } from 'path';
+import { TIERS, PHASES, STATS } from './roadmap-data';
 
 export type FeatureStatus = 'implemented' | 'partial' | 'not_started';
 
@@ -414,7 +413,9 @@ export function parseRoadmapMarkdown(content: string): RoadmapData {
 }
 
 export async function getRoadmapData(): Promise<RoadmapData> {
-  const filePath = join(process.cwd(), '..', '..', 'docs', 'ROADMAP.md');
-  const content = await readFile(filePath, 'utf-8');
-  return parseRoadmapMarkdown(content);
+  return {
+    tiers: TIERS,
+    phases: PHASES,
+    stats: STATS,
+  };
 }

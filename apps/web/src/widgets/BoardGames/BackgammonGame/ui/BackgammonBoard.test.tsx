@@ -151,4 +151,111 @@ describe('BackgammonBoard', () => {
       expect(el).toHaveAttribute('role', 'button');
     }
   });
+
+  it('renders flipped board for player 2 with home board at bottom right', () => {
+    render(
+      <BackgammonBoard
+        currentUserId="p2"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={mockState}
+      />,
+    );
+
+    const point23 = screen.getByTestId('point-23');
+    expect(point23).toBeInTheDocument();
+    expect(screen.getByText('Home: 19-24 (Bottom)')).toBeInTheDocument();
+  });
+
+  it('shows bar enter indicator when user has checkers on the bar', () => {
+    const barState: BackgammonClientState = {
+      ...mockState,
+      bar: { p1: 1, p2: 0 },
+      phase: 'move',
+      dice: [4],
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={barState}
+      />,
+    );
+
+    expect(screen.getByText('ENTER')).toBeInTheDocument();
+    const barZone = screen.getByTestId('bar-zone');
+    fireEvent.click(barZone);
+    expect(screen.getByTestId('point-20').textContent).toContain('+4');
+  });
+
+  it('rolls dice on Space key press during roll phase', () => {
+    const handleRoll = vi.fn();
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={handleRoll}
+        snapshot={mockState}
+      />,
+    );
+
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' });
+    expect(handleRoll).toHaveBeenCalledTimes(1);
+  });
+
+  it('makes sole legal move on Space key press', () => {
+    const handleMove = vi.fn();
+    const moveState: BackgammonClientState = {
+      ...mockState,
+      phase: 'move',
+      dice: [3],
+      rolledDice: [3, 0],
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p1"
+        myTurn={true}
+        onMove={handleMove}
+        onRoll={vi.fn()}
+        snapshot={moveState}
+      />,
+    );
+
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' });
+    expect(handleMove).toHaveBeenCalledWith({ from: 23, to: 20 });
+  });
+
+  it('keeps opposite corner layout unflipped for player 2 in long backgammon mode', () => {
+    const longState: BackgammonClientState = {
+      ...mockState,
+      options: { theme: 'cyberpunk', mode: 'long', aiDifficulty: 'medium' },
+      points: Array.from({ length: 24 }, (_, i) => {
+        if (i === 23) return { playerId: 'p1', count: 15 };
+        if (i === 11) return { playerId: 'p2', count: 15 };
+        return { playerId: null, count: 0 };
+      }),
+    };
+
+    render(
+      <BackgammonBoard
+        currentUserId="p2"
+        myTurn={true}
+        onMove={vi.fn()}
+        onRoll={vi.fn()}
+        snapshot={longState}
+      />,
+    );
+
+    const point23 = screen.getByTestId('point-23');
+    const point11 = screen.getByTestId('point-11');
+    expect(point23).toBeInTheDocument();
+    expect(point11).toBeInTheDocument();
+    expect(screen.getByText('Home: 13-18')).toBeInTheDocument();
+  });
 });

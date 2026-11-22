@@ -8,6 +8,7 @@ import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { BoardSizeSelector } from './BoardSizeSelector';
 import { TicTacToeTeamPanel } from './TicTacToeTeamPanel';
 import { RulesModal } from './RulesModal';
@@ -50,7 +51,7 @@ interface TicTacToeLobbyProps {
   onShowRulesClose: () => void;
 }
 
-function resolveOptions(raw: unknown): TicTacToeOptions {
+function resolveOptions(raw: unknown, fallbackTheme: string): TicTacToeOptions {
   const r = (raw ?? {}) as Partial<{
     theme: string;
     variant: string;
@@ -64,7 +65,7 @@ function resolveOptions(raw: unknown): TicTacToeOptions {
   const isMargin = (n: number | undefined): n is 1 | 2 | 3 =>
     n === 1 || n === 2 || n === 3;
   const isWinLen = (n: number | undefined): n is 4 | 5 => n === 4 || n === 5;
-  const theme = (r.theme ?? r.variant ?? 'adventure') as TicTacToeTheme;
+  const theme = (r.theme ?? r.variant ?? fallbackTheme) as TicTacToeTheme;
   return {
     variant: theme,
     theme,
@@ -91,10 +92,11 @@ export function TicTacToeLobby({
 }: TicTacToeLobbyProps) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
+  const equippedTheme = useEquippedGameTheme() ?? 'adventure';
 
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
-    [room.gameOptions],
+    () => resolveOptions(room.gameOptions, equippedTheme),
+    [room.gameOptions, equippedTheme],
   );
   const variant = options.variant;
   const lobbyTheme = useMemo(

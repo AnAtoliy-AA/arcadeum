@@ -30,12 +30,12 @@ export function CardView({
     const faceDownContent = (
       <div
         className={cx(
-          'relative h-full w-full rounded-xl border border-[var(--sol-card-back-border,rgba(255,255,255,0.25))] bg-[var(--sol-card-back,linear-gradient(135deg,#312e81_0%,#1e1b4b_100%))] shadow-sm transition-transform overflow-hidden',
+          'relative h-full w-full rounded-xl border-2 border-[var(--sol-card-back-border,rgba(255,255,255,0.3))] bg-[var(--sol-card-back,linear-gradient(135deg,#312e81_0%,#1e1b4b_100%))] shadow-md shadow-black/40 transition-transform overflow-hidden select-none',
           className,
         )}
       >
-        <div className="absolute inset-1 sm:inset-1.5 rounded-lg border border-white/25 flex items-center justify-center bg-white/5">
-          <div className="h-3 w-3 sm:h-4 sm:w-4 rotate-45 border border-white/30 bg-white/10" />
+        <div className="absolute inset-1 sm:inset-1.5 rounded-lg border border-white/30 flex items-center justify-center bg-white/10 shadow-inner">
+          <div className="h-3 w-3 sm:h-4 sm:w-4 rotate-45 border border-white/40 bg-white/20 shadow-xs" />
         </div>
       </div>
     );
@@ -63,11 +63,11 @@ export function CardView({
   const cardContent = (
     <div
       className={cx(
-        'relative flex h-full w-full select-none items-center justify-center rounded-xl border border-slate-200/90 dark:border-slate-300/40 bg-gradient-to-br from-white to-slate-50 font-bold shadow-sm transition-all',
+        'relative flex h-full w-full select-none items-center justify-center rounded-xl border border-slate-200/90 dark:border-slate-300/40 bg-gradient-to-br from-white to-slate-50 font-bold shadow-md shadow-black/35 transition-all',
         isRed ? 'text-rose-600' : 'text-slate-900',
-        onClick && 'hover:-translate-y-0.5 hover:shadow-md',
+        onClick && 'hover:-translate-y-1 hover:shadow-lg',
         selected &&
-          '-translate-y-1.5 ring-2 ring-[var(--sol-selected-ring,#f59e0b)] shadow-lg shadow-amber-400/30',
+          '-translate-y-2 ring-2 ring-[var(--sol-selected-ring,#f59e0b)] shadow-xl shadow-amber-400/40',
         className,
       )}
     >

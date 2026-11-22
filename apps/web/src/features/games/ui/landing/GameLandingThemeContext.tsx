@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react';
 import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
+import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 
 /** Theme ids a landing preview can cycle through (excludes `random`). */
 export const LANDING_THEME_IDS: readonly string[] = SHARED_THEMES.filter(
@@ -33,7 +34,7 @@ const GameLandingThemeContext = createContext<GameLandingThemeValue>({
 
 export function GameLandingThemeProvider({
   children,
-  initialTheme = DEFAULT_LANDING_THEME,
+  initialTheme,
   theme: controlledTheme,
   onThemeChange,
 }: {
@@ -42,11 +43,14 @@ export function GameLandingThemeProvider({
   theme?: string;
   onThemeChange?: (theme: string) => void;
 }) {
-  const [internalTheme, setInternalTheme] = useState<string>(
-    LANDING_THEME_IDS.includes(initialTheme)
+  const equippedTheme = useEquippedGameTheme();
+  const fallback = equippedTheme ?? DEFAULT_LANDING_THEME;
+  const resolvedInitial =
+    initialTheme && LANDING_THEME_IDS.includes(initialTheme)
       ? initialTheme
-      : DEFAULT_LANDING_THEME,
-  );
+      : fallback;
+
+  const [internalTheme, setInternalTheme] = useState<string>(resolvedInitial);
 
   const activeTheme =
     controlledTheme !== undefined ? controlledTheme : internalTheme;

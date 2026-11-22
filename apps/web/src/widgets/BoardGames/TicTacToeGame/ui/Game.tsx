@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -70,8 +71,14 @@ function TicTacToeGameImpl({
   onShowRulesClose,
 }: TicTacToeGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -82,6 +89,7 @@ function TicTacToeGameImpl({
     myTurn,
     isGameOver,
     startBusy,
+    setStartBusy,
     session,
   } = useTicTacToeState({
     roomId,
@@ -92,9 +100,20 @@ function TicTacToeGameImpl({
   const { startSession, placeMark } = useTicTacToeActions({
     roomId,
     userId: currentUserId,
+    onActionStart: (action) => {
+      if (action === 'start') {
+        setStartBusy(true);
+      }
+    },
   });
 
   const { play } = useGameSound('tic_tac_toe_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
 
   const handleCellClick = useCallback(
     (row: number, col: number) => {
@@ -198,16 +217,18 @@ function TicTacToeGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
-          onStartGame={(opts) =>
+          onStartGame={(opts) => {
+            setStartBusy(true);
             startSession({
               withBots: !!opts?.withBots,
               botCount: opts?.botCount,
-            })
-          }
+            });
+          }}
           onLeaveRoom={() => onLeaveRoom(currentUserId ?? '')}
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
         />
@@ -304,6 +325,7 @@ function TicTacToeGameImpl({
           title: 'Tic-Tac-Toe',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentShooterId,
             isMyTurn: myTurn,

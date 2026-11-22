@@ -4,7 +4,7 @@ export type { enMessages as en } from './en';
 
 export type CascadeMessages = typeof enMessages;
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadCascadeMessages(locale: string) {
   switch (locale) {
     case 'en':

@@ -138,7 +138,7 @@ export const ChatMessage = memo(function ChatMessage({
 
   return (
     <div className={messageGroupClasses(isOwn, type)}>
-      {!isSystem && senderName && (
+      {!isSystem && (
         <div
           className={cx(
             'flex w-full flex-row items-end gap-2 shrink',
@@ -147,7 +147,7 @@ export const ChatMessage = memo(function ChatMessage({
         >
           {senderAvatar ?? (
             <div className="shrink-0">
-              <Avatar name={senderName} size="sm" src={avatarUrl} />
+              <Avatar name={senderName || 'Anonymous'} size="sm" src={avatarUrl} />
               {badgeUrl ? (
                 <div className="h-4 w-4">
                   <CosmeticSprite src={badgeUrl} size={16} />
@@ -157,16 +157,14 @@ export const ChatMessage = memo(function ChatMessage({
           )}
           <div className="flex flex-1 flex-col gap-1 min-w-0">
             {emoji ? (
-              <span style={{ fontSize: 36, lineHeight: 1 }}>{emoji}</span>
+              <span className="text-[36px] leading-none">{emoji}</span>
             ) : (
               <div
-                className={messageBubbleClasses(isOwn, type)}
+                className={cx(
+                  messageBubbleClasses(isOwn, type),
+                  'w-full break-words [overflow-wrap:anywhere]',
+                )}
                 data-testid="chat-message"
-                style={{
-                  wordBreak: 'break-word',
-                  overflowWrap: 'anywhere',
-                  width: '100%',
-                }}
               >
                 <Typography
                   uiSize="sm"
@@ -180,19 +178,20 @@ export const ChatMessage = memo(function ChatMessage({
                     uiSize="xs"
                     alpha="low"
                     color="var(--color)"
-                    className="mt-1"
-                    style={{ opacity: 0.7 }}
+                    className="mt-1 opacity-70"
                   >
                     {timestamp}
                   </Typography>
                 )}
               </div>
             )}
-            <SenderName
-              name={senderName}
-              color={senderColor}
-              nameStyle={senderNameStyle}
-            />
+            {senderName ? (
+              <SenderName
+                name={senderName}
+                color={senderColor}
+                nameStyle={senderNameStyle}
+              />
+            ) : null}
           </div>
         </div>
       )}

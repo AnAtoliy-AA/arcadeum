@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { parseRoadmapMarkdown } from './roadmap-parser';
+import { parseRoadmapMarkdown, getRoadmapData } from './roadmap-parser';
 
 describe('roadmap-parser', () => {
   it('parses ticket statuses, tiers, features, and phases from markdown', () => {
@@ -221,5 +221,12 @@ Move heavy computational bots off the main thread.
     const tier9 = data.tiers.find((t) => t.id === 'tier9');
     expect(tier9).toBeDefined();
     expect(tier9?.features.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('safely loads roadmap data asynchronously via getRoadmapData', async () => {
+    const data = await getRoadmapData();
+    expect(data.tiers.length).toBeGreaterThan(0);
+    expect(data.phases.length).toBeGreaterThan(0);
+    expect(data.stats.length).toBeGreaterThan(0);
   });
 });

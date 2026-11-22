@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-cat-dash',
   locale: 'en',
   title:
-    'How to Play Cat Dash Online — Dice Racing, Cat Abilities, Track Tactics',
+    'How to Play Cat Dash Online - Dice Racing, Cat Abilities, Track Tactics',
   excerpt:
     'A complete beginner-friendly guide to Cat Dash: the cat racing board game with dice, abilities, hazards, and strategic boosts.',
   publishedAt: '2026-08-25',
@@ -24,7 +24,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Each player selects a cat with a unique ability. All cats start at the starting line. On your turn, roll the dice to determine how many spaces your cat moves forward. Some track spaces have special effects — landing on them triggers the effect immediately.',
+      text: 'Each player selects a cat with a unique ability. All cats start at the starting line. On your turn, roll the dice to determine how many spaces your cat moves forward. Some track spaces have special effects - landing on them triggers the effect immediately.',
     },
     {
       type: 'heading',
@@ -86,14 +86,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/cat-dash',
-      text: 'Play Cat Dash online — free, in your browser',
+      text: 'Play Cat Dash online - free, in your browser',
       description:
         'Open a Cat Dash room, race friends or AI cats. Multiple track layouts and themes.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — the four habits that win races',
+      text: 'TL;DR - the four habits that win races',
       id: 'tldr',
     },
     {
@@ -107,7 +107,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Cat Dash rewards timing and positioning. The fastest cat isn't always the winner — the smartest one is.",
+      text: "Cat Dash rewards timing and positioning. The fastest cat isn't always the winner - the smartest one is.",
     },
   ],
   howTo: {

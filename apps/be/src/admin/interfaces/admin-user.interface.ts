@@ -2,7 +2,6 @@ import type { UserRole } from '../../auth/lib/roles';
 
 export interface AdminUserItem {
   id: string;
-  email: string;
   username: string;
   displayName: string | null;
   role: UserRole;

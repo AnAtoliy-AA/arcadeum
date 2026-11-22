@@ -9,7 +9,7 @@ import {
 test.describe('Level Badge Rewards', () => {
   test.beforeEach(async ({ page }) => {
     await mockSession(page, {
-      xp: 250,
+      xp: 5800,
       level: 5,
       role: 'free',
     });
@@ -48,12 +48,42 @@ test.describe('Level Badge Rewards', () => {
           overridden: false,
         },
         {
+          id: 'badge-veteran',
+          category: 'badge',
+          rarity: 'common',
+          nameKey: 'items.badge.veteran.name',
+          descKey: 'items.badge.veteran.desc',
+          assetUrl: '/shop/badges/veteran.png',
+          defaultPriceAmount: 0,
+          defaultPriceCurrency: 'coins',
+          available: true,
+          purchasable: false,
+          priceAmount: 0,
+          priceCurrency: 'coins',
+          overridden: false,
+        },
+        {
           id: 'badge-scout',
           category: 'badge',
           rarity: 'common',
           nameKey: 'items.badge.scout.name',
           descKey: 'items.badge.scout.desc',
           assetUrl: '/shop/badges/scout.png',
+          defaultPriceAmount: 0,
+          defaultPriceCurrency: 'coins',
+          available: true,
+          purchasable: false,
+          priceAmount: 0,
+          priceCurrency: 'coins',
+          overridden: false,
+        },
+        {
+          id: 'badge-newcomer',
+          category: 'badge',
+          rarity: 'common',
+          nameKey: 'items.badge.newcomer.name',
+          descKey: 'items.badge.newcomer.desc',
+          assetUrl: '/shop/badges/newcomer.png',
           defaultPriceAmount: 0,
           defaultPriceCurrency: 'coins',
           available: true,
@@ -93,20 +123,35 @@ test.describe('Level Badge Rewards', () => {
     await expect(page.getByTestId('level-reward-99')).toBeVisible();
   });
 
-  test('badges are shown in shop catalog as unpurchasable progression rewards', async ({
+  test('badges are shown in shop catalog ordered by level as unpurchasable progression rewards', async ({
     page,
   }) => {
-    await navigateTo(page, '/shop');
+    await navigateTo(page, '/en/shop');
 
-    await expect(page.locator('#row-badges')).toBeVisible();
-    await expect(page.getByTestId('shop-card-badge-scout')).toBeVisible();
-    await expect(page.getByTestId('shop-card-badge-scout')).toHaveText(
-      /lv\. 5/i,
+    const badgeRow = page.locator('#row-badges').first();
+    await expect(badgeRow).toBeVisible();
+
+    const scoutCard = badgeRow.getByTestId('shop-card-badge-scout');
+    await expect(scoutCard).toBeVisible();
+    await expect(scoutCard).toHaveText(/lv\. 5/i);
+    await expect(
+      badgeRow.getByTestId('shop-card-action-badge-scout'),
+    ).toHaveText(/view in stats/i);
+    await expect(badgeRow.getByTestId('shop-buy-badge-scout')).toHaveCount(0);
+
+    const badgeCards = badgeRow.locator('[data-testid^="shop-card-badge-"]');
+    await expect(badgeCards.nth(0)).toHaveAttribute(
+      'data-testid',
+      'shop-card-badge-newcomer',
     );
-    await expect(page.getByTestId('shop-card-action-badge-scout')).toHaveText(
-      /view in stats/i,
+    await expect(badgeCards.nth(1)).toHaveAttribute(
+      'data-testid',
+      'shop-card-badge-scout',
     );
-    await expect(page.getByTestId('shop-buy-badge-scout')).toHaveCount(0);
+    await expect(badgeCards.nth(2)).toHaveAttribute(
+      'data-testid',
+      'shop-card-badge-veteran',
+    );
   });
 
   test('milestone badges showcase is rendered and supports equipping unlocked badges', async ({

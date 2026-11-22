@@ -189,7 +189,7 @@ export function AdminTournamentsTable({
                   {item.waitlistCount > 0 ? ` (+${item.waitlistCount})` : ''}
                 </span>
                 <span className="flex-1 text-xs text-[var(--colorTextSecondary,#a1a1aa)] truncate">
-                  {item.createdBy?.displayName ?? '—'}
+                  {item.createdBy?.displayName ?? '-'}
                 </span>
                 <div className="flex flex-row items-center justify-end flex-[2] gap-1.5 flex-wrap">
                   <Button

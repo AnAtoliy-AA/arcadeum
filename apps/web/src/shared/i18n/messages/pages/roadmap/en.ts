@@ -1,7 +1,7 @@
 export const roadmapEn = {
   title: 'Arcadeum Games Roadmap',
   subtitle:
-    'From niche casual tool to a universally recommended platform for everyone — hardcore board gamers to party-game lovers.',
+    'From niche casual tool to a universally recommended platform for everyone - hardcore board gamers to party-game lovers.',
   canonicalNotice: 'English is the canonical version',
   stats: {
     features: 'Total Features',
@@ -61,9 +61,9 @@ export const roadmapEn = {
     planned: 'Planned',
   },
   legal: {
-    title: '100% Legal — All Public Domain',
+    title: '100% Legal - All Public Domain',
     description:
-      'Chess, Checkers, Go, Backgammon, Hearts, Spades, Pachisi — all public domain games with no licensing required. Game rules and mechanics cannot be copyrighted (Baker v. Selden, 1879). We create all our own artwork and UI.',
+      'Chess, Checkers, Go, Backgammon, Hearts, Spades, Pachisi - all public domain games with no licensing required. Game rules and mechanics cannot be copyrighted (Baker v. Selden, 1879). We create all our own artwork and UI.',
   },
   empty: {
     title: 'No features found',

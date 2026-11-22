@@ -70,6 +70,11 @@ export interface Piece {
 
 export type Board = (Piece | null)[][];
 
+export interface BoardPosition {
+  row: number;
+  col: number;
+}
+
 export interface CheckersPlayer {
   playerId: string;
   color: PlayerColor;

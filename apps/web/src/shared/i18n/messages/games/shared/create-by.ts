@@ -45,7 +45,7 @@ export const createBy = {
   cascadeModePure: 'Чысты',
   cascadeModeSpeed: 'Хуткі',
   cascadeModeClassicHint: 'Поўны набор правіл са стэкамі',
-  cascadeModePureHint: 'Без стэкаў — карты тягі разыгрываюцца адразу',
+  cascadeModePureHint: 'Без стэкаў - карты тягі разыгрываюцца адразу',
   cascadeModeSpeedHint: 'Стэкі ўключаны з таймерам на ход',
   cascadeLastCardCall: 'Каскад на апошняй карце',
   cascadeLastCardCallHint: 'Гонка за выклік пры 1 карце',
@@ -60,7 +60,7 @@ export const createBy = {
   title2: 'Новы стол.',
   titleAccent: 'За секунды.',
   intro:
-    'Выберыце гульню, наладзьце правілы — мы створым зал і спасылку для запрашэння.',
+    'Выберыце гульню, наладзьце правілы - мы створым зал і спасылку для запрашэння.',
   selected: 'Выбрана',
   optional: 'Апцыянальна',
   required: 'абавязкова',
@@ -96,7 +96,7 @@ export const createBy = {
     },
     teams: {
       title: 'Камандны рэжым',
-      desc: "Аб'яднайце гульцоў у флоты — 2v2 або 3v3.",
+      desc: "Аб'яднайце гульцоў у флоты - 2v2 або 3v3.",
     },
     spectators: {
       title: 'Дазволіць гледачоў',

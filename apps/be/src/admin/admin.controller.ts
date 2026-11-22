@@ -14,6 +14,11 @@ import {
   type AdminStatisticsResponse,
 } from './admin-statistics.service';
 import { GamesRealtimeService } from '../games/games.realtime.service';
+import {
+  AdminClusterService,
+  type ClusterStatusResponse,
+  type ClusterReloadResponse,
+} from './admin-cluster.service';
 
 interface DbStats {
   db: string;
@@ -94,6 +99,7 @@ export class AdminController {
     @InjectConnection() private readonly connection: Connection,
     private readonly statisticsService: AdminStatisticsService,
     private readonly realtimeService: GamesRealtimeService,
+    private readonly clusterService: AdminClusterService,
   ) {}
 
   @Get('ping')
@@ -257,5 +263,15 @@ export class AdminController {
       durationMs,
       pid: process.pid,
     };
+  }
+
+  @Get('cluster-status')
+  async getClusterStatus(): Promise<ClusterStatusResponse> {
+    return this.clusterService.getClusterStatus();
+  }
+
+  @Post('cluster-reload')
+  async reloadCluster(): Promise<ClusterReloadResponse> {
+    return this.clusterService.reloadCluster();
   }
 }

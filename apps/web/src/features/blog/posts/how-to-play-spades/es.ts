@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-spades',
   locale: 'es',
   title:
-    'Cómo jugar a Picas (Spades) online — Reglas, apuestas, Nil y estrategia',
+    'Cómo jugar a Picas (Spades) online - Reglas, apuestas, Nil y estrategia',
   excerpt:
     'Guía completa para principiantes de Picas: parejas, reparto, apuestas incluyendo Nil, bazas, bolsas de penalización y hábitos de equipo ganadores.',
   publishedAt: '2026-07-21',
@@ -128,7 +128,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/spades',
-      text: 'Jugar a Picas online — Gratis en el navegador',
+      text: 'Jugar a Picas online - Gratis en el navegador',
       description:
         'Juega al instante contra otros usuarios o practica contra bots inteligentes sin descargas ni registro.',
     },

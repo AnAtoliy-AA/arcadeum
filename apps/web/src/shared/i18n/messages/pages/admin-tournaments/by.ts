@@ -1,5 +1,19 @@
 export const adminTournamentsBy = {
   title: 'Турніры',
+  blitzCup: {
+    title: 'Штотыднёвы Бліц-Кубак Марскога Бою',
+    description:
+      'Аўтаматычны расклад турніраў на выбыванне па суботах у 18:00 UTC',
+    statusActive: 'Актыўны (Плануецца штотыдзень)',
+    statusPaused: 'Прыпынены (Планаванне адключана)',
+    toggleLabel: 'Пераключыць аўтаматычны Бліц-Кубак Марскога Бою',
+    prizePoolLabel: 'Прызавы фонд (Манеты)',
+    prizeDescriptionLabel: 'Апісанне прыза',
+    editPrizes: 'Наладзіць прызы',
+    savePrizes: 'Захаваць прызы',
+    cancel: 'Адмена',
+    prizesSaved: 'Прызы захаваныя',
+  },
   actions: {
     new: '+ Стварыць',
     edit: 'Рэдагаваць',

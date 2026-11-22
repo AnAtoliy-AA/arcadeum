@@ -18,7 +18,7 @@ export const esMessages = {
     landing: {
       meta: {
         title:
-          'Pachisi — Juego de Mesa de Carrera Multijugador Gratis | Arcadeum',
+          'Pachisi - Juego de Mesa de Carrera Multijugador Gratis | Arcadeum',
         description:
           'Juega al Pachisi (Ludo) gratis en línea en Arcadeum. Saca un seis para lanzar tus fichas, captura rivales y llega primero a casa. 2–4 jugadores, bots IA, tableros temáticos.',
         keywords:
@@ -102,16 +102,6 @@ export const esMessages = {
           'Saca un seis para lanzar, captura rivales en plena carrera y llega primero a casa.',
       },
       faq: {
-        gameOver: {
-          won: '¡Victoria!',
-          lost: 'Derrota',
-          draw: 'Empate',
-          messages: {
-            won: 'Todas tus fichas están en casa: ¡primer puesto!',
-            lost: 'Te han ganado la carrera. ¡Suerte la próxima vez!',
-            draw: 'La partida terminó en empate.',
-          },
-        },
         rules: {
           question: '¿Cómo se gana en Pachisi?',
           answer:
@@ -194,6 +184,11 @@ export const esMessages = {
       tokensHome: 'En Casa',
       captured: '¡Capturada!',
       noLegalMoves: 'Sin movimientos legales con esta tirada',
+      noLegalMovesWithRoll: 'Sacaste {{value}} - Sin movimientos posibles',
+      noLegalMovesTurnPassed:
+        'Sacaste {{value}} - Sin movimientos (turno pasado)',
+      needSixToExit: 'Necesitas un 6 para salir de la yarda',
+      opponentRolledNoMoves: 'Rival sacó {{value}} - Sin movimientos',
       passTurn: 'Pasar turno',
       tapToken: 'Toca una ficha resaltada para moverla',
       moveTokenAria: 'Mover ficha {{id}}',
@@ -204,7 +199,7 @@ export const esMessages = {
     tutorial: {
       s1: {
         title: 'Con un 6 sales',
-        body: 'Tira un dado en tu turno y mueve una ficha. Necesitas un 6 para salir del corral — y sacarlo te da otra tirada.',
+        body: 'Tira un dado en tu turno y mueve una ficha. Necesitas un 6 para salir del corral - y sacarlo te da otra tirada.',
       },
       s2: {
         title: 'Mándalos a casa',
@@ -216,7 +211,7 @@ export const esMessages = {
       },
       s4: {
         title: 'La codicia cuesta',
-        body: 'Sacar tres 6 seguidos anula todo tu turno — a veces la jugada segura es la mejor.',
+        body: 'Sacar tres 6 seguidos anula todo tu turno - a veces la jugada segura es la mejor.',
       },
     },
     rules: {
@@ -233,6 +228,16 @@ export const esMessages = {
       sixesTitle: 'Seises',
       sixes:
         'Sacar un 6 otorga otra tirada. Sacar tres seges seguidos pierde el turno por completo.',
+    },
+    gameOver: {
+      won: '¡Victoria!',
+      lost: 'Derrota',
+      draw: 'Empate',
+      messages: {
+        won: 'Todas tus fichas están en casa: ¡primer puesto!',
+        lost: 'Te han ganado la carrera. ¡Suerte la próxima vez!',
+        draw: 'La partida terminó en empate.',
+      },
     },
   },
 };

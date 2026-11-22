@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-win-2048',
   locale: 'fr',
   title:
-    'Comment gagner à 2048 en ligne — stratégie, gestion des tuiles, technique du coin',
+    'Comment gagner à 2048 en ligne - stratégie, gestion des tuiles, technique du coin',
   excerpt:
     'Guide complet de stratégie 2048 : technique du coin, enchaînement de tuiles, discipline de glissement.',
   publishedAt: '2026-06-19',
@@ -54,7 +54,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/2048',
-      text: 'Jouez à 2048 en ligne — gratuit',
+      text: 'Jouez à 2048 en ligne - gratuit',
       description: 'Classique avec animations fluides.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

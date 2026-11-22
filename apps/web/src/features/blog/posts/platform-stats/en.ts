@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'platform-stats',
   locale: 'en',
   title:
-    'Arcadeum by the Numbers — Player Stats, ELO Distribution, and Win Rates',
+    'Arcadeum by the Numbers - Player Stats, ELO Distribution, and Win Rates',
   excerpt:
     'A data-driven look at how Arcadeum players perform across all games: ELO tiers, average win rates, streaks, and which games reward skill the most.',
   publishedAt: '2026-08-25',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Every game on Arcadeum tracks ranked performance — wins, losses, draws, ELO ratings, and win streaks. We crunched the numbers across all games to show you how players actually perform, which games have the steepest skill curves, and where the community sits in the ELO distribution. Whether you're chasing Diamond tier or just curious about your stats, this is the state of Arcadeum.",
+      text: "Every game on Arcadeum tracks ranked performance - wins, losses, draws, ELO ratings, and win streaks. We crunched the numbers across all games to show you how players actually perform, which games have the steepest skill curves, and where the community sits in the ELO distribution. Whether you're chasing Diamond tier or just curious about your stats, this is the state of Arcadeum.",
     },
     {
       type: 'heading',
@@ -36,7 +36,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'The pyramid is steep. Most players sit in Bronze and Silver — which is normal for any competitive system. The jump from Gold to Platinum is where casual players plateau and dedicated grinders break through. Diamond and Master represent the top 5%, and they play noticeably differently: more patience, better endgame, fewer blunders.',
+      text: 'The pyramid is steep. Most players sit in Bronze and Silver - which is normal for any competitive system. The jump from Gold to Platinum is where casual players plateau and dedicated grinders break through. Diamond and Master represent the top 5%, and they play noticeably differently: more patience, better endgame, fewer blunders.',
     },
     {
       type: 'heading',
@@ -62,7 +62,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Average win rates hover near 50% because ELO matchmaking pairs players of similar strength. Games with higher variance (Critical, Hearts) show slightly wider spreads — lucky streaks happen more often, but they also end faster. Chess and Go have the tightest distributions, meaning skill dominates over luck.',
+      text: 'Average win rates hover near 50% because ELO matchmaking pairs players of similar strength. Games with higher variance (Critical, Hearts) show slightly wider spreads - lucky streaks happen more often, but they also end faster. Chess and Go have the tightest distributions, meaning skill dominates over luck.',
     },
     {
       type: 'heading',
@@ -82,7 +82,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Minesweeper streaks are solo and don't involve matchmaking, so they run longer. For head-to-head games, streaks above 10 are rare — the ELO system quickly matches you against stronger opponents. The longest ranked streak this season is 23 wins in Chess by a Diamond player who climbed to Master mid-season.",
+      text: "Minesweeper streaks are solo and don't involve matchmaking, so they run longer. For head-to-head games, streaks above 10 are rare - the ELO system quickly matches you against stronger opponents. The longest ranked streak this season is 23 wins in Chess by a Diamond player who climbed to Master mid-season.",
     },
     {
       type: 'heading',
@@ -108,11 +108,11 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Your stats are available on your profile page. Focus on three numbers: your current ELO (where you are), your peak ELO (your ceiling), and your win rate in the last 20 games (your current form). If your recent win rate is above 55%, you're climbing. Below 45%, you're in a slump — take a break or review your last few games.",
+      text: "Your stats are available on your profile page. Focus on three numbers: your current ELO (where you are), your peak ELO (your ceiling), and your win rate in the last 20 games (your current form). If your recent win rate is above 55%, you're climbing. Below 45%, you're in a slump - take a break or review your last few games.",
     },
     {
       type: 'paragraph',
-      text: 'These numbers are from Season 3 data across all active players. For live leaderboard snapshots and your personal stats, check the stats page — it updates in real time as games finish.',
+      text: 'These numbers are from Season 3 data across all active players. For live leaderboard snapshots and your personal stats, check the stats page - it updates in real time as games finish.',
     },
     {
       type: 'cta',
@@ -124,15 +124,15 @@ export const post: BlogPost = {
     {
       type: 'heading',
       level: 2,
-      text: 'TL;DR — what the data tells us',
+      text: 'TL;DR - what the data tells us',
       id: 'tldr',
     },
     {
       type: 'list',
       items: [
-        '42% of players are Bronze, 1% are Master — the pyramid is steep.',
+        '42% of players are Bronze, 1% are Master - the pyramid is steep.',
         'Chess and Go have the highest skill ceilings; Critical and Hearts have more variance.',
-        'Win streaks above 10 are rare in ranked — ELO matchmaking works.',
+        'Win streaks above 10 are rare in ranked - ELO matchmaking works.',
         'Track your recent 20-game win rate for an honest skill snapshot.',
       ],
     },

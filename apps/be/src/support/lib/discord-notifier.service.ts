@@ -33,13 +33,11 @@ export class DiscordNotifierService {
 
   async notify(input: DiscordNotifyInput): Promise<DiscordNotifyResult> {
     if (isE2EMode()) {
-      this.logger.debug('E2E mode — skipping real Discord webhook');
+      this.logger.debug('E2E mode: skipping real Discord webhook');
       return { status: 'unconfigured' };
     }
     if (!this.webhookUrl) {
-      this.logger.warn(
-        'Discord webhook not configured — skipping channel ping',
-      );
+      this.logger.warn('Discord webhook not configured: skipping channel ping');
       return { status: 'unconfigured' };
     }
 

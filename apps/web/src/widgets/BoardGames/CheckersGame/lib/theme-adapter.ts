@@ -1,5 +1,28 @@
+import type { CSSProperties } from 'react';
 import type { GameTheme } from '@/features/games/lib/shared-themes';
 import type { CheckersTheme } from './theme';
+
+export function boardVars(theme: CheckersTheme): CSSProperties {
+  return {
+    '--checkers-board-bg': theme.boardBackground,
+    '--board-bg': theme.boardBackground,
+    '--checkers-square-light': theme.lightSquare,
+    '--checkers-square-dark': theme.darkSquare,
+    '--board-square-light': theme.lightSquare,
+    '--board-square-dark': theme.darkSquare,
+    '--checkers-piece-light': theme.lightPiece,
+    '--checkers-piece-light-border': theme.lightPieceBorder,
+    '--checkers-piece-dark': theme.darkPiece,
+    '--checkers-piece-dark-border': theme.darkPieceBorder,
+    '--checkers-selected-piece': theme.selectedPiece,
+    '--checkers-valid-indicator': theme.validMoveIndicator,
+    '--checkers-capture-indicator': theme.captureIndicator,
+    '--checkers-king-crown': theme.kingCrown,
+    '--checkers-text-color': theme.textColor,
+    '--board-coord': theme.textColor,
+    '--checkers-border-radius': theme.borderRadius,
+  } as CSSProperties;
+}
 
 export function sharedThemeToCheckers(theme: GameTheme): CheckersTheme {
   const rgb = (hex: string): string => {

@@ -39,25 +39,27 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale, slug } = await params;
   const locale = resolveLocale(rawLocale);
-  const post = getPost(slug, locale);
+  const post = await getPost(slug, locale);
   if (!post) return {};
 
   const routes = buildRoutes(locale);
   const pageUrl = `${appConfig.siteUrl}${routes.blogPost(slug)}`;
 
   // hreflang alternates for every locale that has a translation of this
-  // specific slug. Locales without a translation are not listed — sending
+  // specific slug. Locales without a translation are not listed: sending
   // Google to a fallback English page under e.g. `/ru/blog/...` would
   // confuse the language-clustering signal.
   const languages: Record<string, string> = {};
   for (const l of SUPPORTED_LOCALES) {
-    if (getPost(slug, l)) {
+    if (await getPost(slug, l)) {
       languages[localeToHreflang(l)] =
         `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
     }
   }
   languages['x-default'] =
     `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE).blogPost(slug)}`;
+
+  const ogImageUrl = `${appConfig.siteUrl}/${locale}/blog/${slug}/opengraph-image`;
 
   return {
     title: post.title,
@@ -75,11 +77,20 @@ export async function generateMetadata({
       modifiedTime: post.updatedAt ?? post.publishedAt,
       authors: [post.author],
       tags: post.tags,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
+      images: [ogImageUrl],
     },
   };
 }
@@ -87,7 +98,7 @@ export async function generateMetadata({
 export default async function BlogPostRoute({ params }: PageProps) {
   const { locale: rawLocale, slug } = await params;
   const locale = resolveLocale(rawLocale);
-  const post = getPost(slug, locale);
+  const post = await getPost(slug, locale);
   if (!post) notFound();
 
   const routes = buildRoutes(locale);
@@ -113,6 +124,8 @@ export default async function BlogPostRoute({ params }: PageProps) {
     return total;
   }, 0);
 
+  const ogImageUrl = `${appConfig.siteUrl}/${locale}/blog/${slug}/opengraph-image`;
+
   const postJsonLd = buildBlogPostJsonLd({
     locale,
     pageUrl,
@@ -124,6 +137,7 @@ export default async function BlogPostRoute({ params }: PageProps) {
     tags: post.tags,
     readingTimeMinutes: post.readingTimeMinutes,
     wordCount,
+    image: ogImageUrl,
   });
 
   const blogIndexLabel = messages.seo?.blog?.title ?? 'Blog';
@@ -136,7 +150,7 @@ export default async function BlogPostRoute({ params }: PageProps) {
     ],
   });
 
-  // FAQPage schema removed — restricted to government/healthcare authority
+  // FAQPage schema removed: restricted to government/healthcare authority
   // sites only (Google, Aug 2023). Blog FAQ content remains visible on-page.
 
   const jsonLdNodes: Record<string, unknown>[] = [postJsonLd, breadcrumbJsonLd];

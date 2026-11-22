@@ -2,6 +2,10 @@ name: Deploy to OCI (Dev)
 
 permissions: read-all
 
+concurrency:
+  group: deploy-oci-dev
+  cancel-in-progress: false
+
 on:
   push:
     branches: [staging]
@@ -14,9 +18,9 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to deploy'
-        required: true
-        default: 'staging'
+        description: 'Branch override (leave empty to use the branch selected in the Run workflow dropdown)'
+        required: false
+        default: ''
 
 jobs:
   changes:
@@ -40,7 +44,7 @@ jobs:
   deploy-be-and-tg-bot:
     name: Deploy BE + TG Bot (Dev)
     needs: changes
-    if: needs.changes.outputs.be-or-tg == 'true'
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.be-or-tg == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -52,14 +56,19 @@ jobs:
           port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
-            # Dev/staging deploys use a SEPARATE checkout so they never touch
-            # the prod tree at /opt/arcadeum (which tracks origin/main).
+            exec 200>/tmp/arcadeum-dev-deploy.lock
+            flock -x 200
             DEPLOY_DIR="/opt/arcadeum-dev"
+            if [ ! -d "$DEPLOY_DIR/.git" ]; then
+              sudo mkdir -p "$DEPLOY_DIR"
+              sudo chown -R ubuntu:ubuntu "$DEPLOY_DIR"
+              git clone --depth 1 -b staging https://github.com/AnAtoliy-AA/arcadeum.git "$DEPLOY_DIR"
+            fi
             cd "$DEPLOY_DIR"
 
             rm -f "$DEPLOY_DIR/.git/index.lock"
 
-            BRANCH="${{ github.event.inputs.branch || 'staging' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then
@@ -86,10 +95,15 @@ jobs:
                 "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/stockfish-linux-x86-64-universal.tar.gz"
               mkdir -p /tmp/sf19-extract
               tar -xzf /tmp/sf19.tar.gz -C /tmp/sf19-extract
-              find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} "$SF_BIN" \;
-              chmod +x "$SF_BIN"
+              find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec sudo cp {} "$SF_BIN" \; 2>/dev/null || \
+                find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec cp {} "$SF_BIN" \;
+              sudo chmod +x "$SF_BIN" 2>/dev/null || chmod +x "$SF_BIN"
               rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
-              "$SF_BIN" <<< "uci" 2>/dev/null | head -1
+              if [ ! -x "$SF_BIN" ]; then
+                echo "ERROR: Stockfish binary not found or not executable at $SF_BIN"
+                exit 1
+              fi
+              echo "uci" | "$SF_BIN" 2>/dev/null | head -1
               echo "==> Stockfish 19 installed."
             else
               echo "==> Stockfish 19 binary already present, skipping download."

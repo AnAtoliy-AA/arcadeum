@@ -7,31 +7,41 @@ export function getAllowedOrigins(): string[] {
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0);
 
-  // Add localhost in development or E2E environments
   if (process.env.NODE_ENV !== 'production' || process.env.E2E === 'true') {
     const webPort = process.env.WEB_PORT || '3000';
-    allowedOrigins.push(
-      `http://localhost:${webPort}`,
-      `http://127.0.0.1:${webPort}`,
-    );
+    const devPorts = Array.from(new Set(['3000', '3300', '3500', webPort]));
+    for (const port of devPorts) {
+      const localhostOrigin = `http://localhost:${port}`;
+      const loopbackOrigin = `http://127.0.0.1:${port}`;
+      if (!allowedOrigins.includes(localhostOrigin)) {
+        allowedOrigins.push(localhostOrigin);
+      }
+      if (!allowedOrigins.includes(loopbackOrigin)) {
+        allowedOrigins.push(loopbackOrigin);
+      }
+    }
   }
 
   return allowedOrigins;
 }
 
-/**
- * Common CORS origin matcher for both main app and WebSocket gateways.
- */
 export function corsOriginMatcher(
   origin: string | undefined,
   callback: (err: Error | null, allow?: boolean) => void,
 ): void {
   const allowedOrigins = getAllowedOrigins();
 
-  // Allow requests with no origin (like mobile apps or curl)
   if (!origin || allowedOrigins.includes(origin)) {
     callback(null, true);
-  } else {
-    callback(new Error('Not allowed by CORS'));
+    return;
   }
+
+  if (process.env.NODE_ENV !== 'production' || process.env.E2E === 'true') {
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      callback(null, true);
+      return;
+    }
+  }
+
+  callback(new Error('Not allowed by CORS'));
 }

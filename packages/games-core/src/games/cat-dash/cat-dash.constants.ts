@@ -19,33 +19,97 @@ export const CAT_IDS = [
 ] as const;
 export type CatId = (typeof CAT_IDS)[number];
 
-export const CAT_ABILITIES: Record<
-  CatId,
-  { name: string; description: string }[]
-> = {
+export interface CatAbilityDef {
+  id: string;
+  name: string;
+  description: string;
+  cost: number;
+}
+
+export const CAT_ABILITIES: Record<CatId, CatAbilityDef[]> = {
   neon: [
-    { name: 'Digital Dash', description: 'Skip next obstacle' },
-    { name: 'Neon Shield', description: 'Block opponent ability' },
+    {
+      id: 'neon_boost',
+      name: 'Digital Dash',
+      description: '+3 speed on next roll',
+      cost: 1,
+    },
+    {
+      id: 'neon_shield',
+      name: 'Neon Shield',
+      description: 'Immune to obstacles and bumps',
+      cost: 1,
+    },
   ],
   whiskers: [
-    { name: 'Extra Life', description: 'Re-roll once per game' },
-    { name: 'Purr Power', description: 'Steal 1 movement' },
+    {
+      id: 'whiskers_slingshot',
+      name: 'Aero Slingshot',
+      description: 'Leap 2 spaces ahead of closest rival',
+      cost: 1,
+    },
+    {
+      id: 'whiskers_reroll',
+      name: 'Lucky Paws',
+      description: 'Gain an extra roll this turn',
+      cost: 1,
+    },
   ],
   stardust: [
-    { name: 'Warp Jump', description: 'Teleport to bonus space' },
-    { name: 'Star Shield', description: 'Immune to obstacles' },
+    {
+      id: 'stardust_warp',
+      name: 'Warp Jump',
+      description: 'Teleport to nearest forward bonus tile',
+      cost: 1,
+    },
+    {
+      id: 'stardust_shield',
+      name: 'Star Shield',
+      description: 'Immune to obstacles and bumps',
+      cost: 1,
+    },
   ],
   felix: [
-    { name: "Nature's Path", description: 'Take shortest route' },
-    { name: 'Wild Charge', description: 'Move double next turn' },
+    {
+      id: 'felix_precision',
+      name: 'Apex Calculation',
+      description: 'Sets roll to exact 4 without RNG',
+      cost: 1,
+    },
+    {
+      id: 'felix_boost',
+      name: 'Wild Charge',
+      description: '+3 speed on next roll',
+      cost: 1,
+    },
   ],
   shadow: [
-    { name: 'Shadow Step', description: 'Move unseen' },
-    { name: 'Dark Cover', description: 'Hide from opponents' },
+    {
+      id: 'shadow_snare',
+      name: 'Shadow Snare',
+      description: 'Drop a snare trap on current space',
+      cost: 1,
+    },
+    {
+      id: 'shadow_leap',
+      name: 'Phantom Pounce',
+      description: 'Leap forward 2 spaces silently',
+      cost: 1,
+    },
   ],
   luna: [
-    { name: 'Lunar Boost', description: 'Enhanced movement' },
-    { name: 'Moon Shield', description: 'Protection ability' },
+    {
+      id: 'luna_boost',
+      name: 'Lunar Surge',
+      description: '+3 speed on next roll',
+      cost: 1,
+    },
+    {
+      id: 'luna_ward',
+      name: 'Moon Aegis',
+      description: 'Immune to obstacles and bumps',
+      cost: 1,
+    },
   ],
 };
 

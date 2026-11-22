@@ -7,7 +7,6 @@ import {
   MaximizeIcon,
   MinimizeIcon,
   ShieldIcon,
-  Typography,
 } from '@arcadeum/ui';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
@@ -164,22 +163,19 @@ export function HandRail({
       {/* Stats header */}
       <div className="flex flex-row items-stretch gap-2">
         <div
-          className="flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
+          className="flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px] text-white"
           style={{ backgroundColor: NEUTRAL_BG, borderColor: NEUTRAL_BORDER }}
           data-testid="hand-rail-count"
         >
-          <div className="flex flex-row items-center gap-1.5">
+          <div className="flex flex-row items-center gap-1.5 text-white">
             <CardsIcon size={16} />
-            <Typography weight="800">{handCount}</Typography>
+            <span className="font-extrabold text-white text-[14px]">
+              {handCount}
+            </span>
           </div>
-          <Typography
-            uiSize="xs"
-            weight="700"
-            alpha="low"
-            className="uppercase"
-          >
+          <span className="text-[10px] font-bold text-slate-300 uppercase">
             {t('games.table.state.cards')}
-          </Typography>
+          </span>
         </div>
         <div
           className="flex flex-1 flex-col items-center rounded-[10px] border px-[6px] py-[8px]"
@@ -193,18 +189,16 @@ export function HandRail({
             <span className="" style={{ color: defuseVariant.color }}>
               <ShieldIcon size={16} />
             </span>
-            <Typography weight="800" style={{ color: defuseVariant.color }}>
+            <span
+              className="font-extrabold text-[14px]"
+              style={{ color: defuseVariant.color }}
+            >
               {defuseCount}
-            </Typography>
+            </span>
           </div>
-          <Typography
-            uiSize="xs"
-            weight="700"
-            alpha="low"
-            className="uppercase"
-          >
+          <span className="text-[10px] font-bold text-slate-300 uppercase">
             {t('games.table.state.defuses')}
-          </Typography>
+          </span>
         </div>
       </div>
 
@@ -231,62 +225,52 @@ export function HandRail({
             onClick={handleComboClick}
           >
             <div className="flex flex-col items-center justify-center">
-              <Typography
-                uiSize="xs"
-                weight="800"
+              <span
                 className={cx(
-                  'text-center uppercase line-clamp-2',
+                  'text-center uppercase line-clamp-2 text-xs font-extrabold',
                   canPlay
                     ? 'text-[#062317]'
                     : isInvalid
                       ? 'text-[#ef4444]'
-                      : 'text-[rgba(255,255,255,0.5)]',
+                      : 'text-slate-300',
                 )}
               >
                 {combo.label}
-              </Typography>
+              </span>
               {isInvalid && (
-                <Typography
-                  uiSize="xs"
-                  weight="700"
-                  className="text-[9px] text-[#ef4444] uppercase tracking-[0.5px] mt-0.5"
-                >
+                <span className="text-[9px] font-bold text-[#ef4444] uppercase tracking-[0.5px] mt-0.5">
                   ✕ {t('games.table.mobile.cancel')}
-                </Typography>
+                </span>
               )}
             </div>
           </RailButton>
         </div>
         <RailButton
-          className={`h-[36px] rounded-[10px] ${cx(
+          className={`h-[36px] rounded-[10px] text-white ${cx(
             'border border-[rgba(255,255,255,0.10)]',
             canDraw
               ? 'bg-[rgba(255,255,255,0.07)] hover:bg-[rgba(255,255,255,0.12)] active:scale-[0.98]'
-              : '',
+              : 'opacity-50',
           )}`}
           data-testid="hand-rail-draw"
           disabled={!canDraw}
           onClick={canDraw ? onDraw : undefined}
         >
-          <Typography uiSize="xs" weight="800" className="uppercase">
+          <span className="text-xs font-extrabold uppercase text-white">
             ↓ {t('games.table.actions.draw')}
-          </Typography>
+          </span>
         </RailButton>
         {canNope && (
           <RailButton
-            className="h-[36px] rounded-[10px]"
+            className="h-[36px] rounded-[10px] bg-[#f59e0b] hover:bg-[#d97706] active:scale-[0.98]"
             data-testid="hand-rail-nope"
             onClick={onNope}
           >
-            <div className="flex flex-row items-center gap-[6px]">
+            <div className="flex flex-row items-center gap-[6px] text-[#1c0f00]">
               <HandIcon size={14} />
-              <Typography
-                uiSize="xs"
-                weight="800"
-                className="uppercase text-[#1c0f00]"
-              >
+              <span className="text-xs font-extrabold uppercase text-[#1c0f00]">
                 {t('games.table.actions.playNope')}
-              </Typography>
+              </span>
             </div>
           </RailButton>
         )}
@@ -313,17 +297,14 @@ export function HandRail({
                 aria-pressed={!!showCardName}
                 aria-label={t('games.table.hud.cards.toggleName')}
               >
-                <Typography
-                  uiSize="xs"
-                  weight="800"
+                <span
                   className={cx(
-                    showCardName
-                      ? 'text-[#34d399]'
-                      : 'text-[rgba(255,255,255,0.7)]',
+                    'text-xs font-extrabold',
+                    showCardName ? 'text-[#34d399]' : 'text-slate-300',
                   )}
                 >
                   Aa {showCardName ? '✓' : '○'}
-                </Typography>
+                </span>
               </RailButton>
             )}
             {onToggleCardDescription && (
@@ -339,17 +320,14 @@ export function HandRail({
                 aria-pressed={!!showCardDescription}
                 aria-label={t('games.table.hud.cards.toggleDescription')}
               >
-                <Typography
-                  uiSize="xs"
-                  weight="800"
+                <span
                   className={cx(
-                    showCardDescription
-                      ? 'text-[#34d399]'
-                      : 'text-[rgba(255,255,255,0.7)]',
+                    'text-xs font-extrabold',
+                    showCardDescription ? 'text-[#34d399]' : 'text-slate-300',
                   )}
                 >
                   ¶ {showCardDescription ? '✓' : '○'}
-                </Typography>
+                </span>
               </RailButton>
             )}
           </div>
@@ -365,26 +343,21 @@ export function HandRail({
           >
             {onOpenRules && (
               <RailButton
-                className="h-[48px] flex-1 rounded-[10px] py-1.5"
+                className="h-[48px] flex-1 rounded-[10px] py-1.5 text-slate-200 hover:text-white"
                 data-testid="hand-rail-rules"
                 onClick={onOpenRules}
               >
-                <div className="flex flex-col items-center justify-center gap-0.5">
+                <div className="flex flex-col items-center justify-center gap-0.5 text-slate-200 hover:text-white">
                   <BookOpenIcon size={16} />
-                  <Typography
-                    uiSize="xs"
-                    weight="800"
-                    alpha="high"
-                    className="uppercase tracking-[0.5px] text-[10px]"
-                  >
+                  <span className="uppercase tracking-[0.5px] text-[10px] font-extrabold text-slate-200">
                     {t('games.table.controlPanel.rules')}
-                  </Typography>
+                  </span>
                 </div>
               </RailButton>
             )}
             {onToggleFullscreen && (
               <RailButton
-                className="h-[48px] flex-1 rounded-[10px] py-1.5"
+                className="h-[48px] flex-1 rounded-[10px] py-1.5 text-slate-200 hover:text-white"
                 data-testid="hand-rail-fullscreen"
                 onClick={onToggleFullscreen}
                 aria-label={t(
@@ -393,20 +366,15 @@ export function HandRail({
                     : 'games.table.controlPanel.enterFullscreen',
                 )}
               >
-                <div className="flex flex-col items-center justify-center gap-0.5">
+                <div className="flex flex-col items-center justify-center gap-0.5 text-slate-200 hover:text-white">
                   {isFullscreen ? (
                     <MinimizeIcon size={16} />
                   ) : (
                     <MaximizeIcon size={16} />
                   )}
-                  <Typography
-                    uiSize="xs"
-                    weight="800"
-                    alpha="high"
-                    className="uppercase tracking-[0.5px] text-[10px]"
-                  >
+                  <span className="uppercase tracking-[0.5px] text-[10px] font-extrabold text-slate-200">
                     {t('games.table.controlPanel.fullscreen')}
-                  </Typography>
+                  </span>
                 </div>
               </RailButton>
             )}

@@ -32,7 +32,7 @@ export function useCatDashActions(options: UseCatDashActionsOptions) {
     gameSocket.emit('catDash.session.rollDice', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  const useAbility = useCallback(
+  const activateAbility = useCallback(
     (abilityId: string) => {
       if (!userId) return;
       onActionStart?.('useAbility');
@@ -58,11 +58,46 @@ export function useCatDashActions(options: UseCatDashActionsOptions) {
     [roomId, userId, onActionStart],
   );
 
+  const catnap = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('catnap');
+    gameSocket.emit('catDash.session.catnap', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const pounce = useCallback(() => {
+    if (!userId) return;
+    onActionStart?.('pounce');
+    gameSocket.emit('catDash.session.pounce', { roomId, userId });
+  }, [roomId, userId, onActionStart]);
+
+  const deployTrap = useCallback(
+    (spaceId?: number) => {
+      if (!userId) return;
+      onActionStart?.('deployTrap');
+      gameSocket.emit('catDash.session.deployTrap', {
+        roomId,
+        userId,
+        spaceId,
+      });
+    },
+    [roomId, userId, onActionStart],
+  );
+
   const forfeit = useCallback(() => {
     if (!userId) return;
     onActionStart?.('forfeit');
     gameSocket.emit('catDash.session.forfeit', { roomId, userId });
   }, [roomId, userId, onActionStart]);
 
-  return { startSession, rollDice, useAbility, choosePath, forfeit };
+  return {
+    startSession,
+    rollDice,
+    activateAbility,
+    useAbility: activateAbility,
+    choosePath,
+    catnap,
+    pounce,
+    deployTrap,
+    forfeit,
+  };
 }

@@ -66,7 +66,7 @@ export const esMessages = {
       },
       s2: {
         title: 'Evita todo rastro',
-        body: 'No toques el rastro de otro gusano — ni el tuyo propio, salvo que un escudo te salve.',
+        body: 'No toques el rastro de otro gusano - ni el tuyo propio, salvo que un escudo te salve.',
       },
       s3: {
         title: 'Mejora tus poderes',

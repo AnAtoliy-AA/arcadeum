@@ -33,7 +33,7 @@ export type BattlePassSeason = {
 
 export const CURRENT_SEASON: BattlePassSeason = {
   id: 'season-1',
-  title: 'Season 1 — Genesis',
+  title: 'Season 1: Genesis',
   startsAt: '2026-05-01T00:00:00.000Z',
   endsAt: '2026-07-31T23:59:59.000Z',
   tiers: [

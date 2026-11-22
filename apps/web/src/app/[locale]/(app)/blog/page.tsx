@@ -32,7 +32,7 @@ export default async function BlogPage({
   const messages = await getTranslations(locale);
   const t = messages.pages?.blog;
   const routes = buildRoutes(locale);
-  const rawPosts = getPosts(locale);
+  const rawPosts = await getPosts(locale);
 
   const posts = rawPosts.map((p) => ({
     slug: p.slug,
@@ -53,6 +53,8 @@ export default async function BlogPage({
       name: p.title,
       url: `${appConfig.siteUrl}${p.href}`,
       description: p.excerpt,
+      itemType: 'BlogPosting',
+      image: `${appConfig.siteUrl}/${locale}/blog/${p.slug}/opengraph-image`,
     })),
   });
 

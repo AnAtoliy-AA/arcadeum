@@ -2,6 +2,7 @@
 
 import { memo, useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -39,8 +40,14 @@ function HeartsGameImpl({
   onShowRulesClose,
 }: HeartsGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
   const isLobby = room?.status === 'lobby';
 
   const {
@@ -72,14 +79,31 @@ function HeartsGameImpl({
     if (!isLobby) clearPendingStart();
   }, [isLobby, clearPendingStart]);
 
-  // Clear in-flight pass selections whenever the phase changes (e.g. all
-  // passes resolved and the hand moved to the playing phase).
   useEffect(() => {
     if (snapshot?.phase !== prevPhaseRef.current) {
       prevPhaseRef.current = snapshot?.phase;
       setSelectedPassCards([]);
     }
   }, [snapshot?.phase]);
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
+
+  const prevTakenCountRef = useRef(0);
+  useEffect(() => {
+    if (!snapshot?.taken) return;
+    const count = Object.values(snapshot.taken).reduce(
+      (acc, arr) => acc + arr.length,
+      0,
+    );
+    if (count > prevTakenCountRef.current && prevTakenCountRef.current > 0) {
+      play('collect');
+    }
+    prevTakenCountRef.current = count;
+  }, [snapshot?.taken, play]);
 
   const handleStartGame = useCallback(
     (opts?: { withBots?: boolean; botCount?: number }) => {
@@ -208,6 +232,7 @@ function HeartsGameImpl({
           onDeleteRoom={onDeleteRoom}
           onKickPlayer={(userId) => onKickPlayer(userId, currentUserId ?? '')}
           onRefresh={onRefresh}
+          onReorderPlayers={onReorderPlayers}
           showRulesOpen={showRulesOpen}
           onShowRulesClose={onShowRulesClose}
           accessToken={accessToken}
@@ -297,6 +322,7 @@ function HeartsGameImpl({
           variantEmoji: variantTokens.emoji,
           title: t('games.hearts_v1.name'),
           subtitle: room?.name,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentEntryId ?? null,
             isMyTurn: myTurn,

@@ -25,10 +25,10 @@ async function bootstrap() {
     logger,
   });
 
-  logger.log('[Worker] BullMQ worker ready — processing jobs');
+  logger.log('[Worker] BullMQ worker ready: processing jobs');
 
   const shutdown = async (signal: string) => {
-    logger.log(`\n[Worker] ${signal} received — shutting down gracefully`);
+    logger.log(`\n[Worker] ${signal} received: shutting down gracefully`);
     await app.close();
     await shutdownTracing();
     process.exit(0);

@@ -30,6 +30,12 @@ export interface ClaimButtonProps {
   /** Gem amount the next claim will award. 0 means no gem bonus. */
   nextRewardGems?: number;
   labels: ClaimButtonLabels;
+  /**
+   * Called after a successful claim so the parent can flip its local
+   * `canClaim` to false - keeps the success message visible instead of
+   * unmounting the whole chip the instant the Server Action resolves.
+   */
+  onClaimed?: () => void;
 }
 
 /**
@@ -43,6 +49,7 @@ export function ClaimButton({
   nextRewardCoins,
   nextRewardGems = 0,
   labels,
+  onClaimed,
 }: ClaimButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [feedback, setFeedback] = useState<
@@ -69,6 +76,7 @@ export function ClaimButton({
           );
         }
         setFeedback({ kind: 'success', message: msg });
+        onClaimed?.();
       } else if (res.code === 'already_claimed') {
         setFeedback({ kind: 'error', message: labels.errorAlreadyClaimed });
       } else if (res.code === 'unauthorized') {

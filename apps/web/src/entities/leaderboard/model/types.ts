@@ -8,7 +8,12 @@ export type GameMode =
   | 'cascade_v1'
   | 'chess_v1'
   | 'checkers_v1'
-  | 'cat_dash_v1';
+  | 'cat_dash_v1'
+  | 'backgammon_v1'
+  | 'hearts_v1'
+  | 'spades_v1'
+  | 'go_v1'
+  | 'pachisi_v1';
 
 export type Region = 'na' | 'eu' | 'sa' | 'asia' | 'oceania' | 'africa' | 'me';
 
@@ -16,6 +21,8 @@ export type Tier =
   'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond' | 'mythic';
 
 export type FormResult = 'W' | 'L' | 'D';
+
+export type OpponentType = 'all' | 'pvp' | 'bot';
 
 export type LeaderboardPlayer = {
   id: string;
@@ -148,4 +155,5 @@ export type LeaderboardSnapshot = {
   self: LeaderboardPlayer | null;
   tickerEvents: TickerEvent[];
   topRating: number;
+  opponentType?: OpponentType;
 };

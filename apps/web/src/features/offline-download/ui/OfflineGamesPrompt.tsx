@@ -99,7 +99,7 @@ export function OfflineGamesPrompt() {
               'Select games to download so you can play them without an internet connection.'}
           </p>
           <p className="mt-2 text-[13px] text-[var(--textSecondary)]">
-            {games.length} games — ~{formatTotalBytes(games)}
+            {games.length} games - ~{formatTotalBytes(games)}
           </p>
         </ModalBody>
         <ModalFooter>

@@ -113,8 +113,8 @@ function buildComment(results) {
   );
 
   const header = allPass
-    ? '## ✅ Lighthouse & Core Web Vitals Audit — All Pages Passing'
-    : '## ❌ Lighthouse & Core Web Vitals Audit — Issues Found';
+    ? '## ✅ Lighthouse & Core Web Vitals Audit: All Pages Passing'
+    : '## ❌ Lighthouse & Core Web Vitals Audit: Issues Found';
 
   let table = `| Page | Perf | LCP | CLS | TBT | A11y | SEO | BP |\n|------|------|-----|-----|-----|------|-----|----|`;
   for (const r of results) {

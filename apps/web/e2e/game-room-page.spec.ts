@@ -115,5 +115,6 @@ test.describe('Game Room Logic', () => {
     // the spectator-mode pill renders above the board (ARC-926).
     await expect(page.getByTestId('spectating-indicator')).toBeVisible();
     await expect(page.getByTestId('spectator-mode-pill')).toBeVisible();
+    await expect(page.getByTestId('spectator-reactions-dock')).toBeVisible();
   });
 });

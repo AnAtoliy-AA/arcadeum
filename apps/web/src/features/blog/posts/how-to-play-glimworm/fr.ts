@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-play-glimworm',
   locale: 'fr',
-  title: 'Comment jouer à Glimworm en ligne — arène néon, tactiques, survie',
+  title: 'Comment jouer à Glimworm en ligne - arène néon, tactiques, survie',
   excerpt:
     'Guide complet : multijoueur serpientes où vous mangez de la lumière, laissez des traces létales et surpassez les rivaux.',
   publishedAt: '2026-08-18',
@@ -55,7 +55,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/glimworm',
-      text: 'Jouez à Glimworm en ligne — gratuit',
+      text: 'Jouez à Glimworm en ligne - gratuit',
       description: 'Arène néon, jeu instantané.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

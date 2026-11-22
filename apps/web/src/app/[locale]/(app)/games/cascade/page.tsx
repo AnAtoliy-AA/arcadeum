@@ -43,7 +43,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/cascade/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'Cascade — multiplayer shedding card game on Arcadeum',
+          alt: 'Cascade - multiplayer shedding card game on Arcadeum',
         },
       ],
     },
@@ -58,7 +58,10 @@ export async function generateMetadata({
 export default async function CascadeLandingRoute({ params }: PageProps) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
-  const messages = await getTranslations(locale);
+  const [comingSoon, messages] = await Promise.all([
+    isGameComingSoon(CASCADE_SLUG),
+    getTranslations(locale),
+  ]);
   const routes = buildRoutes(locale);
 
   const landing = messages.games?.cascade_v1?.landing;
@@ -90,7 +93,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       ? {
           name: `How to Play Cascade on ${appConfig.appName}`,
           description:
-            'Play Cascade online — a fun card game for 2 to 10 players.',
+            'Play Cascade online - a fun card game for 2 to 10 players.',
           steps: [
             {
               name: landing.steps?.create?.title ?? 'Create a room',
@@ -120,8 +123,6 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       : undefined,
   });
 
-  const comingSoon = await isGameComingSoon(CASCADE_SLUG);
-
   return (
     <>
       <JsonLd id="json-ld-cascade" data={jsonLd} />
@@ -150,7 +151,7 @@ export default async function CascadeLandingRoute({ params }: PageProps) {
       />
       <RelatedArticles
         locale={locale}
-        posts={getPostsByTag(locale, ['Cascade', 'Card Game', 'Каскад'])}
+        posts={await getPostsByTag(locale, ['Cascade', 'Card Game', 'Каскад'])}
         gameName={landing?.hero?.title}
       />
     </>

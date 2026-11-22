@@ -1,7 +1,8 @@
 'use client';
 
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
+import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
 import {
   useGameChatIntegration,
@@ -10,6 +11,7 @@ import {
   useGameResult,
   useGameEndState,
 } from '@/features/games/hooks';
+import { useGameChatStore } from '@/widgets/GameChat';
 import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytics';
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
@@ -17,9 +19,14 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { useGameSound } from '@/shared/lib/game-sounds';
-import type { Board, CheckersGameProps, MoveStep, Mode } from '../types';
+import type {
+  Board,
+  CheckersGameProps,
+  MoveStep,
+  Mode,
+  BoardPosition,
+} from '../types';
 import { MODE_CONFIGS } from '../types';
 import { useCheckersState } from '../hooks/useCheckersState';
 import { useCheckersActions } from '../hooks/useCheckersActions';
@@ -34,6 +41,8 @@ import { CheckersBoard } from './CheckersBoard';
 import { TurnBadge } from './TurnBadge';
 import { RulesModal } from './RulesModal';
 import { CHECKERS_THEMES } from '../lib/constants';
+import { useCheckersCoach } from '../hooks/useCheckersCoach';
+import { CheckersCoachControls } from '@/features/coach/ui/CheckersCoachControls';
 
 function CheckersGameImpl({
   roomId,
@@ -41,13 +50,18 @@ function CheckersGameImpl({
   session: initialSession,
   currentUserId,
   isHost,
-  accessToken,
   showRulesOpen,
   onShowRulesClose,
 }: CheckersGameProps) {
   const { t } = useTranslation();
-  const { room, onLeaveRoom, onDeleteRoom, onKickPlayer, onRefresh } =
-    useGameRoomActions(roomId, initialRoom);
+  const {
+    room,
+    onLeaveRoom,
+    onDeleteRoom,
+    onKickPlayer,
+    onRefresh,
+    onReorderPlayers,
+  } = useGameRoomActions(roomId, initialRoom);
 
   const isLobby = room?.status === 'lobby';
 
@@ -70,7 +84,31 @@ function CheckersGameImpl({
     userId: currentUserId,
   });
 
+  const coach = useCheckersCoach({
+    room,
+    currentUserId,
+    snapshot,
+    myTurn,
+    isGameOver,
+  });
+
+  const hintText = useMemo(() => {
+    if (!coach.hint) return null;
+    const fromCoord = `${String.fromCharCode(97 + coach.hint.from.col)}${8 - coach.hint.from.row}`;
+    const toCoord = `${String.fromCharCode(97 + coach.hint.to.col)}${8 - coach.hint.to.row}`;
+    const isJump = coach.hint.steps.some((s) => s.capturedRow !== undefined);
+    return isJump
+      ? `Suggested move: ${fromCoord} to ${toCoord} (jump)`
+      : `Suggested move: ${fromCoord} to ${toCoord}`;
+  }, [coach.hint]);
+
   const { play } = useGameSound('checkers_v1');
+
+  const prevMyTurnRef = useRef(myTurn);
+  useEffect(() => {
+    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
+    prevMyTurnRef.current = myTurn;
+  }, [myTurn, isGameOver, play]);
 
   const resolveDisplayNameBound = useCallback(
     (id?: string | null) =>
@@ -85,15 +123,9 @@ function CheckersGameImpl({
   const sendChat = useGameChatSend(roomId, currentUserId, 'checkers_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
 
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !roomId) return;
-      try {
-        await reorderRoomParticipants(roomId, newOrder, accessToken);
-      } catch {}
-    },
-    [roomId, accessToken],
-  );
+  const highlightedCell = useGameChatStore((s) => s.highlightedCell);
+  const persistedCell = useGameChatStore((s) => s.persistedCell);
+  const effectiveHighlight = highlightedCell ?? persistedCell;
 
   const { result, resultMessages } = useGameResult({
     session,
@@ -175,10 +207,9 @@ function CheckersGameImpl({
       : t('games.checkers_v1.status.waiting');
   }, [snapshot, isGameOver, myTurn, result, t]);
 
-  const [selectedPiece, setSelectedPiece] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
+  const [selectedPiece, setSelectedPiece] = useState<BoardPosition | null>(
+    null,
+  );
   const [pendingSteps, setPendingSteps] = useState<MoveStep[]>([]);
   const [optimisticBoard, setOptimisticBoard] = useState<Board | null>(null);
   const [lastServerBoard, setLastServerBoard] = useState<Board | null>(null);
@@ -281,16 +312,24 @@ function CheckersGameImpl({
             setOptimisticBoard(nextBoard);
             setSelectedPiece({ row, col });
           } else {
-            // End of chain: send full chain to server, show optimistic board
-            play('capture');
+            const isCrowned =
+              displayBoard[selectedPiece.row]?.[selectedPiece.col]?.type ===
+                'man' &&
+              ((playerColor === 'light' && row === 0) ||
+                (playerColor === 'dark' && row === displayBoard.length - 1));
+            play(isCrowned ? 'crown' : 'capture');
             setOptimisticBoard(nextBoard);
             setSelectedPiece(null);
             setPendingSteps([]);
             movePiece(newSteps);
           }
         } else {
-          // Simple move: send to server, show optimistic board
-          play('move');
+          const isCrowned =
+            displayBoard[selectedPiece.row]?.[selectedPiece.col]?.type ===
+              'man' &&
+            ((playerColor === 'light' && row === 0) ||
+              (playerColor === 'dark' && row === displayBoard.length - 1));
+          play(isCrowned ? 'crown' : 'move');
           const nextBoard = applyMoveToBoard(displayBoard, [moveStep]);
           setOptimisticBoard(nextBoard);
           setSelectedPiece(null);
@@ -324,7 +363,7 @@ function CheckersGameImpl({
           userId={currentUserId ?? ''}
           isHost={isHost}
           startBusy={startBusy}
-          onReorderPlayers={handleReorderPlayers}
+          onReorderPlayers={onReorderPlayers}
           onStartGame={(opts) => {
             setStartBusy(true);
             startSession({
@@ -357,12 +396,27 @@ function CheckersGameImpl({
             board={displayBoard}
             players={snapshot.players}
             selectedPiece={selectedPiece}
+            highlightedCell={effectiveHighlight}
+            hintCell={
+              coach.hint ? { from: coach.hint.from, to: coach.hint.to } : null
+            }
             disabled={!myTurn || isGameOver}
             ariaLabel={`Checkers ${displayBoard.length}×${displayBoard.length} board`}
             onCellClick={handleCellClick}
             onDeselect={() => setSelectedPiece(null)}
             isFlipped={isFlipped}
           />
+          {coach.visible && (
+            <div className="flex justify-center p-2 w-full">
+              <CheckersCoachControls
+                enabled={coach.enabled}
+                hintAvailable={coach.hintAvailable}
+                hintText={hintText}
+                onToggle={coach.toggleEnabled}
+                onHint={coach.requestHint}
+              />
+            </div>
+          )}
         </>
       ) : null}
     </div>
@@ -420,6 +474,7 @@ function CheckersGameImpl({
           title: 'Checkers',
           subtitle: room?.name,
           onToggleResult: gameEnd.toggleResult,
+          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId: currentTurnUserId,
             isMyTurn: myTurn,

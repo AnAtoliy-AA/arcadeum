@@ -66,8 +66,9 @@ export class GameHistoryStatsService {
     limit: number = 20,
     offset: number = 0,
     gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
-    const key = `${gameId ?? 'all'}|${limit}|${offset}`;
+    const key = `${gameId ?? 'all'}|${limit}|${offset}|${opponentType}`;
     const cached = this.leaderboardCache.get(key);
     if (cached && cached.expiresAt > Date.now()) {
       return cached.value;
@@ -75,7 +76,7 @@ export class GameHistoryStatsService {
     const existing = this.leaderboardInFlight.get(key);
     if (existing) return existing;
 
-    const fresh = this.computeLeaderboard(limit, offset, gameId)
+    const fresh = this.computeLeaderboard(limit, offset, gameId, opponentType)
       .then((value) => {
         if (this.leaderboardCache.size >= 100) {
           const oldest = this.leaderboardCache.keys().next().value as
@@ -103,31 +104,40 @@ export class GameHistoryStatsService {
     limit: number,
     offset: number,
     gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
   ): Promise<{ entries: LeaderboardEntry[]; hasMore: boolean; total: number }> {
     const { entries: rawEntries, total } =
-      await this.playerStats.getLeaderboard(limit, offset, gameId);
+      await this.playerStats.getLeaderboard(
+        limit,
+        offset,
+        gameId,
+        opponentType,
+      );
 
     const hasMore = offset + limit < total;
 
     const userIds = rawEntries
       .map((e) => e.playerId)
       .filter((id) => Types.ObjectId.isValid(id));
-    const users =
+    const [users, recentForms] = await Promise.all([
       userIds.length > 0
-        ? await this.userModel
+        ? this.userModel
             .find({ _id: { $in: userIds } })
             .select(
-              'username role countryCode equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
+              'username displayName role countryCode equippedAvatarId equippedBadgeId equippedNameColorId equippedFrameId equippedAuraId equippedBannerId',
             )
             .lean()
             .exec()
-        : [];
+        : Promise.resolve([]),
+      this.playerStats.getRecentForms(userIds, gameId),
+    ]);
 
     const userMap = new Map(
       users.map((u) => [
         u._id.toString(),
         {
           username: u.username,
+          displayName: (u as { displayName?: string }).displayName ?? null,
           role: u.role ?? null,
           countryCode: u.countryCode ?? null,
           equippedAvatarId: u.equippedAvatarId ?? null,
@@ -142,10 +152,13 @@ export class GameHistoryStatsService {
 
     const entries = rawEntries.map((entry, index) => {
       const userInfo = userMap.get(entry.playerId);
+      const formInfo = recentForms.get(entry.playerId);
       return {
         rank: offset + index + 1,
         playerId: entry.playerId,
-        username: userInfo?.username || 'Unknown',
+        username:
+          userInfo?.displayName?.trim() || userInfo?.username || 'Unknown',
+        displayName: userInfo?.displayName ?? null,
         totalGames: entry.totalGames,
         wins: entry.wins,
         losses: entry.losses,
@@ -158,6 +171,8 @@ export class GameHistoryStatsService {
         equippedFrameId: userInfo?.equippedFrameId ?? null,
         equippedAuraId: userInfo?.equippedAuraId ?? null,
         equippedBannerId: userInfo?.equippedBannerId ?? null,
+        recentForm: formInfo?.recentForm,
+        currentStreak: formInfo?.currentStreak,
       };
     });
 

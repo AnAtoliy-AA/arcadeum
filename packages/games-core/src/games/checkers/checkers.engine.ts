@@ -41,7 +41,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       maxPlayers: 2,
       version: '2.0.0',
       description:
-        'Checkers with American, International (10x10), and Russian variants — forced captures, flying kings, multi-jump, and bot AI',
+        'Checkers with American, International (10x10), and Russian variants: forced captures, flying kings, multi-jump, and bot AI',
       category: 'Board Game',
     };
   }
@@ -53,15 +53,24 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
     const ruleConfig = MODE_CONFIGS[options.mode];
 
+    const shouldRandomize =
+      (config as Record<string, unknown>)?.firstPlayer === 'random' ||
+      (options as Record<string, unknown>)?.firstPlayer === 'random';
+
+    const orderedPlayerIds =
+      shouldRandomize && playerIds.length === 2 && Math.random() < 0.5
+        ? [playerIds[1], playerIds[0]]
+        : [...playerIds];
+
     const players = [
       {
-        playerId: playerIds[0],
+        playerId: orderedPlayerIds[0],
         color: 'light' as const,
         alive: true,
         piecesRemaining: ruleConfig.piecesPerPlayer,
       },
       {
-        playerId: playerIds[1],
+        playerId: orderedPlayerIds[1],
         color: 'dark' as const,
         alive: true,
         piecesRemaining: ruleConfig.piecesPerPlayer,
@@ -72,12 +81,12 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
       phase: GAME_PHASE.PLAYING,
       options,
       board: createInitialBoard(
-        playerIds[1],
-        playerIds[0],
+        orderedPlayerIds[1],
+        orderedPlayerIds[0],
         options.mode,
       ),
       currentTurnIndex: 0,
-      playerOrder: [...playerIds],
+      playerOrder: [...orderedPlayerIds],
       players,
       winnerId: null,
       isDraw: false,
@@ -209,11 +218,13 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
 
     let moveDesc: string;
     if (isMultiJump) {
-      moveDesc = `Multi-jump: ${payload.steps.length} captures`;
+      const firstStep = payload.steps[0];
+      const lastStepFinal = payload.steps[payload.steps.length - 1];
+      moveDesc = `Multi-jump: ${payload.steps.length} captures Move from (${firstStep.fromRow}, ${firstStep.fromCol}) to (${lastStepFinal.toRow}, ${lastStepFinal.toCol})`;
     } else if (isCapture) {
-      moveDesc = `Captured piece at (${lastStep.capturedRow}, ${lastStep.capturedCol})`;
+      moveDesc = `Move at (${lastStep.capturedRow}, ${lastStep.capturedCol})`;
     } else {
-      moveDesc = `Moved from (${lastStep.fromRow}, ${lastStep.fromCol}) to (${lastStep.toRow}, ${lastStep.toCol})`;
+      moveDesc = `Move from (${lastStep.fromRow}, ${lastStep.fromCol}) to (${lastStep.toRow}, ${lastStep.toCol})`;
     }
 
     newState.logs.push(
@@ -283,7 +294,7 @@ export class CheckersEngine extends BaseGameEngine<CheckersState> {
         newState.isDraw = true;
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.logs.push(
-          this.createLogEntry('system', 'Draw — insufficient material.'),
+          this.createLogEntry('system', 'Draw: insufficient material.'),
         );
         return this.successResult(newState);
       }

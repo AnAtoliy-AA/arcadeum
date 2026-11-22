@@ -152,7 +152,8 @@ export const inviteDialogMessages = {
       'This lobby is invite-only. Ask the host for their code to join "{{room}}".',
     roomDescription:
       'This lobby is invite-only. Enter the code from the host to join.',
-    helper: "We'll uppercase automatically—just type the letters you received.",
+    helper:
+      "We'll uppercase automatically - just type the letters you received.",
   },
   es: {
     title: 'Introduce el código de invitación',

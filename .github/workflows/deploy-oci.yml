@@ -2,6 +2,10 @@ name: Deploy to OCI (Prod)
 
 permissions: read-all
 
+concurrency:
+  group: deploy-oci-prod
+  cancel-in-progress: false
+
 on:
   push:
     branches: [main]
@@ -17,9 +21,21 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to deploy'
+        description: 'Branch override (leave empty to use the branch selected in the Run workflow dropdown)'
+        required: false
+        default: ''
+      component:
+        description: 'Component to deploy (be = BE cluster + TG bot + reserve worker)'
+        type: choice
         required: true
-        default: 'main'
+        default: be
+        options:
+          - be
+          - tg-bot
+          - web
+          - task-bot
+          - shorts-factory
+          - all
 
 jobs:
   changes:
@@ -38,7 +54,7 @@ jobs:
           filters: |
             be-or-tg:
               - 'apps/be/**'
-              - 'bots/tg-bot/**'
+              - 'apps/tg-bot/**'
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
@@ -50,10 +66,13 @@ jobs:
             shorts-factory:
               - 'scripts/shorts-factory/**'
 
-  deploy-web:
-    name: Deploy Web (Next.js)
+  deploy-tg-bot:
+    name: Deploy TG Bot + Backend (pm2)
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'be' || inputs.component == 'tg-bot')) ||
+      (github.event_name == 'push' && needs.changes.outputs.be-or-tg == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -65,6 +84,8 @@ jobs:
           port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
             DEPLOY_DIR="/opt/arcadeum"
             cd "$DEPLOY_DIR"
 
@@ -73,7 +94,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then
@@ -87,6 +108,82 @@ jobs:
             git reset --hard "origin/$BRANCH"
 
             pnpm install --frozen-lockfile
+
+            echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
+            npx playwright install chromium
+
+            echo "==> Building games-core + BE..."
+            pnpm --filter @arcadeum/games-core build && pnpm --filter be build
+
+            if [ ! -f "$DEPLOY_DIR/apps/be/dist/src/main.js" ]; then
+              echo "ERROR: BE build did not produce dist/src/main.js"
+              exit 1
+            fi
+
+            [ -x "$DEPLOY_DIR/scripts/fetch-secrets.sh" ] && sudo "$DEPLOY_DIR/scripts/fetch-secrets.sh" /run/arcadeum-secrets/secrets.env 2>/dev/null || true
+
+            echo "==> Restarting BE (cluster)..."
+            pm2 restart arcadeum-be --update-env
+
+            echo "==> Building TG Bot..."
+            cd apps/tg-bot && pnpm build 2>/dev/null || npx tsc 2>/dev/null || true
+            cd "$DEPLOY_DIR"
+
+            echo "==> Restarting TG Bot..."
+            pm2 restart arcadeum-tg-bot --update-env 2>/dev/null || \
+              (cd apps/tg-bot && pm2 start dist/main.js --name arcadeum-tg-bot)
+
+            pm2 save
+
+            echo "==> Prod deploy done (branch: $BRANCH)!"
+            pm2 list
+
+  deploy-web:
+    name: Deploy Web (Next.js)
+    needs: [changes, deploy-tg-bot]
+    if: >-
+      !failure() && !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        (inputs.component == 'all' || inputs.component == 'web')) ||
+       (github.event_name == 'push' && needs.changes.outputs.web == 'true'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
+            DEPLOY_DIR="/opt/arcadeum"
+            cd "$DEPLOY_DIR"
+
+            echo "==> Cleaning git state..."
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+            git reset --hard HEAD 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
+
+            BRANCH="${{ inputs.branch || github.ref_name }}"
+
+            for attempt in 1 2 3; do
+              if git fetch origin "$BRANCH"; then
+                break
+              fi
+              echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
+              rm -f "$DEPLOY_DIR/.git/index.lock"
+              git gc --prune=now 2>/dev/null || true
+              sleep 5
+            done
+            git reset --hard "origin/$BRANCH"
+
+            pnpm install --frozen-lockfile
+
+            echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
+            npx playwright install chromium
 
             cd apps/web
             pnpm build
@@ -102,86 +199,13 @@ jobs:
             echo "==> Web deploy done (branch: $BRANCH)!"
             pm2 list arcadeum-web
 
-  deploy-tg-bot:
-    name: Deploy TG Bot + Backend (Docker)
-    needs: changes
-    if: needs.changes.outputs.be-or-tg == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.OCI_SSH_HOST }}
-          username: ${{ secrets.OCI_SSH_USER }}
-          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
-          port: ${{ secrets.OCI_SSH_PORT || 22 }}
-          script: |
-            set -euo pipefail
-            DEPLOY_DIR="/opt/arcadeum"
-            cd "$DEPLOY_DIR"
-
-            echo "==> Cleaning git state..."
-            rm -f "$DEPLOY_DIR/.git/index.lock"
-            git reset --hard HEAD 2>/dev/null || true
-            git gc --prune=now 2>/dev/null || true
-
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
-
-            for attempt in 1 2 3; do
-              if git fetch origin "$BRANCH"; then
-                break
-              fi
-              echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
-              rm -f "$DEPLOY_DIR/.git/index.lock"
-              git gc --prune=now 2>/dev/null || true
-              sleep 5
-            done
-            git reset --hard "origin/$BRANCH"
-
-            echo "==> Stopping old pm2 processes (ports 4000/4001 conflict with Docker)..."
-            pm2 delete arcadeum-be 2>/dev/null || true
-            pm2 delete arcadeum-be-dev 2>/dev/null || true
-            pm2 delete arcadeum-tg-bot 2>/dev/null || true
-            pm2 delete arcadeum-tg-bot-dev 2>/dev/null || true
-            pm2 save 2>/dev/null || true
-
-            echo "==> Installing Docker Compose plugin + buildx (if missing)..."
-            if ! docker compose version &>/dev/null; then
-              sudo apt-get update -qq && sudo apt-get install -y -qq docker-compose-plugin
-              echo "==> Docker Compose plugin installed"
-            fi
-            if ! docker buildx version &>/dev/null; then
-              mkdir -p ~/.docker/cli-plugins
-              BUILDX_URL="https://github.com/docker/buildx/releases/latest/download/docker-buildx-$(uname -s)-$(uname -m)"
-              curl -sSL -o ~/.docker/cli-plugins/docker-buildx "$BUILDX_URL" && chmod +x ~/.docker/cli-plugins/docker-buildx
-              echo "==> Docker buildx installed"
-            fi
-
-            echo "==> Building and deploying with Docker Compose..."
-            docker compose build be be-2 worker tg-bot
-            docker compose up -d --remove-orphans
-
-            echo "==> Waiting for health checks..."
-            sleep 10
-
-            echo "==> Starting monitoring stack..."
-            if [ -f monitoring/.env.monitoring ]; then
-              docker compose -f docker-compose.monitoring.yml up -d --remove-orphans
-              echo "==> Monitoring stack started"
-            else
-              echo "==> Skipping monitoring (monitoring/.env.monitoring not found)"
-            fi
-
-            echo "==> Container status:"
-            docker compose ps
-            docker compose -f docker-compose.monitoring.yml ps 2>/dev/null || true
-
-            echo "==> Prod deploy done (branch: $BRANCH)!"
-
   deploy-be-reserve:
     name: Deploy Reserve Backend (Worker)
     needs: changes
-    if: needs.changes.outputs.be-or-tg == 'true'
+    if: >-
+      (github.event_name == 'workflow_dispatch' &&
+       (inputs.component == 'all' || inputs.component == 'be' || inputs.component == 'tg-bot')) ||
+      (github.event_name == 'push' && needs.changes.outputs.be-or-tg == 'true')
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -201,7 +225,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git fetch origin "$BRANCH"; then
@@ -236,18 +260,25 @@ jobs:
                 "https://github.com/official-stockfish/Stockfish/releases/download/sf_19/$SF_ASSET"
               mkdir -p /tmp/sf19-extract
               tar -xzf /tmp/sf19.tar.gz -C /tmp/sf19-extract
-              find /tmp/sf19-extract -name "stockfish" -type f -executable -exec cp {} "$SF_BIN" \;
-              chmod +x "$SF_BIN"
+              find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec sudo cp {} "$SF_BIN" \; 2>/dev/null || \
+                find /tmp/sf19-extract -name "stockfish*" -type f -executable -exec cp {} "$SF_BIN" \;
+              sudo chmod +x "$SF_BIN" 2>/dev/null || chmod +x "$SF_BIN"
               rm -rf /tmp/sf19.tar.gz /tmp/sf19-extract
-              "$SF_BIN" <<< "uci" 2>/dev/null | head -1
+              if [ ! -x "$SF_BIN" ]; then
+                echo "ERROR: Stockfish binary not found or not executable at $SF_BIN"
+                exit 1
+              fi
+              echo "uci" | "$SF_BIN" 2>/dev/null | head -1
               echo "==> Stockfish 19 installed."
             else
               echo "==> Stockfish 19 binary already present, skipping download."
             fi
 
             mkdir -p "$DEPLOY_DIR/scripts"
-            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum/apps/be/.env\nset +a\ncd /opt/arcadeum\nexec node apps/be/dist/src/worker.js\n' > "$DEPLOY_DIR/scripts/start-be-reserve.sh"
+            printf '#!/usr/bin/env bash\nset -a\n[ -f /run/arcadeum-secrets/secrets.env ] && source /run/arcadeum-secrets/secrets.env\n[ -f /opt/arcadeum/apps/be/.env.reserve ] && source /opt/arcadeum/apps/be/.env.reserve || source /opt/arcadeum/apps/be/.env\nset +a\ncd /opt/arcadeum\nexec node apps/be/dist/src/worker.js\n' > "$DEPLOY_DIR/scripts/start-be-reserve.sh"
             chmod +x "$DEPLOY_DIR/scripts/start-be-reserve.sh"
+
+            [ -x "$DEPLOY_DIR/scripts/fetch-secrets.sh" ] && sudo "$DEPLOY_DIR/scripts/fetch-secrets.sh" /run/arcadeum-secrets/secrets.env 2>/dev/null || true
 
             pm2 restart arcadeum-be-reserve || \
               pm2 start "$DEPLOY_DIR/scripts/start-be-reserve.sh" --name arcadeum-be-reserve
@@ -259,8 +290,12 @@ jobs:
 
   deploy-task-bot:
     name: Deploy Task Bot
-    needs: changes
-    if: needs.changes.outputs.task-bot == 'true'
+    needs: [changes, deploy-web]
+    if: >-
+      !failure() && !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        (inputs.component == 'all' || inputs.component == 'task-bot')) ||
+       (github.event_name == 'push' && needs.changes.outputs.task-bot == 'true'))
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
@@ -272,6 +307,8 @@ jobs:
           port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
             DEPLOY_DIR="/opt/arcadeum"
 
             echo "==> Cleaning git state..."
@@ -281,7 +318,7 @@ jobs:
 
             cd "$DEPLOY_DIR/bots/task-bot"
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             for attempt in 1 2 3; do
               if git -C "$DEPLOY_DIR" fetch origin "$BRANCH"; then
@@ -309,8 +346,12 @@ jobs:
 
   deploy-shorts-factory:
     name: Deploy Shorts Factory
-    needs: changes
-    if: needs.changes.outputs.shorts-factory == 'true'
+    needs: [changes, deploy-task-bot]
+    if: >-
+      !failure() && !cancelled() &&
+      ((github.event_name == 'workflow_dispatch' &&
+        (inputs.component == 'all' || inputs.component == 'shorts-factory')) ||
+       (github.event_name == 'push' && needs.changes.outputs.shorts-factory == 'true'))
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to OCI via SSH
@@ -319,8 +360,11 @@ jobs:
           host: ${{ secrets.OCI_SSH_HOST }}
           username: ${{ secrets.OCI_SSH_USER }}
           key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
           script: |
             set -e
+            exec 200>/tmp/arcadeum-deploy.lock
+            flock -x 200
             cd /opt/arcadeum
 
             echo "==> Cleaning git state..."
@@ -328,7 +372,7 @@ jobs:
             git reset --hard HEAD 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            BRANCH="${{ github.event.inputs.branch || 'main' }}"
+            BRANCH="${{ inputs.branch || github.ref_name }}"
 
             echo "==> Pulling latest code (branch: $BRANCH)..."
             for attempt in 1 2 3; do

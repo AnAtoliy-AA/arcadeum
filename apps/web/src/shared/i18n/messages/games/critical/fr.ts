@@ -19,7 +19,7 @@ export const frMessages = {
       },
       s3: {
         title: 'Les salons rapides tiquent',
-        body: 'Dans les salons rapides, un minuteur joue pour vous quand le temps expire — gardez le rythme et anticipez.',
+        body: 'Dans les salons rapides, un minuteur joue pour vous quand le temps expire - gardez le rythme et anticipez.',
       },
       s4: {
         title: 'Discussion de table',
@@ -209,7 +209,7 @@ export const frMessages = {
       threat: {
         label: 'Menace',
         oddsTitle:
-          'Probabilité minimale de piocher une Critique (cartes visibles uniquement — les cachées peuvent l’augmenter)',
+          'Probabilité minimale de piocher une Critique (cartes visibles uniquement - les cachées peuvent l’augmenter)',
         oddsTitleServer: 'Probabilité de piocher une carte Critique',
         defusesTitle: 'Cartes de Défuse en main',
         remainingTitle: 'Cartes dangereuses encore dans la pioche',
@@ -234,7 +234,7 @@ export const frMessages = {
       flash: {
         draw: '{{card}} piochée',
         play: '{{card}} jouée',
-        defuse: 'Défusée — {{card}} replacée',
+        defuse: 'Défusée - {{card}} replacée',
         eliminated: '{{name}} éliminé',
         critical: '⚠ Critique piochée',
       },

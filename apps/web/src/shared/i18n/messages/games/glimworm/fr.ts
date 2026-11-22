@@ -63,7 +63,7 @@ export const frMessages = {
       },
       s2: {
         title: 'Évitez toutes les traces',
-        body: 'Ne touchez jamais la trace d’un autre ver — ni la vôtre, sauf si un bouclier vous sauve.',
+        body: 'Ne touchez jamais la trace d’un autre ver - ni la vôtre, sauf si un bouclier vous sauve.',
       },
       s3: {
         title: 'Boostez-vous',
@@ -78,7 +78,7 @@ export const frMessages = {
       objective:
         'Survivez à tous les autres vers de l’arène. Mangez la nourriture lumineuse pour grandir et marquer des points.',
       gameplay:
-        'Votre ver suit le curseur — maintenez et dirigez. L’arène est ouverte ; le danger, ce sont les traînées des autres. Toucher un mur ou un corps adverse vous tue.',
+        'Votre ver suit le curseur - maintenez et dirigez. L’arène est ouverte ; le danger, ce sont les traînées des autres. Toucher un mur ou un corps adverse vous tue.',
       survive:
         'Coupez la route des autres pour qu’ils heurtent votre traînée, puis ramassez la nourriture qu’ils laissent. Restez au bord du peloton, jamais coincé dans un angle.',
       powerups:

@@ -20,6 +20,7 @@ function renderBoard(props: React.ComponentProps<typeof GoBoard>) {
         lastMove={props.lastMove}
         koPoint={props.koPoint}
         myColor={props.myColor}
+        showTerritory={props.showTerritory}
         ariaLabel={props.ariaLabel}
         onCellClick={props.onCellClick}
       />
@@ -89,5 +90,43 @@ describe('GoBoard', () => {
     expect(cell).toHaveProperty('disabled', true);
     fireEvent.click(cell);
     expect(onCellClick).not.toHaveBeenCalled();
+  });
+
+  it('highlights enclosed territory points when showTerritory is true', () => {
+    const board = emptyBoard(5);
+    board[0][1] = 'black';
+    board[1][0] = 'black';
+    renderBoard({
+      board,
+      size: 5,
+      disabled: false,
+      lastMove: null,
+      koPoint: null,
+      myColor: 'black',
+      showTerritory: true,
+      onCellClick: vi.fn(),
+    });
+    const cell = screen.getByTestId('go-cell-0-0');
+    expect(
+      cell.querySelector('[data-testid="go-territory-black"]'),
+    ).toBeTruthy();
+  });
+
+  it('does not render territory highlights when showTerritory is false', () => {
+    const board = emptyBoard(5);
+    board[0][1] = 'black';
+    board[1][0] = 'black';
+    renderBoard({
+      board,
+      size: 5,
+      disabled: false,
+      lastMove: null,
+      koPoint: null,
+      myColor: 'black',
+      showTerritory: false,
+      onCellClick: vi.fn(),
+    });
+    const cell = screen.getByTestId('go-cell-0-0');
+    expect(cell.querySelector('[data-testid="go-territory-black"]')).toBeNull();
   });
 });

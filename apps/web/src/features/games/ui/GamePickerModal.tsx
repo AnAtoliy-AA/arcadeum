@@ -77,16 +77,20 @@ export function GamePickerModal({
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
-    gamesApi.getCatalog().then((catalog) => {
-      if (cancelled) return;
-      setComingSoonIds(
-        new Set(catalog.games.filter((g) => g.comingSoon).map((g) => g.gameId)),
-      );
-    });
+    gamesApi
+      .getCatalog({ token: snapshot.accessToken || undefined })
+      .then((catalog) => {
+        if (cancelled) return;
+        setComingSoonIds(
+          new Set(
+            catalog.games.filter((g) => g.comingSoon).map((g) => g.gameId),
+          ),
+        );
+      });
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, snapshot.accessToken]);
 
   const games: GamePickerItem[] = useMemo(() => {
     return featuredGames

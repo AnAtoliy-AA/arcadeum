@@ -29,11 +29,11 @@ export function MatchWidgetGrid({
   return (
     <div
       className={cx(
-        'flex flex-col items-stretch w-full max-w-[1240px] mx-auto px-[12px] py-[12px] gap-3 max-[800px]:px-2 max-[800px]:gap-2',
+        'flex flex-col items-stretch w-full max-w-[1240px] mx-auto px-[12px] py-2 gap-2 max-[800px]:px-1.5 max-[800px]:py-1 max-[800px]:gap-1.5',
         className,
       )}
       style={{
-        paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 'calc(8px + env(safe-area-inset-bottom, 0px))',
       }}
       data-testid={testId}
     >

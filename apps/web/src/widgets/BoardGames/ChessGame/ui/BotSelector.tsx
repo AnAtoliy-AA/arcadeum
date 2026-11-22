@@ -81,7 +81,7 @@ export function BotSelector({
                   {selectedPersonality.name}
                 </div>
                 <div className="text-[10px] text-[var(--textSecondary)]">
-                  {selectedPersonality.rating} ELO — {selectedPersonality.style}
+                  {selectedPersonality.rating} ELO - {selectedPersonality.style}
                 </div>
               </div>
             </>
@@ -163,7 +163,7 @@ export function BotSelector({
               {selected.name}
             </div>
             <div className="text-[10px] text-[var(--textSecondary)]">
-              {selected.rating} ELO — {selected.style}
+              {selected.rating} ELO - {selected.style}
             </div>
           </div>
         </div>

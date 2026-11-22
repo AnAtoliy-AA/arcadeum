@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-cascade',
   locale: 'fr',
   title:
-    "Comment jouer à Cascade en ligne — règles, chaînes d'action, stratégie",
+    "Comment jouer à Cascade en ligne - règles, chaînes d'action, stratégie",
   excerpt:
     'Guide complet : jeu de cartes style UNO avec chaînes de pénalité et stratégie de combos.',
   publishedAt: '2026-08-11',
@@ -50,7 +50,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/cascade',
-      text: 'Jouez à Cascade en ligne — gratuit',
+      text: 'Jouez à Cascade en ligne - gratuit',
       description: 'Rapides rondes, profondeur stratégique.',
     },
     { type: 'heading', level: 2, text: 'Résumé', id: 'tldr' },

@@ -30,6 +30,10 @@
 - **Reuse `@arcadeum/ui` components** — run `/check-ui-components` before writing any UI component. It audits the full component catalog, identifies reuse opportunities, and guides adding new components to `packages/ui` when nothing fits.
 - **Handle all UI states** — every data-fetching UI must handle loading, error, and empty states explicitly.
 
+### Copy & Typography
+
+- **Never use long dash / em dash (`—`) in text anywhere in the app**: Do not use `—` in UI copy, landing pages, SEO titles, descriptions, open graph text, badges, or i18n strings. Use standard hyphens (`-`), colons (`:`), pipes (`|`), parentheses, or rewrite the sentence without it.
+
 ### i18n
 
 - **No hardcoded user-facing strings** — all text must go through the i18n system (`getTranslations()` on web server components, `useTranslation()` on web client/mobile). Add keys to all locale files (`en`, `ru`, `es`, `fr`, `by`).

@@ -30,17 +30,26 @@ export type MoveSource =
   | { kind: 'foundation'; foundationIndex: FoundationIndex }
   | { kind: 'tableau'; pileIndex: TableauIndex; cardIndex: number };
 
+export type DrawMode = 'draw1' | 'draw3';
+
+export interface SolitaireHint {
+  source: MoveSource;
+  target: MoveTarget;
+  descriptionKey:
+    | 'games.solitaire_v1.hint.wasteToFoundation'
+    | 'games.solitaire_v1.hint.tableauToFoundation'
+    | 'games.solitaire_v1.hint.wasteToTableau'
+    | 'games.solitaire_v1.hint.tableauToTableau';
+}
+
 export interface SolitaireState {
-  /** Face-down draw pile. Top of the stock is the last element. */
   stock: Card[];
-  /** Revealed cards not yet played. Top of the waste is the last element. */
   waste: Card[];
-  /** Four foundation piles, one per suit in `SUITS` order, ascending Ace→King. */
   foundations: Card[][];
-  /** Seven tableau columns; cards[0] is the bottom of each column. */
   tableau: Card[][];
   moves: number;
   score: number;
+  drawMode: DrawMode;
 }
 
 export interface GameOutcome {

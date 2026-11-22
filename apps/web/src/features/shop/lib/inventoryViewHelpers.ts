@@ -8,6 +8,7 @@ import type {
   InventoryItemView,
   ShopCategory,
 } from '../server/shop.types';
+import { getLevelForBadge } from '@/shared/lib/level-rewards';
 
 export type ShopRowLabelKey =
   | 'avatars'
@@ -61,10 +62,23 @@ export function ownedByCategory(
   inventoryItems: InventoryItemView[],
 ): Record<ShopCategory, EffectiveShopItem[]> {
   const ownedIds = new Set(
-    inventoryItems.filter((row) => row.soldAt === null).map((row) => row.itemId),
+    inventoryItems
+      .filter((row) => row.soldAt === null)
+      .map((row) => row.itemId),
   );
-  const filterOwned = (cat: ShopCategory) =>
-    catalog.filter((c) => c.category === cat && ownedIds.has(c.id));
+  const filterOwned = (cat: ShopCategory) => {
+    const items = catalog.filter(
+      (c) => c.category === cat && ownedIds.has(c.id),
+    );
+    if (cat === 'badge') {
+      return items.slice().sort((a, b) => {
+        const lvlA = getLevelForBadge(a.id) ?? Number.MAX_SAFE_INTEGER;
+        const lvlB = getLevelForBadge(b.id) ?? Number.MAX_SAFE_INTEGER;
+        return lvlA - lvlB;
+      });
+    }
+    return items;
+  };
   return {
     avatar: filterOwned('avatar'),
     badge: filterOwned('badge'),

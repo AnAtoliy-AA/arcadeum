@@ -47,7 +47,7 @@ export class GameUtilitiesService {
     const users = validUserIds.length
       ? await this.userModel
           .find({ _id: { $in: validUserIds } })
-          .select('username email')
+          .select('username displayName email')
           .exec()
       : [];
 
@@ -59,7 +59,11 @@ export class GameUtilitiesService {
         id: userId,
         username: user.username || null,
         email: user.email || null,
-        displayName: user.username || user.email || 'Unknown User',
+        displayName:
+          user.displayName?.trim() ||
+          user.username ||
+          user.email ||
+          'Unknown User',
       });
     });
 
@@ -87,7 +91,7 @@ export class GameUtilitiesService {
     }
     const user = await this.userModel
       .findById(userId)
-      .select('username email')
+      .select('username displayName email')
       .lean()
       .exec();
 
@@ -95,7 +99,12 @@ export class GameUtilitiesService {
       return 'Unknown User';
     }
 
-    return user.username || user.email || 'Unknown User';
+    return (
+      (user as { displayName?: string }).displayName?.trim() ||
+      user.username ||
+      user.email ||
+      'Unknown User'
+    );
   }
 
   /**

@@ -1,5 +1,13 @@
 import { create } from 'zustand';
-import type { Clan, ClanMember } from '../model/types';
+import type {
+  Clan,
+  ClanMember,
+  ClanTab,
+  ClanLeaderboardEntry,
+  ClanLeaderboardSort,
+  ClanMvpEntry,
+  CommunityChallenge,
+} from '../model/types';
 import { clansApi } from '../api';
 
 interface ClansState {
@@ -9,14 +17,67 @@ interface ClansState {
   popularClans: Clan[];
   selectedClan: Clan | null;
   selectedClanMembers: ClanMember[];
+  activeTab: ClanTab;
+  leaderboardEntries: ClanLeaderboardEntry[];
+  leaderboardTotal: number;
+  leaderboardSort: ClanLeaderboardSort;
+  communityChallenges: CommunityChallenge[];
+  clanMvps: ClanMvpEntry[];
+  clanWars: import('../model/types').ClanWar[];
+  activeWar: import('../model/types').ClanWar | null;
+  activeMatchWar: import('../model/types').ClanWar | null;
+  warHistory: import('../model/types').ClanWar[];
   loading: boolean;
   error: string | null;
 
+  setActiveTab: (tab: ClanTab) => void;
+  setLeaderboardSort: (sort: ClanLeaderboardSort) => void;
+  setActiveMatchWar: (war: import('../model/types').ClanWar | null) => void;
+  updateClanWar: (war: import('../model/types').ClanWar) => void;
+  fetchActiveMatchWar: (
+    playerA: string,
+    playerB: string,
+    gameId?: string,
+    token?: string,
+  ) => Promise<import('../model/types').ClanWar | null>;
+  fetchActiveWars: (clanId?: string, token?: string) => Promise<void>;
+  fetchWarById: (warId: string, token?: string) => Promise<void>;
+  declareWar: (
+    targetClanId: string,
+    params?: { gameId?: string; targetScore?: number },
+    token?: string,
+  ) => Promise<import('../model/types').ClanWar | null>;
+  respondToWar: (
+    warId: string,
+    accept: boolean,
+    token: string,
+  ) => Promise<void>;
+  recordWarVictory: (
+    warId: string,
+    winningClanId: string,
+    winnerName: string,
+    loserClanId: string,
+    loserName: string,
+    gameId?: string,
+    token?: string,
+  ) => Promise<void>;
+  fetchWarHistory: (clanId: string, token?: string) => Promise<void>;
   fetchMyClan: (token: string) => Promise<void>;
   fetchClanById: (clanId: string, token: string) => Promise<void>;
   fetchClanMembers: (clanId: string, token: string) => Promise<void>;
   fetchPopularClans: (token?: string) => Promise<void>;
   searchClans: (query: string, token?: string) => Promise<void>;
+  fetchLeaderboard: (
+    sort?: ClanLeaderboardSort,
+    token?: string,
+  ) => Promise<void>;
+  fetchCommunityChallenges: (token?: string) => Promise<void>;
+  fetchClanMvps: (clanId: string, token?: string) => Promise<void>;
+  contributeToChallenge: (
+    challengeId: string,
+    amount?: number,
+    token?: string,
+  ) => Promise<void>;
   createClan: (
     data: {
       name: string;
@@ -35,15 +96,29 @@ interface ClansState {
   reset: () => void;
 }
 
-export const useClansStore = create<ClansState>((set, _get) => ({
+export const useClansStore = create<ClansState>((set, get) => ({
   myClan: null,
   myClanMembers: [],
   searchResults: [],
   popularClans: [],
   selectedClan: null,
   selectedClanMembers: [],
+  activeTab: 'overview',
+  leaderboardEntries: [],
+  leaderboardTotal: 0,
+  leaderboardSort: 'wins',
+  communityChallenges: [],
+  clanMvps: [],
+  clanWars: [],
+  activeWar: null,
+  activeMatchWar: null,
+  warHistory: [],
   loading: false,
   error: null,
+
+  setActiveTab: (activeTab) => set({ activeTab }),
+
+  setLeaderboardSort: (leaderboardSort) => set({ leaderboardSort }),
 
   fetchMyClan: async (token) => {
     set({ loading: true, error: null });
@@ -53,6 +128,7 @@ export const useClansStore = create<ClansState>((set, _get) => ({
       if (clan) {
         const members = await clansApi.getClanMembers(clan.id, { token });
         set({ myClanMembers: members });
+        get().fetchClanMvps(clan.id, token);
       }
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
@@ -103,6 +179,213 @@ export const useClansStore = create<ClansState>((set, _get) => ({
     }
   },
 
+  fetchLeaderboard: async (sort, token) => {
+    const currentSort = sort ?? get().leaderboardSort;
+    try {
+      const res = await clansApi.getLeaderboard(
+        { sortBy: currentSort, limit: 25 },
+        token ? { token } : undefined,
+      );
+      set({
+        leaderboardEntries: res.entries,
+        leaderboardTotal: res.total,
+        leaderboardSort: currentSort,
+      });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchCommunityChallenges: async (token) => {
+    try {
+      const challenges = await clansApi.getCommunityChallenges(
+        token ? { token } : undefined,
+      );
+      set({ communityChallenges: challenges });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchClanMvps: async (clanId, token) => {
+    try {
+      const mvps = await clansApi.getClanMvps(
+        clanId,
+        10,
+        token ? { token } : undefined,
+      );
+      set({ clanMvps: mvps });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  contributeToChallenge: async (challengeId, amount = 1, token) => {
+    try {
+      const updated = await clansApi.contributeToChallenge(
+        challengeId,
+        amount,
+        token ? { token } : undefined,
+      );
+      set((state) => ({
+        communityChallenges: state.communityChallenges.map((c) =>
+          c.id === updated.id ? updated : c,
+        ),
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchActiveWars: async (clanId, token) => {
+    try {
+      const wars = await clansApi.getActiveClanWars(
+        clanId,
+        token ? { token } : undefined,
+      );
+      set({ clanWars: wars });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchWarById: async (warId, token) => {
+    try {
+      const war = await clansApi.getClanWarById(
+        warId,
+        token ? { token } : undefined,
+      );
+      set({ activeWar: war });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  declareWar: async (targetClanId, params, token) => {
+    const myClan = get().myClan;
+    if (!myClan || !token) return null;
+    try {
+      const created = await clansApi.declareClanWar(
+        myClan.id,
+        targetClanId,
+        params,
+        { token },
+      );
+      set((state) => ({ clanWars: [created, ...state.clanWars] }));
+      return created;
+    } catch (err) {
+      set({ error: (err as Error).message });
+      return null;
+    }
+  },
+
+  respondToWar: async (warId, accept, token) => {
+    const myClan = get().myClan;
+    if (!myClan || !token) return;
+    try {
+      const updated = await clansApi.respondClanWar(myClan.id, warId, accept, {
+        token,
+      });
+      set((state) => ({
+        clanWars: state.clanWars.map((w) =>
+          w.id === updated.id ? updated : w,
+        ),
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  recordWarVictory: async (
+    warId,
+    winningClanId,
+    winnerName,
+    loserClanId,
+    loserName,
+    gameId,
+    token,
+  ) => {
+    try {
+      const updated = await clansApi.recordClanWarMatch(
+        warId,
+        { winningClanId, winnerName, loserClanId, loserName, gameId },
+        token ? { token } : undefined,
+      );
+      set((state) => ({
+        clanWars: state.clanWars.map((w) =>
+          w.id === updated.id ? updated : w,
+        ),
+        activeWar:
+          state.activeWar?.id === updated.id ? updated : state.activeWar,
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchWarHistory: async (clanId, token) => {
+    try {
+      const history = await clansApi.getClanWarHistory(
+        clanId,
+        token ? { token } : undefined,
+      );
+      set({ warHistory: history });
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  setActiveMatchWar: (activeMatchWar) => set({ activeMatchWar }),
+
+  updateClanWar: (war) => {
+    set((state) => {
+      const existsInActive = state.clanWars.some((w) => w.id === war.id);
+      const updatedActive = existsInActive
+        ? state.clanWars.map((w) => (w.id === war.id ? war : w))
+        : war.status === 'active' || war.status === 'pending'
+          ? [war, ...state.clanWars]
+          : state.clanWars;
+
+      const filteredActive =
+        war.status === 'completed' || war.status === 'declined'
+          ? updatedActive.filter((w) => w.id !== war.id)
+          : updatedActive;
+
+      const existsInHistory = state.warHistory.some((w) => w.id === war.id);
+      const updatedHistory =
+        war.status === 'completed' || war.status === 'declined'
+          ? existsInHistory
+            ? state.warHistory.map((w) => (w.id === war.id ? war : w))
+            : [war, ...state.warHistory]
+          : state.warHistory;
+
+      const activeMatchWar =
+        state.activeMatchWar?.id === war.id ? war : state.activeMatchWar;
+
+      return {
+        clanWars: filteredActive,
+        activeWar: state.activeWar?.id === war.id ? war : state.activeWar,
+        warHistory: updatedHistory,
+        activeMatchWar,
+      };
+    });
+  },
+
+  fetchActiveMatchWar: async (playerA, playerB, gameId, token) => {
+    try {
+      const war = await clansApi.getActiveMatchWar(
+        playerA,
+        playerB,
+        gameId,
+        token ? { token } : undefined,
+      );
+      set({ activeMatchWar: war });
+      return war;
+    } catch {
+      return null;
+    }
+  },
+
   createClan: async (data, token) => {
     set({ loading: true, error: null });
     try {
@@ -131,7 +414,12 @@ export const useClansStore = create<ClansState>((set, _get) => ({
     set({ loading: true, error: null });
     try {
       await clansApi.leaveClan(clanId, { token });
-      set({ myClan: null, myClanMembers: [], loading: false });
+      set({
+        myClan: null,
+        myClanMembers: [],
+        clanMvps: [],
+        loading: false,
+      });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
       throw err;
@@ -139,8 +427,6 @@ export const useClansStore = create<ClansState>((set, _get) => ({
   },
 
   removeMember: async (clanId, token) => {
-    // This is a placeholder - actual implementation would need a target userId
-    // The real removeMember is called from ClansPageContent with userId
     void clanId;
     void token;
   },
@@ -176,6 +462,15 @@ export const useClansStore = create<ClansState>((set, _get) => ({
       popularClans: [],
       selectedClan: null,
       selectedClanMembers: [],
+      activeTab: 'overview',
+      leaderboardEntries: [],
+      leaderboardTotal: 0,
+      leaderboardSort: 'wins',
+      communityChallenges: [],
+      clanMvps: [],
+      clanWars: [],
+      activeWar: null,
+      warHistory: [],
       loading: false,
       error: null,
     }),

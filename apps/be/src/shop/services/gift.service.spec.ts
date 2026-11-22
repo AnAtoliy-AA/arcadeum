@@ -7,8 +7,10 @@ import { User } from '../../auth/schemas/user.schema';
 import { UserInventoryItem } from '../schemas/user-inventory-item.schema';
 import { ShopAdminAudit } from '../schemas/shop-admin-audit.schema';
 import { InventoryService } from './inventory.service';
+import { CatalogService } from './catalog.service';
 import { FriendsService } from '../../friends/friends.service';
 import { NotificationDispatcher } from '../../notifications/notifications.dispatcher';
+import { WalletService } from '../../wallet/wallet.service';
 
 describe('GiftService', () => {
   const senderId = '64a000000000000000000001';
@@ -35,6 +37,14 @@ describe('GiftService', () => {
   };
   let dispatcher: {
     dispatch: jest.Mock;
+  };
+  let catalogService: {
+    getEffective: jest.Mock;
+  };
+  let walletService: {
+    debit: jest.Mock;
+    getBalance: jest.Mock;
+    emitAfterCommit: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -89,6 +99,33 @@ describe('GiftService', () => {
       dispatch: jest.fn().mockResolvedValue(undefined),
     };
 
+    catalogService = {
+      getEffective: jest.fn().mockResolvedValue({
+        id: itemId,
+        category: 'avatar',
+        rarity: 'common',
+        nameKey: 'items.avatar.fox01.name',
+        descKey: 'items.avatar.fox01.desc',
+        assetUrl: '/assets/avatar-fox-01.png',
+        defaultPriceAmount: 100,
+        defaultPriceCurrency: 'coins',
+        available: true,
+        priceAmount: 100,
+        priceCurrency: 'coins',
+        overridden: false,
+      }),
+    };
+
+    walletService = {
+      debit: jest.fn().mockResolvedValue({}),
+      getBalance: jest.fn().mockResolvedValue({
+        coins: 500,
+        gems: 10,
+        arcadeum: 0,
+      }),
+      emitAfterCommit: jest.fn(),
+    };
+
     const module = await Test.createTestingModule({
       providers: [
         GiftService,
@@ -100,8 +137,10 @@ describe('GiftService', () => {
         },
         { provide: getModelToken(ShopAdminAudit.name), useValue: auditModel },
         { provide: InventoryService, useValue: inventoryService },
+        { provide: CatalogService, useValue: catalogService },
         { provide: FriendsService, useValue: friendsService },
         { provide: NotificationDispatcher, useValue: dispatcher },
+        { provide: WalletService, useValue: walletService },
       ],
     }).compile();
 

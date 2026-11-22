@@ -1,9 +1,12 @@
 import { expect } from '@playwright/test';
-import { test } from './fixtures/test-utils';
+import { test, navigateTo } from './fixtures/test-utils';
 
 interface SchemaRecord {
   '@type'?: string | string[];
+  '@id'?: string;
   name?: string;
+  url?: string;
+  inLanguage?: string;
   aggregateRating?: {
     '@type'?: string;
     ratingValue?: string;
@@ -38,14 +41,14 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
     test(`${game.name} landing emits VideoGame, SoftwareApplication with AggregateRating`, async ({
       page,
     }) => {
-      await page.goto(`/en/games/${game.slug}`, {
-        waitUntil: 'domcontentloaded',
-      });
+      await navigateTo(page, `/en/games/${game.slug}`);
       const schemas = await getJsonLdSchemas(page, `#json-ld-${game.id}`);
       expect(schemas.length).toBeGreaterThanOrEqual(2);
 
       const videoGame = schemas.find((s) => s['@type'] === 'VideoGame');
       expect(videoGame).toBeDefined();
+      expect(videoGame?.url).toContain(`/games/${game.slug}`);
+      expect(videoGame?.url).not.toContain('_v1');
       expect(videoGame?.aggregateRating?.['@type']).toBe('AggregateRating');
       expect(videoGame?.aggregateRating?.ratingValue).toBeTruthy();
 
@@ -53,16 +56,25 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
         (s) => s['@type'] === 'SoftwareApplication',
       );
       expect(softwareApp).toBeDefined();
+      expect(softwareApp?.url).toContain(`/games/${game.slug}`);
       expect(softwareApp?.aggregateRating?.['@type']).toBe('AggregateRating');
+
+      const breadcrumbLists = schemas.filter(
+        (s) => s['@type'] === 'BreadcrumbList',
+      );
+      expect(breadcrumbLists.length).toBeLessThanOrEqual(1);
     });
   }
 
-  test('sitemap includes all games with updated lastmod', async ({
+  test('sitemap includes all games and strategy guides', async ({
     request,
   }) => {
-    const res = await request.get('/sitemap.xml');
-    expect(res.status()).toBe(200);
-    const text = await res.text();
+    let text = '';
+    await expect(async () => {
+      const res = await request.get('/sitemap.xml');
+      expect(res.status()).toBe(200);
+      text = await res.text();
+    }).toPass();
 
     const expectedSlugs = [
       'chess',
@@ -83,6 +95,18 @@ test.describe('Game Landings Structured Data & SEO Verification', () => {
 
     for (const slug of expectedSlugs) {
       expect(text).toContain(`/games/${slug}`);
+    }
+
+    const expectedGuides = [
+      'chess-opening-traps',
+      'how-to-win-chess-endgames',
+      'how-to-win-spades',
+      'how-to-win-hearts-advanced',
+      'backgammon-pip-count-guide',
+    ];
+
+    for (const guide of expectedGuides) {
+      expect(text).toContain(`/blog/${guide}`);
     }
   });
 });

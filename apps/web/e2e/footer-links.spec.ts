@@ -46,17 +46,20 @@ test.describe('Footer Links', () => {
     const footer = page.locator('footer').first();
     // On mobile, footer sections are collapsible - expand Legal section if needed
     const privacyLink = footer.locator(`a[href="${routes.privacy}"]`);
-    if (!(await privacyLink.isVisible())) {
-      const legalToggle = footer
-        .getByText('LEGAL')
-        .or(footer.getByText('Legal'))
-        .or(footer.getByText('legal'))
-        .first();
-      if (await legalToggle.isVisible({}).catch(() => false)) {
-        await legalToggle.click({ force: true });
+    // Retry: the toggle click can land before React hydrates.
+    await expect(async () => {
+      if (!(await privacyLink.isVisible())) {
+        const legalToggle = footer
+          .getByText('LEGAL')
+          .or(footer.getByText('Legal'))
+          .or(footer.getByText('legal'))
+          .first();
+        if (await legalToggle.isVisible().catch(() => false)) {
+          await legalToggle.click({ force: true });
+        }
       }
-    }
-    await expect(footer.locator(`a[href="${routes.privacy}"]`)).toBeVisible({});
+      await expect(privacyLink).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 20000 });
     await expect(footer.locator(`a[href="${routes.terms}"]`)).toBeVisible();
     await expect(footer.locator(`a[href="${routes.contact}"]`)).toBeVisible();
 
@@ -99,11 +102,13 @@ test.describe('Footer Links', () => {
     const supportLink = footer.locator(`a[href="${routes.support}"]`);
     if (!(await supportLink.isVisible())) {
       const resourcesToggle = footer
-        .getByText('RESOURCES')
-        .or(footer.getByText('Resources'))
-        .or(footer.getByText('resources'))
+        .getByRole('button', { name: /resources/i })
+        .or(footer.getByText(/resources/i))
         .first();
-      if (await resourcesToggle.isVisible({}).catch(() => false)) {
+      await resourcesToggle
+        .evaluate((el) => el.scrollIntoView({ block: 'center' }))
+        .catch(() => {});
+      if (await resourcesToggle.isVisible().catch(() => false)) {
         await resourcesToggle.click({ force: true });
       }
     }

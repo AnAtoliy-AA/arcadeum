@@ -8,6 +8,7 @@ import { FlashBanner } from '../FlashBanner';
 import { GameMoveHistory } from '@/features/games/ui/GameMoveHistory';
 import { ComboCard, type ComboKind } from './ComboCard';
 import type { CriticalCard, CriticalLogEntry } from '../../types';
+import { useIsNarrow } from '../../lib/useNarrowViewport';
 
 interface ArenaCenterProps {
   // Turn banner
@@ -61,9 +62,11 @@ export function ArenaCenter({
   formatLogMessage,
   resolveDisplayName,
 }: ArenaCenterProps) {
+  const isNarrow = useIsNarrow(540);
+
   return (
     <div
-      className="flex flex-col flex-1 items-center justify-center gap-2 relative"
+      className="flex flex-col flex-1 items-center justify-center gap-1.5 relative"
       data-testid="arena-center"
     >
       <div
@@ -91,15 +94,11 @@ export function ArenaCenter({
         criticalsRemaining={criticalsRemaining}
         hiddenCount={hiddenCount}
       />
-      {/* §4.7 — last-5 timeline strip beneath the threat strip. The
-          single-shot FlashBanner clears in 1.6s; this surfaces a
-          short history so players who were watching their hand can
-          still see what just happened. Each row carries the actor
-          name so it's obvious who did what. */}
       <GameMoveHistory
         logs={logs}
         formatMessage={formatLogMessage}
         resolveDisplayName={resolveDisplayName}
+        limit={isNarrow ? 2 : 4}
       />
     </div>
   );

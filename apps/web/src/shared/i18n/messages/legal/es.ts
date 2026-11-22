@@ -272,7 +272,7 @@ export const es: LegalMessages = {
         eyebrow: 'Soporte de jugadores',
         title: 'Estamos en el mismo equipo.',
         tagline:
-          'Lánzanos una pregunta, reporta un bug o cuéntanos una idea — leemos cada mensaje y todo el equipo juega los juegos que enviamos.',
+          'Lánzanos una pregunta, reporta un bug o cuéntanos una idea - leemos cada mensaje y todo el equipo juega los juegos que enviamos.',
         statusOk: 'Todos los sistemas operativos',
         medianReply: '~ {{hours}} h de respuesta media',
         humansOnline: '{{count}} personas en línea',
@@ -319,7 +319,7 @@ export const es: LegalMessages = {
         email: 'Email',
         subject: 'Asunto',
         message: 'Mensaje',
-        privacy: 'Privado — nunca compartimos tu email.',
+        privacy: 'Privado - nunca compartimos tu email.',
         submit: 'Lanzar mensaje',
         submitting: 'Enviando…',
         successTitle: 'Mensaje enviado.',
@@ -363,18 +363,18 @@ export const es: LegalMessages = {
         label: 'Respuestas más rápidas',
         title: 'Ayúdanos a responderte antes',
         orderId:
-          'Incluye el ID de pedido para reembolsos o pagos — encontramos el recibo al instante.',
+          'Incluye el ID de pedido para reembolsos o pagos - encontramos el recibo al instante.',
         bugs: 'Para bugs: pasos para reproducir, navegador y dispositivo. Cuanto más concreto, mejor.',
         screenshots:
-          'Las capturas son bienvenidas — pégalas directamente en el campo del mensaje, sin adjuntar.',
+          'Las capturas son bienvenidas - pégalas directamente en el campo del mensaje, sin adjuntar.',
         account:
-          'Para problemas de acceso o cuenta — añade el email con el que te registraste para que podamos localizarla.',
+          'Para problemas de acceso o cuenta - añade el email con el que te registraste para que podamos localizarla.',
         urgent:
           "¿Urgente? Añade 'urgent' al asunto y lo enviaremos al equipo de guardia.",
         language:
-          'Escribe en el idioma que prefieras — respondemos en EN, RU, ES, FR, BY.',
+          'Escribe en el idioma que prefieras - respondemos en EN, RU, ES, FR, BY.',
         footer:
-          'Cada mensaje lo lee una persona del equipo — sin chatbots, sin respuestas automáticas.',
+          'Cada mensaje lo lee una persona del equipo - sin chatbots, sin respuestas automáticas.',
       },
       ticker: {
         label: 'Feed en directo',
@@ -390,7 +390,7 @@ export const es: LegalMessages = {
         password: {
           question: '¿Cómo restablezco mi contraseña?',
           answer:
-            'Usa el enlace "Olvidé mi contraseña" en la pantalla de inicio de sesión. El correo de restablecimiento llega en aproximadamente un minuto — revisa el spam si no aparece. Si tu email cambió, contacta a soporte.',
+            'Usa el enlace "Olvidé mi contraseña" en la pantalla de inicio de sesión. El correo de restablecimiento llega en aproximadamente un minuto - revisa el spam si no aparece. Si tu email cambió, contacta a soporte.',
         },
         deleteAccount: {
           question: '¿Cómo elimino mi cuenta?',

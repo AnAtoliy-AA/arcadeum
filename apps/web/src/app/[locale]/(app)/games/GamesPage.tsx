@@ -295,7 +295,7 @@ export default function GamesPage({
         return (
           <>
             <p className="text-sm text-[var(--textSecondary)] col-span-full">
-              These single-player games run in your browser — no room needed.
+              These single-player games run in your browser - no room needed.
             </p>
             {soloGames.map((game) => (
               <GameCard key={game.slug} game={game} showDetails />

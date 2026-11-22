@@ -93,15 +93,6 @@ export function ChessPuzzleTeaser({
       data-testid="chess-puzzle-teaser"
       className="relative overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] p-6 sm:p-8 backdrop-blur-md"
     >
-      <style>{`
-        .cp-chess-board{box-sizing:border-box;width:100%;max-width:360px;margin:0 auto;aspect-ratio:1/1;padding:10px;border-radius:var(--chess-border-radius,16px);border:2px solid var(--chess-selected-square,rgba(245,158,11,.4));box-shadow:0 16px 40px rgba(0,0,0,.5);display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));gap:2px;background:var(--chess-board-bg,#78350f);transition:background-color .25s ease,border-color .25s ease}
-        .cp-sq{box-sizing:border-box;display:flex;align-items:center;justify-content:center;border-radius:2px;font-size:20px;font-weight:700;user-select:none;position:relative;transition:background-color .2s ease}
-        .cp-sq-l{background:var(--chess-square-light,#f0d9b5)}
-        .cp-sq-d{background:var(--chess-square-dark,#b58863)}
-        .cp-moved{background:var(--chess-last-move,#cdd26a)}
-        .cp-selectable{cursor:pointer;box-shadow:inset 0 0 0 2px rgba(245,158,11,.9)}
-      `}</style>
-
       <header className="mb-6 flex flex-col gap-1.5">
         <span className="text-xs font-bold uppercase tracking-wider text-[var(--color)]">
           Tactics of the Day
@@ -110,14 +101,17 @@ export function ChessPuzzleTeaser({
           Solve the Daily Chess Puzzle
         </h2>
         <p className="m-0 text-sm text-[var(--foreground)] opacity-95 max-w-2xl">
-          Test your tactical sharpness. White to move — find the devastating
+          Test your tactical sharpness. White to move: find the devastating
           decisive sequence.
         </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
         <div className="md:col-span-6 flex flex-col items-center">
-          <div aria-label="Puzzle Chess Board" className="cp-chess-board">
+          <div
+            aria-label="Puzzle Chess Board"
+            className="box-border w-full max-w-[360px] mx-auto aspect-square p-2.5 rounded-2xl border-2 border-amber-500/40 shadow-2xl grid grid-cols-8 grid-rows-8 gap-0.5 bg-amber-950/80 transition-all"
+          >
             {currentBoard.map((row, rowIdx) =>
               row.map((cell, colIdx) => {
                 const isLight = (rowIdx + colIdx) % 2 === 0;
@@ -136,10 +130,16 @@ export function ChessPuzzleTeaser({
                       isSolutionTarget && !isSolved ? handleSolve : undefined
                     }
                     className={cx(
-                      'cp-sq',
-                      isLight ? 'cp-sq-l' : 'cp-sq-d',
-                      isSolved && isSolutionTarget && 'cp-moved',
-                      showHint && isSolutionTarget && 'cp-selectable',
+                      'box-border flex items-center justify-center rounded-sm text-xl font-bold select-none relative transition-colors duration-200',
+                      isLight
+                        ? 'bg-[#f0d9b5] text-stone-900'
+                        : 'bg-[#b58863] text-stone-900',
+                      isSolved &&
+                        isSolutionTarget &&
+                        'bg-[#cdd26a] ring-2 ring-emerald-500',
+                      showHint &&
+                        isSolutionTarget &&
+                        'cursor-pointer ring-2 ring-amber-500 ring-inset animate-pulse',
                     )}
                   >
                     {cell ? PIECE_GLYPHS[cell] : ''}

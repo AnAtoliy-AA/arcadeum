@@ -3,7 +3,7 @@ import type { BlogPost } from '../../types';
 export const post: BlogPost = {
   slug: 'how-to-win-tic-tac-toe',
   locale: 'es',
-  title: 'Cómo ganar en Tres en Raya — Estrategia, bifurcaciones y ventajas',
+  title: 'Cómo ganar en Tres en Raya - Estrategia, bifurcaciones y ventajas',
   excerpt:
     'Guía completa de estrategia para Tres en Raya: ventajas del primer jugador, defensa con O, creación de bifurcaciones y patrones ganadores.',
   publishedAt: '2026-06-30',
@@ -51,6 +51,19 @@ export const post: BlogPost = {
       text: 'Una bifurcación es una posición en la que creas dos amenazas simultáneas de victoria. El rival solo puede bloquear una de ellas, permitiéndote ganar en el siguiente turno. Puedes construir bifurcaciones ocupando esquinas opuestas o mediante disposiciones en forma de L. Antes de cada jugada, analiza el tablero para anticipar y bloquear las bifurcaciones del oponente.',
     },
     {
+      type: 'interactive-puzzle',
+      id: 'fork-challenge-1-es',
+      title: 'Encuentra la bifurcación ganadora',
+      prompt:
+        'Juegas con X. Encuentra la casilla ganadora que crea dos amenazas simultáneas de tres en línea.',
+      gameId: 'tic-tac-toe',
+      board: ['X', '', '', '', 'O', '', '', '', 'X'],
+      solutionIndex: 2,
+      explanation:
+        'Colocar en la esquina superior derecha (casilla 3) amenaza la fila superior y la columna derecha. O solo puede tapar una, asegurando tu victoria.',
+      playHref: '/games/tic-tac-toe',
+    },
+    {
       type: 'heading',
       level: 2,
       text: 'Jerarquía de decisiones',
@@ -69,7 +82,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/tic-tac-toe',
-      text: 'Jugar a Tres en Raya online — Gratis en navegador',
+      text: 'Jugar a Tres en Raya online - Gratis en navegador',
       description:
         'Desafía a amigos o bots con diferentes niveles de dificultad sin registro.',
     },

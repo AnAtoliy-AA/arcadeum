@@ -14,6 +14,7 @@ export type RunnerUpCardProps = {
   /** Optional avatar slot — designed for `<EquippedPlayerAvatar size="sm" />`. */
   avatar?: ReactNode;
   className?: string;
+  onClick?: () => void;
 };
 
 const MEDAL_BY_PLACE: Record<2 | 3, string> = { 2: '🥈', 3: '🥉' };
@@ -43,11 +44,29 @@ export function RunnerUpCard({
   'data-testid': dataTestId,
   avatar,
   className,
+  onClick,
 }: RunnerUpCardProps) {
   return (
     <div
       data-testid={dataTestId ?? testID ?? `runner-up-${place}`}
-      className={cx(CardClasses, className)}
+      className={cx(
+        CardClasses,
+        onClick && 'cursor-pointer hover:bg-[rgba(255,255,255,0.06)] transition-colors',
+        className,
+      )}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
     >
       <div className="flex flex-row items-center gap-2">
         {avatar}
@@ -56,7 +75,7 @@ export function RunnerUpCard({
           {placeLabel ?? (place === 2 ? 'Runner · Up' : '3rd · Place')}
         </span>
       </div>
-      <span className="line-clamp-1 text-[20px] font-extrabold">{name}</span>
+      <span className="break-words text-[20px] font-extrabold" title={name}>{name}</span>
       <div className="flex flex-row flex-wrap items-center gap-3">
         <span className="text-[16px] font-bold tracking-[1px]">
           {rating.toLocaleString()}

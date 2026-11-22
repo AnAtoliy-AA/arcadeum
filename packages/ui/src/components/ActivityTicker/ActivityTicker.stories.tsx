@@ -29,7 +29,7 @@ const sample = [
   { tag: 'release', who: 'v2.41', what: 'shipped to production', when: '4m ago', color: '#a78bfa' },
   { tag: 'bug', who: 'Anatoliy', what: 'fixed lobby latency', when: '11m ago', color: '#f472b6' },
   { tag: 'support', who: 'Sergey', what: 'joined office hours', when: '23m ago', color: '#22d3ee' },
-  { tag: 'status', who: 'All systems', what: 'operational · 99.98% uptime', when: '—', color: '#34d399' },
+  { tag: 'status', who: 'All systems', what: 'operational · 99.98% uptime', when: '-', color: '#34d399' },
 ];
 
 export const Default: Story = {

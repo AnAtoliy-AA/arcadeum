@@ -189,9 +189,11 @@ export const shopFr = {
     free: 'Gratuit',
     successTitle: 'Équipé',
     successBody: '{name} est maintenant équipé.',
+    signIn: 'Se connecter',
     errors: {
       insufficientFunds: "Vous n'avez pas assez pour acheter ceci.",
       unavailable: "Cet article n'est pas disponible actuellement.",
+      unauthorized: 'Veuillez vous connecter pour finaliser cet achat.',
       generic: "Impossible de terminer l'achat. Réessayez.",
     },
   },

@@ -142,6 +142,7 @@ const defaultConnectSrc = [
   'https://vercel.live',
   'wss://*.vercel.live',
   'https://*.vercel.app',
+  'https://cloudflareinsights.com',
   process.env.NEXT_PUBLIC_CDN_URL || '',
 ].concat(analyticsOrigins);
 
@@ -160,6 +161,7 @@ const cspScriptSrc = [
   "'unsafe-inline'",
   'https://vercel.live',
   'https://*.vercel.app',
+  'https://static.cloudflareinsights.com',
   ...analyticsOrigins,
 ].join(' ');
 const cspStyleSrc = "'self' 'unsafe-inline'";
@@ -309,7 +311,7 @@ const nextConfig: NextConfig = {
       // files never change between deploys (Next.js hashes _next/static
       // automatically; the rules below cover /images, /fonts, etc.).
       {
-        source: '/images/(.*)',
+        source: '/:media(images|fonts|music|sounds|shop|slides|games)/(.*)',
         headers: [
           {
             key: 'Cache-Control',
@@ -318,7 +320,8 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/fonts/(.*)',
+        source:
+          '/:file(.*\\.(?:png|jpe?g|gif|webp|avif|ico|svg|mp3|wav|ogg|woff2?))',
         headers: [
           {
             key: 'Cache-Control',
@@ -348,6 +351,10 @@ const nextConfig: NextConfig = {
         }
         return sources.map((source) => ({
           source,
+          missing: [
+            { type: 'query' as const, key: '_rsc' },
+            { type: 'header' as const, key: 'rsc' },
+          ],
           headers: [
             {
               key: 'Cache-Control',
@@ -390,6 +397,10 @@ const nextConfig: NextConfig = {
         }
         return sources.map((source) => ({
           source,
+          missing: [
+            { type: 'query' as const, key: '_rsc' },
+            { type: 'header' as const, key: 'rsc' },
+          ],
           headers: [
             {
               key: 'Cache-Control',
@@ -475,7 +486,7 @@ const nextConfig: NextConfig = {
     // deviceSizes entry — ~35% fewer bytes for the same look. 64 stays
     // first so fixed-size images (logo) keep their 1x srcset small.
     imageSizes: [64, 128, 256, 384, 512],
-    minimumCacheTTL: 3600,
+    minimumCacheTTL: 31536000,
   },
 };
 

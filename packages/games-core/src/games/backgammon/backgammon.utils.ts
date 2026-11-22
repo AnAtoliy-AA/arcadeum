@@ -31,7 +31,7 @@ export function createInitialPoints(
 
   if (mode === 'long' || mode === 'gulbara') {
     points[23] = { playerId: player0Id, count: 15 };
-    points[0] = { playerId: player1Id, count: 15 };
+    points[11] = { playerId: player1Id, count: 15 };
     return points;
   }
 
@@ -88,6 +88,12 @@ export function canPlayerBearOff(
         homeCount += points[i].count;
       }
     }
+  } else if (mode === 'long' || mode === 'gulbara') {
+    for (let i = 12; i <= 17; i++) {
+      if (points[i].playerId === playerId) {
+        homeCount += points[i].count;
+      }
+    }
   } else {
     for (let i = 18; i <= 23; i++) {
       if (points[i].playerId === playerId) {
@@ -104,13 +110,18 @@ export function calculatePipCount(
   playerOrder: string[],
   points: BackgammonPoint[],
   barCount: number,
+  mode: Mode = 'standard',
 ): number {
   const isP0 = isPlayer0(playerId, playerOrder);
   let pips = barCount * 25;
 
   for (let i = 0; i < TOTAL_POINTS; i++) {
     if (points[i].playerId === playerId) {
-      const distance = isP0 ? i + 1 : 24 - i;
+      const distance = isP0
+        ? i + 1
+        : mode === 'long' || mode === 'gulbara'
+          ? (i >= 12 ? i - 11 : i + 13)
+          : 24 - i;
       pips += points[i].count * distance;
     }
   }
@@ -147,6 +158,7 @@ export function determineWinType(
   points: BackgammonPoint[],
   bar: Record<string, number>,
   borneOff: Record<string, number>,
+  mode: Mode = 'standard',
 ): WinType {
   const loserId = playerOrder.find((id) => id !== winnerId);
   if (!loserId) return 'single';
@@ -155,9 +167,11 @@ export function determineWinType(
   const winnerIsP0 = isPlayer0(winnerId, playerOrder);
   if ((bar[loserId] ?? 0) > 0) return 'backgammon';
 
-  // Winner's home board: P0 bears in from high points into 0-5,
-  // P1 from low points into 18-23.
-  const [start, end] = winnerIsP0 ? [0, 5] : [18, 23];
+  const [start, end] = winnerIsP0
+    ? [0, 5]
+    : mode === 'long' || mode === 'gulbara'
+      ? [12, 17]
+      : [18, 23];
   let losersInWinnerHome = 0;
   for (let i = start; i <= end; i++) {
     if (points[i].playerId === loserId) {
@@ -246,6 +260,35 @@ export function getLegalMovesForDie(
           if (!hasCheckersFurther) {
             moves.push({ from, to: 'off', die, isHit: false });
           }
+        }
+      }
+    } else if (mode === 'long' || mode === 'gulbara') {
+      const raw = from - die;
+      if (from >= 12) {
+        if (raw >= 12) {
+          if (isPointOpen(raw, playerId, points, mode)) {
+            moves.push({ from, to: raw, die, isHit: false });
+          }
+        } else if (canBearOff) {
+          if (raw === 11) {
+            moves.push({ from, to: 'off', die, isHit: false });
+          } else {
+            let hasCheckersFurther = false;
+            for (let f = 17; f > from; f--) {
+              if (points[f].playerId === playerId && points[f].count > 0) {
+                hasCheckersFurther = true;
+                break;
+              }
+            }
+            if (!hasCheckersFurther) {
+              moves.push({ from, to: 'off', die, isHit: false });
+            }
+          }
+        }
+      } else {
+        const to = raw >= 0 ? raw : 24 + raw;
+        if (isPointOpen(to, playerId, points, mode)) {
+          moves.push({ from, to, die, isHit: false });
         }
       }
     } else {

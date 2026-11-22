@@ -58,7 +58,7 @@ export function ComboCard({
 
   return (
     <div
-      className={`flex flex-col items-center gap-2 px-3 py-2 rounded-[14px] border bg-[rgba(0,0,0,0.45)] transition-all select-none ${
+      className={`flex flex-col items-center gap-1.5 px-2.5 py-1 rounded-[12px] border bg-[rgba(0,0,0,0.45)] transition-all select-none ${
         canClear
           ? 'cursor-pointer hover:bg-[rgba(239,68,68,0.15)] active:scale-[0.98]'
           : ''

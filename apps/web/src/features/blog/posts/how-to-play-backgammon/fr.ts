@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-backgammon',
   locale: 'fr',
   title:
-    'Comment jouer au Backgammon en ligne — règles, cube de doublement, stratégie',
+    'Comment jouer au Backgammon en ligne - règles, cube de doublement, stratégie',
   excerpt:
     'Guide complet pour débutants : règles, déplacement des dés, capture de pions, réticulation, cube de doublement et la stratégie qui gagne.',
   publishedAt: '2026-06-16',
@@ -14,7 +14,7 @@ export const post: BlogPost = {
   body: [
     {
       type: 'paragraph',
-      text: "Le Backgammon est l'un des jeux de société les plus anciens connus — une course entre deux joueurs qui déplacent des pions sur un plateau de 24 points triangulaires selon les lancers de dés. L'objectif est simple : déplacer les quinze pions dans votre secteur maison et les retirer avant l'adversaire. Mais sous l'objectif simple se cache un riche mélange de probabilité, gestion des risques et prise de décision tactique.",
+      text: "Le Backgammon est l'un des jeux de société les plus anciens connus - une course entre deux joueurs qui déplacent des pions sur un plateau de 24 points triangulaires selon les lancers de dés. L'objectif est simple : déplacer les quinze pions dans votre secteur maison et les retirer avant l'adversaire. Mais sous l'objectif simple se cache un riche mélange de probabilité, gestion des risques et prise de décision tactique.",
     },
     {
       type: 'heading',
@@ -34,7 +34,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "À chaque tour, vous lancez deux dés. Vous devez déplacer un pion de la somme des deux dés, ou deux pions chacun de la valeur d'un dé. Par exemple, un 3 et un 5 permettent de déplacer un pion de 8 cases ou deux pions — un de 3 et un de 5. Vous devez utiliser les deux dés si c'est légalement possible. Avec un double (ex. double 4), vous jouez le nombre quatre fois.",
+      text: "À chaque tour, vous lancez deux dés. Vous devez déplacer un pion de la somme des deux dés, ou deux pions chacun de la valeur d'un dé. Par exemple, un 3 et un 5 permettent de déplacer un pion de 8 cases ou deux pions - un de 3 et un de 5. Vous devez utiliser les deux dés si c'est légalement possible. Avec un double (ex. double 4), vous jouez le nombre quatre fois.",
     },
     {
       type: 'heading',
@@ -44,7 +44,7 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: 'Un point occupé par deux pions ou plus est "possédé" — l\'adversaire ne peut pas y atterrir. Un seul pion est un blot. Si un pion adverse atterrit sur votre blot, il est capturé et placé sur la barre. Un joueur avec des pions sur la barre doit les réentrer dans le secteur maison adverse avant tout autre mouvement.',
+      text: 'Un point occupé par deux pions ou plus est "possédé" - l\'adversaire ne peut pas y atterrir. Un seul pion est un blot. Si un pion adverse atterrit sur votre blot, il est capturé et placé sur la barre. Un joueur avec des pions sur la barre doit les réentrer dans le secteur maison adverse avant tout autre mouvement.',
     },
     {
       type: 'heading',
@@ -74,20 +74,20 @@ export const post: BlogPost = {
     },
     {
       type: 'paragraph',
-      text: "Le cube est un dé marqué 2, 4, 8, 16, 32, 64. Avant de lancer, si vous croyez avoir l'avantage, vous pouvez offrir un doublement — porter la mise de 1 à 2 points. L'adversaire doit accepter (et posséder le cube à 2) ou refuser (et perdre 1 point). Accepter est correct quand vous avez environ 25% ou plus de chances de gagner.",
+      text: "Le cube est un dé marqué 2, 4, 8, 16, 32, 64. Avant de lancer, si vous croyez avoir l'avantage, vous pouvez offrir un doublement - porter la mise de 1 à 2 points. L'adversaire doit accepter (et posséder le cube à 2) ou refuser (et perdre 1 point). Accepter est correct quand vous avez environ 25% ou plus de chances de gagner.",
     },
     {
       type: 'heading',
       level: 2,
-      text: 'Stratégie — les deux modes de jeu',
+      text: 'Stratégie - les deux modes de jeu',
       id: 'strategy',
     },
     {
       type: 'list',
       items: [
-        "Mode course. Sans contact entre les forces, c'est une course de pip-count. Comptez vos pips — le plus bas gagne. En course, courez ; ne laissez pas de blots inutiles.",
+        "Mode course. Sans contact entre les forces, c'est une course de pip-count. Comptez vos pips - le plus bas gagne. En course, courez ; ne laissez pas de blots inutiles.",
         "Mode contact. Quand les pions interagissent, la stratégie se concentre sur les points, l'ancrage dans la maison adverse et la gestion du risque.",
-        "Timing. En avance, minimisez le contact. En arrière, cherchez le contact — plus le jeu est chaotique, plus l'adversaire laissera des blots.",
+        "Timing. En avance, minimisez le contact. En arrière, cherchez le contact - plus le jeu est chaotique, plus l'adversaire laissera des blots.",
         "Comptage des pips. Additionnez tous les points que vos pions doivent parcourir. Connaître votre count avant d'accepter un doublement est essentiel.",
       ],
     },
@@ -124,14 +124,14 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/backgammon',
-      text: 'Jouez au Backgammon en ligne — gratuit, dans votre navigateur',
+      text: 'Jouez au Backgammon en ligne - gratuit, dans votre navigateur',
       description:
         'Ouvrez une salle de Backgammon, partagez le lien avec des amis ou jouez contre des bots IA.',
     },
     {
       type: 'heading',
       level: 2,
-      text: 'En résumé — quatre habitudes qui font gagner',
+      text: 'En résumé - quatre habitudes qui font gagner',
       id: 'tldr',
     },
     {

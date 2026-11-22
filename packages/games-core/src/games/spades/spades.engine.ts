@@ -258,7 +258,7 @@ export class SpadesEngine extends BaseGameEngine<SpadesState> {
     state.currentTurnIndex = state.handNumber % state.playerOrder.length;
     this.addLog(
       state,
-      this.createLogEntry('system', 'All bids are in — play begins.', {
+      this.createLogEntry('system', 'All bids are in: play begins.', {
         kind: 'spades.hand_start',
       }),
     );
@@ -284,7 +284,7 @@ export class SpadesEngine extends BaseGameEngine<SpadesState> {
 
     let logMessage = `${context.userId} played ${card}.`;
     if (isSpadeCard(card) && !state.spadesBroken) {
-      logMessage = `${context.userId} played ${card} — spades are broken!`;
+      logMessage = `${context.userId} played ${card}: spades are broken!`;
     }
     if (isSpadeCard(card)) {
       state.spadesBroken = true;
@@ -394,7 +394,7 @@ export class SpadesEngine extends BaseGameEngine<SpadesState> {
       state,
       this.createLogEntry(
         'system',
-        `Hand ${state.handNumber + 1} scored — even ${summary.pointsDelta.even >= 0 ? '+' : ''}${summary.pointsDelta.even}, odd ${summary.pointsDelta.odd >= 0 ? '+' : ''}${summary.pointsDelta.odd}.`,
+        `Hand ${state.handNumber + 1} scored: even ${summary.pointsDelta.even >= 0 ? '+' : ''}${summary.pointsDelta.even}, odd ${summary.pointsDelta.odd >= 0 ? '+' : ''}${summary.pointsDelta.odd}.`,
         { kind: 'spades.hand_over' },
       ),
     );
@@ -414,7 +414,7 @@ export class SpadesEngine extends BaseGameEngine<SpadesState> {
       state,
       this.createLogEntry(
         'system',
-        `Hand ${state.handNumber + 1} begins — place your bids.`,
+        `Hand ${state.handNumber + 1} begins: place your bids.`,
         { kind: 'spades.hand_start' },
       ),
     );

@@ -64,8 +64,18 @@ export class GamesHistoryFacade {
     return this.playerStats.syncRecords(userId, records);
   }
 
-  async getLeaderboard(limit?: number, offset?: number, gameId?: string) {
-    return this.historyService.getLeaderboard(limit, offset, gameId);
+  async getLeaderboard(
+    limit?: number,
+    offset?: number,
+    gameId?: string,
+    opponentType: 'all' | 'pvp' | 'bot' = 'all',
+  ) {
+    return this.historyService.getLeaderboard(
+      limit,
+      offset,
+      gameId,
+      opponentType,
+    );
   }
 
   async getHeadToHead(userId1: string, userId2: string, gameId?: string) {
@@ -87,7 +97,7 @@ export class GamesHistoryFacade {
       gameOptions?: Record<string, unknown>;
       message?: string;
     },
-  ) {
+  ): Promise<{ id: string; pending: boolean; pendingUserIds: string[] }> {
     return this.rematchService.createRematchFromHistory(
       userId,
       roomId,
@@ -98,6 +108,14 @@ export class GamesHistoryFacade {
 
   async declineInvitation(roomId: string, userId: string): Promise<void> {
     return this.rematchService.declineInvitation(roomId, userId);
+  }
+
+  async acceptInvitation(roomId: string, userId: string): Promise<void> {
+    return this.rematchService.acceptInvitation(roomId, userId);
+  }
+
+  async cancelInvitation(roomId: string, userId: string): Promise<void> {
+    return this.rematchService.cancelInvitation(roomId, userId);
   }
 
   async blockRematchRoom(roomId: string, userId: string): Promise<void> {
@@ -137,7 +155,7 @@ export class GamesHistoryFacade {
     } catch (err) {
       if (err instanceof NotFoundException) {
         this.logger.debug(
-          `Room ${roomId} not found in Atlas — skipping Atlas history write (quick-play room)`,
+          `Room ${roomId} not found in Atlas: skipping Atlas history write (quick-play room)`,
         );
       } else {
         throw err;

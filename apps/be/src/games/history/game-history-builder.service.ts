@@ -167,7 +167,7 @@ export class GameHistoryBuilderService {
 
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
-      .select('username email')
+      .select('username displayName email')
       .lean()
       .exec();
 
@@ -185,7 +185,8 @@ export class GameHistoryBuilderService {
       const user = userMap.get(uid);
       return {
         id: uid,
-        username: user?.username || 'Unknown',
+        username: user?.displayName?.trim() || user?.username || 'Unknown',
+        displayName: user?.displayName ?? null,
         email: user?.email || null,
         isHost: uid === room.hostId,
       };
@@ -205,7 +206,7 @@ export class GameHistoryBuilderService {
 
     const users = await this.userModel
       .find({ _id: { $in: validUserIds } })
-      .select('username email')
+      .select('username displayName email')
       .lean()
       .exec();
 
@@ -217,7 +218,8 @@ export class GameHistoryBuilderService {
       const user = userMap.get(uid);
       return {
         id: uid,
-        username: user?.username || 'Unknown',
+        username: user?.displayName?.trim() || user?.username || 'Unknown',
+        displayName: user?.displayName ?? null,
         email: user?.email || null,
         isHost: uid === room.hostId,
       };

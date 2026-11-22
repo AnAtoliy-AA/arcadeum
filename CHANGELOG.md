@@ -7,29 +7,988 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.116] - 2026-11-22
+
+### Fixed
+- scope backdrop-filter override to WebKit so chromium keeps the effect
+- stop Linux WebKit memory runaway from backdrop-filter in e2e builds
+
+
+## [1.30.115] - 2026-11-22
+
+### Fixed
+
+- force remaining unstable modal clicks on Linux WebKit
+- stop landing spec failing on Linux WebKit hidden elements
+
+### Improved
+
+- run engine-sensitive subset on non-chromium browsers and trim dead waits
+
+## [1.30.114] - 2026-11-21
+
+### Fixed
+
+- fix hydration mismatches and clear e2e flakes and console noise
+
+## [1.30.113] - 2026-11-21
+
+### Fixed
+
+- force unstable WebKit clicks in landing and matchmaking specs
+- stop WebKit specs failing on unstable elements
+
+## [1.30.112] - 2026-11-15
+
+### Fixed
+
+- cap rules modal wait that exhausted WebKit test timeouts
+
+## [1.30.111] - 2026-11-15
+
+### Fixed
+
+- stabilize WebKit and Mobile Safari specs (ARC-1046) (ARC-1046)
+
+### Documentation
+
+- drop unrelated ticket reference from e2e fix entry
+
+## [1.30.110] - 2026-11-01
+
+### Added
+
+- show level pill under avatar and highlight prestige rows in leaderboard (ARC-1048) (ARC-1048)
+
+## [1.30.109] - 2026-11-01
+
+### Fixed
+
+- derive player level from xp so stats never show stale level (ARC-1047) (ARC-1047)
+
+## [1.30.108] - 2026-11-01
+
+### Fixed
+
+- scroll theme showcase card into view before click in chess landing (ARC-1030) (ARC-1030)
+- enable 2 workers for webkit and stabilize safari locators (ARC-1030) (ARC-1030)
+
+## [1.30.107] - 2026-11-01
+
+### Fixed
+
+- use swapfile2 with cleanup to prevent text file busy (ARC-1029) (ARC-1029)
+- configure swap space on e2e runners to prevent oom (ARC-1029) (ARC-1029)
+
+## [1.30.106] - 2026-11-01
+
+### Fixed
+
+- reduce e2e shards to 3 and skip axe audit in regular runs (ARC-1028) (ARC-1028)
+
+## [1.30.105] - 2026-11-01
+
+### Fixed
+
+- sanitize and single quote secret values in fetch-secrets (ARC-1027) (ARC-1027)
+- mock puzzle-api in online puzzle duel test (ARC-1027) (ARC-1027)
+- improve oci vault secrets sync and deploy resilience (ARC-1027) (ARC-1027)
+
+## [1.30.104] - 2026-11-01
+
+### Fixed
+
+- stabilize combo modal, chess themes locator, and view mode clicks (ARC-1026) (ARC-1026)
+- optimize workflow jobs and fix webkit e2e stability (ARC-1026) (ARC-1026)
+
+## [1.30.103] - 2026-11-01
+
+### Added
+
+- implement rematch consent flow, UI/UX waiting modal, and notifications (ARC-1045) (ARC-1045)
+
+### Fixed
+
+- require rematch consent and notify players (ARC-1045)
+
+## [1.30.102] - 2026-11-01
+
+### Fixed
+
+- expand ci sharding to 8 shards and scroll elements before click (ARC-1025) (ARC-1025)
+
+## [1.30.101] - 2026-10-31
+
+### Fixed
+
+- fix game mode keys, player name visibility, thumbnails and form sync (ARC-1024) (ARC-1024)
+
+### Improved
+
+- eliminate layout shift and fix hydration in leaderboard page (ARC-1024) (ARC-1024)
+
+## [1.30.100] - 2026-10-31
+
+### Added
+
+- add capture and game over audio cues and multi-token depth styling (ARC-1022) (ARC-1022)
+
+## [1.30.99] - 2026-10-31
+
+### Added
+
+- rework Cat Dash playfield (ARC-938)
+
+### Fixed
+
+- show Cat Dash racer cards on desktop (ARC-938)
+
+## [1.30.98] - 2026-10-31
+
+### Documentation
+
+- sync generated-roadmap.json with Phase 14 updates (ARC-1000) (ARC-1000)
+- mark phase 14 and strategy guide drills as 100% completed (ARC-1000) (ARC-1000)
+
+## [1.30.97] - 2026-10-31
+
+### Added
+
+- add interactive practice drills to Go and Sudoku guides (ARC-980) (ARC-980)
+
+## [1.30.96] - 2026-10-31
+
+### Added
+
+- modularize board components, add landing animation, and auto-pass timer (ARC-1021) (ARC-1021)
+
+## [1.30.95] - 2026-10-31
+
+### Improved
+
+- lazy load in-game chat overlay (ARC-938)
+
+## [1.30.94] - 2026-10-31
+
+### Fixed
+
+- eliminate board jump by consolidating status strip (ARC-1020) (ARC-1020)
+
+## [1.30.93] - 2026-10-31
+
+### Fixed
+
+- guard options access and mock player 2 session in e2e (ARC-1005) (ARC-1005)
+- ensure opposite corners stay unflipped in long mode (ARC-1005) (ARC-1005)
+
+## [1.30.92] - 2026-10-31
+
+### Fixed
+
+- assert game-main-area visibility directly to prevent strict mode violation (ARC-1019) (ARC-1019)
+- update battle assertion and rules button selector in sea battle tests (ARC-1019) (ARC-1019)
+- make ship placement client-side draft to prevent network resets (ARC-1019) (ARC-1019)
+- prevent ship placement reset on opponent confirmation (ARC-1019) (ARC-1019)
+
+## [1.30.91] - 2026-10-25
+
+### Fixed
+
+- resolve idle reconnect overlay assertion in firefox (ARC-1018) (ARC-1018)
+
+## [1.30.90] - 2026-10-25
+
+### Fixed
+
+- resolve chromium live-info navigation and level-badges strict mode (ARC-1018) (ARC-1018)
+- resolve webkit e2e stability timeouts in shard 2 (ARC-1018) (ARC-1018)
+
+## [1.30.89] - 2026-10-25
+
+### Fixed
+
+- resolve webkit e2e test flakes for academy, matchmaking, and logout (ARC-1017) (ARC-1017)
+
+## [1.30.88] - 2026-10-25
+
+### Added
+
+- enlarge avatar and profile menu button in header (ARC-1016) (ARC-1016)
+- enlarge profile menu avatar and button in header (ARC-1016) (ARC-1016)
+
+### Fixed
+
+- support guest and bot ids in participant reorder dto (ARC-1016) (ARC-1016)
+- exempt loopback addresses from IP blocking guard (ARC-1016) (ARC-1016)
+- allow anonymous host to reorder participants (ARC-1016) (ARC-1016)
+- randomize first move only when explicitly configured (ARC-1016) (ARC-1016)
+- prevent board size option subtext clipping (ARC-1016) (ARC-1016)
+- serve game sounds from same-origin path to prevent cors errors (ARC-1016) (ARC-1016)
+- handle bullmq connection gracefully when redis is offline in dev (ARC-1016) (ARC-1016)
+- show actual error and prompt sign in on unauthorized purchase (ARC-1016) (ARC-1016)
+- fix profile menu avatar clipping and align button height (ARC-1016) (ARC-1016)
+- add rfc-9116 security.txt in .well-known and skip prefix in proxy (ARC-1016) (ARC-1016)
+- seat bots in rematch room and render member avatars (ARC-1016) (ARC-1016)
+- allow cloudflare analytics in csp and prevent unauth errors (ARC-1016) (ARC-1016)
+
+## [1.30.87] - 2026-10-24
+
+### Fixed
+
+- stabilize solitaire hint engine and shop slot tile interaction (ARC-1015) (ARC-1015)
+- prevent console errors from daily-rewards and sockets during audits (ARC-1015) (ARC-1015)
+- provide descriptive link text and aria-label for Go game links (ARC-1015) (ARC-1015)
+- prevent webkit stability timeouts on single player games and scope quickplay (ARC-1015) (ARC-1015)
+- prevent tablet safari stability and visibility timeouts (ARC-1015) (ARC-1015)
+- fix rooms filter input hydration and mock auth/me on logout (ARC-1015) (ARC-1015)
+
+### Improved
+
+- optimize image caching, hero LCP delivery, and modern JS baseline (ARC-1015) (ARC-1015)
+
+## [1.30.86] - 2026-10-24
+
+### Fixed
+
+- prevent webkit runner oom and resolve safari click timeouts (ARC-1014) (ARC-1014)
+
+## [1.30.85] - 2026-10-24
+
+### Fixed
+
+- prevent event loop monitor exit and add scroll into view for safari (ARC-1013) (ARC-1013)
+- fix GH_REPO and issue write permissions in issue workflows (ARC-1013) (ARC-1013)
+- resolve mobile safari landing navigation and freshness pulse (ARC-1013) (ARC-1013)
+
+## [1.30.84] - 2026-10-24
+
+### Added
+
+- ensure user avatars are visible across game seats and rematch modals (ARC-1012) (ARC-1012)
+
+### Fixed
+
+- use compact sm avatar size in lobby player list (ARC-1012) (ARC-1012)
+
+### Improved
+
+- eliminate dynamic loading fallback shift on client page (ARC-1012) (ARC-1012)
+- prevent cumulative layout shift on ticker and freshness indicator (ARC-1012) (ARC-1012)
+
+## [1.30.83] - 2026-10-23
+
+### Added
+
+- enhance field and board size visibility and selectors (ARC-1011) (ARC-1011)
+
+### Fixed
+
+- use compact sm avatar size in lobby player list (ARC-1011) (ARC-1011)
+
+## [1.30.82] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in rematch flow test (ARC-1006) (ARC-1006)
+- overhaul rematch and play again lifecycle with bot fallback (ARC-1006) (ARC-1006)
+
+## [1.30.81] - 2026-10-23
+
+### Fixed
+
+- ensure universal avatar visibility, error fallback, and increased sizing (ARC-1001) (ARC-1001)
+
+## [1.30.80] - 2026-10-23
+
+### Added
+
+- rework game lobby UX and visual hierarchy (ARC-1010) (ARC-1010)
+
+### Fixed
+
+- use compact sm avatar size in lobby player list to preserve username visibility (ARC-1010) (ARC-1010)
+
+## [1.30.79] - 2026-10-23
+
+### Added
+
+- standardize lobby player seat reordering across all games (ARC-1008) (ARC-1008)
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in lobby reorder players test (ARC-1008) (ARC-1008)
+
+## [1.30.78] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in first move indicator test (ARC-1007) (ARC-1007)
+- ensure fair 50/50 random first move selection and indicator (ARC-1007) (ARC-1007)
+
+## [1.30.77] - 2026-10-23
+
+### Fixed
+
+- use routes.gameRoom instead of routes.game in backgammon long setup test (ARC-1005) (ARC-1005)
+- set up starting heads in opposite corners for long nardy (ARC-1005) (ARC-1005)
+
+## [1.30.76] - 2026-10-23
+
+### Fixed
+
+- ensure in-game and lobby text chat sending and display (ARC-1009) (ARC-1009)
+
+## [1.30.75] - 2026-10-22
+
+### Fixed
+
+- retain player six on bonus roll instead of opponent prior die (ARC-1004) (ARC-1004)
+
+## [1.30.74] - 2026-10-22
+
+### Added
+
+- add spacebar support for rolling dice and taking turns (ARC-1003) (ARC-1003)
+
+## [1.30.73] - 2026-10-22
+
+### Added
+
+- add relative and full date to notification items (ARC-1002) (ARC-1002)
+
+## [1.30.72] - 2026-10-22
+
+### Documentation
+
+- add community feedback and bug fixes sprint (ARC-1000) (ARC-1000)
+
+## [1.30.71] - 2026-10-22
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.70] - 2026-10-15
+
+### Added
+
+- add real-time war updates and in-game rival match HUD (ARC-982) (ARC-982)
+
+## [1.30.69] - 2026-10-15
+
+### Added
+
+- add clan wars worker automation, matchmaking, and post-match resolution (ARC-981) (ARC-981)
+
+## [1.30.68] - 2026-10-14
+
+### Added
+
+- add interactive strategy guide practice drills across pillar guides (ARC-980) (ARC-980)
+
+## [1.30.67] - 2026-10-12
+
+### Added
+
+- add milestone celebration popups to Sudoku, Solitaire, and Minesweeper (ARC-000)
+
+### Fixed
+
+- stabilize solo milestones e2e tests for sudoku and solitaire (ARC-000)
+
+## [1.30.66] - 2026-10-11
+
+### Added
+
+- extract universal GameMilestoneToast component for all games (ARC-000)
+- add tiered milestone celebration flair for 512, 1024, 2048, 4096, and 8192 (ARC-000)
+- improve 2048 and solo games ui and fix popup positioning (ARC-000)
+
+### Fixed
+
+- allow dynamic milestone toast width without text clipping (ARC-000)
+- relabel 512 milestone to heating up and 1024 to halfway (ARC-000)
+- localize milestone toast badges and result stats (ARC-000)
+- position 2048 milestone toast in top-right on desktop and bottom on mobile (ARC-000)
+- position 2048 milestone toast at top of screen (ARC-000)
+
+### Refactored
+
+- export GAME_2048_MILESTONE_TARGETS constant in 2048 store (ARC-000)
+
+## [1.30.65] - 2026-10-11
+
+### Fixed
+
+- coordinate header popovers and mobile live stats (ARC-000) (ARC-000)
+
+## [1.30.64] - 2026-10-11
+
+### Fixed
+
+- prevent concurrent oci deploys and fix stockfish installation (ARC-000) (ARC-000)
+
+## [1.30.63] - 2026-10-10
+
+### Added
+
+- add interactive game field schemas and replace em dashes (ARC-981) (ARC-981)
+
+## [1.30.62] - 2026-10-10
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.61] - 2026-10-10
+
+### Added
+
+- omit user email from admin api responses and management ui (ARC-980) (ARC-980)
+- mask sensitive user email and exclude encryption fields in admin queries (ARC-980) (ARC-980)
+- implement user data segregation and envelope encryption (ARC-980) (ARC-980)
+
+## [1.30.60] - 2026-10-10
+
+### Fixed
+
+- fix empty room name validation on mobile safari (ARC-922) (ARC-922)
+
+## [1.30.59] - 2026-10-09
+
+### Added
+
+- add clan wars hub, matchup cards, and challenge modal (ARC-979) (ARC-979)
+- add clan wars service, schema, and endpoints (ARC-979) (ARC-979)
+
+### Documentation
+
+- update roadmap and changelog for clan wars (ARC-979) (ARC-979)
+
+## [1.30.58] - 2026-10-08
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.57] - 2026-10-08
+
+### Fixed
+
+- keep hand cards clear of the fixed mobile hand bar (ARC-000) (ARC-000)
+
+## [1.30.56] - 2026-10-07
+
+### Added
+
+- add clan leaderboards, mvp showcase, and community challenges (ARC-978) (ARC-978)
+
+### Documentation
+
+- sync generated-roadmap.json with ARC-978 (ARC-978) (ARC-978
+  ARC-978)
+
+## [1.30.55] - 2026-10-06
+
+### Added
+
+- add direct pointer swipe gestures, undo move counter, and e2e test suite (ARC-977) (ARC-977)
+- add tactile chord feedback, flagless speedrun mode, and robust e2e selectors (ARC-977) (ARC-977)
+- add digit-first speed mode and board-wide number highlighting (ARC-977) (ARC-977)
+- add Klondike draw 3 mode, smart hint engine, and fanned waste (ARC-977) (ARC-977)
+- add tile merge animations, milestone celebrations, and touch polish (ARC-977) (ARC-977)
+- add personal best tracking, remaining safe cells counter, and quick reset (ARC-977) (ARC-977)
+- add intelligent candidate auto-fill, conflict highlighting, and smart hints (ARC-977) (ARC-977)
+
+### Fixed
+
+- resolve e2e strict mode locator collisions and add board testid (ARC-977) (ARC-977)
+
+### Documentation
+
+- sync generated-roadmap.json with ARC-977 (ARC-977) (ARC-977
+  ARC-977)
+- update ARC-977 solo games assistants status and changelog (ARC-977) (ARC-977
+  ARC-977)
+
+## [1.30.54] - 2026-10-06
+
+### Added
+
+- add interactive player profile and match showcase (ARC-976) (ARC-976)
+
+### Fixed
+
+- fix e2e page mock interception and safe pending friend states (ARC-976) (ARC-976)
+
+## [1.30.53] - 2026-10-06
+
+### Fixed
+
+- stop workflow errors that fail runs even when all jobs pass
+
+## [1.30.52] - 2026-10-05
+
+### Added
+
+- add auto-place button to finish all-open games (ARC-975) (ARC-975)
+
+## [1.30.51] - 2026-10-04
+
+### Added
+
+- add puzzle rush global leaderboard, daily streak multipliers, and tactical share card (ARC-973) (ARC-973)
+
+## [1.30.50] - 2026-10-04
+
+### Added
+
+- add sea battle blitz cups interactive bracket modal and roster (ARC-972) (ARC-972)
+
+## [1.30.49] - 2026-10-04
+
+### Added
+
+- add ranked elo 1v1 matchmaking hub, tier ladder, and leaderboard (ARC-971) (ARC-971)
+
+## [1.30.48] - 2026-10-04
+
+### Added
+
+- enrich blog and catalog schema with dynamic opengraph images and item types (ARC-970) (ARC-970)
+- optimize schema canonical urls, deduplicate breadcrumbs, and boost pillar sitemaps (ARC-970) (ARC-970)
+
+### Fixed
+
+- restore entryFile to main in nest-cli (ARC-970) (ARC-970)
+
+## [1.30.47] - 2026-10-04
+
+### Added
+
+- cross-link strategy guides on chess and spades landing pages (ARC-952) (ARC-952)
+
+## [1.30.46] - 2026-10-04
+
+### Fixed
+
+- keep online players counter accurate and live
+
+## [1.30.45] - 2026-10-04
+
+### Added
+
+- add floating live spectator reactions and quick action dock (ARC-889) (ARC-889)
+
+### Fixed
+
+- restore entryFile and start:prod to dist/src/main (ARC-889) (ARC-889)
+
+## [1.30.44] - 2026-10-02
+
+### Fixed
+
+- handle stockfish stdin EPIPE on destroy and point nest-cli entryFile to src/main (ARC-969) (ARC-969)
+
+### Improved
+
+- optimize landing page LCP and TBT for Lighthouse audit (ARC-969) (ARC-969)
+
+## [1.30.43] - 2026-10-02
+
+### Added
+
+- show win screen at 2048 with finish and continue buttons (ARC-969) (ARC-969)
+
+### Fixed
+
+- allow local dev origins 3500 and 3000 in CORS to fix rooms fetch (ARC-969) (ARC-969)
+
+### Improved
+
+- server-render catalog cards to eliminate client bundle overhead and fix TBT (ARC-969) (ARC-969)
+- optimize mobile swipe responsiveness and tile animations (ARC-969) (ARC-969)
+
+## [1.30.42] - 2026-10-02
+
+### Added
+
+- integrate full audio fx cues across all games (ARC-879) (ARC-879)
+
+## [1.30.41] - 2026-10-01
+
+### Added
+
+- add cluster monitoring, graceful reload, and event loop watchdog (ARC-968) (ARC-968)
+
+## [1.30.40] - 2026-10-01
+
+### Added
+
+- polish cat dash tactical audio, complete i18n, and cleanup dead code (ARC-967) (ARC-967)
+
+### Improved
+
+- optimize games catalog rendering and eliminate blocking svg filters (ARC-967) (ARC-967)
+
+## [1.30.39] - 2026-10-01
+
+### Fixed
+
+- count only active play time in solo timers (ARC-974) (ARC-974)
+
+## [1.30.38] - 2026-10-01
+
+### Fixed
+
+- fetch chip status client-side so claim cta renders again (ARC-621) (ARC-621)
+
+## [1.30.37] - 2026-10-01
+
+### Added
+
+- rework cat dash with center roll console and tactical actions (ARC-967) (ARC-967)
+
+## [1.30.36] - 2026-09-30
+
+### Added
+
+- configurable blitz cup default prizes by admin (ARC-966) (ARC-966)
+- localize sea battle blitz cup banner across all languages (ARC-966) (ARC-966)
+- allow admin to toggle sea battle blitz cup scheduling (ARC-966) (ARC-966)
+- automate weekly sea battle blitz cups and landing banner (ARC-966) (ARC-966)
+
+### Fixed
+
+- sanitize gameType filter with $eq operator to resolve CodeQL alert (ARC-966) (ARC-966)
+
+### Refactored
+
+- validate gameType with TOURNAMENT_GAME_TYPES type guard (ARC-966) (ARC-966)
+
+## [1.30.35] - 2026-09-30
+
+### Added
+
+- support checkers and backgammon coach hints on gateway (ARC-883) (ARC-883)
+
+### Fixed
+
+- unignore docs/ROADMAP.md in vercelignore and add generator fallback (ARC-883) (ARC-883)
+- bundle changelog data at build time to prevent runtime ENOENT (ARC-883) (ARC-883)
+- unify roadmap source of truth from docs/ROADMAP.md and eliminate runtime I/O (ARC-883) (ARC-883)
+
+### Refactored
+
+- restore direct CHANGELOG.md parsing and remove generated JSON (ARC-883) (ARC-883)
+- introduce BoardPosition type for row and col coordinates (ARC-883) (ARC-883)
+
+## [1.30.34] - 2026-09-29
+
+### Improved
+
+- optimize chess puzzles lcp with ssg and dynamic imports (ARC-roadmap-single-doc)
+
+### Documentation
+
+- unify platform roadmap and consolidate improvements (ARC-roadmap-single-doc)
+
+## [1.30.33] - 2026-09-29
+
+### Added
+
+- order badges by level in shop and inventory (ARC-shop-badge-order-by-level)
+
+## [1.30.32] - 2026-09-28
+
+### Added
+
+- unify board field with shared checkerboard and fix puzzle playability
+
+## [1.30.31] - 2026-09-28
+
+### Fixed
+
+- resolve logout stale auth state test fixtures and assertions
+- clear stale auth identity on logout
+
+## [1.30.30] - 2026-09-28
+
+### Fixed
+
+- optimize games catalog rendering and restore default lighthouse runs (ARC-shorts-factory-anti-white-screen)
+- support case-insensitive dark theme in e2e test (ARC-shorts-factory-anti-white-screen)
+- eliminate white screens and upgrade video quality (ARC-shorts-factory-anti-white-screen)
+
+## [1.30.29] - 2026-09-28
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.28] - 2026-09-25
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.27] - 2026-09-25
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.26] - 2026-09-25
+
+### Added
+
+- add dynamic rating, blindfold tactics, pgn importer, online duel, and speed leaderboard (ARC-chess-puzzle-enhancements)
+- add puzzle duels, tactical radar analytics, mistakes review, and zen mode (ARC-chess-puzzle-enhancements)
+- allow users to create, play, and share custom puzzles (ARC-chess-puzzle-enhancements)
+- procedural puzzle generation and daily challenge navigation (ARC-chess-puzzle-enhancements)
+- enhance puzzles with multi-move play, hints, themes, and rush modes (ARC-chess-puzzle-enhancements)
+
+### Fixed
+
+- fix pgn study validation and optimize puzzle initial paint (ARC-chess-puzzle-enhancements)
+- use test instead of it in playwright puzzle specs (ARC-chess-puzzle-enhancements)
+
+### Improved
+
+- convert puzzle rush page to server component and optimize LCP (ARC-chess-puzzle-enhancements)
+
+### Refactored
+
+- remove static puzzle json files from web public bundle (ARC-chess-puzzle-enhancements)
+
+## [1.30.25] - 2026-09-24
+
+### Added
+
+- add ru/es/fr/by translations for all 9 strategy articles
+- add 9 deep-dive strategy articles, premium UI, and FAQ blocks
+
+## [1.30.24] - 2026-09-20
+
+### Added
+
+- rework hearts and spades UI and UX for mobile (ARC-hearts-spades-mobile-ui)
+
+## [1.30.23] - 2026-09-20
+
+### Added
+
+- add game themes to shop and preselect equipped skin in room creation
+
+## [1.30.22] - 2026-09-20
+
+### Added
+
+- rework rooms page filters with multi-select dropdowns and UI components (ARC-961) (ARC-961)
+
+## [1.30.21] - 2026-09-20
+
+### Added
+
+- redesign combo modal using SharedModal with high-contrast styling (ARC-critical-game-enhancements)
+- match blind card backs with board theme and streamline trio/fiver pickers (ARC-critical-game-enhancements)
+- stack duplicate cards in hand with count badges and steppers (ARC-critical-game-enhancements)
+- add desktop drag-to-scroll navigation for hand cards (ARC-critical-game-enhancements)
+
+### Fixed
+
+- clean up table card borders and eliminate background corner leaks (ARC-critical-game-enhancements)
+- fix event combo handlers and store state for pairs, trios, and fivers (ARC-critical-game-enhancements)
+- optimize responsive layout for compact and mobile landscape viewports (ARC-critical-game-enhancements)
+
+### Improved
+
+- remove non-composited pulse animation from catalog genre dots (ARC-critical-game-enhancements)
+
+### Refactored
+
+- migrate give favor modal to SharedModal with crisp visual contrast (ARC-critical-game-enhancements)
+- integrate SharedModal with scoped dark theme tokens (ARC-critical-game-enhancements)
+
+## [1.30.20] - 2026-09-20
+
+### Added
+
+- wire undo button into all solo and multiplayer games
+
+## [1.30.19] - 2026-09-19
+
+### Fixed
+
+- keep territory toggle visible throughout match (ARC-go-territory-toggle)
+
+## [1.30.18] - 2026-09-19
+
+### Added
+
+- rework game fields to eliminate excessive transparency and improve UI/UX (ARC-rework-solo-games-fields)
+
+## [1.30.17] - 2026-09-19
+
+### Added
+
+- accumulate and persist scanned cells across teammates (ARC-sea-battle-prevent-layout-shift)
+- add interactive targeting and preview for ship abilities (ARC-sea-battle-prevent-layout-shift)
+
+### Fixed
+
+- set lastSonar on abilities and resize sonar to 3x3 (ARC-sea-battle-prevent-layout-shift)
+- safely extract targetPlayerId and abilityId in gateway (ARC-sea-battle-prevent-layout-shift)
+- replace opacity pulsing with box-shadow glow on targetable opponent field
+- avoid conflicting background and backgroundColor styles on BoardCell
+- prevent fields jumping on turn change and connect ship abilities
+
+## [1.30.16] - 2026-09-19
+
+### Added
+
+- report passed and failed platforms in result notification
+- add edge-tts voiceover with graceful fallback
+- enhance scenarios, loading overlays, and game AI
+
+### Fixed
+
+- resolve edge-tts across users and mix voice into all video types
+
+## [1.30.15] - 2026-09-19
+
+### Added
+
+- support castling as a premove
+
+## [1.30.14] - 2026-09-19
+
+### Fixed
+
+- add missing game over translations for Backgammon and fix Pachisi placement
+
+## [1.30.13] - 2026-09-19
+
+### Added
+
+- enhance pachisi piece visuals, rotation, and fix token stacking (ARC-965) (ARC-965)
+
+## [1.30.12] - 2026-09-19
+
+### Added
+
+- add move-in-chat with board highlighting for all board games
+
+## [1.30.11] - 2026-09-19
+
+### Added
+
+- show rolled dice and improve UX when no moves available in pachisi (ARC-965) (ARC-965)
+
+## [1.30.10] - 2026-09-19
+
+### Added
+
+- modernize backgammon gameplay, ui ux, and playability (ARC-964) (ARC-964)
+
+## [1.30.9] - 2026-09-18
+
+### Fixed
+
+- defer level-up modal when user is in a game room
+
+## [1.30.8] - 2026-09-18
+
+### Added
+
+- add 3d euler settling, flick gesture, and thematic skins (ARC-963) (ARC-963)
+- modernize 3d dice roll animation and unify overlay across games (ARC-963) (ARC-963)
+
+## [1.30.7] - 2026-09-18
+
+### Added
+
+- implement tactical abilities, drafting, and bumping in cat dash (ARC-962) (ARC-962)
+- add realistic 3D racing cat character art and dossier inspection (ARC-962) (ARC-962)
+- upgrade cat dash with realistic cats, reusable dice animation, and flagship dashboard (ARC-962) (ARC-962)
+
+### Fixed
+
+- resolve hook naming in game widget and bonus space roll advancement (ARC-962) (ARC-962)
+
+## [1.30.6] - 2026-09-17
+
+### Added
+
+- add buy-and-gift flow for non-owned shop items
+
+### Fixed
+
+- remove unused balance state from GiftDialog
+
+## [1.30.5] - 2026-09-17
+
+### Fixed
+
+- fix shop purchase E11000 duplicate key on walletSignature index
+
+## [1.30.4] - 2026-09-17
+
+### Fixed
+
+- make premium+ games available to higher roles (ARC-961) (ARC-961)
+
+## [1.30.3] - 2026-09-16
+
+### Added
+
+- rework chess landing UI UX and remove em-dashes across app (ARC-960) (ARC-960)
+
+### Improved
+
+- lazy-load blog registry, parallelize game pages, add watchdog/capture backoff
+
+## [1.30.2] - 2026-09-16
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.30.1] - 2026-09-15
+
+### Refactored
+
+- migrate from Docker to PM2 bare-metal deployment
+
+## [1.30.0] - 2026-09-14
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.29.48] - 2026-09-14
 
 ### Added
-- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
 
+- add capacity stats with peak tracking to monitoring (ARC-admin-capacity-stats)
 
 ## [1.29.47] - 2026-09-14
 
 ### Added
-- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
 
+- display badges in shop and support equipping in inventory (ARC-shop-inventory-badges)
 
 ## [1.29.46] - 2026-09-13
 
 ### Added
-- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
 
+- add puzzle quick access section and links to landing page (ARC-chess-puzzle-quick-access)
 
 ## [1.29.45] - 2026-09-13
 
 ### Added
-- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
 
+- add gift previews, friends list gift button, and gift notifications (ARC-960) (ARC-960)
 
 ## [1.29.44] - 2026-09-13
 

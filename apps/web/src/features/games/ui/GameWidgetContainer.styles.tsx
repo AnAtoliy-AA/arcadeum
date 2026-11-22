@@ -16,13 +16,17 @@ export function useWidgetFullscreen(): boolean {
 
 export { WidgetFullscreenContext };
 
-interface ActiveEmote {
+import type { EmoteId } from '@/widgets/GameChat/ui/EmotePicker';
+
+export interface ActiveEmote {
   key: string;
   userId: string;
   emoteId: string;
+  laneIndex?: number;
+  ts?: number;
 }
 
-interface ActiveEmotesContextValue {
+export interface ActiveEmotesContextValue {
   emotes: ActiveEmote[];
   resolveDisplayName?: (id?: string, fallback?: string) => string | undefined;
   resolveEquipped?: (id?: string | null) => {
@@ -33,6 +37,8 @@ interface ActiveEmotesContextValue {
     equippedAuraId: string | null;
     equippedBannerId: string | null;
   } | null;
+  isSpectating?: boolean;
+  onEmote?: (emoteId: EmoteId) => void;
 }
 
 const ActiveEmotesContext = createContext<ActiveEmotesContextValue>({
@@ -170,7 +176,7 @@ export const GameHeader = ({
   <div
     data-testid={dataTestId}
     className={cx(
-      'flex flex-row items-center justify-between gap-3 px-7 py-2 bg-[var(--glassBg)] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-2 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
+      'flex flex-row items-center justify-between gap-3 px-7 py-1.5 bg-[var(--glassBg)] border-b border-b-[var(--glassBorderStrong)] -mx-1 mt-0 sticky top-0 z-[30] shrink-0 max-[800px]:px-4 max-[800px]:py-1.5 max-[800px]:-mx-2 max-[800px]:mt-0 max-[800px]:top-0 max-[800px]:gap-1 max-[800px]:flex-nowrap',
       className,
     )}
   >
@@ -416,4 +422,5 @@ export interface SharedHeaderProps {
   extraActions?: React.ReactNode;
   titleGradient?: string;
   onToggleResult?: () => void;
+  compact?: boolean;
 }

@@ -26,6 +26,8 @@ import { handleEmote } from './games.gateway.emote';
 import { handleUndoRequest, handleUndoResponse } from './games.gateway.undo';
 import { handleRequestHint } from './games.gateway.hint';
 import { ChessBotService } from './engines/chess/chess-bot.service';
+import { CheckersBotService } from './checkers/checkers-bot.service';
+import { BackgammonBotService } from './backgammon/backgammon-bot.service';
 import {
   handleJoinRoom,
   handleLeaveRoom,
@@ -34,6 +36,7 @@ import {
   handleSetOption,
 } from './games.gateway.room';
 import { registerChatHandlers } from './games.gateway.chat-handlers';
+import { registerPresenceRefresh } from './games.gateway.presence';
 // prettier-ignore
 import { isSocketEncryptionEnabled, getEncryptionKeyHex } from '../common/utils/socket-encryption.util';
 import { corsOriginMatcher } from '../common/utils/cors.util';
@@ -44,6 +47,7 @@ import {
   handleMatchmakingJoin,
   handleMatchmakingLeave,
 } from './games.gateway.matchmaking';
+
 @WebSocketGateway({
   namespace: 'games',
   cors: { origin: corsOriginMatcher },
@@ -65,6 +69,8 @@ export class GamesGateway {
     private readonly matchmakingService: GameRoomsMatchmakingService,
     @Inject(GAME_GATEWAYS) private readonly gameHandlers: GameMessageHandler[],
     private readonly chessBotService?: ChessBotService,
+    @Optional() private readonly checkersBotService?: CheckersBotService,
+    @Optional() private readonly backgammonBotService?: BackgammonBotService,
     @Optional()
     @Inject(forwardRef(() => LiveStatsService))
     private readonly liveStatsService?: LiveStatsService,
@@ -162,16 +168,7 @@ export class GamesGateway {
       client.emit('games.live_stats', { onlineUsers: count });
     });
 
-    client.on('ping', () => {
-      const uid = (client.data as Record<string, unknown>)?.userId as
-        string | undefined;
-      const aid = (client.data as Record<string, unknown>)?.anonId as
-        string | undefined;
-      void this.realtime.refreshSocket(
-        client.id,
-        uid || aid || `guest_${client.id}`,
-      );
-    });
+    registerPresenceRefresh(client, this.realtime);
 
     this.liveStatsService?.scheduleBroadcast();
   }
@@ -212,7 +209,7 @@ export class GamesGateway {
     if (isAuthenticated) {
       if (payloadUserId !== authUserId) {
         this.logger.warn(
-          `User ${authUserId} attempted to act as ${payloadUserId} — blocking`,
+          `User ${authUserId} attempted to act as ${payloadUserId}: blocking`,
         );
         throw new WsException('Cannot perform actions as another user.');
       }
@@ -223,7 +220,7 @@ export class GamesGateway {
     // anonId from their handshake; identity-less sockets cannot act at all.
     if (!anonId || payloadUserId !== anonId) {
       this.logger.warn(
-        `Identity-less socket attempted to act as ${payloadUserId} — blocking`,
+        `Identity-less socket attempted to act as ${payloadUserId}: blocking`,
       );
       throw new WsException('Cannot perform actions as another user.');
     }
@@ -447,7 +444,11 @@ export class GamesGateway {
       payload,
       this.sessionsService,
       this.gamesService,
-      this.chessBotService!,
+      {
+        chess: this.chessBotService,
+        checkers: this.checkersBotService,
+        backgammon: this.backgammonBotService,
+      },
     );
   }
   @SubscribeMessage('games.matchmaking.join')

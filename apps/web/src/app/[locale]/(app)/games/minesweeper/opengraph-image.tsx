@@ -9,7 +9,7 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/shared/i18n';
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 export const alt =
-  'Minesweeper — free online retro logic mine puzzle on Arcadeum Games';
+  'Minesweeper - free online retro logic mine puzzle on Arcadeum Games';
 
 type Props = { params: Promise<{ locale: string }> };
 

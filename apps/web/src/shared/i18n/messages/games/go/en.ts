@@ -7,7 +7,7 @@ export const enMessages = {
       'Surround territory, capture groups, and outplay your opponent on the most elegant board game ever invented!',
     landing: {
       meta: {
-        title: 'Go — Free Online Multiplayer Board Game | Arcadeum',
+        title: 'Go - Free Online Multiplayer Board Game | Arcadeum',
         description:
           'Play Go online for free on Arcadeum. Classic Baduk/Weiqi rules on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring and AI opponents.',
         keywords:
@@ -30,7 +30,7 @@ export const enMessages = {
         },
         captures: {
           title: 'Captures & Ko',
-          body: 'Surround groups to remove them — the ko rule keeps it fair',
+          body: 'Surround groups to remove them - the ko rule keeps it fair',
         },
         botAI: {
           title: 'AI Opponents',
@@ -50,14 +50,14 @@ export const enMessages = {
         },
         play: {
           title: 'Surround & Capture',
-          body: 'Place stones, surround territory, capture groups — two passes end the game and area scoring decides the winner.',
+          body: 'Place stones, surround territory, capture groups - two passes end the game and area scoring decides the winner.',
           tip: 'Komi of 7.5 points compensates white for moving second.',
         },
       },
       themes: {
         title: 'Play in Your Style',
         subtitle:
-          'Every shared Arcadeum theme is available — the board adapts to your vibe.',
+          'Every shared Arcadeum theme is available - the board adapts to your vibe.',
       },
       sections: {
         faqTitle: 'Frequently Asked Questions',
@@ -103,7 +103,7 @@ export const enMessages = {
         koRule: {
           question: 'What is the ko rule?',
           answer:
-            'You cannot immediately recapture in a way that recreates the previous board position. After a single-stone ko capture you must play elsewhere first — the forbidden point is marked on the board.',
+            'You cannot immediately recapture in a way that recreates the previous board position. After a single-stone ko capture you must play elsewhere first - the forbidden point is marked on the board.',
         },
         boardSize: {
           question: 'Which board size should I choose?',
@@ -184,14 +184,14 @@ export const enMessages = {
       draw: 'Draw',
       messages: {
         won: 'Victory! You surrounded more territory. Ready for another round?',
-        lost: 'Defeat — your opponent controlled more area. Want a rematch?',
-        draw: 'Draw — perfectly balanced board. Play again?',
+        lost: 'Defeat - your opponent controlled more area. Want a rematch?',
+        draw: 'Draw - perfectly balanced board. Play again?',
       },
     },
     tutorial: {
       s1: {
         title: 'Surround territory',
-        body: 'Place stones to fence off empty points. When both players pass, the bigger area wins — White starts with komi compensation.',
+        body: 'Place stones to fence off empty points. When both players pass, the bigger area wins - White starts with komi compensation.',
       },
       s2: {
         title: 'Cut off liberties',
@@ -199,7 +199,7 @@ export const enMessages = {
       },
       s3: {
         title: 'Mind the ko rule',
-        body: 'You cannot instantly recapture in a way that recreates the previous position — play elsewhere first. Two consecutive passes end the game.',
+        body: 'You cannot instantly recapture in a way that recreates the previous position - play elsewhere first. Two consecutive passes end the game.',
       },
       s4: {
         title: 'Tools of the trade',
@@ -215,7 +215,7 @@ export const enMessages = {
       capture:
         'A group with no remaining adjacent empty points (liberties) is captured and removed from the board.',
       koTitle: 'Ko Rule',
-      ko: 'Immediately recapturing a single stone that would recreate the previous position is forbidden — play elsewhere first.',
+      ko: 'Immediately recapturing a single stone that would recreate the previous position is forbidden - play elsewhere first.',
       passTitle: 'Passing',
       pass: 'Two consecutive passes end the game. Pass when no valuable move remains.',
       scoringTitle: 'Scoring',

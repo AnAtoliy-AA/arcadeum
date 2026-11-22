@@ -4,7 +4,7 @@ test.describe('Features Page', () => {
   test('should render features page with hero, stats, and sections', async ({
     page,
   }) => {
-    await navigateTo(page, '/features');
+    await navigateTo(page, '/en/features');
     await page.waitForLoadState('domcontentloaded');
 
     await expect(page.locator('h1')).toContainText(
@@ -16,14 +16,18 @@ test.describe('Features Page', () => {
   });
 
   test('should filter sections by search query and clear', async ({ page }) => {
-    await navigateTo(page, '/features');
+    await navigateTo(page, '/en/features');
     await page.waitForLoadState('domcontentloaded');
 
     const searchInput = page.getByTestId('features-search-input');
-    await searchInput.fill('WebSocket');
+    await expect(async () => {
+      await searchInput.fill('');
+      await searchInput.fill('WebSocket');
+      await expect(page.getByTestId('features-search-clear')).toBeVisible();
+      await expect(page.getByText('1. Games (20+)')).not.toBeVisible();
+    }).toPass();
 
     await expect(page.getByText('8. Real-Time (WebSocket)')).toBeVisible();
-    await expect(page.getByText('1. Games (20+)')).not.toBeVisible();
 
     const clearButton = page.getByTestId('features-search-clear');
     await clearButton.click();
@@ -32,7 +36,7 @@ test.describe('Features Page', () => {
   });
 
   test('should filter sections by category', async ({ page }) => {
-    await navigateTo(page, '/features');
+    await navigateTo(page, '/en/features');
     await page.waitForLoadState('domcontentloaded');
 
     const gamesChip = page.getByTestId('filter-games');
@@ -51,27 +55,30 @@ test.describe('Features Page', () => {
   test('should switch view modes between categorized, matrix, and directory', async ({
     page,
   }) => {
-    await navigateTo(page, '/features');
+    await navigateTo(page, '/en/features');
     await page.waitForLoadState('domcontentloaded');
 
     const matrixButton = page.getByTestId('features-view-matrix');
-    await matrixButton.click();
+    await expect(matrixButton).toBeVisible();
+    await matrixButton.click({ force: true });
 
     await expect(page.getByText('Explore →').first()).toBeVisible();
 
     const directoryButton = page.getByTestId('features-view-directory');
-    await directoryButton.click();
+    await expect(directoryButton).toBeVisible();
+    await directoryButton.click({ force: true });
 
     await expect(page.getByText('Directory Index')).toBeVisible();
 
     const fullViewButton = page.getByTestId('features-view-categorized');
-    await fullViewButton.click();
+    await expect(fullViewButton).toBeVisible();
+    await fullViewButton.click({ force: true });
 
     await expect(page.getByText('1. Games (20+)')).toBeVisible();
   });
 
   test('should render markdown tables within sections', async ({ page }) => {
-    await navigateTo(page, '/features');
+    await navigateTo(page, '/en/features');
     await page.waitForLoadState('domcontentloaded');
 
     await expect(page.getByText('Multiplayer Board Games')).toBeVisible();

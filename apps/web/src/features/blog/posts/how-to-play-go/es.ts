@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-go',
   locale: 'es',
   title:
-    'Cómo jugar a Go (Baduk, Weiqi) online — Reglas, vida y muerte, estrategia',
+    'Cómo jugar a Go (Baduk, Weiqi) online - Reglas, vida y muerte, estrategia',
   excerpt:
     'Guía completa para principiantes sobre Go: tablero, libertades, capturas, regla de ko, territorio y conceptos estratégicos clave.',
   publishedAt: '2026-06-23',
@@ -35,6 +35,30 @@ export const post: BlogPost = {
     {
       type: 'paragraph',
       text: 'Las libertades de una piedra son las intersecciones vacías inmediatamente adyacentes (arriba, abajo, izquierda y derecha, nunca en diagonal). Las piedras conectadas comparten sus libertades como un solo grupo. Cuando un grupo se queda con cero libertades al ser rodeado por completo, es capturado y retirado del tablero.',
+    },
+    {
+      type: 'interactive-puzzle',
+      id: 'drill-go-atari',
+      gameId: 'go',
+      title: 'Ejercicio práctico: Ejecuta la captura en atari',
+      prompt:
+        'Juegan negras: encuentra la intersección crítica para capturar la piedra blanca en atari.',
+      grid: [
+        '.........',
+        '.........',
+        '.........',
+        '....B....',
+        '...BWB...',
+        '.........',
+        '.........',
+        '.........',
+        '.........',
+      ],
+      solutionIndex: 49,
+      solutionValue: 'B',
+      explanation:
+        '¡Jugar en E4 elimina la última libertad de la piedra blanca, capturándola del tablero!',
+      playHref: '/games/go',
     },
     {
       type: 'heading',
@@ -110,7 +134,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/go',
-      text: 'Jugar a Go online — Gratis en navegador',
+      text: 'Jugar a Go online - Gratis en navegador',
       description:
         'Juega contra amigos o IA en tableros de 9x9, 13x13 o 19x19 con opciones de handicap.',
     },

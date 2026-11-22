@@ -162,7 +162,7 @@ function ChessCell({
 
       {piece && (
         <div
-          className={`relative z-10 w-[82%] h-[82%] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 ${
+          className={`pointer-events-none relative z-10 w-[82%] h-[82%] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 ${
             isPremoveGhost
               ? 'opacity-70 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]'
               : 'drop-shadow-md'
@@ -195,9 +195,8 @@ function areChessCellPropsEqual(
   if (prev.canInteract !== next.canInteract) return false;
   if (prev.disabled !== next.disabled) return false;
   if (prev.pieceStyle !== next.pieceStyle) return false;
-  if (prev.cellFocusProps?.tabIndex !== next.cellFocusProps?.tabIndex) {
-    return false;
-  }
+  if (prev.onSquareClick !== next.onSquareClick) return false;
+  if (prev.onPieceDrop !== next.onPieceDrop) return false;
   if (prev.piece?.type !== next.piece?.type) return false;
   if (prev.piece?.color !== next.piece?.color) return false;
   return true;

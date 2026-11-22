@@ -4,6 +4,7 @@ import {
   undoReducer,
   type FinishIfOverConfig,
 } from '../solo-game-store';
+import { soloActiveTimer } from '../soloActiveTimer';
 
 vi.mock('@/features/stats/store/statsStore', () => ({
   useLocalStatsStore: {
@@ -78,6 +79,27 @@ describe('finishIfOver', () => {
     );
     expect(result).not.toBeNull();
     expect(result!.finished.custom).toBe(true);
+  });
+
+  it('records active play time instead of wall clock when the timer runs', () => {
+    vi.useFakeTimers();
+    try {
+      const startedAt = Date.now();
+      soloActiveTimer.start(startedAt);
+      soloActiveTimer.setPaused(true);
+      vi.advanceTimersByTime(30_000);
+      soloActiveTimer.setPaused(false);
+      vi.advanceTimersByTime(5_000);
+
+      const result = finishIfOver(makeConfig({ isOver: true, startedAt }));
+
+      // 35s of wall clock passed, only 5s of it was active play.
+      expect(result!.finished.durationMs).toBeGreaterThanOrEqual(5_000);
+      expect(result!.finished.durationMs).toBeLessThan(10_000);
+    } finally {
+      soloActiveTimer.stop();
+      vi.useRealTimers();
+    }
   });
 });
 

@@ -16,7 +16,6 @@ interface HeartsBoardProps {
   snapshot: HeartsClientState;
   currentUserId?: string | null;
   myHand: string[];
-  /** Cards I may legally play right now. */
   legalIds: string[];
   canAct: boolean;
   hasPassed: boolean;
@@ -27,17 +26,15 @@ interface HeartsBoardProps {
   onConfirmPass: () => void;
 }
 
-/** Seat order relative to me around the table (clockwise). */
 const SEATS: SeatSide[] = ['bottom', 'left', 'top', 'right'];
 
 const TRICK_SLOT: Record<SeatSide, string> = {
-  bottom: 'bottom-1 left-1/2 -translate-x-1/2',
-  left: 'left-2 top-1/2 -translate-y-1/2',
-  top: 'top-1 left-1/2 -translate-x-1/2',
-  right: 'right-2 top-1/2 -translate-y-1/2',
+  bottom: 'bottom-0 left-1/2 -translate-x-1/2',
+  left: 'left-0 top-1/2 -translate-y-1/2',
+  top: 'top-0 left-1/2 -translate-x-1/2',
+  right: 'right-0 top-1/2 -translate-y-1/2',
 };
 
-/** Mint the hearts game tokens as scoped CSS vars for the board subtree. */
 function boardVars(theme: HeartsThemeTokens): CSSProperties {
   return {
     '--heartColor': theme.heartColor,
@@ -121,11 +118,10 @@ export const HeartsBoard = memo(function HeartsBoard({
   return (
     <div
       data-testid="hearts-board"
-      className="flex w-full flex-col gap-4 rounded-3xl border border-[var(--hCardBorder)] p-4 shadow-inner sm:p-6"
+      className="flex w-full flex-col gap-3 rounded-3xl border border-[var(--hCardBorder)] p-3 shadow-2xl sm:p-5"
       style={boardVars(theme)}
     >
-      {/* Status chips */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <Chip>
           {t('games.hearts_v1.game.handLabel', {
             n: snapshot.handNumber + 1,
@@ -150,86 +146,106 @@ export const HeartsBoard = memo(function HeartsBoard({
         )}
       </div>
 
-      {/* Table */}
-      <div className="grid grid-cols-[auto_1fr_auto] grid-rows-[auto_1fr_auto] items-center gap-x-3 gap-y-2 sm:gap-x-5">
-        <div className="col-start-2 row-start-1 flex justify-center">
+      <div className="relative mx-auto flex w-full max-w-xl flex-col justify-between rounded-3xl border border-[var(--hCardBorder)] bg-[radial-gradient(ellipse_at_center,rgba(var(--accentRGB),0.12)_0%,rgba(0,0,0,0.45)_100%)] p-3 shadow-inner sm:p-4 min-h-[290px] sm:min-h-[350px]">
+        <div className="flex justify-center">
           {topSeat && (
             <SeatPanel seat={topSeat} side="top" passing={isPassing} />
           )}
         </div>
-        <div className="col-start-1 row-start-2 self-center">
-          {leftSeat && (
-            <SeatPanel seat={leftSeat} side="left" passing={isPassing} />
-          )}
-        </div>
-        <div className="col-start-3 row-start-2 self-center justify-self-end">
-          {rightSeat && (
-            <SeatPanel seat={rightSeat} side="right" passing={isPassing} />
-          )}
-        </div>
 
-        {/* Center trick area — played cards sit near the seat that played them */}
-        <div className="relative col-start-2 row-start-2 mx-auto h-44 w-full max-w-md rounded-2xl border border-[var(--hCardBorder)] bg-black/10 sm:h-48">
-          {SEATS.map((side) => {
-            const playerId = seatId(SEATS.indexOf(side));
-            const card = playerId ? playBySeat.get(playerId) : undefined;
-            return (
-              <div
-                key={side}
-                className={`absolute ${TRICK_SLOT[side]} flex flex-col items-center gap-1`}
-              >
-                {card ? (
-                  <>
-                    <HeartsCard cardId={card} />
-                    <span className="max-w-[80px] truncate rounded-full bg-black/45 px-2 py-0.5 text-[10px] text-white/90">
-                      {playerName(playerId)}
+        <div className="flex items-center justify-between gap-2 my-auto">
+          <div className="shrink-0">
+            {leftSeat && (
+              <SeatPanel seat={leftSeat} side="left" passing={isPassing} />
+            )}
+          </div>
+
+          <div className="relative mx-auto h-36 w-36 sm:h-44 sm:w-44 shrink-0 rounded-full border border-white/10 bg-black/25 shadow-inner backdrop-blur-sm flex items-center justify-center">
+            <span className="text-3xl sm:text-4xl text-[var(--heartColor)] opacity-20 pointer-events-none select-none">
+              ♥
+            </span>
+
+            {SEATS.map((side) => {
+              const playerId = seatId(SEATS.indexOf(side));
+              const card = playerId ? playBySeat.get(playerId) : undefined;
+              return (
+                <div
+                  key={side}
+                  className={`absolute ${TRICK_SLOT[side]} flex flex-col items-center gap-0.5 z-10`}
+                >
+                  {card ? (
+                    <>
+                      <HeartsCard cardId={card} size="sm" />
+                      <span className="max-w-[70px] truncate rounded-full bg-black/60 px-1.5 py-0.2 text-[9px] font-bold text-white/95 shadow">
+                        {playerName(playerId)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="flex h-10 w-7 sm:h-12 sm:w-9 items-center justify-center rounded-md border border-dashed border-white/15 text-xs opacity-25">
+                      ♥
                     </span>
-                  </>
-                ) : (
-                  <span className="flex h-[76px] w-[54px] items-center justify-center rounded-xl border border-dashed border-[var(--hCardBorder)] text-lg opacity-30 sm:h-20 sm:w-14">
-                    ♠
-                  </span>
-                )}
-              </div>
-            );
-          })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="shrink-0">
+            {rightSeat && (
+              <SeatPanel seat={rightSeat} side="right" passing={isPassing} />
+            )}
+          </div>
         </div>
 
-        {/* My seat plaque */}
-        <div className="col-span-3 row-start-3 flex justify-center">
+        <div className="flex justify-center">
           {bottomSeat && (
             <SeatPanel seat={bottomSeat} side="bottom" passing={isPassing} />
           )}
         </div>
       </div>
 
-      {/* Passing panel */}
       {isPassing && (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-[var(--hCardBorder)] bg-[var(--hSurface)] px-4 py-3">
-          <p className="text-sm text-[var(--muted-foreground)]">
-            {hasPassed
-              ? t('games.hearts_v1.game.waitingForOpponent')
-              : t('games.hearts_v1.game.selectCardsToPass')}
-          </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 rounded-2xl border border-[var(--hCardBorder)] bg-[var(--hSurface)] px-3 py-2 sm:px-4 sm:py-2.5 backdrop-blur-md shadow-lg w-full max-w-xl mx-auto">
           <div className="flex items-center gap-2">
-            {[0, 1, 2].map((slot) => (
-              <span
-                key={slot}
-                aria-hidden="true"
-                className={cx(
-                  'h-8 w-8 rounded-lg border-2 transition-colors',
-                  selectedCards.length > slot
-                    ? 'border-[var(--accent)] bg-[rgba(var(--accentRGB),0.25)]'
-                    : 'border-[var(--hCardBorder)] bg-transparent',
-                )}
-              />
-            ))}
+            <span className="text-xs font-bold text-[var(--foreground)]">
+              {hasPassed
+                ? t('games.hearts_v1.game.waitingForOpponent')
+                : t('games.hearts_v1.game.selectCardsToPass')}
+            </span>
+            <span className="rounded-full bg-[var(--accent)]/20 px-2 py-0.5 text-[11px] font-black text-[var(--accent)] border border-[var(--accent)]/30">
+              {selectedCards.length}/3
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              {[0, 1, 2].map((slot) => {
+                const card = selectedCards[slot];
+                return (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={card ? () => onToggleCard(card) : undefined}
+                    disabled={!card}
+                    className={cx(
+                      'flex h-8 w-8 items-center justify-center rounded-lg border text-xs font-black transition-all shadow-sm',
+                      card
+                        ? 'border-[var(--accent)] bg-white text-slate-900 cursor-pointer hover:scale-105 active:scale-95'
+                        : 'border-[var(--hCardBorder)] bg-white/5 text-transparent cursor-default',
+                    )}
+                  >
+                    {card ? card : ''}
+                  </button>
+                );
+              })}
+            </div>
+
             <button
               type="button"
               data-testid="hearts-pass-button"
               onClick={onConfirmPass}
               disabled={!canPass || selectedCards.length !== 3}
-              className="ml-3 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[rgba(var(--accentRGB),0.75)] px-6 py-2 text-sm font-semibold text-white shadow-lg transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl bg-gradient-to-r from-[var(--accent)] to-[rgba(var(--accentRGB),0.8)] px-5 py-1.5 text-xs sm:text-sm font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-98 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {t('games.hearts_v1.game.passCards')}
             </button>
@@ -237,27 +253,32 @@ export const HeartsBoard = memo(function HeartsBoard({
         </div>
       )}
 
-      {/* My hand */}
-      <div className="flex min-h-[92px] items-end justify-center gap-1 pt-1 sm:gap-1.5">
-        {myHand.map((cardId) => {
-          const playable =
-            !isGameOver &&
-            (canPass || (!isPassing && canAct && legalSet.has(cardId)));
-          return (
-            <HeartsCard
-              key={cardId}
-              cardId={cardId}
-              playable={playable}
-              selected={selectedCards.includes(cardId)}
-              onClick={
-                playable
-                  ? () =>
-                      isPassing ? onToggleCard(cardId) : onPlayCard(cardId)
-                  : undefined
-              }
-            />
-          );
-        })}
+      <div className="relative w-full overflow-x-auto no-scrollbar pt-6 pb-2">
+        <div className="flex items-end justify-start min-w-max mx-auto px-3 sm:justify-center">
+          {myHand.map((cardId) => {
+            const playable =
+              !isGameOver &&
+              (canPass || (!isPassing && canAct && legalSet.has(cardId)));
+            return (
+              <div
+                key={cardId}
+                className="shrink-0 -ml-5 sm:-ml-3.5 first:ml-0 transition-transform duration-200"
+              >
+                <HeartsCard
+                  cardId={cardId}
+                  playable={playable}
+                  selected={selectedCards.includes(cardId)}
+                  onClick={
+                    playable
+                      ? () =>
+                          isPassing ? onToggleCard(cardId) : onPlayCard(cardId)
+                      : undefined
+                  }
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { GamesGateway } from './games.gateway';
 import { GamesService } from './games.service';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import { ChessBotService } from './engines/chess/chess-bot.service';
+import { CheckersBotService } from './checkers/checkers-bot.service';
+import { BackgammonBotService } from './backgammon/backgammon-bot.service';
 import { GamesRealtimeService } from './games.realtime.service';
 import { maybeEncrypt } from '../common/utils/socket-encryption.util';
 import type {
@@ -43,6 +45,8 @@ describe('GamesGateway – hint handler', () => {
   let gamesService: jest.Mocked<GamesService>;
   let sessionsService: jest.Mocked<GameSessionsService>;
   let chessBotService: jest.Mocked<ChessBotService>;
+  let checkersBotService: jest.Mocked<CheckersBotService>;
+  let backgammonBotService: jest.Mocked<BackgammonBotService>;
   let realtime: jest.Mocked<GamesRealtimeService>;
   let server: jest.Mocked<Server>;
   let client: jest.Mocked<Socket>;
@@ -75,6 +79,19 @@ describe('GamesGateway – hint handler', () => {
       findBestMove: jest.fn().mockReturnValue(BOT_MOVE),
     } as unknown as jest.Mocked<ChessBotService>;
 
+    checkersBotService = {
+      pickMove: jest.fn().mockReturnValue({
+        steps: [{ fromRow: 2, fromCol: 1, toRow: 3, toCol: 2 }],
+      }),
+    } as unknown as jest.Mocked<CheckersBotService>;
+
+    backgammonBotService = {
+      pickMove: jest.fn().mockReturnValue({
+        from: 24,
+        to: 21,
+      }),
+    } as unknown as jest.Mocked<BackgammonBotService>;
+
     realtime = {
       roomChannel: jest.fn((id: string) => `game-room:${id}`),
       spectatorChannel: jest.fn((id: string) => `game-room-spectators:${id}`),
@@ -88,12 +105,9 @@ describe('GamesGateway – hint handler', () => {
     client = {
       rooms: new Set(['game-room:room-1']),
       emit: mockEmit,
-      // Identity checks fail closed — the socket presents a verified id.
       data: { authenticated: true, userId: 'user-a' },
     } as unknown as jest.Mocked<Socket>;
 
-    // Inert stand-ins for matchmaking and the per-game gateways; only the
-    // hint handler (declared on GamesGateway itself) is exercised here.
     const inert = { handlers: {} };
     gateway = new GamesGateway(
       gamesService,
@@ -101,9 +115,11 @@ describe('GamesGateway – hint handler', () => {
       sessionsService,
       mockJwt,
       mockConfig,
-      inert as never, // matchmaking
+      inert as never,
       [inert],
       chessBotService,
+      checkersBotService,
+      backgammonBotService,
     );
     (gateway as unknown as { server: Server }).server = server;
   });

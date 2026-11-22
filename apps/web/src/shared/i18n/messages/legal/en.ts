@@ -268,7 +268,7 @@ export const en: LegalMessages = {
         eyebrow: 'Player support',
         title: "We're on the same team.",
         tagline:
-          'Drop a question, report a bug, hand us a feature idea — we read every message and the whole team plays the games we ship.',
+          'Drop a question, report a bug, hand us a feature idea - we read every message and the whole team plays the games we ship.',
         statusOk: 'All systems operational',
         medianReply: '~ {{hours}} hr median reply',
         humansOnline: '{{count}} humans online',
@@ -312,7 +312,7 @@ export const en: LegalMessages = {
         email: 'Email',
         subject: 'Subject',
         message: 'Message',
-        privacy: 'Private — we never share your email.',
+        privacy: 'Private - we never share your email.',
         submit: 'Launch message',
         submitting: 'Sending…',
         successTitle: 'Message away.',
@@ -356,18 +356,18 @@ export const en: LegalMessages = {
         label: 'Faster replies',
         title: 'Help us help you faster',
         orderId:
-          'Include your order ID for refund or payment questions — we can pull the receipt instantly.',
+          'Include your order ID for refund or payment questions - we can pull the receipt instantly.',
         bugs: 'For bugs: steps to reproduce, your browser, and your device. The more specific, the faster we triage.',
         screenshots:
-          'Screenshots are welcome — paste them straight into the message field, no need to attach.',
+          'Screenshots are welcome - paste them straight into the message field, no need to attach.',
         account:
           'For login or account issues, include the email you registered with so we can match the account.',
         urgent:
           "Time-sensitive? Add 'urgent' to the subject and we'll route it to the on-call team.",
         language:
-          'Write in whichever language you think in — we answer in EN, RU, ES, FR, BY.',
+          'Write in whichever language you think in - we answer in EN, RU, ES, FR, BY.',
         footer:
-          'Every message is read by a human on our team — no chatbots, no autoresponders.',
+          'Every message is read by a human on our team - no chatbots, no autoresponders.',
       },
       ticker: {
         label: 'HQ live feed',
@@ -383,7 +383,7 @@ export const en: LegalMessages = {
         password: {
           question: 'How do I reset my password?',
           answer:
-            "Use the 'Forgot password' link on the sign-in screen. The reset email arrives in about a minute — check spam if it doesn't show up. If your email changed, contact support.",
+            "Use the 'Forgot password' link on the sign-in screen. The reset email arrives in about a minute - check spam if it doesn't show up. If your email changed, contact support.",
         },
         deleteAccount: {
           question: 'How can I delete my account?',

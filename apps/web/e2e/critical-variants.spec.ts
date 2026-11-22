@@ -86,10 +86,12 @@ test.describe('Critical Variant Selection', () => {
 
     const createBtn = page.getByTestId('create-room-button');
     await expect(createBtn).toBeEnabled({});
-    await createBtn.click({ force: true });
-
-    // The create button should trigger navigation to the room
-    await expect(page).toHaveURL(/\/rooms\//, {});
+    // The create button should trigger navigation to the room. Retry the
+    // click: on WebKit it can land before React hydrates.
+    await expect(async () => {
+      await createBtn.click({ force: true });
+      await expect(page).toHaveURL(/\/rooms\//, { timeout: 4000 });
+    }).toPass({ timeout: 30000 });
     await page.waitForLoadState('domcontentloaded');
     await waitForRoomReady(page);
 

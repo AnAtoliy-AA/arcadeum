@@ -7,17 +7,29 @@ import {
   ChessPuzzleUser,
   type ChessPuzzleUserDocument,
 } from './chess-puzzle-user.schema';
+import {
+  ChessPuzzleRush,
+  type ChessPuzzleRushDocument,
+} from './chess-puzzle-rush.schema';
+import type { SubmitRushScoreDto } from './dto/submit-rush-score.dto';
 import { ChessStockfishService } from '../engine/chess-stockfish.service';
 
-/** Strip MongoDB operator prefixes from user-supplied strings (CodeQL fix). */
 function sanitize(str: string): string {
   return str.replace(/[$.]/g, '_');
 }
 
-/** Clamp a number to a safe range. */
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
+
+import {
+  type RushLeaderboardEntry,
+  type SubmitRushRunResult,
+} from './chess-puzzle-rush.types';
+import {
+  executeSubmitRushRun,
+  executeGetRushLeaderboard,
+} from './chess-puzzle-rush.helpers';
 
 @Injectable()
 export class ChessPuzzlesService {
@@ -28,6 +40,8 @@ export class ChessPuzzlesService {
     private readonly puzzleModel: Model<ChessPuzzleDocument>,
     @InjectModel(ChessPuzzleUser.name, OCI_CONNECTION)
     private readonly puzzleUserModel: Model<ChessPuzzleUserDocument>,
+    @InjectModel(ChessPuzzleRush.name, OCI_CONNECTION)
+    private readonly puzzleRushModel: Model<ChessPuzzleRushDocument>,
     private readonly stockfishService: ChessStockfishService,
   ) {}
 
@@ -266,5 +280,62 @@ export class ChessPuzzlesService {
       eval: { cp: hint.eval.cp, mate: hint.eval.mate, pv: hint.pv },
       alternatives: hint.alternatives,
     };
+  }
+
+  async createCustomPuzzle(
+    userId: string,
+    dto: import('./dto/create-custom-puzzle.dto').CreateCustomPuzzleDto,
+  ): Promise<ChessPuzzleDocument> {
+    const puzzleId = `custom_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    return this.puzzleModel.create({
+      puzzleId,
+      fen: dto.fen.trim(),
+      moves: dto.moves.map((m) => m.trim().toLowerCase()),
+      rating: clamp(dto.rating ?? 1500, 400, 3500),
+      ratingDeviation: 100,
+      themes: (dto.themes ?? ['custom']).map(sanitize),
+      openingTags: dto.title ? [sanitize(dto.title)] : ['Custom Puzzle'],
+      isCustom: true,
+      authorId: sanitize(userId),
+      title: dto.title ? sanitize(dto.title) : undefined,
+      description: dto.description ? sanitize(dto.description) : undefined,
+    });
+  }
+
+  async getCustomPuzzles(userId?: string): Promise<ChessPuzzleDocument[]> {
+    const filter = userId
+      ? { isCustom: true, authorId: sanitize(userId) }
+      : { isCustom: true };
+    return this.puzzleModel.find(filter).sort({ _id: -1 }).limit(50).exec();
+  }
+
+  async deleteCustomPuzzle(
+    userId: string,
+    puzzleId: string,
+  ): Promise<{ deleted: boolean }> {
+    const safePuzzleId = sanitize(puzzleId);
+    const safeUserId = sanitize(userId);
+    const result = await this.puzzleModel
+      .deleteOne({
+        puzzleId: safePuzzleId,
+        authorId: safeUserId,
+        isCustom: true,
+      })
+      .exec();
+    return { deleted: (result.deletedCount ?? 0) > 0 };
+  }
+
+  async submitRushRun(
+    user: { id?: string; username?: string; avatar?: string } | undefined,
+    dto: SubmitRushScoreDto,
+  ): Promise<SubmitRushRunResult> {
+    return executeSubmitRushRun(this.puzzleRushModel, user, dto);
+  }
+
+  async getRushLeaderboard(
+    mode: 'survival' | 'timed' = 'survival',
+    limit = 20,
+  ): Promise<RushLeaderboardEntry[]> {
+    return executeGetRushLeaderboard(this.puzzleRushModel, mode, limit);
   }
 }

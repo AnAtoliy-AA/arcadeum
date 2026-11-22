@@ -9,20 +9,6 @@ interface HouseRulesSectionProps {
   onSetOption: (options: Record<string, unknown>) => void;
 }
 
-const checkboxStyle: React.CSSProperties = {
-  width: 16,
-  height: 16,
-  accentColor: 'var(--gc-accent, #ffd166)',
-};
-
-const labelStyle = (disabled?: boolean): React.CSSProperties => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  cursor: disabled ? 'not-allowed' : 'pointer',
-  opacity: disabled ? 0.4 : 1,
-});
-
 export function HouseRulesSection({
   room,
   ruleComingSoon,
@@ -37,13 +23,32 @@ export function HouseRulesSection({
     null,
   );
 
+  const currentFirstPlayer =
+    optFirstPlayer ?? (room.gameOptions?.firstPlayer as string) ?? 'order';
+  const isRandomFirst = currentFirstPlayer === 'random';
+
+  const handleFirstPlayerChange = (val: string) => {
+    setOptFirstPlayer(val);
+    onSetOption({ firstPlayer: val });
+  };
+
+  const handleRandomToggle = (checked: boolean) => {
+    handleFirstPlayerChange(checked ? 'random' : 'order');
+  };
+
   return (
     <div className="flex flex-col items-stretch gap-3 pt-2">
-      <span className="text-[18px] font-semibold">
+      <span className="text-[18px] font-semibold text-[var(--textPrimary)]">
         {t('games.create.sectionLobbySettings')}
       </span>
 
-      <label style={labelStyle(!!ruleComingSoon.get('idle'))}>
+      <label
+        className={`flex items-center gap-2 select-none ${
+          ruleComingSoon.get('idle')
+            ? 'cursor-not-allowed opacity-40'
+            : 'cursor-pointer'
+        }`}
+      >
         <input
           type="checkbox"
           checked={optIdle ?? !!room.gameOptions?.idleTimerAutoplay}
@@ -53,19 +58,25 @@ export function HouseRulesSection({
             setOptIdle(val);
             onSetOption({ idleTimerAutoplay: val });
           }}
-          style={checkboxStyle}
+          className="w-4 h-4 rounded border border-[var(--glassBorder)] bg-[var(--glassBg)] accent-blue-600 cursor-pointer disabled:cursor-not-allowed"
         />
-        <span className="text-[16px]">
+        <span className="text-[16px] text-[var(--textPrimary)]">
           {t('games.create.rules.idle.title') || 'Idle timer autoplay'}
         </span>
         {ruleComingSoon.get('idle') && (
-          <span className="text-[48px] text-[#f59e0b] font-semibold">
+          <span className="text-xs text-[#f59e0b] font-semibold">
             {t('games.create.comingSoon') || 'Coming Soon'}
           </span>
         )}
       </label>
 
-      <label style={labelStyle(!!ruleComingSoon.get('spectators'))}>
+      <label
+        className={`flex items-center gap-2 select-none ${
+          ruleComingSoon.get('spectators')
+            ? 'cursor-not-allowed opacity-40'
+            : 'cursor-pointer'
+        }`}
+      >
         <input
           type="checkbox"
           checked={optSpectators ?? room.gameOptions?.allowSpectators !== false}
@@ -75,49 +86,52 @@ export function HouseRulesSection({
             setOptSpectators(val);
             onSetOption({ allowSpectators: val });
           }}
-          style={checkboxStyle}
+          className="w-4 h-4 rounded border border-[var(--glassBorder)] bg-[var(--glassBg)] accent-blue-600 cursor-pointer disabled:cursor-not-allowed"
         />
-        <span className="text-[16px]">
+        <span className="text-[16px] text-[var(--textPrimary)]">
           {t('games.create.rules.spectators.title') || 'Allow spectators'}
         </span>
         {ruleComingSoon.get('spectators') && (
-          <span className="text-[48px] text-[#f59e0b] font-semibold">
+          <span className="text-xs text-[#f59e0b] font-semibold">
             {t('games.create.comingSoon') || 'Coming Soon'}
           </span>
         )}
       </label>
 
-      <div className="flex flex-col items-stretch gap-1 max-w-[200px]">
-        <span className="text-[16px] font-medium">
+      <label className="flex items-center gap-2 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          data-testid="random-first-player-checkbox"
+          checked={isRandomFirst}
+          onChange={(e) => handleRandomToggle(e.target.checked)}
+          className="w-4 h-4 rounded border border-[var(--glassBorder)] bg-[var(--glassBg)] accent-blue-600 cursor-pointer"
+        />
+        <span className="text-[16px] text-[var(--textPrimary)]">
+          {t('games.create.rules.firstPlayer.random')}
+        </span>
+      </label>
+
+      <div className="flex flex-col items-stretch gap-1 max-w-[220px]">
+        <span className="text-sm font-medium text-[var(--textSecondary)]">
           {t('games.create.rules.firstPlayer.title')}
         </span>
         <select
-          aria-label="First Player"
-          value={
-            optFirstPlayer ??
-            (room.gameOptions?.firstPlayer as string) ??
-            'host'
-          }
-          onChange={(e) => {
-            const val = e.target.value;
-            setOptFirstPlayer(val);
-            onSetOption({ firstPlayer: val });
-          }}
-          style={{
-            padding: '6px 10px',
-            borderRadius: 8,
-            border: '1px solid var(--glassBorder)',
-            background: 'var(--glassBg)',
-            color: 'var(--color)',
-            fontSize: 14,
-            cursor: 'pointer',
-            width: '100%',
-          }}
+          aria-label={t('games.create.rules.firstPlayer.title')}
+          data-testid="first-player-select"
+          value={isRandomFirst ? 'random' : 'host'}
+          onChange={(e) => handleFirstPlayerChange(e.target.value)}
+          className="px-2.5 py-1.5 rounded-lg border border-[var(--glassBorder)] bg-[var(--glassBg)] text-[var(--color)] text-sm cursor-pointer w-full focus:outline-none focus:border-[var(--primary)]"
         >
-          <option value="host">
+          <option
+            value="host"
+            className="bg-[var(--surface)] text-[var(--color)]"
+          >
             {t('games.create.rules.firstPlayer.host')}
           </option>
-          <option value="random">
+          <option
+            value="random"
+            className="bg-[var(--surface)] text-[var(--color)]"
+          >
             {t('games.create.rules.firstPlayer.random')}
           </option>
         </select>

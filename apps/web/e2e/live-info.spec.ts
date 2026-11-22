@@ -7,7 +7,7 @@ import {
 
 test.describe('Live Platform Info & Online Users', () => {
   test.beforeEach(async ({ page }) => {
-    await navigateTo(page, '/');
+    await navigateTo(page, '/en');
   });
 
   test('should render live pulse badge in navigation header', async ({
@@ -26,9 +26,12 @@ test.describe('Live Platform Info & Online Users', () => {
     const badge = page.getByTestId('header-live-pulse-badge');
     await expect(badge).toBeVisible();
 
-    await badge.click();
     const popover = page.getByTestId('live-activity-popover');
-    await expect(popover).toBeVisible();
+    // Retry the click: it can land before React hydrates and be lost.
+    await expect(async () => {
+      await badge.click();
+      await expect(popover).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
 
     const closeButton = popover.getByRole('button', { name: 'Close' });
     await closeButton.click();
@@ -67,13 +70,13 @@ test.describe('Live Platform Info & Online Users', () => {
   test('should navigate to rooms page filtered by lobby status when clicking open lobbies', async ({
     page,
   }) => {
-    const waitingRoomsCard = page
-      .getByTestId('home-live-pulse-section')
-      .getByTestId('live-waiting-rooms-counter')
-      .locator('..');
+    const waitingRoomsCard = page.getByTestId('live-waiting-rooms-card');
     await expect(waitingRoomsCard).toBeVisible();
-    await waitingRoomsCard.click();
-    await expect(page).toHaveURL(/.*\/rooms\?status=lobby/);
+    await expect(waitingRoomsCard).toHaveAttribute('href', /.*status=lobby/);
+    await expect(async () => {
+      await waitingRoomsCard.click();
+      await expect(page).toHaveURL(/.*status=lobby/);
+    }).toPass();
   });
 
   test('should render live stats on game landing page', async ({ page }) => {
@@ -98,16 +101,64 @@ test.describe('Live Platform Info & Online Users', () => {
     const filtersContainer = page.getByTestId('games-filters-container');
     await expect(filtersContainer).toBeVisible();
 
-    const inProgressBtn = filtersContainer.getByRole('checkbox', {
+    const statusDropdown = filtersContainer.getByTestId(
+      'rooms-filter-status-dropdown',
+    );
+    await expect(statusDropdown).toBeVisible();
+    await statusDropdown.click();
+
+    const inProgressBtn = page.getByRole('checkbox', {
       name: /In Progress|Идут матчи|En curso|En cours|Ідуць матчы/i,
     });
     await expect(inProgressBtn).toBeVisible();
-    await inProgressBtn.click();
-    await expect(page).toHaveURL(/.*status=in_progress.*/);
+    await expect(async () => {
+      await inProgressBtn.click();
+      await expect(page).toHaveURL(/.*status=in_progress.*/);
+    }).toPass();
+
+    await statusDropdown.click();
 
     const clearAllBtn = page.getByTestId('rooms-filter-clear-all');
     await expect(clearAllBtn).toBeVisible();
-    await clearAllBtn.click();
-    await expect(page).toHaveURL(/^((?!status=).)*$/);
+    await expect(async () => {
+      await clearAllBtn.click();
+      await expect(page).toHaveURL(/^((?!status=).)*$/);
+    }).toPass();
+  });
+
+  test('should be fully visible without cutting off on mobile viewport and coordinate with mobile menu', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await navigateTo(page, '/');
+
+    const badge = page.getByTestId('header-live-pulse-badge');
+    await expect(badge).toBeVisible();
+
+    const popover = page.getByTestId('live-activity-popover');
+    // Retry the click: it can land before React hydrates and be lost.
+    await expect(async () => {
+      await badge.click();
+      await expect(popover).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
+
+    const box = await popover.boundingBox();
+    expect(box).not.toBeNull();
+    if (box) {
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(375);
+    }
+
+    const menuButton = page.getByTestId('mobile-menu-button');
+    await expect(menuButton).toBeVisible();
+    await menuButton.click();
+
+    await expect(popover).toBeHidden();
+    const mobileNav = page.getByTestId('mobile-nav');
+    await expect(mobileNav).toBeVisible();
+
+    await badge.click();
+    await expect(popover).toBeVisible();
+    await expect(mobileNav).toBeHidden();
   });
 });

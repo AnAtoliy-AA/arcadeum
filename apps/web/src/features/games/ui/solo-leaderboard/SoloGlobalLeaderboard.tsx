@@ -1,12 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { RoleBadge } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   soloScoresApi,
   type SoloLeaderboardEntry,
 } from '@/shared/api/soloScores';
+import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
 import { formatDuration } from '../SoloGameStats';
 
 interface SoloGlobalLeaderboardProps {
@@ -81,10 +85,12 @@ export function SoloGlobalLeaderboard({
   limit = 20,
   showUndoTab = false,
 }: SoloGlobalLeaderboardProps) {
+  const router = useRouter();
+  const routes = useRoutes();
   const { t } = useTranslation();
   const [page, setPage] = useState(0);
   const [usedUndoFilter, setUsedUndoFilter] = useState<boolean | undefined>(
-    undefined,
+    showUndoTab ? false : undefined,
   );
   const { entries, total, loading } = useSoloLeaderboardData(
     gameId,
@@ -97,6 +103,11 @@ export function SoloGlobalLeaderboard({
   );
 
   const totalPages = Math.ceil(total / limit);
+  const byDuration = sortBy === 'durationMs';
+  const hasScores = entries.some((entry) => entry.score > 0);
+  const scoreValue = (score: number) =>
+    hasScores ? score.toLocaleString() : '-';
+  const timeValue = (durationMs: number) => formatDuration(durationMs);
 
   return (
     <div className="space-y-3">
@@ -105,11 +116,11 @@ export function SoloGlobalLeaderboard({
           <button
             type="button"
             onClick={() => {
-              setUsedUndoFilter(undefined);
+              setUsedUndoFilter(false);
               setPage(0);
             }}
             className={`flex-1 rounded-md px-2 py-1 text-xs font-semibold transition-colors ${
-              usedUndoFilter === undefined
+              usedUndoFilter === false
                 ? 'bg-[var(--primary)] text-white shadow-sm'
                 : 'text-[var(--textSecondary)] hover:text-[var(--color)]'
             }`}
@@ -155,7 +166,7 @@ export function SoloGlobalLeaderboard({
             <span>#</span>
             <span>{t('games.soloLeaderboard.player')}</span>
             <span className="text-right">
-              {sortBy === 'durationMs'
+              {byDuration
                 ? t('games.soloLeaderboard.time')
                 : t('games.soloLeaderboard.score')}
             </span>
@@ -163,7 +174,9 @@ export function SoloGlobalLeaderboard({
               {t('games.soloLeaderboard.moves')}
             </span>
             <span className="text-right">
-              {t('games.soloLeaderboard.time')}
+              {byDuration
+                ? t('games.soloLeaderboard.score')
+                : t('games.soloLeaderboard.time')}
             </span>
           </div>
 
@@ -171,17 +184,27 @@ export function SoloGlobalLeaderboard({
             {entries.map((entry) => {
               const isMe = currentUserId && entry.playerId === currentUserId;
               const name = entry.displayName || entry.username;
-              const initial = (name.charAt(0) || '?').toUpperCase();
 
               return (
                 <div
                   key={entry.playerId}
                   className={cx(
-                    'grid grid-cols-[2.5rem_1fr_4rem_4rem_4rem] items-center gap-2 rounded-xl border px-3 py-2.5 transition-all duration-200',
+                    'grid grid-cols-[2.5rem_1fr_4rem_4rem_4rem] items-center gap-2 rounded-xl border px-3 py-2.5 transition-all duration-200 cursor-pointer',
                     isMe
                       ? 'border-[var(--primary)]/50 bg-[var(--primary)]/10 shadow-sm shadow-[var(--primary)]/10'
                       : 'border-[var(--glassBorder)] bg-[var(--glassBg)] hover:border-[var(--glassBorderStrong)] hover:bg-[var(--backgroundHover)]',
                   )}
+                  onClick={() =>
+                    router.push(routes.playerProfile(entry.playerId))
+                  }
+                  role="link"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      router.push(routes.playerProfile(entry.playerId));
+                    }
+                  }}
                 >
                   <div className="flex items-center">
                     {entry.rank === 1 ? (
@@ -203,13 +226,30 @@ export function SoloGlobalLeaderboard({
                     )}
                   </div>
 
-                  <div className="flex min-w-0 items-center gap-2">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--glassBorder)] bg-[var(--backgroundHover)] text-[10px] font-black text-[var(--color)]">
-                      {initial}
-                    </div>
-                    <p className="truncate text-xs sm:text-sm font-semibold text-[var(--color)]">
+                  <div className="flex min-w-0 items-center gap-2 flex-wrap">
+                    <EquippedPlayerAvatar
+                      size="sm"
+                      name={name}
+                      equippedAvatarId={entry.equippedAvatarId}
+                      equippedBadgeId={entry.equippedBadgeId}
+                      equippedNameColorId={entry.equippedNameColorId}
+                      equippedFrameId={entry.equippedFrameId}
+                      role={entry.role}
+                    />
+                    <p
+                      className="break-words text-xs sm:text-sm font-semibold text-[var(--color)]"
+                      title={name}
+                    >
                       {name}
                     </p>
+                    {entry.role &&
+                    entry.role !== 'free' &&
+                    entry.role !== 'user' ? (
+                      <RoleBadge role={entry.role as never}>
+                        {t(`common.roles.${entry.role}` as never) ||
+                          entry.role.toUpperCase()}
+                      </RoleBadge>
+                    ) : null}
                     {isMe && (
                       <span className="shrink-0 rounded-full bg-[var(--primary)] px-1.5 py-0.5 text-[9px] font-extrabold text-white">
                         YOU
@@ -218,15 +258,17 @@ export function SoloGlobalLeaderboard({
                   </div>
 
                   <span className="text-right font-mono text-xs sm:text-sm font-black tabular-nums text-[var(--color)]">
-                    {sortBy === 'durationMs'
-                      ? formatDuration(entry.score)
-                      : entry.score.toLocaleString()}
+                    {byDuration
+                      ? timeValue(entry.durationMs)
+                      : scoreValue(entry.score)}
                   </span>
                   <span className="text-right font-mono text-xs tabular-nums text-[var(--textSecondary)]">
                     {entry.moves}
                   </span>
                   <span className="text-right font-mono text-xs tabular-nums text-[var(--textSecondary)]">
-                    {formatDuration(entry.durationMs)}
+                    {byDuration
+                      ? scoreValue(entry.score)
+                      : timeValue(entry.durationMs)}
                   </span>
                 </div>
               );

@@ -21,7 +21,6 @@ interface RequestWithUser {
 
 interface AdminUserItemBody {
   id: string;
-  email: string;
   username: string;
   displayName: string | null;
   role: string;

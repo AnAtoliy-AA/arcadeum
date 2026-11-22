@@ -1,6 +1,6 @@
 import type { DeepPartial } from './base-types';
 
-// Single source of truth lives in `@/shared/config/locale-slugs` — it
+// Single source of truth lives in `@/shared/config/locale-slugs`: it
 // has no i18n dependencies, so it's safe to import from app-config and
 // routes without creating a cycle. Re-exported here so existing
 // `@/shared/i18n` imports keep working.

@@ -23,6 +23,11 @@ import { useBoardDrawings } from '../hooks/useBoardDrawings';
 import { MemoizedChessCell } from './ChessCell';
 import { useChessTheme } from '../lib/ChessThemeContext';
 import { boardVars } from '../lib/theme-adapter';
+import {
+  useBoardThemePreference,
+  getBoardThemeCssVars,
+} from '../lib/board-theme';
+import { useChessPieceStylePreference } from '../lib/piece-style';
 import type { ChessPieceStyle } from '../lib/piece-style';
 import './styles/animations.scss';
 
@@ -66,7 +71,7 @@ function ChessBoardImpl({
   isFlipped,
   disabled = false,
   selectedSquare,
-  pieceStyle = 'neo',
+  pieceStyle: pieceStyleProp,
   legalMoves,
   lastMove,
   hintMove = null,
@@ -85,6 +90,9 @@ function ChessBoardImpl({
   onPieceDrop,
 }: ChessBoardProps) {
   const theme = useChessTheme();
+  const { activeBoardTheme } = useBoardThemePreference();
+  const { pieceStyle: preferredPieceStyle } = useChessPieceStylePreference();
+  const pieceStyle = pieceStyleProp ?? preferredPieceStyle ?? 'arcadeum';
   const [hoveredSquare, setHoveredSquare] = useState<string | null>(null);
   const [dragOverSquare, setDragOverSquare] = useState<string | null>(null);
   const prevBoardRef = useRef<Board>(board);
@@ -214,7 +222,14 @@ function ChessBoardImpl({
     setDragOverSquare(sq);
   }, []);
 
-  const vars = useMemo(() => boardVars(theme), [theme]);
+  const vars = useMemo(() => {
+    const bVars = boardVars(theme);
+    const themeVars = getBoardThemeCssVars(activeBoardTheme);
+    return {
+      ...bVars,
+      ...themeVars,
+    } as import('react').CSSProperties;
+  }, [theme, activeBoardTheme]);
 
   return (
     <div

@@ -19,9 +19,10 @@ interface AttackBoardCellProps {
   highlight?: 'sonar' | 'radar' | 'scanWave' | null;
   highlightCellState?: number;
   isWeaponPreview?: boolean;
-  weaponPreviewType?: 'sonar' | 'radar' | null;
+  weaponPreviewType?: 'sonar' | 'radar' | 'ability' | null;
   isWeaponClickable?: boolean;
   isKeyboardCursor?: boolean;
+  isChatHighlighted?: boolean;
   /** Roving-tabindex/focus attributes from the board's keyboard navigation. */
   cellFocusProps?: Record<string, unknown>;
 }
@@ -42,6 +43,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
   weaponPreviewType,
   isWeaponClickable = false,
   isKeyboardCursor = false,
+  isChatHighlighted = false,
   cellFocusProps,
 }: AttackBoardCellProps) {
   const icon = getCellIcon(isSunk, displayState);
@@ -62,42 +64,64 @@ export const AttackBoardCell = memo(function AttackBoardCell({
 
   const isShip = highlightCellState === 1; // CellState.SHIP
 
+  const highlightColor =
+    highlight === 'sonar'
+      ? isShip
+        ? 'rgba(6, 182, 212, 0.2)'
+        : 'rgba(6, 182, 212, 0.06)'
+      : highlight === 'radar'
+        ? isShip
+          ? 'rgba(168, 85, 247, 0.2)'
+          : 'rgba(168, 85, 247, 0.06)'
+        : highlight === 'scanWave'
+          ? isShip
+            ? 'rgba(251, 191, 36, 0.25)'
+            : 'rgba(251, 191, 36, 0.06)'
+          : undefined;
+
+  const previewColor =
+    isWeaponPreview && weaponPreviewType === 'sonar'
+      ? 'rgba(6, 182, 212, 0.08)'
+      : isWeaponPreview && weaponPreviewType === 'radar'
+        ? 'rgba(168, 85, 247, 0.08)'
+        : isWeaponPreview
+          ? 'rgba(251, 191, 36, 0.12)'
+          : undefined;
+
+  const chatHighlightColor = isChatHighlighted
+    ? 'rgba(99, 102, 241, 0.15)'
+    : undefined;
+
   const highlightStyle: React.CSSProperties =
     highlight === 'sonar'
       ? isShip
         ? {
             boxShadow: '0 0 10px 3px rgba(6, 182, 212, 0.8)',
             borderColor: '#06b6d4',
-            backgroundColor: 'rgba(6, 182, 212, 0.2)',
           }
         : {
             boxShadow: '0 0 4px 1px rgba(6, 182, 212, 0.3)',
             borderColor: 'rgba(6, 182, 212, 0.4)',
-            backgroundColor: 'rgba(6, 182, 212, 0.06)',
           }
       : highlight === 'radar'
         ? isShip
           ? {
               boxShadow: '0 0 10px 3px rgba(168, 85, 247, 0.8)',
               borderColor: '#a855f7',
-              backgroundColor: 'rgba(168, 85, 247, 0.2)',
             }
           : {
               boxShadow: '0 0 4px 1px rgba(168, 85, 247, 0.3)',
               borderColor: 'rgba(168, 85, 247, 0.4)',
-              backgroundColor: 'rgba(168, 85, 247, 0.06)',
             }
         : highlight === 'scanWave'
           ? isShip
             ? {
                 boxShadow: '0 0 12px 4px rgba(251, 191, 36, 0.9)',
                 borderColor: '#f59e0b',
-                backgroundColor: 'rgba(251, 191, 36, 0.25)',
               }
             : {
                 boxShadow: '0 0 4px 1px rgba(251, 191, 36, 0.3)',
                 borderColor: 'rgba(251, 191, 36, 0.4)',
-                backgroundColor: 'rgba(251, 191, 36, 0.06)',
               }
           : {};
 
@@ -106,25 +130,42 @@ export const AttackBoardCell = memo(function AttackBoardCell({
       ? {
           boxShadow: '0 0 6px 1px rgba(6, 182, 212, 0.4)',
           borderColor: 'rgba(6, 182, 212, 0.5)',
-          backgroundColor: 'rgba(6, 182, 212, 0.08)',
         }
       : isWeaponPreview && weaponPreviewType === 'radar'
         ? {
             boxShadow: '0 0 6px 1px rgba(168, 85, 247, 0.4)',
             borderColor: 'rgba(168, 85, 247, 0.5)',
-            backgroundColor: 'rgba(168, 85, 247, 0.08)',
           }
-        : {};
+        : isWeaponPreview
+          ? {
+              boxShadow: '0 0 6px 1px rgba(251, 191, 36, 0.5)',
+              borderColor: 'rgba(251, 191, 36, 0.6)',
+            }
+          : {};
+
+  const chatHighlightStyle: React.CSSProperties = isChatHighlighted
+    ? {
+        boxShadow: '0 0 8px 2px rgba(99, 102, 241, 0.6)',
+        borderColor: '#6366f1',
+      }
+    : {};
 
   const isShipCell = displayState === CELL_STATE.SHIP;
+
+  const cellBgColor =
+    highlightColor ??
+    previewColor ??
+    chatHighlightColor ??
+    (isShipCell ? undefined : getCellBg(displayState, theme));
 
   return (
     <BoardCell
       className={`sb-cell ${BOARD_CELL_FOCUS_CLASS} ${isAttackable || isWeaponClickable ? 'sb-attackable' : ''} ${isPending ? 'sb-cell-pending' : ''} ${highlight ? 'sb-highlight' : ''} ${isWeaponPreview ? 'sb-weapon-preview' : ''} ${animClass || ''}`}
       style={{
-        background: isShipCell
+        backgroundColor: cellBgColor,
+        backgroundImage: isShipCell
           ? 'linear-gradient(135deg, #475569 0%, #334155 50%, #1e293b 100%)'
-          : getCellBg(displayState, theme),
+          : undefined,
         borderColor: isShipCell ? '#64748b' : theme.cellBorder,
         borderRadius: parseInt(theme.borderRadius) || 4,
         boxShadow: isShipCell
@@ -132,6 +173,7 @@ export const AttackBoardCell = memo(function AttackBoardCell({
           : undefined,
         ...highlightStyle,
         ...previewStyle,
+        ...chatHighlightStyle,
         ...(isWeaponPreview ? { cursor: 'crosshair' } : {}),
         ...(isKeyboardCursor
           ? {
@@ -195,6 +237,12 @@ export const AttackBoardCell = memo(function AttackBoardCell({
                 ? '🚢'
                 : '📡'}
         </div>
+      )}
+      {isChatHighlighted && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[80%] w-[80%] rounded-full border-[2px] border-indigo-400/80 bg-indigo-500/15 z-15 animate-pulse"
+        />
       )}
     </BoardCell>
   );

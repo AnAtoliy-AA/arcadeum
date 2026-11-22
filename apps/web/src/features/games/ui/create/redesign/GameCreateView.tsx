@@ -15,6 +15,7 @@ import {
   isCreateBlocked,
 } from '@/features/games/ui/create/createPageState';
 import { Container } from '@arcadeum/ui/components/Container/Container';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 
 import s from './GameCreateView.module.scss';
@@ -23,6 +24,7 @@ import { SelectedGameCard } from './SelectedGameCard';
 import { RoomDetails } from './RoomDetails';
 import { PreviewRail } from './PreviewRail';
 import { VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
+import { skinIdToThemeId } from '@/features/games/lib/shared-themes';
 import {
   ROOM_NAME_MAX,
   type CreateRoomForm,
@@ -62,11 +64,17 @@ function defaultThemeFor(gameId: GameId): string {
 function initialForm(
   gameId: GameId,
   themeId: string | undefined,
+  equippedSkinId: string | null,
 ): CreateRoomForm {
   const themes = themesFor(gameId);
   const defaultTheme = defaultThemeFor(gameId);
+  const equippedTheme = skinIdToThemeId(equippedSkinId);
   const resolvedTheme =
-    themeId && themes.some((t) => t.id === themeId) ? themeId : defaultTheme;
+    (themeId && themes.some((t) => t.id === themeId)
+      ? themeId
+      : equippedTheme && themes.some((t) => t.id === equippedTheme)
+        ? equippedTheme
+        : defaultTheme) ?? defaultTheme;
   return {
     gameId,
     themeId: resolvedTheme,
@@ -147,7 +155,21 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   };
 }
 
+/**
+ * The create route is statically prerendered, so the server cannot know the
+ * URL query (gameId/theme) or the stored session the form is seeded from.
+ * Render the form only after hydration so its first client render matches the
+ * server HTML (avoids React hydration error #418).
+ */
 export function GameCreateView() {
+  const { isReady } = useLanguage();
+  if (!isReady) {
+    return <PageLoading layout="standard" />;
+  }
+  return <GameCreateForm />;
+}
+
+function GameCreateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const routes = useRoutes();
@@ -200,7 +222,7 @@ export function GameCreateView() {
   ]);
 
   const [form, setForm] = useState<CreateRoomForm>(() =>
-    initialForm(urlGameId, urlVariant),
+    initialForm(urlGameId, urlVariant, snapshot.equippedGameSkinId),
   );
   const [customRoomName, setCustomRoomName] = useState<string | null>(null);
 
@@ -283,7 +305,7 @@ export function GameCreateView() {
   useEffect(() => {
     let cancelled = false;
     gamesApi
-      .getCatalog()
+      .getCatalog({ token: snapshot.accessToken || undefined })
       .then((d) => {
         if (!cancelled) setCatalog(d);
       })
@@ -291,7 +313,7 @@ export function GameCreateView() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [snapshot.accessToken]);
   const { gameComingSoon, variantComingSoon } = useMemo(
     () => buildComingSoonMaps(catalog),
     [catalog],

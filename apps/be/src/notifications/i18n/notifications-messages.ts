@@ -27,6 +27,8 @@ export type NotificationBundle = {
     friend_request: { title: string; body: string };
     friend_accepted: { title: string; body: string };
     game_invitation: { title: string; body: string };
+    rematch_accepted: { title: string; body: string };
+    rematch_declined: { title: string; body: string };
     gift_received: { title: string; body: string };
   };
 };
@@ -35,7 +37,7 @@ const en: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Daily reward ready',
-      body: 'Your streak is waiting — claim it now.',
+      body: 'Your streak is waiting - claim it now.',
     },
     tournament_starting_soon: {
       title: '{{name}} starts in {{minutes}} min',
@@ -61,6 +63,14 @@ const en: NotificationBundle = {
       title: 'Game invitation',
       body: '{{hostName}} invited you to play {{gameId}}.',
     },
+    rematch_accepted: {
+      title: 'Rematch accepted',
+      body: '{{opponentName}} accepted your rematch. Join game!',
+    },
+    rematch_declined: {
+      title: 'Rematch declined',
+      body: '{{opponentName}} declined the rematch.',
+    },
     gift_received: {
       title: 'Gift from {{senderName}}',
       body: '{{itemName}}: {{message}}',
@@ -72,7 +82,7 @@ const ru: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Награда дня готова',
-      body: 'Не теряйте серию — заберите награду.',
+      body: 'Не теряйте серию - заберите награду.',
     },
     tournament_starting_soon: {
       title: '{{name}} начнётся через {{minutes}} мин',
@@ -98,6 +108,14 @@ const ru: NotificationBundle = {
       title: 'Приглашение в игру',
       body: '{{hostName}} пригласил вас в игру {{gameId}}.',
     },
+    rematch_accepted: {
+      title: 'Реванш принят',
+      body: '{{opponentName}} принял реванш. Войдите в игру!',
+    },
+    rematch_declined: {
+      title: 'Реванш отклонён',
+      body: '{{opponentName}} отклонил реванш.',
+    },
     gift_received: {
       title: 'Подарок от {{senderName}}',
       body: '{{itemName}}: {{message}}',
@@ -109,7 +127,7 @@ const es: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Recompensa diaria lista',
-      body: 'Tu racha te espera — recógela ahora.',
+      body: 'Tu racha te espera - recógela ahora.',
     },
     tournament_starting_soon: {
       title: '{{name}} comienza en {{minutes}} min',
@@ -135,6 +153,14 @@ const es: NotificationBundle = {
       title: 'Invitación a jugar',
       body: '{{hostName}} te invitó a jugar {{gameId}}.',
     },
+    rematch_accepted: {
+      title: 'Revancha aceptada',
+      body: '{{opponentName}} aceptó tu revancha. ¡Únete a la partida!',
+    },
+    rematch_declined: {
+      title: 'Revancha rechazada',
+      body: '{{opponentName}} rechazó la revancha.',
+    },
     gift_received: {
       title: 'Regalo de {{senderName}}',
       body: '{{itemName}}: {{message}}',
@@ -146,7 +172,7 @@ const fr: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Récompense quotidienne prête',
-      body: 'Ta série t\u2019attend — récupère-la maintenant.',
+      body: 'Ta série t\u2019attend - récupère-la maintenant.',
     },
     tournament_starting_soon: {
       title: '{{name}} commence dans {{minutes}} min',
@@ -172,6 +198,14 @@ const fr: NotificationBundle = {
       title: 'Invitation à jouer',
       body: '{{hostName}} vous a invité à jouer à {{gameId}}.',
     },
+    rematch_accepted: {
+      title: 'Revanche acceptée',
+      body: '{{opponentName}} a accepté votre revanche. Rejoignez la partie !',
+    },
+    rematch_declined: {
+      title: 'Revanche refusée',
+      body: '{{opponentName}} a refusé la revanche.',
+    },
     gift_received: {
       title: 'Cadeau de {{senderName}}',
       body: '{{itemName}}: {{message}}',
@@ -183,7 +217,7 @@ const by: NotificationBundle = {
   notifications: {
     daily_reward_ready: {
       title: 'Узнагарода дня гатовая',
-      body: 'Не губіце серыю — забярыце ўзнагароду.',
+      body: 'Не губіце серыю - забярыце ўзнагароду.',
     },
     tournament_starting_soon: {
       title: '{{name}} пачнецца праз {{minutes}} хв',
@@ -208,6 +242,14 @@ const by: NotificationBundle = {
     game_invitation: {
       title: 'Запрашэнне ў гульню',
       body: '{{hostName}} запрасіў вас пагуляць у {{gameId}}.',
+    },
+    rematch_accepted: {
+      title: 'Рэванш прыняты',
+      body: '{{opponentName}} прыняў рэванш. Далучайцеся да гульні!',
+    },
+    rematch_declined: {
+      title: 'Рэванш адхілены',
+      body: '{{opponentName}} адхіліў рэванш.',
     },
     gift_received: {
       title: 'Падарунак ад {{senderName}}',

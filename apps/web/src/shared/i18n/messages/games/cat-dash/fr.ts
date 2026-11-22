@@ -21,17 +21,17 @@ export const frMessages = {
     },
     landing: {
       meta: {
-        title: 'Cat Dash — jeu de course de chats multijoueur',
+        title: 'Cat Dash - jeu de course de chats multijoueur',
         description:
           'Jouez à Cat Dash en ligne gratuitement. 2–6 joueurs, chats uniques, dés + capacités.',
         keywords: 'jeu de chats, jeu de dés, course, multijoueur',
       },
       hero: {
-        title: 'Cat Dash — faites courir votre chat vers la victoire',
+        title: 'Cat Dash - faites courir votre chat vers la victoire',
         subtitle:
           "Lancez les dés, esquivez les obstacles et utilisez les capacités pour arriver premier à la ligne d'arrivée.",
         ctaQuickplay: 'Jouer vs IA',
-        ctaQuickplayError: 'Impossible de démarrer — réessayez',
+        ctaQuickplayError: 'Impossible de démarrer - réessayez',
         createRoom: 'Créer une salle',
         browseRooms: 'Voir les salles',
       },
@@ -70,18 +70,18 @@ export const frMessages = {
       rules: {
         title: 'Règles',
         objective:
-          "Soyez le premier chat à atteindre l'espace 20 — la ligne d'arrivée.",
+          "Soyez le premier chat à atteindre l'espace 20 - la ligne d'arrivée.",
         howToPlay: 'À votre tour, cliquez sur "Lancer les Dés".',
         abilities:
           'Chaque chat a 2 capacités uniques. Dépensez les jetons de pouvoir (3 par partie).',
         trackSpaces:
-          '🟢 Normal — aucun effet. 🔴 Obstacle — passez votre prochain tour. 🟡 Bonus — relancez.',
+          '🟢 Normal - aucun effet. 🔴 Obstacle - passez votre prochain tour. 🟡 Bonus - relancez.',
       },
       faq: {
         abilities: {
           question: 'Que font les capacités?',
           answer:
-            'Chaque chat a deux capacités uniques — une offensive et une défensive.',
+            'Chaque chat a deux capacités uniques - une offensive et une défensive.',
         },
         tokens: {
           question: 'Comment fonctionnent les jetons?',
@@ -140,6 +140,7 @@ export const frMessages = {
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente de joueurs…',
       minPlayers: 'Minimum 2 joueurs',
+      meetRacers: 'Découvrir les 6 pilotes (Dossier et stats)',
     },
     tutorial: {
       s1: {
@@ -152,7 +153,7 @@ export const frMessages = {
       },
       s3: {
         title: 'Dépensez vos jetons à bon escient',
-        body: 'Chaque chat possède deux capacités uniques — dépensez vos trois jetons de pouvoir au moment parfait.',
+        body: 'Chaque chat possède deux capacités uniques - dépensez vos trois jetons de pouvoir au moment parfait.',
       },
       s4: {
         title: 'Photo finish',
@@ -169,7 +170,7 @@ export const frMessages = {
         'À votre tour, cliquez sur "Lancer les Dés". Dé à 6 faces standard.',
       trackSpacesTitle: 'Cases de Piste',
       trackSpaces:
-        '🟢 Normal. 🔴 Obstacle — passez tour. 🟡 Bonus — relancez. 🔵 Fourche — choisissez le chemin.',
+        '🟢 Normal. 🔴 Obstacle - passez tour. 🟡 Bonus - relancez. 🔵 Fourche - choisissez le chemin.',
       abilitiesTitle: 'Capacités',
       abilities:
         'Chaque chat a 2 capacités. Utilisez les jetons de pouvoir (3 par partie).',
@@ -177,13 +178,14 @@ export const frMessages = {
       cats: '🐱 Chat Néon: Dash Numérique + Bouclier Néon. 🐱 Moustaches: Vie Extra + Pouvoir de Ronronnement. 🐱 Poussière Stellaire: Saut Warp + Bouclier Stellaire. 🐱 Félix: Sentier de la Nature + Charge Sauvage.',
       trackTypesTitle: 'Types de Piste',
       trackTypes:
-        'Linéaire — course directe. Circulaire — raccourcis et obstacles. Plusieurs chemins — fourches.',
+        'Linéaire - course directe. Circulaire - raccourcis et obstacles. Plusieurs chemins - fourches.',
     },
     gameOver: {
       won: 'Vous avez gagné!',
       lost: 'Vous avez perdu.',
       draw: 'Match nul.',
       you: 'Vous',
+      winnerIs: '{{name}} gagne !',
       messages: {
         won: 'Votre chat a franchi la ligne en premier! Encore une course?',
         lost: 'Un autre chat a gagné. Revanche?',
@@ -197,6 +199,16 @@ export const frMessages = {
       rematch: 'Revanche',
       leave: 'Quitter',
       forfeit: 'Abandonner',
+      catnap: 'Sieste',
+      pounce: 'Bondir',
+      deployTrap: 'Piège à herbe',
+      rollTitle: 'Lancer et foncer',
+      catnapDesc:
+        'Reposez-vous pour gagner +1 Énergie et un Bouclier protecteur',
+      pounceDesc:
+        'Bondissez de 2 cases avec une agilité féline (Coûte 1 Énergie)',
+      deployTrapDesc:
+        'Posez un piège devant pour ralentir vos rivaux (Coûte 1 Énergie)',
     },
     chat: {
       rolled: '{{name}} a lancé {{roll}} et avancé de {{move}} cases.',
@@ -215,6 +227,46 @@ export const frMessages = {
       turn: '{{player}} lance…',
       winner: '{{player}} a gagné la course!',
       draw: 'Match nul',
+    },
+    dashboard: {
+      raceProgress: 'Progression de la course',
+      leaderboard: 'Classement',
+      finishLine: 'Arrivée',
+      leading: 'En tête',
+      leadsBy: '{{name}} mène de {{count}} cases',
+      inLead: '1re place',
+      rank: 'Rang {{rank}}',
+      spaceProgress: 'Case {{current}} / {{total}}',
+      powerTokens: '{{count}} Énergie',
+      rollNow: 'Lancer le dé',
+      lastRoll: 'Dernier lancer: {{value}}',
+      rolledMoved: 'Lancé {{roll}} (+{{move}} cases)',
+      yourTurnToRoll: 'À vous de lancer!',
+      waitingForPlayer: 'En attente du lancer de {{name}}...',
+      recentEvents: 'Flux de la course',
+      commandDeck: 'Console de course',
+      tacticalDeck: 'Actions tactiques',
+      activeBuffs: 'Modificateurs actifs',
+      shieldActive: 'Bouclier actif',
+      speedPrimed: '+3 Vitesse prête',
+      apexPrimed: 'Précision Apex (4)',
+      powerTokensCount: '{{count}}/3 Énergie',
+      pressSpace: 'Appuyez sur ESPACE pour lancer',
+      distanceToFinish: '{{count}} cases jusqu’à l’arrivée',
+      inspectRoster: 'Dossier des pilotes',
+      rolling: 'Lancement du dé...',
+      used: 'Utilisé',
+      turnBadge: 'Tour',
+      raceInProgress: 'Course en cours...',
+    },
+    board: {
+      start: 'Départ',
+      finish: 'Arrivée',
+      obstacle: 'Obstacle',
+      bonus: 'Bonus',
+      trap: 'Piège',
+      startUpper: 'DÉPART',
+      finishUpper: 'ARRIVÉE',
     },
   },
 };

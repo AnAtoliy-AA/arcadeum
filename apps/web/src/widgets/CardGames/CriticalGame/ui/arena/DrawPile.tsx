@@ -1,4 +1,3 @@
-import { Typography } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { CriticalCard } from '../../types';
 import { DeckDisplay } from '../DeckDisplay';
@@ -10,11 +9,6 @@ interface DrawPileProps {
   disabled: boolean;
   onDraw: () => void;
   cardVariant?: string;
-  /**
-   * When true, shrink the pile to ~80×112 so the three-column arena
-   * row still fits at 390px. Passed from `Arena` once per layout so
-   * piles don't each call the matchMedia hook.
-   */
   isNarrow?: boolean;
 }
 
@@ -27,9 +21,6 @@ export function DrawPile({
   isNarrow = false,
 }: DrawPileProps) {
   const { t } = useTranslation();
-  // DeckDisplay's `t` prop accepts the unparameterised string form used by
-  // the existing layout — cast through to keep the typed namespace inside
-  // the new components without forking DeckDisplay just for ARC-632.
   const tCompat = t as unknown as (key: string) => string;
 
   return (
@@ -56,36 +47,27 @@ export function DrawPile({
             }
       }
     >
-      {/* Desktop: 140×196 — the widget arena has more vertical real
-          estate than the table-mode header. Phones: 80×112 so the
-          three-column row still fits at 390px. */}
       <CardSlot
         role="deck"
         style={{
-          width: isNarrow ? 80 : 140,
-          height: isNarrow ? 112 : 196,
+          width: isNarrow ? 76 : 120,
+          height: isNarrow ? 106 : 168,
         }}
       >
         <DeckDisplay deck={deck} t={tCompat} cardVariant={cardVariant} />
       </CardSlot>
-      <Typography
-        uiSize="xs"
-        weight="800"
-        alpha="high"
-        className="tracking-[0.4px]"
+      <span
+        className="text-xs font-extrabold tracking-[0.4px] text-slate-200 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
         data-testid="arena-draw-pile-count"
       >
         {t('games.table.state.deck')} · {count}
-      </Typography>
-      <Typography
-        uiSize="xs"
-        weight="600"
-        alpha="high"
-        className="uppercase tracking-[0.4px]"
+      </span>
+      <span
+        className="text-xs font-semibold uppercase tracking-[0.4px] text-slate-300 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
         data-testid="arena-draw-pile-hint"
       >
         {t('games.table.arena.drawHint')}
-      </Typography>
+      </span>
     </div>
   );
 }

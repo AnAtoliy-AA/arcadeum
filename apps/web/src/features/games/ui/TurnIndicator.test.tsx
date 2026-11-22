@@ -13,6 +13,7 @@ vi.mock('@/shared/i18n/useTranslation', () => ({
         'games.table.turn.otherTurn': "{{name}}'s turn",
         'games.table.turn.waiting': 'Waiting…',
         'games.table.turn.gameOver': 'Game over',
+        'games.table.turn.firstMove': 'First Move',
       };
       const base = labels[key] ?? key;
       return params
@@ -124,6 +125,18 @@ describe('TurnIndicator', () => {
     );
     expect(screen.getByTestId('turn-indicator-label')).toHaveTextContent(
       "Bot 9's turn",
+    );
+  });
+
+  it('renders first move indicator badge when isFirstMove is true', () => {
+    render(
+      <TurnIndicator
+        turn={{ onClockUserId: 'u-1', isMyTurn: true, isFirstMove: true }}
+      />,
+    );
+    expect(screen.getByTestId('first-move-indicator')).toBeVisible();
+    expect(screen.getByTestId('first-move-indicator')).toHaveTextContent(
+      'First Move',
     );
   });
 });

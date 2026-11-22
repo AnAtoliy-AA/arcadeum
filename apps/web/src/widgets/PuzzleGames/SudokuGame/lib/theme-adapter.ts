@@ -6,6 +6,7 @@ export interface SudokuTheme {
   /** Panel the grid sits on. */
   boardBackground: string;
   boardBorder: string;
+  cellBackground: string;
   /** Grid lines: thin cell borders and thick 3×3 separators. */
   lineThin: string;
   lineThick: string;
@@ -25,19 +26,20 @@ export interface SudokuTheme {
 export function sharedThemeToSudoku(theme: GameTheme): SudokuTheme {
   return {
     background: `linear-gradient(160deg, ${theme.colors.background} 0%, ${theme.colors.surface} 100%)`,
-    boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.85)`,
+    boardBackground: `rgba(${hexToRgb(theme.colors.surface)}, 0.95)`,
     boardBorder: theme.colors.border,
-    lineThin: `rgba(${hexToRgb(theme.colors.text)}, 0.18)`,
+    cellBackground: `rgba(${hexToRgb(theme.colors.background)}, 0.55)`,
+    lineThin: `rgba(${hexToRgb(theme.colors.text)}, 0.16)`,
     lineThick: theme.colors.border,
-    selectedCell: `rgba(${hexToRgb(theme.colors.highlight)}, 0.35)`,
-    peerCell: `rgba(${hexToRgb(theme.colors.primary)}, 0.12)`,
-    sameNumberCell: `rgba(${hexToRgb(theme.colors.glow)}, 0.3)`,
+    selectedCell: `rgba(${hexToRgb(theme.colors.highlight)}, 0.45)`,
+    peerCell: `rgba(${hexToRgb(theme.colors.primary)}, 0.22)`,
+    sameNumberCell: `rgba(${hexToRgb(theme.colors.glow)}, 0.35)`,
     conflictColor: '#ef4444',
     givenColor: theme.colors.text,
     playerValueColor: theme.colors.primary,
-    noteColor: `rgba(${hexToRgb(theme.colors.text)}, 0.55)`,
+    noteColor: `rgba(${hexToRgb(theme.colors.text)}, 0.65)`,
     textColor: theme.colors.text,
-    borderRadius: '10px',
+    borderRadius: '16px',
     bgImage: theme.bgImage,
   };
 }

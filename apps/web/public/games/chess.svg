@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 225" width="400" height="225">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="80%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#090d16"/>
+    </radialGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#94a3b8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="225" fill="url(#bg)"/>
+
+  <g transform="translate(200,105)">
+    <!-- Board squares in background -->
+    <rect x="-48" y="-48" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="0" y="-48" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="-24" y="-24" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="24" y="-24" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="-48" y="0" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="0" y="0" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="-24" y="24" width="24" height="24" fill="#334155" opacity="0.6"/>
+    <rect x="24" y="24" width="24" height="24" fill="#334155" opacity="0.6"/>
+
+    <!-- Knight piece silhouette -->
+    <path d="M-18 36 H18 L14 26 C12 24 16 16 16 10 C16 4 11 -4 8 -8 C5 -12 2 -20 -4 -24 C-10 -28 -16 -24 -18 -18 C-20 -12 -12 -10 -12 -4 C-12 0 -22 6 -20 16 L-18 26 Z"
+          fill="#f8fafc" stroke="#090d16" stroke-width="2.5"/>
+    <circle cx="-10" cy="-14" r="2.5" fill="#090d16"/>
+  </g>
+
+  <text x="200" y="202" text-anchor="middle" font-family="system-ui, sans-serif"
+        font-size="26" font-weight="900" letter-spacing="4" fill="url(#title)">CHESS</text>
+</svg>

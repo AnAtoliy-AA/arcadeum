@@ -49,6 +49,7 @@ export interface GrantResult {
 
 export interface GiftResult {
   inventoryItem: InventoryItemView;
+  balance?: WalletBalanceView;
 }
 
 export interface RevokeResult {

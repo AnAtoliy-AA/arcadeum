@@ -3,8 +3,20 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { GlassCard } from '@arcadeum/ui';
 import { Sparkline } from './MonitoringCharts';
-import { ReadinessCard, DbHealthCard } from './MonitoringCards';
+import {
+  ReadinessCard,
+  DbHealthCard,
+  StatCard,
+  InfoItem,
+  formatBytes,
+  parsePrometheusMetrics,
+  type PrometheusMetrics,
+} from './MonitoringCards';
 import { CapacityCard, type CapacityData } from './MonitoringCapacity';
+import {
+  MonitoringClusterCard,
+  type ClusterStatus,
+} from './MonitoringClusterCard';
 
 interface HealthData {
   status: string;
@@ -54,16 +66,6 @@ interface ServerMetricsData {
   };
 }
 
-interface PrometheusMetrics {
-  activeConnections: number;
-  memoryRSS: number;
-  memoryHeap: number;
-  memoryHeapUsed: number;
-  httpRequestsTotal: number;
-  httpRequestDuration: number;
-  mongodbOperations: number;
-}
-
 interface MetricsHistory {
   timestamp: number;
   cpu: number;
@@ -86,42 +88,6 @@ function formatUptime(seconds: number): string {
   return `${minutes}m`;
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes >= 1073741824) return `${(bytes / 1073741824).toFixed(1)} GB`;
-  if (bytes >= 1048576) return `${(bytes / 1048576).toFixed(1)} MB`;
-  return `${(bytes / 1024).toFixed(1)} KB`;
-}
-
-function parsePrometheusMetrics(text: string): PrometheusMetrics {
-  const m: PrometheusMetrics = {
-    activeConnections: 0,
-    memoryRSS: 0,
-    memoryHeap: 0,
-    memoryHeapUsed: 0,
-    httpRequestsTotal: 0,
-    httpRequestDuration: 0,
-    mongodbOperations: 0,
-  };
-
-  for (const line of text.split('\n')) {
-    const val = line.match(/(\d+)$/)?.[1];
-    if (!val) continue;
-    if (line.startsWith('http_server_active_connections'))
-      m.activeConnections = parseInt(val);
-    if (line.startsWith('process_resident_memory_bytes'))
-      m.memoryRSS = parseInt(val);
-    if (line.startsWith('nodejs_heap_size_total_bytes'))
-      m.memoryHeap = parseInt(val);
-    if (line.startsWith('nodejs_heap_size_used_bytes'))
-      m.memoryHeapUsed = parseInt(val);
-    if (line.startsWith('http_server_request_duration_seconds_count'))
-      m.httpRequestsTotal += parseInt(val);
-    if (line.startsWith('mongodb_operation_duration_seconds_count'))
-      m.mongodbOperations += parseInt(val);
-  }
-  return m;
-}
-
 export function MonitoringView({ t }: MonitoringClientProps) {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [ready, setReady] = useState<ReadyData | null>(null);
@@ -129,6 +95,7 @@ export function MonitoringView({ t }: MonitoringClientProps) {
   const [server, setServer] = useState<ServerMetricsData | null>(null);
   const [prom, setProm] = useState<PrometheusMetrics | null>(null);
   const [capacity, setCapacity] = useState<CapacityData | null>(null);
+  const [cluster, setCluster] = useState<ClusterStatus | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState<MetricsHistory[]>([]);
@@ -155,18 +122,23 @@ export function MonitoringView({ t }: MonitoringClientProps) {
     [],
   );
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   useEffect(() => {
+    let cancelled = false;
     const fetchData = async () => {
       try {
-        const [h, r, d, s, m, c] = await Promise.allSettled([
+        const [h, r, d, s, m, c, cl] = await Promise.allSettled([
           fetch('/api/admin/monitoring/health'),
           fetch('/api/admin/monitoring/ready'),
           fetch('/api/admin/monitoring/db-health'),
           fetch('/api/admin/monitoring/server-metrics'),
           fetch('/api/admin/monitoring/metrics'),
           fetch('/api/admin/monitoring/capacity'),
+          fetch('/api/admin/monitoring/cluster-status'),
         ]);
 
+        if (cancelled) return;
         if (h.status === 'fulfilled' && h.value.ok)
           setHealth(await h.value.json());
         if (r.status === 'fulfilled' && r.value.ok)
@@ -188,20 +160,30 @@ export function MonitoringView({ t }: MonitoringClientProps) {
         if (c.status === 'fulfilled' && c.value.ok) {
           setCapacity(await c.value.json());
         }
+        if (cl.status === 'fulfilled' && cl.value.ok) {
+          setCluster(await cl.value.json());
+        }
         setError(null);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch metrics',
-        );
+        if (!cancelled) {
+          setError(
+            err instanceof Error ? err.message : 'Failed to fetch metrics',
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     void fetchData();
     const interval = setInterval(fetchData, 10000);
-    return () => clearInterval(interval);
-  }, [pushHistory]);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [pushHistory, refreshKey]);
 
   if (loading) {
     return (
@@ -390,6 +372,12 @@ export function MonitoringView({ t }: MonitoringClientProps) {
           </GlassCard>
         )}
 
+        {/* Backend Cluster Workers */}
+        <MonitoringClusterCard
+          cluster={cluster}
+          onReloadSuccess={() => setRefreshKey((k) => k + 1)}
+        />
+
         {/* System Info */}
         <GlassCard className="p-5">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
@@ -465,34 +453,6 @@ export function MonitoringView({ t }: MonitoringClientProps) {
             : '-'}
         </div>
       </div>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: string;
-  color?: string;
-}) {
-  return (
-    <GlassCard className="p-4">
-      <p className="text-xs text-[var(--text-secondary)]">{label}</p>
-      <p className={`mt-1 text-xl font-bold ${color ?? 'text-[var(--text)]'}`}>
-        {value}
-      </p>
-    </GlassCard>
-  );
-}
-
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span className="text-[var(--text-secondary)]">{label}</span>
-      <p className="font-medium text-[var(--text)]">{value}</p>
     </div>
   );
 }

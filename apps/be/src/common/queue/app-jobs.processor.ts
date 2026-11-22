@@ -10,10 +10,21 @@ export interface AppJobData {
 @Processor('app-jobs')
 export class AppJobsProcessor extends WorkerHost implements OnModuleInit {
   private readonly logger = new Logger(AppJobsProcessor.name);
+  private hasReportedOffline = false;
 
   onModuleInit(): void {
     if (this.worker) {
       this.worker.on('error', (err: Error) => {
+        if (
+          err.message.includes('ECONNREFUSED') ||
+          err.message.includes('Connection is closed')
+        ) {
+          if (!this.hasReportedOffline) {
+            this.hasReportedOffline = true;
+            this.logger.debug(`BullMQ worker offline: ${err.message}`);
+          }
+          return;
+        }
         this.logger.warn(`BullMQ worker connection error: ${err.message}`);
       });
     }

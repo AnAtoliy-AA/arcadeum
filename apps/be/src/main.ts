@@ -160,7 +160,7 @@ async function bootstrap() {
   }
 
   const shutdown = async (signal: string) => {
-    logger.log(`\n[Backend] ${signal} received — shutting down gracefully`);
+    logger.log(`\n[Backend] ${signal} received: shutting down gracefully`);
     await app.close();
     await shutdownTracing();
     process.exit(0);

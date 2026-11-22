@@ -4,8 +4,8 @@ const APP = appConfig.appName;
 
 export const en = {
   home: {
-    title: `${APP} — Free Online Board & Card Games`,
-    description: `Play free board games, card games, and mini-games with friends on ${APP}. Chess, Checkers, Solitaire, and more — no download, no signup.`,
+    title: `${APP} - Free Online Board & Card Games`,
+    description: `Play free board games, card games, and mini-games with friends on ${APP}. Chess, Checkers, Solitaire, and more - no download, no signup.`,
     badge: 'Play with Friends or AI',
   },
   games: {
@@ -22,88 +22,88 @@ export const en = {
   },
   gameRoom: {
     title: `Game Room · ${APP}`,
-    description: `Join a live game room on ${APP}, take a seat, and start playing — or spectate matches in progress.`,
+    description: `Join a live game room on ${APP}, take a seat, and start playing - or spectate matches in progress.`,
   },
   seaBattleLanding: {
-    title: `Sea Battle (Battleship) Online — Play Free with Friends or AI · ${APP}`,
+    title: `Sea Battle (Battleship) Online - Play Free with Friends or AI · ${APP}`,
     description: `Play Sea Battle (Battleship) online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match on a 10×10 grid.`,
   },
   battleshipLanding: {
-    title: `Battleship Online — Play Free with Friends or AI · ${APP}`,
+    title: `Battleship Online - Play Free with Friends or AI · ${APP}`,
     description: `Play Battleship online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match on a 10×10 grid.`,
   },
   criticalLanding: {
     title: `Critical · Free Exploding Card Game Online · ${APP}`,
-    description: `Play Critical online for free on ${APP} — a strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks. No download, no signup.`,
+    description: `Play Critical online for free on ${APP} - a strategic card game where you draw, defuse, and survive the explosion. 2–5 players, AI bots, themed decks. No download, no signup.`,
   },
   glimwormLanding: {
     title: `Glimworm · Free Online Snake Arena Game · ${APP}`,
-    description: `Play Glimworm online for free on ${APP} — a real-time glow-worm snake arena for up to 10 players. Slither, survive, eat the lights. Browser-based, no download.`,
+    description: `Play Glimworm online for free on ${APP} - a real-time glow-worm snake arena for up to 10 players. Slither, survive, eat the lights. Browser-based, no download.`,
   },
   ticTacToeLanding: {
     title: `Tic-Tac-Toe · Multiplayer · 3×3 – 9×9 boards · ${APP}`,
-    description: `Play multiplayer Tic-Tac-Toe on ${APP} — six themed variants, 2–4 players, optional teams, bots from day one. Free, instant rooms, no download.`,
+    description: `Play multiplayer Tic-Tac-Toe on ${APP} - six themed variants, 2–4 players, optional teams, bots from day one. Free, instant rooms, no download.`,
   },
   cascadeLanding: {
     title: `Cascade · Multiplayer shedding card game · ${APP}`,
-    description: `Play Cascade online on ${APP} — a shedding card game with Draw-Two and Wild +4 stacking chains and four selectable themes. 2–10 players, free instant rooms, no download.`,
+    description: `Play Cascade online on ${APP} - a shedding card game with Draw-Two and Wild +4 stacking chains and four selectable themes. 2–10 players, free instant rooms, no download.`,
   },
   chessLanding: {
-    title: `Play Chess Online Free — Stockfish 19, 20 AI Bots, 6 Variants · ${APP}`,
-    description: `Play chess online free on ${APP} with Stockfish 19 engine, 20 AI bot personalities, 6 variants (Chess960, Crazyhouse, Atomic), Puzzle Rush, live analysis, game review, endgame tablebases, and tournaments — no signup, no download.`,
+    title: `Play Chess Online Free: Stockfish 19, 20 AI Bots, 6 Variants · ${APP}`,
+    description: `Play chess online free on ${APP} with Stockfish 19 engine, 20 AI bot personalities, 6 variants (Chess960, Crazyhouse, Atomic), Puzzle Rush, live analysis, game review, endgame tablebases, and tournaments - no signup, no download.`,
   },
   checkersLanding: {
     title: `Checkers · Multiplayer · ${APP}`,
-    description: `Play Checkers online on ${APP} — standard 8×8 rules with forced captures, multi-jump, and king promotion. Free, instant rooms, no download.`,
+    description: `Play Checkers online on ${APP} - standard 8×8 rules with forced captures, multi-jump, and king promotion. Free, instant rooms, no download.`,
   },
   catDashLanding: {
     title: `Cat Dash · Multiplayer Cat Racing Dice Game · ${APP}`,
-    description: `Play Cat Dash online on ${APP} — race cats with dice, unique abilities, and themed tracks. 2–6 players, free, instant rooms.`,
+    description: `Play Cat Dash online on ${APP} - race cats with dice, unique abilities, and themed tracks. 2–6 players, free, instant rooms.`,
   },
   backgammonLanding: {
     title: `Backgammon · Free Online Multiplayer Board Game · ${APP}`,
-    description: `Play Backgammon online on ${APP} — classic 24-point board, dice rolls, bearing off, hitting blots to the bar, and AI opponents. Free, instant rooms, no download.`,
+    description: `Play Backgammon online on ${APP} - classic 24-point board, dice rolls, bearing off, hitting blots to the bar, and AI opponents. Free, instant rooms, no download.`,
   },
   pachisiLanding: {
     title: `Pachisi (Ludo) · Free Online Race Board Game · ${APP}`,
-    description: `Play Pachisi online on ${APP} — roll a six to launch your tokens, capture rivals, dodge danger zones, and race all four home. 2–4 players, AI bots, free instant rooms.`,
+    description: `Play Pachisi online on ${APP} - roll a six to launch your tokens, capture rivals, dodge danger zones, and race all four home. 2–4 players, AI bots, free instant rooms.`,
   },
   heartsLanding: {
     title: `Hearts · Free Online Multiplayer Card Game · ${APP}`,
-    description: `Play Hearts online on ${APP} — classic 4-player trick-taking card game with passing, Hearts, Queen of Spades, and AI opponents. Free, instant rooms.`,
+    description: `Play Hearts online on ${APP} - classic 4-player trick-taking card game with passing, Hearts, Queen of Spades, and AI opponents. Free, instant rooms.`,
   },
   spadesLanding: {
     title: `Spades · Free Online Multiplayer Card Game · ${APP}`,
-    description: `Play Spades online on ${APP} — classic 4-player partnership trick-taking card game with bidding, nil bids, bags, and AI opponents. Free, instant rooms.`,
+    description: `Play Spades online on ${APP} - classic 4-player partnership trick-taking card game with bidding, nil bids, bags, and AI opponents. Free, instant rooms.`,
   },
   goLanding: {
     title: `Go · Free Online Multiplayer Board Game · ${APP}`,
-    description: `Play Go online on ${APP} — classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring, and AI opponents. Free, instant rooms.`,
+    description: `Play Go online on ${APP} - classic Baduk/Weiqi on 9×9, 13×13 and 19×19 boards with captures, ko rule, area scoring, and AI opponents. Free, instant rooms.`,
   },
 
   solitaireLanding: {
     title: `Solitaire · Free Online Klondike Card Game · ${APP}`,
-    description: `Play Solitaire (Klondike) online on ${APP} — the classic single-player card puzzle with scoring, timer, and saved progress. Free, instant, no download.`,
+    description: `Play Solitaire (Klondike) online on ${APP} - the classic single-player card puzzle with scoring, timer, and saved progress. Free, instant, no download.`,
   },
   minesweeperLanding: {
     title: `Minesweeper · Free Online Classic Puzzle Game · ${APP}`,
-    description: `Play Minesweeper online on ${APP} — beginner to expert grids with flags, chording, timer, and saved progress. Free, instant, no download.`,
+    description: `Play Minesweeper online on ${APP} - beginner to expert grids with flags, chording, timer, and saved progress. Free, instant, no download.`,
   },
   minesweeperPlay: {
     title: `Play Minesweeper · ${APP}`,
-    description: `Play Minesweeper on ${APP} — reveal safe tiles, flag mines, and clear the board. Beginner to expert difficulty, free instant play.`,
+    description: `Play Minesweeper on ${APP} - reveal safe tiles, flag mines, and clear the board. Beginner to expert difficulty, free instant play.`,
   },
   sudokuLanding: {
     title: `Sudoku · Free Online Number Puzzle Game · ${APP}`,
-    description: `Play Sudoku online on ${APP} — easy, medium and hard puzzles with unique solutions, pencil marks, and saved progress. Free, instant, no download.`,
+    description: `Play Sudoku online on ${APP} - easy, medium and hard puzzles with unique solutions, pencil marks, and saved progress. Free, instant, no download.`,
   },
   game2048Landing: {
     title: `2048 · Free Online Tile-Merging Puzzle Game · ${APP}`,
-    description: `Play 2048 online on ${APP} — slide and merge numbered tiles on a 4×4 grid, chase your best score, and keep going past 2048. Free, instant, no download.`,
+    description: `Play 2048 online on ${APP} - slide and merge numbered tiles on a 4×4 grid, chase your best score, and keep going past 2048. Free, instant, no download.`,
   },
   settings: {
     title: `Settings · ${APP}`,
-    description: `Customize your ${APP} experience — manage appearance, theme, language, and download preferences.`,
+    description: `Customize your ${APP} experience - manage appearance, theme, language, and download preferences.`,
   },
   history: {
     title: `Game History · ${APP}`,
@@ -111,7 +111,7 @@ export const en = {
   },
   stats: {
     title: `Player Statistics · ${APP}`,
-    description: `Track your ${APP} stats — games played, wins, losses, and progression across every supported title.`,
+    description: `Track your ${APP} stats - games played, wins, losses, and progression across every supported title.`,
   },
   referrals: {
     title: `Invite Friends · Referral Rewards · ${APP}`,
@@ -139,19 +139,19 @@ export const en = {
   },
   rewards: {
     title: `Daily Rewards · ${APP}`,
-    description: `Claim daily rewards on ${APP} — earn coins, stamps, and cosmetics just by stopping by every day.`,
+    description: `Claim daily rewards on ${APP} - earn coins, stamps, and cosmetics just by stopping by every day.`,
   },
   wallet: {
     title: `Wallet & Balance · ${APP}`,
-    description: `Manage your ${APP} wallet — view your coin balance, transaction history, and current cosmetic inventory.`,
+    description: `Manage your ${APP} wallet - view your coin balance, transaction history, and current cosmetic inventory.`,
   },
   token: {
     title: `Token · ${APP}`,
-    description: `Learn about the ${APP} token on Solana — earn through gameplay or tournament prizes, spend in the shop.`,
+    description: `Learn about the ${APP} token on Solana - earn through gameplay or tournament prizes, spend in the shop.`,
   },
   shop: {
     title: `Shop · Cosmetics & Boosts · ${APP}`,
-    description: `Browse the ${APP} shop — unlock avatars, badges, color tags, and packs to personalize your profile.`,
+    description: `Browse the ${APP} shop - unlock avatars, badges, color tags, and packs to personalize your profile.`,
   },
   payment: {
     title: `Payment · ${APP}`,
@@ -167,15 +167,15 @@ export const en = {
   },
   notes: {
     title: `Supporter Notes · ${APP}`,
-    description: `Read messages of support from the ${APP} community — and add your own if you've helped fund the project.`,
+    description: `Read messages of support from the ${APP} community - and add your own if you've helped fund the project.`,
   },
   chats: {
     title: `Chats · ${APP}`,
-    description: `Pick up your ${APP} conversations — message friends, plan matches, and keep the chatter going between games.`,
+    description: `Pick up your ${APP} conversations - message friends, plan matches, and keep the chatter going between games.`,
   },
   chat: {
     title: `Chat · ${APP}`,
-    description: `Direct messaging on ${APP} — talk to friends, coordinate matches, and share quick notes.`,
+    description: `Direct messaging on ${APP} - talk to friends, coordinate matches, and share quick notes.`,
   },
   auth: {
     title: `Sign in · ${APP}`,
@@ -195,7 +195,7 @@ export const en = {
   },
   contact: {
     title: `Contact Us · ${APP}`,
-    description: `Have feedback, a bug report, or a partnership idea? Reach the ${APP} team — we read every message.`,
+    description: `Have feedback, a bug report, or a partnership idea? Reach the ${APP} team - we read every message.`,
   },
   help: {
     title: `Help Center · ${APP}`,
@@ -219,7 +219,7 @@ export const en = {
   },
   community: {
     title: `Community · ${APP}`,
-    description: `Join the ${APP} community — Discord, Telegram, and our channels for players and supporters.`,
+    description: `Join the ${APP} community - Discord, Telegram, and our channels for players and supporters.`,
   },
   developers: {
     title: `Developers · ${APP}`,
@@ -227,7 +227,7 @@ export const en = {
   },
   features: {
     title: `Platform Features · ${APP}`,
-    description: `Explore all implemented features on ${APP} — 20+ multiplayer games, ranking, social, economy, security, SEO, and more.`,
+    description: `Explore all implemented features on ${APP} - 20+ multiplayer games, ranking, social, economy, security, SEO, and more.`,
   },
   admin: {
     title: `Admin · ${APP}`,

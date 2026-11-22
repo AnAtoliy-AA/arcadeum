@@ -50,10 +50,13 @@ export interface LeaderboardEntry {
   rank: number;
   playerId: string;
   username: string;
+  displayName?: string | null;
   totalGames: number;
   wins: number;
   losses: number;
   winRate: number;
+  recentForm?: Array<'W' | 'L' | 'D'>;
+  currentStreak?: number;
   equippedAvatarId?: string | null;
   equippedBadgeId?: string | null;
   equippedNameColorId?: string | null;
@@ -123,16 +126,30 @@ export const historyApi = {
     limit?: number,
     offset?: number,
     gameId?: string,
+    opponentTypeOrOptions?: 'all' | 'pvp' | 'bot' | ApiClientOptions,
     options?: ApiClientOptions,
   ): Promise<LeaderboardResponse> => {
+    let opponentType: 'all' | 'pvp' | 'bot' | undefined;
+    let actualOptions: ApiClientOptions | undefined = options;
+    if (typeof opponentTypeOrOptions === 'string') {
+      opponentType = opponentTypeOrOptions;
+    } else if (
+      opponentTypeOrOptions &&
+      typeof opponentTypeOrOptions === 'object'
+    ) {
+      actualOptions = opponentTypeOrOptions;
+    }
     const params = new URLSearchParams();
     if (limit) params.append('limit', String(limit));
     if (offset !== undefined) params.append('offset', String(offset));
     if (gameId) params.append('gameId', gameId);
+    if (opponentType && opponentType !== 'all') {
+      params.append('opponentType', opponentType);
+    }
     const queryString = params.toString() ? `?${params.toString()}` : '';
     return apiClient.get<LeaderboardResponse>(
       `/games/leaderboard${queryString}`,
-      options,
+      actualOptions,
     );
   },
 

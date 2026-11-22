@@ -4,7 +4,7 @@ export const post: BlogPost = {
   slug: 'how-to-play-glimworm',
   locale: 'es',
   title:
-    'Cómo jugar a Glimworm online — arena de neón, tácticas, supervivencia',
+    'Cómo jugar a Glimworm online - arena de neón, tácticas, supervivencia',
   excerpt:
     'Guía completa: multijugador serpientes donde comes luz, dejas rastros letales y superas rivales.',
   publishedAt: '2026-08-18',
@@ -56,7 +56,7 @@ export const post: BlogPost = {
     {
       type: 'cta',
       href: '/games/glimworm',
-      text: 'Juega a Glimworm online — gratis',
+      text: 'Juega a Glimworm online - gratis',
       description: 'Arena de neón, juego instantáneo.',
     },
     { type: 'heading', level: 2, text: 'Resumen', id: 'tldr' },

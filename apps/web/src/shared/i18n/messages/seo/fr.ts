@@ -6,8 +6,8 @@ const APP = appConfig.appName;
 
 export const fr: DeepPartial<SeoMessages> = {
   home: {
-    title: `${APP} — Jeux de société, cartes et mini-jeux gratuits en ligne`,
-    description: `Jouez gratuitement à des jeux de société, jeux de cartes et mini-jeux en ligne entre amis sur ${APP}. Échecs, Bataille navale, Dames, Cascade, 2048 et plus — créez un salon et jouez directement dans votre navigateur. Sans téléchargement.`,
+    title: `${APP} - Jeux de société, cartes et mini-jeux gratuits en ligne`,
+    description: `Jouez gratuitement à des jeux de société, jeux de cartes et mini-jeux en ligne entre amis sur ${APP}. Échecs, Bataille navale, Dames, Cascade, 2048 et plus - créez un salon et jouez directement dans votre navigateur. Sans téléchargement.`,
     badge: "Jouez avec des amis ou contre l'IA",
   },
   games: {
@@ -24,88 +24,88 @@ export const fr: DeepPartial<SeoMessages> = {
   },
   gameRoom: {
     title: `Salon de jeu · ${APP}`,
-    description: `Rejoignez un salon en direct sur ${APP}, prenez place et commencez à jouer — ou regardez les parties en cours.`,
+    description: `Rejoignez un salon en direct sur ${APP}, prenez place et commencez à jouer - ou regardez les parties en cours.`,
   },
   criticalLanding: {
     title: `Critical · Jeu de cartes explosif gratuit en ligne · ${APP}`,
-    description: `Jouez gratuitement à Critical en ligne sur ${APP} — un jeu de cartes stratégique où vous piochez, désamorcez et survivez à l'explosion. 2 à 5 joueurs, IA, decks thématiques. Sans téléchargement, sans inscription.`,
+    description: `Jouez gratuitement à Critical en ligne sur ${APP} - un jeu de cartes stratégique où vous piochez, désamorcez et survivez à l'explosion. 2 à 5 joueurs, IA, decks thématiques. Sans téléchargement, sans inscription.`,
   },
   glimwormLanding: {
     title: `Glimworm · Jeu de serpents en arène gratuit en ligne · ${APP}`,
-    description: `Jouez gratuitement à Glimworm en ligne sur ${APP} — un jeu d'arène de vers lumineux en temps réel pour jusqu'à 10 joueurs. Glissez, survivez, mangez les lumières. Dans le navigateur, sans téléchargement.`,
+    description: `Jouez gratuitement à Glimworm en ligne sur ${APP} - un jeu d'arène de vers lumineux en temps réel pour jusqu'à 10 joueurs. Glissez, survivez, mangez les lumières. Dans le navigateur, sans téléchargement.`,
   },
   ticTacToeLanding: {
     title: `Morpion · Multijoueur · Plateaux 3×3 – 9×9 · ${APP}`,
-    description: `Jouez au morpion multijoueur sur ${APP} — six variantes thématiques, 2–4 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans téléchargement.`,
+    description: `Jouez au morpion multijoueur sur ${APP} - six variantes thématiques, 2–4 joueurs, mode équipes optionnel, bots dès le premier jour. Gratuit, salons instantanés, sans téléchargement.`,
   },
   cascadeLanding: {
     title: `Cascade · Jeu de cartes multijoueur de défausse · ${APP}`,
-    description: `Jouez à Cascade sur ${APP} — un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
+    description: `Jouez à Cascade sur ${APP} - un jeu de cartes de défausse avec chaînes Pioche-Deux et Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans téléchargement.`,
   },
   chessLanding: {
     title: `Échecs · Multijoueur · Standard & Chess960 · ${APP}`,
-    description: `Jouez aux échecs sur ${APP} — variantes standard et Chess960, contrôles de temps, bots IA. Gratuit, salles instantanées, sans téléchargement.`,
+    description: `Jouez aux échecs sur ${APP} - variantes standard et Chess960, contrôles de temps, bots IA. Gratuit, salles instantanées, sans téléchargement.`,
   },
   checkersLanding: {
     title: `Dames · Multijoueur · ${APP}`,
-    description: `Jouez aux dames sur ${APP} — plateau 8×8 avec prises obligatoires, sauts multiples et promotion en dame. Gratuit, salles instantanées.`,
+    description: `Jouez aux dames sur ${APP} - plateau 8×8 avec prises obligatoires, sauts multiples et promotion en dame. Gratuit, salles instantanées.`,
   },
   catDashLanding: {
     title: `Cat Dash · Course de chats multijoueur · ${APP}`,
-    description: `Jouez à Cat Dash sur ${APP} — courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
+    description: `Jouez à Cat Dash sur ${APP} - courses de chats avec dés, capacités uniques et pistes thématiques. 2–6 joueurs, gratuit.`,
   },
   pachisiLanding: {
     title: `Pachisi (Ludo) · Jeu de plateau de course gratuit · ${APP}`,
-    description: `Jouez au Pachisi en ligne sur ${APP} — faites un six pour lancer vos pions, capturez vos rivaux et rentrez les quatre à la maison. 2–4 joueurs, bots IA, salons gratuits.`,
+    description: `Jouez au Pachisi en ligne sur ${APP} - faites un six pour lancer vos pions, capturez vos rivaux et rentrez les quatre à la maison. 2–4 joueurs, bots IA, salons gratuits.`,
   },
   backgammonLanding: {
     title: `Backgammon · Jeu de plateau multijoueur gratuit · ${APP}`,
-    description: `Jouez au Backgammon en ligne sur ${APP} — plateau classique à 24 flèches, dés, sorties de pions et bots IA. Gratuit, sans téléchargement.`,
+    description: `Jouez au Backgammon en ligne sur ${APP} - plateau classique à 24 flèches, dés, sorties de pions et bots IA. Gratuit, sans téléchargement.`,
   },
   heartsLanding: {
     title: `Coeurs · Jeu de cartes multijoueur gratuit · ${APP}`,
-    description: `Jouez aux Coeurs en ligne sur ${APP} — classique jeu de cartes à 4 joueurs avec passage, Coeurs, Reine de Pique et adversaires IA. Gratuit.`,
+    description: `Jouez aux Coeurs en ligne sur ${APP} - classique jeu de cartes à 4 joueurs avec passage, Coeurs, Reine de Pique et adversaires IA. Gratuit.`,
   },
   spadesLanding: {
     title: `Pique · Jeu de cartes multijoueur gratuit · ${APP}`,
-    description: `Jouez au Pique en ligne sur ${APP} — classique jeu de cartes en partenariat à 4 joueurs avec annonces, Nil, sacs et adversaires IA. Gratuit.`,
+    description: `Jouez au Pique en ligne sur ${APP} - classique jeu de cartes en partenariat à 4 joueurs avec annonces, Nil, sacs et adversaires IA. Gratuit.`,
   },
   seaBattleLanding: {
     title: `Bataille Navale en Ligne Gratuite (Touché-Coulé) · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre l'IA, adversaire en ligne ou salon privé entre amis sans inscription.`,
   },
   battleshipLanding: {
-    title: `Bataille Navale en Ligne — Jouez Gratuitement avec des Amis ou l'IA · ${APP}`,
+    title: `Bataille Navale en Ligne - Jouez Gratuitement avec des Amis ou l'IA · ${APP}`,
     description: `Jouez à la Bataille Navale en ligne gratuitement sur ${APP}. Partie rapide contre l'IA, trouvez un adversaire ou invitez des amis dans un salon privé sur une grille 10×10.`,
   },
   goLanding: {
     title: `Go · Jeu de Plateau Multijoueur en Ligne Gratuit · ${APP}`,
-    description: `Jouez au Go en ligne sur ${APP} — Baduk/Weiqi classique sur plateaux 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et IA. Salons instantanés gratuits.`,
+    description: `Jouez au Go en ligne sur ${APP} - Baduk/Weiqi classique sur plateaux 9×9, 13×13 et 19×19 avec captures, règle du ko, comptage par aire et IA. Salons instantanés gratuits.`,
   },
 
   solitaireLanding: {
     title: `Solitaire · Jeu de Cartes Klondike Gratuit en Ligne · ${APP}`,
-    description: `Jouez au Solitaire (Klondike) en ligne sur ${APP} — le casse-tête de cartes classique solo avec score, chronomètre et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+    description: `Jouez au Solitaire (Klondike) en ligne sur ${APP} - le casse-tête de cartes classique solo avec score, chronomètre et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
   },
   minesweeperLanding: {
     title: `Démineur · Jeu de Réflexion Classique Gratuit en Ligne · ${APP}`,
-    description: `Jouez au Démineur en ligne sur ${APP} — grilles de débutant à expert avec drapeaux, chrono et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+    description: `Jouez au Démineur en ligne sur ${APP} - grilles de débutant à expert avec drapeaux, chrono et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
   },
   minesweeperPlay: {
     title: `Jouer au Démineur · ${APP}`,
-    description: `Jouez au Démineur sur ${APP} — révélez les cases sûres, placez des drapeaux et nettoyez la grille. Débutant à expert, gratuit.`,
+    description: `Jouez au Démineur sur ${APP} - révélez les cases sûres, placez des drapeaux et nettoyez la grille. Débutant à expert, gratuit.`,
   },
   sudokuLanding: {
     title: `Sudoku · Jeu de Puzzle de Chiffres Gratuit en Ligne · ${APP}`,
-    description: `Jouez au Sudoku en ligne sur ${APP} — niveaux facile, moyen et difficile à solution unique, crayon et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
+    description: `Jouez au Sudoku en ligne sur ${APP} - niveaux facile, moyen et difficile à solution unique, crayon et progression sauvegardée. Gratuit, instantané, sans téléchargement.`,
   },
   game2048Landing: {
     title: `2048 · Jeu de Puzzle à Fusion de Tuiles Gratuit en Ligne · ${APP}`,
-    description: `Jouez à 2048 en ligne sur ${APP} — glissez et fusionnez des tuiles sur une grille 4×4, battez votre record et continuez après 2048. Gratuit, instantané, sans téléchargement.`,
+    description: `Jouez à 2048 en ligne sur ${APP} - glissez et fusionnez des tuiles sur une grille 4×4, battez votre record et continuez après 2048. Gratuit, instantané, sans téléchargement.`,
   },
   settings: {
     title: `Paramètres · ${APP}`,
-    description: `Personnalisez votre expérience ${APP} — apparence, thème, langue et préférences de téléchargement.`,
+    description: `Personnalisez votre expérience ${APP} - apparence, thème, langue et préférences de téléchargement.`,
   },
   history: {
     title: `Historique des parties · ${APP}`,
@@ -169,7 +169,7 @@ export const fr: DeepPartial<SeoMessages> = {
   },
   notes: {
     title: `Messages de la communauté · ${APP}`,
-    description: `Lisez les messages de soutien de la communauté ${APP} — et laissez le vôtre si vous avez contribué au projet.`,
+    description: `Lisez les messages de soutien de la communauté ${APP} - et laissez le vôtre si vous avez contribué au projet.`,
   },
   chats: {
     title: `Discussions · ${APP}`,
@@ -197,7 +197,7 @@ export const fr: DeepPartial<SeoMessages> = {
   },
   contact: {
     title: `Nous contacter · ${APP}`,
-    description: `Un retour, un bug ou une idée de partenariat? Écrivez à l'équipe ${APP} — nous lisons chaque message.`,
+    description: `Un retour, un bug ou une idée de partenariat? Écrivez à l'équipe ${APP} - nous lisons chaque message.`,
   },
   help: {
     title: `Centre d'aide · ${APP}`,
@@ -229,7 +229,7 @@ export const fr: DeepPartial<SeoMessages> = {
   },
   features: {
     title: `Fonctionnalités de la Plateforme · ${APP}`,
-    description: `Explorez toutes les fonctionnalités de ${APP} — 20+ jeux multijoueurs, classements, fonctionnalités sociales, économie, sécurité et SEO.`,
+    description: `Explorez toutes les fonctionnalités de ${APP} - 20+ jeux multijoueurs, classements, fonctionnalités sociales, économie, sécurité et SEO.`,
   },
   admin: {
     title: `Admin · ${APP}`,

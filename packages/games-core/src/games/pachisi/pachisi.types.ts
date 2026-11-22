@@ -27,8 +27,9 @@ export interface PachisiState extends BaseGameState {
   /** playerId -> seat index (0, 13, 26, or 39 start offset / 4). */
   seats: Record<string, number>;
   tokens: Record<string, PachisiToken[]>;
-  /** Current rolled die value; null while waiting for a roll. */
   die: number | null;
+  lastDie: number | null;
+  lastRollerId: string | null;
   consecutiveSixes: number;
   currentTurnIndex: number;
   playerOrder: string[];

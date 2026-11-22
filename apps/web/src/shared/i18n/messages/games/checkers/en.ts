@@ -4,7 +4,7 @@ export const enMessages = {
     description:
       'Classic 8×8 checkers with forced captures, multi-jump, and king promotion',
     summary:
-      'Strategic board game — capture opponent pieces and reach the other side to become a king!',
+      'Strategic board game - capture opponent pieces and reach the other side to become a king!',
     variants: {
       classic: { name: 'Classic', description: 'Traditional checkers board' },
       neon: { name: 'Neon', description: 'Glowing neon aesthetic' },
@@ -14,7 +14,7 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Checkers — Free Multiplayer Board Game | Arcadeum',
+        title: 'Checkers - Free Multiplayer Board Game | Arcadeum',
         description:
           'Play checkers online for free on Arcadeum. Classic 8×8 board with forced captures, multi-jump, king promotion, and AI opponents.',
         keywords:
@@ -172,7 +172,7 @@ export const enMessages = {
       backwardCaptures:
         'In some rulesets, regular pieces (men) can capture opponent pieces behind them.\nMen always move forward, but can capture in any diagonal direction when backward captures are enabled.\nThis option is always on in International rules and can be toggled in other variants.',
       forcedCaptures:
-        'If a capture is available, the player must take it.\nIf multiple captures are available, the player must choose one.\nA multi-jump chain must be completed in full — you cannot stop early if more captures are available.',
+        'If a capture is available, the player must take it.\nIf multiple captures are available, the player must choose one.\nA multi-jump chain must be completed in full - you cannot stop early if more captures are available.',
       winConditions:
         'You WIN when:\n• You capture all opponent pieces\n• The opponent has no legal moves on their turn\n\nYou LOSE when:\n• All your pieces are captured\n• You have no legal moves on your turn\n\nThe game is a DRAW when both players have only kings with equal material and neither can force a win.',
     },

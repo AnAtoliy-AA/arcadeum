@@ -1,9 +1,11 @@
 'use client';
 
 import { memo, useMemo } from 'react';
-import { useCatDashTheme } from '../lib/CatDashThemeContext';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 import type { CatDashClientState } from '../types';
-
 import { RealisticCat } from './RealisticCat';
 
 interface TurnBadgeProps {
@@ -19,8 +21,7 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
   myTurn,
   resolveName,
 }: TurnBadgeProps) {
-  const { tokens } = useCatDashTheme();
-
+  const { t } = useTranslation();
   const currentPlayer = useMemo(() => {
     if (!currentEntryId) return null;
     return snapshot.players.find((p) => p.playerId === currentEntryId);
@@ -30,22 +31,22 @@ export const CatDashTurnBadge = memo(function CatDashTurnBadge({
 
   return (
     <div
-      className="flex flex-row items-center justify-center gap-3 py-3 px-4 rounded-3xl border-[1.5px]"
-      style={{
-        backgroundColor: myTurn
-          ? 'rgba(124, 58, 237, 0.18)'
-          : 'rgba(255, 255, 255, 0.03)',
-        borderColor: myTurn ? tokens.playerBorder : tokens.trackBorder,
-      }}
+      className={`flex flex-row items-center justify-center gap-3 py-3 px-5 rounded-3xl border backdrop-blur-md transition-all duration-200 ${
+        myTurn
+          ? 'bg-purple-900/30 border-purple-500/50 shadow-lg shadow-purple-500/20 ring-1 ring-purple-400/40'
+          : 'bg-slate-900/40 border-white/10'
+      }`}
     >
-      <RealisticCat catId={currentPlayer.catId} size={40} />
-      <span
-        className="text-[18px] font-bold tracking-[0.5px]"
-        style={{ color: tokens.text }}
-      >
+      <RealisticCat catId={currentPlayer.catId} size={40} showGlow={myTurn} />
+      <span className="text-base sm:text-lg font-bold tracking-wide text-slate-100">
         {myTurn
-          ? '🎲 Your turn — roll the dice!'
-          : `⏳ ${resolveName(currentEntryId)} is rolling...`}
+          ? `🎲 ${t('games.cat_dash_v1.dashboard.yourTurnToRoll' as TranslationKey)}`
+          : `⏳ ${t(
+              'games.cat_dash_v1.dashboard.waitingForPlayer' as TranslationKey,
+              {
+                name: resolveName(currentEntryId),
+              },
+            )}`}
       </span>
     </div>
   );

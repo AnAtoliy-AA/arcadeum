@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { DailyChallengesService } from '../daily-challenges/daily-challenges.service';
@@ -13,6 +13,8 @@ import { XpSettingsService } from '../xp/xp-settings.service';
 import { User } from '../auth/schemas/user.schema';
 import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
 import { ActivityFeedService } from './activity-feed/activity-feed.service';
+import { ClanWarsQueueService } from '../clans/clan-wars-queue.service';
+import { ClanWarsAutomationService } from '../clans/clan-wars-automation.service';
 
 @Injectable()
 export class GamePostMatchService {
@@ -30,6 +32,10 @@ export class GamePostMatchService {
     @InjectModel(User.name, OCI_CONNECTION)
     private readonly userModel: Model<User>,
     private readonly activityFeed: ActivityFeedService,
+    @Optional()
+    private readonly clanWarsQueue?: ClanWarsQueueService,
+    @Optional()
+    private readonly clanWarsAutomation?: ClanWarsAutomationService,
   ) {}
 
   async onGameCompleted(
@@ -37,6 +43,7 @@ export class GamePostMatchService {
     gameId: string,
     winners: string[],
     stats: { shots?: number; shipsSunk?: number },
+    sessionId?: string,
   ): Promise<void> {
     try {
       await this.dailyChallenges.onGameCompleted(
@@ -69,7 +76,14 @@ export class GamePostMatchService {
     }
 
     try {
-      await this.playerStats.recordGameResult(playerIds, gameId, winners);
+      const hasBots = playerIds.some((id) => id.startsWith('bot-'));
+      await this.playerStats.recordGameResult(
+        playerIds,
+        gameId,
+        winners,
+        hasBots,
+        sessionId,
+      );
     } catch (err) {
       this.logger.warn(
         `Player stats recording failed: ${(err as Error).message}`,
@@ -112,6 +126,36 @@ export class GamePostMatchService {
       this.logger.warn(
         `Activity feed recording failed: ${(err as Error).message}`,
       );
+    }
+
+    try {
+      const winnerId = winners[0];
+      const opponentId = playerIds.find((id) => id !== winnerId);
+      if (
+        winners.length === 1 &&
+        winnerId &&
+        opponentId &&
+        !winnerId.startsWith('bot-') &&
+        !opponentId.startsWith('bot-')
+      ) {
+        let dispatched = false;
+        if (this.clanWarsQueue) {
+          dispatched = await this.clanWarsQueue.dispatchMatchResolution(
+            winnerId,
+            opponentId,
+            gameId,
+          );
+        }
+        if (!dispatched && this.clanWarsAutomation) {
+          await this.clanWarsAutomation.resolveMatchForPlayers(
+            winnerId,
+            opponentId,
+            gameId,
+          );
+        }
+      }
+    } catch (err) {
+      this.logger.warn(`Clan war resolution failed: ${(err as Error).message}`);
     }
   }
 

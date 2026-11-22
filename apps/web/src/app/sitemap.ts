@@ -158,6 +158,18 @@ const ROUTE_KEYS: RouteKey[] = (Object.keys(PAGE_LAST_MODIFIED) as RouteKey[])
   .filter((k) => !GAME_LANDING_KEYS.includes(k))
   .filter((k) => !NOINDEX_KEYS.has(k));
 
+const PILLAR_STRATEGY_SLUGS: ReadonlySet<string> = new Set([
+  'chess-opening-traps',
+  'how-to-win-chess-endgames',
+  'how-to-win-spades',
+  'how-to-win-hearts-advanced',
+  'backgammon-pip-count-guide',
+  'how-to-win-checkers',
+  'how-to-solve-sudoku-advanced',
+  'sea-battle-advanced',
+  'go-life-death-problems',
+]);
+
 const PAGE_CHANGE_FREQ: Partial<
   Record<RouteKey, MetadataRoute.Sitemap[number]['changeFrequency']>
 > = {
@@ -282,7 +294,7 @@ function alternatesFor(key: RouteKey): Record<string, string> {
   return languages;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of SUPPORTED_LOCALES) {
@@ -314,7 +326,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // locales avoids pointing Google at a fallback that would dilute
     // the language-clustering signal.
     for (const slug of POST_SLUGS) {
-      const post = getPost(slug, locale);
+      const post = await getPost(slug, locale);
       if (!post || post.locale !== locale) continue;
 
       const postLanguages: Record<string, string> = {
@@ -322,18 +334,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'x-default': `${appConfig.siteUrl}${buildRoutes(DEFAULT_LOCALE).blogPost(slug)}`,
       };
       for (const l of SUPPORTED_LOCALES) {
-        const localized = getPost(slug, l);
+        const localized = await getPost(slug, l);
         if (localized && localized.locale === l) {
           postLanguages[localeToHreflang(l)] =
             `${appConfig.siteUrl}${buildRoutes(l).blogPost(slug)}`;
         }
       }
 
+      const isPillar = PILLAR_STRATEGY_SLUGS.has(slug);
       entries.push({
         url: `${appConfig.siteUrl}${r.blogPost(slug)}`,
         lastModified: new Date(post.updatedAt ?? post.publishedAt),
-        changeFrequency: 'monthly',
-        priority: 0.6,
+        changeFrequency: isPillar ? 'weekly' : 'monthly',
+        priority: isPillar ? 0.8 : 0.6,
         alternates: { languages: postLanguages },
       });
     }

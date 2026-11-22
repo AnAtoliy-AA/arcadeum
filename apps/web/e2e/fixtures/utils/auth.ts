@@ -3,6 +3,7 @@ import { handleRoute } from './network';
 
 export interface MockSessionOptions {
   persistent?: boolean;
+  userId?: string;
   role?:
     | 'free'
     | 'admin'
@@ -16,6 +17,8 @@ export interface MockSessionOptions {
   xp?: number;
   level?: number;
   equippedBadgeId?: string | null;
+  displayName?: string;
+  username?: string;
 }
 
 export const MOCK_OBJECT_ID = '507f191e810c19729de860ea';
@@ -35,10 +38,10 @@ export async function mockSession(
       Date.now() + 24 * 60 * 60 * 1000,
     ).toISOString(),
     updatedAt: new Date().toISOString(),
-    userId: MOCK_OBJECT_ID,
+    userId: options.userId ?? MOCK_OBJECT_ID,
     email: 'test@example.com',
-    username: 'testuser',
-    displayName: 'Test User',
+    username: options.username ?? 'testuser',
+    displayName: options.displayName ?? 'Test User',
     role: options.role ?? null,
     xp: options.xp ?? 0,
     level: options.level ?? 1,
@@ -107,7 +110,13 @@ export async function mockSession(
     await page.addInitScript(setSession, snapshot);
   } else {
     await page.addInitScript((s) => {
-      if (!document.cookie.includes('__arcadeum_session_mocked=true')) {
+      if (
+        !document.cookie.includes('__arcadeum_session_mocked=true') &&
+        !window.sessionStorage.getItem('__arcadeum_session_mocked') &&
+        !window.localStorage.getItem('__arcadeum_session_mocked')
+      ) {
+        window.sessionStorage.setItem('__arcadeum_session_mocked', 'true');
+        window.localStorage.setItem('__arcadeum_session_mocked', 'true');
         window.localStorage.setItem(
           'web_session_tokens_v1',
           JSON.stringify({ state: { snapshot: s }, version: 0 }),
@@ -118,14 +127,24 @@ export async function mockSession(
     }, snapshot);
   }
 
-  // Mock auth check
   await page.route('**/auth/me', async (route) => {
+    const headers = route.request().headers();
+    const hasAuth =
+      Boolean(headers['authorization']) ||
+      Boolean(headers['cookie']?.includes('access_token='));
+    if (!hasAuth) {
+      await route.fulfill({
+        status: 401,
+        body: JSON.stringify({ message: 'Unauthorized' }),
+      });
+      return;
+    }
     await handleRoute(route, {
       user: {
-        id: MOCK_OBJECT_ID,
+        id: options.userId ?? MOCK_OBJECT_ID,
         email: 'test@example.com',
-        username: 'testuser',
-        displayName: 'Test User',
+        username: options.username ?? 'testuser',
+        displayName: options.displayName ?? 'Test User',
         role: options.role ?? 'free',
         xp: options.xp ?? 0,
         level: options.level ?? 1,
@@ -135,11 +154,22 @@ export async function mockSession(
     });
   });
 
-  // Mock profile
   await page.route('**/profile/**', async (route) => {
+    const req = route.request();
+    const url = req.url();
+    if (
+      req.isNavigationRequest() ||
+      req.resourceType() === 'document' ||
+      url.includes('/_next/') ||
+      req.headers()['rsc'] === '1' ||
+      req.headers()['next-router-state-tree']
+    ) {
+      await route.continue();
+      return;
+    }
     await handleRoute(route, {
       profile: {
-        userId: MOCK_OBJECT_ID,
+        userId: options.userId ?? MOCK_OBJECT_ID,
         email: snapshot.email,
         username: snapshot.username,
         displayName: snapshot.displayName,

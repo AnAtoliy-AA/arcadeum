@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from 'react';
 
 import { cx } from '@arcadeum/ui/utils/cx';
 import { Button, type ButtonProps, type GameVariant } from '@arcadeum/ui';
-import { Card as BaseCard, CARD_SURFACE_CLASS } from './cards-base';
+import { Card as BaseCard } from './cards-base';
 import { getVariantStyles } from './variants';
 import { useMediaQuery } from '@/shared/hooks/useMediaQuery';
 
@@ -55,30 +55,24 @@ export function LastPlayedCard({
 }) {
   const cards = getVariantStyles(variant).cards;
   return (
-    <div
+    <BaseCard
       className={cx(
         'absolute left-0 top-0 w-full h-full z-[10] cursor-default transition-transform duration-150 ease-out hover:scale-[1.05]',
         className,
       )}
-      style={{
-        boxShadow: `0 10px 30px rgba(0,0,0,0.5), ${cards.glowEffect}`,
-        ...style,
-      }}
+      style={
+        {
+          border: cards.borderEffect,
+          boxShadow: `0 10px 30px rgba(0,0,0,0.5), ${cards.glowEffect}`,
+          transform: isAnimating ? 'rotateY(180deg) scale(1.1)' : undefined,
+          ...style,
+        } as CSSProperties
+      }
+      variant={variant}
       data-testid={testId}
     >
-      <div
-        className={cx(
-          CARD_SURFACE_CLASS,
-          'w-full h-full bg-[var(--background)]',
-        )}
-        style={{
-          border: cards.borderEffect,
-          transform: isAnimating ? 'rotateY(180deg) scale(1.1)' : undefined,
-        }}
-      >
-        {children}
-      </div>
-    </div>
+      {children}
+    </BaseCard>
   );
 }
 

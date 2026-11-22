@@ -4,6 +4,7 @@ import { InGameAvatar } from './InGameAvatar';
 import * as cosmeticsHook from '@/features/shop/hooks/useEquippedCosmetics';
 import { useGameStore } from '@/features/games/store/gameStore';
 import type { GameRoomSummary } from '@/shared/types/games';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 
 vi.mock('@/features/shop/hooks/useEquippedCosmetics');
 
@@ -119,11 +120,64 @@ describe('InGameAvatar', () => {
       <InGameAvatar playerId="u-1" name="Jane" size="md" data-testid="iga" />,
     );
 
-    // Frame ring and aura halo now render in-game (identity reads the same as
-    // in the shop). Banner stays off: it's chrome-only (card/profile) and
-    // `md` has no chrome, so InGameAvatar passes null for it.
     expect(screen.getByTestId('iga-frame')).toBeInTheDocument();
     expect(screen.getByTestId('iga-aura')).toBeInTheDocument();
     expect(screen.queryByTestId('iga-banner')).not.toBeInTheDocument();
+  });
+
+  it('resolves equipped cosmetics from session tokens when player is self and room is null', () => {
+    const spy = vi
+      .mocked(cosmeticsHook.useEquippedCosmetics)
+      .mockReturnValue({ ...allNulls, avatarUrl: '/self.png' });
+    useSessionStore.setState({
+      snapshot: {
+        userId: 'my-user-id',
+        username: 'Me',
+        displayName: 'Me',
+        email: 'me@example.com',
+        role: 'vip',
+        accessToken: 'token',
+        refreshToken: 'refresh',
+        accessTokenExpiresAt: '2099-01-01',
+        provider: 'local',
+        equippedAvatarId: 'av-self',
+        equippedBadgeId: 'bd-self',
+        equippedFrameId: 'fr-self',
+        equippedAuraId: 'au-self',
+        equippedBannerId: null,
+        equippedNameColorId: null,
+        equippedGameSkinId: null,
+      },
+    });
+
+    render(
+      <InGameAvatar playerId="my-user-id" name="Me" data-testid="iga-self" />,
+    );
+
+    expect(spy).toHaveBeenCalledWith({
+      equippedAvatarId: 'av-self',
+      equippedBadgeId: 'bd-self',
+      equippedFrameId: 'fr-self',
+      equippedAuraId: 'au-self',
+      equippedBackgroundId: null,
+    });
+    expect(screen.getByRole('img')).toHaveAttribute('src', '/self.png');
+  });
+
+  it('renders bot fallback avatar when player is a bot', () => {
+    vi.mocked(cosmeticsHook.useEquippedCosmetics).mockReturnValue(allNulls);
+
+    render(
+      <InGameAvatar
+        playerId="bot-easy"
+        name="Easy Bot"
+        data-testid="iga-bot"
+      />,
+    );
+
+    expect(screen.getByTestId('iga-bot-sprite')).toHaveAttribute(
+      'data-avatar-url',
+      '/shop/avatars/default-01.png',
+    );
   });
 });

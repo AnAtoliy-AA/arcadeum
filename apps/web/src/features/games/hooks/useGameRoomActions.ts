@@ -1,11 +1,8 @@
+import { useCallback } from 'react';
 import { useGameStore, type GameState } from '@/features/games/store/gameStore';
+import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import type { GameRoomSummary } from '@/shared/types/games';
 
-/**
- * Resolves the live room from the game store (falling back to the initial
- * server-rendered room) and exposes the standard room-action callbacks that
- * every lobby needs (leave, delete, kick, refresh).
- */
 export function useGameRoomActions(
   roomId: string,
   initialRoom: GameRoomSummary | null,
@@ -15,8 +12,21 @@ export function useGameRoomActions(
   const kickPlayer = useGameStore((s: GameState) => s.kickPlayer);
   const leaveRoom = useGameStore((s: GameState) => s.leaveRoom);
   const refreshRoom = useGameStore((s: GameState) => s.refreshRoom);
+  const accessToken = useGameStore((s: GameState) => s.accessToken);
 
   const room = (storeRoom?.id === roomId ? storeRoom : null) ?? initialRoom;
+
+  const onReorderPlayers = useCallback(
+    async (newOrder: string[]) => {
+      if (!roomId) return;
+      try {
+        await reorderRoomParticipants(roomId, newOrder, accessToken ?? '');
+      } catch {
+        void refreshRoom(roomId);
+      }
+    },
+    [roomId, accessToken, refreshRoom],
+  );
 
   return {
     room,
@@ -25,5 +35,6 @@ export function useGameRoomActions(
     onKickPlayer: (targetUserId: string, callerUserId: string) =>
       kickPlayer(roomId, targetUserId, callerUserId),
     onRefresh: () => void refreshRoom(roomId),
+    onReorderPlayers,
   } as const;
 }

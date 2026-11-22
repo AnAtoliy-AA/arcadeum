@@ -20,18 +20,18 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: 'Tic-Tac-Toe — multiplayer with 3×3, 5×5, 7×7, 9×9 boards',
+        title: 'Tic-Tac-Toe - multiplayer with 3×3, 5×5, 7×7, 9×9 boards',
         description:
           'Play multiplayer Tic-Tac-Toe online. Six themed variants, 2–5 players, optional teams, bots from day one. Free, instant rooms, no install.',
         keywords:
           'tic tac toe, tic-tac-toe online, multiplayer tic tac toe, gomoku, 5 in a row, board games',
       },
       hero: {
-        title: 'Tic-Tac-Toe — picked, polished, multiplayer',
+        title: 'Tic-Tac-Toe - picked, polished, multiplayer',
         subtitle:
           'Themed boards, teams, and bots. Hop in alone or with friends, on 3×3 through 9×9.',
         ctaQuickplay: 'Play vs AI now',
-        ctaQuickplayError: "Couldn't start a game — try again",
+        ctaQuickplayError: "Couldn't start a game - try again",
         createRoom: 'Create a room',
         browseRooms: 'Browse rooms',
       },
@@ -76,12 +76,12 @@ export const enMessages = {
         teams: {
           question: 'Can we play in teams?',
           answer:
-            'Yes — toggle team mode in the lobby. Up to 4 players split into two teams; team members share a mark and alternate turns.',
+            'Yes - toggle team mode in the lobby. Up to 4 players split into two teams; team members share a mark and alternate turns.',
         },
         bots: {
           question: 'Are the bots good?',
           answer:
-            'On 3×3 the bot plays perfect minimax — it never loses. On 5×5 it blocks immediate threats and biases the centre. On 7×7 and 9×9 it plays a fast win/block heuristic with random spacing.',
+            'On 3×3 the bot plays perfect minimax - it never loses. On 5×5 it blocks immediate threats and biases the centre. On 7×7 and 9×9 it plays a fast win/block heuristic with random spacing.',
         },
         firstPlayerAdvantage: {
           question: 'Does the first player have an advantage in Tic-Tac-Toe?',
@@ -140,11 +140,11 @@ export const enMessages = {
       },
       s2: {
         title: 'Mind the win length',
-        body: '3×3 needs 3 in a row, 5×5 needs 4, and 7×7 or 9×9 need 5 — horizontally, vertically or diagonally.',
+        body: '3×3 needs 3 in a row, 5×5 needs 4, and 7×7 or 9×9 need 5 - horizontally, vertically or diagonally.',
       },
       s3: {
         title: 'Infinity mode',
-        body: 'On Infinity boards the grid expands whenever someone plays near the edge — no draws, ever.',
+        body: 'On Infinity boards the grid expands whenever someone plays near the edge - no draws, ever.',
       },
       s4: {
         title: 'Talk strategy',
@@ -154,7 +154,7 @@ export const enMessages = {
     rules: {
       title: 'Rules',
       objective:
-        'Be the first to place your mark in {{winLength}} cells in a row — horizontal, vertical, or diagonal.',
+        'Be the first to place your mark in {{winLength}} cells in a row - horizontal, vertical, or diagonal.',
       objectiveInfinity:
         'Be the first to place your mark in {{winLength}} cells in a row. The board starts at 9×9 and expands by {{margin}} cells when you play near the edge.',
       steps:
@@ -162,7 +162,7 @@ export const enMessages = {
       winLengths:
         'Win-length per board: 3×3 → 3, 5×5 → 4, 7×7 → 5, 9×9 → 5, ∞ → configurable.',
       infinityDescription:
-        'In Infinity mode, the board starts at 9×9 and automatically expands by {{margin}} cells in every direction when a mark is placed near the edge. The game never ends in a draw — the board keeps growing until someone wins.',
+        'In Infinity mode, the board starts at 9×9 and automatically expands by {{margin}} cells in every direction when a mark is placed near the edge. The game never ends in a draw - the board keeps growing until someone wins.',
       headers: {
         objective: 'Objective',
         howToPlay: 'How to play',

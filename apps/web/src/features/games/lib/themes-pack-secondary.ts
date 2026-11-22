@@ -70,7 +70,7 @@ export const SECONDARY_THEMES: readonly GameTheme[] = [
       playerPalette: [
         '#10B981',
         '#D4AF37',
-        '#059669',
+        '#EF4444',
         '#F59E0B',
         '#8B5CF6',
         '#EC4899',

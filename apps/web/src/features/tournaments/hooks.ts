@@ -7,10 +7,12 @@ import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { useLanguage } from '@/shared/i18n';
 import {
   fetchPublicTournaments,
+  fetchSeaBattleBlitzCup,
   fetchTournamentBracket,
   registerForTournament,
   unregisterFromTournament,
   type PublicTournamentsResponse,
+  type SeaBattleBlitzCupResponse,
   type TournamentBracketResponse,
 } from './api';
 
@@ -27,10 +29,18 @@ export function usePublicTournaments(
     queryKey: ['public-tournaments', locale, accessToken ?? null],
     queryFn: () => fetchPublicTournaments({ locale, accessToken }),
     refreshKey: PUBLIC_TOURNAMENTS_REFRESH_KEY,
-    // SSR-seeded list renders instantly; registration mutations still
-    // refetch via the refresh key.
     initialData,
     refetchOnMount: !initialData,
+  });
+}
+
+export function useSeaBattleBlitzCup() {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  const { locale } = useLanguage();
+  return useQuery<SeaBattleBlitzCupResponse>({
+    queryKey: ['sea-battle-blitz-cup', locale, accessToken ?? null],
+    queryFn: () => fetchSeaBattleBlitzCup({ locale, accessToken }),
+    refreshKey: PUBLIC_TOURNAMENTS_REFRESH_KEY,
   });
 }
 

@@ -4,7 +4,7 @@ export type { enMessages as en } from './en';
 
 export type ChessMessages = typeof enMessages;
 
-/** Lazy loader — returns locale-specific messages without eagerly importing all locales */
+/** Lazy loader - returns locale-specific messages without eagerly importing all locales */
 export async function loadChessMessages(locale: string) {
   switch (locale) {
     case 'en':

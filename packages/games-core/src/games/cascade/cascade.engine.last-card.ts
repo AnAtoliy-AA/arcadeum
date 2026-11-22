@@ -67,7 +67,7 @@ export function applyCallCascade(
   if (isSelf) {
     next.lastCardWindow = null;
     next.logs.push(
-      helpers.createLogEntry('action', 'called Cascade — safe', {
+      helpers.createLogEntry('action', 'called Cascade: safe', {
         senderId: context.userId,
         kind: 'cascade_self',
       }),

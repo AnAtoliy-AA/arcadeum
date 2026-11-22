@@ -179,16 +179,19 @@ describe('ArcadePet persistence (integration)', () => {
     it('bounds the stored action id list', async () => {
       const user = newId();
       await seed(user);
-      for (let i = 0; i < 60; i++) {
-        await model.updateOne(
-          { userId: user },
-          { $push: { recentActionIds: { $each: [`old-${i}`], $slice: -50 } } },
-        );
-      }
+      await model.updateOne(
+        { userId: user },
+        {
+          $set: {
+            recentActionIds: Array.from({ length: 200 }, (_, i) => `old-${i}`),
+          },
+        },
+      );
       await economy.perform(user.toHexString(), { type: 'claim_daily' }, 'new');
       const ids = (await model.findOne({ userId: user }))!.recentActionIds;
-      expect(ids.length).toBeLessThanOrEqual(50);
+      expect(ids).toHaveLength(200);
       expect(ids.at(-1)).toBe('new');
+      expect(ids[0]).toBe('old-1');
     });
 
     it('debits once and gifts once when a gift is retried', async () => {
@@ -265,6 +268,33 @@ describe('ArcadePet persistence (integration)', () => {
       expect(
         (await model.findOne({ userId: user }))!.pets[0].inventory.hearts_candy,
       ).toBe(MAX_TREAT_STOCK);
+    });
+
+    it('does not burn the key when the stock is full at write time', async () => {
+      const user = newId();
+      await seed(user);
+      await model.updateOne(
+        { userId: user },
+        { $set: { 'pets.0.inventory.chess_cookie': MAX_TREAT_STOCK } },
+      );
+      // Simulates a concurrent award filling the stock after the pre-read.
+      jest
+        .spyOn(model, 'findOne')
+        .mockResolvedValueOnce(
+          (await model.findOne({ userId: user }))!.set(
+            'pets.0.inventory.chess_cookie',
+            MAX_TREAT_STOCK - 1,
+          ),
+        );
+      const result = await collections.awardTreat(
+        user.toHexString(),
+        'chess_cookie',
+        'treat:race',
+      );
+      expect(result).toBe('duplicate');
+      const after = (await model.findOne({ userId: user }))!;
+      expect(after.recentActionIds).not.toContain('treat:race');
+      jest.restoreAllMocks();
     });
 
     it('gives nothing to users without a document or active pet', async () => {

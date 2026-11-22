@@ -316,7 +316,7 @@ describe('ArcadePetEconomyService', () => {
       ];
       expect(update.$push.recentActionIds).toEqual({
         $each: ['act-2'],
-        $slice: -50,
+        $slice: -200,
       });
     });
 

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- stop treat awards from burning their idempotency key when the stock fills concurrently (ARC-1046)
 - stop grantPresent from reporting a full inbox when it loses a race with a first write (ARC-1046)
 
 ## [1.31.1] - 2026-11-22

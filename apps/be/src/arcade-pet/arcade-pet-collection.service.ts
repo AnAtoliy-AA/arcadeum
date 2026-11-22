@@ -228,6 +228,14 @@ export class ArcadePetCollectionService {
       {
         userId: { $eq: userObjectId },
         recentActionIds: { $ne: awardKey },
+        // Re-check the stock atomically so a concurrent award that filled it
+        // cannot burn the key without giving a treat.
+        pets: {
+          $elemMatch: {
+            id: { $eq: petId },
+            [stockPath]: { $not: { $gte: MAX_TREAT_STOCK } },
+          },
+        },
       },
       {
         $inc: { [`pets.$[pet].${stockPath}`]: 1, revision: 1 },

@@ -8,7 +8,7 @@ import { clamp } from './arcade-pet.core';
 import { GAME_TREAT_IDS, type PetState } from './arcade-pet.types';
 
 /** Longest list of recent economy action ids kept for idempotent replays. */
-export const MAX_RECENT_ACTION_IDS = 50;
+export const MAX_RECENT_ACTION_IDS = 200;
 
 /** A stored or persisted collection of any past schema version. */
 export type StoredCollectionShape = Partial<ArcadePetCollectionPayload> & {

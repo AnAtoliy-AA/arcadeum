@@ -51,7 +51,10 @@ export class GameVisibilityService {
 
   /** Tier of a game without an admin override (flags default off in prod). */
   private defaultGameTier(gameId: string): VisibilityTier {
-    if (this.config?.get<string>('NODE_ENV') !== 'production') return 'all';
+    // Fail closed: without config we cannot rule out production.
+    if (this.config && this.config.get<string>('NODE_ENV') !== 'production') {
+      return 'all';
+    }
     return getCatalogEntry(gameId)?.productionDefaultTier ?? 'all';
   }
 

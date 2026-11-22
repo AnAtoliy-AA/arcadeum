@@ -25,7 +25,7 @@ describe('migrateCollection', () => {
       ...pet,
       inventory: { chess_cookie: 500, hearts_candy: Number.NaN },
     } as unknown as typeof pet;
-    const ids = Array.from({ length: 80 }, (_, i) => `a${i}`);
+    const ids = Array.from({ length: 250 }, (_, i) => `a${i}`);
     const migrated = migrateCollection({
       schemaVersion: 1,
       pets: [broken],
@@ -35,7 +35,7 @@ describe('migrateCollection', () => {
     expect(migrated.pets[0].inventory.hearts_candy).toBe(0);
     expect(migrated.pets[0].inventory.pachisi_spice).toBe(0);
     expect(migrated.recentActionIds).toHaveLength(MAX_RECENT_ACTION_IDS);
-    expect(migrated.recentActionIds.at(-1)).toBe('a79');
+    expect(migrated.recentActionIds.at(-1)).toBe('a249');
   });
 
   it('leaves current documents alone and keeps newer versions', () => {

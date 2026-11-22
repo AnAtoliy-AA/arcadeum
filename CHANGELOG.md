@@ -7,19 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.3] - 2026-11-22
+
 ### Added
-
-- add ArcadePet QA e2e spec with a real-backend fixture (ARC-1046)
-- add ArcadePet accessibility unit and e2e specs (ARC-1047)
-
-### Changed
-
-- polish ArcadePet web UI: accessible modals and tabs, shared Notice and TabBar components, theme and LCD fixes (ARC-1047)
-- add reduced-motion safe booth and sprite styles and a live "now" hook for pet timers (ARC-1047)
+- web quality pass with accessible modals, shared UI primitives and a11y specs (ARC-1047) (ARC-1047)
 
 ### Fixed
+- make the themes scroll region keyboard focusable (ARC-1047) (ARC-1047)
+- keep guest trigger aria-disabled, cap widget height, align e2e selectors (ARC-1047) (ARC-1047)
+- restore aria-disabled on guest trigger and align theme e2e with Button (ARC-1047) (ARC-1047)
+- reseed real arcade-pet session on every page load (ARC-1046) (ARC-1046)
+- prevent double milestone payout and lost first adoption during sync (ARC-1046) (ARC-1046)
 
-- stop ArcadePet milestones paying twice and a first adoption being erased by the initial server sync, and block adoption while that pull is pending (ARC-1046)
 
 ## [1.31.2] - 2026-11-22
 

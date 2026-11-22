@@ -150,16 +150,25 @@ export default async function RootLayout({
           // E2E builds only. Linux WebKit rasterises in software, and
           // backdrop-filter (the glass/blur effects) makes its web process
           // allocate ~1 GB/s until the machine runs out of memory, which
-          // killed CI runners. It has to be in the HTML head so it applies
-          // before first paint; adding it from a script after load races
-          // the first paint and does not stop the runaway.
-          <style
-            data-e2e-no-backdrop-filter=""
-            dangerouslySetInnerHTML={{
-              __html:
-                '*,*::before,*::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}',
-            }}
-          />
+          // killed CI runners. Scoped to WebKit (not Chrome/Firefox) so specs
+          // that assert on the effect keep seeing it. Both parts are in the
+          // HTML head so they apply before first paint; adding them from a
+          // script after load races the first paint and does not stop the
+          // runaway.
+          <>
+            <script
+              dangerouslySetInnerHTML={{
+                __html:
+                  "(function(){var u=navigator.userAgent;if(/AppleWebKit/.test(u)&&!/Chrom(e|ium)|Edg|OPR/.test(u)){document.documentElement.setAttribute('data-e2e-no-backdrop-filter','')}})()",
+              }}
+            />
+            <style
+              dangerouslySetInnerHTML={{
+                __html:
+                  '[data-e2e-no-backdrop-filter] *,[data-e2e-no-backdrop-filter] *::before,[data-e2e-no-backdrop-filter] *::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}',
+              }}
+            />
+          </>
         ) : null}
         {/*
          * Resource hints — only for origins actually used on first paint.

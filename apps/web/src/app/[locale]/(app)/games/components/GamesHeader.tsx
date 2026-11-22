@@ -4,6 +4,7 @@ import { useRoutes } from '@/shared/config/useRoutes';
 import { Header, HeaderControls, Title, ViewToggle } from '../styles';
 import { Button, CreateRoomLinkButton } from '@arcadeum/ui';
 import { InviteCodeModal } from './InviteCodeModal';
+import { QuickJoinButton } from './QuickJoinButton';
 import type { GamesViewMode } from '../types';
 
 interface GamesHeaderProps {
@@ -39,7 +40,8 @@ export function GamesHeader({
             size="sm"
             active={viewMode === 'grid'}
             onClick={() => onViewModeChange('grid')}
-            title="Grid view"
+            title={t('roomsBrowser.viewGrid')}
+            aria-label={t('roomsBrowser.viewGrid')}
             className="rounded-none"
           >
             ▦
@@ -49,12 +51,14 @@ export function GamesHeader({
             size="sm"
             active={viewMode === 'list'}
             onClick={() => onViewModeChange('list')}
-            title="List view"
+            title={t('roomsBrowser.viewList')}
+            aria-label={t('roomsBrowser.viewList')}
             className="rounded-none"
           >
             ☰
           </Button>
         </ViewToggle>
+        <QuickJoinButton gameId={createRoomGameId} />
         <Button
           variant="secondary"
           size="md"

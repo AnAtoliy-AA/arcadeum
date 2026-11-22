@@ -52,6 +52,28 @@ export class GameRoomsQueryBuilder {
 
     query['gameOptions.rematchCancelledAt'] = { $exists: false };
 
+    const extraAnd: FilterQuery<GameRoom>[] = [];
+    if (filters.openSeats) {
+      extraAnd.push({
+        $expr: {
+          $or: [
+            { $eq: [{ $ifNull: ['$maxPlayers', null] }, null] },
+            {
+              $lt: [
+                { $size: { $ifNull: ['$participants', []] } },
+                '$maxPlayers',
+              ],
+            },
+          ],
+        },
+      });
+    }
+    if (filters.hasBots) {
+      extraAnd.push({
+        participants: { $elemMatch: { userId: { $regex: /^bot-/ } } },
+      });
+    }
+
     let searchOr: FilterQuery<GameRoom>['$or'] | undefined;
     if (filters.search) {
       const escaped = escapeRegExp(filters.search);
@@ -106,6 +128,10 @@ export class GameRoomsQueryBuilder {
       query.$or = searchOr;
     } else if (anonOr) {
       query.$or = anonOr;
+    }
+
+    if (extraAnd.length > 0) {
+      query.$and = [...(query.$and ?? []), ...extraAnd];
     }
 
     return query;

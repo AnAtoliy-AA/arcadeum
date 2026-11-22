@@ -42,6 +42,8 @@ interface GetRoomsParams {
   gameId?: string;
   categories?: string;
   aiVsAi?: boolean;
+  openSeats?: boolean;
+  hasBots?: boolean;
 }
 
 export interface GetRoomsResponse {

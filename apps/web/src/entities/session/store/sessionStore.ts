@@ -301,20 +301,26 @@ export const useSessionStore = create<SessionState>()(
         return (_state, error) => {
           if (error) return;
 
-          const hydrated = useSessionStore.getState().snapshot;
-          const derivedLevel = levelFromXp(hydrated.xp ?? 0);
-          if (hydrated.level !== derivedLevel) {
-            useSessionStore.setState({
-              snapshot: { ...hydrated, level: derivedLevel },
-            });
-          }
+          // localStorage hydration is synchronous, so this callback can fire
+          // while create() is still running, before `useSessionStore` is
+          // assigned (TDZ ReferenceError, silently swallowed by persist).
+          // Defer the fix-ups until the module has finished evaluating.
+          queueMicrotask(() => {
+            const hydrated = useSessionStore.getState().snapshot;
+            const derivedLevel = levelFromXp(hydrated.xp ?? 0);
+            if (hydrated.level !== derivedLevel) {
+              useSessionStore.setState({
+                snapshot: { ...hydrated, level: derivedLevel },
+              });
+            }
 
-          const ANON_KEY = 'arcadeum_anon_id';
-          const stored = localStorage.getItem(ANON_KEY);
-          const current = useSessionStore.getState();
-          if (stored && stored !== current.anonId) {
-            useSessionStore.setState({ anonId: stored });
-          }
+            const ANON_KEY = 'arcadeum_anon_id';
+            const stored = localStorage.getItem(ANON_KEY);
+            const current = useSessionStore.getState();
+            if (stored && stored !== current.anonId) {
+              useSessionStore.setState({ anonId: stored });
+            }
+          });
         };
       },
     },

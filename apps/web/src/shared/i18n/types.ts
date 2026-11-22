@@ -125,4 +125,5 @@ export type TranslationBundle = {
   wallet?: DeepPartial<import('./messages/wallet').WalletMessages>;
   arcadePetCompanion?: import('./messages/arcade-pet-companion').ArcadePetCompanionMessages;
   createRoom?: import('./messages/create-room').CreateRoomBundle;
+  roomsBrowser?: DeepPartial<typeof import('./messages/roomsBrowser').en>;
 };

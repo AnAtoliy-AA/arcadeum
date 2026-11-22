@@ -2,48 +2,12 @@
 
 import React from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { Button, Badge, RefreshIcon } from '@arcadeum/ui';
-import {
-  Sidebar,
-  LobbyCard,
-  CardTitle,
-  PlayerList,
-  PlayerItem,
-  PlayerInfo,
-  LobbyPlayerName,
-  EmptySlot,
-  EmptyAvatar,
-  EmptyAvatarText,
-  InfoRow,
-  InfoLabel,
-  StatusBadge,
-  InfoValue,
-  FastBadge,
-  FastBadgeText,
-  DeleteButton,
-  CardHeader,
-  RefreshButton,
-} from './lobbyStyles';
-import { SortablePlayerItem } from './SortablePlayerItem';
+import { Sidebar, DeleteButton } from './lobbyStyles';
 import { ConfirmationModal } from './ConfirmationModal';
-import { InGameAvatar } from './InGameAvatar';
-import { InviteFriendPicker } from './InviteFriendPicker';
+import { LobbySidebarPlayers } from './LobbySidebarPlayers';
+import { LobbySidebarInvited, type RematchUser } from './LobbySidebarInvited';
+import { LobbySidebarRoomInfo } from './LobbySidebarRoomInfo';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;
@@ -84,7 +48,6 @@ interface LobbySidebarProps {
   onAddBot?: () => void;
   onRemoveBot?: (botId: string) => void;
 }
-
 export function LobbySidebar({
   room,
   isHost,
@@ -122,26 +85,19 @@ export function LobbySidebar({
     fastRoomLabel = 'Fast Room',
   } = labels;
   const { t } = useTranslation();
-  const maxPlayers = room.maxPlayers ?? 5;
   const hasBotsInRoom = members.some((m) => m.id.startsWith('bot-'));
   const canAddBots =
-    enableBots && isHost && room.status === 'lobby' && !hasBotsInRoom;
-  const canRemoveBots = enableBots && isHost && room.status === 'lobby';
+    !!enableBots && isHost && room.status === 'lobby' && !hasBotsInRoom;
+  const canRemoveBots = !!enableBots && isHost && room.status === 'lobby';
 
   // Get invited/declined for rematch
   const invitedUsers =
     room.rematchInvitedUsers ||
-    (room.gameOptions?.rematchInvitedUsers as Array<{
-      id: string;
-      displayName: string;
-    }>) ||
+    (room.gameOptions?.rematchInvitedUsers as RematchUser[]) ||
     [];
   const declinedUsers =
     room.rematchDeclinedUsers ||
-    (room.gameOptions?.rematchDeclinedUsers as Array<{
-      id: string;
-      displayName: string;
-    }>) ||
+    (room.gameOptions?.rematchDeclinedUsers as RematchUser[]) ||
     [];
   const joinedIds = new Set(members.map((m) => m.id));
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
@@ -165,285 +121,55 @@ export function LobbySidebar({
     onLeaveRoom?.();
     setShowLeaveConfirm(false);
   }, [onLeaveRoom, setShowLeaveConfirm]);
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      const oldIndex = members.findIndex((m) => m.id === active.id);
-      const newIndex = members.findIndex((m) => m.id === over?.id);
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newOrder = arrayMove(members, oldIndex, newIndex).map(
-          (m) => m.id,
-        );
-        onReorderPlayers?.(newOrder);
-      }
-    }
-  };
 
   return (
     <Sidebar className={className}>
-      <LobbyCard>
-        <CardHeader>
-          <CardTitle data-testid="player-count-heading">
-            {playersLabel} ({room.playerCount}/{maxPlayers})
-          </CardTitle>
-          <div className="flex items-center gap-1.5">
-            {canAddBots && onAddBot && (
-              <Button
-                className="py-1 px-2 min-w-[auto] text-[11px] font-semibold"
-                variant="ghost"
-                size="sm"
-                onClick={onAddBot}
-                data-testid="add-bot-button"
-              >
-                + 🤖
-              </Button>
-            )}
-            {onRefresh && (
-              <RefreshButton
-                onClick={onRefresh}
-                title="Refresh Room"
-                data-testid="refresh-room-button"
-              >
-                <RefreshIcon size={16} />
-              </RefreshButton>
-            )}
-          </div>
-        </CardHeader>
-        <PlayerList>
-          {showReorderControls && isHost ? (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={members.map((m) => m.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {members.map((member, index) => {
-                  const isBot = member.id.startsWith('bot-');
-                  return (
-                    <SortablePlayerItem
-                      key={member.id}
-                      member={member}
-                      isHost={isHost}
-                      isRoomHost={member.id === room.hostId}
-                      index={index}
-                      totalCount={members.length}
-                      onMoveUp={() => {
-                        const newOrder = arrayMove(
-                          members,
-                          index,
-                          index - 1,
-                        ).map((m) => m.id);
-                        onReorderPlayers?.(newOrder);
-                      }}
-                      onMoveDown={() => {
-                        const newOrder = arrayMove(
-                          members,
-                          index,
-                          index + 1,
-                        ).map((m) => m.id);
-                        onReorderPlayers?.(newOrder);
-                      }}
-                      onKick={
-                        isBot && canRemoveBots && onRemoveBot
-                          ? () => onRemoveBot(member.id)
-                          : onKickPlayer && member.id !== room.hostId
-                            ? () =>
-                                setKickTarget({
-                                  id: member.id,
-                                  name: member.displayName,
-                                })
-                            : undefined
-                      }
-                      isBot={isBot}
-                    />
-                  );
-                })}
-              </SortableContext>
-            </DndContext>
-          ) : (
-            members.map((member) => {
-              const isRoomHost = member.id === room.hostId;
-              const isBot = member.id.startsWith('bot-');
-              return (
-                <PlayerItem key={member.id} isHost={isRoomHost}>
-                  <InGameAvatar
-                    playerId={member.id}
-                    name={member.displayName}
-                    size="sm"
-                  />
-                  <PlayerInfo>
-                    <div className="flex flex-row flex-wrap items-center gap-1.5 min-w-0">
-                      <LobbyPlayerName
-                        className="break-words"
-                        title={member.displayName}
-                      >
-                        {member.displayName}
-                      </LobbyPlayerName>
-                      {isRoomHost && (
-                        <Badge variant="info" className="shrink-0">
-                          HOST
-                        </Badge>
-                      )}
-                      {isBot && (
-                        <span className="text-[11px]" title="AI Bot">
-                          🤖
-                        </span>
-                      )}
-                    </div>
-                  </PlayerInfo>
-                  {isBot && canRemoveBots && onRemoveBot ? (
-                    <Button
-                      className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
-                      variant="danger"
-                      ghost
-                      size="sm"
-                      onClick={() => onRemoveBot(member.id)}
-                      data-testid={`remove-bot-${member.id}`}
-                    >
-                      ✕
-                    </Button>
-                  ) : onKickPlayer && !isRoomHost ? (
-                    <Button
-                      className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
-                      variant="danger"
-                      ghost
-                      size="sm"
-                      onClick={() =>
-                        setKickTarget({
-                          id: member.id,
-                          name: member.displayName,
-                        })
-                      }
-                    >
-                      ✕
-                    </Button>
-                  ) : null}
-                </PlayerItem>
-              );
-            })
-          )}
-          {Array.from({ length: Math.max(0, minPlayers - members.length) }).map(
-            (_, i) => (
-              <EmptySlot key={`empty-${i}`}>
-                <EmptyAvatar>
-                  <EmptyAvatarText>?</EmptyAvatarText>
-                </EmptyAvatar>
-                <InfoLabel>{waitingForPlayerLabel}</InfoLabel>
-              </EmptySlot>
-            ),
-          )}
-        </PlayerList>
-      </LobbyCard>
+      <LobbySidebarPlayers
+        room={room}
+        isHost={isHost}
+        minPlayers={minPlayers}
+        members={members}
+        showReorderControls={showReorderControls}
+        canAddBots={canAddBots}
+        canRemoveBots={canRemoveBots}
+        playersLabel={playersLabel}
+        waitingForPlayerLabel={waitingForPlayerLabel}
+        onReorderPlayers={onReorderPlayers}
+        onKickPlayer={onKickPlayer}
+        onRequestKick={setKickTarget}
+        onRefresh={onRefresh}
+        onAddBot={onAddBot}
+        onRemoveBot={onRemoveBot}
+      />
 
       {extraPlayersCardSlot}
 
       {showInvitedPlayers &&
         (pendingInvited.length > 0 || pendingDeclined.length > 0) && (
-          <LobbyCard>
-            <CardTitle>{invitedPlayersLabel}</CardTitle>
-            <PlayerList>
-              {pendingInvited.map((u) => (
-                <PlayerItem key={u.id} className="opacity-70">
-                  <InGameAvatar
-                    playerId={u.id}
-                    name={u.displayName}
-                    size="sm"
-                    className="grayscale"
-                  />
-                  <PlayerInfo>
-                    <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
-                    <InfoLabel>Waiting...</InfoLabel>
-                  </PlayerInfo>
-                </PlayerItem>
-              ))}
-              {pendingDeclined.map((u) => (
-                <PlayerItem key={u.id} className="opacity-50">
-                  <div className="flex flex-1 items-center gap-2">
-                    <InGameAvatar
-                      playerId={u.id}
-                      name={u.displayName}
-                      size="sm"
-                      className="grayscale"
-                    />
-                    <PlayerInfo>
-                      <LobbyPlayerName className="line-through">
-                        {u.displayName}
-                      </LobbyPlayerName>
-                      <InfoLabel className="text-[#ef4444]">
-                        {declinedLabel}
-                      </InfoLabel>
-                    </PlayerInfo>
-                  </div>
-                  {isHost && onReinvite && (
-                    <Button
-                      className="ml-2"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onReinvite?.([u.id])}
-                    >
-                      {reinviteLabel}
-                    </Button>
-                  )}
-                </PlayerItem>
-              ))}
-            </PlayerList>
-          </LobbyCard>
+          <LobbySidebarInvited
+            pendingInvited={pendingInvited}
+            pendingDeclined={pendingDeclined}
+            isHost={isHost}
+            invitedPlayersLabel={invitedPlayersLabel}
+            declinedLabel={declinedLabel}
+            reinviteLabel={reinviteLabel}
+            onReinvite={onReinvite}
+          />
         )}
 
-      <LobbyCard>
-        <CardTitle>{roomInfoLabel}</CardTitle>
-        <InfoRow>
-          <InfoLabel>{statusLabel}</InfoLabel>
-          <StatusBadge status={room.status}>
-            {t(`games.rooms.status.${room.status}`) || room.status}
-          </StatusBadge>
-        </InfoRow>
-        {isFastMode && (
-          <InfoRow>
-            <InfoLabel>Mode</InfoLabel>
-            <FastBadge>
-              <FastBadgeText>⚡ {fastRoomLabel}</FastBadgeText>
-            </FastBadge>
-          </InfoRow>
-        )}
-        <InfoRow>
-          <InfoLabel>{visibilityLabel}</InfoLabel>
-          <InfoValue>
-            {room.visibility === 'public'
-              ? `🌐 ${visibilityPublicLabel}`
-              : `🔒 ${visibilityPrivateLabel}`}
-          </InfoValue>
-        </InfoRow>
-        {room.inviteCode && (
-          <InfoRow>
-            <InfoLabel>{inviteCodeLabel}</InfoLabel>
-            <InfoValue className="font-mono tracking-[1px]">
-              {room.inviteCode}
-            </InfoValue>
-          </InfoRow>
-        )}
-        {room.notes ? (
-          <InfoRow>
-            <InfoLabel>{labels.notesLabel || 'Notes'}</InfoLabel>
-            <InfoValue className="text-xs break-words max-w-[180px] text-right">
-              {room.notes}
-            </InfoValue>
-          </InfoRow>
-        ) : null}
-
-        {isHost && room.status === 'lobby' && (
-          <InviteFriendPicker roomId={room.id} />
-        )}
-      </LobbyCard>
+      <LobbySidebarRoomInfo
+        room={room}
+        isHost={isHost}
+        isFastMode={isFastMode}
+        roomInfoLabel={roomInfoLabel}
+        statusLabel={statusLabel}
+        visibilityLabel={visibilityLabel}
+        visibilityPublicLabel={visibilityPublicLabel}
+        visibilityPrivateLabel={visibilityPrivateLabel}
+        inviteCodeLabel={inviteCodeLabel}
+        fastRoomLabel={fastRoomLabel}
+        notesLabel={labels.notesLabel}
+      />
 
       {isHost && onDeleteRoom && (
         <DeleteButton

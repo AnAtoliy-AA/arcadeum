@@ -3,7 +3,6 @@ import {
   applyDeterministicDecay,
   createInitialPet,
   executePetAction,
-  type PetState,
 } from '@arcadeum/games-core';
 import {
   getPetAdoptionCost,
@@ -405,28 +404,6 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
         pets: updatedPets,
       });
     }
-  },
-
-  awardTreat: (treatId) => {
-    const current = get().pet;
-    if (!current) return;
-
-    const count = current.inventory[treatId] ?? 0;
-    const updated: PetState = {
-      ...current,
-      inventory: {
-        ...current.inventory,
-        [treatId]: count + 1,
-      },
-    };
-    const updatedPets = get().pets.map((p) =>
-      p.id === current.id ? updated : p,
-    );
-    set({ pet: updated, pets: updatedPets });
-    persistStore({
-      ...get(),
-      pets: updatedPets,
-    });
   },
 
   toggleWidget: () => set((state) => ({ isWidgetOpen: !state.isWidgetOpen })),

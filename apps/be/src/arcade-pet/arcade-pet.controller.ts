@@ -18,6 +18,8 @@ import type {
 } from '@arcadeum/games-core';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import type { AuthenticatedUser } from '../auth/jwt/jwt.strategy';
+import { ArcadePetEconomyException } from './arcade-pet-economy.exception';
+import { ArcadePetFeatureGuard } from './arcade-pet-feature.guard';
 import { ArcadePetCollectionService } from './arcade-pet-collection.service';
 import {
   ArcadePetEconomyService,
@@ -40,8 +42,18 @@ function requireUser(req: Request): AuthenticatedUser {
   return user;
 }
 
+/** Successful action outcome; rejections are thrown as HTTP errors. */
+export type ArcadePetActionSuccess = Extract<
+  ArcadePetEconomyResult,
+  { ok: true }
+>;
+
+/**
+ * Unversioned like every other controller (no global prefix or URI
+ * versioning exists in this API), so the path is `/arcade-pet/...`.
+ */
 @Controller('arcade-pet')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ArcadePetFeatureGuard)
 export class ArcadePetController {
   constructor(
     private readonly collections: ArcadePetCollectionService,
@@ -63,18 +75,28 @@ export class ArcadePetController {
   }
 
   /**
-   * Domain rejections (insufficient gems, unknown recipient, ...) return 200
-   * with `ok: false` on purpose: the client needs the authoritative
-   * collection in the same response to roll back its optimistic update.
+   * Domain rejections map to real HTTP codes (see
+   * ARCADE_PET_ERROR_HTTP_STATUS): 400 invalid, 402 insufficient funds, 404
+   * unknown pet/present/recipient, 409 state conflicts. The error body still
+   * carries the authoritative collection for client rollback. A retry with
+   * the same `actionId` is answered with success, not applied twice.
    */
   @Post('collection/action')
   @Throttle(ACTION_THROTTLE)
-  performAction(
+  async performAction(
     @Req() req: Request,
     @Body() dto: EconomyActionDto,
-  ): Promise<ArcadePetEconomyResult> {
+  ): Promise<ArcadePetActionSuccess> {
     const action = toEconomyAction(dto);
     if (!action) throw new BadRequestException('Invalid pet action');
-    return this.economy.perform(requireUser(req).userId, action);
+    const result = await this.economy.perform(
+      requireUser(req).userId,
+      action,
+      dto.actionId,
+    );
+    if (!result.ok) {
+      throw new ArcadePetEconomyException(result.error, result.collection);
+    }
+    return result;
   }
 }

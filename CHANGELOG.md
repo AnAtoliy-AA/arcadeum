@@ -7,9 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- award pet treats on the server from verified match results and stop accepting treat increases from clients (ARC-1046)
+- gate ArcadePet REST routes and the socket start event behind the arcade_pet_v1 catalog flag, default off in production (ARC-1046)
+- make pet economy actions idempotent with a client actionId and return real HTTP codes (400/402/404/409) for rejections (ARC-1046)
+- add schemaVersion with migration to stored and local pet collections (ARC-1046)
+
+### Fixed
+
+- stop treat awards from burning their idempotency key when the stock fills concurrently (ARC-1046)
+- stop grantPresent from reporting a full inbox when it loses a race with a first write (ARC-1046)
+
 ## [1.31.1] - 2026-11-22
 
 ### Added
+
 - make pet economy server-authoritative and sync new progress fields (ARC-1046) (ARC-1046)
 - sync pet collection to server with revisioned writes and deliver admin gifts (ARC-1046) (ARC-1046)
 - add care milestones that reward coins with a toast (ARC-1046) (ARC-1046)
@@ -44,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement ArcadePet game and platform companion (ARC-1046) (ARC-1046)
 
 ### Fixed
+
 - repair e2e seeds, localize landing and improve web UX (ARC-1046) (ARC-1046)
 - harden server-side sync, gifts and economy (ARC-1046) (ARC-1046)
 - harden user-id queries with $eq and use sha256 for gift ids (ARC-1046) (ARC-1046)
@@ -56,13 +70,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - smooth rounded blob contour and prevent mirrored name tag (ARC-1046) (ARC-1046)
 
 ### Improved
+
 - pause pet simulation in background tabs and honor reduced motion (ARC-1046) (ARC-1046)
 
 ### Refactored
+
 - extract companion status panel and localize its banners (ARC-1046) (ARC-1046)
 - store action errors as codes and extract home upgrade (ARC-1046) (ARC-1046)
 - split games-core utils into core and decay modules (ARC-1046) (ARC-1046)
-
 
 ## [1.31.0] - 2026-11-22
 

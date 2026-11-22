@@ -154,11 +154,8 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().gemBalance).toBe(150);
   });
 
-  it('awards treat to inventory', () => {
-    useArcadePetStore.getState().initialize('test-user', 'retro');
-    useArcadePetStore.getState().awardTreat('chess_cookie');
-    const pet = useArcadePetStore.getState().pet;
-    expect(pet?.inventory.chess_cookie).toBeGreaterThanOrEqual(1);
+  it('has no client-side treat minting path', () => {
+    expect('awardTreat' in useArcadePetStore.getState()).toBe(false);
   });
 
   it('toggles widget modal open and closed', () => {

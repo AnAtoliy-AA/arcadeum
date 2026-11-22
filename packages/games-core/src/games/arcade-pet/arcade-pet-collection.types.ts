@@ -12,10 +12,13 @@ export interface PetGiftPresentPayload {
   isOpened: boolean;
 }
 
-/** Everything the server stores for a user's pet collection (minus revision). */
-/** Bump when the stored/localStorage shape changes; drives migrations. */
-export const ARCADE_PET_SCHEMA_VERSION = 1;
+/**
+ * Bump when the stored/localStorage shape changes and add a step to
+ * MIGRATIONS in arcade-pet-migration.ts.
+ */
+export const ARCADE_PET_SCHEMA_VERSION = 2;
 
+/** Everything the server stores for a user's pet collection (minus revision). */
 export interface ArcadePetCollectionPayload {
   pets: PetState[];
   activePetId: string | null;
@@ -84,6 +87,14 @@ export type ArcadePetEconomyAction =
   | { type: 'claim_milestones' }
   | { type: 'queue_theme'; themeId: string };
 
+/**
+ * Economy action as sent over the wire. `actionId` (uuid) is generated once
+ * per user action and reused on retries, so the server applies it only once.
+ */
+export type ArcadePetEconomyRequest = ArcadePetEconomyAction & {
+  actionId?: string;
+};
+
 export type ArcadePetEconomyActionType = ArcadePetEconomyAction['type'];
 
 export const ARCADE_PET_ECONOMY_ACTION_TYPES = [
@@ -114,10 +125,28 @@ export type ArcadePetEconomyError =
   | 'INBOX_FULL'
   | 'CONTENTION';
 
+/** HTTP status the REST API uses for each domain rejection. */
+export const ARCADE_PET_ERROR_HTTP_STATUS = {
+  HOME_FULL: 409,
+  HOME_MAX: 409,
+  INSUFFICIENT_GEMS: 402,
+  INSUFFICIENT_COINS: 402,
+  PET_NOT_FOUND: 404,
+  PRESENT_NOT_FOUND: 404,
+  INVALID_SPEC: 400,
+  DUPLICATE_PET: 409,
+  ALREADY_CLAIMED: 409,
+  NOTHING_TO_CLAIM: 409,
+  RECIPIENT_NOT_FOUND: 404,
+  SELF_GIFT: 400,
+  INBOX_FULL: 409,
+  CONTENTION: 409,
+} as const satisfies Record<ArcadePetEconomyError, 400 | 402 | 404 | 409>;
+
 /**
- * Domain rejections are returned as HTTP 200 with `ok: false` on purpose: the
- * client needs the authoritative collection in the same response to roll back
- * its optimistic update. Malformed requests still fail with 400.
+ * Economy outcome as seen by the services. Over REST a rejection is an HTTP
+ * error (see ARCADE_PET_ERROR_HTTP_STATUS) whose body still carries the
+ * authoritative collection, so the client can roll back its optimistic update.
  */
 export type ArcadePetEconomyResult =
   | { ok: true; collection: ArcadePetCollectionResponse }

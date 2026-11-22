@@ -59,7 +59,6 @@ export interface ArcadePetStoreState {
     targetPetId?: string,
   ) => { success: boolean; error?: string };
   hatch: (name: string, species: PetSpecies, theme?: string) => void;
-  awardTreat: (treatId: GameTreatId) => void;
   adoptRandomPet: () => { success: boolean; pet?: PetState; error?: string };
   adoptSelectedPet: (
     species: PetSpecies,

@@ -10,6 +10,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -77,7 +78,7 @@ export class CollectionPetDto {
   @IsBoolean() isSleeping: boolean;
   @IsInt() @Min(0) @Max(4) poopCount: number;
   @IsBoolean() isSick: boolean;
-  // Only known treat ids are read, and counts are clamped, when merged.
+  // Shape only: stock can never be raised by a client, only lowered (merge).
   @IsObject() inventory: Record<GameTreatId, number>;
   @IsInt() @Min(0) @Max(1000) careMistakes: number;
   @IsIn(PET_MOODS) mood: PetMood;
@@ -106,6 +107,11 @@ export class SyncCollectionDto implements Omit<
  */
 export class EconomyActionDto {
   @IsIn(ARCADE_PET_ECONOMY_ACTION_TYPES) type: ArcadePetEconomyActionType;
+
+  /** Client-generated uuid, reused on retries so the action applies once. */
+  @IsOptional()
+  @IsUUID()
+  actionId?: string;
 
   @ValidateIf((o: EconomyActionDto) =>
     ['adopt_random', 'adopt_selected', 'feed_snack', 'claim_present'].includes(

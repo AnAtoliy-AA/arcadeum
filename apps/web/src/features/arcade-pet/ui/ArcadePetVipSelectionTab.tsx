@@ -2,7 +2,9 @@
 
 import React from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
-import { SELECT_PET_COST, THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
+import { Button, EmptyState, Input, Notice } from '@arcadeum/ui';
+import { SELECT_PET_COST } from '../lib/arcade-pet-economy';
+import { SPECIES_PALETTE } from '../lib/arcade-pet-palette';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export const SPECIES_OPTIONS: readonly {
@@ -38,98 +40,112 @@ export function ArcadePetVipSelectionTab({
   onAdoptSelected,
 }: ArcadePetVipSelectionTabProps) {
   const { t } = useTranslation();
+  const themes = Object.values(SPECIES_PALETTE);
   return (
     <div className="space-y-4">
-      <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200">
+      <Notice tone="warning" icon="👑">
         <strong>
           {t('arcadePetCompanion.adoption.vipTitle', {
             cost: SELECT_PET_COST,
           })}
         </strong>{' '}
         {t('arcadePetCompanion.adoption.vipBody')}
-      </div>
+      </Notice>
 
       <div className="space-y-2">
-        <span className="text-xs font-bold text-neutral-300 block">
+        <span className="block text-xs font-bold text-[var(--color)]">
           {t('arcadePetCompanion.adoption.chooseSpecies')}
         </span>
         <div className="grid grid-cols-5 gap-2">
           {SPECIES_OPTIONS.map((spec) => (
-            <button
+            <Button
               key={spec.id}
-              type="button"
+              variant="chip"
+              size="auto"
+              padding="p-2"
+              active={selectedSpecies === spec.id}
+              aria-pressed={selectedSpecies === spec.id}
               data-testid={`select-species-${spec.id}`}
               onClick={() => onSelectSpecies(spec.id)}
-              className={`p-2 rounded-xl text-center flex flex-col items-center gap-1 border transition-all ${
-                selectedSpecies === spec.id
-                  ? 'border-amber-400 bg-amber-500/20 text-white font-bold'
-                  : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
-              }`}
+              className="flex-col gap-1"
             >
-              <span className="text-2xl">{spec.emoji}</span>
+              <span aria-hidden="true" className="text-2xl">
+                {spec.emoji}
+              </span>
               <span className="text-xs">
                 {t(`arcadePetCompanion.gifts.species.${spec.id}`)}
               </span>
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       <div className="space-y-2">
-        <span className="text-xs font-bold text-neutral-300 block">
+        <span className="block text-xs font-bold text-[var(--color)]">
           {t('arcadePetCompanion.adoption.chooseTheme')}
         </span>
-        <div className="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1">
-          {Object.values(THEME_PET_PALETTES).map((theme) => (
-            <button
-              key={theme.id}
-              type="button"
-              data-testid={`select-theme-${theme.id}`}
-              onClick={() => onSelectTheme(theme.id)}
-              className={`p-2 rounded-xl text-left border flex items-center gap-1.5 transition-all ${
-                selectedTheme === theme.id
-                  ? 'border-amber-400 bg-amber-500/20 text-white font-bold'
-                  : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
-              }`}
-            >
-              <span className="text-base">{theme.emoji}</span>
-              <span className="text-xs truncate">{theme.title}</span>
-            </button>
-          ))}
-        </div>
+        {themes.length === 0 ? (
+          <EmptyState
+            icon="🎨"
+            message={t('arcadePetCompanion.states.themesEmpty')}
+            className="p-4 text-xs"
+          />
+        ) : (
+          <div className="grid max-h-36 grid-cols-4 gap-2 overflow-y-auto p-1">
+            {themes.map((theme) => (
+              <Button
+                key={theme.id}
+                variant="chip"
+                size="auto"
+                padding="p-2"
+                active={selectedTheme === theme.id}
+                aria-pressed={selectedTheme === theme.id}
+                data-testid={`select-theme-${theme.id}`}
+                onClick={() => onSelectTheme(theme.id)}
+                className="justify-start gap-1.5"
+              >
+                <span aria-hidden="true" className="text-base">
+                  {theme.emoji}
+                </span>
+                <span className="truncate text-xs">{theme.title}</span>
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-1">
-        <span className="text-xs font-bold text-neutral-300 block">
+        <label
+          htmlFor="arcade-pet-custom-name"
+          className="block text-xs font-bold text-[var(--color)]"
+        >
           {t('arcadePetCompanion.adoption.companionName')}
-        </span>
-        <input
-          type="text"
+        </label>
+        <Input
+          id="arcade-pet-custom-name"
+          size="sm"
+          fullWidth
           data-testid="custom-pet-name-input"
           value={customName}
           onChange={(e) => onChangeCustomName(e.target.value)}
           placeholder={t('arcadePetCompanion.adoption.companionPlaceholder')}
-          className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-white focus:outline-none focus:border-amber-400"
         />
       </div>
 
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="md"
+        fullWidth
         data-testid="adopt-selected-btn"
         disabled={isHomeFull}
         onClick={onAdoptSelected}
-        className={`w-full py-3 rounded-xl font-bold text-sm shadow-lg transition-transform active:scale-95 ${
-          isHomeFull
-            ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed'
-            : 'bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white'
-        }`}
       >
         {isHomeFull
           ? t('arcadePetCompanion.adoption.upgradeToAdopt')
           : t('arcadePetCompanion.adoption.selectEquip', {
               cost: SELECT_PET_COST,
             })}
-      </button>
+      </Button>
     </div>
   );
 }

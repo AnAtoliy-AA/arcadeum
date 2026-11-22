@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Button } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { MinigameGuess } from '../types';
 
 interface ArcadePetMinigameProps {
@@ -12,11 +14,12 @@ export const ArcadePetMinigame: React.FC<ArcadePetMinigameProps> = ({
   onComplete,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const [currentNumber] = useState<number>(
     () => Math.floor(Math.random() * 7) + 2,
   );
   const [revealedNumber, setRevealedNumber] = useState<number | null>(null);
-  const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const [won, setWon] = useState<boolean | null>(null);
 
   const handleGuess = (guess: MinigameGuess) => {
     let nextNum = Math.floor(Math.random() * 9) + 1;
@@ -26,64 +29,63 @@ export const ArcadePetMinigame: React.FC<ArcadePetMinigameProps> = ({
     setRevealedNumber(nextNum);
 
     const isHigher = nextNum > currentNumber;
-    const won =
+    const didWin =
       (guess === 'higher' && isHigher) || (guess === 'lower' && !isHigher);
-
-    if (won) {
-      setResultMessage('You Win! (+Happiness)');
-      onComplete(true);
-    } else {
-      setResultMessage('Oops! Try Again!');
-      onComplete(false);
-    }
+    setWon(didWin);
+    onComplete(didWin);
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 bg-black/60 rounded-lg text-white font-mono gap-3 w-full">
-      <div className="text-xs uppercase font-bold tracking-wider text-emerald-400">
-        Higher or Lower Game
+    <div className="flex w-full flex-col items-center justify-center gap-3 rounded-lg bg-black/60 p-4 font-mono text-white">
+      <div className="text-xs font-bold uppercase tracking-wider text-[var(--arcade-accent,var(--accent))]">
+        {t('arcadePetCompanion.game.miniTitle')}
       </div>
 
-      <div className="flex items-center gap-4 text-2xl font-bold py-2">
-        <div className="w-12 h-16 bg-white text-black flex items-center justify-center rounded shadow-inner">
+      <div className="flex items-center gap-4 py-2 text-2xl font-bold">
+        <div className="flex h-16 w-12 items-center justify-center rounded bg-white text-black shadow-inner">
           {currentNumber}
         </div>
-        <span className="text-lg text-neutral-400">vs</span>
-        <div className="w-12 h-16 bg-neutral-800 text-white border-2 border-dashed border-neutral-500 flex items-center justify-center rounded shadow-inner">
+        <span className="text-lg text-white/70">
+          {t('arcadePetCompanion.game.miniVs')}
+        </span>
+        <div className="flex h-16 w-12 items-center justify-center rounded border-2 border-dashed border-white/60 bg-black/40 text-white shadow-inner">
           {revealedNumber !== null ? revealedNumber : '?'}
         </div>
       </div>
 
-      {resultMessage ? (
-        <div className="text-sm font-bold text-yellow-300 animate-pulse">
-          {resultMessage}
+      {won !== null ? (
+        <div
+          role="status"
+          className="animate-pulse text-sm font-bold text-white motion-reduce:animate-none"
+        >
+          {won
+            ? t('arcadePetCompanion.game.miniWin')
+            : t('arcadePetCompanion.game.miniLose')}
         </div>
       ) : (
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="sm"
             onClick={() => handleGuess('higher')}
-            className="px-4 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider"
+            className="text-xs uppercase tracking-wider"
           >
-            Higher ▲
-          </button>
-          <button
-            type="button"
+            {t('arcadePetCompanion.game.miniHigher')}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => handleGuess('lower')}
-            className="px-4 py-1.5 rounded bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider"
+            className="text-xs uppercase tracking-wider"
           >
-            Lower ▼
-          </button>
+            {t('arcadePetCompanion.game.miniLower')}
+          </Button>
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={onCancel}
-        className="text-[11px] text-neutral-400 hover:text-white underline mt-1"
-      >
-        Exit Game
-      </button>
+      <Button variant="link" size="sm" onClick={onCancel} className="text-xs">
+        {t('arcadePetCompanion.game.miniExit')}
+      </Button>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { Button } from '@arcadeum/ui';
 import React, { useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { PET_NAME_MAX_LENGTH, sanitizePetName } from '@arcadeum/games-core';
@@ -35,16 +36,16 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
     return (
       <span className="flex items-center gap-1">
         <span className="text-sm font-bold leading-tight">{name}</span>
-        <button
-          type="button"
+        <Button
+          variant="icon"
+          size="sm"
           data-testid="pet-rename-btn"
           onClick={startEditing}
           aria-label={t('arcadePetCompanion.rename.edit')}
           title={t('arcadePetCompanion.rename.edit')}
-          className="text-xs text-neutral-400 hover:text-white"
         >
-          ✏️
-        </button>
+          <span aria-hidden="true">✏️</span>
+        </Button>
       </span>
     );
   }
@@ -72,18 +73,19 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
         }}
         aria-label={t('arcadePetCompanion.rename.label')}
         aria-invalid={invalid}
-        className={`w-28 px-1.5 py-0.5 rounded bg-neutral-950 border text-xs text-white ${
-          invalid ? 'border-red-500' : 'border-neutral-700'
+        className={`w-28 rounded border bg-[var(--background)] px-1.5 py-0.5 text-xs text-[var(--color)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] ${
+          invalid ? 'border-[var(--danger)]' : 'border-[var(--glassBorder)]'
         }`}
       />
-      <button
+      <Button
         type="submit"
+        variant="icon"
+        size="sm"
         data-testid="pet-rename-save"
         aria-label={t('arcadePetCompanion.rename.save')}
-        className="text-xs text-emerald-400 hover:text-emerald-300"
       >
-        ✓
-      </button>
+        <span aria-hidden="true">✓</span>
+      </Button>
       {invalid && (
         <span role="alert" className="sr-only">
           {t('arcadePetCompanion.rename.invalid')}

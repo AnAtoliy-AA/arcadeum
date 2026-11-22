@@ -1,4 +1,5 @@
 import React from 'react';
+import { Notice } from '@arcadeum/ui';
 import {
   formatAwayDuration,
   type AwaySummary,
@@ -17,30 +18,23 @@ export const ArcadePetAwayBanner: React.FC<ArcadePetAwayBannerProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div
-      role="status"
+    <Notice
+      tone="info"
       data-testid="pet-away-summary"
-      className="text-xs text-sky-200 text-center bg-sky-950/40 border border-sky-500/30 rounded py-1.5 px-2 flex flex-col gap-1"
+      dismissTestId="pet-away-summary-dismiss"
+      onDismiss={onDismiss}
+      dismissLabel={t('arcadePetCompanion.awayDismiss')}
+      className="text-center"
     >
-      <span>
-        {t('arcadePetCompanion.awaySummary', {
-          duration: formatAwayDuration(summary.awayMs),
-          name: summary.petName,
-          hunger: summary.hungerDrop,
-          hours: summary.growthHoursGained,
-        })}
-        {summary.stageBefore !== summary.stageAfter
-          ? ` ${t('arcadePetCompanion.awayEvolved', { stage: t(stageTranslationKey(summary.stageAfter)) })}`
-          : ''}
-      </span>
-      <button
-        type="button"
-        data-testid="pet-away-summary-dismiss"
-        onClick={onDismiss}
-        className="self-center px-2 py-0.5 rounded-full border border-sky-400/50 font-bold text-xs uppercase"
-      >
-        {t('arcadePetCompanion.awayDismiss')}
-      </button>
-    </div>
+      {t('arcadePetCompanion.awaySummary', {
+        duration: formatAwayDuration(summary.awayMs),
+        name: summary.petName,
+        hunger: summary.hungerDrop,
+        hours: summary.growthHoursGained,
+      })}
+      {summary.stageBefore !== summary.stageAfter
+        ? ` ${t('arcadePetCompanion.awayEvolved', { stage: t(stageTranslationKey(summary.stageAfter)) })}`
+        : ''}
+    </Notice>
   );
 };

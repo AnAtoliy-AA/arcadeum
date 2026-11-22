@@ -174,4 +174,34 @@ describe('useArcadePetSync', () => {
     unmount();
     expect(useArcadePetStore.getState().serverBacked).toBe(false);
   });
+
+  describe('status', () => {
+    it('is idle while disabled', async () => {
+      const { result } = renderHook(() => useArcadePetSync(false));
+      await flush();
+      expect(result.current.status).toBe('idle');
+    });
+
+    it('reports syncing then synced', async () => {
+      fetchServerCollection.mockResolvedValue(serverCollection());
+      const { result } = renderHook(() => useArcadePetSync(true));
+      expect(result.current.status).toBe('syncing');
+      await flush();
+      expect(result.current.status).toBe('synced');
+    });
+
+    it('reports error on a failed pull and recovers on retry', async () => {
+      fetchServerCollection.mockRejectedValueOnce(new Error('offline'));
+      const { result } = renderHook(() => useArcadePetSync(true));
+      await flush();
+      expect(result.current.status).toBe('error');
+
+      fetchServerCollection.mockResolvedValue(serverCollection());
+      act(() => result.current.retry());
+      expect(result.current.status).toBe('syncing');
+      await flush();
+      expect(result.current.status).toBe('synced');
+      expect(fetchServerCollection).toHaveBeenCalledTimes(2);
+    });
+  });
 });

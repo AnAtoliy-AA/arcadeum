@@ -1,8 +1,10 @@
 import React from 'react';
 import type { PetState } from '@arcadeum/games-core';
+import { Button, EmptyState } from '@arcadeum/ui';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
+import { SPECIES_PALETTE } from '../lib/arcade-pet-palette';
+import { stageTranslationKey } from '../lib/arcade-pet-stage-key';
 
 export function ArcadePetCollectionList({
   pets,
@@ -16,34 +18,35 @@ export function ArcadePetCollectionList({
   const { t } = useTranslation();
   if (pets.length === 0) {
     return (
-      <p
-        data-testid="pet-collection-empty"
-        className="text-xs text-neutral-400 text-center py-4"
-      >
-        {t('arcadePetCompanion.collectionEmpty')}
-      </p>
+      <div data-testid="pet-collection-empty">
+        <EmptyState
+          icon="🥚"
+          message={t('arcadePetCompanion.collectionEmpty')}
+          className="p-4 text-xs"
+        />
+      </div>
     );
   }
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-neutral-300">
-          Your Stables ({pets.length} Owned)
-        </span>
-      </div>
+      <span className="block text-xs font-bold text-[var(--color)]">
+        {t('arcadePetCompanion.collection.title', { count: pets.length })}
+      </span>
 
-      <div className="space-y-2 max-h-64 overflow-y-auto">
+      <ul className="max-h-64 space-y-2 overflow-y-auto">
         {pets.map((p) => {
           const isActive = p.id === activePetId;
-          const palette = THEME_PET_PALETTES[p.theme];
+          const palette = SPECIES_PALETTE[p.theme];
+          const displayName =
+            p.stage === 'egg' ? t('arcadePetCompanion.mysteryEgg') : p.name;
           return (
-            <div
+            <li
               key={p.id}
               data-testid={`pet-item-${p.id}`}
-              className={`flex items-center justify-between p-3 rounded-xl border ${
+              className={`flex items-center justify-between rounded-xl border p-3 ${
                 isActive
-                  ? 'border-emerald-500/60 bg-emerald-950/30'
-                  : 'border-neutral-800 bg-neutral-950'
+                  ? 'border-[var(--success)] bg-[color-mix(in_srgb,var(--success)_14%,transparent)]'
+                  : 'border-[var(--glassBorder)] bg-[var(--backgroundHover)]'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -52,43 +55,54 @@ export function ArcadePetCollectionList({
                   state="idle"
                   theme={p.theme}
                   stage={p.stage}
-                  className="w-10 h-10"
+                  className="h-10 w-10"
                 />
                 <div className="flex flex-col">
-                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    {p.stage === 'egg' ? 'Mystery Egg' : p.name}
+                  <span className="flex items-center gap-1.5 text-xs font-bold text-[var(--color)]">
+                    {displayName}
                     {p.stage !== 'egg' && palette && (
-                      <span className="text-xs px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
+                      <span className="rounded-full border border-[var(--glassBorder)] px-1.5 text-xs text-[var(--textSecondary)]">
                         {palette.emoji} {palette.title}
                       </span>
                     )}
                   </span>
-                  <span className="text-xs text-neutral-400">
+                  <span className="text-xs text-[var(--textSecondary)]">
                     {p.stage === 'egg'
-                      ? 'Incubating • Mystery Companion'
-                      : `Level ${p.stats.level} • ${p.species} • ${p.stage}`}
+                      ? t('arcadePetCompanion.collection.incubating')
+                      : t('arcadePetCompanion.collection.levelLine', {
+                          level: p.stats.level,
+                          species: t(
+                            `arcadePetCompanion.gifts.species.${p.species}`,
+                          ),
+                          stage: t(stageTranslationKey(p.stage)),
+                        })}
                   </span>
                 </div>
               </div>
 
               {isActive ? (
-                <span className="text-xs font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
-                  Active Mount
+                <span className="rounded-full border border-[var(--success)] px-3 py-1 text-xs font-bold text-[var(--color)]">
+                  {t('arcadePetCompanion.collection.active')}
                 </span>
               ) : (
-                <button
-                  type="button"
+                <Button
+                  variant="glass"
+                  size="sm"
+                  padding="px-3"
                   data-testid={`equip-pet-${p.id}`}
+                  aria-label={t('arcadePetCompanion.collection.equipAria', {
+                    name: displayName,
+                  })}
                   onClick={() => onSelectPet(p.id)}
-                  className="text-xs font-semibold text-white px-3 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700"
+                  className="text-xs font-semibold"
                 >
-                  Equip
-                </button>
+                  {t('arcadePetCompanion.collection.equip')}
+                </Button>
               )}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }

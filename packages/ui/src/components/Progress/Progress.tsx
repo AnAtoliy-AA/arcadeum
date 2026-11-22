@@ -9,6 +9,8 @@ export type ProgressBarProps = {
   color?: string;
   showLabel?: boolean;
   gameVariant?: GameVariant;
+  /** Accessible name for the bar (pass a translated string). */
+  ariaLabel?: string;
   className?: string;
 };
 
@@ -18,6 +20,7 @@ export const ProgressBar = memo(function ProgressBar({
   color = 'var(--primary)',
   showLabel = false,
   gameVariant,
+  ariaLabel,
   className,
 }: ProgressBarProps) {
   const indicatorColor = gameVariant
@@ -29,6 +32,7 @@ export const ProgressBar = memo(function ProgressBar({
     <div className={`flex w-full flex-col gap-2 ${className ?? ''}`}>
       <div
         role="progressbar"
+        aria-label={ariaLabel}
         aria-valuenow={Math.round(clamped)}
         aria-valuemin={0}
         aria-valuemax={100}

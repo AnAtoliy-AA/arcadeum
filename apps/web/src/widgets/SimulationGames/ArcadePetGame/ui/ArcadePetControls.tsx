@@ -72,7 +72,7 @@ export const ArcadePetControls: React.FC<ArcadePetControlsProps> = ({
           ariaLabel={t('arcadePetCompanion.landing.btnSelectAria')}
           caption={t('arcadePetCompanion.landing.labelSelect')}
           glyph="A"
-          colorVar="var(--arcade-btn-a, #ef4444)"
+          colorVar="var(--arcade-btn-a, var(--danger))"
           sizeClass="w-14 h-14"
           glyphClass="text-lg"
           onPress={onPressA}
@@ -86,7 +86,7 @@ export const ArcadePetControls: React.FC<ArcadePetControlsProps> = ({
               : t('arcadePetCompanion.landing.labelConfirm')
           }
           glyph={isEgg ? t('arcadePetCompanion.landing.labelHatch') : 'B'}
-          colorVar="var(--arcade-btn-b, #10b981)"
+          colorVar="var(--arcade-btn-b, var(--success))"
           sizeClass="w-16 h-16"
           glyphClass="text-xl"
           onPress={onPressB}
@@ -100,7 +100,7 @@ export const ArcadePetControls: React.FC<ArcadePetControlsProps> = ({
               : t('arcadePetCompanion.landing.labelCancel')
           }
           glyph="C"
-          colorVar="var(--arcade-btn-c, #f59e0b)"
+          colorVar="var(--arcade-btn-c, var(--warning))"
           sizeClass="w-14 h-14"
           glyphClass="text-lg"
           onPress={onPressC}

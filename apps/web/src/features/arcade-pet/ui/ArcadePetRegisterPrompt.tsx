@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetRegisterPromptProps {
@@ -14,28 +15,28 @@ export const ArcadePetRegisterPrompt: React.FC<
   return (
     <div
       data-testid="arcade-pet-register-prompt"
-      className="mb-3 w-72 rounded-2xl bg-neutral-900/95 border border-amber-500/50 p-4 shadow-2xl backdrop-blur-md text-white font-sans flex flex-col gap-2.5 text-center"
+      className="mb-3 w-72 rounded-2xl bg-[var(--glassBg)] border border-[var(--warning)] p-4 shadow-2xl backdrop-blur-md text-[var(--color)] font-sans flex flex-col gap-2.5 text-center"
     >
-      <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-        <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
+      <div className="flex items-center justify-between border-b border-[var(--glassBorder)] pb-2">
+        <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color)]">
           <span>🔒</span>
           <span>{t('arcadePetCompanion.registerTitle')}</span>
         </div>
-        <button
-          type="button"
+        <Button
+          variant="icon"
+          size="sm"
           onClick={onClose}
-          className="text-neutral-400 hover:text-white p-1 text-xs"
           aria-label={t('arcadePetCompanion.closePrompt')}
         >
-          ✕
-        </button>
+          <span aria-hidden="true">✕</span>
+        </Button>
       </div>
-      <p className="text-xs text-neutral-300 leading-relaxed">
+      <p className="text-xs text-[var(--textSecondary)] leading-relaxed">
         {t('arcadePetCompanion.registerBody')}
       </p>
       <Link
         href={`/${locale}/auth`}
-        className="w-full py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs uppercase text-center shadow-md transition-transform transform hover:scale-105"
+        className="w-full rounded-lg bg-[var(--primary)] py-1.5 text-center text-xs font-bold uppercase text-[var(--primaryText)] shadow-md transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
       >
         {t('arcadePetCompanion.registerCta')}
       </Link>

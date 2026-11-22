@@ -98,6 +98,8 @@ function ArcadePetVisual() {
   );
 }
 
+// Design-token exception: OG images render outside the DOM theme, so CSS
+// variables are unavailable and the device skin colors must be literal hex.
 export default async function Image({ params }: Props) {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);

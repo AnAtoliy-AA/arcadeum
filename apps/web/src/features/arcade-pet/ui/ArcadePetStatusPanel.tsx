@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProgressBar } from '@arcadeum/ui';
+import { Notice, ProgressBar } from '@arcadeum/ui';
 import { getGrowthSpeedPercent, type PetState } from '@arcadeum/games-core';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
@@ -13,63 +13,71 @@ export const ArcadePetStatusPanel: React.FC<ArcadePetStatusPanelProps> = ({
   isAtHome,
 }) => {
   const { t } = useTranslation();
+  const growthPercent = getGrowthSpeedPercent(pet.stats.hunger, isAtHome);
   return (
     <>
       {isAtHome ? (
-        <div
+        <Notice
+          tone="warning"
+          icon="🏠"
           data-testid="pet-home-resting-banner"
-          className="text-xs text-amber-200 font-medium text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
+          className="text-center font-medium"
         >
-          <span>🏠</span>
-          <span>{t('arcadePetCompanion.restingBanner')}</span>
-        </div>
+          {t('arcadePetCompanion.restingBanner')}
+        </Notice>
       ) : (
-        <div
+        <Notice
+          tone="success"
+          icon="⚡"
           data-testid="pet-running-banner"
-          className="text-xs text-emerald-300 font-medium text-center bg-emerald-950/30 border border-emerald-500/30 rounded py-1 px-2 flex items-center justify-center gap-1"
+          className="text-center font-medium"
         >
-          <span>⚡</span>
-          <span>{t('arcadePetCompanion.runningBanner')}</span>
-        </div>
+          {t('arcadePetCompanion.runningBanner')}
+        </Notice>
       )}
 
       <div className="flex flex-col gap-2 text-xs">
-        <div className="flex justify-between text-xs text-neutral-400">
+        <div className="flex justify-between text-xs text-[var(--textSecondary)]">
           <span>{t('arcadePetCompanion.hunger')}</span>
-          <span className="font-bold text-neutral-200">
+          <span className="font-bold text-[var(--color)]">
             {pet.stats.hunger}%
           </span>
         </div>
-        {/* Fixed amber/rose keep the bars legible on the dark panel in every theme. */}
-        <ProgressBar value={pet.stats.hunger} height={6} color="#f59e0b" />
+        <ProgressBar
+          value={pet.stats.hunger}
+          height={6}
+          color="var(--warning)"
+          ariaLabel={t('arcadePetCompanion.hunger')}
+        />
 
-        <div className="flex justify-between text-xs text-neutral-400 pt-1">
+        <div className="flex justify-between pt-1 text-xs text-[var(--textSecondary)]">
           <span>{t('arcadePetCompanion.happiness')}</span>
-          <span className="font-bold text-neutral-200">
+          <span className="font-bold text-[var(--color)]">
             {pet.stats.happiness}%
           </span>
         </div>
-        <ProgressBar value={pet.stats.happiness} height={6} color="#f43f5e" />
+        <ProgressBar
+          value={pet.stats.happiness}
+          height={6}
+          color="var(--danger)"
+          ariaLabel={t('arcadePetCompanion.happiness')}
+        />
 
         <div
           data-testid="pet-growth-rate-badge"
-          className="flex items-center justify-between text-xs px-2 py-1 rounded bg-neutral-950/70 border border-neutral-800"
+          className="flex items-center justify-between rounded border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-2 py-1 text-xs"
         >
-          <span className="text-neutral-400">
+          <span className="text-[var(--textSecondary)]">
             {t('arcadePetCompanion.growthSpeed')}
           </span>
           <span
             className={`font-bold ${
-              isAtHome
-                ? 'text-neutral-400'
-                : getGrowthSpeedPercent(pet.stats.hunger, isAtHome) >= 70
-                  ? 'text-emerald-400'
-                  : 'text-amber-400'
+              isAtHome ? 'text-[var(--textSecondary)]' : 'text-[var(--color)]'
             }`}
           >
             {isAtHome
               ? t('arcadePetCompanion.pausedAtHome')
-              : `${getGrowthSpeedPercent(pet.stats.hunger, isAtHome)}%`}
+              : `${growthPercent}%`}
             {!isAtHome && pet.stats.hunger < 25
               ? t('arcadePetCompanion.hungryWarning')
               : ''}

@@ -187,7 +187,11 @@ export function ArcadePetSocialStage({
             </div>
 
             <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-indigo-400/50 text-xs font-semibold text-indigo-300 pointer-events-none select-none">
-              {otherPlayer?.displayName ?? 'Neighbor'}&apos;s Pet
+              {t('arcadePetCompanion.opponentPetOf', {
+                name:
+                  otherPlayer?.displayName ??
+                  t('arcadePetCompanion.a11y.neighbor'),
+              })}
             </span>
           </div>
         )}

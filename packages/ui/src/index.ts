@@ -22,6 +22,8 @@ export * from './components/Icons/index';
 export * from './components/FormGroup/FormGroup';
 export * from './components/GlassCard/GlassCard';
 export * from './components/Modal/Modal';
+export * from './components/Notice';
+export * from './components/TabBar';
 export * from './components/Section/Section';
 export * from './components/PageLayout/PageLayout';
 export * from './components/PageTitle/PageTitle';

@@ -343,7 +343,6 @@ export default function GamesPage({
         <GamesEmpty
           hasFilters={hasActiveFilters}
           onClearFilters={handleClearAll}
-          gameId={gameId}
         />
       );
     }

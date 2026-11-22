@@ -1,4 +1,9 @@
-import { normalizeCookieDomain, resolveCookieDomain } from './cookie-domain';
+import {
+  isNonProdArcadeumHost,
+  normalizeCookieDomain,
+  resolveCookieDomain,
+  resolveCookieNames,
+} from './cookie-domain';
 
 const reqWith = (headers: Record<string, string>) => ({
   get: (name: string) => headers[name.toLowerCase()],
@@ -48,5 +53,55 @@ describe('normalizeCookieDomain', () => {
   it('rejects empty and single-label values', () => {
     expect(normalizeCookieDomain('')).toBeUndefined();
     expect(normalizeCookieDomain('localhost')).toBeUndefined();
+  });
+});
+
+describe('non-prod hosts', () => {
+  it('classifies hosts', () => {
+    expect(isNonProdArcadeumHost('api-dev.arcadeum.games')).toBe(true);
+    expect(isNonProdArcadeumHost('staging.arcadeum.games')).toBe(true);
+    expect(isNonProdArcadeumHost('api.arcadeum.games')).toBe(false);
+    expect(isNonProdArcadeumHost('www.arcadeum.games')).toBe(false);
+    expect(isNonProdArcadeumHost('arcadeum.games')).toBe(false);
+  });
+
+  it('does not infer a domain-wide cookie for dev/staging hosts', () => {
+    expect(
+      resolveCookieDomain(reqWith({ host: 'api-dev.arcadeum.games' })),
+    ).toBeUndefined();
+    expect(
+      resolveCookieDomain(
+        reqWith({
+          host: 'be:3000',
+          'x-forwarded-host': 'staging.arcadeum.games',
+        }),
+      ),
+    ).toBeUndefined();
+  });
+
+  it('still honours an explicit COOKIE_DOMAIN on dev hosts', () => {
+    expect(
+      resolveCookieDomain(
+        reqWith({ host: 'api-dev.arcadeum.games' }),
+        '.arcadeum.games',
+      ),
+    ).toBe('.arcadeum.games');
+  });
+});
+
+describe('resolveCookieNames', () => {
+  it('keeps plain names on prod and prefixes non-prod', () => {
+    expect(resolveCookieNames(reqWith({ host: 'api.arcadeum.games' }))).toEqual(
+      {
+        access: 'access_token',
+        refresh: 'refresh_token',
+      },
+    );
+    expect(
+      resolveCookieNames(reqWith({ host: 'api-dev.arcadeum.games' })),
+    ).toEqual({ access: 'dev_access_token', refresh: 'dev_refresh_token' });
+    expect(resolveCookieNames(reqWith({ host: 'localhost:3000' })).access).toBe(
+      'access_token',
+    );
   });
 });

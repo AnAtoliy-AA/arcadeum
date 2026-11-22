@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.4] - 2026-11-22
+
+### Fixed
+- make scrollable themes grid keyboard focusable (ARC-1047) (ARC-1047)
+
+
 ## [1.31.3] - 2026-11-22
 
 ### Added

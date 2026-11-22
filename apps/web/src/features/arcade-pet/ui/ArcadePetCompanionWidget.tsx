@@ -14,7 +14,6 @@ import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
 import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
 import { getPetFoodCost } from '../lib/arcade-pet-economy';
 import { SPECIES_PALETTE } from '../lib/arcade-pet-palette';
-import { gamesApi } from '@/features/games/api';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
 import { getPetAttention } from '../lib/arcade-pet-attention';
 import { ArcadePetCompanionHeader } from './ArcadePetCompanionHeader';
@@ -23,7 +22,7 @@ import { ArcadePetMilestoneToast } from './ArcadePetMilestoneToast';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
 import { Button, Notice } from '@arcadeum/ui';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
-import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
+import { useArcadePetFeatureDisabled } from '../hooks/useArcadePetFeatureDisabled';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetCompanionWidgetProps {
@@ -66,6 +65,7 @@ export const ArcadePetCompanionWidget: React.FC<
     adoptRandomPet,
     selectActivePet,
     homeCapacity,
+    syncPending,
   } = useArcadePetStore(
     useShallow((s) => ({
       pet: s.pet,
@@ -93,6 +93,7 @@ export const ArcadePetCompanionWidget: React.FC<
       adoptRandomPet: s.adoptRandomPet,
       selectActivePet: s.selectActivePet,
       homeCapacity: s.homeCapacity,
+      syncPending: s.syncPending,
     })),
   );
 
@@ -100,7 +101,7 @@ export const ArcadePetCompanionWidget: React.FC<
   const [showGiftsModal, setShowGiftsModal] = useState(false);
   const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
   const [showCommitmentModal, setShowCommitmentModal] = useState(false);
-  const [isFeatureDisabled, setIsFeatureDisabled] = useState(false);
+  const isFeatureDisabled = useArcadePetFeatureDisabled(snapshot.accessToken);
 
   useEffect(() => {
     initialize(currentUserId, theme);
@@ -113,22 +114,6 @@ export const ArcadePetCompanionWidget: React.FC<
   useEffect(() => {
     checkMilestones();
   }, [pets, dailyStreak, checkMilestones]);
-
-  useEffect(() => {
-    let cancelled = false;
-    gamesApi
-      .getCatalog({ token: snapshot.accessToken || undefined })
-      .then((res) => {
-        if (cancelled) return;
-        setIsFeatureDisabled(isPetFeatureDisabled(res.games));
-      })
-      .catch(() => {
-        // Fallback on network error: keep available
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [snapshot.accessToken]);
 
   if (pathname?.includes('/games/arcade-pet') || isFeatureDisabled) {
     return null;
@@ -180,9 +165,10 @@ export const ArcadePetCompanionWidget: React.FC<
             size="sm"
             shape="round"
             data-testid="arcade-pet-companion-trigger"
+            disabled={syncPending}
             onClick={() => setShowCommitmentModal(true)}
             aria-label={t('arcadePetCompanion.adoptFreeAria')}
-            className="gap-2 px-3.5"
+            className="gap-2 px-3.5 disabled:cursor-wait"
           >
             <span aria-hidden="true" className="text-lg">
               🥚
@@ -376,6 +362,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     variant="glass"
                     size="sm"
                     data-testid="companion-feed-btn"
+                    disabled={syncPending}
                     onClick={() => performAction('feed_snack')}
                     className="text-xs font-semibold"
                   >
@@ -401,6 +388,7 @@ export const ArcadePetCompanionWidget: React.FC<
                     variant="glass"
                     size="sm"
                     data-testid="open-adoption-modal-btn"
+                    disabled={syncPending}
                     onClick={() => setShowAdoptionModal(true)}
                     className="text-xs font-semibold"
                   >

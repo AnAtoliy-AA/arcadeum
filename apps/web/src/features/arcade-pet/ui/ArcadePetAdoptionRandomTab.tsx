@@ -110,8 +110,9 @@ export function ArcadePetAdoptionRandomTab({
           </span>
         </div>
         <div
-          role="region"
+          // Scrollable region must be keyboard reachable (axe: scrollable-region-focusable).
           tabIndex={0}
+          role="region"
           aria-label={t('arcadePetCompanion.adoption.themesTitle')}
           className="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto p-1 sm:grid-cols-3"
         >

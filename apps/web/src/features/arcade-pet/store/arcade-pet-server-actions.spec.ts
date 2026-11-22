@@ -87,6 +87,32 @@ describe('server actions', () => {
     expect(st().pets.map((p) => p.id)).toEqual(['mine']);
   });
 
+  it('keeps a freshly adopted pet when the server has no document yet', async () => {
+    const egg = createInitialPet({ id: 'egg', name: 'Egg' });
+    set({ pets: [egg], pet: egg, activePetId: 'egg', syncRevision: null });
+    pushServerCollection.mockResolvedValue({
+      status: 'conflict',
+      collection: collection({
+        revision: 0,
+        pets: [],
+        hasConfirmedCare: false,
+      }),
+    });
+    performServerAction.mockResolvedValue({
+      ok: true,
+      collection: collection({ pets: [egg] }),
+    } satisfies ArcadePetEconomyResult);
+    await sendEconomyAction(st, set, {
+      type: 'adopt_random',
+      petId: 'egg',
+      species: 'slime',
+      theme: 'retro',
+      name: 'Egg',
+    });
+    expect(st().pets.map((p) => p.id)).toEqual(['egg']);
+    expect(st().pet?.id).toBe('egg');
+  });
+
   it('rolls optimistic state back when the server rejects', async () => {
     const ghost = createInitialPet({ id: 'ghost', name: 'Ghost' });
     set({ pets: [ghost], pet: ghost, activePetId: 'ghost' });

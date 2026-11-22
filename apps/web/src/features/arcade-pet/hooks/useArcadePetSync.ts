@@ -49,6 +49,7 @@ export function useArcadePetSync(enabled: boolean): ArcadePetSyncState {
     if (!enabled) return;
 
     let cancelled = false;
+    useArcadePetStore.setState({ syncPending: true });
     let timer: ReturnType<typeof setTimeout> | null = null;
     const store = useArcadePetStore;
     const get = store.getState;
@@ -83,6 +84,8 @@ export function useArcadePetSync(enabled: boolean): ArcadePetSyncState {
       } catch {
         // Stay local-only until the user retries or the next mount.
         if (!cancelled) setOutcome({ attempt, result: 'error' });
+      } finally {
+        if (!cancelled) set({ syncPending: false });
       }
     })();
 
@@ -90,7 +93,7 @@ export function useArcadePetSync(enabled: boolean): ArcadePetSyncState {
       cancelled = true;
       unsubscribe();
       if (timer) clearTimeout(timer);
-      set({ serverBacked: false });
+      set({ serverBacked: false, syncPending: false });
     };
   }, [enabled, attempt]);
 

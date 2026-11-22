@@ -40,7 +40,7 @@ import {
   encryptTokenCookie,
 } from '../common/utils/token-cookie-cipher.util';
 
-import { resolveCookieDomain } from './lib/cookie-domain';
+import { resolveCookieDomain, resolveCookieNames } from './lib/cookie-domain';
 
 const COOKIE_MAX_AGE_15_MIN = 15 * 60 * 1000;
 const COOKIE_MAX_AGE_30_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -56,6 +56,8 @@ function setTokenCookies(
   refreshTokenExpiresAt: Date,
 ): void {
   const domain = resolveCookieDomain(req, cookieDomain);
+  const names = resolveCookieNames(req);
+  clearLegacyHostOnlyCookies(res, req, domain);
   const maxAgeAccess = accessTokenExpiresAt
     ? Math.min(
         accessTokenExpiresAt.getTime() - Date.now(),
@@ -72,7 +74,7 @@ function setTokenCookies(
   //
   // The values are AES-GCM encrypted before storage so the credentials
   // are never persisted in clear text (CWE-312).
-  res.cookie('access_token', encryptTokenCookie(accessToken, cookieKey), {
+  res.cookie(names.access, encryptTokenCookie(accessToken, cookieKey), {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -80,7 +82,7 @@ function setTokenCookies(
     path: '/',
     maxAge: Math.max(maxAgeAccess, 0),
   });
-  res.cookie('refresh_token', encryptTokenCookie(refreshToken, cookieKey), {
+  res.cookie(names.refresh, encryptTokenCookie(refreshToken, cookieKey), {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
@@ -105,8 +107,36 @@ function clearTokenCookies(
     sameSite: 'lax' as const,
     ...(domain ? { domain } : {}),
   };
-  res.clearCookie('access_token', options);
-  res.clearCookie('refresh_token', options);
+  const names = resolveCookieNames(req);
+  res.clearCookie(names.access, options);
+  res.clearCookie(names.refresh, options);
+  clearLegacyHostOnlyCookies(res, req, domain);
+}
+
+/**
+ * Older builds wrote host-only cookies (no Domain). A browser can hold those
+ * next to the domain-wide ones and send them first, so a stale/foreign token
+ * wins. A Domain-scoped Set-Cookie cannot delete them, hence the extra
+ * host-only expiry. Only runs when the live cookies carry a Domain (or use
+ * prefixed names), otherwise the regular write/clear already hits them.
+ */
+function clearLegacyHostOnlyCookies(
+  res: Response,
+  req: Request,
+  domain: string | undefined,
+): void {
+  const names = resolveCookieNames(req);
+  const base = {
+    path: '/',
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax' as const,
+  };
+  // Host-only legacy cookies only differ from the live ones when the live
+  // ones carry a Domain or a non-prod name prefix.
+  if (!domain && names.access === 'access_token') return;
+  res.clearCookie('access_token', base);
+  res.clearCookie('refresh_token', base);
 }
 
 @Controller('auth')
@@ -222,7 +252,9 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AuthTokensResponse> {
-    const cookieToken = (req.cookies as Record<string, string>)?.refresh_token;
+    const cookieToken = (req.cookies as Record<string, string>)?.[
+      resolveCookieNames(req).refresh
+    ];
     // Cookies written before this feature are plain text; accept them so
     // existing sessions survive the deploy and get re-encrypted on next
     // refresh.

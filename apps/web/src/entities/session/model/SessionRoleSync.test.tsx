@@ -454,16 +454,24 @@ describe('SessionRoleSync', () => {
       expect(mockRefreshFromCookie).toHaveBeenCalledTimes(2);
     });
 
-    it('skips restore when another tab holds the refresh lock', async () => {
-      mockAcquireLock.mockReturnValueOnce(false);
+    it('skips restore while another tab holds the lock, then retries after the TTL', async () => {
+      mockAcquireLock.mockReturnValueOnce(false).mockReturnValue(true);
+      mockRefreshFromCookie.mockResolvedValueOnce(REFRESH_RESPONSE);
+      apiGetMock.mockResolvedValueOnce(PROFILE);
 
       render(<SessionRoleSync />);
       act(() => {
         vi.advanceTimersByTime(INITIAL_SYNC_DEFER_MS);
       });
       await flushPromises();
-
       expect(mockRefreshFromCookie).not.toHaveBeenCalled();
+
+      act(() => {
+        vi.advanceTimersByTime(10_500);
+      });
+      await flushPromises();
+
+      expect(mockRefreshFromCookie).toHaveBeenCalledTimes(1);
     });
   });
 

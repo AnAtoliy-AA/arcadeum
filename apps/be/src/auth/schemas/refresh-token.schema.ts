@@ -20,6 +20,10 @@ export class RefreshToken {
 
   @Prop({ type: String, required: true })
   rotationParentId!: string; // id of previous token in chain (or self for first)
+
+  /** Set when the token is rotated; drives the reuse grace window. */
+  @Prop({ type: Date })
+  rotatedAt?: Date;
 }
 
 export type RefreshTokenDocument = RefreshToken & Document;

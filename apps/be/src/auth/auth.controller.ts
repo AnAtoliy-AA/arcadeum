@@ -40,27 +40,22 @@ import {
   encryptTokenCookie,
 } from '../common/utils/token-cookie-cipher.util';
 
+import { resolveCookieDomain } from './lib/cookie-domain';
+
 const COOKIE_MAX_AGE_15_MIN = 15 * 60 * 1000;
 const COOKIE_MAX_AGE_30_DAYS = 30 * 24 * 60 * 60 * 1000;
-
-function getCookieDomain(req: Request): string | undefined {
-  const host = (req.get('host') ?? '').split(':')[0].toLowerCase();
-  if (host === 'arcadeum.games' || host.endsWith('.arcadeum.games')) {
-    return '.arcadeum.games';
-  }
-  return undefined;
-}
 
 function setTokenCookies(
   res: Response,
   req: Request,
   cookieKey: Buffer,
+  cookieDomain: string | undefined,
   accessToken: string,
   accessTokenExpiresAt: Date | null,
   refreshToken: string,
   refreshTokenExpiresAt: Date,
 ): void {
-  const domain = getCookieDomain(req);
+  const domain = resolveCookieDomain(req, cookieDomain);
   const maxAgeAccess = accessTokenExpiresAt
     ? Math.min(
         accessTokenExpiresAt.getTime() - Date.now(),
@@ -95,8 +90,12 @@ function setTokenCookies(
   });
 }
 
-function clearTokenCookies(res: Response, req: Request): void {
-  const domain = getCookieDomain(req);
+function clearTokenCookies(
+  res: Response,
+  req: Request,
+  configuredDomain: string | undefined,
+): void {
+  const domain = resolveCookieDomain(req, configuredDomain);
   const options = {
     path: '/',
     httpOnly: true,
@@ -113,6 +112,7 @@ function clearTokenCookies(res: Response, req: Request): void {
 @Controller('auth')
 export class AuthController {
   private readonly cookieKey: Buffer;
+  private readonly cookieDomain: string | undefined;
 
   constructor(
     private readonly authService: AuthService,
@@ -121,14 +121,16 @@ export class AuthController {
     configService: ConfigService,
   ) {
     this.cookieKey = cookieCipherKey(resolveJwtSecret(configService));
+    this.cookieDomain = configService.get<string>('COOKIE_DOMAIN');
   }
 
+  // Returns the provider tokens to the caller only. It must NOT set session
+  // cookies: the Google tokens are not Arcadeum credentials, and only
+  // /auth/oauth/login mints the real session.
   @Post('token')
   @Throttle({ auth: { limit: 10, ttl: 60_000 } })
   async exchange(
     @Body() dto: TokenExchangeDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
     @Headers('origin') originHeader?: string,
     @Headers('referer') refererHeader?: string,
   ): Promise<OAuthTokenResponse> {
@@ -142,15 +144,6 @@ export class AuthController {
       redirectUri: dto.redirectUri,
       requestOrigin,
     });
-    setTokenCookies(
-      res,
-      req,
-      this.cookieKey,
-      result.accessToken,
-      null,
-      result.refreshToken ?? '',
-      new Date(Date.now() + COOKIE_MAX_AGE_30_DAYS),
-    );
     return result;
   }
 
@@ -192,6 +185,7 @@ export class AuthController {
       res,
       req,
       this.cookieKey,
+      this.cookieDomain,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -212,6 +206,7 @@ export class AuthController {
       res,
       req,
       this.cookieKey,
+      this.cookieDomain,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -231,17 +226,19 @@ export class AuthController {
     // Cookies written before this feature are plain text; accept them so
     // existing sessions survive the deploy and get re-encrypted on next
     // refresh.
-    const rawToken =
-      dto.refreshToken ||
-      (cookieToken
-        ? (decryptTokenCookie(cookieToken, this.cookieKey) ?? cookieToken)
-        : '') ||
-      '';
+    // The cookie is the source of truth (it is rotated on every refresh), so
+    // it wins over a possibly stale body token; the body is the fallback for
+    // clients without cookies (mobile).
+    const fromCookie = cookieToken
+      ? (decryptTokenCookie(cookieToken, this.cookieKey) ?? cookieToken)
+      : '';
+    const rawToken = fromCookie || dto.refreshToken || '';
     const result = await this.authService.refreshToken(rawToken);
     setTokenCookies(
       res,
       req,
       this.cookieKey,
+      this.cookieDomain,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,
@@ -253,7 +250,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(204)
   logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): void {
-    clearTokenCookies(res, req);
+    clearTokenCookies(res, req, this.cookieDomain);
   }
 
   // Account-enumeration defense: always 204, never reveal whether the email
@@ -313,6 +310,7 @@ export class AuthController {
       res,
       req,
       this.cookieKey,
+      this.cookieDomain,
       result.accessToken,
       result.accessTokenExpiresAt,
       result.refreshToken,

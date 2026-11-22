@@ -53,6 +53,7 @@ import { HEARTS_THEMES } from '@/widgets/CardGames/HeartsGame/lib/constants';
 import { SPADES_THEMES } from '@/widgets/CardGames/SpadesGame/lib/constants';
 import { GO_THEMES } from '@/widgets/BoardGames/GoGame/lib/constants';
 import { PACHISI_THEMES } from '@/widgets/BoardGames/PachisiGame/lib/constants';
+import { SHARED_THEMES } from '@/features/games/lib/shared-themes';
 
 export const featuredGames: FeaturedGame[] = [
   {
@@ -412,5 +413,26 @@ export const featuredGames: FeaturedGame[] = [
     rulesPrefix: 'games.game_2048_v1.rules',
     rulesKeys: ['objective', 'gameplay', 'scoring'],
     variants: [],
+  },
+  {
+    id: 'arcade_pet_v1',
+    nameKey: 'games.arcade_pet_v1.name' as TranslationKey,
+    descriptionKey: 'games.arcade_pet_v1.description' as TranslationKey,
+    accentColor: '#10b981',
+    genre: 'Simulation',
+    pace: 'Casual',
+    category: 'Simulation',
+    players: '1',
+    duration: 'Endless',
+    playingNow: null,
+    isPlayable: true,
+    landingHref: '/games/arcade-pet',
+    type: 'board',
+    rulesPrefix: 'games.arcade_pet_v1.rules',
+    rulesKeys: ['objective', 'care', 'evolution'],
+    variants: SHARED_THEMES.map((v) => ({
+      id: v.id,
+      nameKey: v.nameKey as TranslationKey,
+    })),
   },
 ];

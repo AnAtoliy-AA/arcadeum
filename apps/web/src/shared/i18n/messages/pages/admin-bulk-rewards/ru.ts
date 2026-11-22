@@ -14,6 +14,7 @@ export const adminBulkRewardsRu = {
       label: 'Количество',
       placeholder: 'Введите количество',
     },
+    petSpecies: 'Вид питомца',
     itemId: {
       label: 'ID Предмета',
       placeholder: 'Введите ID предмета из каталога',

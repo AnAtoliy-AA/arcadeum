@@ -1,3 +1,4 @@
+import type { VisibilityTier } from '../auth/lib/roles';
 import { SHARED_VISUAL_THEMES } from './common/shared-themes';
 
 export interface GameCatalogRule {
@@ -15,9 +16,42 @@ export interface GameCatalogEntry {
   variants: ReadonlyArray<string>;
   rules: ReadonlyArray<GameCatalogRule>;
   startMode: GameStartMode;
+  /**
+   * Visibility tier in production while no admin override exists. Omitted
+   * means 'all'. Non-production environments always default to 'all'.
+   */
+  productionDefaultTier?: VisibilityTier;
 }
 
 export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
+  {
+    gameId: 'arcade_pet_v1',
+    startMode: 'immediate',
+    productionDefaultTier: 'none',
+    themes: [...SHARED_VISUAL_THEMES],
+    modes: ['classic', 'speed'],
+    variants: [...SHARED_VISUAL_THEMES, 'classic', 'speed'],
+    rules: [
+      {
+        ruleId: 'pets',
+        label: 'Virtual pets & companions',
+        description:
+          'Enable pet companions, floating stage, adoption, and nursery across Arcadeum.',
+      },
+      {
+        ruleId: 'treats',
+        label: 'Cross-game treats',
+        description:
+          'Earn pet snacks by winning matches across Arcadeum games.',
+      },
+      {
+        ruleId: 'care',
+        label: 'Care discipline',
+        description:
+          'Balance hunger, energy, and cleanliness to evolve your pet.',
+      },
+    ],
+  },
   {
     gameId: 'critical_v1',
     startMode: 'immediate',

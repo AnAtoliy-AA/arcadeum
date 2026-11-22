@@ -124,4 +124,5 @@ export type TranslationBundle = {
   musicPlayer?: import('./messages/music-player').MusicPlayerMessages;
   wallet?: DeepPartial<import('./messages/wallet').WalletMessages>;
   createRoom?: import('./messages/create-room').CreateRoomBundle;
+  arcadePetCompanion?: import('./messages/arcade-pet-companion').ArcadePetCompanionMessages;
 };

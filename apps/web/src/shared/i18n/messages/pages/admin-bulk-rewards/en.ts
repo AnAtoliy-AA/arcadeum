@@ -14,6 +14,7 @@ export const adminBulkRewardsEn = {
       label: 'Amount',
       placeholder: 'Enter amount',
     },
+    petSpecies: 'Pet Species',
     itemId: {
       label: 'Item ID',
       placeholder: 'Enter catalog item ID',

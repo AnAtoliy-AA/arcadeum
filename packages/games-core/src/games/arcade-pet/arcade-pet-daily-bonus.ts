@@ -25,7 +25,9 @@ export function canClaimDailyBonus(
   state: DailyBonusState,
   now: number,
 ): boolean {
-  return state.lastClaimDay !== toDayKey(now);
+  // ISO day keys sort lexically; a claim day in the future (clock moved
+  // backwards) must not allow a second claim.
+  return state.lastClaimDay === null || toDayKey(now) > state.lastClaimDay;
 }
 
 /** Streak that a claim made `now` would produce (resets after a missed day). */

@@ -1,4 +1,7 @@
-import type { PetGiftPresentPayload } from './arcade-pet-collection.types';
+import type {
+  ArcadePetCollectionPayload,
+  PetGiftPresentPayload,
+} from './arcade-pet-collection.types';
 import type { PetSpecies } from './arcade-pet.types';
 import {
   GAME_THEME_IDS,
@@ -77,7 +80,15 @@ export function getRandomPetSpec(queuedTheme?: string | null): {
 /** Present every new collection starts with (same id on client and server). */
 export const WELCOME_PRESENT_ID = 'present-welcome-gift';
 
-export function createWelcomePresent(now: number): PetGiftPresentPayload {
+/** Starting balances of a brand-new collection (single source of truth). */
+export const INITIAL_GEM_BALANCE = 300;
+export const INITIAL_COIN_BALANCE = 50;
+
+/**
+ * The welcome present has a fixed `createdAt` so it is identical on every
+ * read and render (stable id and timestamp, no SSR/client mismatch).
+ */
+export function createWelcomePresent(now = 0): PetGiftPresentPayload {
   return {
     id: WELCOME_PRESENT_ID,
     senderId: 'arcadeum-team',
@@ -88,5 +99,24 @@ export function createWelcomePresent(now: number): PetGiftPresentPayload {
     message: 'Welcome to Arcadeum! Here is a special cosmic companion gift.',
     createdAt: now,
     isOpened: false,
+  };
+}
+
+/** Collection state for a user who has never stored anything. */
+export function createEmptyCollection(): ArcadePetCollectionPayload {
+  return {
+    pets: [],
+    activePetId: null,
+    gemBalance: INITIAL_GEM_BALANCE,
+    coinBalance: INITIAL_COIN_BALANCE,
+    adoptionCount: 0,
+    homeCapacity: DEFAULT_HOME_CAPACITY,
+    queuedThemeForNextPet: null,
+    presents: [createWelcomePresent()],
+    hasConfirmedCare: false,
+    isAtHome: false,
+    dailyStreak: 0,
+    lastDailyClaimDay: null,
+    claimedMilestones: [],
   };
 }

@@ -1,5 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import {
+  ARCADE_PET_SCHEMA_VERSION,
+  INITIAL_COIN_BALANCE,
+  INITIAL_GEM_BALANCE,
+} from '@arcadeum/games-core';
 import type { PetGiftPresentPayload, PetState } from '@arcadeum/games-core';
 
 @Schema({ collection: 'arcade_pet_collections', timestamps: true })
@@ -11,23 +16,29 @@ export class ArcadePetCollection extends Document {
     ref: 'User',
     required: true,
     unique: true,
-    index: true,
   })
   userId: Types.ObjectId;
+
+  /** Stored-shape version; bump ARCADE_PET_SCHEMA_VERSION and migrate on read. */
+  @Prop({ type: Number, default: ARCADE_PET_SCHEMA_VERSION })
+  schemaVersion: number;
 
   @Prop({ type: Number, default: 0, min: 0 })
   revision: number;
 
+  // Mixed arrays: shape is enforced by the DTO + games-core merge, and the
+  // list sizes are bounded (MAX_PETS / MAX_PRESENTS) so a document stays far
+  // below the 16MB limit.
   @Prop({ type: [Object], default: [] })
   pets: PetState[];
 
   @Prop({ type: String, default: null })
   activePetId: string | null;
 
-  @Prop({ type: Number, default: 300, min: 0 })
+  @Prop({ type: Number, default: INITIAL_GEM_BALANCE, min: 0 })
   gemBalance: number;
 
-  @Prop({ type: Number, default: 50, min: 0 })
+  @Prop({ type: Number, default: INITIAL_COIN_BALANCE, min: 0 })
   coinBalance: number;
 
   @Prop({ type: Number, default: 0, min: 0 })

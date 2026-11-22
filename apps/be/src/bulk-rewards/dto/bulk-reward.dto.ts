@@ -30,10 +30,12 @@ export class BulkRewardDto {
 
   @IsString()
   @IsOptional()
+  @MaxLength(80)
   itemId?: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(300)
   reason?: string;
 
   /**

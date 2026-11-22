@@ -2,27 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
+  MAX_PRESENTS,
+  WELCOME_PRESENT_ID,
+  createEmptyCollection,
   createWelcomePresent,
+  mergeClientPet,
+  type ArcadePetCollectionPayload,
   type ArcadePetCollectionResponse,
   type PetGiftPresentPayload,
   type SyncArcadePetCollectionResult,
 } from '@arcadeum/games-core';
 import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
+import { isDuplicateKeyError } from '../common/utils/mongo-errors.util';
 import type { SyncCollectionDto } from './dto/arcade-pet-collection.dto';
 import {
   ArcadePetCollection,
   type ArcadePetCollectionDocument,
 } from './schemas/arcade-pet-collection.schema';
 
-const DUPLICATE_KEY_ERROR = 11000;
-
-function isDuplicateKey(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    (error as { code?: number }).code === DUPLICATE_KEY_ERROR
-  );
-}
+export type GrantPresentResult = 'granted' | 'duplicate' | 'full';
 
 @Injectable()
 export class ArcadePetCollectionService {
@@ -31,27 +29,11 @@ export class ArcadePetCollectionService {
     private readonly model: Model<ArcadePetCollectionDocument>,
   ) {}
 
+  /** Response for a stored document, or the pristine default when none exists. */
   toResponse(
     doc: ArcadePetCollectionDocument | null,
   ): ArcadePetCollectionResponse {
-    if (!doc) {
-      return {
-        revision: 0,
-        pets: [],
-        activePetId: null,
-        gemBalance: 300,
-        coinBalance: 50,
-        adoptionCount: 0,
-        homeCapacity: 1,
-        queuedThemeForNextPet: null,
-        presents: [createWelcomePresent(Date.now())],
-        hasConfirmedCare: false,
-        isAtHome: false,
-        dailyStreak: 0,
-        lastDailyClaimDay: null,
-        claimedMilestones: [],
-      };
-    }
+    if (!doc) return { revision: 0, ...createEmptyCollection() };
     return {
       revision: doc.revision,
       pets: doc.pets,
@@ -78,81 +60,105 @@ export class ArcadePetCollectionService {
   }
 
   /**
-   * Optimistic-concurrency write: succeeds only when `baseRevision` matches
-   * the stored revision, otherwise returns the server copy as a conflict.
+   * Optimistic-concurrency write. Last-writer rules: the write succeeds only
+   * when `baseRevision` matches the stored revision; otherwise the server
+   * copy is returned as a conflict and the client adopts it (the client's
+   * unsynced care edits for pets the server knows are re-applied by the
+   * client on top). Users who never adopted have no document, so a sync for
+   * them is a no-op conflict that returns the pristine default (revision 0),
+   * which the client already holds, so it does not loop.
    */
   async syncCollection(
     userId: string,
     dto: SyncCollectionDto,
+    now: number = Date.now(),
   ): Promise<SyncArcadePetCollectionResult> {
     const userObjectId = new Types.ObjectId(userId);
     const current = await this.model.findOne({ userId: { $eq: userObjectId } });
-    const currentRevision = current?.revision ?? 0;
-
-    if (dto.baseRevision !== currentRevision) {
+    if (!current) {
+      return { status: 'conflict', collection: this.toResponse(null) };
+    }
+    if (dto.baseRevision !== current.revision) {
       return { status: 'conflict', collection: this.toResponse(current) };
     }
 
     // Pets can only be created through economy actions, so a client write may
-    // only update pets the server already knows. Balances, capacity, presents
-    // and rewards are server-owned and never taken from the client.
-    const serverPets = current?.pets ?? [];
+    // only update pets the server already knows, and only through the
+    // whitelisted merge. Balances, capacity, presents and rewards are
+    // server-owned and never taken from the client.
     const clientById = new Map(dto.pets.map((p) => [p.id, p]));
-    const pets = serverPets.map((p) => clientById.get(p.id) ?? p);
-    const activePetId = pets.some((p) => p.id === dto.activePetId)
-      ? dto.activePetId
-      : (current?.activePetId ?? null);
-
-    if (!current) {
-      return { status: 'conflict', collection: this.toResponse(null) };
-    }
+    const pets = current.pets.map((serverPet) => {
+      const clientPet = clientById.get(serverPet.id);
+      return clientPet ? mergeClientPet(serverPet, clientPet, now) : serverPet;
+    });
+    const activePetId =
+      dto.activePetId && pets.some((p) => p.id === dto.activePetId)
+        ? dto.activePetId
+        : current.activePetId;
 
     const fields = { pets, activePetId, isAtHome: dto.isAtHome };
 
     try {
       const saved = await this.model.findOneAndUpdate(
-        { userId: { $eq: userObjectId }, revision: { $eq: currentRevision } },
+        { userId: { $eq: userObjectId }, revision: { $eq: current.revision } },
         { $set: fields, $inc: { revision: 1 } },
         { new: true },
       );
-      if (!saved) {
-        const latest = await this.model.findOne({
-          userId: { $eq: userObjectId },
-        });
-        return { status: 'conflict', collection: this.toResponse(latest) };
-      }
-      return { status: 'ok', collection: this.toResponse(saved) };
+      if (saved) return { status: 'ok', collection: this.toResponse(saved) };
     } catch (error) {
-      if (!isDuplicateKey(error)) throw error;
-      const latest = await this.model.findOne({
-        userId: { $eq: userObjectId },
-      });
-      return { status: 'conflict', collection: this.toResponse(latest) };
+      if (!isDuplicateKeyError(error)) throw error;
     }
+    const latest = await this.model.findOne({ userId: { $eq: userObjectId } });
+    return { status: 'conflict', collection: this.toResponse(latest) };
   }
 
   /**
    * Delivers a gift present into a user's collection. Idempotent per present
-   * id, so retried bulk operations never double-gift.
+   * id, so retried operations never double-gift. Recipients without a
+   * document get one seeded with the welcome present as well, so it is not
+   * lost. Rejects when the inbox is full.
    */
   async grantPresent(
     userId: string,
     present: PetGiftPresentPayload,
-  ): Promise<boolean> {
+  ): Promise<GrantPresentResult> {
+    const userObjectId = new Types.ObjectId(userId);
+    const filter = { userId: { $eq: userObjectId } };
+
+    const pushed = await this.model.updateOne(
+      {
+        ...filter,
+        'presents.id': { $ne: present.id },
+        [`presents.${MAX_PRESENTS - 1}`]: { $exists: false },
+      },
+      { $push: { presents: present }, $inc: { revision: 1 } },
+    );
+    if (pushed.modifiedCount === 1) return 'granted';
+
+    const existing = await this.model.findOne(filter).select('presents');
+    if (existing) {
+      return existing.presents.some((p) => p.id === present.id)
+        ? 'duplicate'
+        : 'full';
+    }
+
+    const presents: PetGiftPresentPayload[] =
+      present.id === WELCOME_PRESENT_ID
+        ? [present]
+        : [createWelcomePresent(), present];
+    const base: ArcadePetCollectionPayload = createEmptyCollection();
     try {
-      const result = await this.model.findOneAndUpdate(
-        {
-          userId: { $eq: new Types.ObjectId(userId) },
-          'presents.id': { $ne: present.id },
-        },
-        { $push: { presents: present }, $inc: { revision: 1 } },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
-      );
-      return result !== null;
+      await this.model.create({
+        ...base,
+        userId: userObjectId,
+        presents,
+        revision: 1,
+      });
+      return 'granted';
     } catch (error) {
-      // Duplicate userId on upsert means the present already exists.
-      if (isDuplicateKey(error)) return false;
-      throw error;
+      if (!isDuplicateKeyError(error)) throw error;
+      // A concurrent first write created the document: deliver against it.
+      return this.grantPresent(userId, present);
     }
   }
 }

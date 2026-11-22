@@ -13,6 +13,9 @@ export interface PetGiftPresentPayload {
 }
 
 /** Everything the server stores for a user's pet collection (minus revision). */
+/** Bump when the stored/localStorage shape changes; drives migrations. */
+export const ARCADE_PET_SCHEMA_VERSION = 1;
+
 export interface ArcadePetCollectionPayload {
   pets: PetState[];
   activePetId: string | null;
@@ -83,6 +86,18 @@ export type ArcadePetEconomyAction =
 
 export type ArcadePetEconomyActionType = ArcadePetEconomyAction['type'];
 
+export const ARCADE_PET_ECONOMY_ACTION_TYPES = [
+  'adopt_random',
+  'adopt_selected',
+  'upgrade_home',
+  'feed_snack',
+  'claim_present',
+  'send_gift',
+  'claim_daily',
+  'claim_milestones',
+  'queue_theme',
+] as const satisfies readonly ArcadePetEconomyActionType[];
+
 export type ArcadePetEconomyError =
   | 'HOME_FULL'
   | 'HOME_MAX'
@@ -95,10 +110,19 @@ export type ArcadePetEconomyError =
   | 'ALREADY_CLAIMED'
   | 'NOTHING_TO_CLAIM'
   | 'RECIPIENT_NOT_FOUND'
-  | 'SELF_GIFT';
+  | 'SELF_GIFT'
+  | 'INBOX_FULL'
+  | 'CONTENTION';
 
-export interface ArcadePetEconomyResult {
-  ok: boolean;
-  error?: ArcadePetEconomyError;
-  collection: ArcadePetCollectionResponse;
-}
+/**
+ * Domain rejections are returned as HTTP 200 with `ok: false` on purpose: the
+ * client needs the authoritative collection in the same response to roll back
+ * its optimistic update. Malformed requests still fail with 400.
+ */
+export type ArcadePetEconomyResult =
+  | { ok: true; collection: ArcadePetCollectionResponse }
+  | {
+      ok: false;
+      error: ArcadePetEconomyError;
+      collection: ArcadePetCollectionResponse;
+    };

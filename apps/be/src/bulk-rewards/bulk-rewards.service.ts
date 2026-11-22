@@ -2,13 +2,18 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { createHash } from 'node:crypto';
 import { Model } from 'mongoose';
-import type { PetSpecies } from '@arcadeum/games-core';
+import { ALL_SPECIES, type PetSpecies } from '@arcadeum/games-core';
 import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
 import { InventoryService } from '../shop/services/inventory.service';
 import { ArcadePetCollectionService } from '../arcade-pet/arcade-pet-collection.service';
-import { VALID_SPECIES } from '../arcade-pet/dto/arcade-pet.dto';
 import { BulkRewardDto, BulkRewardType } from './dto/bulk-reward.dto';
+
+function isPetSpecies(value: string | undefined): value is PetSpecies {
+  return (
+    value !== undefined && (ALL_SPECIES as readonly string[]).includes(value)
+  );
+}
 
 export interface BulkRewardResult {
   totalUsers: number;
@@ -34,6 +39,14 @@ export class BulkRewardsService {
   ): Promise<BulkRewardResult> {
     if (dto.type === BulkRewardType.ITEM && !dto.itemId) {
       throw new BadRequestException('bulkRewards.itemIdRequired');
+    }
+
+    if (
+      dto.type === BulkRewardType.PET &&
+      dto.itemId &&
+      !(ALL_SPECIES as readonly string[]).includes(dto.itemId)
+    ) {
+      throw new BadRequestException('bulkRewards.invalidPetSpecies');
     }
 
     const operationId =
@@ -115,18 +128,10 @@ export class BulkRewardsService {
         break;
 
       case BulkRewardType.PET: {
-        const petSpecies = dto.itemId || 'dragon';
-        await this.inventoryService.grant(
-          userId,
-          `pet:${petSpecies}`,
-          idempotencyKey,
-        );
-        // Also deliver a claimable present into the user's pet collection so
-        // the gift shows up in the companion. Idempotent per present id.
-        const species = (VALID_SPECIES as readonly string[]).includes(
-          petSpecies,
-        )
-          ? (petSpecies as PetSpecies)
+        // The present is the single source of truth for a pet gift; it is
+        // idempotent per id so retried runs never double-gift.
+        const species: PetSpecies = isPetSpecies(dto.itemId)
+          ? dto.itemId
           : 'dragon';
         await this.petCollections.grantPresent(userId, {
           id: `admin-gift-${createHash('sha256').update(idempotencyKey).digest('hex').slice(0, 16)}`,

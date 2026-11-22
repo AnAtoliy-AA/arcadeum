@@ -1,9 +1,24 @@
-export type PetStage = 'egg' | 'baby' | 'child' | 'teen' | 'adult' | 'senior';
+export const PET_STAGES = [
+  'egg',
+  'baby',
+  'child',
+  'teen',
+  'adult',
+  'senior',
+] as const;
+export type PetStage = (typeof PET_STAGES)[number];
 
 export type PetSpecies = 'slime' | 'dragon' | 'cyber_cat' | 'dino' | 'blob';
 
-export type PetMood =
-  'happy' | 'neutral' | 'sad' | 'sleeping' | 'sick' | 'hungry';
+export const PET_MOODS = [
+  'happy',
+  'neutral',
+  'sad',
+  'sleeping',
+  'sick',
+  'hungry',
+] as const;
+export type PetMood = (typeof PET_MOODS)[number];
 
 export type PetActionType =
   | 'hatch'
@@ -19,12 +34,14 @@ export type PetActionType =
   | 'praise'
   | 'scold';
 
-export type GameTreatId =
-  | 'chess_cookie'
-  | 'sea_battle_fish'
-  | 'hearts_candy'
-  | 'critical_pepper'
-  | 'pachisi_spice';
+export const GAME_TREAT_IDS = [
+  'chess_cookie',
+  'sea_battle_fish',
+  'hearts_candy',
+  'critical_pepper',
+  'pachisi_spice',
+] as const;
+export type GameTreatId = (typeof GAME_TREAT_IDS)[number];
 
 export interface PetStats {
   hunger: number;

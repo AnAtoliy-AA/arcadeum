@@ -19,27 +19,23 @@ import {
   getPetFoodCost,
 } from './arcade-pet-economy';
 import { getNewMilestones } from './arcade-pet-milestones';
-import { sanitizePetName } from './arcade-pet-name';
+import { sanitizeGiftMessage, sanitizePetName } from './arcade-pet-name';
+import { STAGE_THRESHOLDS_HOURS, ALL_SPECIES } from './arcade-pet.constants';
 import { THEME_PET_ROSTER, getThemePets } from './arcade-pet-theme-roster';
 import type { PetSpecies } from './arcade-pet.types';
 import { createInitialPet } from './arcade-pet.utils';
 
 export const MAX_HOME_CAPACITY = 20;
-export const PET_SPECIES_LIST: readonly PetSpecies[] = [
-  'slime',
-  'dragon',
-  'cyber_cat',
-  'dino',
-  'blob',
-];
+/** Most presents an inbox may hold; further gifts are rejected. */
+export const MAX_PRESENTS = 50;
 
 const PET_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
-const THEME_ID_PATTERN = /^[a-z0-9_-]{1,40}$/;
-const MAX_GIFT_MESSAGE = 300;
 
 export interface EconomyContext {
   now: number;
   userId: string;
+  /** Revision of the sender's stored collection; makes gift ids deterministic. */
+  revision: number;
   senderName: string;
   isAdmin: boolean;
 }
@@ -59,7 +55,7 @@ const fail = (error: ArcadePetEconomyError): EconomyReduceResult => ({
 });
 
 const isSpecies = (v: string): v is PetSpecies =>
-  (PET_SPECIES_LIST as readonly string[]).includes(v);
+  (ALL_SPECIES as readonly string[]).includes(v);
 
 /**
  * Pure economy transition. The server is the authority; clients may run the
@@ -178,6 +174,10 @@ function adopt(
   });
   pet.species = action.species;
   pet.stage = isRandom ? 'egg' : 'adult';
+  if (!isRandom) {
+    // Growth must match the forced stage or the next decay demotes the pet.
+    pet.stats.growthHours = STAGE_THRESHOLDS_HOURS.adult;
+  }
 
   return {
     ok: true,
@@ -246,9 +246,8 @@ function claimPresent(
       ...state,
       pets: [...state.pets, pet],
       activePetId: pet.id,
-      presents: state.presents.map((p) =>
-        p.id === presentId ? { ...p, isOpened: true } : p,
-      ),
+      // Opened presents are dropped so the inbox cannot fill up forever.
+      presents: state.presents.filter((p) => p.id !== presentId),
       gemBalance: state.gemBalance + PRESENT_CLAIM_BONUS_GEMS,
       hasConfirmedCare: true,
     },
@@ -260,7 +259,7 @@ function sendGift(
   action: Extract<ArcadePetEconomyAction, { type: 'send_gift' }>,
   ctx: EconomyContext,
 ): EconomyReduceResult {
-  if (!isSpecies(action.species) || !THEME_ID_PATTERN.test(action.theme)) {
+  if (!isSpecies(action.species) || !THEME_PET_ROSTER[action.theme]) {
     return fail('INVALID_SPEC');
   }
   const cost = ctx.isAdmin ? 0 : GIFT_PET_COST_GEMS;
@@ -270,13 +269,13 @@ function sendGift(
     sanitizePetName(action.petName) ??
     action.species.charAt(0).toUpperCase() + action.species.slice(1);
   const outgoingGift: PetGiftPresentPayload = {
-    id: `gift-${ctx.now}-${Math.random().toString(36).slice(2, 9)}`,
+    id: `gift-${ctx.userId}-${ctx.revision + 1}`,
     senderId: ctx.userId,
     senderName: ctx.isAdmin ? 'Arcadeum Admin' : ctx.senderName,
     species: action.species,
     theme: action.theme,
     petName,
-    message: (action.message ?? '').slice(0, MAX_GIFT_MESSAGE) || undefined,
+    message: sanitizeGiftMessage(action.message ?? ''),
     createdAt: ctx.now,
     isOpened: false,
   };

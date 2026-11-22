@@ -6,12 +6,13 @@ import {
   type EconomyContext,
 } from './arcade-pet-economy-reducer';
 import { getThemePets, GAME_THEME_IDS } from './arcade-pet-theme-roster';
-import { createInitialPet } from './arcade-pet.utils';
+import { applyDeterministicDecay, createInitialPet } from './arcade-pet.utils';
 
 const NOW = Date.UTC(2026, 10, 15, 12);
 const ctx: EconomyContext = {
   now: NOW,
   userId: 'u1',
+  revision: 4,
   senderName: 'Alice',
   isAdmin: false,
 };
@@ -123,6 +124,9 @@ describe('reduceEconomy adopt_selected', () => {
     if (!r.ok) return;
     expect(r.state.gemBalance).toBe(50);
     expect(r.state.pets[0]).toMatchObject({ stage: 'adult', name: 'Rex' });
+    // growth matches the forced stage so decay does not demote the pet
+    const decayed = applyDeterministicDecay(r.state.pets[0], NOW + 3_600_000);
+    expect(decayed.stage).toBe('adult');
   });
 
   it('rejects insufficient gems', () => {
@@ -211,7 +215,7 @@ describe('reduceEconomy presents and gifts', () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.state.gemBalance).toBe(350);
-    expect(r.state.presents[0].isOpened).toBe(true);
+    expect(r.state.presents).toHaveLength(0);
     expect(
       reduceEconomy(
         r.state,
@@ -316,5 +320,108 @@ describe('reduceEconomy queue_theme', () => {
     expect(
       reduceEconomy(base(), { type: 'queue_theme', themeId: 'nope' }, ctx),
     ).toEqual({ ok: false, error: 'INVALID_SPEC' });
+  });
+});
+
+describe('reduceEconomy send_gift rules', () => {
+  const gift = {
+    type: 'send_gift' as const,
+    recipientUsername: 'bob',
+    species: 'slime' as const,
+    theme: 'retro',
+    petName: 'Goo',
+    message: 'hi',
+  };
+
+  it('builds a deterministic gift id from sender and revision', () => {
+    const r = reduceEconomy(base(), gift, ctx);
+    expect(r.ok && r.outgoingGift?.id).toBe('gift-u1-5');
+    const again = reduceEconomy(base(), gift, ctx);
+    expect(again.ok && again.outgoingGift?.id).toBe('gift-u1-5');
+  });
+
+  it('rejects themes that are not in the roster', () => {
+    const r = reduceEconomy(base(), { ...gift, theme: 'nope_theme' }, ctx);
+    expect(r).toEqual({ ok: false, error: 'INVALID_SPEC' });
+  });
+
+  it('strips control characters and markup from the message', () => {
+    const r = reduceEconomy(
+      base(),
+      { ...gift, message: 'hello <b>x</b>\u0000\n  there' },
+      ctx,
+    );
+    expect(r.ok && r.outgoingGift?.message).toBe('hello b x /b there');
+  });
+
+  it('drops a message of only whitespace', () => {
+    const r = reduceEconomy(base(), { ...gift, message: '   ' }, ctx);
+    expect(r.ok && r.outgoingGift?.message).toBeUndefined();
+  });
+});
+
+describe('reduceEconomy claim_daily clock edge cases', () => {
+  const claim = { type: 'claim_daily' as const };
+
+  it('rejects a second claim on the same UTC day', () => {
+    const first = reduceEconomy(base(), claim, ctx);
+    expect(first.ok).toBe(true);
+    if (!first.ok) return;
+    expect(reduceEconomy(first.state, claim, ctx)).toEqual({
+      ok: false,
+      error: 'ALREADY_CLAIMED',
+    });
+  });
+
+  it('rejects a claim when the stored day is in the future', () => {
+    const r = reduceEconomy(
+      base({ lastDailyClaimDay: '2027-01-01' }),
+      claim,
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, error: 'ALREADY_CLAIMED' });
+  });
+
+  it('continues the streak across a month and year boundary', () => {
+    const newYear = Date.UTC(2027, 0, 1, 0, 30);
+    const r = reduceEconomy(
+      base({ lastDailyClaimDay: '2026-12-31', dailyStreak: 3 }),
+      claim,
+      { ...ctx, now: newYear },
+    );
+    expect(r.ok && r.state.dailyStreak).toBe(4);
+    expect(r.ok && r.state.lastDailyClaimDay).toBe('2027-01-01');
+  });
+
+  it('resets the streak after a missed day', () => {
+    const r = reduceEconomy(
+      base({ lastDailyClaimDay: '2026-11-10', dailyStreak: 5 }),
+      claim,
+      ctx,
+    );
+    expect(r.ok && r.state.dailyStreak).toBe(1);
+  });
+});
+
+describe('reduceEconomy upgrade_home and feed_snack limits', () => {
+  it('rejects upgrading when old data exceeds the max capacity', () => {
+    const r = reduceEconomy(
+      base({ homeCapacity: MAX_HOME_CAPACITY + 5, coinBalance: 999999 }),
+      { type: 'upgrade_home', currency: 'coins' },
+      ctx,
+    );
+    expect(r).toEqual({ ok: false, error: 'HOME_MAX' });
+  });
+
+  it('keeps escalating the food cost past the price table', () => {
+    const pets = Array.from({ length: 8 }, (_, i) =>
+      createInitialPet({ id: `p${i}`, name: `Pet ${i}`, now: NOW }),
+    );
+    const r = reduceEconomy(
+      base({ pets, coinBalance: 1000, homeCapacity: 8 }),
+      { type: 'feed_snack', petId: 'p7' },
+      ctx,
+    );
+    expect(r.ok && r.state.coinBalance).toBe(750);
   });
 });

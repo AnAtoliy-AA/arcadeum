@@ -20,5 +20,6 @@ export * from './games/arcade-pet/arcade-pet-daily-bonus';
 export * from './games/arcade-pet/arcade-pet-milestones';
 export * from './games/arcade-pet/arcade-pet-economy';
 export * from './games/arcade-pet/arcade-pet-economy-reducer';
+export * from './games/arcade-pet/arcade-pet-sync-merge';
 export * from './games/arcade-pet/arcade-pet.constants';
 export * from './games/arcade-pet/arcade-pet.utils';

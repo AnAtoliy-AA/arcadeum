@@ -76,7 +76,7 @@ describe('ArcadePetEconomyService', () => {
         .mockReturnValue(chain({ username: 'alice', role: 'free' })),
       findOne: jest.fn().mockReturnValue(chain({ _id: recipientId })),
     };
-    grantPresent = jest.fn().mockResolvedValue(true);
+    grantPresent = jest.fn().mockResolvedValue('granted');
     const module = await Test.createTestingModule({
       providers: [
         ArcadePetEconomyService,
@@ -206,5 +206,83 @@ describe('ArcadePetEconomyService', () => {
       error: 'SELF_GIFT',
     });
     expect(grantPresent).not.toHaveBeenCalled();
+  });
+
+  describe('send_gift delivery ordering', () => {
+    const gift = {
+      type: 'send_gift' as const,
+      recipientUsername: 'bob',
+      species: 'slime' as const,
+      theme: 'retro',
+      petName: 'Goo',
+    };
+
+    it('does not debit the sender when delivery throws', async () => {
+      model.findOne.mockResolvedValue(doc());
+      grantPresent.mockRejectedValue(new Error('db down'));
+      await expect(service.perform(userId, gift)).rejects.toThrow('db down');
+      expect(model.findOneAndUpdate).not.toHaveBeenCalled();
+    });
+
+    it('uses a deterministic gift id derived from sender and revision', async () => {
+      model.findOne.mockResolvedValue(doc({ revision: 6 }));
+      model.findOneAndUpdate.mockImplementation(
+        (_f: unknown, u: { $set: object }) =>
+          Promise.resolve({ ...doc(), revision: 7, ...u.$set }),
+      );
+      await service.perform(userId, gift);
+      expect(grantPresent).toHaveBeenCalledWith(
+        recipientId.toString(),
+        expect.objectContaining({ id: `gift-${userId}-7` }),
+      );
+    });
+
+    it('rejects with INBOX_FULL without debiting', async () => {
+      model.findOne.mockResolvedValue(doc());
+      grantPresent.mockResolvedValue('full');
+      const res = await service.perform(userId, gift);
+      expect(res).toMatchObject({ ok: false, error: 'INBOX_FULL' });
+      expect(model.findOneAndUpdate).not.toHaveBeenCalled();
+    });
+
+    it('re-uses the delivered gift id when the debit loses a race', async () => {
+      model.findOne
+        .mockResolvedValueOnce(doc({ revision: 1 }))
+        .mockResolvedValueOnce(doc({ revision: 2 }));
+      model.findOneAndUpdate
+        .mockResolvedValueOnce(null)
+        .mockImplementationOnce((_f: unknown, u: { $set: object }) =>
+          Promise.resolve({ ...doc(), revision: 3, ...u.$set }),
+        );
+      grantPresent
+        .mockResolvedValueOnce('granted')
+        .mockResolvedValueOnce('duplicate');
+      const res = await service.perform(userId, gift);
+      expect(res.ok).toBe(true);
+      const calls = grantPresent.mock.calls as [string, { id: string }][];
+      const ids = calls.map((c) => c[1].id);
+      expect(new Set(ids).size).toBe(1);
+    });
+  });
+
+  it('reports CONTENTION after exhausting every attempt', async () => {
+    model.findOne.mockResolvedValue(doc());
+    model.findOneAndUpdate.mockResolvedValue(null);
+    const res = await service.perform(userId, {
+      type: 'upgrade_home',
+      currency: 'gems',
+    });
+    expect(res).toMatchObject({ ok: false, error: 'CONTENTION' });
+    expect(model.findOneAndUpdate).toHaveBeenCalledTimes(3);
+  });
+
+  it('recovers when two first writes race on the unique index', async () => {
+    model.findOne.mockResolvedValue(null);
+    model.create
+      .mockRejectedValueOnce({ code: 11000 })
+      .mockImplementationOnce((d: object) => Promise.resolve({ ...d }));
+    const res = await service.perform(userId, { type: 'claim_daily' });
+    expect(res.ok).toBe(true);
+    expect(model.create).toHaveBeenCalledTimes(2);
   });
 });

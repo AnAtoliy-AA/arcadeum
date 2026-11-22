@@ -8,6 +8,7 @@ import {
   type ArcadePetEconomyError,
   type ArcadePetEconomyResult,
 } from '@arcadeum/games-core';
+import { isDuplicateKeyError } from '../common/utils/mongo-errors.util';
 import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
 import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { ArcadePetCollectionService } from './arcade-pet-collection.service';
@@ -18,15 +19,6 @@ import {
 } from './schemas/arcade-pet-collection.schema';
 
 const MAX_ATTEMPTS = 3;
-const DUPLICATE_KEY_ERROR = 11000;
-
-function isDuplicateKey(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    (error as { code?: number }).code === DUPLICATE_KEY_ERROR
-  );
-}
 
 /** Narrows the flat validated DTO into the discriminated action union. */
 export function toEconomyAction(
@@ -114,6 +106,10 @@ export class ArcadePetEconomyService {
       recipientId = recipient._id.toString();
     }
 
+    // Revision used for the gift id once the gift was delivered, so a retry
+    // after a lost commit race re-uses the same id instead of gifting twice.
+    let deliveredAtRevision: number | null = null;
+
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       const current = await this.model.findOne({
         userId: { $eq: userObjectId },
@@ -124,11 +120,28 @@ export class ArcadePetEconomyService {
       const result = reduceEconomy(state, action, {
         now: Date.now(),
         userId,
+        revision: deliveredAtRevision ?? revision,
         senderName: sender?.username ?? 'Friend',
         isAdmin: sender?.role === 'admin',
       });
       if (!result.ok) {
         return { ok: false, error: result.error, collection };
+      }
+
+      // Deliver the gift first: it is idempotent per deterministic id, so a
+      // failure or retry can never double-gift, and the sender is only
+      // debited once the recipient has it.
+      if (result.outgoingGift && recipientId) {
+        const delivery = await this.collections.grantPresent(
+          recipientId,
+          result.outgoingGift,
+        );
+        if (delivery === 'full') return this.rejected(userId, 'INBOX_FULL');
+        if (delivery === 'duplicate' && deliveredAtRevision === null) {
+          // Same id from a concurrent send of ours: retry with a fresh id.
+          continue;
+        }
+        deliveredAtRevision ??= revision;
       }
 
       const saved = await this.commit(
@@ -139,14 +152,11 @@ export class ArcadePetEconomyService {
       );
       if (!saved) continue;
 
-      if (result.outgoingGift && recipientId) {
-        await this.collections.grantPresent(recipientId, result.outgoingGift);
-      }
       return { ok: true, collection: this.collections.toResponse(saved) };
     }
 
     // Persistent write contention: surface the latest state to the client.
-    return this.rejected(userId, undefined);
+    return this.rejected(userId, 'CONTENTION');
   }
 
   private async commit(
@@ -166,14 +176,14 @@ export class ArcadePetEconomyService {
       return await this.model.create({ userId, ...state, revision: 1 });
     } catch (error) {
       // A concurrent first write created the record: retry against it.
-      if (isDuplicateKey(error)) return null;
+      if (isDuplicateKeyError(error)) return null;
       throw error;
     }
   }
 
   private async rejected(
     userId: string,
-    error: ArcadePetEconomyError | undefined,
+    error: ArcadePetEconomyError,
   ): Promise<ArcadePetEconomyResult> {
     return {
       ok: false,

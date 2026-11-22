@@ -88,9 +88,9 @@ export async function useRealSession(
     equippedGameSkinId: null,
   };
   await page.addInitScript((s) => {
-    // Only seed once so an in-test sign-out is not undone by a reload.
-    if (window.sessionStorage.getItem('qa_session_seeded')) return;
-    window.sessionStorage.setItem('qa_session_seeded', '1');
+    // Re-seed on every load: the session store never persists tokens to
+    // localStorage (partialize strips them), so a reload would otherwise
+    // come back signed out.
     window.localStorage.setItem(
       'web_session_tokens_v1',
       JSON.stringify({ state: { snapshot: s }, version: 0 }),

@@ -116,6 +116,7 @@ describe('ArcadePetCollectionService', () => {
       'activePetId',
       'isAtHome',
       'pets',
+      'schemaVersion',
     ]);
     expect(res.status).toBe('ok');
     expect(res.collection.pets[0].name).toBe('Renamed');
@@ -218,11 +219,35 @@ describe('ArcadePetCollectionService', () => {
 
     it('reports a full inbox', async () => {
       model.updateOne.mockResolvedValue({ modifiedCount: 0 });
+      const presents = Array.from({ length: 50 }, (_, i) => present(`p${i}`));
+      model.findOne.mockReturnValue({
+        select: () => Promise.resolve({ presents }),
+      });
+      await expect(service.grantPresent(userId, present('x'))).resolves.toBe(
+        'full',
+      );
+    });
+
+    it('retries instead of reporting full when the push lost a race', async () => {
+      model.updateOne
+        .mockResolvedValueOnce({ modifiedCount: 0 })
+        .mockResolvedValueOnce({ modifiedCount: 1 });
       model.findOne.mockReturnValue({
         select: () => Promise.resolve({ presents: [present('other')] }),
       });
       await expect(service.grantPresent(userId, present('x'))).resolves.toBe(
-        'full',
+        'granted',
+      );
+      expect(model.updateOne).toHaveBeenCalledTimes(2);
+    });
+
+    it('gives up with an error under endless contention', async () => {
+      model.updateOne.mockResolvedValue({ modifiedCount: 0 });
+      model.findOne.mockReturnValue({
+        select: () => Promise.resolve({ presents: [] }),
+      });
+      await expect(service.grantPresent(userId, present('x'))).rejects.toThrow(
+        'contention',
       );
     });
 
@@ -268,5 +293,75 @@ describe('ArcadePetCollectionService', () => {
     const a = await service.getCollection(userId);
     const b = await service.getCollection(userId);
     expect(a.presents).toEqual(b.presents);
+  });
+
+  describe('awardTreat', () => {
+    it('increments the active pet stock and records the award key', async () => {
+      model.findOne.mockResolvedValue(stored());
+      model.updateOne.mockResolvedValue({ modifiedCount: 1 });
+      await expect(
+        service.awardTreat(userId, 'chess_cookie', 'treat:s1'),
+      ).resolves.toBe('awarded');
+      const [filter, update, options] = model.updateOne.mock.calls[0] as [
+        { recentActionIds: object },
+        { $inc: Record<string, number>; $push: object },
+        { arrayFilters: object[] },
+      ];
+      expect(filter.recentActionIds).toEqual({ $ne: 'treat:s1' });
+      expect(update.$inc['pets.$[pet].inventory.chess_cookie']).toBe(1);
+      expect(update.$inc.revision).toBe(1);
+      expect(options.arrayFilters[0]).toMatchObject({
+        'pet.id': { $eq: 'p1' },
+      });
+    });
+
+    it('does nothing for a replayed award key', async () => {
+      model.findOne.mockResolvedValue(
+        stored({ recentActionIds: ['treat:s1'] }),
+      );
+      await expect(
+        service.awardTreat(userId, 'chess_cookie', 'treat:s1'),
+      ).resolves.toBe('duplicate');
+      expect(model.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('does nothing without a document or an active pet', async () => {
+      model.findOne.mockResolvedValue(null);
+      await expect(
+        service.awardTreat(userId, 'chess_cookie', 'k'),
+      ).resolves.toBe('no_pet');
+      model.findOne.mockResolvedValue(stored({ activePetId: null }));
+      await expect(
+        service.awardTreat(userId, 'chess_cookie', 'k'),
+      ).resolves.toBe('no_pet');
+      expect(model.updateOne).not.toHaveBeenCalled();
+    });
+
+    it('stops at the stock cap', async () => {
+      const full = {
+        ...serverPet,
+        inventory: { ...serverPet.inventory, chess_cookie: 99 },
+      };
+      model.findOne.mockResolvedValue(stored({ pets: [full] }));
+      await expect(
+        service.awardTreat(userId, 'chess_cookie', 'k'),
+      ).resolves.toBe('stock_full');
+      expect(model.updateOne).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('legacy documents', () => {
+    it('migrates an old document on read without writing', () => {
+      const legacyPet = { ...serverPet, inventory: { chess_cookie: 3 } };
+      const res = service.toResponse(
+        stored({
+          schemaVersion: undefined,
+          pets: [legacyPet],
+        }) as never,
+      );
+      expect(res.pets[0].inventory.chess_cookie).toBe(3);
+      expect(res.pets[0].inventory.pachisi_spice).toBe(0);
+      expect(model.findOneAndUpdate).not.toHaveBeenCalled();
+    });
   });
 });

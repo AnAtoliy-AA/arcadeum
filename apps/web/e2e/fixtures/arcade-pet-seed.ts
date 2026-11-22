@@ -136,8 +136,8 @@ export async function mockPetServer(
     'access-control-allow-headers': 'authorization,content-type,x-anonymous-id',
     'access-control-allow-methods': 'GET,POST,PUT,OPTIONS',
   });
-  const json = (body: unknown, origin: string | undefined) => ({
-    status: 200,
+  const json = (body: unknown, origin: string | undefined, status = 200) => ({
+    status,
     contentType: 'application/json',
     body: JSON.stringify(body),
     headers: cors(origin),
@@ -154,13 +154,21 @@ export async function mockPetServer(
       const action = request.postDataJSON() as Record<string, unknown>;
       actions.push(action);
       const verdict = options.actionResult?.(action) ?? { ok: true };
+      // Same wire format as the backend: rejections are HTTP errors whose
+      // body carries the code and the authoritative collection.
       await route.fulfill(
-        json(
-          verdict.ok
-            ? { ok: true, collection: response }
-            : { ok: false, error: verdict.error, collection: response },
-          origin,
-        ),
+        verdict.ok
+          ? json({ ok: true, collection: response }, origin)
+          : json(
+              {
+                statusCode: 404,
+                message: verdict.error,
+                error: verdict.error,
+                details: { collection: response },
+              },
+              origin,
+              404,
+            ),
       );
       return;
     }

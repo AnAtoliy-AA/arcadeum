@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - add ArcadePet accessibility unit and e2e specs (ARC-1047)
 
+## [1.31.2] - 2026-11-22
+
+### Added
+- stop minting treats on the client and send idempotent action ids
+- server-verified treats, flag gating, idempotent actions and HTTP error codes
+
+### Fixed
+- keep the feature flag on for e2e runs on a production build
+- apply review findings on treat award race and flag defaults
+
+### Documentation
+- note ArcadePet backend hardening
+
+
 ## [1.31.1] - 2026-11-22
 
 ### Added

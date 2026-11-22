@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
+  ARCADE_PET_SCHEMA_VERSION,
+  MAX_RECENT_ACTION_IDS,
   reduceEconomy,
   type ArcadePetCollectionPayload,
   type ArcadePetEconomyAction,
@@ -80,9 +82,14 @@ export class ArcadePetEconomyService {
     private readonly collections: ArcadePetCollectionService,
   ) {}
 
+  /**
+   * Applies one action. With an `actionId`, a retry of an already applied
+   * action answers with the current collection instead of applying it twice.
+   */
   async perform(
     userId: string,
     action: ArcadePetEconomyAction,
+    actionId?: string,
   ): Promise<ArcadePetEconomyResult> {
     const userObjectId = new Types.ObjectId(userId);
     const sender = await this.userModel
@@ -115,12 +122,16 @@ export class ArcadePetEconomyService {
         userId: { $eq: userObjectId },
       });
       const collection = this.collections.toResponse(current);
+      if (actionId && current?.recentActionIds?.includes(actionId)) {
+        return { ok: true, collection };
+      }
       const { revision, ...state } = collection;
 
       const result = reduceEconomy(state, action, {
         now: Date.now(),
         userId,
         revision: deliveredAtRevision ?? revision,
+        actionId,
         senderName: sender?.username ?? 'Friend',
         isAdmin: sender?.role === 'admin',
       });
@@ -137,8 +148,14 @@ export class ArcadePetEconomyService {
           result.outgoingGift,
         );
         if (delivery === 'full') return this.rejected(userId, 'INBOX_FULL');
-        if (delivery === 'duplicate' && deliveredAtRevision === null) {
-          // Same id from a concurrent send of ours: retry with a fresh id.
+        if (
+          delivery === 'duplicate' &&
+          deliveredAtRevision === null &&
+          !actionId
+        ) {
+          // Revision-derived id collided with a concurrent send of ours: retry.
+          // Action-derived ids are unique per action, so a duplicate means an
+          // earlier attempt of this same action already delivered the gift.
           continue;
         }
         deliveredAtRevision ??= revision;
@@ -149,6 +166,7 @@ export class ArcadePetEconomyService {
         current !== null,
         revision,
         result.state,
+        actionId,
       );
       if (!saved) continue;
 
@@ -164,16 +182,35 @@ export class ArcadePetEconomyService {
     exists: boolean,
     revision: number,
     state: ArcadePetCollectionPayload,
+    actionId?: string,
   ): Promise<ArcadePetCollectionDocument | null> {
     try {
       if (exists) {
         return await this.model.findOneAndUpdate(
           { userId: { $eq: userId }, revision: { $eq: revision } },
-          { $set: state, $inc: { revision: 1 } },
+          {
+            $set: { ...state, schemaVersion: ARCADE_PET_SCHEMA_VERSION },
+            $inc: { revision: 1 },
+            ...(actionId
+              ? {
+                  $push: {
+                    recentActionIds: {
+                      $each: [actionId],
+                      $slice: -MAX_RECENT_ACTION_IDS,
+                    },
+                  },
+                }
+              : {}),
+          },
           { new: true },
         );
       }
-      return await this.model.create({ userId, ...state, revision: 1 });
+      return await this.model.create({
+        userId,
+        ...state,
+        revision: 1,
+        recentActionIds: actionId ? [actionId] : [],
+      });
     } catch (error) {
       // A concurrent first write created the record: retry against it.
       if (isDuplicateKeyError(error)) return null;

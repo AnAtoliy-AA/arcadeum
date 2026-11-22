@@ -340,6 +340,17 @@ describe('reduceEconomy send_gift rules', () => {
     expect(again.ok && again.outgoingGift?.id).toBe('gift-u1-5');
   });
 
+  it('derives the gift id from the client action id when present', () => {
+    const r = reduceEconomy(base(), gift, { ...ctx, actionId: 'a-1' });
+    const moved = reduceEconomy(base(), gift, {
+      ...ctx,
+      actionId: 'a-1',
+      revision: 9,
+    });
+    expect(r.ok && r.outgoingGift?.id).toBe('gift-u1-a-1');
+    expect(moved.ok && moved.outgoingGift?.id).toBe('gift-u1-a-1');
+  });
+
   it('rejects themes that are not in the roster', () => {
     const r = reduceEconomy(base(), { ...gift, theme: 'nope_theme' }, ctx);
     expect(r).toEqual({ ok: false, error: 'INVALID_SPEC' });

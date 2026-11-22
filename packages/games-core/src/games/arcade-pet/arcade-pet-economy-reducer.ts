@@ -36,6 +36,8 @@ export interface EconomyContext {
   userId: string;
   /** Revision of the sender's stored collection; makes gift ids deterministic. */
   revision: number;
+  /** Client action id; when set, gift ids derive from it so retries match. */
+  actionId?: string;
   senderName: string;
   isAdmin: boolean;
 }
@@ -269,7 +271,9 @@ function sendGift(
     sanitizePetName(action.petName) ??
     action.species.charAt(0).toUpperCase() + action.species.slice(1);
   const outgoingGift: PetGiftPresentPayload = {
-    id: `gift-${ctx.userId}-${ctx.revision + 1}`,
+    id: ctx.actionId
+      ? `gift-${ctx.userId}-${ctx.actionId}`
+      : `gift-${ctx.userId}-${ctx.revision + 1}`,
     senderId: ctx.userId,
     senderName: ctx.isAdmin ? 'Arcadeum Admin' : ctx.senderName,
     species: action.species,

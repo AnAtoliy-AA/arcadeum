@@ -20,10 +20,97 @@ export const frMessages = {
       },
     },
     landing: {
+      extra: {
+        hero: {
+          eyebrow: 'Course multijoueur rapide',
+          intro:
+            'Un jeu de course de chats avec dés, plein de boosts de vitesse, d’obstacles hilarants et de pistes thématiques.',
+          category: 'Course / Décontracté',
+          playersBadge: '2-6 joueurs',
+          durationBadge: '5-15 min',
+          difficultyBadge: 'Amusant pour tous',
+          chips: [
+            'Course aux dés',
+            'Boosts de vitesse',
+            '4 thèmes de piste',
+            '2-6 joueurs',
+          ],
+        },
+        highlights: {
+          title: 'Pourquoi vous allez adorer Cat Dash',
+          kicker: 'Fonctionnalités clés',
+          obstacles: {
+            title: 'Obstacles interactifs',
+            body: 'Esquivez les pièges de pelotes de laine, les flaques de lait glissantes, et foncez grâce aux boosts de thon.',
+          },
+        },
+        howTo: {
+          title: 'Comment jouer à Cat Dash',
+          kicker: 'Démarrage rapide',
+          intro:
+            'Lancez les dés, activez vos pouvoirs et soyez le premier chat à franchir la ligne d’arrivée.',
+          create:
+            'Choisissez le thème de la piste et réglez la course sur 1 à 3 tours.',
+          join: 'Affrontez vos amis ou des bots coureurs intelligents.',
+          play: 'Lancez les dés, activez les bonus et sprintez jusqu’à la ligne d’arrivée.',
+        },
+        themesSection: {
+          kicker: 'Choix de la piste',
+          cta: 'Courir sur cette piste',
+        },
+        rules: {
+          kicker: 'Livre de règles',
+          fallbackTitle: 'Règles et mécaniques de course',
+          objective: 'Objectif',
+          howToPlay: 'Dés et déplacement',
+          abilities: 'Capacités des chats',
+          trackSpaces: 'Cases de la piste',
+        },
+        strategy: {
+          title: 'Tactiques et stratégies de piste',
+          kicker: 'Conseils de pro',
+          intro:
+            'Apprenez à tirer le meilleur parti de vos jets de dés et à dominer les classements.',
+          boostTiming: {
+            title: 'Choisissez le bon moment pour vos boosts',
+            body: 'Gardez vos boosts de vitesse pour les lignes droites ou juste après être sorti d’un piège.',
+          },
+          hazards: {
+            title: 'Poussez vos adversaires dans les pièges',
+            body: 'Placez votre chat pour bloquer les voies sûres et forcer vos rivaux sur les cases dangereuses.',
+          },
+          finishSprint: {
+            title: 'Sprint du dernier tour',
+            body: 'Libérez toute l’endurance et tous les bonus restants dans la dernière ligne droite pour décrocher la victoire.',
+          },
+        },
+        faq: {
+          title: 'Questions fréquentes',
+          kicker: 'FAQ',
+        },
+        related: {
+          title: 'Découvrez d’autres jeux rapides',
+          kicker: 'Découvrir',
+        },
+        finalCta: {
+          title: 'Prêt à courir ?',
+          subtitle:
+            'Jouez contre des bots ou défiez jusqu’à 5 amis dans une course de chats déjantée en temps réel.',
+          allGames: 'Tous les jeux',
+        },
+        preview: {
+          raceTrack: 'Piste de course',
+          lap: 'Tour 3/3',
+          first: '1er',
+          second: '2e',
+          third: '3e',
+          diceRoll: 'Lancer de dé : 6 + boost',
+        },
+      },
       meta: {
         title: 'Cat Dash - jeu de course de chats multijoueur',
         description:
-          'Jouez à Cat Dash en ligne gratuitement. 2–6 joueurs, chats uniques, dés + capacités.',
+          'Jouez à Cat Dash en ligne gratuitement. 2-6 joueurs, chats uniques, dés + capacités.',
         keywords: 'jeu de chats, jeu de dés, course, multijoueur',
       },
       hero: {
@@ -37,7 +124,7 @@ export const frMessages = {
       },
       highlights: {
         players: {
-          title: '2–6 joueurs',
+          title: '2-6 joueurs',
           body: 'Affrontez vos amis ou complétez avec des bots.',
         },
         cats: {

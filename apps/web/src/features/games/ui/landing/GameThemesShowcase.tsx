@@ -122,6 +122,7 @@ const SUPPORTED_GAME_IDS = new Set<string>([
 ]);
 
 export function GameThemesShowcase({
+  id = 'themes',
   gameId,
   title = 'Visual Themes & Board Styles',
   kicker = 'Customization',
@@ -148,8 +149,8 @@ export function GameThemesShowcase({
 
   return (
     <section
-      id="themes"
-      className="box-border flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_500px]"
+      id={id}
+      className="box-border scroll-mt-32 flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_500px]"
     >
       <div className="box-border flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="box-border flex flex-col gap-1">

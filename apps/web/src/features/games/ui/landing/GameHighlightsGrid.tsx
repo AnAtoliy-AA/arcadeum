@@ -1,6 +1,7 @@
 import type { GameHighlightsGridProps } from './types';
 
 export function GameHighlightsGrid({
+  id = 'highlights',
   title,
   kicker,
   items,
@@ -8,7 +9,10 @@ export function GameHighlightsGrid({
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="box-border flex flex-col gap-6 py-8">
+    <section
+      id={id}
+      className="box-border scroll-mt-32 flex flex-col gap-6 py-8"
+    >
       {kicker || title ? (
         <div className="box-border flex flex-col gap-1">
           {kicker ? (

@@ -2,28 +2,26 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
-import { Button } from '@arcadeum/ui';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { GameBotPlay } from './GameBotPlay';
 import type { GameFinalCtaProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
-import { AIvsAIViewer } from '@/features/games/ui/AIvsAIViewer';
-import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
 import { gamesApi } from '@/features/games/api';
 
 export function GameFinalCta({
   gameId,
-  title = 'Ready to Play?',
-  subtitle = 'Jump into matchmaking against smart bots or challenge real players worldwide.',
-  roomsHref,
+  title,
+  subtitle,
   gamesHref,
-  ctaQuickplayLabel = 'Play Instant Match',
-  ctaQuickplayErrorLabel = 'Matchmaking Error',
+  ctaQuickplayLabel,
+  ctaQuickplayErrorLabel,
   ctaPlayHumanLabel,
   ctaPlayHumanErrorLabel,
-  browseRoomsLabel = 'Browse Active Rooms',
-  backToGamesLabel = 'All Games',
+  backToGamesLabel,
   comingSoon = false,
 }: GameFinalCtaProps) {
+  const { t } = useTranslation();
   const { theme } = useGameLandingTheme();
   const [effectiveComingSoon, setEffectiveComingSoon] = useState(comingSoon);
 
@@ -51,37 +49,36 @@ export function GameFinalCta({
           {title}
         </h2>
         <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 leading-relaxed">
-          {subtitle}
+          {subtitle ?? t('games.landing.finalBotHint')}
         </p>
       </div>
 
       <div className="box-border flex flex-wrap items-center justify-center gap-3">
-        <QuickplayCta
+        <QuickplayButton
           gameId={gameId}
+          label={ctaPlayHumanLabel ?? t('games.landing.playNow')}
+          mode="human"
           theme={theme}
-          ctaQuickplay={ctaQuickplayLabel}
-          ctaQuickplayError={ctaQuickplayErrorLabel}
-          ctaPlayHuman={ctaPlayHumanLabel}
-          ctaPlayHumanError={ctaPlayHumanErrorLabel}
+          size="lg"
+          errorLabel={ctaPlayHumanErrorLabel ?? ctaQuickplayErrorLabel}
           disabled={effectiveComingSoon}
         />
-
-        {!effectiveComingSoon && isAiVsAiSupported(gameId) ? (
-          <AIvsAIViewer gameId={gameId} theme={theme} />
-        ) : null}
-
-        <Link href={roomsHref} className="box-border inline-flex">
-          <Button variant="secondary" size="lg">
-            {browseRoomsLabel}
-          </Button>
-        </Link>
-
-        <Link href={gamesHref} className="box-border inline-flex">
-          <Button variant="ghost" size="lg">
-            ← {backToGamesLabel}
-          </Button>
-        </Link>
+        <GameBotPlay
+          gameId={gameId}
+          theme={theme}
+          label={ctaQuickplayLabel}
+          errorLabel={ctaQuickplayErrorLabel}
+          size="lg"
+          disabled={effectiveComingSoon}
+        />
       </div>
+
+      <Link
+        href={gamesHref}
+        className="box-border text-sm font-medium text-[var(--foreground)] opacity-80 hover:text-[var(--primary)] hover:underline"
+      >
+        ← {backToGamesLabel ?? t('games.landing.allGames')}
+      </Link>
     </section>
   );
 }

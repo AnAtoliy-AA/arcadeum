@@ -207,7 +207,7 @@ export function renderSeaBattleOgImage(): ImageResponse {
             maxWidth: 540,
           }}
         >
-          Multiplayer Battleship in your browser. 2–4 players, AI bots, 10+
+          Multiplayer Battleship in your browser. 2-4 players, AI bots, 10+
           themes.
         </div>
         <div

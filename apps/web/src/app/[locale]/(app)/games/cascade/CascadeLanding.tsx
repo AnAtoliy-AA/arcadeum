@@ -50,16 +50,13 @@ export default function CascadeLanding({
 }: Props) {
   if (!landing) return null;
 
+  const x = landing.extra;
+
   const highlights = [
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'themes', icon: '🎨', ...landing.highlights.themes },
     { key: 'stacking', icon: '⚡', ...landing.highlights.stacking },
-    {
-      key: 'combos',
-      icon: '🔥',
-      title: 'Action Card Chains',
-      body: 'Counter attack cards with matching penalties to pass the draw burden to opponents.',
-    },
+    { key: 'combos', icon: '🔥', ...x.highlights.combos },
   ];
 
   const steps = [
@@ -67,46 +64,34 @@ export default function CascadeLanding({
       key: 'create',
       stepNumber: 1,
       ...landing.steps.create,
-      tip: 'Configure starting hand sizes and penalty stacking rules.',
+      tip: x.howTo.create,
     },
     {
       key: 'join',
       stepNumber: 2,
       ...landing.steps.join,
-      tip: 'Supports up to 10 simultaneous players in a single room.',
+      tip: x.howTo.join,
     },
     {
       key: 'play',
       stepNumber: 3,
       ...landing.steps.play,
-      tip: 'Match by color or number and save wild cards for tactical escapes.',
+      tip: x.howTo.play,
     },
   ];
 
   const rulesList = rules
     ? [
-        { key: 'objective', head: 'Objective', body: rules.objective },
-        { key: 'steps', head: 'How Stacking Works', body: rules.steps },
-        { key: 'stacking', head: 'Penalty Defense', body: rules.stacking },
+        { key: 'objective', head: x.rules.objective, body: rules.objective },
+        { key: 'steps', head: x.rules.steps, body: rules.steps },
+        { key: 'stacking', head: x.rules.stacking, body: rules.stacking },
       ]
     : [];
 
   const strategyTips = [
-    {
-      key: 'saveWilds',
-      title: 'Save Wilds for Emergencies',
-      body: 'Hold wild cards until you are forced into an unfavorable color to regain tempo.',
-    },
-    {
-      key: 'colorTracking',
-      title: 'Track Opponent Color Preferences',
-      body: 'Pay attention to what colors other players pass on and shift the active color away from them.',
-    },
-    {
-      key: 'stackDefend',
-      title: 'Keep +2 and +4 Counters',
-      body: 'Never play your last draw-card unnecessarily if you suspect a draw chain is coming.',
-    },
+    { key: 'saveWilds', ...x.strategy.saveWilds },
+    { key: 'colorTracking', ...x.strategy.colorTracking },
+    { key: 'stackDefend', ...x.strategy.stackDefend },
   ];
 
   const faqItems = Object.entries(landing.faq).map(([key, entry]) => {
@@ -137,87 +122,76 @@ export default function CascadeLanding({
       hero={{
         gameId,
         title: landing.hero.title,
-        eyebrow: 'Fast Party Cards',
+        eyebrow: x.hero.eyebrow,
         subtitle: landing.hero.subtitle,
-        intro:
-          'The fast-paced card shedding showdown with ruthless stacking penalties, color changes, and 4 themes.',
-        category: 'Card Game',
-        playersBadge: '2–10 Players',
-        durationBadge: '5–15 min',
-        difficultyBadge: 'Casual Party',
-        chips: [
-          'Stacking Penalties',
-          '4 Theme Decks',
-          'Up to 10 Players',
-          'Instant Quickplay',
-        ],
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        intro: x.hero.intro,
+        category: x.hero.category,
+        playersBadge: x.hero.playersBadge,
+        durationBadge: x.hero.durationBadge,
+        difficultyBadge: x.hero.difficultyBadge,
+        chips: x.hero.chips,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
-        createRoomLabel: 'Create Room',
+        createRoomLabel: x.hero.createRoom,
         roomsHref,
         createRoomHref,
         heroVisual: <CascadeLandingPreview />,
       }}
       highlights={{
-        title: 'Action-Packed Card Shedding',
-        kicker: 'Key Features',
+        title: x.highlights.title,
+        kicker: x.highlights.kicker,
         items: highlights,
       }}
       howToPlay={{
-        title: 'How to Play Cascade',
-        kicker: 'Quick Start',
-        intro:
-          'Match cards by number, color, or symbol and be the first to empty your hand.',
+        title: x.howTo.title,
+        kicker: x.howTo.kicker,
+        intro: x.howTo.intro,
         steps,
       }}
       themes={
         themesList.length > 0
           ? {
               title: landing.themes.title,
-              kicker: 'Deck Themes',
+              kicker: x.themesSection.kicker,
               subtitle: landing.themes.subtitle,
               themes: themesList,
               baseHref: createRoomHref,
-              createRoomLabel: 'Play Deck',
+              createRoomLabel: x.themesSection.cta,
             }
           : undefined
       }
       rules={
         rulesList.length > 0
           ? {
-              title: rules?.title ?? 'Rules & Mechanics',
-              kicker: 'Rulebook',
+              title: rules?.title ?? x.rules.fallbackTitle,
+              kicker: x.rules.kicker,
               rules: rulesList,
             }
           : undefined
       }
       strategy={{
-        title: 'Winning Strategies & Combos',
-        kicker: 'Pro Tips',
-        intro:
-          'Learn how to counter draw chains and control the flow of the game.',
+        title: x.strategy.title,
+        kicker: x.strategy.kicker,
+        intro: x.strategy.intro,
         tips: strategyTips,
       }}
       faq={{
-        title: 'Frequently Asked Questions',
-        kicker: 'FAQ',
+        title: x.faq.title,
+        kicker: x.faq.kicker,
         items: faqItems,
       }}
       relatedGames={{
-        title: 'More Multiplayer Card Games',
-        kicker: 'Discover',
+        title: x.related.title,
+        kicker: x.related.kicker,
         currentGameSlug: gameId,
         games: relatedGames,
       }}
       finalCta={{
         gameId,
-        title: 'Jump Into the Next Round',
-        subtitle:
-          'Play against intelligent AI bots or host a high-stakes party game for up to 10 friends.',
+        title: x.finalCta.title,
+        subtitle: x.finalCta.subtitle,
         roomsHref,
         gamesHref,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
         backToGamesLabel,

@@ -7,26 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.14] - 2026-11-22
+
+### Fixed
+- isolate auth cookies per env so staging keeps session after reload
+
+
+## [1.31.13] - 2026-11-22
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.31.12] - 2026-11-22
+
+### Fixed
+
+- quiet SSR catalog 502 spam and Turbopack file tracing warnings
+
 ## [1.31.11] - 2026-11-22
 
 ### Added
-- rework create-room flow with guided steps, presets and clearer states
 
+- rework create-room flow with guided steps, presets and clearer states
 
 ## [1.31.10] - 2026-11-22
 
 ### Fixed
-- defer session rehydrate fix-ups to avoid TDZ on first load
 
+- defer session rehydrate fix-ups to avoid TDZ on first load
 
 ## [1.31.9] - 2026-11-22
 
 ### Fixed
+
 - stop Google login reverting to anon (refresh grace, token cookies, cookie domain)
 
 ### Refactored
-- shared lobby config layer and split oversized lobby files
 
+- shared lobby config layer and split oversized lobby files
 
 ## [1.31.8] - 2026-11-22
 

@@ -70,7 +70,10 @@ function slugify(text: string): string {
 export async function getFeaturesData(): Promise<FeatureSection[]> {
   for (const filePath of CANDIDATE_PATHS) {
     try {
-      const content = await readFile(filePath, 'utf-8');
+      const content = await readFile(
+        /*turbopackIgnore: true*/ filePath,
+        'utf-8',
+      );
       if (content) {
         return parseFeatures(content);
       }

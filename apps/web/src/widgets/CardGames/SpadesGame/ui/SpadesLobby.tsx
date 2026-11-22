@@ -1,22 +1,19 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
-import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-  LobbyToggle,
-} from '@/features/games/ui/LobbyOptions';
-import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { useLobbyReorder } from '@/features/games/ui/useLobbyReorder';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { MIN_PLAYERS } from '../types';
 import { SPADES_THEMES } from '../lib/constants';
-import { resolveSpadesTheme } from '../lib/theme';
 import { RulesModal } from './RulesModal';
-import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import {
+  SpadesLobbyOptionsPanel,
+  resolveSpadesLobbyOptions,
+  SPADES_LOBBY_THEME,
+} from './SpadesLobbyOptions';
 
 interface SpadesLobbyProps {
   room: GameRoomSummary;
@@ -32,28 +29,6 @@ interface SpadesLobbyProps {
   onShowRulesClose?: () => void;
   accessToken?: string | null;
   onReorderPlayers?: (newOrder: string[]) => void;
-}
-
-const SPADES_LOBBY_THEME = {
-  fallbackLightGradient:
-    'linear-gradient(90deg, #eef2ff 0%, #818cf8 50%, #eef2ff 100%)',
-  buttonGradient: 'linear-gradient(135deg, #1d4ed8 0%, #312e81 100%)',
-};
-
-function resolveOptions(raw: unknown): {
-  variant: ReturnType<typeof resolveSpadesTheme>;
-  nilEnabled: boolean;
-  targetScore: number;
-} {
-  const r = (raw ?? {}) as Partial<{
-    nilEnabled: boolean;
-    targetScore: number;
-  }>;
-  return {
-    variant: resolveSpadesTheme(raw),
-    nilEnabled: typeof r.nilEnabled === 'boolean' ? r.nilEnabled : true,
-    targetScore: r.targetScore === 300 ? 300 : 500,
-  };
 }
 
 export function SpadesLobby({
@@ -72,68 +47,13 @@ export function SpadesLobby({
   onReorderPlayers,
 }: SpadesLobbyProps) {
   const { t } = useTranslation();
-  const { setOption } = useRoomOptions({ roomId: room.id, userId });
-
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
+    () => resolveSpadesLobbyOptions(room.gameOptions),
     [room.gameOptions],
   );
-
-  const variantTokens = useMemo(
-    () =>
-      SPADES_THEMES.find((v) => v.id === options.variant) ?? SPADES_THEMES[0],
-    [options.variant],
-  );
-
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !room.id) return;
-      try {
-        await reorderRoomParticipants(room.id, newOrder, accessToken);
-      } catch {}
-    },
-    [accessToken, room.id],
-  );
-
-  const optionsSlot = (
-    <div className="flex flex-col items-stretch gap-4">
-      <LobbyOptionSection title={t('games.spades_v1.lobby.variant')}>
-        <GameThemePicker
-          selectedTheme={options.variant}
-          onSelect={(themeId) =>
-            setOption({ theme: themeId, variant: themeId })
-          }
-          disabled={!isHost}
-        />
-      </LobbyOptionSection>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <LobbyOptionSection title={t('games.spades_v1.lobby.targetScore')}>
-          <LobbyChipGroup
-            options={[
-              { id: '300', label: '300' },
-              { id: '500', label: '500' },
-            ]}
-            value={String(options.targetScore)}
-            onChange={(v) =>
-              setOption({ targetScore: v === '300' ? 300 : 500 })
-            }
-            accentColor="#1d4ed8"
-            testIdPrefix="spades-target-score"
-          />
-        </LobbyOptionSection>
-
-        <div className="flex items-center">
-          <LobbyToggle
-            label={t('games.spades_v1.lobby.nilEnabled')}
-            checked={options.nilEnabled}
-            onCheckedChange={(val) => setOption({ nilEnabled: val })}
-            disabled={!isHost}
-          />
-        </div>
-      </div>
-    </div>
-  );
+  const variantTokens =
+    SPADES_THEMES.find((v) => v.id === options.variant) ?? SPADES_THEMES[0];
+  const handleReorder = useLobbyReorder(room.id, accessToken, onReorderPlayers);
 
   return (
     <ReusableGameLobby
@@ -141,17 +61,27 @@ export function SpadesLobby({
       userId={userId}
       isHost={isHost}
       startBusy={startBusy}
-      minPlayers={MIN_PLAYERS}
-      gameName="Spades"
-      gameIcon="♠"
-      variantName={t(variantTokens.name)}
-      theme={getLobbyTheme(
-        SPADES_THEMES,
-        options.variant,
-        SPADES_LOBBY_THEME.fallbackLightGradient,
-        SPADES_LOBBY_THEME.buttonGradient,
-      )}
-      optionsSlot={optionsSlot}
+      config={{
+        gameName: 'Spades',
+        gameIcon: '♠',
+        variantName: t(variantTokens.name),
+        seats: { min: MIN_PLAYERS },
+        bots: { enabled: true },
+        theme: getLobbyTheme(
+          SPADES_THEMES,
+          options.variant,
+          SPADES_LOBBY_THEME.fallbackLightGradient,
+          SPADES_LOBBY_THEME.buttonGradient,
+        ),
+      }}
+      optionsSlot={
+        <SpadesLobbyOptionsPanel
+          options={options}
+          roomId={room.id}
+          userId={userId}
+          isHost={isHost}
+        />
+      }
       rulesModalSlot={
         <RulesModal
           open={!!showRulesOpen}
@@ -159,12 +89,11 @@ export function SpadesLobby({
         />
       }
       onStartGame={onStartGame}
-      onReorderPlayers={onReorderPlayers ?? handleReorderPlayers}
+      onReorderPlayers={handleReorder}
       onLeaveRoom={onLeaveRoom}
       onDeleteRoom={onDeleteRoom}
       onKickPlayer={onKickPlayer}
       onRefresh={onRefresh}
-      enableBots
     />
   );
 }

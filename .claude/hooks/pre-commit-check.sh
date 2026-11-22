@@ -14,8 +14,8 @@ pnpm check-translations
 TRANS_EXIT=$?
 
 if (( LINT_EXIT != 0 || FILELEN_EXIT != 0 || TRANS_EXIT != 0 )); then
-  echo "❌ Lint, file-length, or translation check failed"
-  exit 1
+  echo "❌ Lint, file-length, or translation check failed" >&2
+  exit 2
 fi
 
 echo "✅ All pre-commit checks passed"

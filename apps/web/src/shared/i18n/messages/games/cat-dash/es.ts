@@ -20,10 +20,97 @@ export const esMessages = {
       },
     },
     landing: {
+      extra: {
+        hero: {
+          eyebrow: 'Carrera multijugador rápida',
+          intro:
+            'Un juego de carreras de gatos con dados lleno de impulsos de velocidad, peligros divertidos y pistas temáticas.',
+          category: 'Carreras / Casual',
+          playersBadge: '2-6 jugadores',
+          durationBadge: '5-15 min',
+          difficultyBadge: 'Diversión para todos',
+          chips: [
+            'Carreras con dados',
+            'Impulsos de velocidad',
+            '4 temas de pista',
+            '2-6 jugadores',
+          ],
+        },
+        highlights: {
+          title: 'Por qué te encantará Cat Dash',
+          kicker: 'Características clave',
+          obstacles: {
+            title: 'Peligros interactivos',
+            body: 'Esquiva trampas de ovillos y charcos resbaladizos de leche, y sal disparado con impulsos de atún.',
+          },
+        },
+        howTo: {
+          title: 'Cómo jugar a Cat Dash',
+          kicker: 'Inicio rápido',
+          intro:
+            'Tira los dados, activa poderes y sé el primer gato en cruzar la meta.',
+          create:
+            'Elige el tema de la pista y fija de 1 a 3 vueltas para la carrera.',
+          join: 'Compite contra amigos o contra bots corredores inteligentes.',
+          play: 'Tira los dados, activa potenciadores y corre hacia la meta.',
+        },
+        themesSection: {
+          kicker: 'Selección de pista',
+          cta: 'Correr en esta pista',
+        },
+        rules: {
+          kicker: 'Reglamento',
+          fallbackTitle: 'Reglas y mecánicas de carrera',
+          objective: 'Objetivo',
+          howToPlay: 'Dados y movimiento',
+          abilities: 'Habilidades de los gatos',
+          trackSpaces: 'Casillas de la pista',
+        },
+        strategy: {
+          title: 'Tácticas y estrategias de pista',
+          kicker: 'Consejos de experto',
+          intro:
+            'Aprende a sacar el máximo partido a las tiradas de dados y a dominar las clasificaciones.',
+          boostTiming: {
+            title: 'Elige el momento de tus impulsos',
+            body: 'Guarda los impulsos de velocidad para las rectas o justo después de salir de una trampa.',
+          },
+          hazards: {
+            title: 'Guía a tus rivales hacia las trampas',
+            body: 'Coloca a tu gato para bloquear los carriles seguros y obligar a los rivales a pisar casillas de peligro.',
+          },
+          finishSprint: {
+            title: 'Esprint de la vuelta final',
+            body: 'Libera toda la energía y los potenciadores que te queden en el tramo final para asegurar la victoria.',
+          },
+        },
+        faq: {
+          title: 'Preguntas frecuentes',
+          kicker: 'FAQ',
+        },
+        related: {
+          title: 'Descubre más juegos rápidos',
+          kicker: 'Descubre',
+        },
+        finalCta: {
+          title: '¿Listo para correr?',
+          subtitle:
+            'Juega contra bots o desafía hasta a 5 amigos en una caótica carrera de gatos en tiempo real.',
+          allGames: 'Todos los juegos',
+        },
+        preview: {
+          raceTrack: 'Pista de carreras',
+          lap: 'Vuelta 3/3',
+          first: '1.º',
+          second: '2.º',
+          third: '3.º',
+          diceRoll: 'Tirada de dado: 6 + impulso',
+        },
+      },
       meta: {
         title: 'Cat Dash - juego de carrera de gatos con dados multijugador',
         description:
-          'Juega Cat Dash online gratis. 2–6 jugadores, gatos únicos, dados + habilidades, cuatro pistas temáticas.',
+          'Juega Cat Dash online gratis. 2-6 jugadores, gatos únicos, dados + habilidades, cuatro pistas temáticas.',
         keywords:
           'juego de gatos, juego de dados, carrera, multijugador, juego familiar',
       },
@@ -38,7 +125,7 @@ export const esMessages = {
       },
       highlights: {
         players: {
-          title: '2–6 jugadores',
+          title: '2-6 jugadores',
           body: 'Compite con amigos o completa con bots.',
         },
         cats: {

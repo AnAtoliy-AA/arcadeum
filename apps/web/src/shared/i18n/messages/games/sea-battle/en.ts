@@ -255,8 +255,8 @@ export const enMessages = {
     },
     landing: {
       meta: {
-        title: `Sea Battle (Battleship) Online - Play Free with Friends or AI (2–4 Players) | ${APP}`,
-        description: `Play Sea Battle (Battleship) online for free on ${APP}! 2–4 players multiplayer: challenge friends with an invite link or practice against smart AI bots on a 10×10 grid. Best fleet setups, tactics & 10+ themes.`,
+        title: `Sea Battle (Battleship) Online - Play Free with Friends or AI (2-4 Players) | ${APP}`,
+        description: `Play Sea Battle (Battleship) online for free on ${APP}! 2-4 players multiplayer: challenge friends with an invite link or practice against smart AI bots on a 10×10 grid. Best fleet setups, tactics & 10+ themes.`,
         ogTitle:
           'Sea Battle (Battleship) Online - Play Free with Friends or AI',
         ogDescription:
@@ -274,7 +274,7 @@ export const enMessages = {
         ctaQuickplayError: 'Couldn’t start a game - try again',
         ctaPlayHuman: 'Find a human opponent',
         ctaGroupLabel: 'Sea Battle quick start',
-        eyebrow: 'Free · 2–4 players · No signup',
+        eyebrow: 'Free · 2-4 players · No signup',
         chips: [
           'Browser-based',
           'Play with AI bots',

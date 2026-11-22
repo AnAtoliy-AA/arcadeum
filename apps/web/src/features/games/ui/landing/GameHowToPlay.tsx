@@ -1,6 +1,7 @@
 import type { GameHowToPlayProps } from './types';
 
 export function GameHowToPlay({
+  id = 'how-to-play',
   title,
   kicker,
   intro,
@@ -9,7 +10,10 @@ export function GameHowToPlay({
   if (!steps || steps.length === 0) return null;
 
   return (
-    <section id="how-to-play" className="box-border flex flex-col gap-6 py-8">
+    <section
+      id={id}
+      className="box-border scroll-mt-32 flex flex-col gap-6 py-8"
+    >
       {kicker || title ? (
         <div className="box-border flex flex-col gap-1">
           {kicker ? (

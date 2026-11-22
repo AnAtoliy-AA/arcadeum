@@ -3,6 +3,7 @@ import { Badge } from '@arcadeum/ui';
 import type { GameRelatedGamesProps } from './types';
 
 export function GameRelatedGames({
+  id = 'related',
   title = 'More Multiplayer Games',
   kicker = 'Discover',
   currentGameSlug,
@@ -12,7 +13,10 @@ export function GameRelatedGames({
   if (filtered.length === 0) return null;
 
   return (
-    <section className="box-border flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_400px]">
+    <section
+      id={id}
+      className="box-border scroll-mt-32 flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_400px]"
+    >
       <div className="box-border flex flex-col gap-1">
         {kicker ? (
           <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">

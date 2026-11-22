@@ -25,7 +25,7 @@ export function GameLandingLayout({
 
   return (
     <PageLayout>
-      <div className="box-border relative w-full overflow-hidden">
+      <div className="box-border relative w-full overflow-x-clip">
         <div
           className={`box-border pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-radial bg-gradient-to-b ${glowClass} blur-3xl opacity-60`}
           aria-hidden="true"

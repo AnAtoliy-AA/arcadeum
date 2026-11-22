@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type {
   GameSpecTableProps,
   PlatformComparisonTableProps,
@@ -44,8 +45,10 @@ export interface GameLandingHeroProps {
   durationBadge?: string;
   difficultyBadge?: string;
   chips?: string[];
+  /** Label of the secondary "Play vs bot" action. Defaults to the i18n key. */
   ctaQuickplayLabel?: string;
   ctaQuickplayErrorLabel?: string;
+  /** Label of the primary "Play now" action. Defaults to the i18n key. */
   ctaPlayHumanLabel?: string;
   ctaPlayHumanErrorLabel?: string;
   browseRoomsLabel?: string;
@@ -55,7 +58,20 @@ export interface GameLandingHeroProps {
   heroVisual?: ReactNode;
   initialTheme?: string;
   comingSoon?: boolean;
+  /** @deprecated Ignored: the sticky section nav is generated automatically. */
   quickNavItems?: QuickNavItem[];
+}
+
+/** Entry of the sticky in-page navigation. `labelKey` is an i18n key. */
+export interface GameSectionNavItem {
+  id: string;
+  labelKey: TranslationKey;
+  /**
+   * Where the item sits in the nav. `afterPlay` for hubs rendered in
+   * `topSection` (right below the hero); `end` (default) places it after
+   * Strategy, matching `extraSection` content.
+   */
+  placement?: 'afterPlay' | 'end';
 }
 
 export interface GameHighlightItem {
@@ -66,6 +82,8 @@ export interface GameHighlightItem {
 }
 
 export interface GameHighlightsGridProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   title?: string;
   kicker?: string;
   items: GameHighlightItem[];
@@ -81,6 +99,8 @@ export interface GameHowToStep {
 }
 
 export interface GameHowToPlayProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   title?: string;
   kicker?: string;
   intro?: string;
@@ -98,6 +118,8 @@ export interface GameThemeItem {
 }
 
 export interface GameThemesShowcaseProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   gameId?: string;
   title?: string;
   kicker?: string;
@@ -116,6 +138,8 @@ export interface GameRuleItem {
 }
 
 export interface GameRulesSectionProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   title?: string;
   kicker?: string;
   rules: GameRuleItem[];
@@ -129,6 +153,8 @@ export interface GameStrategyTip {
 }
 
 export interface GameStrategySectionProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   title?: string;
   kicker?: string;
   intro?: string;
@@ -142,6 +168,8 @@ export interface GameFaqItem {
 }
 
 export interface GameFaqSectionProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   title?: string;
   kicker?: string;
   items: GameFaqItem[];
@@ -158,6 +186,8 @@ export interface RelatedGameCard {
 }
 
 export interface GameRelatedGamesProps {
+  /** Anchor id used by the sticky section nav. Defaults per section. */
+  id?: string;
   title?: string;
   kicker?: string;
   currentGameSlug: string;
@@ -174,6 +204,7 @@ export interface GameFinalCtaProps {
   ctaQuickplayErrorLabel?: string;
   ctaPlayHumanLabel?: string;
   ctaPlayHumanErrorLabel?: string;
+  /** @deprecated Final CTA no longer shows a browse-rooms button. */
   browseRoomsLabel?: string;
   backToGamesLabel?: string;
   /** Game disabled by admin — quickplay buttons are rendered disabled. */
@@ -192,17 +223,18 @@ export interface UnifiedGameLandingProps {
     | 'orange'
     | 'blue';
   hero: GameLandingHeroProps;
+  /** @deprecated Ignored: the sticky section nav is generated automatically. */
   quickNavItems?: QuickNavItem[];
   topSection?: ReactNode;
+  /**
+   * Extra anchors appended to the sticky section nav, e.g. for sections
+   * rendered via `topSection` / `extraSection`. Ids must exist on the page.
+   */
+  extraNavItems?: GameSectionNavItem[];
   specifications?: GameSpecTableProps;
   comparison?: PlatformComparisonTableProps;
   highlights?: GameHighlightsGridProps;
-  howToPlay?: {
-    title?: string;
-    kicker?: string;
-    intro?: string;
-    steps: GameHowToStep[];
-  };
+  howToPlay?: GameHowToPlayProps;
   themes?: GameThemesShowcaseProps;
   rules?: GameRulesSectionProps;
   strategy?: GameStrategySectionProps;

@@ -1,16 +1,18 @@
 'use client';
 
 import { getThemeById } from '@/features/games/lib/shared-themes';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 
 const CRITICAL_CARDS = [
-  { name: '💣 Bomb', translate: '-translate-x-8 -rotate-12' },
-  { name: '🛠 Defuse', translate: '-translate-x-3 -rotate-6' },
-  { name: '⚔️ Attack', translate: 'translate-x-3 rotate-3' },
-  { name: '🔮 See Future', translate: 'translate-x-8 rotate-12' },
-];
+  { icon: '💣', nameKey: 'bomb', translate: '-translate-x-8 -rotate-12' },
+  { icon: '🛠', nameKey: 'defuse', translate: '-translate-x-3 -rotate-6' },
+  { icon: '⚔️', nameKey: 'attack', translate: 'translate-x-3 rotate-3' },
+  { icon: '🔮', nameKey: 'seeFuture', translate: 'translate-x-8 rotate-12' },
+] as const;
 
 export function CriticalLandingPreview() {
+  const { t } = useTranslation();
   return (
     <GameLandingPreview
       testId="critical-landing-preview"
@@ -37,7 +39,8 @@ export function CriticalLandingPreview() {
               >
                 <span className="text-xs font-black">CRITICAL</span>
                 <span className="text-center text-xs font-bold leading-tight">
-                  {card.name}
+                  {card.icon}{' '}
+                  {t(`games.critical_v1.landing.extra.preview.${card.nameKey}`)}
                 </span>
                 <span className="text-[10px] font-mono opacity-95 self-end">
                   #0{idx + 1}

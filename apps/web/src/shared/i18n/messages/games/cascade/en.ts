@@ -4,7 +4,7 @@ export const enMessages = {
     description:
       'Match by color or number, chain Draw-Two and Draw-Four cards to flood the next player, and empty your hand first to win.',
     summary:
-      'A shedding card game in the Crazy Eights family - eight selectable themes, 2–10 players, full stacking penalties.',
+      'A shedding card game in the Crazy Eights family - eight selectable themes, 2-10 players, full stacking penalties.',
     variants: {
       cosmic: {
         name: 'Cosmic',
@@ -46,17 +46,94 @@ export const enMessages = {
       },
     },
     landing: {
+      extra: {
+        hero: {
+          eyebrow: 'Fast Party Cards',
+          intro:
+            'The fast-paced card shedding showdown with ruthless stacking penalties, color changes, and 4 themes.',
+          category: 'Card Game',
+          playersBadge: '2-10 Players',
+          durationBadge: '5-15 min',
+          difficultyBadge: 'Casual Party',
+          chips: [
+            'Stacking Penalties',
+            '4 Theme Decks',
+            'Up to 10 Players',
+            'Instant Quickplay',
+          ],
+          createRoom: 'Create Room',
+        },
+        highlights: {
+          title: 'Action-Packed Card Shedding',
+          kicker: 'Key Features',
+          combos: {
+            title: 'Action Card Chains',
+            body: 'Counter attack cards with matching penalties to pass the draw burden to opponents.',
+          },
+        },
+        howTo: {
+          title: 'How to Play Cascade',
+          kicker: 'Quick Start',
+          intro:
+            'Match cards by number, color, or symbol and be the first to empty your hand.',
+          create: 'Configure starting hand sizes and penalty stacking rules.',
+          join: 'Supports up to 10 simultaneous players in a single room.',
+          play: 'Match by color or number and save wild cards for tactical escapes.',
+        },
+        themesSection: {
+          kicker: 'Deck Themes',
+          cta: 'Play Deck',
+        },
+        rules: {
+          kicker: 'Rulebook',
+          fallbackTitle: 'Rules & Mechanics',
+          objective: 'Objective',
+          steps: 'How Stacking Works',
+          stacking: 'Penalty Defense',
+        },
+        strategy: {
+          title: 'Winning Strategies & Combos',
+          kicker: 'Pro Tips',
+          intro:
+            'Learn how to counter draw chains and control the flow of the game.',
+          saveWilds: {
+            title: 'Save Wilds for Emergencies',
+            body: 'Hold wild cards until you are forced into an unfavorable color to regain tempo.',
+          },
+          colorTracking: {
+            title: 'Track Opponent Color Preferences',
+            body: 'Pay attention to what colors other players pass on and shift the active color away from them.',
+          },
+          stackDefend: {
+            title: 'Keep +2 and +4 Counters',
+            body: 'Never play your last draw-card unnecessarily if you suspect a draw chain is coming.',
+          },
+        },
+        faq: {
+          title: 'Frequently Asked Questions',
+          kicker: 'FAQ',
+        },
+        related: {
+          title: 'More Multiplayer Card Games',
+          kicker: 'Discover',
+        },
+        finalCta: {
+          title: 'Jump Into the Next Round',
+          subtitle:
+            'Play against intelligent AI bots or host a high-stakes party game for up to 10 friends.',
+        },
+      },
       meta: {
         title: 'Cascade - multiplayer shedding card game online',
         description:
-          'Play Cascade online - a shedding card game with stacking Draw-Two / Wild +4 chains and four selectable visual themes. 2–10 players, free instant rooms, no install.',
+          'Play Cascade online - a shedding card game with stacking Draw-Two / Wild +4 chains and four selectable visual themes. 2-10 players, free instant rooms, no install.',
         keywords:
           'cascade, crazy eights, multiplayer card game, online card game, shedding card game, matching card game',
       },
       hero: {
         title: 'Cascade - the stacking card game, reimagined',
         subtitle:
-          'Match color or number. Chain penalties. Pick from eight distinct visual themes. 2–10 players.',
+          'Match color or number. Chain penalties. Pick from eight distinct visual themes. 2-10 players.',
         createRoom: 'Create a room',
         ctaQuickplay: 'Play vs AI now',
         ctaQuickplayError: "Couldn't start a game - try again",
@@ -64,7 +141,7 @@ export const enMessages = {
       },
       highlights: {
         players: {
-          title: '2–10 players',
+          title: '2-10 players',
           body: 'Free-for-all rounds; bots fill empty seats so you can start instantly.',
         },
         themes: {

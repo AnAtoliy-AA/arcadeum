@@ -1,4 +1,90 @@
 export const landing = {
+  extra: {
+    category: 'Jeu de cartes',
+    badges: {
+      players: '2-5 joueurs',
+      duration: '10-20 min',
+      difficulty: 'Haute tension',
+    },
+    rankedChip: '1v1 classé ELO',
+    createRoom: 'Créer une salle',
+    highlights: {
+      title: 'Mécaniques de jeu de cartes impitoyables',
+      kicker: 'Fonctionnalités clés',
+      tension: {
+        title: 'Roulette de cartes à haut risque',
+        body: 'Chaque carte piochée pourrait être la bombe Critical fatale qui vous élimine.',
+      },
+      defuse: {
+        title: 'Tactiques de désamorçage',
+        body: 'Utilisez des cartes Désamorçage pour survivre aux bombes et réinsérez stratégiquement la bombe n’importe où dans la pioche.',
+      },
+      actionCards: {
+        title: 'Cartes d’action agressives',
+        body: 'Attaquez vos adversaires, sautez des tours, volez des cartes et jetez un œil à l’ordre des prochaines cartes de la pioche.',
+      },
+      party: {
+        title: 'Chaos à 2-5 joueurs',
+        body: 'Des parties rapides avec matchmaking instantané contre des amis ou des bots IA intelligents.',
+      },
+    },
+    tips: {
+      setup: 'Chacun commence avec une carte Désamorçage secrète en main.',
+      draw: 'Jouez des actions pour éviter de piocher, mais quelqu’un finira par devoir piocher une carte.',
+      play: 'Enchaînez les attaques pour forcer vos adversaires à piocher double.',
+      survive: 'Le dernier joueur à ne pas avoir explosé remporte la partie.',
+    },
+    themes: {
+      title: 'Thèmes visuels de cartes personnalisés',
+      kicker: 'Styles visuels',
+      subtitle:
+        'Explorez des esthétiques visuelles et des designs de cartes variés.',
+      cta: 'Jouer avec ce thème',
+    },
+    rules: {
+      title: 'Règles essentielles et désamorçage de bombe',
+      bombCard: {
+        head: 'Cartes bombe Critical',
+        body: 'Piocher une carte Bombe vous élimine, sauf si vous jouez immédiatement une carte Désamorçage de votre main.',
+      },
+      reinsert: {
+        head: 'Réinsertion secrète',
+        body: 'Quand vous désamorcez une bombe, vous choisissez en secret à quelle position de la pioche la replacer.',
+      },
+      turnEnd: {
+        head: 'Le tour se termine en piochant',
+        body: 'Jouer des cartes ne termine pas votre tour ; il se termine seulement après avoir pioché une carte ou joué une carte Passer.',
+      },
+    },
+    strategy: {
+      title: 'Stratégies de survie et jeux d’esprit',
+      kicker: 'Conseils de pro',
+      intro:
+        'Maîtrisez le décompte des cartes et déjouez vos adversaires quand la pioche s’épuise.',
+      deckCounting: {
+        title: 'Comptez les bombes restantes',
+        body: 'Suivez le nombre de bombes et de cartes Désamorçage révélées pour évaluer le risque avant de piocher.',
+      },
+      seeFuture: {
+        title: 'Combinez Voir l’avenir et Mélanger',
+        body: 'Regardez les 3 cartes du dessus ; si une bombe est en haut, jouez aussitôt Mélanger ou Passer.',
+      },
+      bombPosition: {
+        title: 'Placement stratégique de la bombe',
+        body: 'En réinsérant une bombe désamorcée, placez-la tout en haut si le joueur suivant n’a plus de Désamorçage.',
+      },
+    },
+    related: {
+      title: 'Plus de jeux multijoueurs à haut risque',
+      kicker: 'Découvrir',
+    },
+    preview: {
+      bomb: 'Bombe',
+      defuse: 'Désamorçage',
+      attack: 'Attaque',
+      seeFuture: 'Voir l’avenir',
+    },
+  },
   meta: {
     title: 'Critical - Jeu de cartes explosif gratuit en ligne | Navigateur',
     description:
@@ -131,6 +217,7 @@ export const landing = {
     critical: 'Critical',
   },
   ranked: {
+    navLabel: 'Ranked 1v1',
     kicker: 'Compétitif 1v1',
     title: 'Classement ELO et Arène de Duel Critical',
     subtitle:

@@ -1,8 +1,93 @@
 export const landing = {
+  extra: {
+    category: 'Juego de cartas',
+    badges: {
+      players: '2-5 jugadores',
+      duration: '10-20 min',
+      difficulty: 'Alta tensión',
+    },
+    rankedChip: '1v1 clasificatorio con ELO',
+    createRoom: 'Crear sala',
+    highlights: {
+      title: 'Mecánicas de fiesta de cartas sin piedad',
+      kicker: 'Características clave',
+      tension: {
+        title: 'Ruleta de cartas de alto riesgo',
+        body: 'Cada carta que robes del mazo podría ser la bomba Critical que te elimine.',
+      },
+      defuse: {
+        title: 'Tácticas de desactivación',
+        body: 'Usa cartas de Desactivar para sobrevivir a las bombas y reinserta la bomba estratégicamente en cualquier lugar del mazo.',
+      },
+      actionCards: {
+        title: 'Cartas de acción agresivas',
+        body: 'Ataca a tus rivales, salta turnos, roba cartas y echa un vistazo al orden de las próximas cartas del mazo.',
+      },
+      party: {
+        title: 'Caos para 2-5 jugadores',
+        body: 'Partidas rápidas con emparejamiento instantáneo contra amigos o bots de IA inteligentes.',
+      },
+    },
+    tips: {
+      setup: 'Todos empiezan con una carta de Desactivar secreta en la mano.',
+      draw: 'Juega acciones para evitar robar, pero al final alguien tendrá que robar una carta.',
+      play: 'Encadena ataques para obligar a tus rivales a robar el doble.',
+      survive: 'El último jugador que no explote gana la partida.',
+    },
+    themes: {
+      title: 'Temas visuales de cartas personalizados',
+      kicker: 'Estilos visuales',
+      subtitle: 'Explora estéticas visuales y diseños de cartas distintos.',
+      cta: 'Jugar con este tema',
+    },
+    rules: {
+      title: 'Reglas básicas y desactivación de bombas',
+      bombCard: {
+        head: 'Cartas de bomba Critical',
+        body: 'Robar una carta de Bomba te elimina, a menos que juegues de inmediato una carta de Desactivar de tu mano.',
+      },
+      reinsert: {
+        head: 'Reinserción secreta',
+        body: 'Al desactivar una bomba, eliges en secreto en qué posición del mazo de robo la devuelves.',
+      },
+      turnEnd: {
+        head: 'El turno termina al robar',
+        body: 'Jugar cartas no termina tu turno; solo termina cuando robas una carta del mazo o juegas una carta de Saltar.',
+      },
+    },
+    strategy: {
+      title: 'Estrategias de supervivencia y juegos mentales',
+      kicker: 'Consejos de experto',
+      intro:
+        'Domina el conteo de cartas y supera a tus rivales cuando el mazo se acaba.',
+      deckCounting: {
+        title: 'Cuenta las bombas restantes',
+        body: 'Lleva la cuenta de cuántas bombas y cartas de Desactivar se han revelado para calcular el riesgo antes de robar.',
+      },
+      seeFuture: {
+        title: 'Combina Ver el futuro con Barajar',
+        body: 'Mira las 3 cartas superiores; si hay una bomba arriba, juega de inmediato Barajar o Saltar.',
+      },
+      bombPosition: {
+        title: 'Colocación estratégica de la bomba',
+        body: 'Al reinsertar una bomba desactivada, ponla justo arriba si al siguiente jugador no le queda Desactivar.',
+      },
+    },
+    related: {
+      title: 'Más juegos multijugador de alto riesgo',
+      kicker: 'Descubre',
+    },
+    preview: {
+      bomb: 'Bomba',
+      defuse: 'Desactivar',
+      attack: 'Ataque',
+      seeFuture: 'Ver futuro',
+    },
+  },
   meta: {
     title: 'Critical - Juego de cartas explosivo gratis en línea | Navegador',
     description:
-      'Juega gratis a Critical en línea - un juego de cartas estratégico y rápido donde robas, desactivas y sobrevives a la explosión. 2–5 jugadores, IA, mazos temáticos, sin descarga.',
+      'Juega gratis a Critical en línea - un juego de cartas estratégico y rápido donde robas, desactivas y sobrevives a la explosión. 2-5 jugadores, IA, mazos temáticos, sin descarga.',
     ogTitle: 'Critical en línea - Juego de cartas explosivo gratis',
     ogDescription:
       'Roba, desactiva, sobrevive. El último en pie gana. Juega gratis a Critical en tu navegador con amigos o IA.',
@@ -21,7 +106,7 @@ export const landing = {
     ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
     ctaPlayHuman: 'Buscar un rival humano',
     ctaGroupLabel: 'Inicio rápido de Critical',
-    eyebrow: 'Gratis · 2–5 jugadores · Sin registro',
+    eyebrow: 'Gratis · 2-5 jugadores · Sin registro',
     chips: [
       'Desde el navegador',
       'Bots de IA',
@@ -130,6 +215,7 @@ export const landing = {
     critical: 'Critical',
   },
   ranked: {
+    navLabel: 'Ranked 1v1',
     kicker: 'Competitivo 1v1',
     title: 'Clasificatoria ELO y Arena de Duelos Critical',
     subtitle:

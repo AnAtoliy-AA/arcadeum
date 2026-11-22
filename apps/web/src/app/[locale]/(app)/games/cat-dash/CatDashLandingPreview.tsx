@@ -1,15 +1,17 @@
 'use client';
 
 import { getTheme as getCatDashTheme } from '@/widgets/ActionGames/CatDashGame/lib/theme';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { GameLandingPreview } from '@/features/games/ui/landing/GameLandingPreview';
 
 const DEMO_RACERS = [
-  { name: 'Mittens', icon: '🐱', progress: 'w-4/5', badge: '1st' },
-  { name: 'Shadow', icon: '🐈‍⬛', progress: 'w-3/5', badge: '2nd' },
-  { name: 'Ginger', icon: '🦁', progress: 'w-2/5', badge: '3rd' },
-];
+  { name: 'Mittens', icon: '🐱', progress: 'w-4/5', badgeKey: 'first' },
+  { name: 'Shadow', icon: '🐈‍⬛', progress: 'w-3/5', badgeKey: 'second' },
+  { name: 'Ginger', icon: '🦁', progress: 'w-2/5', badgeKey: 'third' },
+] as const;
 
 export function CatDashLandingPreview() {
+  const { t } = useTranslation();
   return (
     <GameLandingPreview
       testId="cat-dash-landing-preview"
@@ -28,8 +30,10 @@ export function CatDashLandingPreview() {
               className="box-border flex items-center justify-between text-xs font-bold uppercase tracking-wider pb-1 border-b"
               style={{ color: theme.text, borderColor: theme.trackBorder }}
             >
-              <span>Race Track</span>
-              <span>🏁 Lap 3/3</span>
+              <span>
+                {t('games.cat_dash_v1.landing.extra.preview.raceTrack')}
+              </span>
+              <span>🏁 {t('games.cat_dash_v1.landing.extra.preview.lap')}</span>
             </div>
 
             <div className="box-border flex flex-col gap-2.5">
@@ -54,7 +58,9 @@ export function CatDashLandingPreview() {
                         background: theme.track,
                       }}
                     >
-                      {racer.badge}
+                      {t(
+                        `games.cat_dash_v1.landing.extra.preview.${racer.badgeKey}`,
+                      )}
                     </span>
                   </div>
                   <div
@@ -80,7 +86,9 @@ export function CatDashLandingPreview() {
               className="box-border pt-1 flex items-center justify-center gap-2 text-[10px]"
               style={{ color: theme.textSecondary }}
             >
-              <span>🎲 Dice Roll: 6 + Boost ⚡</span>
+              <span>
+                🎲 {t('games.cat_dash_v1.landing.extra.preview.diceRoll')} ⚡
+              </span>
             </div>
           </div>
         );

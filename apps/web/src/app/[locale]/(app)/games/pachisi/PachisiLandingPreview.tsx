@@ -37,7 +37,7 @@ export function PachisiLandingPreview() {
         return (
           <div
             aria-hidden="true"
-            className="box-border mx-auto aspect-square w-full max-w-[340px] overflow-hidden rounded-2xl border shadow-xl"
+            className="box-border mx-auto aspect-square w-full max-w-[260px] sm:max-w-[320px] overflow-hidden rounded-2xl border shadow-xl"
             style={{
               background: theme.boardBackground,
               borderColor: theme.yardBorder,

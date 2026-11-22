@@ -12,7 +12,13 @@ export function checkMilestones(get: Getter, set: Setter): void {
     get();
   if (pets.length === 0) return;
 
-  const reached = getNewMilestones({ pets, dailyStreak }, claimedMilestones);
+  // Milestones already waiting in the toast must not be queued (or paid)
+  // again when a server response briefly resets `claimedMilestones`.
+  const queued = new Set(newMilestones.map((m) => m.id));
+  const reached = getNewMilestones(
+    { pets, dailyStreak },
+    claimedMilestones,
+  ).filter((m) => !queued.has(m.id));
   if (reached.length === 0) return;
 
   const reward = reached.reduce((sum, m) => sum + m.rewardCoins, 0);

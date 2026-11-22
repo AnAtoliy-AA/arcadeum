@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add ArcadePet QA e2e spec with a real-backend fixture (ARC-1046)
+
 ### Changed
 
 - award pet treats on the server from verified match results and stop accepting treat increases from clients (ARC-1046)
@@ -18,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - stop treat awards from burning their idempotency key when the stock fills concurrently (ARC-1046)
 - stop grantPresent from reporting a full inbox when it loses a race with a first write (ARC-1046)
+- stop ArcadePet milestones paying twice and a first adoption being erased by the initial server sync, and block adoption while that pull is pending (ARC-1046)
 
 ## [1.31.1] - 2026-11-22
 

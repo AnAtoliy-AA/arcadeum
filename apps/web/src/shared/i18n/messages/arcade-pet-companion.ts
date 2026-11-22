@@ -37,6 +37,7 @@ export const en = {
   presentsBtn: 'Presents',
   eggResting: 'Your ArcadePet is resting in its egg!',
   hatchCta: 'Hatch in Game Room',
+  openGameRoomCta: 'Open Game Room',
   opponentPet: 'Opponent Pet',
   opponentPetOf: "{{name}}'s Pet",
   restingBanner: 'Resting at Home • Growth paused (counts only running hours)',
@@ -108,6 +109,7 @@ export const es: ArcadePetCompanionMessages = {
   presentsBtn: 'Presentes',
   eggResting: '¡Tu ArcadePet descansa en su huevo!',
   hatchCta: 'Eclosionar en la sala de juego',
+  openGameRoomCta: 'Abrir la sala de juego',
   opponentPet: 'Mascota rival',
   opponentPetOf: 'Mascota de {{name}}',
   restingBanner:
@@ -180,6 +182,7 @@ export const fr: ArcadePetCompanionMessages = {
   presentsBtn: 'Présents',
   eggResting: 'Ton ArcadePet se repose dans son œuf !',
   hatchCta: 'Éclore dans la salle de jeu',
+  openGameRoomCta: 'Ouvrir la salle de jeu',
   opponentPet: 'Animal adverse',
   opponentPetOf: 'Animal de {{name}}',
   restingBanner:
@@ -252,6 +255,7 @@ export const ru: ArcadePetCompanionMessages = {
   presentsBtn: 'Презенты',
   eggResting: 'Ваш ArcadePet отдыхает в яйце!',
   hatchCta: 'Вылупить в игровой комнате',
+  openGameRoomCta: 'Открыть игровую комнату',
   opponentPet: 'Питомец соперника',
   opponentPetOf: 'Питомец игрока {{name}}',
   restingBanner:
@@ -322,6 +326,7 @@ export const by: ArcadePetCompanionMessages = {
   presentsBtn: 'Прэзенты',
   eggResting: 'Ваш ArcadePet адпачывае ў яйку!',
   hatchCta: 'Вылупіць у гульнявым пакоі',
+  openGameRoomCta: 'Адкрыць гульнявы пакой',
   opponentPet: 'Пітомец суперніка',
   opponentPetOf: 'Пітомец гульца {{name}}',
   restingBanner:

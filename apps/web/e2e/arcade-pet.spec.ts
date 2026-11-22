@@ -414,7 +414,10 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(page.getByTestId('home-full-banner')).not.toBeVisible();
     await expect(page.getByTestId('adopt-random-btn')).not.toBeDisabled();
 
-    await page.getByTestId('close-adoption-modal-btn').click();
+    await page
+      .getByTestId('arcade-pet-adoption-modal')
+      .getByTestId('modal-close-button')
+      .click();
 
     const stage = page.getByTestId('arcade-pet-social-stage');
     await expect(stage).toBeVisible();

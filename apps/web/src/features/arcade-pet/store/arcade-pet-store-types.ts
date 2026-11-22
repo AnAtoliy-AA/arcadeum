@@ -42,6 +42,11 @@ export interface ArcadePetStoreState {
   syncRevision: number | null;
   /** True once the server collection was loaded; economy then runs on the server. */
   serverBacked: boolean;
+  /**
+   * True while a signed-in user's first server pull is in flight. Local-only
+   * economy changes made now would be overwritten by the pull, so they wait.
+   */
+  syncPending: boolean;
   actionError: ArcadePetActionError | null;
   awaySummary: AwaySummary | null;
   dailyStreak: number;

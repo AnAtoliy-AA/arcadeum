@@ -6,6 +6,18 @@ import { describe, it, expect, vi } from 'vitest';
 const render = (ui: React.ReactElement) => rtlRender(ui);
 
 describe('Button', () => {
+  it('shows a token-colored keyboard focus ring', () => {
+    render(<Button>Focus</Button>);
+    expect(screen.getByRole('button').className).toContain(
+      'focus-visible:ring-[var(--primary)]',
+    );
+  });
+
+  it('size="auto" hugs content instead of a fixed height', () => {
+    render(<Button size="auto">Tall</Button>);
+    expect(screen.getByRole('button').className).toContain('h-auto');
+  });
+
   it('renders correctly with default props', () => {
     render(<Button>Click me</Button>);
     const button = screen.getByRole('button', { name: /click me/i });

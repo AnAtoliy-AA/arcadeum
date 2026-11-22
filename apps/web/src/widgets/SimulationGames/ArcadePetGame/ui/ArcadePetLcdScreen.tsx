@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { PetMood, PetSpecies, PetStage } from '../types';
 
 interface ArcadePetLcdScreenProps {
@@ -14,16 +15,16 @@ interface ArcadePetLcdScreenProps {
   messageText?: string;
 }
 
-const MENU_ICONS: readonly { id: string; label: string; icon: string }[] = [
-  { id: 'meal', label: 'Meal', icon: '🍖' },
-  { id: 'snack', label: 'Snack (1🪙)', icon: '🍰' },
-  { id: 'play', label: 'Play', icon: '🎮' },
-  { id: 'clean', label: 'Clean', icon: '🛁' },
-  { id: 'sleep', label: 'Sleep', icon: '💡' },
-  { id: 'heal', label: 'Heal', icon: '💉' },
-  { id: 'train', label: 'Train', icon: '🏆' },
-  { id: 'treat', label: 'Treat', icon: '🍪' },
-];
+const MENU_ICONS = [
+  { id: 'meal', labelKey: 'menuMeal', icon: '🍖' },
+  { id: 'snack', labelKey: 'menuSnack', icon: '🍰' },
+  { id: 'play', labelKey: 'menuPlay', icon: '🎮' },
+  { id: 'clean', labelKey: 'menuClean', icon: '🛁' },
+  { id: 'sleep', labelKey: 'menuSleep', icon: '💡' },
+  { id: 'heal', labelKey: 'menuHeal', icon: '💉' },
+  { id: 'train', labelKey: 'menuTrain', icon: '🏆' },
+  { id: 'treat', labelKey: 'menuTreat', icon: '🍪' },
+] as const;
 
 export const ArcadePetLcdScreen: React.FC<ArcadePetLcdScreenProps> = ({
   stage,
@@ -35,21 +36,22 @@ export const ArcadePetLcdScreen: React.FC<ArcadePetLcdScreenProps> = ({
   activeMenuIndex,
   messageText,
 }) => {
+  const { t } = useTranslation();
   return (
-    <div className="relative flex flex-col items-center justify-between w-full h-64 p-3 rounded-lg border-4 border-[var(--arcade-shell-border,#1d2a14)] bg-[var(--arcade-screen-bg,#8ea171)] text-[var(--arcade-pixel-color,#1d2a14)] font-mono select-none overflow-hidden shadow-inner">
-      <div className="w-full flex items-center justify-between px-1 py-1 border-b border-[var(--arcade-pixel-color,#1d2a14)]/30 text-xs">
+    <div className="relative flex flex-col items-center justify-between w-full h-64 p-3 rounded-lg border-4 border-[var(--arcade-shell-border,var(--borderColor))] bg-[var(--arcade-screen-bg,var(--background))] text-[var(--arcade-pixel-color,var(--color))] font-mono select-none overflow-hidden shadow-inner">
+      <div className="w-full flex items-center justify-between px-1 py-1 border-b border-[var(--arcade-pixel-color,var(--color))]/30 text-xs">
         {MENU_ICONS.slice(0, 4).map((item, idx) => (
           <div
             key={item.id}
             className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${
               activeMenuIndex === idx
-                ? 'bg-[var(--arcade-pixel-color,#1d2a14)] text-[var(--arcade-screen-bg,#8ea171)] font-bold'
+                ? 'bg-[var(--arcade-pixel-color,var(--color))] text-[var(--arcade-screen-bg,var(--background))] font-bold'
                 : 'opacity-70'
             }`}
           >
-            <span>{item.icon}</span>
-            <span className="hidden sm:inline text-[10px] uppercase">
-              {item.label}
+            <span aria-hidden="true">{item.icon}</span>
+            <span className="sr-only sm:not-sr-only text-xs uppercase">
+              {t(`arcadePetCompanion.game.${item.labelKey}`)}
             </span>
           </div>
         ))}
@@ -91,9 +93,11 @@ export const ArcadePetLcdScreen: React.FC<ArcadePetLcdScreenProps> = ({
               <div className="text-xs font-bold uppercase mt-1 tracking-wider">
                 {mood === 'happy' && '♥ (＾▽＾) ♥'}
                 {mood === 'sad' && '(｡•́︿•̀｡)'}
-                {mood === 'hungry' && '(⊙_⊙;) Hungry!'}
+                {mood === 'hungry' &&
+                  `(⊙_⊙;) ${t('arcadePetCompanion.game.moodHungry')}`}
                 {mood === 'sleeping' && '(-_-) zzz'}
-                {mood === 'sick' && '(×_×) Sick!'}
+                {mood === 'sick' &&
+                  `(×_×) ${t('arcadePetCompanion.game.moodSick')}`}
                 {mood === 'neutral' && '(•‿•)'}
               </div>
             </div>
@@ -101,13 +105,13 @@ export const ArcadePetLcdScreen: React.FC<ArcadePetLcdScreenProps> = ({
         </div>
 
         {messageText && (
-          <div className="absolute bottom-1 bg-[var(--arcade-pixel-color,#1d2a14)] text-[var(--arcade-screen-bg,#8ea171)] text-[11px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+          <div className="absolute bottom-1 bg-[var(--arcade-pixel-color,var(--color))] text-[var(--arcade-screen-bg,var(--background))] text-xs px-2 py-0.5 rounded font-bold uppercase tracking-wider">
             {messageText}
           </div>
         )}
       </div>
 
-      <div className="w-full flex items-center justify-between px-1 py-1 border-t border-[var(--arcade-pixel-color,#1d2a14)]/30 text-xs">
+      <div className="w-full flex items-center justify-between px-1 py-1 border-t border-[var(--arcade-pixel-color,var(--color))]/30 text-xs">
         {MENU_ICONS.slice(4, 8).map((item, idx) => {
           const actualIndex = idx + 4;
           return (
@@ -115,13 +119,13 @@ export const ArcadePetLcdScreen: React.FC<ArcadePetLcdScreenProps> = ({
               key={item.id}
               className={`flex items-center gap-1 px-1.5 py-0.5 rounded ${
                 activeMenuIndex === actualIndex
-                  ? 'bg-[var(--arcade-pixel-color,#1d2a14)] text-[var(--arcade-screen-bg,#8ea171)] font-bold'
+                  ? 'bg-[var(--arcade-pixel-color,var(--color))] text-[var(--arcade-screen-bg,var(--background))] font-bold'
                   : 'opacity-70'
               }`}
             >
-              <span>{item.icon}</span>
-              <span className="hidden sm:inline text-[10px] uppercase">
-                {item.label}
+              <span aria-hidden="true">{item.icon}</span>
+              <span className="sr-only sm:not-sr-only text-xs uppercase">
+                {t(`arcadePetCompanion.game.${item.labelKey}`)}
               </span>
             </div>
           );

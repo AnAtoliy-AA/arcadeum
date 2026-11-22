@@ -5,10 +5,10 @@ import {
   getPetFoodCost,
   getRandomPetSpec,
   SELECT_PET_COST,
-  THEME_PET_PALETTES,
   getThemePets,
   getSignaturePet,
 } from './arcade-pet-economy';
+import { SPECIES_PALETTE } from './arcade-pet-palette';
 
 describe('arcade-pet-economy', () => {
   it('calculates home upgrade costs in coins and gems', () => {
@@ -59,9 +59,9 @@ describe('arcade-pet-economy', () => {
     ];
 
     for (const theme of requiredThemes) {
-      expect(THEME_PET_PALETTES[theme]).toBeDefined();
-      expect(THEME_PET_PALETTES[theme]?.primary).toBeDefined();
-      expect(THEME_PET_PALETTES[theme]?.emoji).toBeDefined();
+      expect(SPECIES_PALETTE[theme]).toBeDefined();
+      expect(SPECIES_PALETTE[theme]?.primary).toBeDefined();
+      expect(SPECIES_PALETTE[theme]?.emoji).toBeDefined();
     }
   });
 

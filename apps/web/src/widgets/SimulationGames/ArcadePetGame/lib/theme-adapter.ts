@@ -1,6 +1,17 @@
 import type { GameTheme } from '@/features/games/lib/shared-themes';
 import type { ArcadePetThemeTokens } from '../types';
 
+/**
+ * Maps a shared game theme to the ArcadePet handheld device skin.
+ *
+ * This does NOT duplicate `packages/ui/src/themeDefinitions.ts`: that file
+ * defines the app chrome themes (dark, light, neon, violet, teal), while
+ * these are the physical LCD device skins (cyberpunk, zen, underwater) keyed
+ * by game theme id. The hex values are illustration colors for the device
+ * artwork (design-token exception) and reach the DOM only through the
+ * `--arcade-*` variables minted by ArcadePetThemeProvider. Everything outside
+ * the device (panels, modals, banners) uses the app tokens.
+ */
 export function sharedThemeToArcadePet(theme: GameTheme): ArcadePetThemeTokens {
   const isCyber = theme.id === 'cyberpunk';
   const isZen = theme.id === 'zen';
@@ -62,7 +73,7 @@ export function sharedThemeToArcadePet(theme: GameTheme): ArcadePetThemeTokens {
     pixelDim: '#7d8e63',
     buttonA: theme.colors.playerPalette[0] ?? theme.colors.primary,
     buttonB: theme.colors.playerPalette[1] ?? theme.colors.accent,
-    buttonC: theme.colors.highlight ?? '#eab308',
+    buttonC: theme.colors.highlight ?? theme.colors.accent,
     accent: theme.colors.primary,
     textColor: theme.colors.text,
     glow: `rgba(0, 0, 0, 0.25)`,

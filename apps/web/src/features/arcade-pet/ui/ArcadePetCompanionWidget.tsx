@@ -12,16 +12,17 @@ import { ArcadePetSocialStage } from './ArcadePetSocialStage';
 import { ArcadePetAdoptionModal } from './ArcadePetAdoptionModal';
 import { ArcadePetGiftsModal } from './ArcadePetGiftsModal';
 import { ArcadePetCommitmentModal } from './ArcadePetCommitmentModal';
-import { THEME_PET_PALETTES, getPetFoodCost } from '../lib/arcade-pet-economy';
-import { gamesApi } from '@/features/games/api';
+import { getPetFoodCost } from '../lib/arcade-pet-economy';
+import { SPECIES_PALETTE } from '../lib/arcade-pet-palette';
 import { ArcadePetRegisterPrompt } from './ArcadePetRegisterPrompt';
 import { getPetAttention } from '../lib/arcade-pet-attention';
 import { ArcadePetCompanionHeader } from './ArcadePetCompanionHeader';
 import { ArcadePetStatusPanel } from './ArcadePetStatusPanel';
 import { ArcadePetMilestoneToast } from './ArcadePetMilestoneToast';
 import { ArcadePetDailyBonus } from './ArcadePetDailyBonus';
+import { Button, Notice } from '@arcadeum/ui';
 import { ArcadePetAwayBanner } from './ArcadePetAwayBanner';
-import { isPetFeatureDisabled } from '../lib/arcade-pet-feature-flag';
+import { useArcadePetFeatureDisabled } from '../hooks/useArcadePetFeatureDisabled';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ArcadePetCompanionWidgetProps {
@@ -64,6 +65,7 @@ export const ArcadePetCompanionWidget: React.FC<
     adoptRandomPet,
     selectActivePet,
     homeCapacity,
+    syncPending,
   } = useArcadePetStore(
     useShallow((s) => ({
       pet: s.pet,
@@ -91,6 +93,7 @@ export const ArcadePetCompanionWidget: React.FC<
       adoptRandomPet: s.adoptRandomPet,
       selectActivePet: s.selectActivePet,
       homeCapacity: s.homeCapacity,
+      syncPending: s.syncPending,
     })),
   );
 
@@ -98,33 +101,19 @@ export const ArcadePetCompanionWidget: React.FC<
   const [showGiftsModal, setShowGiftsModal] = useState(false);
   const [showRegisterPrompt, setShowRegisterPrompt] = useState(false);
   const [showCommitmentModal, setShowCommitmentModal] = useState(false);
-  const [isFeatureDisabled, setIsFeatureDisabled] = useState(false);
+  const isFeatureDisabled = useArcadePetFeatureDisabled(snapshot.accessToken);
 
   useEffect(() => {
     initialize(currentUserId, theme);
   }, [currentUserId, theme, initialize]);
 
-  useArcadePetSync(Boolean(snapshot.accessToken));
+  const { status: syncStatus, retry: retrySync } = useArcadePetSync(
+    Boolean(snapshot.accessToken),
+  );
 
   useEffect(() => {
     checkMilestones();
   }, [pets, dailyStreak, checkMilestones]);
-
-  useEffect(() => {
-    let cancelled = false;
-    gamesApi
-      .getCatalog({ token: snapshot.accessToken || undefined })
-      .then((res) => {
-        if (cancelled) return;
-        setIsFeatureDisabled(isPetFeatureDisabled(res.games));
-      })
-      .catch(() => {
-        // Fallback on network error: keep available
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [snapshot.accessToken]);
 
   if (pathname?.includes('/games/arcade-pet') || isFeatureDisabled) {
     return null;
@@ -146,10 +135,13 @@ export const ArcadePetCompanionWidget: React.FC<
           data-testid="arcade-pet-companion-trigger"
           onClick={() => setShowRegisterPrompt((prev) => !prev)}
           title={t('arcadePetCompanion.registerTriggerTitle')}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 border border-neutral-700/80 shadow-lg backdrop-blur-md text-neutral-400 opacity-80 cursor-pointer hover:border-amber-500/60 transition-all"
           aria-label={t('arcadePetCompanion.registerTriggerAria')}
+          aria-expanded={showRegisterPrompt}
+          className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] px-3 py-1.5 text-[var(--color)] opacity-80 shadow-lg backdrop-blur-md transition-all hover:border-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
         >
-          <span className="text-lg">🔒</span>
+          <span aria-hidden="true" className="text-lg">
+            🔒
+          </span>
           <span className="text-xs font-bold">
             {t('arcadePetCompanion.registerForPet')}
           </span>
@@ -168,18 +160,23 @@ export const ArcadePetCompanionWidget: React.FC<
         />
 
         <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="sm"
+            shape="round"
             data-testid="arcade-pet-companion-trigger"
+            disabled={syncPending}
             onClick={() => setShowCommitmentModal(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
             aria-label={t('arcadePetCompanion.adoptFreeAria')}
+            className="gap-2 px-3.5 disabled:cursor-wait"
           >
-            <span className="text-lg">🥚</span>
+            <span aria-hidden="true" className="text-lg">
+              🥚
+            </span>
             <span className="text-xs font-bold">
               {t('arcadePetCompanion.adoptFreeAria')} 🐾
             </span>
-          </button>
+          </Button>
         </div>
       </>
     );
@@ -198,7 +195,7 @@ export const ArcadePetCompanionWidget: React.FC<
           },
         )}`
       : t('arcadePetCompanion.toggleCompanion');
-  const themePalette = THEME_PET_PALETTES[pet.theme];
+  const themePalette = SPECIES_PALETTE[pet.theme];
 
   const speciesEmoji =
     pet.stage === 'egg'
@@ -235,13 +232,15 @@ export const ArcadePetCompanionWidget: React.FC<
       <ArcadePetGiftsModal
         open={showGiftsModal}
         onClose={() => setShowGiftsModal(false)}
+        syncStatus={syncStatus}
+        onRetrySync={retrySync}
       />
 
       <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end">
         {isWidgetOpen && (
           <div
             data-testid="arcade-pet-companion-modal"
-            className="mb-3 w-80 rounded-2xl bg-neutral-900/95 border border-neutral-700/80 p-4 shadow-2xl backdrop-blur-md text-white font-sans flex flex-col gap-3"
+            className="mb-3 w-80 rounded-2xl bg-[var(--glassBg)] border border-[var(--glassBorderStrong)] p-4 shadow-2xl backdrop-blur-md text-[var(--color)] font-sans flex flex-col gap-3 max-h-[calc(100dvh-8rem)] overflow-y-auto"
           >
             <ArcadePetCompanionHeader
               pet={pet}
@@ -257,7 +256,7 @@ export const ArcadePetCompanionWidget: React.FC<
             {pets.length > 1 && (
               <div
                 data-testid="companion-pet-selector"
-                className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 border-b border-neutral-800"
+                className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 border-b border-[var(--glassBorder)]"
               >
                 {pets.map((p, idx) => {
                   const cost = getPetFoodCost(idx);
@@ -275,33 +274,24 @@ export const ArcadePetCompanionWidget: React.FC<
                               ? '🐡'
                               : '👾';
                   return (
-                    <button
+                    <Button
                       key={p.id}
-                      type="button"
+                      variant="chip"
+                      size="sm"
+                      active={isCurrent}
+                      aria-pressed={isCurrent}
                       data-testid={`select-pet-${p.id}`}
                       onClick={() => selectActivePet(p.id)}
-                      className={`px-2 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 shrink-0 transition-colors ${
-                        isCurrent
-                          ? 'bg-indigo-600 text-white shadow-sm'
-                          : 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300'
-                      }`}
+                      className="shrink-0 gap-1 text-xs font-semibold"
                     >
-                      <span>{icon}</span>
-                      <span className="truncate max-w-[80px]">
+                      <span aria-hidden="true">{icon}</span>
+                      <span className="max-w-[80px] truncate">
                         {p.stage === 'egg'
                           ? t('arcadePetCompanion.mysteryEgg')
                           : p.name}
                       </span>
-                      <span
-                        className={`text-xs px-1 rounded ${
-                          isCurrent
-                            ? 'bg-indigo-900/60 text-amber-300'
-                            : 'text-amber-400'
-                        }`}
-                      >
-                        🪙 {cost}
-                      </span>
-                    </button>
+                      <span className="text-xs">🪙 {cost}</span>
+                    </Button>
                   );
                 })}
               </div>
@@ -342,123 +332,152 @@ export const ArcadePetCompanionWidget: React.FC<
                 />
 
                 {actionError && (
-                  <div
+                  <Notice
+                    tone="warning"
                     role="alert"
                     data-testid="pet-action-error"
-                    className="text-xs text-amber-400 font-semibold text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2"
+                    className="text-center font-semibold"
                   >
                     {t(
                       `arcadePetCompanion.errors.${actionError.code}`,
                       actionError.params,
                     )}
-                  </div>
+                  </Notice>
+                )}
+
+                {syncStatus === 'error' && (
+                  <Notice
+                    tone="info"
+                    data-testid="pet-sync-error"
+                    onDismiss={retrySync}
+                    dismissLabel={t('arcadePetCompanion.states.retry')}
+                    dismissTestId="pet-sync-retry"
+                  >
+                    {t('arcadePetCompanion.states.syncError')}
+                  </Notice>
                 )}
 
                 <div className="grid grid-cols-2 gap-2 pt-1">
-                  <button
-                    type="button"
+                  <Button
+                    variant="glass"
+                    size="sm"
                     data-testid="companion-feed-btn"
+                    disabled={syncPending}
                     onClick={() => performAction('feed_snack')}
-                    className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
+                    className="text-xs font-semibold"
                   >
-                    <span>🍰</span>{' '}
+                    <span aria-hidden="true">🍰</span>{' '}
                     {t('arcadePetCompanion.snackBtn', {
                       cost: currentFoodCost,
                     })}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="glass"
+                    size="sm"
                     data-testid="companion-praise-btn"
                     onClick={() => performAction('praise')}
-                    className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
+                    className="text-xs font-semibold"
                   >
-                    <span>❤️</span> {t('arcadePetCompanion.petBtn')}
-                  </button>
+                    <span aria-hidden="true">❤️</span>{' '}
+                    {t('arcadePetCompanion.petBtn')}
+                  </Button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 pt-1">
-                  <button
-                    type="button"
+                  <Button
+                    variant="glass"
+                    size="sm"
                     data-testid="open-adoption-modal-btn"
+                    disabled={syncPending}
                     onClick={() => setShowAdoptionModal(true)}
-                    className="py-1.5 px-2 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-300 text-xs font-semibold text-center flex items-center justify-center gap-1"
+                    className="text-xs font-semibold"
                   >
-                    <span>🥚</span>{' '}
+                    <span aria-hidden="true">🥚</span>{' '}
                     {t('arcadePetCompanion.mountsBtn', {
                       used: pets.length,
                       total: homeCapacity,
                     })}
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="glass"
+                    size="sm"
                     data-testid="open-gifts-modal-btn"
                     onClick={() => setShowGiftsModal(true)}
-                    className="py-1.5 px-2 rounded-lg bg-pink-950/80 hover:bg-pink-900 border border-pink-500/40 text-pink-300 text-xs font-semibold text-center flex items-center justify-center gap-1 relative"
+                    className="text-xs font-semibold"
                   >
-                    <span>🎁</span> {t('arcadePetCompanion.presentsBtn')}
+                    <span aria-hidden="true">🎁</span>{' '}
+                    {t('arcadePetCompanion.presentsBtn')}
                     {unopenedCount > 0 && (
-                      <span className="w-2 h-2 rounded-full bg-pink-500 animate-ping absolute top-1 right-1" />
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-1 top-1 h-2 w-2 animate-ping rounded-full bg-[var(--primary)] motion-reduce:animate-none"
+                      />
                     )}
-                  </button>
+                  </Button>
                 </div>
 
-                <button
-                  type="button"
+                <Button
+                  variant="glass"
+                  size="sm"
+                  fullWidth
                   data-testid="arcade-pet-home-toggle-btn"
                   onClick={toggleHome}
-                  className="w-full py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1.5"
+                  className="text-xs font-semibold"
                 >
-                  <span>🏠</span>
-                  <span>
-                    {isAtHome
-                      ? t('arcadePetCompanion.callOutside')
-                      : t('arcadePetCompanion.sendHome')}
-                  </span>
-                </button>
+                  <span aria-hidden="true">🏠</span>{' '}
+                  {isAtHome
+                    ? t('arcadePetCompanion.callOutside')
+                    : t('arcadePetCompanion.sendHome')}
+                </Button>
 
                 <Link
                   href={petGameHref}
                   className="w-full mt-1 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase text-center tracking-wide block"
                 >
-                  Open Game Room →
+                  {t('arcadePetCompanion.openGameRoom')}
                 </Link>
               </>
             )}
           </div>
         )}
 
-        <button
-          type="button"
+        <Button
+          variant="glass"
+          size="sm"
+          shape="round"
           data-testid="arcade-pet-companion-trigger"
           onClick={toggleWidget}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-neutral-900/90 hover:bg-neutral-800 border border-indigo-500/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           aria-label={triggerLabel}
+          aria-expanded={isWidgetOpen}
+          className="gap-2 px-3"
         >
-          <span className="text-lg">{speciesEmoji}</span>
+          <span aria-hidden="true" className="text-lg">
+            {speciesEmoji}
+          </span>
           <span className="text-xs font-bold hidden sm:inline">
             {pet.stage === 'egg'
               ? t('arcadePetCompanion.mysteryEgg')
               : pet.name}
           </span>
           {isAtHome && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-xs text-amber-200 font-semibold">
+            <span className="px-1.5 py-0.2 rounded-full border border-[var(--warning)] text-xs font-semibold">
               {t('arcadePetCompanion.homeBadge')}
             </span>
           )}
           {unopenedCount > 0 ? (
-            <span className="px-1.5 py-0.2 rounded-full bg-pink-500 text-white text-xs font-bold">
+            <span className="px-1.5 py-0.2 rounded-full bg-[var(--primary)] text-[var(--primaryText)] text-xs font-bold">
               🎁 {unopenedCount}
             </span>
           ) : attention.length > 0 ? (
             <span
               data-testid="pet-attention-indicator"
               aria-hidden="true"
-              className="w-2 h-2 rounded-full bg-red-500 animate-pulse"
+              className="w-2 h-2 rounded-full bg-[var(--danger)] animate-pulse motion-reduce:animate-none"
             />
           ) : !isAtHome ? (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--success)] animate-pulse motion-reduce:animate-none" />
           ) : null}
-        </button>
+        </Button>
       </div>
     </>
   );

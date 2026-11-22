@@ -7,19 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add ArcadePet QA e2e spec with a real-backend fixture (ARC-1046)
+- add ArcadePet accessibility unit and e2e specs (ARC-1047)
+
+### Changed
+
+- polish ArcadePet web UI: accessible modals and tabs, shared Notice and TabBar components, theme and LCD fixes (ARC-1047)
+- add reduced-motion safe booth and sprite styles and a live "now" hook for pet timers (ARC-1047)
+
+### Fixed
+
+- stop ArcadePet milestones paying twice and a first adoption being erased by the initial server sync, and block adoption while that pull is pending (ARC-1046)
+
 ## [1.31.2] - 2026-11-22
 
 ### Added
+
 - stop minting treats on the client and send idempotent action ids
 - server-verified treats, flag gating, idempotent actions and HTTP error codes
 
 ### Fixed
+
 - keep the feature flag on for e2e runs on a production build
 - apply review findings on treat award race and flag defaults
 
 ### Documentation
-- note ArcadePet backend hardening
 
+- note ArcadePet backend hardening
 
 ## [1.31.1] - 2026-11-22
 

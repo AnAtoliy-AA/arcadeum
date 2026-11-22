@@ -35,7 +35,6 @@ export function getMessages(_locale: Locale): TranslationBundle {
     battlePass: {} as never,
     musicPlayer: {} as never,
     wallet: {} as never,
-    arcadePetCompanion: {} as never,
   };
 }
 

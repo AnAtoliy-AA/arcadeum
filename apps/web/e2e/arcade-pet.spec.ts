@@ -43,7 +43,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     const cyberpunkButton = page.getByRole('button', { name: /Cyberpunk/i });
     await cyberpunkButton.click();
-    await expect(cyberpunkButton).toHaveClass(/bg-indigo-600/);
+    await expect(cyberpunkButton).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('should show disabled pet button with register prompt for guest player', async ({
@@ -414,7 +414,10 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(page.getByTestId('home-full-banner')).not.toBeVisible();
     await expect(page.getByTestId('adopt-random-btn')).not.toBeDisabled();
 
-    await page.getByTestId('close-adoption-modal-btn').click();
+    await page
+      .getByTestId('arcade-pet-adoption-modal')
+      .getByTestId('modal-close-button')
+      .click();
 
     const stage = page.getByTestId('arcade-pet-social-stage');
     await expect(stage).toBeVisible();

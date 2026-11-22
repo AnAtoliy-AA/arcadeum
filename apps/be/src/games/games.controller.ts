@@ -149,6 +149,8 @@ export class GamesController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('aiVsAi') aiVsAi?: string,
+    @Query('openSeats') openSeats?: string,
+    @Query('hasBots') hasBots?: string,
   ): Promise<Awaited<ReturnType<GamesService['listRooms']>>> {
     const user = req.user as AuthenticatedUser | undefined | null;
     const statusFilters = parseStatusFilters(statusParam);
@@ -167,6 +169,8 @@ export class GamesController {
       visibility: visibilityFilters.length ? visibilityFilters : undefined,
       participation: participationFilter,
       aiVsAi: aiVsAi === 'true',
+      openSeats: openSeats === 'true',
+      hasBots: hasBots === 'true',
       page: pageNum,
       limit: limitNum,
     });

@@ -10,7 +10,8 @@ import type {
   GamesAiVsAiFilter,
 } from '../types';
 import { STATUS_VALUES } from '../types';
-import { SearchInput } from '@arcadeum/ui';
+import { SearchInput, FilterChip } from '@arcadeum/ui';
+import { GameFilterSelect } from './GameFilterSelect';
 import { StatusDropdown } from './StatusDropdown';
 import { CategoryDropdown } from './CategoryDropdown';
 import { ParticipationMenu } from './ParticipationMenu';
@@ -30,6 +31,13 @@ export interface GamesFiltersProps {
   onAiVsAiChange: (filter: GamesAiVsAiFilter) => void;
   canFilterParticipation: boolean;
   onClearAll?: () => void;
+  /** Game picker is shown only when provided (hidden on game-scoped pages). */
+  gameFilter?: string;
+  onGameChange?: (gameId: string) => void;
+  openSeatsOnly?: boolean;
+  onOpenSeatsChange?: (value: boolean) => void;
+  botRoomsOnly?: boolean;
+  onBotRoomsChange?: (value: boolean) => void;
 }
 
 export function GamesFilters({
@@ -45,6 +53,12 @@ export function GamesFilters({
   onAiVsAiChange,
   canFilterParticipation,
   onClearAll,
+  gameFilter,
+  onGameChange,
+  openSeatsOnly = false,
+  onOpenSeatsChange,
+  botRoomsOnly = false,
+  onBotRoomsChange,
 }: GamesFiltersProps) {
   const isMounted = useIsMounted();
   const { t } = useTranslation();
@@ -63,7 +77,10 @@ export function GamesFilters({
     (hasCategory ? 1 : 0) +
     (hasStatus ? 1 : 0) +
     (hasAi ? 1 : 0) +
-    (hasParticipation ? 1 : 0);
+    (hasParticipation ? 1 : 0) +
+    (gameFilter ? 1 : 0) +
+    (openSeatsOnly ? 1 : 0) +
+    (botRoomsOnly ? 1 : 0);
 
   const handleClearAll = useCallback(() => {
     if (onClearAll) {
@@ -74,6 +91,9 @@ export function GamesFilters({
       onStatusChange([]);
       onAiVsAiChange('all');
       onParticipationChange('all');
+      onGameChange?.('');
+      onOpenSeatsChange?.(false);
+      onBotRoomsChange?.(false);
     }
   }, [
     onClearAll,
@@ -82,6 +102,9 @@ export function GamesFilters({
     onStatusChange,
     onAiVsAiChange,
     onParticipationChange,
+    onGameChange,
+    onOpenSeatsChange,
+    onBotRoomsChange,
   ]);
 
   return (
@@ -106,7 +129,14 @@ export function GamesFilters({
           />
         </div>
 
-        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 overflow-visible shrink-0">
+        <div className="flex flex-wrap items-center gap-2 overflow-visible">
+          {onGameChange && (
+            <GameFilterSelect
+              value={gameFilter ?? ''}
+              onChange={onGameChange}
+            />
+          )}
+
           <StatusDropdown
             statusFilter={statusFilter}
             onStatusChange={onStatusChange}
@@ -122,6 +152,25 @@ export function GamesFilters({
             onChange={onParticipationChange}
             canFilter={canFilterParticipation}
           />
+
+          {onOpenSeatsChange && (
+            <FilterChip
+              active={openSeatsOnly}
+              onClick={() => onOpenSeatsChange(!openSeatsOnly)}
+              data-testid="rooms-filter-open-seats"
+            >
+              {t('roomsBrowser.openSeats')}
+            </FilterChip>
+          )}
+          {onBotRoomsChange && (
+            <FilterChip
+              active={botRoomsOnly}
+              onClick={() => onBotRoomsChange(!botRoomsOnly)}
+              data-testid="rooms-filter-bot-rooms"
+            >
+              {t('roomsBrowser.botRooms')}
+            </FilterChip>
+          )}
 
           <button
             type="button"
@@ -143,7 +192,7 @@ export function GamesFilters({
 
           <div
             className={cx(
-              'w-[115px] shrink-0 flex items-center justify-end transition-opacity duration-200',
+              'min-w-[115px] shrink-0 flex items-center justify-end transition-opacity duration-200',
               activeCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none',
             )}
           >

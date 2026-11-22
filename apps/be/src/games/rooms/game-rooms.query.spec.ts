@@ -124,4 +124,30 @@ describe('GameRoomsQueryBuilder', () => {
     const query = build({ status: 'all' });
     expect(query.status).toBeUndefined();
   });
+
+  it('adds an open-seats expression when openSeats is set', () => {
+    const query = build({ openSeats: true });
+
+    expect(query.$and).toHaveLength(1);
+    expect(query.$and?.[0]).toHaveProperty('$expr');
+  });
+
+  it('adds a bot participant match when hasBots is set', () => {
+    const query = build({ hasBots: true });
+
+    expect(query.$and).toEqual([
+      { participants: { $elemMatch: { userId: { $regex: /^bot-/ } } } },
+    ]);
+  });
+
+  it('keeps search/anon $and alongside seat and bot filters', () => {
+    const query = build({
+      userId: 'anon_abc123',
+      search: 'chess',
+      openSeats: true,
+      hasBots: true,
+    });
+
+    expect(query.$and).toHaveLength(4);
+  });
 });

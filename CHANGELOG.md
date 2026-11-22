@@ -7,17 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
+## [1.31.2] - 2026-11-22
 
-- award pet treats on the server from verified match results and stop accepting treat increases from clients (ARC-1046)
-- gate ArcadePet REST routes and the socket start event behind the arcade_pet_v1 catalog flag, default off in production (ARC-1046)
-- make pet economy actions idempotent with a client actionId and return real HTTP codes (400/402/404/409) for rejections (ARC-1046)
-- add schemaVersion with migration to stored and local pet collections (ARC-1046)
+### Added
+- stop minting treats on the client and send idempotent action ids
+- server-verified treats, flag gating, idempotent actions and HTTP error codes
 
 ### Fixed
+- keep the feature flag on for e2e runs on a production build
+- apply review findings on treat award race and flag defaults
 
-- stop treat awards from burning their idempotency key when the stock fills concurrently (ARC-1046)
-- stop grantPresent from reporting a full inbox when it loses a race with a first write (ARC-1046)
+### Documentation
+- note ArcadePet backend hardening
+
 
 ## [1.31.1] - 2026-11-22
 

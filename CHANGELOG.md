@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.31.9] - 2026-11-22
 
-- be(auth): accept a just-rotated refresh token for a short grace window (`REFRESH_TOKEN_GRACE_SECONDS`, default 30s) instead of revoking all sessions
-- be(auth): `/auth/token` no longer sets session cookies; `/auth/refresh` prefers the cookie token over the body token
-- be(auth): resolve the auth cookie domain from `COOKIE_DOMAIN` or `X-Forwarded-Host` so it is `.arcadeum.games` behind a proxy
+### Fixed
+- stop Google login reverting to anon (refresh grace, token cookies, cookie domain)
+
+### Refactored
+- shared lobby config layer and split oversized lobby files
+
 
 ## [1.31.8] - 2026-11-22
 

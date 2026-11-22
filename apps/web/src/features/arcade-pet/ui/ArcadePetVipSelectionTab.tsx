@@ -67,7 +67,7 @@ export function ArcadePetVipSelectionTab({
               }`}
             >
               <span className="text-2xl">{spec.emoji}</span>
-              <span className="text-[10px]">
+              <span className="text-xs">
                 {t(`arcadePetCompanion.gifts.species.${spec.id}`)}
               </span>
             </button>
@@ -93,7 +93,7 @@ export function ArcadePetVipSelectionTab({
               }`}
             >
               <span className="text-base">{theme.emoji}</span>
-              <span className="text-[11px] truncate">{theme.title}</span>
+              <span className="text-xs truncate">{theme.title}</span>
             </button>
           ))}
         </div>

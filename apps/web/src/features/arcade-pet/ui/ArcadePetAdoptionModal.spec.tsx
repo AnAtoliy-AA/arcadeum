@@ -84,8 +84,8 @@ describe('ArcadePetAdoptionModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('shows the dev-only bonus gems button outside production', () => {
+  it('never offers free gems', () => {
     render(<ArcadePetAdoptionModal open onClose={onClose} />);
-    expect(screen.getByTestId('add-bonus-gems-btn')).toBeInTheDocument();
+    expect(screen.queryByTestId('add-bonus-gems-btn')).not.toBeInTheDocument();
   });
 });

@@ -43,18 +43,18 @@ export const ArcadePetCompanionHeader: React.FC<
               <ArcadePetRenameField name={pet.name} onRename={onRename} />
             )}
             {pet.stage === 'egg' ? (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-amber-300">
+              <span className="text-xs px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-amber-300">
                 🥚 {t('arcadePetCompanion.mystery')}
               </span>
             ) : (
               themePalette && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
+                <span className="text-xs px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
                   {themePalette.emoji} {themePalette.title}
                 </span>
               )
             )}
           </div>
-          <span className="text-[10px] text-neutral-400 uppercase tracking-wider">
+          <span className="text-xs text-neutral-400 uppercase tracking-wider">
             {pet.stage === 'egg'
               ? t('arcadePetCompanion.incubating')
               : t('arcadePetCompanion.levelOwned', {
@@ -67,14 +67,14 @@ export const ArcadePetCompanionHeader: React.FC<
       </div>
       <div className="flex items-center gap-1.5">
         <div
-          className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-950 border border-amber-500/40 text-[11px] font-bold text-amber-300"
+          className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-950 border border-amber-500/40 text-xs font-bold text-amber-300"
           title={t('arcadePetCompanion.coins')}
         >
           <span>🪙</span>
           <span data-testid="companion-coin-balance">{coinBalance}</span>
         </div>
         <div
-          className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-[11px] font-bold text-indigo-300"
+          className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-xs font-bold text-indigo-300"
           title={t('arcadePetCompanion.gems')}
         >
           <span>💎</span>

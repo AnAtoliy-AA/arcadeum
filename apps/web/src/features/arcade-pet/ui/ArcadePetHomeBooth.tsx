@@ -69,7 +69,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
             <span>{t('arcadePetCompanion.knockTitle')}</span>
             <span>🚪</span>
           </div>
-          <span className="text-[10px] text-neutral-200 font-medium">
+          <span className="text-xs text-neutral-200 font-medium">
             {t('arcadePetCompanion.knockLine', {
               name: knockerName || t('arcadePetCompanion.friendPet'),
             })}
@@ -78,7 +78,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
             type="button"
             data-testid="open-door-and-play-btn"
             onClick={onOpenDoor}
-            className="mt-0.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-[10px] uppercase shadow-md transition-transform transform hover:scale-105 active:scale-95"
+            className="mt-0.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs uppercase shadow-md transition-transform transform hover:scale-105 active:scale-95"
           >
             {t('arcadePetCompanion.openDoor')}
           </button>
@@ -88,7 +88,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
       {isAtHome && !isKnocked && (
         <div
           data-testid="arcade-pet-sleeping-bubble"
-          className={`mb-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-amber-500/40 text-[10px] text-amber-200 flex items-center gap-1 shadow ${styles.sleepingZzz}`}
+          className={`mb-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-amber-500/40 text-xs text-amber-200 flex items-center gap-1 shadow ${styles.sleepingZzz}`}
         >
           <span>💤</span>
           <span>{t('arcadePetCompanion.resting')}</span>
@@ -117,7 +117,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           <span aria-hidden="true">⠿</span>
         </button>
         <div className="absolute -top-3 right-2 flex flex-col items-center pointer-events-none">
-          <span className={`text-[10px] text-neutral-400 ${styles.smokePuff}`}>
+          <span className={`text-xs text-neutral-400 ${styles.smokePuff}`}>
             💨
           </span>
           <div className="w-2 h-3 bg-neutral-800 border border-neutral-600 rounded-t-sm" />
@@ -155,7 +155,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
                 </div>
               </div>
             ) : (
-              <div className="text-[10px] text-amber-500/60 font-mono select-none">
+              <div className="text-xs text-amber-500/60 font-mono select-none">
                 🚪
               </div>
             )}

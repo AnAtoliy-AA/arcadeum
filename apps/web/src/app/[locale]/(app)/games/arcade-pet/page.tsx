@@ -6,7 +6,10 @@ import { JsonLd } from '@/shared/ui/JsonLd';
 import { buildPageMetadata } from '@/shared/seo/buildPageMetadata';
 import { buildGameLandingJsonLd } from '@/shared/seo/buildGameLandingJsonLd';
 import { isGameComingSoon } from '@/features/games/api.server';
-import ArcadePetLanding from './ArcadePetLanding';
+import { landingEn } from '@/shared/i18n/messages/arcade-pet-companion-landing';
+import ArcadePetLanding, {
+  type ArcadePetLandingCopy,
+} from './ArcadePetLanding';
 
 export const dynamic = 'force-static';
 export const revalidate = 300;
@@ -27,6 +30,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   const locale = resolveLocale(rawLocale);
+  const messages = await getTranslations(locale);
   const base = await buildPageMetadata({ locale, page: 'arcadePetLanding' });
   return {
     ...base,
@@ -37,7 +41,7 @@ export async function generateMetadata({
           url: `${appConfig.siteUrl}/${locale}/games/arcade-pet/opengraph-image`,
           width: 1200,
           height: 630,
-          alt: 'ArcadePet - Free Virtual Pet Simulation on Arcadeum',
+          alt: (messages.arcadePetCompanion?.landing ?? landingEn).ogAlt,
         },
       ],
     },
@@ -77,6 +81,11 @@ export default async function ArcadePetLandingRoute({ params }: PageProps) {
     },
   });
 
+  // Locale files are partial (fall back to English per missing key).
+  const copy: ArcadePetLandingCopy = {
+    ...landingEn,
+    ...messages.arcadePetCompanion?.landing,
+  };
   const comingSoon = await isGameComingSoon(ARCADE_PET_SLUG);
 
   return (
@@ -85,6 +94,7 @@ export default async function ArcadePetLandingRoute({ params }: PageProps) {
       <ArcadePetLanding
         gameName={gameName}
         description={description}
+        copy={copy}
         comingSoon={comingSoon}
       />
     </>

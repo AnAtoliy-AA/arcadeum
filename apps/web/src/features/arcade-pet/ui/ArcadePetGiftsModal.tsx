@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
+import { useShallow } from 'zustand/react/shallow';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
@@ -29,8 +30,14 @@ export function ArcadePetGiftsModal({
   onClose,
 }: ArcadePetGiftsModalProps) {
   const { t } = useTranslation();
-  const { presents, gemBalance, claimPresent, sendGiftPet } =
-    useArcadePetStore();
+  const { presents, gemBalance, claimPresent, sendGiftPet } = useArcadePetStore(
+    useShallow((s) => ({
+      presents: s.presents,
+      gemBalance: s.gemBalance,
+      claimPresent: s.claimPresent,
+      sendGiftPet: s.sendGiftPet,
+    })),
+  );
   const { snapshot } = useSessionTokens();
   const isAdmin = snapshot.role === 'admin';
 
@@ -93,6 +100,10 @@ export function ArcadePetGiftsModal({
         );
       } else if (result.error === 'RECIPIENT_NOT_FOUND') {
         setErrorMsg(t('arcadePetCompanion.gifts.errRecipient'));
+      } else if (result.error === 'INBOX_FULL') {
+        setErrorMsg(t('arcadePetCompanion.gifts.errInbox'));
+      } else if (result.error === 'OFFLINE') {
+        setErrorMsg(t('arcadePetCompanion.gifts.errOffline'));
       } else {
         setErrorMsg(t('arcadePetCompanion.gifts.errSend'));
       }
@@ -160,7 +171,7 @@ export function ArcadePetGiftsModal({
           >
             <span>{t('arcadePetCompanion.gifts.takePresents')}</span>
             {unopenedCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-pink-500 text-white text-[10px] font-bold">
+              <span className="px-1.5 py-0.5 rounded-full bg-pink-500 text-white text-xs font-bold">
                 {unopenedCount}
               </span>
             )}
@@ -231,12 +242,12 @@ export function ArcadePetGiftsModal({
                             <span className="text-xs font-bold text-white flex items-center gap-1.5">
                               {present.petName}
                               {palette && (
-                                <span className="text-[10px] px-1.5 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
+                                <span className="text-xs px-1.5 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
                                   {palette.emoji} {palette.title}
                                 </span>
                               )}
                             </span>
-                            <span className="text-[11px] text-pink-300 font-semibold flex items-center gap-1.5">
+                            <span className="text-xs text-pink-300 font-semibold flex items-center gap-1.5">
                               {t('arcadePetCompanion.gifts.from', {
                                 name: present.senderName,
                               })}
@@ -250,7 +261,7 @@ export function ArcadePetGiftsModal({
                               )}
                             </span>
                             {present.message && (
-                              <span className="text-[10px] text-neutral-400 italic">
+                              <span className="text-xs text-neutral-400 italic">
                                 &ldquo;{present.message}&rdquo;
                               </span>
                             )}
@@ -258,7 +269,7 @@ export function ArcadePetGiftsModal({
                         </div>
 
                         {present.isOpened ? (
-                          <span className="text-[11px] text-neutral-500 px-3 py-1 rounded bg-neutral-900">
+                          <span className="text-xs text-neutral-500 px-3 py-1 rounded bg-neutral-900">
                             {t('arcadePetCompanion.gifts.opened')}
                           </span>
                         ) : (
@@ -327,7 +338,7 @@ export function ArcadePetGiftsModal({
                       }`}
                     >
                       <span className="text-xl">{spec.emoji}</span>
-                      <span className="text-[10px]">
+                      <span className="text-xs">
                         {t(`arcadePetCompanion.gifts.species.${spec.id}`)}
                       </span>
                     </button>
@@ -353,7 +364,7 @@ export function ArcadePetGiftsModal({
                       }`}
                     >
                       <span className="text-base">{pal.emoji}</span>
-                      <span className="text-[11px] truncate">{pal.title}</span>
+                      <span className="text-xs truncate">{pal.title}</span>
                     </button>
                   ))}
                 </div>

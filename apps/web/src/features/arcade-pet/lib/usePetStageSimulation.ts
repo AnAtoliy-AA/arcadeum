@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { usePageVisible } from './usePageVisible';
+import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 import type { PetSpecies } from '@arcadeum/games-core';
 import {
   computeNextStep,
@@ -47,7 +48,10 @@ export function usePetStageSimulation({
   const localBehavior = getSpeciesBehavior(localSpecies);
   const remoteBehavior = getSpeciesBehavior(remoteSpecies);
 
-  const isPageVisible = usePageVisible();
+  // Ambient walking pauses in background tabs and for reduced-motion users.
+  const pageVisible = usePageVisible();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isPageVisible = pageVisible && !prefersReducedMotion;
   const [sim, setSim] = useState<PetSimState>(() => {
     const initialLocalTarget = pickSpeciesTarget(localSpecies, 2, 1);
     const initialRemoteTarget = pickSpeciesTarget(remoteSpecies, 6, 2);

@@ -20,7 +20,7 @@ export const ArcadePetAwayBanner: React.FC<ArcadePetAwayBannerProps> = ({
     <div
       role="status"
       data-testid="pet-away-summary"
-      className="text-[11px] text-sky-200 text-center bg-sky-950/40 border border-sky-500/30 rounded py-1.5 px-2 flex flex-col gap-1"
+      className="text-xs text-sky-200 text-center bg-sky-950/40 border border-sky-500/30 rounded py-1.5 px-2 flex flex-col gap-1"
     >
       <span>
         {t('arcadePetCompanion.awaySummary', {
@@ -37,7 +37,7 @@ export const ArcadePetAwayBanner: React.FC<ArcadePetAwayBannerProps> = ({
         type="button"
         data-testid="pet-away-summary-dismiss"
         onClick={onDismiss}
-        className="self-center px-2 py-0.5 rounded-full border border-sky-400/50 font-bold text-[10px] uppercase"
+        className="self-center px-2 py-0.5 rounded-full border border-sky-400/50 font-bold text-xs uppercase"
       >
         {t('arcadePetCompanion.awayDismiss')}
       </button>

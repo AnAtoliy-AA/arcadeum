@@ -1,4 +1,4 @@
-import type { PetSpecies } from '@arcadeum/games-core';
+import type { PetGiftPresentPayload } from '@arcadeum/games-core';
 
 export interface ThemePetPalette {
   id: string;
@@ -160,17 +160,8 @@ export const THEME_PET_PALETTES: Record<string, ThemePetPalette> = {
 
 export const ALL_THEME_IDS = Object.keys(THEME_PET_PALETTES);
 
-export interface PetGiftPresent {
-  id: string;
-  senderId: string;
-  senderName: string;
-  species: PetSpecies;
-  theme: string;
-  petName: string;
-  message?: string;
-  createdAt: number;
-  isOpened: boolean;
-}
+/** Same shape the server stores and sends; single definition in games-core. */
+export type PetGiftPresent = PetGiftPresentPayload;
 
 export {
   DEFAULT_HOME_CAPACITY,

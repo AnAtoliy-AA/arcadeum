@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/shared/i18n/useLanguage';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useShallow } from 'zustand/react/shallow';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import { useArcadePetSync } from '../hooks/useArcadePetSync';
 import { ArcadePetSocialStage } from './ArcadePetSocialStage';
@@ -63,7 +64,35 @@ export const ArcadePetCompanionWidget: React.FC<
     adoptRandomPet,
     selectActivePet,
     homeCapacity,
-  } = useArcadePetStore();
+  } = useArcadePetStore(
+    useShallow((s) => ({
+      pet: s.pet,
+      pets: s.pets,
+      gemBalance: s.gemBalance,
+      coinBalance: s.coinBalance,
+      actionError: s.actionError,
+      awaySummary: s.awaySummary,
+      dismissAwaySummary: s.dismissAwaySummary,
+      dailyStreak: s.dailyStreak,
+      lastDailyClaimDay: s.lastDailyClaimDay,
+      claimDailyBonus: s.claimDailyBonus,
+      renamePet: s.renamePet,
+      newMilestones: s.newMilestones,
+      dismissMilestones: s.dismissMilestones,
+      checkMilestones: s.checkMilestones,
+      presents: s.presents,
+      isWidgetOpen: s.isWidgetOpen,
+      isAtHome: s.isAtHome,
+      initialize: s.initialize,
+      performAction: s.performAction,
+      toggleWidget: s.toggleWidget,
+      setWidgetOpen: s.setWidgetOpen,
+      toggleHome: s.toggleHome,
+      adoptRandomPet: s.adoptRandomPet,
+      selectActivePet: s.selectActivePet,
+      homeCapacity: s.homeCapacity,
+    })),
+  );
 
   const [showAdoptionModal, setShowAdoptionModal] = useState(false);
   const [showGiftsModal, setShowGiftsModal] = useState(false);
@@ -264,7 +293,7 @@ export const ArcadePetCompanionWidget: React.FC<
                           : p.name}
                       </span>
                       <span
-                        className={`text-[10px] px-1 rounded ${
+                        className={`text-xs px-1 rounded ${
                           isCurrent
                             ? 'bg-indigo-900/60 text-amber-300'
                             : 'text-amber-400'
@@ -316,7 +345,7 @@ export const ArcadePetCompanionWidget: React.FC<
                   <div
                     role="alert"
                     data-testid="pet-action-error"
-                    className="text-[11px] text-amber-400 font-semibold text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2"
+                    className="text-xs text-amber-400 font-semibold text-center bg-amber-950/40 border border-amber-500/30 rounded py-1 px-2"
                   >
                     {t(
                       `arcadePetCompanion.errors.${actionError.code}`,
@@ -412,12 +441,12 @@ export const ArcadePetCompanionWidget: React.FC<
               : pet.name}
           </span>
           {isAtHome && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-[10px] text-amber-200 font-semibold">
+            <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 border border-amber-400/50 text-xs text-amber-200 font-semibold">
               {t('arcadePetCompanion.homeBadge')}
             </span>
           )}
           {unopenedCount > 0 ? (
-            <span className="px-1.5 py-0.2 rounded-full bg-pink-500 text-white text-[10px] font-bold">
+            <span className="px-1.5 py-0.2 rounded-full bg-pink-500 text-white text-xs font-bold">
               🎁 {unopenedCount}
             </span>
           ) : attention.length > 0 ? (

@@ -7,12 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- ArcadePet collection sync now merges only whitelisted client fields (identity, growth, xp, level and stage stay server-side) and treat stock is validated
+- ArcadePet gifts: deterministic gift ids, delivery before debit, inbox cap, per-route throttling and sanitized messages
+- ArcadePet economy rejections use a typed `ok`/`error` union with `CONTENTION` and `INBOX_FULL` codes
+
+### Fixed
+
+- fix ArcadePet e2e specs seeding pets that the loader rejected (missing `lastInteractedAt`), which failed Web E2E chromium shards 1 and 2
+- keep the welcome present for users who receive a gift before adopting
+- instant adult adoption no longer demotes to baby after the first decay tick
+- daily bonus cannot be claimed twice when the stored claim day is in the future
+- ArcadePet landing, controls and admin bulk rewards copy is translated in all locales
+
+### Changed
+
+- ArcadePet landing is a Server Component with a small client theme showcase
+- remove the dev-only free gems button and the offline fake gift; gifts need a server connection
+- bulk pet rewards deliver a claimable present only and validate the species up front
+- respect reduced motion for the ArcadePet stage walk
+
+### Added
+
+- ArcadePet controller, gateway, DTO, merge and economy edge-case tests plus a locale parity test and an e2e for rejected gifts
+
 ## [1.30.116] - 2026-11-22
 
 ### Fixed
+
 - scope backdrop-filter override to WebKit so chromium keeps the effect
 - stop Linux WebKit memory runaway from backdrop-filter in e2e builds
-
 
 ## [1.30.115] - 2026-11-22
 

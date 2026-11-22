@@ -87,8 +87,6 @@ export interface ArcadePetStoreState {
     isAdmin?: boolean,
   ) => Promise<SendGiftResult>;
   buyGameTheme: (themeId: string) => void;
-  addGems: (amount: number) => void;
-  addCoins: (amount: number) => void;
   applyServerCollection: (server: ArcadePetCollectionResponse) => void;
   renamePet: (
     petId: string,

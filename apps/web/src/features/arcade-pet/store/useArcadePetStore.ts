@@ -311,24 +311,6 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     });
   },
 
-  addGems: (amount) => {
-    const nextGems = Math.max(0, get().gemBalance + amount);
-    set({ gemBalance: nextGems });
-    persistStore({
-      ...get(),
-      gemBalance: nextGems,
-    });
-  },
-
-  addCoins: (amount) => {
-    const nextCoins = Math.max(0, get().coinBalance + amount);
-    set({ coinBalance: nextCoins });
-    persistStore({
-      ...get(),
-      coinBalance: nextCoins,
-    });
-  },
-
   applyServerCollection: (server) => {
     set(buildServerPatch(get(), server));
     persistStore(get());

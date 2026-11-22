@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useShallow } from 'zustand/react/shallow';
 import { useArcadePetStore } from '../store/useArcadePetStore';
 import {
   getHomeUpgradeCost,
@@ -14,9 +15,6 @@ import {
 } from '../lib/arcade-pet-economy';
 import { ArcadePetCollectionList } from './ArcadePetCollectionList';
 import { ArcadePetVipSelectionTab } from './ArcadePetVipSelectionTab';
-
-/** Free gems are a development convenience only; never shown in production. */
-const SHOW_DEV_GEM_GRANT = process.env.NODE_ENV !== 'production';
 
 interface ArcadePetAdoptionModalProps {
   open: boolean;
@@ -39,9 +37,20 @@ export function ArcadePetAdoptionModal({
     adoptSelectedPet,
     upgradeHome,
     selectActivePet,
-    addGems,
-    serverBacked,
-  } = useArcadePetStore();
+  } = useArcadePetStore(
+    useShallow((s) => ({
+      gemBalance: s.gemBalance,
+      adoptionCount: s.adoptionCount,
+      homeCapacity: s.homeCapacity,
+      pets: s.pets,
+      activePetId: s.activePetId,
+      queuedThemeForNextPet: s.queuedThemeForNextPet,
+      adoptRandomPet: s.adoptRandomPet,
+      adoptSelectedPet: s.adoptSelectedPet,
+      upgradeHome: s.upgradeHome,
+      selectActivePet: s.selectActivePet,
+    })),
+  );
 
   const [activeTab, setActiveTab] = useState<
     'random' | 'select' | 'collection'
@@ -295,7 +304,7 @@ export function ArcadePetAdoptionModal({
                   })}
                 </span>
               </div>
-              <p className="text-[11px] text-neutral-300">
+              <p className="text-xs text-neutral-300">
                 {t('arcadePetCompanion.adoption.homeFullHint')}
               </p>
               <div className="flex items-center justify-center gap-2">
@@ -373,7 +382,7 @@ export function ArcadePetAdoptionModal({
                 <span className="font-bold text-neutral-300 block">
                   {t('arcadePetCompanion.adoption.progressionTitle')}
                 </span>
-                <div className="grid grid-cols-5 gap-2 text-center text-[11px]">
+                <div className="grid grid-cols-5 gap-2 text-center text-xs">
                   {[
                     {
                       label: t('arcadePetCompanion.adoption.tier1'),
@@ -421,7 +430,7 @@ export function ArcadePetAdoptionModal({
                   <span className="font-bold text-neutral-300 block">
                     {t('arcadePetCompanion.adoption.themesTitle')}
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300 font-semibold">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-950 border border-indigo-500/40 text-indigo-300 font-semibold">
                     {t('arcadePetCompanion.adoption.themesBadge')}
                   </span>
                 </div>
@@ -436,11 +445,11 @@ export function ArcadePetAdoptionModal({
                       >
                         <div className="flex items-center gap-1.5">
                           <span className="text-base">{pal.emoji}</span>
-                          <span className="font-bold text-white text-[11px] truncate">
+                          <span className="font-bold text-white text-xs truncate">
                             {pal.title}
                           </span>
                         </div>
-                        <span className="text-[10px] text-indigo-300 font-medium truncate">
+                        <span className="text-xs text-indigo-300 font-medium truncate">
                           ⭐ {signature.name}
                         </span>
                         <span className="text-[9px] text-neutral-400 line-clamp-1">
@@ -451,20 +460,6 @@ export function ArcadePetAdoptionModal({
                   })}
                 </div>
               </div>
-
-              {SHOW_DEV_GEM_GRANT && !serverBacked && (
-                <div className="flex items-center justify-between text-xs text-neutral-400 pt-1">
-                  <span>{t('arcadePetCompanion.adoption.needGems')}</span>
-                  <button
-                    type="button"
-                    data-testid="add-bonus-gems-btn"
-                    onClick={() => addGems(100)}
-                    className="px-3 py-1 rounded-lg bg-indigo-900/50 hover:bg-indigo-800 border border-indigo-500/40 text-indigo-300 font-semibold"
-                  >
-                    {t('arcadePetCompanion.adoption.bonusGems')}
-                  </button>
-                </div>
-              )}
             </div>
           )}
 

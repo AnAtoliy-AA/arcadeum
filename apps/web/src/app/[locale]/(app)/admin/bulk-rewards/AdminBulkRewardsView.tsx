@@ -2,11 +2,20 @@
 
 import { useState, useTransition } from 'react';
 import { Button, GlassCard, Input } from '@arcadeum/ui';
+import { ALL_SPECIES } from '@arcadeum/games-core';
 import { sendBulkRewardsAction } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { BulkRewardResult } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { adminBulkRewardsEn } from '@/shared/i18n/messages/pages/admin-bulk-rewards/en';
 
 type Labels = typeof adminBulkRewardsEn;
+
+/** 'cyber_cat' -> 'Cyber Cat' (species are proper names, not translated). */
+function formatSpecies(species: string): string {
+  return species
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
 
 interface Props {
   labels: Labels;
@@ -132,18 +141,18 @@ export function AdminBulkRewardsView({ labels }: Props) {
 
         {rewardType === 'pet' && (
           <div className="flex flex-col items-stretch gap-1">
-            <span className="font-semibold">Pet Species</span>
+            <span className="font-semibold">{labels.form.petSpecies}</span>
             <select
               value={itemId || 'dragon'}
-              aria-label="Pet Species"
+              aria-label={labels.form.petSpecies}
               onChange={(e) => setItemId(e.target.value)}
               className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
             >
-              <option value="cyber_cat">Cyber Cat 🐱</option>
-              <option value="dragon">Dragon 🐲</option>
-              <option value="dino">Dino 🦖</option>
-              <option value="blob">Blob 🐡</option>
-              <option value="slime">Slime 👾</option>
+              {ALL_SPECIES.map((species) => (
+                <option key={species} value={species}>
+                  {formatSpecies(species)}
+                </option>
+              ))}
             </select>
           </div>
         )}

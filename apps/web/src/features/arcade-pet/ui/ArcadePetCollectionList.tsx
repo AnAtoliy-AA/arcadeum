@@ -58,12 +58,12 @@ export function ArcadePetCollectionList({
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     {p.stage === 'egg' ? 'Mystery Egg' : p.name}
                     {p.stage !== 'egg' && palette && (
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
+                      <span className="text-xs px-1.5 py-0.2 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
                         {palette.emoji} {palette.title}
                       </span>
                     )}
                   </span>
-                  <span className="text-[10px] text-neutral-400">
+                  <span className="text-xs text-neutral-400">
                     {p.stage === 'egg'
                       ? 'Incubating • Mystery Companion'
                       : `Level ${p.stats.level} • ${p.species} • ${p.stage}`}
@@ -72,7 +72,7 @@ export function ArcadePetCollectionList({
               </div>
 
               {isActive ? (
-                <span className="text-[11px] font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+                <span className="text-xs font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30">
                   Active Mount
                 </span>
               ) : (
@@ -80,7 +80,7 @@ export function ArcadePetCollectionList({
                   type="button"
                   data-testid={`equip-pet-${p.id}`}
                   onClick={() => onSelectPet(p.id)}
-                  className="text-[11px] font-semibold text-white px-3 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700"
+                  className="text-xs font-semibold text-white px-3 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700"
                 >
                   Equip
                 </button>

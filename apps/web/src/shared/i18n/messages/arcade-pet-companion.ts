@@ -20,9 +20,17 @@ import {
   adoptionRu,
   adoptionBy,
 } from './arcade-pet-companion-adoption';
+import {
+  landingEn,
+  landingEs,
+  landingFr,
+  landingRu,
+  landingBy,
+} from './arcade-pet-companion-landing';
 
 export const en = {
   ...miscEn,
+  landing: landingEn,
   snackBtn: 'Snack (🪙 {{cost}})',
   petBtn: 'Pet',
   mountsBtn: 'Mounts ({{used}}/{{total}})',
@@ -93,6 +101,7 @@ export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
   ...miscEs,
+  landing: landingEs,
   snackBtn: 'Snack (🪙 {{cost}})',
   petBtn: 'Acariciar',
   mountsBtn: 'Compañeros ({{used}}/{{total}})',
@@ -164,6 +173,7 @@ export const es: ArcadePetCompanionMessages = {
 
 export const fr: ArcadePetCompanionMessages = {
   ...miscFr,
+  landing: landingFr,
   snackBtn: 'Friandise (🪙 {{cost}})',
   petBtn: 'Caresser',
   mountsBtn: 'Montures ({{used}}/{{total}})',
@@ -235,6 +245,7 @@ export const fr: ArcadePetCompanionMessages = {
 
 export const ru: ArcadePetCompanionMessages = {
   ...miscRu,
+  landing: landingRu,
   snackBtn: 'Лакомство (🪙 {{cost}})',
   petBtn: 'Погладить',
   mountsBtn: 'Питомцы ({{used}}/{{total}})',
@@ -304,6 +315,7 @@ export const ru: ArcadePetCompanionMessages = {
 
 export const by: ArcadePetCompanionMessages = {
   ...miscBy,
+  landing: landingBy,
   snackBtn: 'Ласунак (🪙 {{cost}})',
   petBtn: 'Пагладзіць',
   mountsBtn: 'Пітомцы ({{used}}/{{total}})',

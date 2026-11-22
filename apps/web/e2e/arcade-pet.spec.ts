@@ -1,4 +1,5 @@
 import { test, expect, navigateTo, mockSession } from './fixtures/test-utils';
+import { mockPetServer, seedPetCollection } from './fixtures/arcade-pet-seed';
 
 test.describe('ArcadePet Virtual Pet Simulation', () => {
   test('should render arcade-pet landing page with hero and interactive widget', async ({
@@ -104,30 +105,22 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     page,
   }) => {
     await mockSession(page);
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'arcadeum_pet_collection_v2',
-        JSON.stringify({
-          pets: [
-            {
-              id: 'owner-pet-1',
-              name: 'PixelBuddy',
-              species: 'cyber_cat',
-              stage: 'adult',
-              theme: 'cyberpunk',
-              stats: { hunger: 80, happiness: 90, level: 3 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-          ],
-          activePetId: 'owner-pet-1',
-          gemBalance: 300,
-          adoptionCount: 1,
-          queuedThemeForNextPet: null,
-          presents: [],
-          hasConfirmedCare: true,
-        }),
-      );
+    await seedPetCollection(page, {
+      pets: [
+        {
+          id: 'owner-pet-1',
+          name: 'PixelBuddy',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 80,
+          happiness: 90,
+          level: 3,
+        },
+      ],
+      activePetId: 'owner-pet-1',
+      gemBalance: 300,
+      adoptionCount: 1,
     });
 
     await navigateTo(page, '/en/games');
@@ -168,30 +161,22 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     page,
   }) => {
     await mockSession(page);
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'arcadeum_pet_collection_v2',
-        JSON.stringify({
-          pets: [
-            {
-              id: 'owner-pet-1',
-              name: 'PixelBuddy',
-              species: 'cyber_cat',
-              stage: 'adult',
-              theme: 'cyberpunk',
-              stats: { hunger: 80, happiness: 90, level: 3 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-          ],
-          activePetId: 'owner-pet-1',
-          gemBalance: 300,
-          adoptionCount: 1,
-          queuedThemeForNextPet: null,
-          presents: [],
-          hasConfirmedCare: true,
-        }),
-      );
+    await seedPetCollection(page, {
+      pets: [
+        {
+          id: 'owner-pet-1',
+          name: 'PixelBuddy',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 80,
+          happiness: 90,
+          level: 3,
+        },
+      ],
+      activePetId: 'owner-pet-1',
+      gemBalance: 300,
+      adoptionCount: 1,
     });
 
     await navigateTo(page, '/en/games');
@@ -220,31 +205,25 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     page,
   }) => {
     await mockSession(page, { role: 'admin' });
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'arcadeum_pet_collection_v2',
-        JSON.stringify({
-          pets: [
-            {
-              id: 'admin-pet-1',
-              name: 'AdminBot',
-              species: 'cyber_cat',
-              stage: 'adult',
-              theme: 'cyberpunk',
-              stats: { hunger: 100, happiness: 100, level: 10 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-          ],
-          activePetId: 'admin-pet-1',
-          gemBalance: 0,
-          adoptionCount: 1,
-          queuedThemeForNextPet: null,
-          presents: [],
-          hasConfirmedCare: true,
-        }),
-      );
-    });
+    const adminCollection = {
+      pets: [
+        {
+          id: 'admin-pet-1',
+          name: 'AdminBot',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 100,
+          happiness: 100,
+          level: 10,
+        },
+      ],
+      activePetId: 'admin-pet-1',
+      gemBalance: 0,
+      adoptionCount: 1,
+    };
+    await seedPetCollection(page, adminCollection);
+    const actions = await mockPetServer(page, adminCollection);
 
     await navigateTo(page, '/en/games');
     await page.waitForLoadState('domcontentloaded');
@@ -272,48 +251,84 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     await expect(
       page.getByText(/Pet gift sent to GrandChampion/i),
     ).toBeVisible();
+    expect(actions).toContainEqual(
+      expect.objectContaining({
+        type: 'send_gift',
+        recipientUsername: 'GrandChampion',
+      }),
+    );
+  });
+
+  test('should explain a rejected gift instead of showing success', async ({
+    page,
+  }) => {
+    await mockSession(page, { role: 'admin' });
+    const collection = {
+      pets: [
+        {
+          id: 'admin-pet-2',
+          name: 'AdminBot',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 100,
+          happiness: 100,
+          level: 10,
+        },
+      ],
+      activePetId: 'admin-pet-2',
+      gemBalance: 0,
+      adoptionCount: 1,
+    };
+    await seedPetCollection(page, collection);
+    await mockPetServer(page, collection, {
+      actionResult: () => ({ ok: false, error: 'RECIPIENT_NOT_FOUND' }),
+    });
+
+    await navigateTo(page, '/en/games');
+    await page.waitForLoadState('domcontentloaded');
+    await page.getByTestId('arcade-pet-companion-trigger').click();
+    await page.getByTestId('open-gifts-modal-btn').click();
+    await page.getByTestId('tab-send-gift').click();
+    await page.getByTestId('gift-recipient-input').fill('NoSuchPlayer');
+    await page.getByTestId('send-pet-gift-btn').click();
+
+    await expect(page.getByText(/Player not found/i)).toBeVisible();
+    await expect(page.getByText(/Pet gift sent/i)).toHaveCount(0);
   });
 
   test('should show escalating food costs for multiple pets and resting banner when at home', async ({
     page,
   }) => {
     await mockSession(page);
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'arcadeum_pet_collection_v2',
-        JSON.stringify({
-          pets: [
-            {
-              id: 'multi-pet-1',
-              name: 'Cyber Alpha',
-              species: 'cyber_cat',
-              stage: 'adult',
-              theme: 'cyberpunk',
-              stats: { hunger: 50, happiness: 50, level: 2 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-            {
-              id: 'multi-pet-2',
-              name: 'Drake Beta',
-              species: 'dragon',
-              stage: 'adult',
-              theme: 'fantasy',
-              stats: { hunger: 50, happiness: 50, level: 2 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-          ],
-          activePetId: 'multi-pet-1',
-          coinBalance: 50,
-          gemBalance: 300,
-          adoptionCount: 2,
-          queuedThemeForNextPet: null,
-          presents: [],
-          hasConfirmedCare: true,
-          isAtHome: false,
-        }),
-      );
+    await seedPetCollection(page, {
+      pets: [
+        {
+          id: 'multi-pet-1',
+          name: 'Cyber Alpha',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 50,
+          happiness: 50,
+          level: 2,
+        },
+        {
+          id: 'multi-pet-2',
+          name: 'Drake Beta',
+          species: 'dragon',
+          stage: 'adult',
+          theme: 'fantasy',
+          hunger: 50,
+          happiness: 50,
+          level: 2,
+        },
+      ],
+      activePetId: 'multi-pet-1',
+      coinBalance: 50,
+      gemBalance: 300,
+      adoptionCount: 2,
+      isAtHome: false,
     });
 
     await navigateTo(page, '/en/games');
@@ -350,33 +365,25 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     page,
   }) => {
     await mockSession(page);
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'arcadeum_pet_collection_v2',
-        JSON.stringify({
-          pets: [
-            {
-              id: 'home-pet-1',
-              name: 'Cyber Fox',
-              species: 'cyber_cat',
-              stage: 'adult',
-              theme: 'cyberpunk',
-              stats: { hunger: 80, happiness: 80, level: 1 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-          ],
-          activePetId: 'home-pet-1',
-          homeCapacity: 1,
-          coinBalance: 100,
-          gemBalance: 200,
-          adoptionCount: 1,
-          queuedThemeForNextPet: null,
-          presents: [],
-          hasConfirmedCare: true,
-          isAtHome: true,
-        }),
-      );
+    await seedPetCollection(page, {
+      pets: [
+        {
+          id: 'home-pet-1',
+          name: 'Cyber Fox',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 80,
+          happiness: 80,
+          level: 1,
+        },
+      ],
+      activePetId: 'home-pet-1',
+      homeCapacity: 1,
+      coinBalance: 100,
+      gemBalance: 200,
+      adoptionCount: 1,
+      isAtHome: true,
     });
 
     await navigateTo(page, '/en/games');
@@ -421,33 +428,25 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
     page,
   }) => {
     await mockSession(page);
-    await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'arcadeum_pet_collection_v2',
-        JSON.stringify({
-          pets: [
-            {
-              id: 'home-pet-drag-1',
-              name: 'Draggie',
-              species: 'cyber_cat',
-              stage: 'adult',
-              theme: 'cyberpunk',
-              stats: { hunger: 80, happiness: 80, level: 1 },
-              timestamps: { bornAt: Date.now() },
-              inventory: {},
-            },
-          ],
-          activePetId: 'home-pet-drag-1',
-          homeCapacity: 1,
-          coinBalance: 50,
-          gemBalance: 100,
-          adoptionCount: 1,
-          queuedThemeForNextPet: null,
-          presents: [],
-          hasConfirmedCare: true,
-          isAtHome: true,
-        }),
-      );
+    await seedPetCollection(page, {
+      pets: [
+        {
+          id: 'home-pet-drag-1',
+          name: 'Draggie',
+          species: 'cyber_cat',
+          stage: 'adult',
+          theme: 'cyberpunk',
+          hunger: 80,
+          happiness: 80,
+          level: 1,
+        },
+      ],
+      activePetId: 'home-pet-drag-1',
+      homeCapacity: 1,
+      coinBalance: 50,
+      gemBalance: 100,
+      adoptionCount: 1,
+      isAtHome: true,
     });
 
     await navigateTo(page, '/en/games');

@@ -9,6 +9,35 @@ vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => mockUseTranslation(),
 }));
 
+const performServerAction = vi.fn();
+
+vi.mock('../lib/arcade-pet-sync', async (importActual) => {
+  const actual = await importActual<typeof import('../lib/arcade-pet-sync')>();
+  return {
+    ...actual,
+    performServerAction: (a: unknown) => performServerAction(a),
+    pushServerCollection: () =>
+      Promise.resolve({ status: 'ok', collection: { revision: 1 } }),
+  };
+});
+
+const serverCollection = (gemBalance: number) => ({
+  revision: 2,
+  pets: [],
+  activePetId: null,
+  gemBalance,
+  coinBalance: 0,
+  adoptionCount: 0,
+  homeCapacity: 1,
+  queuedThemeForNextPet: null,
+  presents: [],
+  hasConfirmedCare: true,
+  isAtHome: false,
+  dailyStreak: 0,
+  lastDailyClaimDay: null,
+  claimedMilestones: [],
+});
+
 const mockSessionState = { role: 'user', userId: 'player-1' };
 
 vi.mock('@/entities/session/model/useSessionTokens', () => ({
@@ -24,7 +53,10 @@ describe('ArcadePetGiftsModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSessionState.role = 'user';
+    performServerAction.mockReset();
     useArcadePetStore.setState({
+      serverBacked: true,
+      hasConfirmedCare: true,
       gemBalance: 200,
       pets: [],
       presents: [
@@ -84,6 +116,10 @@ describe('ArcadePetGiftsModal', () => {
   });
 
   it('allows sending pet gift to another player', async () => {
+    performServerAction.mockResolvedValue({
+      ok: true,
+      collection: serverCollection(150),
+    });
     render(<ArcadePetGiftsModal open onClose={onClose} />);
     const sendTab = screen.getByTestId('tab-send-gift');
     fireEvent.click(sendTab);
@@ -102,6 +138,10 @@ describe('ArcadePetGiftsModal', () => {
 
   it('displays admin authority callout and grants gift for 0 gems when user is admin', async () => {
     mockSessionState.role = 'admin';
+    performServerAction.mockResolvedValue({
+      ok: true,
+      collection: serverCollection(0),
+    });
     useArcadePetStore.setState({ gemBalance: 0 });
 
     render(<ArcadePetGiftsModal open onClose={onClose} />);
@@ -123,8 +163,39 @@ describe('ArcadePetGiftsModal', () => {
       await screen.findByText(/Pet gift sent to WinnerUser/i),
     ).toBeInTheDocument();
     expect(useArcadePetStore.getState().gemBalance).toBe(0);
-    const presents = useArcadePetStore.getState().presents;
-    expect(presents[0]?.senderId).toBe('admin');
+    expect(performServerAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'send_gift',
+        recipientUsername: 'WinnerUser',
+      }),
+    );
+  });
+
+  it('shows a specific error when the recipient inbox is full', async () => {
+    performServerAction.mockResolvedValue({
+      ok: false,
+      error: 'INBOX_FULL',
+      collection: serverCollection(200),
+    });
+    render(<ArcadePetGiftsModal open onClose={onClose} />);
+    fireEvent.click(screen.getByTestId('tab-send-gift'));
+    fireEvent.change(screen.getByTestId('gift-recipient-input'), {
+      target: { value: 'Dave' },
+    });
+    fireEvent.click(screen.getByTestId('send-pet-gift-btn'));
+    expect(await screen.findByText(/inbox is full/i)).toBeInTheDocument();
+  });
+
+  it('tells the player when they are offline instead of faking a gift', async () => {
+    useArcadePetStore.setState({ serverBacked: false });
+    render(<ArcadePetGiftsModal open onClose={onClose} />);
+    fireEvent.click(screen.getByTestId('tab-send-gift'));
+    fireEvent.change(screen.getByTestId('gift-recipient-input'), {
+      target: { value: 'Dave' },
+    });
+    fireEvent.click(screen.getByTestId('send-pet-gift-btn'));
+    expect(await screen.findByText(/offline/i)).toBeInTheDocument();
+    expect(useArcadePetStore.getState().gemBalance).toBe(200);
   });
 
   it('is an accessible dialog that closes on Escape', () => {

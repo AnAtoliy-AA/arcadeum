@@ -41,7 +41,7 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
           onClick={startEditing}
           aria-label={t('arcadePetCompanion.rename.edit')}
           title={t('arcadePetCompanion.rename.edit')}
-          className="text-[11px] text-neutral-400 hover:text-white"
+          className="text-xs text-neutral-400 hover:text-white"
         >
           ✏️
         </button>
@@ -80,7 +80,7 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
         type="submit"
         data-testid="pet-rename-save"
         aria-label={t('arcadePetCompanion.rename.save')}
-        className="text-[11px] text-emerald-400 hover:text-emerald-300"
+        className="text-xs text-emerald-400 hover:text-emerald-300"
       >
         ✓
       </button>

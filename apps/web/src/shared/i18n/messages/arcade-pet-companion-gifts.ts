@@ -25,6 +25,8 @@ export const giftsEn = {
   errName: 'Please enter friend or player name.',
   errGems: 'Need 💎 50 gems to send gift. You have 💎 {{gems}}.',
   errSend: 'Failed to send pet gift.',
+  errInbox: "That player's gift inbox is full.",
+  errOffline: 'You are offline. Reconnect to send gifts.',
   errRecipient: 'Player not found. Check the username.',
   okOpened: 'Present opened! {{name}} joined your collection (+50 bonus gems)!',
   okSent: 'Pet gift sent to {{name}}!',
@@ -67,6 +69,8 @@ export const giftsEs = {
   errName: 'Introduce el nombre del amigo o jugador.',
   errGems: 'Necesitas 💎 50 gemas para enviar el regalo. Tienes 💎 {{gems}}.',
   errSend: 'No se pudo enviar el regalo.',
+  errInbox: 'El buzón de regalos de ese jugador está lleno.',
+  errOffline: 'Sin conexión. Reconéctate para enviar regalos.',
   errRecipient: 'Jugador no encontrado. Revisa el nombre de usuario.',
   okOpened:
     '¡Presente abierto! {{name}} se unió a tu colección (+50 gemas de bonificación).',
@@ -109,6 +113,8 @@ export const giftsFr = {
   errName: "Saisis le nom d'un ami ou d'un joueur.",
   errGems: 'Il faut 💎 50 gemmes pour envoyer le cadeau. Tu as 💎 {{gems}}.',
   errSend: "Échec de l'envoi du cadeau.",
+  errInbox: 'La boîte à cadeaux de ce joueur est pleine.',
+  errOffline: 'Hors ligne. Reconnectez-vous pour envoyer des cadeaux.',
   errRecipient: "Joueur introuvable. Vérifiez le nom d'utilisateur.",
   okOpened:
     'Présent ouvert ! {{name}} a rejoint ta collection (+50 gemmes bonus) !',
@@ -151,6 +157,8 @@ export const giftsRu = {
   errName: 'Введите имя друга или игрока.',
   errGems: 'Нужно 💎 50 кристаллов для подарка. У вас 💎 {{gems}}.',
   errSend: 'Не удалось отправить подарок.',
+  errInbox: 'Ящик подарков этого игрока переполнен.',
+  errOffline: 'Нет соединения. Подключитесь, чтобы отправлять подарки.',
   errRecipient: 'Игрок не найден. Проверьте имя пользователя.',
   okOpened:
     'Презент открыт! {{name}} теперь в вашей коллекции (+50 бонусных кристаллов)!',
@@ -193,6 +201,8 @@ export const giftsBy = {
   errName: 'Увядзіце імя сябра або гульца.',
   errGems: 'Патрэбна 💎 50 крышталёў для падарунка. У вас 💎 {{gems}}.',
   errSend: 'Не атрымалася адправіць падарунак.',
+  errInbox: 'Скрынка падарункаў гэтага гульца запоўнена.',
+  errOffline: 'Няма злучэння. Падключыцеся, каб адпраўляць падарункі.',
   errRecipient: 'Гулец не знойдзены. Праверце імя карыстальніка.',
   okOpened:
     'Прэзент адкрыты! {{name}} цяпер у вашай калекцыі (+50 бонусных крышталёў)!',

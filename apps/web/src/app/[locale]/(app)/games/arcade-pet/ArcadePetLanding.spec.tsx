@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import React from 'react';
 import { ArcadePetLanding } from './ArcadePetLanding';
+import { landingEn } from '@/shared/i18n/messages/arcade-pet-companion-landing';
 
 vi.mock('@/widgets/SimulationGames/ArcadePetGame', () => ({
   ArcadePetGame: () => <div data-testid="mock-arcade-pet-game">Pet Game</div>,
@@ -13,6 +14,7 @@ describe('ArcadePetLanding', () => {
       <ArcadePetLanding
         gameName="ArcadePet"
         description="Virtual companion simulation"
+        copy={landingEn}
         comingSoon={false}
       />,
     );
@@ -29,6 +31,7 @@ describe('ArcadePetLanding', () => {
       <ArcadePetLanding
         gameName="ArcadePet"
         description="Virtual companion simulation"
+        copy={landingEn}
         comingSoon={true}
       />,
     );

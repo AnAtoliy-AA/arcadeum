@@ -107,8 +107,12 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().gemBalance).toBe(50);
   });
 
-  it('sends pet gift to friend and deducts 50 gemBalance', async () => {
-    useArcadePetStore.setState({ gemBalance: 100 });
+  it('refuses to send a gift while offline and keeps balances untouched', async () => {
+    useArcadePetStore.setState({
+      gemBalance: 100,
+      presents: [],
+      serverBacked: false,
+    });
     const result = await useArcadePetStore
       .getState()
       .sendGiftPet('friend-2', 'Bob', {
@@ -118,8 +122,21 @@ describe('useArcadePetStore', () => {
         message: 'Happy gaming!',
       });
 
-    expect(result.success).toBe(true);
-    expect(useArcadePetStore.getState().gemBalance).toBe(50);
+    expect(result).toEqual({ success: false, error: 'OFFLINE' });
+    expect(useArcadePetStore.getState().gemBalance).toBe(100);
+    expect(useArcadePetStore.getState().presents).toEqual([]);
+  });
+
+  it('rejects a gift locally when the player cannot afford it', async () => {
+    useArcadePetStore.setState({ gemBalance: 10, serverBacked: true });
+    const result = await useArcadePetStore
+      .getState()
+      .sendGiftPet('friend-2', 'Bob', {
+        species: 'dino',
+        theme: 'western',
+        petName: 'Sheriff Rex',
+      });
+    expect(result).toEqual({ success: false, error: 'INSUFFICIENT_GEMS' });
   });
 
   it('claims present and adds gifted pet with bonus gemBalance', () => {
@@ -165,29 +182,6 @@ describe('useArcadePetStore', () => {
     expect(useArcadePetStore.getState().isAtHome).toBe(true);
     useArcadePetStore.getState().setAtHome(false);
     expect(useArcadePetStore.getState().isAtHome).toBe(false);
-  });
-
-  it('allows admin to gift pet for 0 gems with official admin attribution', async () => {
-    useArcadePetStore.setState({ gemBalance: 0, presents: [] });
-    const result = await useArcadePetStore.getState().sendGiftPet(
-      'lucky-player',
-      'Lucky',
-      {
-        species: 'cyber_cat',
-        theme: 'cyberpunk',
-        petName: 'Admin Cyber Cat',
-      },
-      true,
-    );
-
-    expect(result.success).toBe(true);
-    expect(useArcadePetStore.getState().gemBalance).toBe(0);
-    const presents = useArcadePetStore.getState().presents;
-    expect(presents.length).toBe(1);
-    expect(presents[0]?.senderId).toBe('admin');
-    expect(presents[0]?.senderName).toBe('👑 Arcadeum Admin');
-    expect(presents[0]?.species).toBe('cyber_cat');
-    expect(presents[0]?.message).toBe('Official Administrator Gift');
   });
 
   it('does not load unconfirmed collection or legacy unconfirmed pet without care confirmation', () => {

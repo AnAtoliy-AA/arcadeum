@@ -150,7 +150,7 @@ export function ArcadePetSocialStage({
               />
             </div>
 
-            <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-[10px] font-semibold text-emerald-300 pointer-events-none select-none">
+            <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-emerald-400/50 text-xs font-semibold text-emerald-300 pointer-events-none select-none">
               {localPet.stage === 'egg'
                 ? t('arcadePetCompanion.mysteryEgg')
                 : localPet.name}
@@ -186,7 +186,7 @@ export function ArcadePetSocialStage({
               />
             </div>
 
-            <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-indigo-400/50 text-[10px] font-semibold text-indigo-300 pointer-events-none select-none">
+            <span className="mt-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-indigo-400/50 text-xs font-semibold text-indigo-300 pointer-events-none select-none">
               {otherPlayer?.displayName ?? 'Neighbor'}&apos;s Pet
             </span>
           </div>

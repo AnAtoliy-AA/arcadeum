@@ -15,6 +15,7 @@ import { ArcadePetLcdScreen } from './ArcadePetLcdScreen';
 import { ArcadePetControls } from './ArcadePetControls';
 import { ArcadePetMinigame } from './ArcadePetMinigame';
 import { getArcadePetTheme } from '../lib/theme';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
   gameOptions,
@@ -25,6 +26,7 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
     [gameOptions?.theme],
   );
 
+  const { t } = useTranslation();
   const [pet, setPet] = useState<PetState>(() =>
     createInitialPet({
       id: currentUserId || 'local-pet',
@@ -250,7 +252,9 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
       <div className="flex flex-col gap-4 w-full max-w-sm bg-neutral-900/80 border border-neutral-800 p-5 rounded-2xl backdrop-blur-md">
         <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
           <div className="flex flex-col">
-            <span className="text-base font-bold text-white">Pet Status</span>
+            <span className="text-base font-bold text-white">
+              {t('arcadePetCompanion.landing.statusTitle')}
+            </span>
             <span className="text-xs text-neutral-400">
               Level {pet.stats.level} (XP: {pet.stats.xp})
             </span>
@@ -388,7 +392,7 @@ export const ArcadePetGame: React.FC<ArcadePetGameProps> = ({
 
         <div className="border-t border-neutral-800 pt-3 flex items-center justify-between text-xs text-neutral-400">
           <span>Theme: {gameOptions?.theme ?? 'Retro'}</span>
-          <span>Offline state synced</span>
+          <span>{t('arcadePetCompanion.landing.offlineSynced')}</span>
         </div>
       </div>
     </div>

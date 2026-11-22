@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.8] - 2026-11-22
+
+### Added
+- add anonymous room cleanup with separate configurable period
+- add MongoDB cleanup service with admin-configurable periods
+
+
 ## [1.31.7] - 2026-11-22
 
 ### Changed

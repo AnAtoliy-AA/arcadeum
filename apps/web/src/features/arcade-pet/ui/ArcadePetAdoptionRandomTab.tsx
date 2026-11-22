@@ -109,7 +109,13 @@ export function ArcadePetAdoptionRandomTab({
             {t('arcadePetCompanion.adoption.themesBadge')}
           </span>
         </div>
-        <div className="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto p-1 sm:grid-cols-3">
+        <div
+          // Scrollable region must be keyboard reachable (axe: scrollable-region-focusable).
+          tabIndex={0}
+          role="region"
+          aria-label={t('arcadePetCompanion.adoption.themesTitle')}
+          className="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto p-1 sm:grid-cols-3"
+        >
           {Object.values(SPECIES_PALETTE).map((pal) => {
             const signature = getSignaturePet(pal.id);
             return (

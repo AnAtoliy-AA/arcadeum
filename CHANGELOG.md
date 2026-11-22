@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.10] - 2026-11-22
+
+### Fixed
+- defer session rehydrate fix-ups to avoid TDZ on first load
+
+
 ## [1.31.9] - 2026-11-22
 
 ### Fixed

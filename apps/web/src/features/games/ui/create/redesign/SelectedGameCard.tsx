@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { useRoutes } from '@/shared/config/useRoutes';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getThemeById } from '@/features/games/lib/shared-themes';
 import {
   GAMES,
@@ -15,13 +14,17 @@ interface Props {
   gameId: GameId;
   themeId: string;
   roomNumber?: number;
-  labels: {
-    changeGame: string;
-  };
+  pickerOpen: boolean;
+  /** Id of the panel the change button controls (for aria-controls). */
+  pickerId: string;
+  onTogglePicker: () => void;
   onCycleTheme?: () => void;
 }
 
-function resolveThemeName(gameId: GameId, themeId: string): string | null {
+export function resolveThemeName(
+  gameId: GameId,
+  themeId: string,
+): string | null {
   const theme = getThemeById(themeId);
   if (theme) {
     return (
@@ -33,14 +36,21 @@ function resolveThemeName(gameId: GameId, themeId: string): string | null {
   return null;
 }
 
+/**
+ * Shows which game the room is for and lets the user swap it right here.
+ * Changing the game opens an inline picker instead of leaving the page, so the
+ * settings the user already made are not lost.
+ */
 export function SelectedGameCard({
   gameId,
   themeId,
   roomNumber,
-  labels,
+  pickerOpen,
+  pickerId,
+  onTogglePicker,
   onCycleTheme,
 }: Props) {
-  const routes = useRoutes();
+  const { t } = useTranslation();
   const game = GAMES[gameId];
   const themeName = resolveThemeName(gameId, themeId);
 
@@ -48,7 +58,7 @@ export function SelectedGameCard({
     <section className={s.card} data-testid="selected-game-card">
       <div className={s.left}>
         <div className={s.titleRow}>
-          <h2 className={s.title}>{game.title}</h2>
+          <h3 className={s.title}>{game.title}</h3>
           {roomNumber ? (
             <span className={s.roomNumberBadge} data-testid="room-number-badge">
               #{roomNumber}
@@ -61,8 +71,8 @@ export function SelectedGameCard({
                 onClick={onCycleTheme}
                 className={s.themeBadge}
                 data-testid="selected-theme-badge"
-                title="Click to cycle theme"
-                aria-label={`Theme: ${themeName}. Click to change theme`}
+                title={t('createRoom.game.cycleTheme')}
+                aria-label={`${t('createRoom.theme.current', { name: themeName })}. ${t('createRoom.game.cycleTheme')}`}
               >
                 <span className={s.themeDot} aria-hidden="true" />
                 <span>{themeName}</span>
@@ -82,7 +92,9 @@ export function SelectedGameCard({
           <span className={s.metaDot} aria-hidden="true">
             ·
           </span>
-          <span className={s.metaItem}>{game.players.label} players</span>
+          <span className={s.metaItem}>
+            {t('createRoom.game.players', { label: game.players.label })}
+          </span>
           <span className={s.metaDot} aria-hidden="true">
             ·
           </span>
@@ -93,14 +105,21 @@ export function SelectedGameCard({
       </div>
 
       <div className={s.right}>
-        <Link
-          href={routes.games}
+        <button
+          type="button"
           className={s.changeLink}
           data-testid="change-game-link"
+          aria-expanded={pickerOpen}
+          aria-controls={pickerId}
+          onClick={onTogglePicker}
         >
-          <span>←</span>
-          <span>{labels.changeGame}</span>
-        </Link>
+          <span aria-hidden="true">{pickerOpen ? '↑' : '⇄'}</span>
+          <span>
+            {pickerOpen
+              ? t('createRoom.game.done')
+              : t('createRoom.game.change')}
+          </span>
+        </button>
       </div>
     </section>
   );

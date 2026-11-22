@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.30.116] - 2026-11-22
 
-- stop Linux WebKit runaway memory in e2e runs (the web process grew ~1 GB/s on game landing pages because of `backdrop-filter`, killing CI runners): e2e builds (`NEXT_PUBLIC_E2E=true`) now disable `backdrop-filter` for WebKit only, from a script and style in the page head so it applies before first paint and chromium keeps the real glass effect; measured peak web-process memory 7.4 GB down to under 1 GB
-- stop the settings e2e spec flaking on WebKit by retrying its theme, language, haptics and sound clicks until they take effect
+### Fixed
+- scope backdrop-filter override to WebKit so chromium keeps the effect
+- stop Linux WebKit memory runaway from backdrop-filter in e2e builds
+
 
 ## [1.30.115] - 2026-11-22
 

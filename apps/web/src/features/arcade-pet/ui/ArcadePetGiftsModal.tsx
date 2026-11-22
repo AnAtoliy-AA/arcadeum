@@ -1,0 +1,403 @@
+'use client';
+
+import React, { useState } from 'react';
+import type { PetSpecies } from '@arcadeum/games-core';
+import { useShallow } from 'zustand/react/shallow';
+import { useArcadePetStore } from '../store/useArcadePetStore';
+import { THEME_PET_PALETTES } from '../lib/arcade-pet-economy';
+import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+
+interface ArcadePetGiftsModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const GIFT_SPECIES: readonly {
+  id: PetSpecies;
+  emoji: string;
+}[] = [
+  { id: 'cyber_cat', emoji: '🐱' },
+  { id: 'dragon', emoji: '🐲' },
+  { id: 'dino', emoji: '🦖' },
+  { id: 'blob', emoji: '🐡' },
+  { id: 'slime', emoji: '👾' },
+];
+
+export function ArcadePetGiftsModal({
+  open,
+  onClose,
+}: ArcadePetGiftsModalProps) {
+  const { t } = useTranslation();
+  const { presents, gemBalance, claimPresent, sendGiftPet } = useArcadePetStore(
+    useShallow((s) => ({
+      presents: s.presents,
+      gemBalance: s.gemBalance,
+      claimPresent: s.claimPresent,
+      sendGiftPet: s.sendGiftPet,
+    })),
+  );
+  const { snapshot } = useSessionTokens();
+  const isAdmin = snapshot.role === 'admin';
+
+  const [activeTab, setActiveTab] = useState<'received' | 'send'>('received');
+  const [recipient, setRecipient] = useState('');
+  const [species, setSpecies] = useState<PetSpecies>('dragon');
+  const [theme, setTheme] = useState<string>('fantasy');
+  const [petName, setPetName] = useState('');
+  const [message, setMessage] = useState('');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  if (!open) return null;
+
+  const unopenedCount = presents.filter((p) => !p.isOpened).length;
+
+  const handleClaim = (presentId: string) => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    const result = claimPresent(presentId);
+    if (result.success && result.present) {
+      setSuccessMsg(
+        t('arcadePetCompanion.gifts.okOpened', {
+          name: result.present.petName,
+        }),
+      );
+    }
+  };
+
+  const handleSendGift = async () => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    if (!recipient.trim()) {
+      setErrorMsg(t('arcadePetCompanion.gifts.errName'));
+      return;
+    }
+
+    const result = await sendGiftPet(
+      recipient.trim(),
+      recipient.trim(),
+      {
+        species,
+        theme,
+        petName:
+          petName.trim() ||
+          `${THEME_PET_PALETTES[theme]?.title ?? ''} ${species}`,
+        message:
+          message.trim() ||
+          (isAdmin
+            ? t('arcadePetCompanion.gifts.defaultAdminMsg')
+            : t('arcadePetCompanion.gifts.defaultMsg')),
+      },
+      isAdmin,
+    );
+
+    if (!result.success) {
+      if (result.error === 'INSUFFICIENT_GEMS') {
+        setErrorMsg(
+          t('arcadePetCompanion.gifts.errGems', { gems: gemBalance }),
+        );
+      } else if (result.error === 'RECIPIENT_NOT_FOUND') {
+        setErrorMsg(t('arcadePetCompanion.gifts.errRecipient'));
+      } else if (result.error === 'INBOX_FULL') {
+        setErrorMsg(t('arcadePetCompanion.gifts.errInbox'));
+      } else if (result.error === 'OFFLINE') {
+        setErrorMsg(t('arcadePetCompanion.gifts.errOffline'));
+      } else {
+        setErrorMsg(t('arcadePetCompanion.gifts.errSend'));
+      }
+      return;
+    }
+
+    setSuccessMsg(
+      t('arcadePetCompanion.gifts.okSent', { name: recipient.trim() }),
+    );
+    setRecipient('');
+    setPetName('');
+    setMessage('');
+  };
+
+  return (
+    <div
+      data-testid="arcade-pet-gifts-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('arcadePetCompanion.gifts.title')}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+    >
+      <div className="relative w-full max-w-lg rounded-2xl bg-neutral-900 border border-neutral-700 shadow-2xl text-white font-sans flex flex-col max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🎁</span>
+            <div className="flex flex-col">
+              <span className="text-base font-bold text-white">
+                {t('arcadePetCompanion.gifts.title')}
+              </span>
+              <span className="text-xs text-neutral-400">
+                {t('arcadePetCompanion.gifts.subtitle')}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-500/40 text-xs font-bold text-indigo-300">
+              <span>💎</span>
+              <span>{gemBalance}</span>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-neutral-400 hover:text-white p-1 text-sm"
+              aria-label={t('arcadePetCompanion.close')}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        <div className="flex border-b border-neutral-800 bg-neutral-950/60 text-xs font-semibold">
+          <button
+            type="button"
+            data-testid="tab-received-presents"
+            onClick={() => setActiveTab('received')}
+            className={`flex-1 py-3 text-center transition-colors flex items-center justify-center gap-1.5 ${
+              activeTab === 'received'
+                ? 'text-indigo-400 border-b-2 border-indigo-500 bg-indigo-500/10'
+                : 'text-neutral-400 hover:text-neutral-200'
+            }`}
+          >
+            <span>{t('arcadePetCompanion.gifts.takePresents')}</span>
+            {unopenedCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-pink-500 text-white text-xs font-bold">
+                {unopenedCount}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            data-testid="tab-send-gift"
+            onClick={() => setActiveTab('send')}
+            className={`flex-1 py-3 text-center transition-colors ${
+              activeTab === 'send'
+                ? 'text-pink-400 border-b-2 border-pink-500 bg-pink-500/10'
+                : 'text-neutral-400 hover:text-neutral-200'
+            }`}
+          >
+            {isAdmin
+              ? t('arcadePetCompanion.gifts.adminTab')
+              : t('arcadePetCompanion.gifts.sendTab')}
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          {errorMsg && (
+            <div
+              role="alert"
+              className="p-3 rounded-xl bg-red-950/80 border border-red-500/50 text-xs text-red-200"
+            >
+              {errorMsg}
+            </div>
+          )}
+          {successMsg && (
+            <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-xs text-emerald-200">
+              {successMsg}
+            </div>
+          )}
+
+          {activeTab === 'received' && (
+            <div className="space-y-3">
+              <span className="text-xs text-neutral-400 block">
+                {t('arcadePetCompanion.gifts.waiting')}
+              </span>
+
+              {presents.length === 0 ? (
+                <div className="p-6 text-center text-xs text-neutral-500 rounded-xl bg-neutral-950 border border-neutral-800">
+                  {t('arcadePetCompanion.gifts.empty')}
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-72 overflow-y-auto">
+                  {presents.map((present) => {
+                    const palette = THEME_PET_PALETTES[present.theme];
+                    return (
+                      <div
+                        key={present.id}
+                        data-testid={`present-item-${present.id}`}
+                        className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${
+                          present.isOpened
+                            ? 'border-neutral-800 bg-neutral-950/50 opacity-60'
+                            : 'border-pink-500/50 bg-pink-950/20 shadow-md'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <ArcadePetWalkingSprite
+                            species={present.species}
+                            state="happy"
+                            theme={present.theme}
+                            className="w-10 h-10"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                              {present.petName}
+                              {palette && (
+                                <span className="text-xs px-1.5 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-300">
+                                  {palette.emoji} {palette.title}
+                                </span>
+                              )}
+                            </span>
+                            <span className="text-xs text-pink-300 font-semibold flex items-center gap-1.5">
+                              {t('arcadePetCompanion.gifts.from', {
+                                name: present.senderName,
+                              })}
+                              {present.senderId === 'admin' && (
+                                <span
+                                  data-testid="admin-gift-badge"
+                                  className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-300 font-bold"
+                                >
+                                  {t('arcadePetCompanion.gifts.adminGift')}
+                                </span>
+                              )}
+                            </span>
+                            {present.message && (
+                              <span className="text-xs text-neutral-400 italic">
+                                &ldquo;{present.message}&rdquo;
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {present.isOpened ? (
+                          <span className="text-xs text-neutral-500 px-3 py-1 rounded bg-neutral-900">
+                            {t('arcadePetCompanion.gifts.opened')}
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            data-testid={`claim-present-${present.id}`}
+                            onClick={() => handleClaim(present.id)}
+                            className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-xs shadow-md active:scale-95 transition-transform"
+                          >
+                            {t('arcadePetCompanion.gifts.take')}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'send' && (
+            <div className="space-y-4">
+              {isAdmin ? (
+                <div
+                  data-testid="admin-gift-callout"
+                  className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/50 text-xs text-amber-200 flex items-center gap-2"
+                >
+                  <span>👑</span>
+                  <span>{t('arcadePetCompanion.gifts.adminAuthority')}</span>
+                </div>
+              ) : (
+                <div className="p-3 rounded-xl bg-pink-950/30 border border-pink-500/30 text-xs text-pink-200">
+                  {t('arcadePetCompanion.gifts.giftCost')}
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-neutral-300 block">
+                  {t('arcadePetCompanion.gifts.nameLabel')}
+                </span>
+                <input
+                  type="text"
+                  data-testid="gift-recipient-input"
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                  placeholder={t('arcadePetCompanion.gifts.namePlaceholder')}
+                  className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-neutral-300 block">
+                  {t('arcadePetCompanion.gifts.speciesLabel')}
+                </span>
+                <div className="grid grid-cols-5 gap-2">
+                  {GIFT_SPECIES.map((spec) => (
+                    <button
+                      key={spec.id}
+                      type="button"
+                      data-testid={`gift-species-${spec.id}`}
+                      onClick={() => setSpecies(spec.id)}
+                      className={`p-2 rounded-xl text-center flex flex-col items-center gap-1 border transition-all ${
+                        species === spec.id
+                          ? 'border-pink-400 bg-pink-500/20 text-white font-bold'
+                          : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-xl">{spec.emoji}</span>
+                      <span className="text-xs">
+                        {t(`arcadePetCompanion.gifts.species.${spec.id}`)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-neutral-300 block">
+                  {t('arcadePetCompanion.gifts.themeLabel')}
+                </span>
+                <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto p-1">
+                  {Object.values(THEME_PET_PALETTES).map((pal) => (
+                    <button
+                      key={pal.id}
+                      type="button"
+                      data-testid={`gift-theme-${pal.id}`}
+                      onClick={() => setTheme(pal.id)}
+                      className={`p-2 rounded-xl text-left border flex items-center gap-1.5 transition-all ${
+                        theme === pal.id
+                          ? 'border-pink-400 bg-pink-500/20 text-white font-bold'
+                          : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-base">{pal.emoji}</span>
+                      <span className="text-xs truncate">{pal.title}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-xs font-bold text-neutral-300 block">
+                  {t('arcadePetCompanion.gifts.messageLabel')}
+                </span>
+                <input
+                  type="text"
+                  data-testid="gift-message-input"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t('arcadePetCompanion.gifts.messagePlaceholder')}
+                  className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-white focus:outline-none focus:border-pink-500"
+                />
+              </div>
+
+              <button
+                type="button"
+                data-testid="send-pet-gift-btn"
+                onClick={handleSendGift}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-sm shadow-lg transition-transform active:scale-95"
+              >
+                {isAdmin
+                  ? t('arcadePetCompanion.gifts.grantBtn')
+                  : t('arcadePetCompanion.gifts.sendBtn')}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

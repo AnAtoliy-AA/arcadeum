@@ -24,6 +24,10 @@ export const en = {
     title: `Game Room · ${APP}`,
     description: `Join a live game room on ${APP}, take a seat, and start playing - or spectate matches in progress.`,
   },
+  arcadePetLanding: {
+    title: `ArcadePet - Free Virtual Pet Simulation Game Online · ${APP}`,
+    description: `Raise, feed, train, and evolve your retro pixel virtual pet on ${APP}. Earn treats across games, play mini-games, and level up your companion.`,
+  },
   seaBattleLanding: {
     title: `Sea Battle (Battleship) Online - Play Free with Friends or AI · ${APP}`,
     description: `Play Sea Battle (Battleship) online for free on ${APP}. Quickplay against a bot, find a human opponent, or invite friends to a private match on a 10×10 grid.`,

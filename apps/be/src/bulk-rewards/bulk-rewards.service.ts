@@ -1,10 +1,19 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { createHash } from 'node:crypto';
 import { Model } from 'mongoose';
+import { ALL_SPECIES, type PetSpecies } from '@arcadeum/games-core';
 import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { WalletService } from '../wallet/wallet.service';
 import { InventoryService } from '../shop/services/inventory.service';
+import { ArcadePetCollectionService } from '../arcade-pet/arcade-pet-collection.service';
 import { BulkRewardDto, BulkRewardType } from './dto/bulk-reward.dto';
+
+function isPetSpecies(value: string | undefined): value is PetSpecies {
+  return (
+    value !== undefined && (ALL_SPECIES as readonly string[]).includes(value)
+  );
+}
 
 export interface BulkRewardResult {
   totalUsers: number;
@@ -21,6 +30,7 @@ export class BulkRewardsService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly walletService: WalletService,
     private readonly inventoryService: InventoryService,
+    private readonly petCollections: ArcadePetCollectionService,
   ) {}
 
   async rewardAllUsers(
@@ -29,6 +39,14 @@ export class BulkRewardsService {
   ): Promise<BulkRewardResult> {
     if (dto.type === BulkRewardType.ITEM && !dto.itemId) {
       throw new BadRequestException('bulkRewards.itemIdRequired');
+    }
+
+    if (
+      dto.type === BulkRewardType.PET &&
+      dto.itemId &&
+      !(ALL_SPECIES as readonly string[]).includes(dto.itemId)
+    ) {
+      throw new BadRequestException('bulkRewards.invalidPetSpecies');
     }
 
     const operationId =
@@ -108,6 +126,29 @@ export class BulkRewardsService {
         }
         await this.inventoryService.grant(userId, dto.itemId, idempotencyKey);
         break;
+
+      case BulkRewardType.PET: {
+        // The present is the single source of truth for a pet gift; it is
+        // idempotent per id so retried runs never double-gift.
+        const species: PetSpecies = isPetSpecies(dto.itemId)
+          ? dto.itemId
+          : 'dragon';
+        await this.petCollections.grantPresent(userId, {
+          id: `admin-gift-${createHash('sha256').update(idempotencyKey).digest('hex').slice(0, 16)}`,
+          senderId: 'admin',
+          senderName: 'Arcadeum Admin',
+          species,
+          theme: 'retro',
+          petName: species
+            .split('_')
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(' '),
+          message: dto.reason || 'Official Administrator Gift',
+          createdAt: Date.now(),
+          isOpened: false,
+        });
+        break;
+      }
 
       default:
         throw new BadRequestException('bulkRewards.invalidType');

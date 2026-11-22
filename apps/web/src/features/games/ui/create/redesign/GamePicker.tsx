@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import s from './GameCreateView.module.scss';
 import { GameArt } from './art/GameArt';
 import { CriticalMiniCluster } from './art/CriticalMiniCluster';
@@ -22,10 +23,6 @@ interface GamePickerProps {
   value: GameId;
   themeId?: string;
   comingSoon: Map<string, boolean>;
-  labels: {
-    selected: string;
-    comingSoon: string;
-  };
   onChange: (gameId: GameId) => void;
 }
 
@@ -33,15 +30,15 @@ export function GamePicker({
   value,
   themeId,
   comingSoon,
-  labels,
   onChange,
 }: GamePickerProps) {
+  const { t } = useTranslation();
   const categories = getGamesByCategory();
 
   return (
     <div
       role="radiogroup"
-      aria-label="Game selection"
+      aria-label={t('createRoom.game.pickerTitle')}
       data-testid="game-picker"
     >
       {categories.map(({ category, games }) => (
@@ -67,11 +64,13 @@ export function GamePicker({
                   className={`${s.gameCard} ${active ? s.gameCardActive : ''}`}
                 >
                   {active ? (
-                    <span className={s.gameCardBadge}>✓ {labels.selected}</span>
+                    <span className={s.gameCardBadge}>
+                      ✓ {t('createRoom.game.selected')}
+                    </span>
                   ) : null}
                   {blocked ? (
                     <span className={s.gameCardComingSoon}>
-                      {labels.comingSoon}
+                      {t('createRoom.game.comingSoon')}
                     </span>
                   ) : null}
                   <div className={s.gameCardArt}>

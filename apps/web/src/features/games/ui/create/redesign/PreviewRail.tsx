@@ -1,98 +1,106 @@
+'use client';
+
 import { CreateRoomButton } from '@arcadeum/ui/components/Button/SpecializedButtons';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import s from './GameCreateView.module.scss';
+import f from './CreateFlow.module.scss';
 import { RailPreviewArt } from './RailPreviewArt';
 import { RulesAccess } from './RulesAccess';
-import { GAMES, findCriticalTheme, findSeaBattleTheme } from './data/themes';
-import { getThemeById } from '@/features/games/lib/shared-themes';
+import { GAMES } from './data/themes';
+import { resolveThemeName } from './SelectedGameCard';
+import { supportedRules } from './data/createFlow';
 import type { CreateRoomForm } from './data/form';
-
-interface SummaryLabels {
-  livePreview: string;
-  defaultRoomName: string;
-  roomName?: string;
-  game: string;
-  theme: string;
-  maxPlayers: string;
-  visibility: string;
-  auto: string;
-  upTo: (n: number) => string;
-  visibilityPublic: string;
-  visibilityUnlisted: string;
-  visibilityPrivate: string;
-}
 
 interface Props {
   form: CreateRoomForm;
+  defaultRoomName: string;
   isValid: boolean;
   loading: boolean;
   blocked: boolean;
   error?: string | null;
-  labels: SummaryLabels;
-  cta: {
-    create: string;
-    creating: string;
-    comingSoon: string;
-    shortcut: string;
-  };
   onSubmit: () => void;
   onThemeChange?: (theme: string) => void;
 }
 
-function themeName(form: CreateRoomForm): string | null {
-  const theme = getThemeById(form.themeId);
-  if (theme) {
-    return (
-      theme.id.charAt(0).toUpperCase() + theme.id.slice(1).replace(/-/g, ' ')
-    );
-  }
-  if (form.gameId === 'critical_v1')
-    return findCriticalTheme(form.themeId).name;
-  if (form.gameId === 'sea_battle_v1')
-    return findSeaBattleTheme(form.themeId).name;
-  return null;
-}
-
-function visibilityLabel(form: CreateRoomForm, labels: SummaryLabels): string {
-  if (form.visibility === 'public') return labels.visibilityPublic;
-  if (form.visibility === 'unlisted') return labels.visibilityUnlisted;
-  return labels.visibilityPrivate;
-}
-
-function maxPlayersLabel(form: CreateRoomForm, labels: SummaryLabels): string {
-  const cap = GAMES[form.gameId].players.max;
-  if (form.maxPlayers === 'auto') return `${labels.auto} · ${labels.upTo(cap)}`;
-  return String(form.maxPlayers);
+function Row({
+  label,
+  value,
+  testId,
+}: {
+  label: string;
+  value: string;
+  testId?: string;
+}) {
+  return (
+    <div className={s.railRow}>
+      <span className={s.railRowLabel}>{label}</span>
+      <span className={s.railRowValue} data-testid={testId}>
+        {value}
+      </span>
+    </div>
+  );
 }
 
 export function PreviewRail({
   form,
+  defaultRoomName,
   isValid,
   loading,
   blocked,
   error,
-  labels,
-  cta,
   onSubmit,
   onThemeChange,
 }: Props) {
+  const { t } = useTranslation();
   const game = GAMES[form.gameId];
-  const tName = themeName(form);
-  const displayTitle = form.roomName.trim() || labels.defaultRoomName;
+  const themeName = resolveThemeName(form.gameId, form.themeId);
+  const displayTitle = form.roomName.trim() || defaultRoomName;
+  const extraPacks = form.expansionPackIds.filter((id) => id !== 'core').length;
+
+  const visibilityText =
+    form.visibility === 'public'
+      ? t('createRoom.details.visibilityPublic')
+      : form.visibility === 'unlisted'
+        ? t('createRoom.details.visibilityUnlisted')
+        : t('createRoom.details.visibilityPrivate');
+
+  const playersText =
+    form.maxPlayers === 'auto'
+      ? game.players.min === game.players.max
+        ? String(game.players.max)
+        : `${t('createRoom.details.auto')} · ${t('createRoom.details.upTo', { n: game.players.max })}`
+      : String(form.maxPlayers);
+
+  const ruleNames = supportedRules(form.gameId)
+    .filter((k) => k !== 'spectators' && form.rules[k])
+    .map((k) => {
+      if (k === 'combos') return t('createRoom.rules.combos.title');
+      if (k === 'idle') return t('createRoom.rules.idle.title');
+      return t('createRoom.rules.teams.title');
+    });
+
+  // Say why the button is off, in plain words, right where the user looks.
+  const disabledReason = blocked
+    ? t('createRoom.cta.whyUnavailable')
+    : !isValid
+      ? t('createRoom.cta.whyNeedName')
+      : null;
 
   return (
     <aside
       className={s.rail}
-      aria-label={labels.livePreview}
+      aria-label={t('createRoom.summary.title')}
       data-testid="preview-rail"
     >
       <div className={s.railHeader}>
         <span className={s.railHeaderTag}>
           <span className={s.railArtDot} aria-hidden="true" />
-          {labels.livePreview}
+          {t('createRoom.summary.title')}
         </span>
         <h3 className={s.railHeaderTitle} data-testid="preview-room-title">
           {displayTitle}
         </h3>
+        <p className={f.railIntro}>{t('createRoom.summary.subtitle')}</p>
       </div>
 
       <div className={s.railArtContainer}>
@@ -104,41 +112,69 @@ export function PreviewRail({
       </div>
 
       <div className={s.railSummary}>
-        <div className={s.railRow}>
-          <span className={s.railRowLabel}>{labels.roomName ?? 'Room'}</span>
-          <span className={s.railRowValue}>{displayTitle}</span>
-        </div>
-        <div className={s.railRow}>
-          <span className={s.railRowLabel}>{labels.game}</span>
-          <span className={s.railRowValue}>{game.title}</span>
-        </div>
-        {game.hasThemes && tName ? (
-          <div className={s.railRow}>
-            <span className={s.railRowLabel}>{labels.theme}</span>
-            <span className={s.railRowValue}>{tName}</span>
-          </div>
+        <Row label={t('createRoom.summary.room')} value={displayTitle} />
+        <Row label={t('createRoom.summary.game')} value={game.title} />
+        {game.hasThemes && themeName ? (
+          <Row label={t('createRoom.summary.theme')} value={themeName} />
         ) : null}
-        <div className={s.railRow}>
-          <span className={s.railRowLabel}>{labels.maxPlayers}</span>
-          <span className={s.railRowValue}>
-            {maxPlayersLabel(form, labels)}
-          </span>
-        </div>
-        <div className={s.railRow}>
-          <span className={s.railRowLabel}>{labels.visibility}</span>
-          <span className={s.railRowValue}>
-            {visibilityLabel(form, labels)}
-          </span>
-        </div>
+        <Row label={t('createRoom.summary.players')} value={playersText} />
+        <Row label={t('createRoom.summary.access')} value={visibilityText} />
+        {game.hasExpansion ? (
+          <Row
+            label={t('createRoom.summary.packs')}
+            value={
+              extraPacks === 0
+                ? t('createRoom.packs.summaryCore')
+                : t('createRoom.packs.summaryExtra', { n: extraPacks })
+            }
+          />
+        ) : null}
+        <Row
+          label={t('createRoom.summary.rules')}
+          value={
+            ruleNames.length > 0
+              ? ruleNames.join(', ')
+              : t('createRoom.summary.rulesNone')
+          }
+        />
+        <Row
+          label={t('createRoom.summary.ranked')}
+          value={
+            form.ranked
+              ? t('createRoom.summary.yes')
+              : t('createRoom.summary.no')
+          }
+        />
       </div>
 
       <div className={s.railRulesRow}>
         <RulesAccess gameId={form.gameId} themeId={form.themeId} />
       </div>
 
-      {error ? <div className={s.errorBox}>{error}</div> : null}
+      {error ? (
+        <div
+          className={`${f.notice} ${f.noticeError}`}
+          style={{ margin: '0 18px 18px' }}
+          role="alert"
+          data-testid="create-error"
+        >
+          <span className={f.noticeTitle}>
+            {t('createRoom.errors.submitTitle')}
+          </span>
+          <span>{error}</span>
+          <span>{t('createRoom.errors.submitHelp')}</span>
+          <button type="button" className={f.noticeBtn} onClick={onSubmit}>
+            {t('createRoom.errors.retry')}
+          </button>
+        </div>
+      ) : null}
 
       <div className={s.railCta}>
+        {disabledReason ? (
+          <p className={f.ctaReason} data-testid="create-disabled-reason">
+            {disabledReason}
+          </p>
+        ) : null}
         <CreateRoomButton
           type="button"
           disabled={!isValid || loading || blocked}
@@ -146,9 +182,10 @@ export function PreviewRail({
           fullWidth
           data-testid="create-room-button"
         >
-          {blocked ? cta.comingSoon : loading ? cta.creating : cta.create}
+          {loading ? t('createRoom.cta.creating') : t('createRoom.cta.create')}
         </CreateRoomButton>
-        <p className={s.createCaption}>{cta.shortcut}</p>
+        <p className={f.ctaNext}>{t('createRoom.cta.next')}</p>
+        <p className={s.createCaption}>{t('createRoom.cta.shortcut')}</p>
       </div>
     </aside>
   );

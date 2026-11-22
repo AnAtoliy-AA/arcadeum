@@ -1,0 +1,263 @@
+@use '../../../../../app/styles/breakpoints' as bp;
+
+/* Styles for the guided create-room flow (step nav, helper text, presets with
+   explanations, notices). They rely on the --gc-* tokens defined on the page
+   wrapper in GameCreateView.module.scss. */
+
+.quickNote {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--gc-text-dim);
+  max-width: 60ch;
+}
+
+.progress {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.progressLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--gc-line);
+  background: var(--gc-bg-card);
+  color: var(--gc-text);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+
+.progressLink:hover,
+.progressLink:focus-visible {
+  border-color: var(--gc-accent);
+}
+
+.progressNum {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--gc-line);
+  color: var(--gc-text);
+}
+
+.progressNumDone {
+  background: var(--gc-accent);
+  color: #111;
+}
+
+.stepWhy {
+  margin: -12px 0 20px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--gc-text-dim);
+  max-width: 62ch;
+}
+
+.stepAnchor {
+  scroll-margin-top: 96px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.subhead {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gc-text);
+}
+
+.helper {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--gc-text-dim);
+}
+
+.fieldError {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #fca5a5;
+}
+
+.inputInvalid {
+  border-color: #ef4444 !important;
+}
+
+.presetGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@include bp.narrow {
+  .presetGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.presetCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--gc-line);
+  background: var(--gc-bg-card);
+  color: var(--gc-text);
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.presetCard:hover {
+  border-color: var(--gc-line-strong);
+}
+
+.presetCardActive {
+  border-color: var(--gc-accent);
+  background: rgba(255, 209, 102, 0.1);
+}
+
+.presetTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.presetHint {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--gc-text-dim);
+}
+
+.disclosure {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--gc-accent);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.disclosureBody {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.pickerPanel {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--gc-line);
+  background: var(--gc-bg-card);
+}
+
+.pickerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.pickerTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.08);
+  color: var(--gc-text);
+}
+
+.noticeError {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.noticeTitle {
+  font-weight: 600;
+}
+
+.noticeBtn {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--gc-line-strong);
+  background: transparent;
+  color: var(--gc-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.railIntro {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--gc-text-dim);
+}
+
+.ctaReason {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #fcd34d;
+  text-align: center;
+}
+
+.ctaNext {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--gc-text-dim);
+  text-align: center;
+}
+
+@include bp.cta {
+  /* The fixed bottom bar must stay compact: keep only the reason. */
+  .ctaNext {
+    display: none;
+  }
+}

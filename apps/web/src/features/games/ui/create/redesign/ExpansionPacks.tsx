@@ -1,56 +1,52 @@
+'use client';
+
 import { useState } from 'react';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import s from './GameCreateView.module.scss';
 import { EXPANSION_PACK_LIST } from './data/themes';
 
 interface Props {
   value: string[];
-  labels: {
-    barTitle: string;
-    barDesc: string;
-    selectAll: string;
-    clearExtras: string;
-    show: string;
-    hide: string;
-    alwaysOn: string;
-    coreSummary: string;
-    cardsSuffix: string;
-  };
   onChange: (ids: string[]) => void;
 }
 
-export function ExpansionPacks({ value, labels, onChange }: Props) {
+/**
+ * Optional extra card packs for Critical. Core is always on. The summary chip
+ * stays visible so people can see the current choice without opening the list.
+ */
+export function ExpansionPacks({ value, onChange }: Props) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const extras = EXPANSION_PACK_LIST.filter((p) => !p.locked);
+  const extraCount = value.filter((id) => id !== 'core').length;
   const allExtrasSelected = extras.every((p) => value.includes(p.id));
 
-  const summaryText =
-    value.length <= 1
-      ? labels.coreSummary
-      : `${value.length - 1} ${value.length - 1 === 1 ? 'pack' : 'packs'}`;
+  const summary =
+    extraCount === 0
+      ? t('createRoom.packs.summaryCore')
+      : t('createRoom.packs.summaryExtra', { n: extraCount });
 
   function toggle(id: string) {
     const pack = EXPANSION_PACK_LIST.find((p) => p.id === id);
     if (!pack || pack.locked) return;
-    const next = value.includes(id)
-      ? value.filter((v) => v !== id)
-      : [...value, id];
-    onChange(next);
+    onChange(
+      value.includes(id) ? value.filter((v) => v !== id) : [...value, id],
+    );
   }
 
   function selectAllOrClear() {
-    if (allExtrasSelected) {
-      onChange(['core']);
-    } else {
-      onChange(['core', ...extras.map((p) => p.id)]);
-    }
+    onChange(
+      allExtrasSelected ? ['core'] : ['core', ...extras.map((p) => p.id)],
+    );
   }
 
   return (
-    <>
+    <div data-testid="expansion-packs">
       <div className={s.expansionBar}>
         <div className={s.expansionBarText}>
-          <p className={s.expansionBarTitle}>{labels.barTitle}</p>
-          <p className={s.expansionBarDesc}>{labels.barDesc}</p>
+          <p className={s.expansionBarTitle} data-testid="packs-summary">
+            {summary}
+          </p>
         </div>
         <div className={s.expansionBarRight}>
           <button
@@ -58,7 +54,9 @@ export function ExpansionPacks({ value, labels, onChange }: Props) {
             className={s.linkBtn}
             onClick={selectAllOrClear}
           >
-            {allExtrasSelected ? labels.clearExtras : labels.selectAll}
+            {allExtrasSelected
+              ? t('createRoom.packs.clearExtras')
+              : t('createRoom.packs.selectAll')}
           </button>
           <button
             type="button"
@@ -66,7 +64,7 @@ export function ExpansionPacks({ value, labels, onChange }: Props) {
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
           >
-            {open ? labels.hide : labels.show} {summaryText}
+            {open ? t('createRoom.packs.hide') : t('createRoom.packs.show')}
           </button>
         </div>
       </div>
@@ -82,6 +80,7 @@ export function ExpansionPacks({ value, labels, onChange }: Props) {
                 aria-checked={checked}
                 aria-disabled={pack.locked}
                 tabIndex={pack.locked ? -1 : 0}
+                data-testid={`pack-${pack.id}`}
                 className={`${s.packRow} ${checked ? s.packRowActive : ''} ${pack.locked ? s.packRowLocked : ''}`}
                 onClick={() => toggle(pack.id)}
                 onKeyDown={(e) => {
@@ -100,11 +99,11 @@ export function ExpansionPacks({ value, labels, onChange }: Props) {
                   <div className={s.packHeader}>
                     <span className={s.packName}>{pack.name}</span>
                     <span className={s.packChip}>
-                      {pack.count} {labels.cardsSuffix}
+                      {t('createRoom.packs.cards', { n: pack.count })}
                     </span>
                     {pack.locked ? (
                       <span className={`${s.packChip} ${s.packChipLocked}`}>
-                        {labels.alwaysOn}
+                        {t('createRoom.packs.alwaysOn')}
                       </span>
                     ) : null}
                   </div>
@@ -115,6 +114,6 @@ export function ExpansionPacks({ value, labels, onChange }: Props) {
           })}
         </div>
       ) : null}
-    </>
+    </div>
   );
 }

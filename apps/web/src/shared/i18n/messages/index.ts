@@ -21,6 +21,7 @@ import type { en as battlePassEn } from './battle-pass';
 import type { en as musicPlayerEn } from './music-player';
 import type { en as walletEn } from './wallet';
 import type { en as arcadePetCompanionEn } from './arcade-pet-companion';
+import type { CreateRoomMessages } from './create-room/en';
 import type { en as roomsBrowserEn } from './roomsBrowser';
 import type { chatMessages, chatListMessages } from './chat';
 
@@ -48,6 +49,7 @@ export type EnglishTranslations = {
   musicPlayer: typeof musicPlayerEn;
   wallet: typeof walletEn;
   arcadePetCompanion: typeof arcadePetCompanionEn;
+  createRoom: CreateRoomMessages;
   roomsBrowser: typeof roomsBrowserEn;
 };
 
@@ -112,6 +114,9 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
       seoMod.loadSeoMessages(locale),
       homeMod.loadHomeMessages(locale),
     ]);
+  const createRoom = await import('./create-room').then((m) =>
+    m.loadCreateRoomMessages(locale),
+  );
 
   return {
     common: common[locale],
@@ -136,6 +141,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     musicPlayer: musicPlayer[locale],
     wallet: wallet[locale],
     arcadePetCompanion: arcadePetCompanion[locale],
+    createRoom,
     roomsBrowser: roomsBrowser[locale],
   };
 }

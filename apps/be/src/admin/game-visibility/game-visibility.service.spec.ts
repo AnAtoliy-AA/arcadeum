@@ -252,12 +252,18 @@ it('listForAdmin returns the full catalog joined with tiers (defaults to all)', 
 });
 
 describe('GameVisibilityService production defaults', () => {
-  const build = (nodeEnv: string, rows: Array<Record<string, unknown>> = []) =>
+  const build = (
+    nodeEnv: string,
+    rows: Array<Record<string, unknown>> = [],
+    e2e?: string,
+  ) =>
     new GameVisibilityService(
       makeModelMock(rows) as unknown as ConstructorParameters<
         typeof GameVisibilityService
       >[0],
-      { get: () => nodeEnv } as unknown as ConfigService,
+      {
+        get: (k: string) => (k === 'E2E' ? e2e : nodeEnv),
+      } as unknown as ConfigService,
     );
 
   it('defaults ArcadePet off in production and on elsewhere', async () => {
@@ -266,6 +272,12 @@ describe('GameVisibilityService production defaults', () => {
     ).resolves.toBe('none');
     await expect(
       build('development').getEffectiveTier('arcade_pet_v1'),
+    ).resolves.toBe('all');
+  });
+
+  it('keeps the flag on for e2e runs on a production build', async () => {
+    await expect(
+      build('production', [], 'true').getEffectiveTier('arcade_pet_v1'),
     ).resolves.toBe('all');
   });
 

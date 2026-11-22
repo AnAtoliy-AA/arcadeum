@@ -49,12 +49,17 @@ export class GameVisibilityService {
     @Optional() private readonly config?: ConfigService,
   ) {}
 
-  /** Tier of a game without an admin override (flags default off in prod). */
+  /**
+   * Tier of a game without an admin override. Flags default off in production
+   * (fail closed without config); E2E runs use a production build but need
+   * the features on, so `E2E=true` keeps the open default.
+   */
   private defaultGameTier(gameId: string): VisibilityTier {
-    // Fail closed: without config we cannot rule out production.
-    if (this.config && this.config.get<string>('NODE_ENV') !== 'production') {
-      return 'all';
-    }
+    const isProd = this.config
+      ? this.config.get<string>('NODE_ENV') === 'production' &&
+        this.config.get<string>('E2E') !== 'true'
+      : true;
+    if (!isProd) return 'all';
     return getCatalogEntry(gameId)?.productionDefaultTier ?? 'all';
   }
 

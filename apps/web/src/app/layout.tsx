@@ -146,6 +146,21 @@ export default async function RootLayout({
       data-theme-preference={themePreference}
     >
       <head>
+        {process.env.NEXT_PUBLIC_E2E === 'true' ? (
+          // E2E builds only. Linux WebKit rasterises in software, and
+          // backdrop-filter (the glass/blur effects) makes its web process
+          // allocate ~1 GB/s until the machine runs out of memory, which
+          // killed CI runners. It has to be in the HTML head so it applies
+          // before first paint; adding it from a script after load races
+          // the first paint and does not stop the runaway.
+          <style
+            data-e2e-no-backdrop-filter=""
+            dangerouslySetInnerHTML={{
+              __html:
+                '*,*::before,*::after{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}',
+            }}
+          />
+        ) : null}
         {/*
          * Resource hints — only for origins actually used on first paint.
          * R2 CDN hosts game cover images and assets loaded eagerly.

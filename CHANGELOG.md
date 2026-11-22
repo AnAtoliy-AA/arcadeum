@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.11] - 2026-11-22
+
+### Added
+- rework create-room flow with guided steps, presets and clearer states
+
+
 ## [1.31.10] - 2026-11-22
 
 ### Fixed

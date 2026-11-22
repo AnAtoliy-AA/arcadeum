@@ -32,6 +32,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ArcadePet controller, gateway, DTO, merge and economy edge-case tests plus a locale parity test and an e2e for rejected gifts
 
+## [1.31.0] - 2026-11-22
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.30.116] - 2026-11-22
 
 ### Fixed

@@ -285,4 +285,112 @@ describe('ArcadePetEconomyService', () => {
     expect(res.ok).toBe(true);
     expect(model.create).toHaveBeenCalledTimes(2);
   });
+
+  describe('idempotent actions', () => {
+    const upgrade = {
+      type: 'upgrade_home' as const,
+      currency: 'coins' as const,
+    };
+
+    it('answers a replayed action id without writing again', async () => {
+      model.findOne.mockResolvedValue(
+        doc({ homeCapacity: 2, recentActionIds: ['act-1'] }),
+      );
+      const res = await service.perform(userId, upgrade, 'act-1');
+      expect(res.ok).toBe(true);
+      expect(res.collection.homeCapacity).toBe(2);
+      expect(model.findOneAndUpdate).not.toHaveBeenCalled();
+      expect(model.create).not.toHaveBeenCalled();
+    });
+
+    it('records the action id in the same atomic update', async () => {
+      model.findOne.mockResolvedValue(doc());
+      model.findOneAndUpdate.mockImplementation(
+        (_f: unknown, u: { $set: object }) =>
+          Promise.resolve({ ...doc(), revision: 2, ...u.$set }),
+      );
+      await service.perform(userId, upgrade, 'act-2');
+      const [, update] = model.findOneAndUpdate.mock.calls[0] as [
+        unknown,
+        { $push: { recentActionIds: { $each: string[]; $slice: number } } },
+      ];
+      expect(update.$push.recentActionIds).toEqual({
+        $each: ['act-2'],
+        $slice: -50,
+      });
+    });
+
+    it('treats a lost race for the same action id as already applied', async () => {
+      model.findOne
+        .mockResolvedValueOnce(doc())
+        .mockResolvedValueOnce(
+          doc({ revision: 2, homeCapacity: 2, recentActionIds: ['act-3'] }),
+        );
+      model.findOneAndUpdate.mockResolvedValueOnce(null);
+      const res = await service.perform(userId, upgrade, 'act-3');
+      expect(res.ok).toBe(true);
+      expect(res.collection.homeCapacity).toBe(2);
+      expect(model.findOneAndUpdate).toHaveBeenCalledTimes(1);
+    });
+
+    it('stamps current schema version and applies without an id as before', async () => {
+      model.findOne.mockResolvedValue(doc());
+      model.findOneAndUpdate.mockImplementation(
+        (_f: unknown, u: { $set: object }) =>
+          Promise.resolve({ ...doc(), revision: 2, ...u.$set }),
+      );
+      await service.perform(userId, upgrade);
+      const [, update] = model.findOneAndUpdate.mock.calls[0] as [
+        unknown,
+        { $set: { schemaVersion: number }; $push?: unknown },
+      ];
+      expect(update.$set.schemaVersion).toBe(2);
+      expect(update.$push).toBeUndefined();
+    });
+
+    it('derives the gift id from the action id so retries match', async () => {
+      model.findOne.mockResolvedValue(doc({ revision: 6 }));
+      model.findOneAndUpdate.mockImplementation(
+        (_f: unknown, u: { $set: object }) =>
+          Promise.resolve({ ...doc(), revision: 7, ...u.$set }),
+      );
+      await service.perform(
+        userId,
+        {
+          type: 'send_gift',
+          recipientUsername: 'bob',
+          species: 'slime',
+          theme: 'retro',
+          petName: 'Goo',
+        },
+        'act-4',
+      );
+      expect(grantPresent).toHaveBeenCalledWith(
+        recipientId.toString(),
+        expect.objectContaining({ id: `gift-${userId}-act-4` }),
+      );
+    });
+
+    it('still debits when a retry finds the gift already delivered', async () => {
+      model.findOne.mockResolvedValue(doc());
+      model.findOneAndUpdate.mockImplementation(
+        (_f: unknown, u: { $set: object }) =>
+          Promise.resolve({ ...doc(), revision: 2, ...u.$set }),
+      );
+      grantPresent.mockResolvedValue('duplicate');
+      const res = await service.perform(
+        userId,
+        {
+          type: 'send_gift',
+          recipientUsername: 'bob',
+          species: 'slime',
+          theme: 'retro',
+          petName: 'Goo',
+        },
+        'act-5',
+      );
+      expect(res.ok).toBe(true);
+      expect(model.findOneAndUpdate).toHaveBeenCalledTimes(1);
+    });
+  });
 });

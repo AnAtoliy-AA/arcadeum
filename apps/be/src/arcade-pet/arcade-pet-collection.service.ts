@@ -2,11 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
+  ARCADE_PET_SCHEMA_VERSION,
   MAX_PRESENTS,
+  MAX_RECENT_ACTION_IDS,
+  MAX_TREAT_STOCK,
   WELCOME_PRESENT_ID,
   createEmptyCollection,
   createWelcomePresent,
   mergeClientPet,
+  migrateCollection,
+  needsMigration,
+  type GameTreatId,
   type ArcadePetCollectionPayload,
   type ArcadePetCollectionResponse,
   type PetGiftPresentPayload,
@@ -20,7 +26,11 @@ import {
   type ArcadePetCollectionDocument,
 } from './schemas/arcade-pet-collection.schema';
 
+const MAX_GRANT_ATTEMPTS = 5;
+
 export type GrantPresentResult = 'granted' | 'duplicate' | 'full';
+export type AwardTreatResult =
+  'awarded' | 'duplicate' | 'no_pet' | 'stock_full';
 
 @Injectable()
 export class ArcadePetCollectionService {
@@ -34,8 +44,8 @@ export class ArcadePetCollectionService {
     doc: ArcadePetCollectionDocument | null,
   ): ArcadePetCollectionResponse {
     if (!doc) return { revision: 0, ...createEmptyCollection() };
-    return {
-      revision: doc.revision,
+    const stored = {
+      schemaVersion: doc.schemaVersion,
       pets: doc.pets,
       activePetId: doc.activePetId,
       gemBalance: doc.gemBalance,
@@ -49,6 +59,23 @@ export class ArcadePetCollectionService {
       dailyStreak: doc.dailyStreak ?? 0,
       lastDailyClaimDay: doc.lastDailyClaimDay ?? null,
       claimedMilestones: doc.claimedMilestones ?? [],
+    };
+    const payload = needsMigration(stored) ? migrateCollection(stored) : stored;
+    return {
+      revision: doc.revision,
+      pets: payload.pets,
+      activePetId: payload.activePetId,
+      gemBalance: payload.gemBalance,
+      coinBalance: payload.coinBalance,
+      adoptionCount: payload.adoptionCount,
+      homeCapacity: payload.homeCapacity,
+      queuedThemeForNextPet: payload.queuedThemeForNextPet,
+      presents: payload.presents,
+      hasConfirmedCare: payload.hasConfirmedCare,
+      isAtHome: payload.isAtHome,
+      dailyStreak: payload.dailyStreak,
+      lastDailyClaimDay: payload.lastDailyClaimDay,
+      claimedMilestones: payload.claimedMilestones,
     };
   }
 
@@ -87,7 +114,7 @@ export class ArcadePetCollectionService {
     // whitelisted merge. Balances, capacity, presents and rewards are
     // server-owned and never taken from the client.
     const clientById = new Map(dto.pets.map((p) => [p.id, p]));
-    const pets = current.pets.map((serverPet) => {
+    const pets = this.toResponse(current).pets.map((serverPet) => {
       const clientPet = clientById.get(serverPet.id);
       return clientPet ? mergeClientPet(serverPet, clientPet, now) : serverPet;
     });
@@ -96,7 +123,12 @@ export class ArcadePetCollectionService {
         ? dto.activePetId
         : current.activePetId;
 
-    const fields = { pets, activePetId, isAtHome: dto.isAtHome };
+    const fields = {
+      pets,
+      activePetId,
+      isAtHome: dto.isAtHome,
+      schemaVersion: ARCADE_PET_SCHEMA_VERSION,
+    };
 
     try {
       const saved = await this.model.findOneAndUpdate(
@@ -121,6 +153,7 @@ export class ArcadePetCollectionService {
   async grantPresent(
     userId: string,
     present: PetGiftPresentPayload,
+    attempt = 0,
   ): Promise<GrantPresentResult> {
     const userObjectId = new Types.ObjectId(userId);
     const filter = { userId: { $eq: userObjectId } };
@@ -137,9 +170,16 @@ export class ArcadePetCollectionService {
 
     const existing = await this.model.findOne(filter).select('presents');
     if (existing) {
-      return existing.presents.some((p) => p.id === present.id)
-        ? 'duplicate'
-        : 'full';
+      if (existing.presents.some((p) => p.id === present.id)) {
+        return 'duplicate';
+      }
+      if (existing.presents.length >= MAX_PRESENTS) return 'full';
+      // Room is left, so the push lost a race with a concurrent first write
+      // or inbox change: deliver again against the current document.
+      if (attempt >= MAX_GRANT_ATTEMPTS) {
+        throw new Error('ArcadePet present delivery contention');
+      }
+      return this.grantPresent(userId, present, attempt + 1);
     }
 
     const presents: PetGiftPresentPayload[] =
@@ -158,7 +198,55 @@ export class ArcadePetCollectionService {
     } catch (error) {
       if (!isDuplicateKeyError(error)) throw error;
       // A concurrent first write created the document: deliver against it.
-      return this.grantPresent(userId, present);
+      return this.grantPresent(userId, present, attempt + 1);
     }
+  }
+
+  /**
+   * Awards one treat to the user's active pet for a verified match win.
+   * Idempotent per `awardKey` (e.g. `treat:<sessionId>`): the key is recorded
+   * in the same atomic update, so a replayed match result never double-awards.
+   * Users without a pet get nothing. Never callable from a client.
+   */
+  async awardTreat(
+    userId: string,
+    treatId: GameTreatId,
+    awardKey: string,
+  ): Promise<AwardTreatResult> {
+    const userObjectId = new Types.ObjectId(userId);
+    const doc = await this.model.findOne({ userId: { $eq: userObjectId } });
+    const petId = doc?.activePetId;
+    if (!doc || !petId) return 'no_pet';
+    if (doc.recentActionIds?.includes(awardKey)) return 'duplicate';
+
+    const pet = this.toResponse(doc).pets.find((p) => p.id === petId);
+    if (!pet) return 'no_pet';
+    if ((pet.inventory[treatId] ?? 0) >= MAX_TREAT_STOCK) return 'stock_full';
+
+    const stockPath = `inventory.${treatId}`;
+    const res = await this.model.updateOne(
+      {
+        userId: { $eq: userObjectId },
+        recentActionIds: { $ne: awardKey },
+      },
+      {
+        $inc: { [`pets.$[pet].${stockPath}`]: 1, revision: 1 },
+        $push: {
+          recentActionIds: {
+            $each: [awardKey],
+            $slice: -MAX_RECENT_ACTION_IDS,
+          },
+        },
+      },
+      {
+        arrayFilters: [
+          {
+            'pet.id': { $eq: petId },
+            [`pet.${stockPath}`]: { $not: { $gte: MAX_TREAT_STOCK } },
+          },
+        ],
+      },
+    );
+    return res.modifiedCount === 1 ? 'awarded' : 'duplicate';
   }
 }

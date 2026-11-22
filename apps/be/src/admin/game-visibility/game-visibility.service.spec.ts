@@ -1,3 +1,4 @@
+import type { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { getModelToken } from '@nestjs/mongoose';
 import { GameVisibilityService } from './game-visibility.service';
@@ -248,4 +249,36 @@ it('listForAdmin returns the full catalog joined with tiers (defaults to all)', 
   const texas = rows.find((r) => r.gameId === 'texas_holdem_v1');
   expect(texas?.tier).toBe('all');
   expect(texas?.variants).toEqual([{ variantId: 'standard', tier: 'all' }]);
+});
+
+describe('GameVisibilityService production defaults', () => {
+  const build = (nodeEnv: string, rows: Array<Record<string, unknown>> = []) =>
+    new GameVisibilityService(
+      makeModelMock(rows) as unknown as ConstructorParameters<
+        typeof GameVisibilityService
+      >[0],
+      { get: () => nodeEnv } as unknown as ConfigService,
+    );
+
+  it('defaults ArcadePet off in production and on elsewhere', async () => {
+    await expect(
+      build('production').getEffectiveTier('arcade_pet_v1'),
+    ).resolves.toBe('none');
+    await expect(
+      build('development').getEffectiveTier('arcade_pet_v1'),
+    ).resolves.toBe('all');
+  });
+
+  it('keeps other games on by default in production', async () => {
+    await expect(
+      build('production').getEffectiveTier('chess_v1'),
+    ).resolves.toBe('all');
+  });
+
+  it('lets an admin override turn the default-off game on', async () => {
+    const svc = build('production', [
+      { gameId: 'arcade_pet_v1', variantId: null, tier: 'all' },
+    ]);
+    await expect(svc.getEffectiveTier('arcade_pet_v1')).resolves.toBe('all');
+  });
 });

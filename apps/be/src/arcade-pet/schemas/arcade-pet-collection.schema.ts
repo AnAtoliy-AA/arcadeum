@@ -19,9 +19,16 @@ export class ArcadePetCollection extends Document {
   })
   userId: Types.ObjectId;
 
-  /** Stored-shape version; bump ARCADE_PET_SCHEMA_VERSION and migrate on read. */
+  /**
+   * Stored-shape version. Older documents are migrated on read (see
+   * migrateCollection) and rewritten at the current version on the next save.
+   */
   @Prop({ type: Number, default: ARCADE_PET_SCHEMA_VERSION })
   schemaVersion: number;
+
+  /** Bounded list of recent action ids; makes retried actions idempotent. */
+  @Prop({ type: [String], default: [] })
+  recentActionIds: string[];
 
   @Prop({ type: Number, default: 0, min: 0 })
   revision: number;

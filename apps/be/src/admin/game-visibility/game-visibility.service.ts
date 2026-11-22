@@ -3,7 +3,9 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
+  Optional,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -44,14 +46,21 @@ export class GameVisibilityService {
   constructor(
     @InjectModel(GameVisibility.name)
     private readonly model: Model<GameVisibilityDocument>,
+    @Optional() private readonly config?: ConfigService,
   ) {}
+
+  /** Tier of a game without an admin override (flags default off in prod). */
+  private defaultGameTier(gameId: string): VisibilityTier {
+    if (this.config?.get<string>('NODE_ENV') !== 'production') return 'all';
+    return getCatalogEntry(gameId)?.productionDefaultTier ?? 'all';
+  }
 
   async getEffectiveTier(
     gameId: string,
     variantId?: string,
   ): Promise<VisibilityTier> {
     const map = await this.getMap();
-    const gameTier = map.get(gameId) ?? 'all';
+    const gameTier = map.get(gameId) ?? this.defaultGameTier(gameId);
     if (!variantId) return gameTier;
     const variantTier = map.get(variantKey(gameId, variantId)) ?? 'all';
     return TIER_RANK[gameTier] >= TIER_RANK[variantTier]
@@ -116,7 +125,7 @@ export class GameVisibilityService {
     const map = await this.getMap();
     return GAME_CATALOG.map((g) => ({
       gameId: g.gameId,
-      tier: map.get(g.gameId) ?? 'all',
+      tier: map.get(g.gameId) ?? this.defaultGameTier(g.gameId),
       variants: g.variants.map((variantId) => ({
         variantId,
         tier: map.get(variantKey(g.gameId, variantId)) ?? 'all',

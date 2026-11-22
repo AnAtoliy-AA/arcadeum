@@ -14,6 +14,7 @@ import { User } from '../auth/schemas/user.schema';
 import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
 import { ActivityFeedService } from './activity-feed/activity-feed.service';
 import { ClanWarsQueueService } from '../clans/clan-wars-queue.service';
+import { ArcadePetTreatRewardService } from '../arcade-pet/arcade-pet-treat-reward.service';
 import { ClanWarsAutomationService } from '../clans/clan-wars-automation.service';
 
 @Injectable()
@@ -36,6 +37,8 @@ export class GamePostMatchService {
     private readonly clanWarsQueue?: ClanWarsQueueService,
     @Optional()
     private readonly clanWarsAutomation?: ClanWarsAutomationService,
+    @Optional()
+    private readonly petTreats?: ArcadePetTreatRewardService,
   ) {}
 
   async onGameCompleted(
@@ -88,6 +91,12 @@ export class GamePostMatchService {
       this.logger.warn(
         `Player stats recording failed: ${(err as Error).message}`,
       );
+    }
+
+    try {
+      await this.petTreats?.awardWinTreats(gameId, winners, sessionId);
+    } catch (err) {
+      this.logger.warn(`Pet treat award failed: ${(err as Error).message}`);
     }
 
     if (gameId === 'chess_v1') {

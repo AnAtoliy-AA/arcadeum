@@ -29,6 +29,10 @@ describe('GamePostMatchService', () => {
     resolveMatchForPlayers: jest.fn(),
   };
 
+  const mockPetTreats = {
+    awardWinTreats: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(() => {
     service = new GamePostMatchService(
       mockDailyChallenges as never,
@@ -43,6 +47,7 @@ describe('GamePostMatchService', () => {
       mockActivityFeed as never,
       mockClanWarsQueue as never,
       mockClanWarsAutomation as never,
+      mockPetTreats as never,
     );
     jest.clearAllMocks();
   });
@@ -111,5 +116,27 @@ describe('GamePostMatchService', () => {
     expect(
       mockClanWarsAutomation.resolveMatchForPlayers,
     ).not.toHaveBeenCalled();
+  });
+
+  it('awards pet treats from the verified session winners', async () => {
+    await service.onGameCompleted(
+      ['user_1', 'user_2'],
+      'chess_v1',
+      ['user_1'],
+      {},
+      'session-1',
+    );
+    expect(mockPetTreats.awardWinTreats).toHaveBeenCalledWith(
+      'chess_v1',
+      ['user_1'],
+      'session-1',
+    );
+  });
+
+  it('keeps post-match processing going when the treat award fails', async () => {
+    mockPetTreats.awardWinTreats.mockRejectedValueOnce(new Error('boom'));
+    await expect(
+      service.onGameCompleted(['user_1'], 'chess_v1', ['user_1'], {}, 's2'),
+    ).resolves.toBeUndefined();
   });
 });

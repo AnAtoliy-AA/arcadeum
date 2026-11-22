@@ -84,7 +84,7 @@ describe('mergeClientPet', () => {
     expect(merged.stats.hygiene).toBe(0);
   });
 
-  it('validates inventory keys and counts', () => {
+  it('never lets a client raise treat stock or invent keys', () => {
     const merged = mergeClientPet(
       serverPet(),
       withClient({
@@ -96,9 +96,23 @@ describe('mergeClientPet', () => {
       }),
       NOW,
     );
-    expect(merged.inventory.chess_cookie).toBe(MAX_TREAT_STOCK);
+    const server = serverPet().inventory;
+    expect(merged.inventory.chess_cookie).toBe(server.chess_cookie);
+    expect(merged.inventory.chess_cookie).toBeLessThanOrEqual(MAX_TREAT_STOCK);
     expect(merged.inventory.hearts_candy).toBe(0);
     expect(merged.inventory).not.toHaveProperty('bogus');
+  });
+
+  it('lets a client report consuming a treat', () => {
+    const server = serverPet();
+    const merged = mergeClientPet(
+      server,
+      withClient({
+        inventory: { ...server.inventory, chess_cookie: 1 },
+      }),
+      NOW,
+    );
+    expect(merged.inventory.chess_cookie).toBe(1);
   });
 
   it('sanitizes the name and falls back to the server name when invalid', () => {

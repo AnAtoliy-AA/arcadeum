@@ -135,6 +135,9 @@
   font-weight: 600;
   color: var(--gc-accent);
   text-decoration: none;
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 44px;
   padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid rgba(255, 209, 102, 0.25);

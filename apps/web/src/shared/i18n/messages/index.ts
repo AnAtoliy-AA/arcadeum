@@ -20,6 +20,7 @@ import type { en as notificationsEn } from './notifications';
 import type { en as battlePassEn } from './battle-pass';
 import type { en as musicPlayerEn } from './music-player';
 import type { en as walletEn } from './wallet';
+import type { CreateRoomMessages } from './create-room/en';
 import type { chatMessages, chatListMessages } from './chat';
 
 /** English translation type - used only for type inference, no runtime cost */
@@ -45,6 +46,7 @@ export type EnglishTranslations = {
   battlePass: typeof battlePassEn;
   musicPlayer: typeof musicPlayerEn;
   wallet: typeof walletEn;
+  createRoom: CreateRoomMessages;
 };
 
 /**
@@ -104,6 +106,9 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
       seoMod.loadSeoMessages(locale),
       homeMod.loadHomeMessages(locale),
     ]);
+  const createRoom = await import('./create-room').then((m) =>
+    m.loadCreateRoomMessages(locale),
+  );
 
   return {
     common: common[locale],
@@ -127,5 +132,6 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     battlePass: battlePass[locale],
     musicPlayer: musicPlayer[locale],
     wallet: wallet[locale],
+    createRoom,
   };
 }

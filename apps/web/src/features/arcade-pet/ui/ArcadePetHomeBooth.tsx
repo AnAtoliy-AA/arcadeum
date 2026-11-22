@@ -1,9 +1,11 @@
 import React from 'react';
+import { Button } from '@arcadeum/ui';
 import type { PetSpecies, PetStage, PetState } from '@arcadeum/games-core';
 import { ArcadePetWalkingSprite } from './ArcadePetWalkingSprite';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useDraggableHome } from './useDraggableHome';
 import styles from './arcade-pet-companion.module.scss';
+import boothStyles from './arcade-pet-booth.module.scss';
 
 interface ArcadePetHomeBoothProps {
   isAtHome: boolean;
@@ -55,14 +57,14 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className={`${styles.homeBooth} ${styles.col8} ${styles.row1} ${
-        isDragging ? styles.homeBoothDragging : ''
+      className={`${boothStyles.homeBooth} ${styles.col8} ${styles.row1} ${
+        isDragging ? boothStyles.homeBoothDragging : ''
       }`}
     >
       {isKnocked && (
         <div
           data-testid="arcade-pet-knock-bubble"
-          className={`mb-2 px-3 py-1.5 rounded-2xl bg-black/90 border border-amber-400 shadow-xl flex flex-col items-center gap-1 ${styles.knockBubble}`}
+          className={`mb-2 px-3 py-1.5 rounded-2xl bg-black/90 border border-amber-400 shadow-xl flex flex-col items-center gap-1 ${boothStyles.knockBubble}`}
         >
           <div className="flex items-center gap-1 text-xs font-black text-amber-300">
             <span>✊</span>
@@ -74,32 +76,42 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
               name: knockerName || t('arcadePetCompanion.friendPet'),
             })}
           </span>
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="sm"
+            shape="round"
             data-testid="open-door-and-play-btn"
             onClick={onOpenDoor}
-            className="mt-0.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold text-xs uppercase shadow-md transition-transform transform hover:scale-105 active:scale-95"
+            className="mt-0.5 text-xs uppercase"
           >
             {t('arcadePetCompanion.openDoor')}
-          </button>
+          </Button>
         </div>
       )}
 
       {isAtHome && !isKnocked && (
         <div
           data-testid="arcade-pet-sleeping-bubble"
-          className={`mb-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-amber-500/40 text-xs text-amber-200 flex items-center gap-1 shadow ${styles.sleepingZzz}`}
+          className={`mb-1 px-2 py-0.5 rounded-full bg-neutral-900/90 border border-amber-500/40 text-xs text-amber-200 flex items-center gap-1 shadow ${boothStyles.sleepingZzz}`}
         >
           <span>💤</span>
           <span>{t('arcadePetCompanion.resting')}</span>
         </div>
       )}
 
+      {/*
+        Decorative pointer target: the booth is draggable and click-to-toggle
+        for mouse and touch. Keyboard users get the same two actions through
+        real controls (the arrow-key drag handle below and the "send home"
+        button in the companion panel), so this wrapper is intentionally not
+        focusable and has no role (a role would nest the handle button inside
+        another interactive element).
+      */}
       <div
         data-testid="arcade-pet-house-structure"
         onClick={() => handleHouseClick(onToggleHome)}
         className={`relative flex flex-col items-center cursor-pointer transition-all transform hover:scale-105 ${
-          isKnocked ? styles.houseKnockWobble : ''
+          isKnocked ? boothStyles.houseKnockWobble : ''
         }`}
       >
         <button
@@ -109,7 +121,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           onKeyDown={onMoveKeyDown}
           onClick={(e) => e.stopPropagation()}
           aria-label={moveLabel}
-          className="flex items-center gap-1 text-[8px] text-amber-400/80 font-bold tracking-wider select-none mb-0.5 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-300"
+          className="flex items-center gap-1 text-xs text-amber-400/80 font-bold tracking-wider select-none mb-0.5 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
           title={moveLabel}
         >
           <span aria-hidden="true">⠿</span>
@@ -117,7 +129,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
           <span aria-hidden="true">⠿</span>
         </button>
         <div className="absolute -top-3 right-2 flex flex-col items-center pointer-events-none">
-          <span className={`text-xs text-neutral-400 ${styles.smokePuff}`}>
+          <span className={`text-xs text-neutral-400 ${boothStyles.smokePuff}`}>
             💨
           </span>
           <div className="w-2 h-3 bg-neutral-800 border border-neutral-600 rounded-t-sm" />
@@ -128,7 +140,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
         </div>
 
         <div className="w-28 bg-neutral-900/95 border-x border-b border-amber-600/50 rounded-b-xl p-2 shadow-2xl flex flex-col items-center gap-1.5 backdrop-blur-md">
-          <div className="px-1.5 py-0.2 rounded bg-amber-950/80 border border-amber-500/40 text-[9px] font-bold text-amber-300 text-center truncate max-w-full">
+          <div className="px-1.5 py-0.2 rounded bg-amber-950/80 border border-amber-500/40 text-xs font-bold text-amber-300 text-center truncate max-w-full">
             🐾 {localPetName}
           </div>
 
@@ -166,7 +178,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
               data-testid="home-places-container"
               className="w-full flex flex-col gap-1 border-t border-amber-800/40 pt-1"
             >
-              <div className="flex items-center justify-between text-[8px] text-amber-300 font-bold px-0.5">
+              <div className="flex items-center justify-between text-xs text-amber-300 font-bold px-0.5">
                 <span>{t('arcadePetCompanion.places')}</span>
                 <span data-testid="booth-capacity-tag">
                   {pets?.length ?? 1}/{placesCount}
@@ -183,7 +195,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
                           ? `home-place-slot-${idx}`
                           : `home-empty-slot-${idx}`
                       }
-                      className={`px-1 py-0.5 rounded text-[8px] flex items-center gap-0.5 truncate ${
+                      className={`px-1 py-0.5 rounded text-xs flex items-center gap-0.5 truncate ${
                         occupant
                           ? 'bg-amber-950/70 border border-amber-500/40 text-amber-200'
                           : 'border border-dashed border-neutral-700 text-neutral-500'
@@ -204,7 +216,7 @@ export const ArcadePetHomeBooth: React.FC<ArcadePetHomeBoothProps> = ({
             </div>
           )}
 
-          <span className="text-[8px] text-neutral-400 font-medium">
+          <span className="text-xs text-neutral-400 font-medium">
             {isAtHome
               ? t('arcadePetCompanion.wakeHint')
               : t('arcadePetCompanion.cozyCrib')}

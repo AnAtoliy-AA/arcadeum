@@ -1,7 +1,12 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { mockUseTranslation } from '@/features/arcade-pet/test/mock-translation';
 import { ArcadePetGame } from './ArcadePetGame';
+
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => mockUseTranslation(),
+}));
 
 describe('ArcadePetGame', () => {
   it('renders initial coins badge and LCD screen', () => {

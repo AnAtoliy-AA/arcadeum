@@ -17,7 +17,20 @@ export interface ModalProps extends Omit<BaseModalProps, 'data-testid'> {
   open: boolean;
   onClose?: () => void;
   className?: string;
+  /** Accessible name when the dialog has no visible title element. */
+  ariaLabel?: string;
+  /** Id of the visible title element (preferred over `ariaLabel`). */
+  ariaLabelledBy?: string;
 }
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
 
 export interface ModalContentProps extends BaseModalProps {
   maxWidth?: string | number;
@@ -25,9 +38,11 @@ export interface ModalContentProps extends BaseModalProps {
 
 export interface ModalHeaderProps extends BaseModalProps {
   onClose?: () => void;
+  /** Accessible label of the close button (pass a translated string). */
+  closeLabel?: string;
 }
 
-export type ModalTitleProps = BaseModalProps;
+export type ModalTitleProps = BaseModalProps & { id?: string };
 export type ModalBodyProps = BaseModalProps;
 export type ModalFooterProps = BaseModalProps;
 
@@ -36,6 +51,8 @@ export const Modal = memo(function Modal({
   onClose,
   className,
   children,
+  ariaLabel,
+  ariaLabelledBy,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +86,35 @@ export const Modal = memo(function Modal({
   useEffect(() => {
     if (!open) return;
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose?.();
+      if (e.key === 'Escape') {
+        onClose?.();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      // Focus trap: keep Tab / Shift+Tab cycling inside the dialog.
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      );
+      if (focusable.length === 0) {
+        e.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (e.shiftKey && (active === first || active === dialog)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!dialog.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
@@ -91,6 +136,8 @@ export const Modal = memo(function Modal({
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
+        aria-label={ariaLabelledBy ? undefined : ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         tabIndex={-1}
         data-state="open"
         className="w-full flex items-center justify-center max-h-full"
@@ -128,6 +175,7 @@ export const ModalContent = memo(function ModalContent({
 export const ModalHeader = memo(function ModalHeader({
   children,
   onClose,
+  closeLabel = 'Close modal',
   'data-testid': dataTestId,
   className,
 }: ModalHeaderProps) {
@@ -145,7 +193,7 @@ export const ModalHeader = memo(function ModalHeader({
           variant="icon"
           size="sm"
           onClick={onClose}
-          aria-label="Close modal"
+          aria-label={closeLabel}
           data-testid="modal-close-button"
           className="text-[var(--color)] hover:text-[var(--primary)] hover:bg-[var(--backgroundHover)]"
         >
@@ -158,11 +206,13 @@ export const ModalHeader = memo(function ModalHeader({
 
 export const ModalTitle = memo(function ModalTitle({
   children,
+  id,
   'data-testid': dataTestId,
   className,
 }: ModalTitleProps) {
   return (
     <span
+      id={id}
       data-testid={dataTestId}
       className={cx('text-[17px] font-bold text-[var(--color)]', className)}
     >
@@ -179,10 +229,7 @@ export const ModalBody = memo(function ModalBody({
   return (
     <div
       data-testid={dataTestId}
-      className={cx(
-        'flex-1 min-h-0 overflow-y-auto p-4 sm:p-5',
-        className,
-      )}
+      className={cx('flex-1 min-h-0 overflow-y-auto p-4 sm:p-5', className)}
     >
       {children}
     </div>

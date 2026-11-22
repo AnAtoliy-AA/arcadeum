@@ -1,5 +1,12 @@
 import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
-import { Modal, ModalContent, ModalHeader, ModalTitle, ModalBody, ModalFooter } from './Modal';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+} from './Modal';
 
 import { describe, it, expect, vi } from 'vitest';
 
@@ -91,5 +98,66 @@ describe('Modal', () => {
     expect(screen.getByText('My Title')).toBeInTheDocument();
     expect(screen.getByText('My Body')).toBeInTheDocument();
     expect(screen.getByText('My Footer')).toBeInTheDocument();
+  });
+});
+
+describe('Modal accessibility', () => {
+  it('labels the dialog and the close button', () => {
+    render(
+      <Modal open={true} onClose={vi.fn()} ariaLabel="Settings">
+        <ModalContent>
+          <ModalHeader onClose={vi.fn()} closeLabel="Fermer">
+            <ModalTitle>Settings</ModalTitle>
+          </ModalHeader>
+        </ModalContent>
+      </Modal>,
+    );
+    expect(
+      screen.getByRole('dialog', { name: 'Settings' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Fermer' })).toBeInTheDocument();
+  });
+
+  it('prefers aria-labelledby when a title id is provided', () => {
+    render(
+      <Modal open={true} ariaLabelledBy="t1">
+        <ModalContent>
+          <ModalTitle id="t1">Visible title</ModalTitle>
+        </ModalContent>
+      </Modal>,
+    );
+    expect(
+      screen.getByRole('dialog', { name: 'Visible title' }),
+    ).toBeInTheDocument();
+  });
+
+  it('traps Tab focus inside the dialog', () => {
+    render(
+      <Modal open={true} onClose={vi.fn()} ariaLabel="Trap">
+        <ModalContent>
+          <button>first</button>
+          <button>last</button>
+        </ModalContent>
+      </Modal>,
+    );
+    const first = screen.getByText('first');
+    const last = screen.getByText('last');
+    last.focus();
+    fireEvent.keyDown(document, { key: 'Tab' });
+    expect(document.activeElement).toBe(first);
+    first.focus();
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true });
+    expect(document.activeElement).toBe(last);
+  });
+
+  it('closes on Escape', () => {
+    const onClose = vi.fn();
+    render(
+      <Modal open={true} onClose={onClose} ariaLabel="Esc">
+        <ModalContent>x</ModalContent>
+      </Modal>,
+    );
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(onClose).toHaveBeenCalled();
   });
 });

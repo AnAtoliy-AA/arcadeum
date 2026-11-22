@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Button } from '@arcadeum/ui';
 import { ArcadePetGame } from '@/widgets/SimulationGames/ArcadePetGame';
 
 export interface ThemeOption {
@@ -31,20 +32,18 @@ export function ArcadePetThemeShowcase({
         className="flex flex-wrap items-center justify-center gap-2 pt-2"
       >
         {themes.map((theme) => (
-          <button
+          <Button
             key={theme.id}
-            type="button"
+            variant="chip"
+            size="sm"
+            active={selectedTheme === theme.id}
             aria-pressed={selectedTheme === theme.id}
             onClick={() => setSelectedTheme(theme.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
-              selectedTheme === theme.id
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 scale-105'
-                : 'bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 border border-neutral-700/60'
-            }`}
+            className="gap-2 px-4 text-xs font-bold"
           >
             <span aria-hidden="true">{theme.emoji}</span>
             <span>{theme.label}</span>
-          </button>
+          </Button>
         ))}
       </div>
       <div className="w-full flex justify-center py-4">

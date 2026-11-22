@@ -21,6 +21,13 @@ import {
   adoptionBy,
 } from './arcade-pet-companion-adoption';
 import {
+  statesEn,
+  statesEs,
+  statesFr,
+  statesRu,
+  statesBy,
+} from './arcade-pet-companion-states';
+import {
   landingEn,
   landingEs,
   landingFr,
@@ -30,6 +37,7 @@ import {
 
 export const en = {
   ...miscEn,
+  ...statesEn,
   landing: landingEn,
   snackBtn: 'Snack (🪙 {{cost}})',
   petBtn: 'Pet',
@@ -37,7 +45,6 @@ export const en = {
   presentsBtn: 'Presents',
   eggResting: 'Your ArcadePet is resting in its egg!',
   hatchCta: 'Hatch in Game Room',
-  openGameRoomCta: 'Open Game Room',
   opponentPet: 'Opponent Pet',
   opponentPetOf: "{{name}}'s Pet",
   restingBanner: 'Resting at Home • Growth paused (counts only running hours)',
@@ -102,6 +109,7 @@ export type ArcadePetCompanionMessages = DeepPartial<typeof en>;
 
 export const es: ArcadePetCompanionMessages = {
   ...miscEs,
+  ...statesEs,
   landing: landingEs,
   snackBtn: 'Snack (🪙 {{cost}})',
   petBtn: 'Acariciar',
@@ -109,7 +117,6 @@ export const es: ArcadePetCompanionMessages = {
   presentsBtn: 'Presentes',
   eggResting: '¡Tu ArcadePet descansa en su huevo!',
   hatchCta: 'Eclosionar en la sala de juego',
-  openGameRoomCta: 'Abrir la sala de juego',
   opponentPet: 'Mascota rival',
   opponentPetOf: 'Mascota de {{name}}',
   restingBanner:
@@ -175,6 +182,7 @@ export const es: ArcadePetCompanionMessages = {
 
 export const fr: ArcadePetCompanionMessages = {
   ...miscFr,
+  ...statesFr,
   landing: landingFr,
   snackBtn: 'Friandise (🪙 {{cost}})',
   petBtn: 'Caresser',
@@ -182,7 +190,6 @@ export const fr: ArcadePetCompanionMessages = {
   presentsBtn: 'Présents',
   eggResting: 'Ton ArcadePet se repose dans son œuf !',
   hatchCta: 'Éclore dans la salle de jeu',
-  openGameRoomCta: 'Ouvrir la salle de jeu',
   opponentPet: 'Animal adverse',
   opponentPetOf: 'Animal de {{name}}',
   restingBanner:
@@ -248,6 +255,7 @@ export const fr: ArcadePetCompanionMessages = {
 
 export const ru: ArcadePetCompanionMessages = {
   ...miscRu,
+  ...statesRu,
   landing: landingRu,
   snackBtn: 'Лакомство (🪙 {{cost}})',
   petBtn: 'Погладить',
@@ -255,7 +263,6 @@ export const ru: ArcadePetCompanionMessages = {
   presentsBtn: 'Презенты',
   eggResting: 'Ваш ArcadePet отдыхает в яйце!',
   hatchCta: 'Вылупить в игровой комнате',
-  openGameRoomCta: 'Открыть игровую комнату',
   opponentPet: 'Питомец соперника',
   opponentPetOf: 'Питомец игрока {{name}}',
   restingBanner:
@@ -319,6 +326,7 @@ export const ru: ArcadePetCompanionMessages = {
 
 export const by: ArcadePetCompanionMessages = {
   ...miscBy,
+  ...statesBy,
   landing: landingBy,
   snackBtn: 'Ласунак (🪙 {{cost}})',
   petBtn: 'Пагладзіць',
@@ -326,7 +334,6 @@ export const by: ArcadePetCompanionMessages = {
   presentsBtn: 'Прэзенты',
   eggResting: 'Ваш ArcadePet адпачывае ў яйку!',
   hatchCta: 'Вылупіць у гульнявым пакоі',
-  openGameRoomCta: 'Адкрыць гульнявы пакой',
   opponentPet: 'Пітомец суперніка',
   opponentPetOf: 'Пітомец гульца {{name}}',
   restingBanner:

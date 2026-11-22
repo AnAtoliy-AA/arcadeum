@@ -29,15 +29,21 @@ export const buttonBase = [
   'focus:outline-none',
   'focus:border-[2px]',
   'focus:border-[var(--primary)]',
+  // Keyboard focus ring in the primary token (>= 3:1 against both surfaces).
+  'focus-visible:ring-2',
+  'focus-visible:ring-[var(--primary)]',
+  'focus-visible:ring-offset-2',
+  'focus-visible:ring-offset-[var(--background)]',
 ].join(' ');
 
-export type ButtonSizeKey = 'sm' | 'md' | 'lg';
+export type ButtonSizeKey = 'sm' | 'md' | 'lg' | 'auto';
 
 /** height / horizontal padding / vertical padding / radius */
 export const buttonSizes: Record<ButtonSizeKey, string> = {
   sm: 'h-9 px-4 py-2 rounded-[12px]',
   md: 'h-12 px-6 py-3 rounded-[16px]',
   lg: 'h-[60px] px-8 py-4 rounded-[20px]',
+  auto: 'h-auto min-h-9 px-3 py-2 rounded-[12px]',
 };
 
 /** Size classes without padding — used when a variant or `padding` owns spacing. */
@@ -45,6 +51,7 @@ export const buttonSizesWithoutPadding: Record<ButtonSizeKey, string> = {
   sm: 'h-9 rounded-[12px]',
   md: 'h-12 rounded-[16px]',
   lg: 'h-[60px] rounded-[20px]',
+  auto: 'h-auto min-h-9 rounded-[12px]',
 };
 
 /**
@@ -52,7 +59,11 @@ export const buttonSizesWithoutPadding: Record<ButtonSizeKey, string> = {
  * emit competing `px-*` / `py-*` utilities (shorthand-vs-longhand cascade
  * fights that previously required `!important` to resolve).
  */
-const selfPaddedVariants: ReadonlySet<string> = new Set(['icon', 'icon glass', 'link']);
+const selfPaddedVariants: ReadonlySet<string> = new Set([
+  'icon',
+  'icon glass',
+  'link',
+]);
 
 /**
  * Drop padding utilities (`p-*`, `px-*`, `py-*`, `pt/pr/pb/pl-*`, banged or
@@ -304,8 +315,6 @@ export const buttonVariants: Record<string, string> = {
   ].join(' '),
 };
 
-
-
 export const buttonFlags = {
   fullWidth: 'w-full',
   isActive: [
@@ -316,7 +325,9 @@ export const buttonFlags = {
     'shadow-[0_6px_3px_var(--primary)]',
   ].join(' '),
   rotatable: 'hover:rotate-180',
-  disabled: ['opacity-40', 'cursor-not-allowed', 'pointer-events-none'].join(' '),
+  disabled: ['opacity-40', 'cursor-not-allowed', 'pointer-events-none'].join(
+    ' ',
+  ),
   pulse: 'animate-[btn-pulse_2s_ease-in-out_infinite]',
   jump: 'animate-[btn-jump_0.8s_ease-in-out_2]',
 };

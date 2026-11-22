@@ -1,0 +1,97 @@
+// Home booth drag, knock and ambient animations (used by ArcadePetHomeBooth).
+.homeBooth {
+  position: absolute;
+  pointer-events: auto;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 36;
+  transform: translate3d(var(--home-drag-x, 0px), var(--home-drag-y, 0px), 0);
+  touch-action: none;
+  cursor: grab;
+}
+
+.homeBooth.homeBoothDragging {
+  cursor: grabbing;
+}
+
+.houseKnockWobble {
+  animation: knockWobble 0.35s ease-in-out infinite alternate;
+}
+
+.knockBubble {
+  animation: knockPulse 0.8s ease-in-out infinite;
+}
+
+.smokePuff {
+  animation: smokeFloat 2s ease-out infinite;
+}
+
+.sleepingZzz {
+  animation: zzzFloat 2s ease-in-out infinite;
+}
+
+@keyframes knockWobble {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-3deg) scale(1.03);
+  }
+  75% {
+    transform: rotate(3deg) scale(1.03);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes knockPulse {
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.08) translateY(-3px);
+  }
+}
+
+@keyframes smokeFloat {
+  0% {
+    opacity: 0.8;
+    transform: translateY(0) scale(0.6);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-8px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(1.4);
+  }
+}
+
+@keyframes zzzFloat {
+  0% {
+    opacity: 0.3;
+    transform: translateY(0) scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(1.3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .houseKnockWobble,
+  .knockBubble,
+  .smokePuff,
+  .sleepingZzz {
+    animation: none;
+  }
+}

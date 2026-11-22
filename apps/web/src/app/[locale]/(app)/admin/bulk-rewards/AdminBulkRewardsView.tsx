@@ -2,17 +2,26 @@
 
 import { useState, useTransition } from 'react';
 import { Button, GlassCard, Input } from '@arcadeum/ui';
+import { ALL_SPECIES } from '@arcadeum/games-core';
 import { sendBulkRewardsAction } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { BulkRewardResult } from '@/features/admin-bulk-rewards/server/admin-bulk-rewards.actions';
 import type { adminBulkRewardsEn } from '@/shared/i18n/messages/pages/admin-bulk-rewards/en';
 
 type Labels = typeof adminBulkRewardsEn;
 
+/** 'cyber_cat' -> 'Cyber Cat' (species are proper names, not translated). */
+function formatSpecies(species: string): string {
+  return species
+    .split('_')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
 interface Props {
   labels: Labels;
 }
 
-type RewardType = 'coins' | 'gems' | 'arcadeum' | 'item';
+type RewardType = 'coins' | 'gems' | 'arcadeum' | 'item' | 'pet';
 
 export function AdminBulkRewardsView({ labels }: Props) {
   const [rewardType, setRewardType] = useState<RewardType>('coins');
@@ -25,8 +34,13 @@ export function AdminBulkRewardsView({ labels }: Props) {
   const [isPending, startTransition] = useTransition();
 
   const validate = (): boolean => {
-    const numAmount = parseInt(amount, 10);
-    if (!amount || isNaN(numAmount) || numAmount < 1 || numAmount > 1_000_000) {
+    const numAmount = parseInt(amount || (rewardType === 'pet' ? '1' : ''), 10);
+    if (
+      (!amount && rewardType !== 'pet') ||
+      isNaN(numAmount) ||
+      numAmount < 1 ||
+      numAmount > 1_000_000
+    ) {
       setError(labels.validation.invalidAmount);
       return false;
     }
@@ -51,8 +65,13 @@ export function AdminBulkRewardsView({ labels }: Props) {
     startTransition(async () => {
       const response = await sendBulkRewardsAction({
         type: rewardType,
-        amount: parseInt(amount, 10),
-        itemId: rewardType === 'item' ? itemId.trim() : undefined,
+        amount: rewardType === 'pet' ? 1 : parseInt(amount, 10),
+        itemId:
+          rewardType === 'item'
+            ? itemId.trim()
+            : rewardType === 'pet'
+              ? itemId.trim() || 'dragon'
+              : undefined,
         reason: reason.trim() || undefined,
       });
 
@@ -89,27 +108,54 @@ export function AdminBulkRewardsView({ labels }: Props) {
           <select
             value={rewardType}
             aria-label={labels.form.type.label}
-            onChange={(e) => setRewardType(e.target.value as RewardType)}
+            onChange={(e) => {
+              const nextType = e.target.value as RewardType;
+              setRewardType(nextType);
+              if (nextType === 'pet' && !itemId) {
+                setItemId('dragon');
+              }
+            }}
             className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           >
             <option value="coins">{labels.form.type.coinsLabel}</option>
             <option value="gems">{labels.form.type.gemsLabel}</option>
             <option value="arcadeum">{labels.form.type.arcadeumLabel}</option>
             <option value="item">{labels.form.type.itemLabel}</option>
+            <option value="pet">🐾 Virtual Companion Pet</option>
           </select>
         </div>
 
-        <div className="flex flex-col items-stretch gap-1">
-          <span className="font-semibold">{labels.form.amount.label}</span>
-          <Input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder={labels.form.amount.placeholder}
-            min={1}
-            max={1000000}
-          />
-        </div>
+        {rewardType !== 'pet' && (
+          <div className="flex flex-col items-stretch gap-1">
+            <span className="font-semibold">{labels.form.amount.label}</span>
+            <Input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder={labels.form.amount.placeholder}
+              min={1}
+              max={1000000}
+            />
+          </div>
+        )}
+
+        {rewardType === 'pet' && (
+          <div className="flex flex-col items-stretch gap-1">
+            <span className="font-semibold">{labels.form.petSpecies}</span>
+            <select
+              value={itemId || 'dragon'}
+              aria-label={labels.form.petSpecies}
+              onChange={(e) => setItemId(e.target.value)}
+              className="py-2 px-2.5 bg-[var(--backgroundFocus)] border border-[var(--borderColor)] rounded-md text-inherit text-sm focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+            >
+              {ALL_SPECIES.map((species) => (
+                <option key={species} value={species}>
+                  {formatSpecies(species)}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {rewardType === 'item' && (
           <div className="flex flex-col items-stretch gap-1">

@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.31.16] - 2026-11-22
 
-- logged out after reloading twice quickly: the cross-tab refresh lock now recognises a reload of the same tab and no longer blocks its session restore
+### Fixed
+- let a reloaded tab restore its session without waiting on the cross-tab lock
+
 
 ## [1.31.15] - 2026-11-22
 

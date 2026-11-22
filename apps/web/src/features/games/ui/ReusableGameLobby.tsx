@@ -1,27 +1,10 @@
 'use client';
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
-import { gamesApi } from '@/features/games/api';
 import {
-  loadStoredSettings,
-  saveStoredSettings,
-} from '@/shared/lib/settings-storage';
-import { gameSocket } from '@/shared/lib/socket';
-import {
-  LobbyContent,
-  RoomNameBadge,
-  RoomNameIcon,
-  RoomNameText,
-  FastBadge,
   GameContainer,
+  LobbyContent,
   GameHeader,
   GameInfo,
   GameTitleText,
@@ -37,7 +20,14 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { useMatchmaking } from './MatchmakingQueue';
 import { LobbyHeroSection } from './LobbyHeroSection';
 import { LobbySetupSection } from './LobbySetupSection';
-import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
+import { LobbyHeaderBar } from './LobbyHeaderBar';
+import { useLobbyBots } from './useLobbyBots';
+import { useLobbyCatalogRules } from './useLobbyCatalogRules';
+import {
+  getDefaultSubtitle,
+  getFieldSizeBadge,
+  resolveLobbyConfig,
+} from './lobbyConfig';
 import { useRankingStore } from '@/features/ranking/store/rankingStore';
 import type { ReusableGameLobbyProps } from './ReusableGameLobby.types';
 
@@ -46,45 +36,51 @@ export { LobbyHeroSection } from './LobbyHeroSection';
 export { LobbySetupSection } from './LobbySetupSection';
 export type {
   GameLobbyTheme,
+  LobbyLabels,
+  LobbyStartOptions,
   ReusableGameLobbyProps,
 } from './ReusableGameLobby.types';
+export type { GameLobbyConfig } from './lobbyConfig';
 
-export function ReusableGameLobby({
-  room,
-  userId,
-  isHost,
-  startBusy,
-  startDisabled = false,
-  isFullscreen = false,
-  containerRef,
-  onToggleFullscreen,
-  onStartGame,
-  onReorderPlayers,
-  onReinvite,
-  onDeleteRoom,
-  onKickPlayer,
-  onLeaveRoom,
-  onRefresh,
-  gameName,
-  gameIcon,
-  variantName,
-  roomIcon = '🎲',
-  minPlayers = 2,
-  maxPlayers: maxPlayersProp,
-  theme = {},
-  isFastMode,
-  labels = {},
-  optionsSlot,
-  headerActionsSlot,
-  rulesModalSlot,
-  extraPlayersCardSlot,
-  showFullscreenButton = true,
-  showReorderControls = true,
-  showInvitedPlayers = true,
-  enableBots = false,
-  showDifficulty = true,
-  onRuleComingSoonChange,
-}: ReusableGameLobbyProps) {
+export function ReusableGameLobby(props: ReusableGameLobbyProps) {
+  const {
+    room,
+    userId,
+    isHost,
+    startBusy,
+    startDisabled = false,
+    isFullscreen = false,
+    containerRef,
+    onToggleFullscreen,
+    onStartGame,
+    onReorderPlayers,
+    onReinvite,
+    onDeleteRoom,
+    onKickPlayer,
+    onLeaveRoom,
+    onRefresh,
+    isFastMode,
+    optionsSlot,
+    headerActionsSlot,
+    rulesModalSlot,
+    extraPlayersCardSlot,
+    onRuleComingSoonChange,
+  } = props;
+  const {
+    gameName,
+    gameIcon,
+    roomIcon,
+    variantName,
+    theme,
+    labels,
+    minPlayers,
+    maxPlayers: maxPlayersProp,
+    enableBots,
+    showDifficulty,
+    showFullscreenButton,
+    showReorderControls,
+    showInvitedPlayers,
+  } = resolveLobbyConfig(props);
   const {
     waitingLabel = 'Waiting for game to start...',
     subtitleText,
@@ -103,7 +99,6 @@ export function ReusableGameLobby({
     deleteRoomLabel,
   } = labels;
   const { t } = useTranslation();
-  const { setOption } = useRoomOptions({ roomId: room.id, userId });
   const { isQueued, joinQueue, leaveQueue } = useMatchmaking();
   const myRating = useRankingStore((s) => s.ratings[room.gameId]);
   const loadMyRankings = useRankingStore((s) => s.loadMyRankings);
@@ -113,72 +108,34 @@ export function ReusableGameLobby({
   }, [userId, loadMyRankings]);
 
   const isRanked = room.gameOptions?.ranked === true;
-
-  const [ruleComingSoon, setRuleComingSoon] = useState<Map<string, boolean>>(
-    new Map(),
+  const ruleComingSoon = useLobbyCatalogRules(
+    room.gameId,
+    onRuleComingSoonChange,
   );
-  useEffect(() => {
-    gamesApi
-      .getCatalog()
-      .then((catalog) => {
-        const game = catalog.games.find((g) => g.gameId === room.gameId);
-        if (!game) return;
-        const map = new Map<string, boolean>();
-        for (const r of game.rules) map.set(r.ruleId, r.comingSoon);
-        setRuleComingSoon(map);
-        onRuleComingSoonChange?.(map);
-      })
-      .catch(() => {});
-  }, [room.gameId, onRuleComingSoonChange]);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const members = room.members ?? [];
   const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 6;
-  const [botCount, setBotCount] = useState(() =>
-    Math.max(1, Math.min(minPlayers - 1, maxPlayers - 1)),
-  );
-  const [difficulty, setDifficulty] = useState<
-    'easy' | 'medium' | 'hard' | 'expert'
-  >(() => {
-    const settings = loadStoredSettings();
-    return settings.aiDifficulty ?? 'medium';
+  const {
+    setOption,
+    botCount,
+    setBotCount,
+    difficulty,
+    setDifficulty,
+    handleStart,
+    handleAddBot,
+    handleRemoveBot,
+  } = useLobbyBots({
+    roomId: room.id,
+    userId,
+    roomStatus: room.status,
+    playerCount: room.playerCount,
+    isHost,
+    enableBots,
+    minPlayers,
+    maxPlayers,
+    onStartGame,
   });
-  const cooldownRef = useRef(0);
-  useEffect(() => {
-    saveStoredSettings({ aiDifficulty: difficulty });
-    if (enableBots && isHost && room.status === 'lobby') {
-      setOption({ aiDifficulty: difficulty });
-    }
-  }, [difficulty, enableBots, isHost, room.status, setOption]);
-
-  const handleStart = useCallback(() => {
-    const now = Date.now();
-    if (now - cooldownRef.current < 1000) return;
-    cooldownRef.current = now;
-    if (enableBots && room.playerCount === 1) {
-      onStartGame({ withBots: true, botCount, difficulty });
-    } else {
-      onStartGame();
-    }
-  }, [enableBots, room.playerCount, botCount, difficulty, onStartGame]);
-
-  const handleAddBot = useCallback(() => {
-    gameSocket.emit('games.room.add_bot', {
-      roomId: room.id,
-      userId,
-    });
-  }, [room.id, userId]);
-
-  const handleRemoveBot = useCallback(
-    (botId: string) => {
-      gameSocket.emit('games.room.remove_bot', {
-        roomId: room.id,
-        userId,
-        botId,
-      });
-    },
-    [room.id, userId],
-  );
 
   const progress = Math.round((room.playerCount / maxPlayers) * 100);
 
@@ -200,15 +157,13 @@ export function ReusableGameLobby({
   }, [onDeleteRoom]);
   const handleDeleteClick = useCallback(() => setShowDeleteConfirm(true), []);
 
-  const defaultSubtitle = useMemo(() => {
-    if (room.status !== 'lobby') return 'Loading...';
-    if (enableBots && room.playerCount === 1)
-      return 'Single player mode available';
-    if (room.playerCount < minPlayers)
-      return `Need at least ${minPlayers} players`;
-    if (isHost) return "Click 'Start Game' when ready";
-    return 'Waiting for host to start...';
-  }, [room.status, enableBots, room.playerCount, minPlayers, isHost]);
+  const defaultSubtitle = getDefaultSubtitle({
+    status: room.status,
+    enableBots,
+    playerCount: room.playerCount,
+    minPlayers,
+    isHost,
+  });
 
   const visualTheme =
     (room.gameOptions?.theme as string | undefined) ??
@@ -218,22 +173,10 @@ export function ReusableGameLobby({
   const showHostBots =
     isHost && room.status === 'lobby' && enableBots && room.playerCount === 1;
 
-  const fieldSizeBadgeText = useMemo(() => {
-    const opts = room.gameOptions;
-    if (!opts) return null;
-    if (opts.boardSize !== undefined) {
-      if (opts.boardSize === 'infinity') return 'Field: ∞';
-      return `Field: ${opts.boardSize}×${opts.boardSize}`;
-    }
-    if (opts.gridSize !== undefined) {
-      return `Grid: ${opts.gridSize}×${opts.gridSize}`;
-    }
-    if (room.gameId === 'checkers_v1') {
-      const mode = (opts.mode as string) ?? 'american';
-      return mode === 'international' ? 'Board: 10×10' : 'Board: 8×8';
-    }
-    return null;
-  }, [room.gameOptions, room.gameId]);
+  const fieldSizeBadgeText = useMemo(
+    () => getFieldSizeBadge(room.gameId, room.gameOptions),
+    [room.gameOptions, room.gameId],
+  );
 
   const handleToggleQueue = useCallback(() => {
     if (isQueued) {
@@ -258,66 +201,22 @@ export function ReusableGameLobby({
         cancelLabel={deleteRoomTranslations.cancelButton}
       />
 
-      <GameHeader>
-        <GameInfo>
-          <GameTitleText gradient={theme.titleGradient}>
-            {gameName}
-            {variantName && (
-              <VariantText
-                gradient={theme.variantGradient}
-              >{` : ${variantName}`}</VariantText>
-            )}
-          </GameTitleText>
-          <RoomNameBadge>
-            <RoomNameIcon>{roomIcon}</RoomNameIcon>
-            <RoomNameText data-testid="room-name-text">
-              {room.name}
-            </RoomNameText>
-          </RoomNameBadge>
-          {isFastMode && (
-            <FastBadge>
-              <span>⚡</span>
-              <span>{fastRoomLabel}</span>
-            </FastBadge>
-          )}
-          {fieldSizeBadgeText && (
-            <span
-              data-testid="lobby-field-size-badge"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[rgba(59,130,246,0.35)] bg-[rgba(59,130,246,0.15)] text-[#93c5fd] shadow-sm shrink-0"
-            >
-              <span className="text-[12px]">⊞</span>
-              <span className="text-[11px] font-bold uppercase tracking-[0.5px]">
-                {fieldSizeBadgeText}
-              </span>
-            </span>
-          )}
-          {isRanked && (
-            <span
-              data-testid="lobby-ranked-badge"
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-[#facc15] bg-[rgba(250,204,21,0.18)] text-[#ffd700] shadow-[0_4px_12px_rgba(250,204,21,0.25)] shrink-0"
-            >
-              <span className="text-[12px]">★</span>
-              <span className="text-[10px] font-extrabold uppercase tracking-[0.8px]">
-                {t('games.rooms.ranked')}
-              </span>
-            </span>
-          )}
-          {isRanked && myRating && (
-            <RatingBadge elo={myRating.elo} tier={myRating.tier} size="sm" />
-          )}
-        </GameInfo>
-        <HeaderActions>
-          {headerActionsSlot}
-          {showFullscreenButton && onToggleFullscreen && (
-            <IconButton
-              onClick={onToggleFullscreen}
-              title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
-            >
-              {isFullscreen ? '⤓' : '⤢'}
-            </IconButton>
-          )}
-        </HeaderActions>
-      </GameHeader>
+      <LobbyHeaderBar
+        gameName={gameName}
+        variantName={variantName}
+        roomName={room.name}
+        roomIcon={roomIcon}
+        theme={theme}
+        isFastMode={isFastMode}
+        fastRoomLabel={fastRoomLabel}
+        fieldSizeBadgeText={fieldSizeBadgeText}
+        isRanked={isRanked}
+        myRating={myRating}
+        headerActionsSlot={headerActionsSlot}
+        showFullscreenButton={showFullscreenButton}
+        isFullscreen={isFullscreen}
+        onToggleFullscreen={onToggleFullscreen}
+      />
 
       <LobbyContent>
         <div className="flex flex-col flex-1 min-w-0 max-w-full gap-5 max-[1023px]:w-full max-[1023px]:order-2">

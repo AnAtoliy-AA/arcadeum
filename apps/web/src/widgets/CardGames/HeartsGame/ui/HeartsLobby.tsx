@@ -1,22 +1,19 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ReusableGameLobby } from '@/features/games/ui/ReusableGameLobby';
-import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-  LobbyToggle,
-} from '@/features/games/ui/LobbyOptions';
-import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
+import { useLobbyReorder } from '@/features/games/ui/useLobbyReorder';
 import { getLobbyTheme } from '@/features/games/ui/lobbyTheme';
 import type { GameRoomSummary } from '@/shared/types/games';
-import { reorderRoomParticipants } from '@/shared/api/gamesApi';
 import { MIN_PLAYERS } from '../types';
 import { HEARTS_THEMES } from '../lib/constants';
-import { resolveHeartsTheme } from '../lib/theme';
 import { RulesModal } from './RulesModal';
-import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import {
+  HeartsLobbyOptionsPanel,
+  resolveHeartsLobbyOptions,
+  HEARTS_LOBBY_THEME,
+} from './HeartsLobbyOptions';
 
 interface HeartsLobbyProps {
   room: GameRoomSummary;
@@ -32,29 +29,6 @@ interface HeartsLobbyProps {
   onShowRulesClose?: () => void;
   accessToken?: string | null;
   onReorderPlayers?: (newOrder: string[]) => void;
-}
-
-const HEARTS_LOBBY_THEME = {
-  fallbackLightGradient:
-    'linear-gradient(90deg, #fff1f2 0%, #fda4af 50%, #fff1f2 100%)',
-  buttonGradient: 'linear-gradient(135deg, #dc2626 0%, #9f1239 100%)',
-};
-
-function resolveOptions(raw: unknown): {
-  variant: ReturnType<typeof resolveHeartsTheme>;
-  passingEnabled: boolean;
-  targetScore: 50 | 100;
-} {
-  const r = (raw ?? {}) as Partial<{
-    passingEnabled: boolean;
-    targetScore: number;
-  }>;
-  return {
-    variant: resolveHeartsTheme(raw),
-    passingEnabled:
-      typeof r.passingEnabled === 'boolean' ? r.passingEnabled : true,
-    targetScore: r.targetScore === 50 ? 50 : 100,
-  };
 }
 
 export function HeartsLobby({
@@ -73,66 +47,13 @@ export function HeartsLobby({
   onReorderPlayers,
 }: HeartsLobbyProps) {
   const { t } = useTranslation();
-  const { setOption } = useRoomOptions({ roomId: room.id, userId });
-
   const options = useMemo(
-    () => resolveOptions(room.gameOptions),
+    () => resolveHeartsLobbyOptions(room.gameOptions),
     [room.gameOptions],
   );
-
-  const variantTokens = useMemo(
-    () =>
-      HEARTS_THEMES.find((v) => v.id === options.variant) ?? HEARTS_THEMES[0],
-    [options.variant],
-  );
-
-  const handleReorderPlayers = useCallback(
-    async (newOrder: string[]) => {
-      if (!accessToken || !room.id) return;
-      try {
-        await reorderRoomParticipants(room.id, newOrder, accessToken);
-      } catch {}
-    },
-    [accessToken, room.id],
-  );
-
-  const optionsSlot = (
-    <div className="flex flex-col items-stretch gap-4">
-      <LobbyOptionSection title={t('games.hearts_v1.lobby.variant')}>
-        <GameThemePicker
-          selectedTheme={options.variant}
-          onSelect={(themeId) =>
-            setOption({ theme: themeId, variant: themeId })
-          }
-          disabled={!isHost}
-        />
-      </LobbyOptionSection>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <LobbyOptionSection title={t('games.hearts_v1.lobby.targetScore')}>
-          <LobbyChipGroup
-            options={[
-              { id: '50', label: '50' },
-              { id: '100', label: '100' },
-            ]}
-            value={String(options.targetScore)}
-            onChange={(v) => setOption({ targetScore: v === '50' ? 50 : 100 })}
-            accentColor="#dc2626"
-            testIdPrefix="hearts-target-score"
-          />
-        </LobbyOptionSection>
-
-        <div className="flex items-center">
-          <LobbyToggle
-            label={t('games.hearts_v1.lobby.passingEnabled')}
-            checked={options.passingEnabled}
-            onCheckedChange={(val) => setOption({ passingEnabled: val })}
-            disabled={!isHost}
-          />
-        </div>
-      </div>
-    </div>
-  );
+  const variantTokens =
+    HEARTS_THEMES.find((v) => v.id === options.variant) ?? HEARTS_THEMES[0];
+  const handleReorder = useLobbyReorder(room.id, accessToken, onReorderPlayers);
 
   return (
     <ReusableGameLobby
@@ -140,17 +61,27 @@ export function HeartsLobby({
       userId={userId}
       isHost={isHost}
       startBusy={startBusy}
-      minPlayers={MIN_PLAYERS}
-      gameName="Hearts"
-      gameIcon="♥"
-      variantName={t(variantTokens.name)}
-      theme={getLobbyTheme(
-        HEARTS_THEMES,
-        options.variant,
-        HEARTS_LOBBY_THEME.fallbackLightGradient,
-        HEARTS_LOBBY_THEME.buttonGradient,
-      )}
-      optionsSlot={optionsSlot}
+      config={{
+        gameName: 'Hearts',
+        gameIcon: '♥',
+        variantName: t(variantTokens.name),
+        seats: { min: MIN_PLAYERS },
+        bots: { enabled: true },
+        theme: getLobbyTheme(
+          HEARTS_THEMES,
+          options.variant,
+          HEARTS_LOBBY_THEME.fallbackLightGradient,
+          HEARTS_LOBBY_THEME.buttonGradient,
+        ),
+      }}
+      optionsSlot={
+        <HeartsLobbyOptionsPanel
+          options={options}
+          roomId={room.id}
+          userId={userId}
+          isHost={isHost}
+        />
+      }
       rulesModalSlot={
         <RulesModal
           open={!!showRulesOpen}
@@ -158,12 +89,11 @@ export function HeartsLobby({
         />
       }
       onStartGame={onStartGame}
-      onReorderPlayers={onReorderPlayers ?? handleReorderPlayers}
+      onReorderPlayers={handleReorder}
       onLeaveRoom={onLeaveRoom}
       onDeleteRoom={onDeleteRoom}
       onKickPlayer={onKickPlayer}
       onRefresh={onRefresh}
-      enableBots
     />
   );
 }

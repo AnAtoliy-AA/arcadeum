@@ -176,6 +176,9 @@ export const byMessages = {
     lobby: {
       variant: 'Варыянт',
       timeControl: 'Кантроль часу',
+      timeControlHint:
+        'Час на гадзіннік для кожнага гульца. Без гадзінніка для спакойнай гульні',
+      unlimited: 'Без абмежаванняў',
       startWithBots: 'Пачаць з ботамі',
       waitingForPlayers: 'Чаканне гульцоў…',
       minPlayers: 'Мінімум 2 гульцы',

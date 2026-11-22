@@ -2,6 +2,9 @@
 
 import type { ReactNode } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { LobbyRoomCode } from './LobbyRoomCode';
+import { LobbyStatusChip } from './LobbyChips';
+import type { LobbyPhase } from './lobbyConfig';
 import { RatingBadge } from '@/features/ranking/ui/RatingBadge';
 import {
   RoomNameBadge,
@@ -33,6 +36,8 @@ export interface LobbyHeaderBarProps {
   showFullscreenButton: boolean;
   isFullscreen: boolean;
   onToggleFullscreen?: () => void;
+  roomCode?: string;
+  phase?: LobbyPhase;
 }
 
 export function LobbyHeaderBar({
@@ -50,6 +55,8 @@ export function LobbyHeaderBar({
   showFullscreenButton,
   isFullscreen,
   onToggleFullscreen,
+  roomCode,
+  phase,
 }: LobbyHeaderBarProps) {
   const { t } = useTranslation();
   return (
@@ -67,6 +74,8 @@ export function LobbyHeaderBar({
           <RoomNameIcon>{roomIcon}</RoomNameIcon>
           <RoomNameText data-testid="room-name-text">{roomName}</RoomNameText>
         </RoomNameBadge>
+        {phase && <LobbyStatusChip phase={phase} />}
+        {roomCode && <LobbyRoomCode code={roomCode} />}
         {isFastMode && (
           <FastBadge>
             <span>⚡</span>
@@ -76,7 +85,7 @@ export function LobbyHeaderBar({
         {fieldSizeBadgeText && (
           <span
             data-testid="lobby-field-size-badge"
-            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[rgba(59,130,246,0.35)] bg-[rgba(59,130,246,0.15)] text-[#93c5fd] shadow-sm shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[var(--info)]/40 bg-[var(--info)]/15 text-[var(--textPrimary)] shadow-sm shrink-0"
           >
             <span className="text-[12px]">⊞</span>
             <span className="text-[11px] font-bold uppercase tracking-[0.5px]">
@@ -87,7 +96,7 @@ export function LobbyHeaderBar({
         {isRanked && (
           <span
             data-testid="lobby-ranked-badge"
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-[#facc15] bg-[rgba(250,204,21,0.18)] text-[#ffd700] shadow-[0_4px_12px_rgba(250,204,21,0.25)] shrink-0"
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-[var(--warning)]/50 bg-[var(--warning)]/15 text-[var(--textPrimary)] shrink-0"
           >
             <span className="text-[12px]">★</span>
             <span className="text-[10px] font-extrabold uppercase tracking-[0.8px]">
@@ -104,7 +113,16 @@ export function LobbyHeaderBar({
         {showFullscreenButton && onToggleFullscreen && (
           <IconButton
             onClick={onToggleFullscreen}
-            title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            title={t(
+              isFullscreen
+                ? 'games.lobby.exitFullscreen'
+                : 'games.lobby.enterFullscreen',
+            )}
+            aria-label={t(
+              isFullscreen
+                ? 'games.lobby.exitFullscreen'
+                : 'games.lobby.enterFullscreen',
+            )}
           >
             {isFullscreen ? '⤓' : '⤢'}
           </IconButton>

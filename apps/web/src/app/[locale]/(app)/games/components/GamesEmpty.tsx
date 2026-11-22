@@ -1,16 +1,19 @@
 'use client';
 
-import { Button, EmptyState } from '@arcadeum/ui';
+import { Button, CreateRoomLinkButton, EmptyState } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface GamesEmptyProps {
   hasFilters?: boolean;
   onClearFilters?: () => void;
+  /** Destination of the primary "Create room" call to action. */
+  createRoomHref?: string;
 }
 
 export function GamesEmpty({
   hasFilters = false,
   onClearFilters,
+  createRoomHref,
 }: GamesEmptyProps) {
   const { t } = useTranslation();
 
@@ -35,6 +38,11 @@ export function GamesEmpty({
                 <Button variant="secondary" size="md" onClick={onClearFilters}>
                   {t('roomsBrowser.clearFilters')}
                 </Button>
+              )}
+              {createRoomHref && (
+                <CreateRoomLinkButton href={createRoomHref}>
+                  {t('roomsBrowser.createRoom')}
+                </CreateRoomLinkButton>
               )}
             </div>
           </div>

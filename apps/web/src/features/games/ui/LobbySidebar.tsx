@@ -11,6 +11,7 @@ import { LobbySidebarRoomInfo } from './LobbySidebarRoomInfo';
 
 interface LobbySidebarProps {
   room: GameRoomSummary;
+  userId?: string;
   isHost: boolean;
   minPlayers: number;
   isFastMode?: boolean;
@@ -50,9 +51,9 @@ interface LobbySidebarProps {
 }
 export function LobbySidebar({
   room,
+  userId,
   isHost,
   minPlayers,
-  isFastMode,
   className,
   showReorderControls,
   showInvitedPlayers,
@@ -70,21 +71,18 @@ export function LobbySidebar({
   onAddBot,
   onRemoveBot,
 }: LobbySidebarProps) {
-  const {
-    playersLabel = 'Players',
-    invitedPlayersLabel = 'Invited Players',
-    declinedLabel = 'Declined',
-    reinviteLabel = 'Re-invite',
-    roomInfoLabel = 'Room Info',
-    statusLabel = 'Status',
-    visibilityLabel = 'Visibility',
-    visibilityPublicLabel = 'Public',
-    visibilityPrivateLabel = 'Private',
-    inviteCodeLabel = 'Invite Code',
-    waitingForPlayerLabel = 'Waiting for player...',
-    fastRoomLabel = 'Fast Room',
-  } = labels;
   const { t } = useTranslation();
+  const {
+    playersLabel = t('games.lobby.playersTitle'),
+    invitedPlayersLabel = t('games.lobby.invitedPlayersTitle'),
+    declinedLabel = t('games.lobby.declinedLabel'),
+    reinviteLabel = t('games.lobby.reinviteLabel'),
+    roomInfoLabel = t('games.lobby.roomInfoTitle'),
+    visibilityLabel = t('games.lobby.visibilityLabel'),
+    visibilityPublicLabel = t('games.lobby.visibilityPublic'),
+    visibilityPrivateLabel = t('games.lobby.visibilityPrivate'),
+    waitingForPlayerLabel = t('games.lobby.waitingForPlayerSlot'),
+  } = labels;
   const hasBotsInRoom = members.some((m) => m.id.startsWith('bot-'));
   const canAddBots =
     !!enableBots && isHost && room.status === 'lobby' && !hasBotsInRoom;
@@ -122,6 +120,12 @@ export function LobbySidebar({
     setShowLeaveConfirm(false);
   }, [onLeaveRoom, setShowLeaveConfirm]);
 
+  const scrollToInvite = React.useCallback(() => {
+    const el = document.getElementById('lobby-invite-section');
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el?.querySelector<HTMLElement>('button')?.focus();
+  }, []);
+
   return (
     <Sidebar className={className}>
       <LobbySidebarPlayers
@@ -140,6 +144,10 @@ export function LobbySidebar({
         onRefresh={onRefresh}
         onAddBot={onAddBot}
         onRemoveBot={onRemoveBot}
+        userId={userId}
+        onInvite={
+          isHost && room.status === 'lobby' ? scrollToInvite : undefined
+        }
       />
 
       {extraPlayersCardSlot}
@@ -160,15 +168,11 @@ export function LobbySidebar({
       <LobbySidebarRoomInfo
         room={room}
         isHost={isHost}
-        isFastMode={isFastMode}
         roomInfoLabel={roomInfoLabel}
-        statusLabel={statusLabel}
         visibilityLabel={visibilityLabel}
         visibilityPublicLabel={visibilityPublicLabel}
         visibilityPrivateLabel={visibilityPrivateLabel}
-        inviteCodeLabel={inviteCodeLabel}
-        fastRoomLabel={fastRoomLabel}
-        notesLabel={labels.notesLabel}
+        notesLabel={labels.notesLabel ?? t('games.lobby.notesLabel')}
       />
 
       {isHost && onDeleteRoom && (

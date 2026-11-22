@@ -53,11 +53,6 @@ export {
   GameWidgetErrorBoundary,
   type GameWidgetErrorBoundaryProps,
 } from './GameWidgetErrorBoundary';
-export {
-  LobbyOptionSection,
-  LobbyChipGroup,
-  LobbyToggle,
-} from './LobbyOptions';
 export { getLobbyTheme } from './lobbyTheme';
 export {
   resolveLobbyConfig,

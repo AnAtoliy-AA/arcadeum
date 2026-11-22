@@ -24,7 +24,7 @@ import { LobbyHeaderBar } from './LobbyHeaderBar';
 import { useLobbyBots } from './useLobbyBots';
 import { useLobbyCatalogRules } from './useLobbyCatalogRules';
 import {
-  getDefaultSubtitle,
+  getLobbyPhase,
   getFieldSizeBadge,
   resolveLobbyConfig,
 } from './lobbyConfig';
@@ -81,24 +81,26 @@ export function ReusableGameLobby(props: ReusableGameLobbyProps) {
     showReorderControls,
     showInvitedPlayers,
   } = resolveLobbyConfig(props);
+  const { t } = useTranslation();
   const {
-    waitingLabel = 'Waiting for game to start...',
+    waitingLabel = t('games.lobby.statusWaiting'),
     subtitleText,
-    playersLabel = 'Players',
-    hostControlsLabel = 'Host Controls',
-    startLabel = 'Start Game',
-    startingLabel = 'Starting...',
-    fastRoomLabel = 'Fast Room',
-    botCountLabel = 'Number of bots',
-    startWithBotsLabel = 'Start with {{count}} 🤖',
-    difficultyLabel = 'AI Difficulty',
-    difficultyEasyLabel = 'Easy',
-    difficultyMediumLabel = 'Medium',
-    difficultyHardLabel = 'Hard',
-    difficultyExpertLabel = 'Expert',
+    playersLabel = t('games.lobby.playersTitle'),
+    hostControlsLabel = t('games.lobby.hostControls'),
+    startLabel = t('games.lobby.startGame'),
+    startingLabel = t('games.lobby.startingGame'),
+    fastRoomLabel = t('games.lobby.fastRoomChip'),
+    botCountLabel = t('games.lobby.botCountLabel'),
+    startWithBotsLabel = t('games.lobby.startWithBots', {
+      count: '{{count}}',
+    }),
+    difficultyLabel = t('games.lobby.difficultyLabel'),
+    difficultyEasyLabel = t('games.lobby.difficultyEasy'),
+    difficultyMediumLabel = t('games.lobby.difficultyMedium'),
+    difficultyHardLabel = t('games.lobby.difficultyHard'),
+    difficultyExpertLabel = t('games.lobby.difficultyExpert'),
     deleteRoomLabel,
   } = labels;
-  const { t } = useTranslation();
   const { isQueued, joinQueue, leaveQueue } = useMatchmaking();
   const myRating = useRankingStore((s) => s.ratings[room.gameId]);
   const loadMyRankings = useRankingStore((s) => s.loadMyRankings);
@@ -157,13 +159,23 @@ export function ReusableGameLobby(props: ReusableGameLobbyProps) {
   }, [onDeleteRoom]);
   const handleDeleteClick = useCallback(() => setShowDeleteConfirm(true), []);
 
-  const defaultSubtitle = getDefaultSubtitle({
+  const phase = getLobbyPhase({
     status: room.status,
-    enableBots,
     playerCount: room.playerCount,
     minPlayers,
-    isHost,
   });
+  const defaultSubtitle = (() => {
+    if (room.status !== 'lobby') return t('games.lobby.subtitleLoading');
+    if (enableBots && room.playerCount === 1)
+      return t('games.lobby.subtitleSolo');
+    if (room.playerCount < minPlayers)
+      return t('games.lobby.subtitleNeedPlayers', { count: minPlayers });
+    return t(
+      isHost
+        ? 'games.lobby.subtitleHostReady'
+        : 'games.lobby.subtitleWaitingHost',
+    );
+  })();
 
   const visualTheme =
     (room.gameOptions?.theme as string | undefined) ??
@@ -216,6 +228,8 @@ export function ReusableGameLobby(props: ReusableGameLobbyProps) {
         showFullscreenButton={showFullscreenButton}
         isFullscreen={isFullscreen}
         onToggleFullscreen={onToggleFullscreen}
+        roomCode={room.inviteCode ?? undefined}
+        phase={phase}
       />
 
       <LobbyContent>
@@ -268,6 +282,7 @@ export function ReusableGameLobby(props: ReusableGameLobbyProps) {
 
         <LobbySidebar
           room={room}
+          userId={userId}
           isHost={isHost}
           minPlayers={minPlayers}
           isFastMode={isFastMode}

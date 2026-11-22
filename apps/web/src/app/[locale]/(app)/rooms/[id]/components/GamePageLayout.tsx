@@ -11,7 +11,7 @@ import React, {
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useFullscreen } from '@/features/games/hooks/useFullscreen';
 import { ConnectionOverlay } from '@arcadeum/ui/components/ConnectionOverlay/ConnectionOverlay';
-import { GamesControlPanel } from '@/widgets/GamesControlPanel';
+import { GamesControlPanel, RoomHeaderBar } from '@/widgets/GamesControlPanel';
 import { GameChat, useGameChatStore } from '@/widgets/GameChat';
 import { useEmotes } from '@/features/games/hooks/useEmotes';
 import { useGameRoomChat } from '@/features/games/hooks/useGameRoomChat';
@@ -274,6 +274,13 @@ export function GamePageLayout(props: GamePageLayoutProps) {
             testId="connection-overlay-idle"
           />
         )}
+
+        <RoomHeaderBar
+          roomName={room.name}
+          status={room.status}
+          playerCount={room.playerCount}
+          maxPlayers={room.maxPlayers}
+        />
 
         <GamesControlPanel
           roomId={roomId}

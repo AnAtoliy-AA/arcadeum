@@ -1,7 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@arcadeum/ui';
+import {
+  LobbyChoice,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+  LobbySubAdvanced,
+  LobbySwitchRow,
+} from '@/features/games/ui/LobbyOptionKit';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getDefaultShipCount } from '../types';
 
@@ -28,262 +34,132 @@ export function HouseRulesPanel({
     (gameOptions.shipCount as number) ?? getDefaultShipCount(gridSize);
   const sw = gameOptions.specialWeapons as
     { sonar?: boolean; radar?: boolean; revealAll?: boolean } | undefined;
+  const gridLocked = !!ruleComingSoon.get('gridSize');
+  const soon = t('games.create.comingSoon');
+  const currentMode = (gameOptions.mode as string) ?? 'classic';
+
+  const gridItems = ([10, 15, 20] as const).map((gs) => ({
+    id: String(gs),
+    label: `${gs}×${gs}`,
+    testId: `sea-battle-grid-size-${gs}`,
+    disabled: gridLocked,
+    badge: gridLocked ? soon : undefined,
+  }));
+  const modeItems = [
+    {
+      id: 'classic',
+      label: t('games.create.seaBattleModeClassic'),
+      description: t('games.create.seaBattleModeClassicDesc'),
+    },
+    {
+      id: 'salvo',
+      label: t('games.create.seaBattleModeSalvo'),
+      description: t('games.create.seaBattleModeSalvoDesc'),
+    },
+    {
+      id: 'speed',
+      label: t('games.create.seaBattleModeSpeed'),
+      description: t('games.create.seaBattleModeSpeedDesc'),
+    },
+  ].map((m) => ({ ...m, testId: `sea-battle-mode-${m.id}` }));
+  const shipItems = getShipCountOptions(gridSize).map((count) => ({
+    id: String(count),
+    label: String(count),
+    testId: `sea-battle-ship-count-${count}`,
+  }));
+  const durationItems = [1, 2, 3, 4, 5].map((sec) => ({
+    id: String(sec),
+    label: `${sec}s`,
+    testId: `sea-battle-reveal-duration-${sec}`,
+  }));
 
   return (
-    <div className="flex flex-col items-stretch gap-3 py-2">
-      <span className="text-[18px] font-semibold">
-        {t('games.create.sectionHouseRules') || 'House Rules'}
-      </span>
-      <div
+    <LobbyOptionStack data-testid="sea-battle-house-rules">
+      <LobbyOptionGroup
         data-testid="sea-battle-grid-size-section"
-        className="flex flex-col items-stretch gap-2 p-3 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+        title={t('games.create.seaBattleGridSize')}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-base">📐</span>
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
-            {t('games.create.seaBattleGridSize') || 'Grid Size'}
-          </span>
-          {ruleComingSoon.get('gridSize') && (
-            <span className="text-xs text-[#f59e0b] font-semibold">
-              {t('games.create.comingSoon') || 'Coming Soon'}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-row items-stretch gap-2 flex-wrap">
-          {([10, 15, 20] as const).map((gs) => {
-            const disabled = !!ruleComingSoon.get('gridSize');
-            const active = gridSize === gs;
-            return (
-              <Button
-                className={`rounded-[8px] font-semibold text-[13px] ${
-                  active
-                    ? 'bg-blue-500/20 border-blue-500/60 text-blue-500 hover:bg-blue-500/25'
-                    : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
-                } ${disabled ? 'opacity-40' : 'opacity-100'}`}
-                key={gs}
-                variant="chip"
-                size="sm"
-                data-testid={`sea-battle-grid-size-${gs}`}
-                disabled={disabled}
-                data-active={active ? 'on' : undefined}
-                onClick={() => {
-                  if (disabled) return;
-                  onOptionChange({
-                    gridSize: gs,
-                    shipCount: getDefaultShipCount(gs),
-                  });
-                }}
-              >
-                {gs}×{gs}
-              </Button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex flex-col items-stretch gap-2">
-        <span className="text-[16px] font-semibold">Game Mode</span>
-        <div className="flex flex-row items-stretch gap-2 flex-wrap">
-          {(
-            [
-              {
-                id: 'classic',
-                label: 'Classic',
-                desc: 'Turn-based - miss ends your turn',
-              },
-              {
-                id: 'salvo',
-                label: 'Salvo',
-                desc: 'Fire N shots per turn (N = ships remaining)',
-              },
-              {
-                id: 'speed',
-                label: 'Speed',
-                desc: '30s per turn: think fast!',
-              },
-            ] as const
-          ).map((mode) => {
-            const active = (gameOptions.mode ?? 'classic') === mode.id;
-            return (
-              <button
-                key={mode.id}
-                type="button"
-                onClick={() => onOptionChange({ mode: mode.id })}
-                className={`flex flex-col items-start rounded-lg px-3 py-2 text-left transition-all ${
-                  active
-                    ? 'bg-amber-500/20 border border-amber-500/60 text-amber-400'
-                    : 'bg-[var(--glassBg)] border border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
-                }`}
-              >
-                <span className="text-[13px] font-semibold">{mode.label}</span>
-                <span className="text-[11px] opacity-70">{mode.desc}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex flex-col items-stretch gap-2">
-        <span className="text-[16px] font-semibold">
-          {t('games.create.seaBattleShipCount') || 'Number of Ships'}
-        </span>
-        <div className="flex flex-row items-stretch gap-2 flex-wrap">
-          {getShipCountOptions(gridSize).map((count) => {
-            const active = shipCount === count;
-            return (
-              <Button
-                className={`rounded-[8px] font-semibold text-[13px] ${
-                  active
-                    ? 'bg-blue-500/20 border-blue-500/60 text-blue-500 hover:bg-blue-500/25'
-                    : 'bg-[var(--glassBg)] border-[var(--glassBorder)] text-[var(--color)] hover:bg-[var(--glassBgHover)]'
-                }`}
-                key={count}
-                variant="chip"
-                size="sm"
-                data-active={active ? 'on' : undefined}
-                onClick={() => onOptionChange({ shipCount: count })}
-              >
-                {count}
-              </Button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="flex flex-col items-stretch gap-2">
-        <span className="text-[16px] font-semibold">
-          {t('games.create.specialWeapons') || 'Special Weapons'}
-          {(ruleComingSoon.get('sonar') || ruleComingSoon.get('radar')) && (
-            <span className="text-[48px] text-[#f59e0b] font-semibold -ml-8">
-              {t('games.create.comingSoon') || 'Coming Soon'}
-            </span>
-          )}
-        </span>
-        <label
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            fontSize: 13,
-            opacity: ruleComingSoon.get('sonar') ? 0.4 : 1,
-            cursor: ruleComingSoon.get('sonar') ? 'not-allowed' : 'pointer',
-          }}
-        >
-          <input
-            type="checkbox"
+        <LobbyChoice
+          aria-label={t('games.create.seaBattleGridSize')}
+          items={gridItems}
+          value={String(gridSize)}
+          onChange={(id) =>
+            onOptionChange({
+              gridSize: Number(id),
+              shipCount: getDefaultShipCount(Number(id)),
+            })
+          }
+        />
+      </LobbyOptionGroup>
+      <LobbyOptionGroup title={t('games.create.seaBattleGameMode')}>
+        <LobbyChoice
+          aria-label={t('games.create.seaBattleGameMode')}
+          items={modeItems}
+          value={currentMode}
+          onChange={(id) => onOptionChange({ mode: id })}
+        />
+      </LobbyOptionGroup>
+      <LobbyOptionGroup title={t('games.create.seaBattleShipCount')}>
+        <LobbyChoice
+          aria-label={t('games.create.seaBattleShipCount')}
+          items={shipItems}
+          value={String(shipCount)}
+          onChange={(id) => onOptionChange({ shipCount: Number(id) })}
+        />
+      </LobbyOptionGroup>
+      <LobbySubAdvanced
+        testId="sea-battle-advanced-rules"
+        title={t('games.create.seaBattleAdvancedWeapons')}
+      >
+        <LobbyOptionGroup title={t('games.create.specialWeapons')}>
+          <LobbySwitchRow
+            label={t('games.create.seaBattleSonar')}
+            hint={t('games.create.seaBattleSonarHint')}
+            badge={ruleComingSoon.get('sonar') ? soon : undefined}
             checked={!!sw?.sonar}
             disabled={!!ruleComingSoon.get('sonar')}
-            onChange={() =>
-              onOptionChange({
-                specialWeapons: { ...sw, sonar: !sw?.sonar },
-              })
+            onCheckedChange={(v) =>
+              onOptionChange({ specialWeapons: { ...sw, sonar: v } })
             }
           />
-          {t('games.create.seaBattleSonar') || 'Sonar'}:{' '}
-          {t('games.create.seaBattleSonarHint') || 'Reveal ship locations'}
-        </label>
-        <label
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            fontSize: 13,
-            opacity: ruleComingSoon.get('radar') ? 0.4 : 1,
-            cursor: ruleComingSoon.get('radar') ? 'not-allowed' : 'pointer',
-          }}
-        >
-          <input
-            type="checkbox"
+          <LobbySwitchRow
+            label={t('games.create.seaBattleRadar')}
+            hint={t('games.create.seaBattleRadarHint')}
+            badge={ruleComingSoon.get('radar') ? soon : undefined}
             checked={!!sw?.radar}
             disabled={!!ruleComingSoon.get('radar')}
-            onChange={() =>
-              onOptionChange({
-                specialWeapons: { ...sw, radar: !sw?.radar },
-              })
+            onCheckedChange={(v) =>
+              onOptionChange({ specialWeapons: { ...sw, radar: v } })
             }
           />
-          {t('games.create.seaBattleRadar') || 'Radar'}:{' '}
-          {t('games.create.seaBattleRadarHint') || 'Scan a row or column'}
-        </label>
-
-        <label
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            cursor: 'pointer',
-          }}
-        >
-          <input
-            type="checkbox"
+          <LobbySwitchRow
+            label={t('games.create.seaBattleRevealAll')}
+            hint={t('games.create.seaBattleRevealAllHint')}
             checked={!!sw?.revealAll}
-            onChange={() =>
-              onOptionChange({
-                specialWeapons: { ...sw, revealAll: !sw?.revealAll },
-              })
+            onCheckedChange={(v) =>
+              onOptionChange({ specialWeapons: { ...sw, revealAll: v } })
             }
           />
-          {t('games.create.seaBattleRevealAll') || 'Scan Wave'}:{' '}
-          {t('games.create.seaBattleRevealAllHint') ||
-            'Reveal all ships briefly at battle start'}
-        </label>
-
-        {sw?.revealAll && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              paddingLeft: 24,
-            }}
-          >
-            <span className="text-[12px] opacity-[0.6]">Duration:</span>
-            {[1, 2, 3, 4, 5].map((sec) => {
-              const currentDuration =
-                (gameOptions.revealAllDuration as number) ?? 1;
-              return (
-                <button
-                  key={sec}
-                  type="button"
-                  onClick={() => onOptionChange({ revealAllDuration: sec })}
-                  style={{
-                    padding: '2px 8px',
-                    borderRadius: 4,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    border: '1px solid',
-                    borderColor:
-                      currentDuration === sec
-                        ? '#f59e0b'
-                        : 'rgba(255,255,255,0.2)',
-                    background:
-                      currentDuration === sec
-                        ? 'rgba(251,191,36,0.2)'
-                        : 'transparent',
-                    color: currentDuration === sec ? '#f59e0b' : '#999',
-                  }}
-                >
-                  {sec}s
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col items-stretch gap-2">
-        <span className="text-[16px] font-semibold">Ship Abilities</span>
-        <label className="flex items-center gap-2 text-[13px] cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!!gameOptions.shipAbilities}
-            onChange={() =>
-              onOptionChange({ shipAbilities: !gameOptions.shipAbilities })
-            }
-          />
-          <span>
-            Enable ship powers: each ship type gets a unique ability with
-            cooldown (Scout, Barrage, Torpedo, etc.)
-          </span>
-        </label>
-      </div>
-    </div>
+          {sw?.revealAll && (
+            <LobbyOptionGroup title={t('games.create.seaBattleScanDuration')}>
+              <LobbyChoice
+                aria-label={t('games.create.seaBattleScanDuration')}
+                items={durationItems}
+                value={String((gameOptions.revealAllDuration as number) ?? 1)}
+                onChange={(id) =>
+                  onOptionChange({ revealAllDuration: Number(id) })
+                }
+              />
+            </LobbyOptionGroup>
+          )}
+        </LobbyOptionGroup>
+        <LobbySwitchRow
+          label={t('games.create.seaBattleShipAbilities')}
+          hint={t('games.create.seaBattleShipAbilitiesHint')}
+          checked={!!gameOptions.shipAbilities}
+          onCheckedChange={(v) => onOptionChange({ shipAbilities: v })}
+        />
+      </LobbySubAdvanced>
+    </LobbyOptionStack>
   );
 }

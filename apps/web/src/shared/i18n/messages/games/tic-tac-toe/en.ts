@@ -124,6 +124,10 @@ export const enMessages = {
       boardSize: 'Board size',
       maxPlayersShort: 'up to {{n}}',
       teamMode: 'Team mode',
+      teamModeHint: 'Players are split into teams that play together',
+      expansionMarginHint:
+        'How far the board grows when a move lands near its edge',
+      winLengthLabel: 'Marks in a row to win',
       startWithBots: 'Start with bots',
       addBot: 'Add bot',
       waitingForPlayers: 'Waiting for players…',

@@ -125,6 +125,8 @@ export const frMessages = {
       forcedCaptures: 'Captures Forcées',
       backwardCaptures: "Captures Vers l'Arrière",
       alwaysEnabled: 'toujours activées',
+      forcedCapturesHint: "Vous devez capturer dès qu'une capture est possible",
+      backwardCapturesHint: "Les pions peuvent aussi capturer vers l'arrière",
       ruleVariants: {
         american: {
           name: 'Américaines',

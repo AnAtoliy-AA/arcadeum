@@ -177,6 +177,9 @@ export const ruMessages = {
     lobby: {
       variant: 'Вариант',
       timeControl: 'Контроль времени',
+      timeControlHint:
+        'Время на часах для каждого игрока. Без часов для спокойной игры',
+      unlimited: 'Без ограничений',
       startWithBots: 'Начать с ботами',
       waitingForPlayers: 'Ожидание игроков…',
       minPlayers: 'Минимум 2 игрока',

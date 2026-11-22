@@ -145,6 +145,8 @@ export const frMessages = {
       startWithBots: 'Commencer avec un Bot',
       aiDifficulty: 'Difficulté IA',
       nilEnabled: 'Autoriser les annonces Nil',
+      nilEnabledHint: 'Annoncez zéro pli pour un bonus ou une pénalité',
+      targetScoreHint: 'La première équipe à atteindre ce score gagne',
       targetScore: 'Score Cible',
     },
     gameOver: {

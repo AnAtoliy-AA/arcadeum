@@ -125,6 +125,8 @@ export const ruMessages = {
       forcedCaptures: 'Обязательные Взятия',
       backwardCaptures: 'Обратные Взятия',
       alwaysEnabled: 'всегда включены',
+      forcedCapturesHint: 'Взятие обязательно, если оно возможно',
+      backwardCapturesHint: 'Простые шашки тоже могут бить назад',
       ruleVariants: {
         american: {
           name: 'Американские',

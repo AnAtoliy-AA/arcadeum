@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   LobbyCard,
   CardTitle,
@@ -36,6 +37,7 @@ export function LobbySidebarInvited({
   reinviteLabel,
   onReinvite,
 }: LobbySidebarInvitedProps) {
+  const { t } = useTranslation();
   return (
     <LobbyCard>
       <CardTitle>{invitedPlayersLabel}</CardTitle>
@@ -50,7 +52,7 @@ export function LobbySidebarInvited({
             />
             <PlayerInfo>
               <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
-              <InfoLabel>Waiting...</InfoLabel>
+              <InfoLabel>{t('games.lobby.invitedWaiting')}</InfoLabel>
             </PlayerInfo>
           </PlayerItem>
         ))}

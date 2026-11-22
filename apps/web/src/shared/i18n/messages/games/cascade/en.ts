@@ -226,6 +226,7 @@ export const enMessages = {
     },
     lobby: {
       stacking: 'Allow stacking penalties',
+      stackingAutoHint: 'Set automatically by the game mode',
       lastCardCall: 'Last-Card race (press Cascade when an opponent hits 1)',
       startWithBots: 'Start with bots',
       addBot: 'Add bot',

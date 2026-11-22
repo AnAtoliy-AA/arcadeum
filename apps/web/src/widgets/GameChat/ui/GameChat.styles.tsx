@@ -109,29 +109,31 @@ export function TabsRow({
 export function Tab({
   className,
   children,
-  role,
   'aria-selected': ariaSelected,
   onClick,
   style,
+  'data-testid': testId,
 }: DivProps & {
-  role?: AriaRole;
   'aria-selected'?: boolean | 'true' | 'false';
-  onClick?: MouseEventHandler<HTMLDivElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   style?: CSSProperties;
+  'data-testid'?: string;
 }) {
   return (
-    <div
+    <button
+      type="button"
+      role="tab"
       className={cx(
-        'flex flex-1 cursor-pointer flex-row items-center justify-center gap-1.5 rounded-full px-2.5 py-[5px] hover:bg-[var(--backgroundHover)]',
+        'flex min-h-11 flex-1 cursor-pointer flex-row items-center justify-center gap-1.5 rounded-full px-3 py-1.5 transition-colors hover:bg-[var(--backgroundHover)] focus-visible:outline-2 focus-visible:outline-[var(--primary)]',
         className,
       )}
-      role={role}
       aria-selected={ariaSelected}
       onClick={onClick}
       style={style}
+      data-testid={testId}
     >
       {children}
-    </div>
+    </button>
   );
 }
 
@@ -143,7 +145,7 @@ export function TabLabel({
   return (
     <span
       className={cx(
-        'text-[11.5px] font-semibold text-[rgba(180,180,200,0.7)]',
+        'text-[13px] font-semibold text-[var(--textSecondary)]',
         className,
       )}
       style={color ? { color } : undefined}
@@ -157,14 +159,22 @@ export function TabCount({
   className,
   children,
   style,
-}: SpanProps & { style?: CSSProperties }) {
+  'aria-label': ariaLabel,
+  'data-testid': testId,
+}: SpanProps & {
+  style?: CSSProperties;
+  'aria-label'?: string;
+  'data-testid'?: string;
+}) {
   return (
     <span
       className={cx(
-        'min-w-[16px] rounded-full bg-[var(--backgroundHover)] px-1 py-0.5 text-center text-[9.5px] text-[rgba(180,180,200,0.7)]',
+        'min-w-[18px] rounded-full bg-[var(--backgroundHover)] px-1.5 py-0.5 text-center text-[11px] text-[rgba(180,180,200,0.7)]',
         className,
       )}
       style={style}
+      aria-label={ariaLabel}
+      data-testid={testId}
     >
       {children}
     </span>

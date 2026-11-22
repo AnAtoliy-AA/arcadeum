@@ -22,7 +22,7 @@ export const LobbyContent = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-start gap-5 flex-1 min-h-0 p-5 pb-[96px] overflow-y-auto overflow-x-hidden max-[1023px]:flex-col max-[1023px]:flex-1 max-[1023px]:min-h-0 max-[1023px]:overflow-y-visible max-[1023px]:overflow-x-visible max-[1023px]:p-3 max-[1023px]:pb-[96px] max-[1023px]:gap-3 max-[1023px]:items-stretch',
+      'flex flex-row items-start gap-5 flex-1 min-h-0 p-5 pb-6 overflow-y-auto overflow-x-hidden max-[1023px]:flex-col max-[1023px]:flex-1 max-[1023px]:min-h-0 max-[1023px]:overflow-y-visible max-[1023px]:overflow-x-visible max-[1023px]:p-3 max-[1023px]:pb-4 max-[1023px]:gap-3 max-[1023px]:items-stretch',
       className,
     )}
   >
@@ -133,7 +133,7 @@ export const RoomNameBadge = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-center gap-2 py-2 px-4 bg-[rgba(16,185,129,0.12)] border border-[rgba(16,185,129,0.2)] rounded-[20px] max-w-full overflow-hidden',
+      'flex flex-row items-center gap-2 py-2 px-4 min-h-[44px] bg-[var(--backgroundHover)] border border-[var(--glassBorder)] rounded-full max-w-full overflow-hidden',
       className,
     )}
   >
@@ -163,8 +163,7 @@ export const RoomNameText = ({
   <span
     data-testid={dataTestId}
     className={cx(
-      'text-[20px] font-bold overflow-hidden truncate',
-      'bg-gradient-to-r from-[var(--color)] via-[var(--primary)] to-[var(--color)] bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer',
+      'text-base font-bold overflow-hidden truncate text-[var(--textPrimary)]',
       className,
     )}
   >

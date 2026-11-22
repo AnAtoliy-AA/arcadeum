@@ -126,6 +126,8 @@ export const byMessages = {
       forcedCaptures: 'Абавязковыя Захопы',
       backwardCaptures: 'Зваротныя Захопы',
       alwaysEnabled: 'заўжды ўключаны',
+      forcedCapturesHint: 'Захоп абавязковы, калі ён магчымы',
+      backwardCapturesHint: 'Простыя шашкі таксама могуць біць назад',
       ruleVariants: {
         american: {
           name: 'Амерыканскія',

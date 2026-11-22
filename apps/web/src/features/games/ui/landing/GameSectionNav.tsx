@@ -54,9 +54,9 @@ export function GameSectionNav({ items }: GameSectionNavProps) {
                 href={`#${item.id}`}
                 aria-current={active ? 'true' : undefined}
                 onClick={() => setActiveId(item.id)}
-                className={`box-border inline-flex items-center px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors ${
+                className={`box-border inline-flex items-center min-h-10 px-3.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap motion-safe:transition-colors focus-visible:outline-2 focus-visible:outline-[var(--primary)] ${
                   active
-                    ? 'bg-[var(--primary)] text-white'
+                    ? 'bg-[var(--primary)] text-[var(--primaryText)]'
                     : 'text-[var(--foreground)] hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]'
                 }`}
               >

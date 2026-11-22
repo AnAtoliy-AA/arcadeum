@@ -1,6 +1,6 @@
 'use client';
 
-import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import { LobbyOptionGroup } from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { TranslationKey } from '@/shared/i18n/useTranslation';
@@ -42,13 +42,13 @@ export function SeaBattleLobbyOptionsPanel({
   // dedicated SeaBattleTeamPanel above the lobby so they don't compete with
   // the Start button for stacking context.
   const variantPicker = (
-    <LobbyOptionSection title={t('games.create.sectionVariant')}>
+    <LobbyOptionGroup title={t('games.create.sectionVariant')}>
       <GameThemePicker
         selectedTheme={selectedVariant}
         onSelect={handleVariantSelect}
         disabled={!isHost}
       />
-    </LobbyOptionSection>
+    </LobbyOptionGroup>
   );
 
   const showTeamPanel = room.status === 'lobby' && (isHost || teamMode);

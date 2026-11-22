@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.6] - 2026-11-22
+
+### Fixed
+- run pre-commit checks via PreToolUse hook on git commit
+
+
 ## [1.31.5] - 2026-11-22
 
 ### Fixed

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.5] - 2026-11-22
+
+### Fixed
+- stop session reverting to anonymous after sign-in
+
+
 ## [1.31.4] - 2026-11-22
 
 ### Fixed

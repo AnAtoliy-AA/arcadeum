@@ -133,6 +133,7 @@ export const ArcadePetCompanionWidget: React.FC<
           variant="glass"
           size="sm"
           shape="round"
+          aria-disabled="true"
           data-testid="arcade-pet-companion-trigger"
           onClick={() => setShowRegisterPrompt((prev) => !prev)}
           title={t('arcadePetCompanion.registerTriggerTitle')}

@@ -43,7 +43,7 @@ test.describe('ArcadePet Virtual Pet Simulation', () => {
 
     const cyberpunkButton = page.getByRole('button', { name: /Cyberpunk/i });
     await cyberpunkButton.click();
-    await expect(cyberpunkButton).toHaveClass(/bg-indigo-600/);
+    await expect(cyberpunkButton).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('should show disabled pet button with register prompt for guest player', async ({

@@ -7,16 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.30.115] - 2026-11-22
 
-- stop the checkers/backgammon landing e2e spec failing on Linux WebKit, which reports its heading and spec table as hidden
-- force the remaining unstable clicks on Linux WebKit (invite/share modal buttons, matchmaking cancel and expand)
-- run the full browser matrix (chromium, firefox, webkit, Mobile Chrome, Mobile Safari) on every PR, including PRs into develop, so engine-specific failures surface before the staging and main promotion PRs
-- harden the Web E2E CI job against runners dying mid-run: 45 minute job timeout, free preinstalled toolchains to reclaim disk before creating the swap file, and log memory and disk every 30 seconds while tests run
-- run WebKit and Mobile Safari e2e jobs with a single worker (measured memory peaked at 14.5 GB of 15 GB with two, which shut the runner down) and raise the job timeout to 60 minutes
-- speed up e2e: chromium runs the whole suite, while firefox, webkit, Mobile Chrome and Mobile Safari run only engine-sensitive specs and every spec that has failed on a specific engine (3,390 test runs per PR down to 1,350); cap the rules-modal wait at 1.5s instead of 5s on every room test (chromium 567s to 361s); stub audio, video and tracking requests in e2e instead of fetching them
-- stop chess puzzle zen-mode e2e spec flaking on Mobile Safari
-- render the WebKit and Mobile Safari e2e projects at 1x pixel density (Linux WebKit rasterises in software, so the 2x and 3x defaults multiplied memory use and was shutting CI runners down) and log the top memory-using processes in the e2e job log
+### Fixed
+- force remaining unstable modal clicks on Linux WebKit
+- stop landing spec failing on Linux WebKit hidden elements
+
+### Improved
+- run engine-sensitive subset on non-chromium browsers and trim dead waits
+
 
 ## [1.30.114] - 2026-11-21
 

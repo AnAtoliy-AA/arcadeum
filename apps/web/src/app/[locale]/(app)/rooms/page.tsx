@@ -22,7 +22,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'rooms', noIndex: true }) : {};
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'rooms', noIndex: true })
+    : {};
 }
 
 interface PageProps {
@@ -86,6 +88,8 @@ async function RoomsDataFetcher({
       : 'all';
   const search =
     typeof searchParams.search === 'string' ? searchParams.search : undefined;
+  const openSeats = searchParams.openSeats === 'true' ? true : undefined;
+  const hasBots = searchParams.hasBots === 'true' ? true : undefined;
   const page =
     typeof searchParams.page === 'string' ? parseInt(searchParams.page, 10) : 0;
 
@@ -100,6 +104,8 @@ async function RoomsDataFetcher({
         limit: 12,
         gameId,
         categories,
+        openSeats,
+        hasBots,
       },
       {
         token: accessToken || undefined,

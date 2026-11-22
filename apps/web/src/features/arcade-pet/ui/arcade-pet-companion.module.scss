@@ -1,0 +1,146 @@
+.stageContainer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+  overflow: hidden;
+}
+
+.petTrack {
+  position: absolute;
+  inset: 0;
+}
+
+.petEntity {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    left 2.8s cubic-bezier(0.25, 1, 0.5, 1),
+    bottom 2.8s cubic-bezier(0.25, 1, 0.5, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.spriteDirectionLeft {
+  transform: scaleX(-1);
+}
+
+.spriteDirectionRight {
+  transform: scaleX(1);
+}
+
+.col0 {
+  left: 3%;
+}
+.col1 {
+  left: 12%;
+}
+.col2 {
+  left: 21%;
+}
+.col3 {
+  left: 31%;
+}
+.col4 {
+  left: 41%;
+}
+.col5 {
+  left: 50%;
+}
+.col6 {
+  left: 60%;
+}
+.col7 {
+  left: 70%;
+}
+.col8 {
+  left: 79%;
+}
+.col9 {
+  left: 88%;
+}
+
+.row0 {
+  bottom: 4%;
+}
+.row1 {
+  bottom: 15%;
+}
+.row2 {
+  bottom: 26%;
+}
+.row3 {
+  bottom: 37%;
+}
+.row4 {
+  bottom: 48%;
+}
+.row5 {
+  bottom: 59%;
+}
+.row6 {
+  bottom: 70%;
+}
+.row7 {
+  bottom: 82%;
+}
+
+.floatingEmote {
+  animation: emoteFloat 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.friendshipSparkle {
+  animation: sparkleTwinkle 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes emoteFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.7);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  40% {
+    transform: translateY(-4px) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(-12px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.2) rotate(45deg);
+    opacity: 1;
+  }
+}
+
+// Theme aura: one rule, tinted per pet via the --pet-glow custom property
+// that ArcadePetWalkingSprite sets from the species palette.
+.aura {
+  filter: drop-shadow(
+    0 0 6px color-mix(in srgb, var(--pet-glow, var(--primary)) 60%, transparent)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stageContainer,
+  .stageContainer * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

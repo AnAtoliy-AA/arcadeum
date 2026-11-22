@@ -121,6 +121,7 @@ test.describe('Game Room Creation', () => {
     const nameInput = page.getByLabel(/room name/i).first();
     await nameInput.fill('Notes Test Room');
 
+    await page.getByTestId('more-options-toggle').click();
     const notesInput = page.getByTestId('notes-input').first();
     await expect(notesInput).toBeVisible();
     await notesInput.fill('Custom host notes for testing <script>');
@@ -146,5 +147,71 @@ test.describe('Game Room Creation', () => {
 
     await autoBtn.click();
     await expect(autoBtn).not.toBeVisible();
+  });
+
+  test('should explain why create is disabled and show a name error', async ({
+    page,
+  }) => {
+    const nameInput = page.getByTestId('room-name-input').first();
+    const submitBtn = page.getByTestId('create-room-button').first();
+    await expect(async () => {
+      await nameInput.fill('x');
+      await nameInput.fill('');
+      await nameInput.blur();
+      await expect(submitBtn).toBeDisabled({ timeout: 2000 });
+      await expect(page.getByTestId('create-disabled-reason')).toBeVisible({
+        timeout: 2000,
+      });
+      await expect(page.getByTestId('room-name-error')).toBeVisible({
+        timeout: 2000,
+      });
+    }).toPass({ timeout: 20000 });
+
+    await nameInput.fill('Friendly table');
+    await expect(page.getByTestId('room-name-error')).toHaveCount(0);
+    await expect(submitBtn).toBeEnabled();
+  });
+
+  test('should apply a starting setup and keep it explained', async ({
+    page,
+  }) => {
+    const friends = page.getByTestId('preset-friends');
+    await expect(async () => {
+      await friends.click();
+      await expect(friends).toHaveAttribute('aria-checked', 'true', {
+        timeout: 2000,
+      });
+    }).toPass({ timeout: 20000 });
+    await expect(page.getByTestId('visibility-unlisted')).toHaveAttribute(
+      'aria-checked',
+      'true',
+    );
+
+    await page.getByTestId('visibility-private').click();
+    await expect(page.getByTestId('preset-custom-note')).toBeVisible();
+  });
+
+  test('should switch game inline without leaving the page', async ({
+    page,
+  }) => {
+    await page.getByTestId('change-game-link').first().click();
+    await expect(page.getByTestId('game-picker')).toBeVisible();
+    await page.getByTestId('game-tile-chess_v1').click();
+
+    await expect(page).toHaveURL(/\/games\/create.*gameId=chess_v1/);
+    await expect(page.getByTestId('selected-game-card')).toContainText(
+      /chess/i,
+    );
+    await expect(page.getByTestId('game-picker')).toHaveCount(0);
+    await expect(page.getByTestId('theme-picker-chess')).toBeVisible();
+  });
+
+  test('should change the theme from the theme step', async ({ page }) => {
+    const group = page.getByTestId('theme-picker-critical');
+    await expect(group).toBeVisible();
+    const cards = group.getByRole('radio');
+    const second = cards.nth(1);
+    await second.click();
+    await expect(second).toHaveAttribute('aria-checked', 'true');
   });
 });

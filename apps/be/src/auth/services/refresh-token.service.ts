@@ -24,6 +24,9 @@ import type {
 /** Cap for the legacy-format fallback scan: ~50 bcrypt compares worst case. */
 const LEGACY_TOKEN_SCAN_LIMIT = 50;
 
+/** Default window in which a just-rotated token is still accepted. */
+const DEFAULT_REFRESH_GRACE_SECONDS = 30;
+
 @Injectable()
 export class RefreshTokenService {
   private readonly logger = new Logger(RefreshTokenService.name);
@@ -132,6 +135,24 @@ export class RefreshTokenService {
   }
 
   /**
+   * A token that was rotated moments ago may legitimately be presented again
+   * (two tabs, a retried request after a dropped response). Accept it for a
+   * short window instead of treating it as theft. Requires a matching hash so
+   * a guessed tokenId alone is never enough.
+   */
+  private async isWithinRotationGrace(
+    stored: RefreshTokenDocument,
+    raw: string,
+  ): Promise<boolean> {
+    if (!stored.revoked || !stored.rotatedAt) return false;
+    const graceMs =
+      (Number(this.config.get<string>('REFRESH_TOKEN_GRACE_SECONDS')) ||
+        DEFAULT_REFRESH_GRACE_SECONDS) * 1000;
+    if (Date.now() - stored.rotatedAt.getTime() > graceMs) return false;
+    return bcrypt.compare(raw, stored.tokenHash);
+  }
+
+  /**
    * Derive access token expiration from JWT payload.
    */
   deriveAccessTokenExpiration(token: string): Date | null {
@@ -166,7 +187,9 @@ export class RefreshTokenService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    if (stored.revoked) {
+    const inGrace = await this.isWithinRotationGrace(stored, candidate);
+
+    if (stored.revoked && !inGrace) {
       // Presenting an already-rotated/revoked token means it was copied —
       // assume theft and kill the whole token family for this user.
       this.logger.warn(
@@ -177,8 +200,10 @@ export class RefreshTokenService {
     }
 
     if (stored.expiresAt.getTime() <= Date.now()) {
-      stored.revoked = true;
-      await stored.save();
+      await this.refreshModel.updateOne(
+        { _id: stored._id },
+        { $set: { revoked: true } },
+      );
       throw new UnauthorizedException('Refresh token expired');
     }
 
@@ -218,8 +243,14 @@ export class RefreshTokenService {
     const accessTokenExpiresAt = this.deriveAccessTokenExpiration(accessToken);
 
     const rotated = await this.issueRefreshToken(userId, String(stored.id));
-    stored.revoked = true;
-    await stored.save();
+    if (!stored.revoked) {
+      // Atomic claim: only mark rotatedAt if still live, so a concurrent
+      // refresh keeps the first rotation timestamp (grace window start).
+      await this.refreshModel.updateOne(
+        { _id: stored._id, revoked: false },
+        { $set: { revoked: true, rotatedAt: new Date() } },
+      );
+    }
 
     return {
       accessToken,

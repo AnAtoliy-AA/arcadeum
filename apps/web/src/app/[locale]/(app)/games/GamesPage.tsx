@@ -49,7 +49,7 @@ interface GamesPageProps {
 
 export default function GamesPage({
   initialData,
-  gameId,
+  gameId: scopedGameId,
   pageTitle,
 }: GamesPageProps) {
   const { snapshot, hydrated } = useSessionTokens();
@@ -69,6 +69,11 @@ export default function GamesPage({
   const aiVsAiFilter = parseAiVsAiFilterFromUrl(
     searchParams?.get('aiVsAi') ?? null,
   );
+  const gameFilter = searchParams?.get('gameId') || '';
+  const openSeatsOnly = searchParams?.get('openSeats') === 'true';
+  const botRoomsOnly = searchParams?.get('hasBots') === 'true';
+  // A page scoped to one game (e.g. /games/chess) wins over the URL filter.
+  const gameId = scopedGameId || gameFilter || undefined;
   const initialSearchQuery = searchParams?.get('search') || '';
   const categoryFilterParam = searchParams?.get('category') || '';
 
@@ -137,6 +142,21 @@ export default function GamesPage({
     [updateParams],
   );
 
+  const handleGameChange = useCallback(
+    (next: string) => updateParams({ gameId: next || undefined }),
+    [updateParams],
+  );
+
+  const handleOpenSeatsChange = useCallback(
+    (next: boolean) => updateParams({ openSeats: next ? 'true' : undefined }),
+    [updateParams],
+  );
+
+  const handleBotRoomsChange = useCallback(
+    (next: boolean) => updateParams({ hasBots: next ? 'true' : undefined }),
+    [updateParams],
+  );
+
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
   }, []);
@@ -160,12 +180,15 @@ export default function GamesPage({
     currentParams.delete('status');
     currentParams.delete('aiVsAi');
     currentParams.delete('participation');
+    currentParams.delete('openSeats');
+    currentParams.delete('hasBots');
+    if (!scopedGameId) currentParams.delete('gameId');
     currentParams.delete('page');
 
     router.push(`${pathname}?${currentParams.toString()}`, {
       scroll: false,
     });
-  }, [pathname, router]);
+  }, [pathname, router, scopedGameId]);
 
   // Sync deferred search query to URL - only if it actually changed from current URL
   useEffect(() => {
@@ -210,6 +233,7 @@ export default function GamesPage({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteQuery<GetRoomsResponse, number>({
     queryKey: [
       'games',
@@ -217,6 +241,8 @@ export default function GamesPage({
       serializedStatus ?? 'all',
       participationFilter,
       aiVsAiFilter,
+      openSeatsOnly ? 1 : 0,
+      botRoomsOnly ? 1 : 0,
       deferredSearchQuery,
       categoryFilter || 'all',
       gameId ?? null,
@@ -229,6 +255,8 @@ export default function GamesPage({
           status: serializedStatus,
           participation: participationFilter,
           aiVsAi: aiVsAiFilter === 'ai_vs_ai',
+          openSeats: openSeatsOnly || undefined,
+          hasBots: botRoomsOnly || undefined,
           search: deferredSearchQuery || undefined,
           page: pageParam as number,
           limit: PAGE_SIZE,
@@ -279,7 +307,15 @@ export default function GamesPage({
     );
   }, []);
 
-  const error = queryError ? 'Failed to load rooms' : null;
+  const error = Boolean(queryError);
+  const hasActiveFilters =
+    selectedStatuses.length > 0 ||
+    participationFilter !== 'all' ||
+    aiVsAiFilter !== 'all' ||
+    Boolean(deferredSearchQuery || categoryFilter) ||
+    openSeatsOnly ||
+    botRoomsOnly ||
+    Boolean(gameFilter && !scopedGameId);
 
   const renderContent = () => {
     if (isLoading) {
@@ -287,7 +323,7 @@ export default function GamesPage({
     }
 
     if (error && !rooms.length) {
-      return <GamesError error={error} />;
+      return <GamesError onRetry={() => void refetch()} />;
     }
 
     if (sortedRooms.length === 0) {
@@ -303,7 +339,12 @@ export default function GamesPage({
           </>
         );
       }
-      return <GamesEmpty />;
+      return (
+        <GamesEmpty
+          hasFilters={hasActiveFilters}
+          onClearFilters={handleClearAll}
+        />
+      );
     }
 
     return (
@@ -333,6 +374,12 @@ export default function GamesPage({
           onAiVsAiChange={handleAiVsAiChange}
           canFilterParticipation={!!snapshot.accessToken || !!snapshot.userId}
           onClearAll={handleClearAll}
+          gameFilter={scopedGameId ? undefined : gameFilter}
+          onGameChange={scopedGameId ? undefined : handleGameChange}
+          openSeatsOnly={openSeatsOnly}
+          onOpenSeatsChange={handleOpenSeatsChange}
+          botRoomsOnly={botRoomsOnly}
+          onBotRoomsChange={handleBotRoomsChange}
         />
 
         <GlassCard className={'p-6'}>

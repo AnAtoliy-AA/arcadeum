@@ -4,6 +4,10 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { historyApi } from '@/features/history/api';
 import type { GameResult } from '@/features/games/hooks/useGameResultModal';
 
+/**
+ * Records the result locally and syncs stats. Pet treats are never granted
+ * here: the backend awards them from the verified match result.
+ */
 export function useRecordGameResult(
   result: GameResult,
   gameId: string,
@@ -28,9 +32,11 @@ export function useRecordGameResult(
     recordGameResult(record);
 
     if (snapshot.accessToken) {
-      historyApi.syncStats([record], { token: snapshot.accessToken }).catch(() => {
-        // silent — local record is already saved
-      });
+      historyApi
+        .syncStats([record], { token: snapshot.accessToken })
+        .catch(() => {
+          // silent: local record is already saved
+        });
     }
   }, [result, gameId, sessionId, recordGameResult, snapshot.accessToken]);
 }

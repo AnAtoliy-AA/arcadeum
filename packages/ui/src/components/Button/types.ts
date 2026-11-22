@@ -19,7 +19,8 @@ export type GameVariant =
   | 'horror'
   | 'adventure'
   | 'high-altitude-hike';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+/** `auto` hugs its content (no fixed height); use for multi-line or stacked chips. */
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'auto';
 
 /** Corner shape — overrides the radius from the chosen size. */
 export type ButtonShape = 'round' | 'square' | 'circle';

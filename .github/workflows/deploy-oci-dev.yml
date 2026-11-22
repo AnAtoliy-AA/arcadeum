@@ -15,6 +15,7 @@ on:
       - 'packages/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
+      - 'apps/web/**'
   workflow_dispatch:
     inputs:
       branch:
@@ -28,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       be-or-tg: ${{ steps.filter.outputs.be-or-tg }}
+      web: ${{ steps.filter.outputs.web }}
     steps:
       - uses: actions/checkout@v7
       - uses: dorny/paths-filter@v4
@@ -37,6 +39,11 @@ jobs:
             be-or-tg:
               - 'apps/be/**'
               - 'bots/tg-bot/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+            web:
+              - 'apps/web/**'
               - 'packages/**'
               - 'package.json'
               - 'pnpm-lock.yaml'
@@ -123,3 +130,68 @@ jobs:
 
             echo "==> Dev deploy done (branch: $BRANCH)!"
             pm2 list
+
+  deploy-web:
+    name: Deploy Web (Dev, Next.js standalone)
+    needs: [changes, deploy-be-and-tg-bot]
+    if: >-
+      !cancelled() && needs.changes.result == 'success' &&
+      (github.event_name == 'workflow_dispatch' || needs.changes.outputs.web == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.OCI_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            exec 200>/tmp/arcadeum-dev-deploy.lock
+            flock -x 200
+            DEPLOY_DIR="/opt/arcadeum-dev"
+            WEB_PORT=3001
+            cd "$DEPLOY_DIR"
+
+            rm -f "$DEPLOY_DIR/.git/index.lock"
+
+            BRANCH="${{ inputs.branch || github.ref_name }}"
+
+            for attempt in 1 2 3; do
+              if git fetch origin "$BRANCH"; then
+                break
+              fi
+              echo "==> Git fetch failed (attempt $attempt), retrying in 5s..."
+              rm -f "$DEPLOY_DIR/.git/index.lock"
+              sleep 5
+            done
+            git reset --hard "origin/$BRANCH"
+
+            WEB_ENV="$DEPLOY_DIR/apps/web/.env.dev"
+            if [ ! -f "$WEB_ENV" ]; then
+              echo "ERROR: $WEB_ENV is missing. Create it on the server first (NEXT_PUBLIC_* values are inlined at build time)."
+              exit 1
+            fi
+
+            pnpm install --frozen-lockfile
+
+            # Load staging env so NEXT_PUBLIC_* are baked into the build
+            set -a; source "$WEB_ENV"; set +a
+            pnpm --filter @arcadeum/games-core build
+            (cd apps/web && pnpm build)
+
+            # Copy static assets + public into standalone output
+            STANDALONE="apps/web/.next/standalone/apps/web"
+            cp -r apps/web/.next/static "$STANDALONE/.next/static"
+            cp -r apps/web/public "$STANDALONE/public" 2>/dev/null || true
+
+            mkdir -p "${DEPLOY_DIR}/scripts"
+            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum-dev/apps/web/.env.dev\nset +a\nexport PORT=%s HOSTNAME=0.0.0.0\ncd /opt/arcadeum-dev/apps/web/.next/standalone/apps/web\nexec node server.js\n' "$WEB_PORT" > "${DEPLOY_DIR}/scripts/start-web-dev.sh"
+            chmod +x "${DEPLOY_DIR}/scripts/start-web-dev.sh"
+
+            pm2 restart arcadeum-web-dev --update-env || pm2 start "${DEPLOY_DIR}/scripts/start-web-dev.sh" --name arcadeum-web-dev
+            pm2 save
+
+            echo "==> Dev web deploy done (branch: $BRANCH, port: $WEB_PORT)!"
+            pm2 list arcadeum-web-dev

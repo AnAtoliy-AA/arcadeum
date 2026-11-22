@@ -42,7 +42,8 @@ function resolveCategory(
   if (type === 'puzzle') return 'puzzle';
   if (
     genre.toLowerCase().includes('race') ||
-    genre.toLowerCase().includes('arcade')
+    genre.toLowerCase().includes('arcade') ||
+    genre.toLowerCase().includes('sim')
   ) {
     return 'casual';
   }

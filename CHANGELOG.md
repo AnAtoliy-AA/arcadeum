@@ -7,17 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- logged out after reloading twice quickly: the cross-tab refresh lock now recognises a reload of the same tab and no longer blocks its session restore
+
 ## [1.31.15] - 2026-11-22
 
 ### Added
-- rework game landings with clear hierarchy and bot play
 
+- rework game landings with clear hierarchy and bot play
 
 ## [1.31.14] - 2026-11-22
 
 ### Fixed
-- isolate auth cookies per env so staging keeps session after reload
 
+- isolate auth cookies per env so staging keeps session after reload
 
 ## [1.31.13] - 2026-11-22
 

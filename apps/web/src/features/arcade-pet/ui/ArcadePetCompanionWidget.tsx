@@ -64,6 +64,7 @@ export const ArcadePetCompanionWidget: React.FC<
     adoptRandomPet,
     selectActivePet,
     homeCapacity,
+    syncPending,
   } = useArcadePetStore(
     useShallow((s) => ({
       pet: s.pet,
@@ -91,6 +92,7 @@ export const ArcadePetCompanionWidget: React.FC<
       adoptRandomPet: s.adoptRandomPet,
       selectActivePet: s.selectActivePet,
       homeCapacity: s.homeCapacity,
+      syncPending: s.syncPending,
     })),
   );
 
@@ -171,8 +173,9 @@ export const ArcadePetCompanionWidget: React.FC<
           <button
             type="button"
             data-testid="arcade-pet-companion-trigger"
+            disabled={syncPending}
             onClick={() => setShowCommitmentModal(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="disabled:opacity-60 disabled:cursor-wait flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 border border-emerald-400/50 shadow-lg backdrop-blur-md text-white transition-all transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
             aria-label={t('arcadePetCompanion.adoptFreeAria')}
           >
             <span className="text-lg">🥚</span>
@@ -358,6 +361,7 @@ export const ArcadePetCompanionWidget: React.FC<
                   <button
                     type="button"
                     data-testid="companion-feed-btn"
+                    disabled={syncPending}
                     onClick={() => performAction('feed_snack')}
                     className="py-1.5 px-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-center border border-neutral-700 flex items-center justify-center gap-1"
                   >
@@ -380,6 +384,7 @@ export const ArcadePetCompanionWidget: React.FC<
                   <button
                     type="button"
                     data-testid="open-adoption-modal-btn"
+                    disabled={syncPending}
                     onClick={() => setShowAdoptionModal(true)}
                     className="py-1.5 px-2 rounded-lg bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-500/40 text-indigo-300 text-xs font-semibold text-center flex items-center justify-center gap-1"
                   >
@@ -420,7 +425,7 @@ export const ArcadePetCompanionWidget: React.FC<
                   href={petGameHref}
                   className="w-full mt-1 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs uppercase text-center tracking-wide block"
                 >
-                  Open Game Room →
+                  {t('arcadePetCompanion.openGameRoomCta')}
                 </Link>
               </>
             )}

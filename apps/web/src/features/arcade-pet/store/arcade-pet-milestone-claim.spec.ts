@@ -42,6 +42,18 @@ describe('checkMilestones', () => {
     expect(useArcadePetStore.getState().coinBalance).toBe(10);
   });
 
+  it('does not queue or pay a milestone twice when claims were reset', () => {
+    run();
+    // A server response can briefly reset the claimed list.
+    useArcadePetStore.setState({ claimedMilestones: [] });
+    run();
+    const state = useArcadePetStore.getState();
+    expect(state.newMilestones).toEqual([
+      { id: 'first_hatch', rewardCoins: 10 },
+    ]);
+    expect(state.coinBalance).toBe(10);
+  });
+
   it('dismisses the queued notices', () => {
     run();
     useArcadePetStore.getState().dismissMilestones();

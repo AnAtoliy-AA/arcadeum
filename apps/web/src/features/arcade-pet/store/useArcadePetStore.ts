@@ -41,6 +41,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   hasConfirmedCare: false,
   syncRevision: null,
   serverBacked: false,
+  syncPending: false,
   actionError: null,
   awaySummary: null,
   dailyStreak: 0,
@@ -112,6 +113,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       homeCapacity,
     } = get();
 
+    if (get().syncPending) return { success: false, error: 'SYNC_PENDING' };
+
     if (pets.length >= homeCapacity) {
       set({
         actionError: { code: 'HOME_FULL' },
@@ -171,6 +174,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
   adoptSelectedPet: (species, theme, name) => {
     const { gemBalance, pets, adoptionCount, homeCapacity } = get();
+
+    if (get().syncPending) return { success: false, error: 'SYNC_PENDING' };
 
     if (pets.length >= homeCapacity) {
       set({

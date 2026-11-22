@@ -60,7 +60,11 @@ export async function pushPetState(get: Getter, set: Setter): Promise<void> {
       ...buildSyncPayload(state),
       baseRevision: state.syncRevision ?? 0,
     });
-    if (result.status === 'conflict') {
+    if (result.status === 'conflict' && result.collection.revision === 0) {
+      // The server has no document yet (first adoption still queued behind
+      // this push). Adopting its empty default would erase the optimistic
+      // pet, so local state stays until the economy action creates it.
+    } else if (result.status === 'conflict') {
       set(buildServerPatch(get(), result.collection));
       persistStore(get());
     } else {

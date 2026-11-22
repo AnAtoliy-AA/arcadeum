@@ -422,4 +422,16 @@ describe('useArcadePetStore', () => {
     const pet = useArcadePetStore.getState().pet;
     expect(pet?.timestamps.lastInteractedAt).toBeGreaterThanOrEqual(before);
   });
+
+  it('refuses adoption while the first server pull is pending', () => {
+    useArcadePetStore.setState({ syncPending: true, pets: [], pet: null });
+    expect(useArcadePetStore.getState().adoptRandomPet()).toEqual({
+      success: false,
+      error: 'SYNC_PENDING',
+    });
+    expect(
+      useArcadePetStore.getState().adoptSelectedPet('dragon', 'cyberpunk', 'A'),
+    ).toEqual({ success: false, error: 'SYNC_PENDING' });
+    expect(useArcadePetStore.getState().pets).toEqual([]);
+  });
 });

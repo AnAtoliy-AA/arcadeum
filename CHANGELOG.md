@@ -7,9 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- stop ArcadePet milestones paying twice and a first adoption being erased by the initial server sync, and block adoption while that pull is pending (ARC-1046)
+
+### Added
+
+- add ArcadePet QA e2e spec with a real-backend fixture (ARC-1046)
+
 ## [1.31.1] - 2026-11-22
 
 ### Added
+
 - make pet economy server-authoritative and sync new progress fields (ARC-1046) (ARC-1046)
 - sync pet collection to server with revisioned writes and deliver admin gifts (ARC-1046) (ARC-1046)
 - add care milestones that reward coins with a toast (ARC-1046) (ARC-1046)
@@ -44,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - implement ArcadePet game and platform companion (ARC-1046) (ARC-1046)
 
 ### Fixed
+
 - repair e2e seeds, localize landing and improve web UX (ARC-1046) (ARC-1046)
 - harden server-side sync, gifts and economy (ARC-1046) (ARC-1046)
 - harden user-id queries with $eq and use sha256 for gift ids (ARC-1046) (ARC-1046)
@@ -56,13 +66,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - smooth rounded blob contour and prevent mirrored name tag (ARC-1046) (ARC-1046)
 
 ### Improved
+
 - pause pet simulation in background tabs and honor reduced motion (ARC-1046) (ARC-1046)
 
 ### Refactored
+
 - extract companion status panel and localize its banners (ARC-1046) (ARC-1046)
 - store action errors as codes and extract home upgrade (ARC-1046) (ARC-1046)
 - split games-core utils into core and decay modules (ARC-1046) (ARC-1046)
-
 
 ## [1.31.0] - 2026-11-22
 

@@ -7,30 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Security
-
-- ArcadePet collection sync now merges only whitelisted client fields (identity, growth, xp, level and stage stay server-side) and treat stock is validated
-- ArcadePet gifts: deterministic gift ids, delivery before debit, inbox cap, per-route throttling and sanitized messages
-- ArcadePet economy rejections use a typed `ok`/`error` union with `CONTENTION` and `INBOX_FULL` codes
-
-### Fixed
-
-- fix ArcadePet e2e specs seeding pets that the loader rejected (missing `lastInteractedAt`), which failed Web E2E chromium shards 1 and 2
-- keep the welcome present for users who receive a gift before adopting
-- instant adult adoption no longer demotes to baby after the first decay tick
-- daily bonus cannot be claimed twice when the stored claim day is in the future
-- ArcadePet landing, controls and admin bulk rewards copy is translated in all locales
-
-### Changed
-
-- ArcadePet landing is a Server Component with a small client theme showcase
-- remove the dev-only free gems button and the offline fake gift; gifts need a server connection
-- bulk pet rewards deliver a claimable present only and validate the species up front
-- respect reduced motion for the ArcadePet stage walk
+## [1.31.1] - 2026-11-22
 
 ### Added
+- make pet economy server-authoritative and sync new progress fields (ARC-1046) (ARC-1046)
+- sync pet collection to server with revisioned writes and deliver admin gifts (ARC-1046) (ARC-1046)
+- add care milestones that reward coins with a toast (ARC-1046) (ARC-1046)
+- let players rename their pets with validated inline editing (ARC-1046) (ARC-1046)
+- flag needy pets on the companion button with an accessible indicator (ARC-1046) (ARC-1046)
+- localize adoption modal and VIP tab, make modal an accessible dialog (ARC-1046) (ARC-1046)
+- localize gifts modal and make it an accessible dialog (ARC-1046) (ARC-1046)
+- localize commitment modal and stage names, make modal an accessible dialog (ARC-1046) (ARC-1046)
+- add daily coin bonus with streak to ease the economy (ARC-1046) (ARC-1046)
+- show while-you-were-away summary and announce errors (ARC-1046) (ARC-1046)
+- add keyboard controls for the draggable home booth (ARC-1046) (ARC-1046)
+- count only running hours for growth and update hunger curve (ARC-1046) (ARC-1046)
+- make pets home booth draggable across screen (ARC-1046) (ARC-1046)
+- hide pet identity while in egg until it grows (ARC-1046) (ARC-1046)
+- add differential growth and hunger rates for home vs screen and hunger scaling (ARC-1046) (ARC-1046)
+- add pet home capacity places and upgrade for coins or gems (ARC-1046) (ARC-1046)
+- add multi-pet escalating food costs and home rest mechanics (ARC-1046) (ARC-1046)
+- hide home and home button in AP button by default (ARC-1046) (ARC-1046)
+- add coin economy for feeding snacks and expand theme rosters (ARC-1046) (ARC-1046)
+- organize pets by game theme with 5 pets per theme roster (ARC-1046) (ARC-1046)
+- enable administrators to gift companion pets individually and in bulk (ARC-1046) (ARC-1046)
+- allow administrators to enable or disable pets feature and visibility (ARC-1046) (ARC-1046)
+- implement species-specific behaviors, movement cadences, and distinct animations (ARC-1046) (ARC-1046)
+- require registration for pets and adoption pledge confirmation (ARC-1046) (ARC-1046)
+- add pet home booth with hiding and opponent knocking interaction (ARC-1046) (ARC-1046)
+- add gem mounts economy, random rolls, pet gifts, and theme guarantees (ARC-1046) (ARC-1046)
+- add whole-screen waypoint roaming for animated companion (ARC-1046) (ARC-1046)
+- enable whole-screen 2D roaming for animated pet companion (ARC-1046) (ARC-1046)
+- animated walking companion with multiplayer friendly pet social stage (ARC-1046) (ARC-1046)
+- mount arcade pet companion globally across all games (ARC-1046) (ARC-1046)
+- register arcade pet in games catalog and home featured games (ARC-1046) (ARC-1046)
+- implement ArcadePet game and platform companion (ARC-1046) (ARC-1046)
 
-- ArcadePet controller, gateway, DTO, merge and economy edge-case tests plus a locale parity test and an e2e for rejected gifts
+### Fixed
+- repair e2e seeds, localize landing and improve web UX (ARC-1046) (ARC-1046)
+- harden server-side sync, gifts and economy (ARC-1046) (ARC-1046)
+- harden user-id queries with $eq and use sha256 for gift ids (ARC-1046) (ARC-1046)
+- localize remaining companion widget and social stage strings (ARC-1046) (ARC-1046)
+- hide free bonus gems button in production builds (ARC-1046) (ARC-1046)
+- add empty state to pet collection list (ARC-1046) (ARC-1046)
+- move companion strings to i18n in all five locales (ARC-1046) (ARC-1046)
+- validate persisted collection and clamp offline decay gap (ARC-1046) (ARC-1046)
+- isolate local player from opponent pet and enforce care confirmation (ARC-1046) (ARC-1046)
+- smooth rounded blob contour and prevent mirrored name tag (ARC-1046) (ARC-1046)
+
+### Improved
+- pause pet simulation in background tabs and honor reduced motion (ARC-1046) (ARC-1046)
+
+### Refactored
+- extract companion status panel and localize its banners (ARC-1046) (ARC-1046)
+- store action errors as codes and extract home upgrade (ARC-1046) (ARC-1046)
+- split games-core utils into core and decay modules (ARC-1046) (ARC-1046)
+
 
 ## [1.31.0] - 2026-11-22
 

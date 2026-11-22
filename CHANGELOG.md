@@ -7,12 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.116] - 2026-11-22
+
+### Fixed
+- scope backdrop-filter override to WebKit so chromium keeps the effect
+- stop Linux WebKit memory runaway from backdrop-filter in e2e builds
+
+
+## [1.30.115] - 2026-11-22
+
+### Fixed
+
+- force remaining unstable modal clicks on Linux WebKit
+- stop landing spec failing on Linux WebKit hidden elements
+
+### Improved
+
+- run engine-sensitive subset on non-chromium browsers and trim dead waits
+
+## [1.30.114] - 2026-11-21
+
+### Fixed
+
+- fix hydration mismatches and clear e2e flakes and console noise
+
 ## [1.30.113] - 2026-11-21
 
 ### Fixed
+
 - force unstable WebKit clicks in landing and matchmaking specs
 - stop WebKit specs failing on unstable elements
-
 
 ## [1.30.112] - 2026-11-15
 

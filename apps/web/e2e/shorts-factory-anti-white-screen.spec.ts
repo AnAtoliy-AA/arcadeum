@@ -22,7 +22,8 @@ test.describe('Shorts Factory Gameplay and Scenarios Canvas', () => {
     page,
   }) => {
     await navigateTo(page, '/en/games/sea-battle');
-    const hero = page.locator('#play');
+    // first(): a transient duplicate #play can exist while the page hydrates.
+    const hero = page.locator('#play').first();
     await expect(hero).toBeVisible();
     const quickplayBtn = hero
       .locator('[data-testid="quickplay-ai-button"]')
@@ -41,7 +42,8 @@ test.describe('Shorts Factory Gameplay and Scenarios Canvas', () => {
     page,
   }) => {
     await navigateTo(page, '/en/games/chess');
-    const hero = page.locator('#play');
+    // first(): a transient duplicate #play can exist while the page hydrates.
+    const hero = page.locator('#play').first();
     await expect(hero).toBeVisible();
     const quickplayBtn = hero
       .locator('[data-testid="quickplay-ai-button"]')

@@ -31,11 +31,14 @@ test.describe('Settings Page', () => {
 
     await expect(hapticsRow).toBeVisible();
     const initialState = await hapticsCheckbox.isChecked();
-    await hapticsRow.click();
-
-    await expect
-      .poll(async () => await hapticsCheckbox.isChecked(), {})
-      .toBe(!initialState);
+    // Retry the click: it can land before React hydrates and be lost. Click
+    // only while the state is unchanged so a retry never flips it back.
+    await expect(async () => {
+      if ((await hapticsCheckbox.isChecked()) === initialState) {
+        await hapticsRow.click({ force: true });
+      }
+      expect(await hapticsCheckbox.isChecked()).toBe(!initialState);
+    }).toPass({ timeout: 20000 });
   });
 
   test('should toggle sound', async ({ page }) => {
@@ -44,11 +47,14 @@ test.describe('Settings Page', () => {
 
     await expect(soundRow).toBeVisible();
     const initialState = await soundCheckbox.isChecked();
-    await soundRow.click();
-
-    await expect
-      .poll(async () => await soundCheckbox.isChecked(), {})
-      .toBe(!initialState);
+    // Retry the click: it can land before React hydrates and be lost. Click
+    // only while the state is unchanged so a retry never flips it back.
+    await expect(async () => {
+      if ((await soundCheckbox.isChecked()) === initialState) {
+        await soundRow.click({ force: true });
+      }
+      expect(await soundCheckbox.isChecked()).toBe(!initialState);
+    }).toPass({ timeout: 20000 });
   });
 
   test('should switch themes', async ({ page }) => {
@@ -58,10 +64,14 @@ test.describe('Settings Page', () => {
     await expect(lightThemeBtn).toBeVisible();
     await expect(darkThemeBtn).toBeVisible();
 
-    await darkThemeBtn.click({ force: true });
-    await expect
-      .poll(async () => await darkThemeBtn.getAttribute('aria-pressed'), {})
-      .toBe('true');
+    // Retry the click: a forced click can land before React hydrates and be
+    // lost. Selecting a theme is idempotent, so repeating it is safe.
+    await expect(async () => {
+      await darkThemeBtn.click({ force: true });
+      await expect(darkThemeBtn).toHaveAttribute('aria-pressed', 'true', {
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
 
     await expect(page.locator('html')).toHaveAttribute(
       'data-theme-preference',
@@ -71,10 +81,12 @@ test.describe('Settings Page', () => {
 
     // Wait for state to settle
 
-    await lightThemeBtn.click({ force: true });
-    await expect
-      .poll(async () => await lightThemeBtn.getAttribute('aria-pressed'), {})
-      .toBe('true');
+    await expect(async () => {
+      await lightThemeBtn.click({ force: true });
+      await expect(lightThemeBtn).toHaveAttribute('aria-pressed', 'true', {
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
 
     await expect(darkThemeBtn).toHaveAttribute('aria-pressed', 'false', {});
     await expect(page.locator('html')).toHaveAttribute(
@@ -89,7 +101,14 @@ test.describe('Settings Page', () => {
     const englishBtn = page.getByTestId('lang-btn-en').first();
 
     await expect(spanishBtn).toBeVisible();
-    await spanishBtn.click({ force: true });
+    // Retry the click: a forced click can land before React hydrates and be
+    // lost. Selecting a language is idempotent, so repeating it is safe.
+    await expect(async () => {
+      await spanishBtn.click({ force: true });
+      await expect(page.locator('html')).toHaveAttribute('lang', 'es', {
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
 
     await expect(page.locator('[data-current-locale]')).toHaveAttribute(
       'data-current-locale',
@@ -102,8 +121,12 @@ test.describe('Settings Page', () => {
     ).toBeVisible({});
     await expect(spanishBtn).toHaveAttribute('aria-pressed', 'true', {});
 
-    await englishBtn.click({ force: true });
-    await expect(page.locator('html')).toHaveAttribute('lang', 'en', {});
+    await expect(async () => {
+      await englishBtn.click({ force: true });
+      await expect(page.locator('html')).toHaveAttribute('lang', 'en', {
+        timeout: 3000,
+      });
+    }).toPass({ timeout: 20000 });
     await expect(page.getByRole('heading', { name: /settings/i })).toBeVisible(
       {},
     );

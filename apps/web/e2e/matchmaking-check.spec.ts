@@ -21,34 +21,6 @@ test('trace joinMatchmaking effect', async ({ page }) => {
     })
     .toBe(true);
 
-  // Patch joinMatchmaking to add tracing
-  await page.evaluate(() => {
-    const original = (
-      window as typeof window & {
-        __joinMatchmaking?: (g: string) => Promise<void>;
-      }
-    ).__joinMatchmaking;
-    (
-      window as typeof window & {
-        __joinMatchmaking?: (g: string) => Promise<void>;
-      }
-    ).__joinMatchmaking = async (gameId: string) => {
-      console.log('__joinMatchmaking called with:', gameId);
-      await original?.(gameId);
-      console.log('__joinMatchmaking completed');
-    };
-  });
-
-  page.on('console', (msg) => {
-    if (
-      msg.text().startsWith('__joinMatchmaking') ||
-      msg.text().startsWith('startQueue') ||
-      msg.text().startsWith('leaveQueue')
-    ) {
-      console.log('BROWSER LOG:', msg.text());
-    }
-  });
-
   await page.evaluate(() =>
     (
       window as typeof window & {

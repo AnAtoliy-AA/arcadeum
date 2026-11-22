@@ -7,49 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- be(auth): accept a just-rotated refresh token for a short grace window (`REFRESH_TOKEN_GRACE_SECONDS`, default 30s) instead of revoking all sessions
+- be(auth): `/auth/token` no longer sets session cookies; `/auth/refresh` prefers the cookie token over the body token
+- be(auth): resolve the auth cookie domain from `COOKIE_DOMAIN` or `X-Forwarded-Host` so it is `.arcadeum.games` behind a proxy
+
 ## [1.31.8] - 2026-11-22
 
 ### Added
+
 - add anonymous room cleanup with separate configurable period
 - add MongoDB cleanup service with admin-configurable periods
-
 
 ## [1.31.7] - 2026-11-22
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.31.6] - 2026-11-22
 
 ### Fixed
-- run pre-commit checks via PreToolUse hook on git commit
 
+- run pre-commit checks via PreToolUse hook on git commit
 
 ## [1.31.5] - 2026-11-22
 
 ### Fixed
-- stop session reverting to anonymous after sign-in
 
+- stop session reverting to anonymous after sign-in
 
 ## [1.31.4] - 2026-11-22
 
 ### Fixed
-- make scrollable themes grid keyboard focusable (ARC-1047) (ARC-1047)
 
+- make scrollable themes grid keyboard focusable (ARC-1047) (ARC-1047)
 
 ## [1.31.3] - 2026-11-22
 
 ### Added
+
 - web quality pass with accessible modals, shared UI primitives and a11y specs (ARC-1047) (ARC-1047)
 
 ### Fixed
+
 - make the themes scroll region keyboard focusable (ARC-1047) (ARC-1047)
 - keep guest trigger aria-disabled, cap widget height, align e2e selectors (ARC-1047) (ARC-1047)
 - restore aria-disabled on guest trigger and align theme e2e with Button (ARC-1047) (ARC-1047)
 - reseed real arcade-pet session on every page load (ARC-1046) (ARC-1046)
 - prevent double milestone payout and lost first adoption during sync (ARC-1046) (ARC-1046)
-
 
 ## [1.31.2] - 2026-11-22
 

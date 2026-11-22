@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { LoginResponse } from '../api/authApi';
-import { refreshSession } from '../api/authApi';
+import { refreshSessionFromCookie } from '../api/authApi';
+import { ApiError } from '@/shared/lib/api-client';
 import { acquireRefreshLock } from '../lib/refreshLock';
 import { levelFromXp } from '@/shared/lib/xp-level';
 import type {
@@ -10,6 +11,12 @@ import type {
   SetSessionTokensInput,
   LocalAuthMode,
 } from '../model/types';
+
+const STORAGE_KEY = 'web_session_tokens_v1';
+// Written (with a timestamp) only when an authenticated session is really
+// ended, so other tabs can tell a logout from an unrelated removal of the
+// persisted snapshot.
+export const LOGOUT_MARKER_KEY = 'web_session_logout_v1';
 
 const defaultSnapshot: SessionTokensSnapshot = {
   provider: null,
@@ -181,12 +188,20 @@ export const useSessionStore = create<SessionState>()(
       },
 
       clearTokens: async () => {
-        const { refreshTimeoutId } = get();
+        const { snapshot, refreshTimeoutId } = get();
+        const wasAuthenticated = !!(snapshot.accessToken || snapshot.userId);
         if (refreshTimeoutId) clearTimeout(refreshTimeoutId);
         set({ snapshot: defaultSnapshot, refreshTimeoutId: null });
 
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('web_session_tokens_v1');
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+            if (wasAuthenticated) {
+              localStorage.setItem(LOGOUT_MARKER_KEY, String(Date.now()));
+            }
+          } catch {
+            // Storage unavailable: nothing to broadcast.
+          }
         }
       },
 
@@ -196,7 +211,13 @@ export const useSessionStore = create<SessionState>()(
           return state.snapshot;
         }
 
-        // Another tab refreshed within the lock window — skip so we don't
+        // Nothing to refresh for a visitor who never signed in. Bail out
+        // before taking the cross-tab lock so we never burn it for nothing.
+        if (!state.snapshot.accessToken && !state.snapshot.userId) {
+          return state.snapshot;
+        }
+
+        // Another tab refreshed within the lock window: skip so we don't
         // race a rotated cookie (one tab would get 401 and drop the session).
         if (!acquireRefreshLock()) {
           return state.snapshot;
@@ -206,23 +227,25 @@ export const useSessionStore = create<SessionState>()(
         set({ refreshInFlight: true, refreshTimeoutId: null });
 
         try {
-          const refreshToken = state.snapshot.refreshToken;
-          if (!refreshToken) {
-            (get() as SessionState).clearTokens();
-            set({ refreshInFlight: false });
-            return state.snapshot;
-          }
-          const response = await refreshSession(refreshToken);
+          // The refresh token lives only in the httpOnly cookie. Never send a
+          // body token: a stale in-memory copy replays a rotated token and
+          // makes the backend revoke the whole token family.
+          const response = await refreshSessionFromCookie();
+          const current = get().snapshot;
           const merged = enrichWithResponse(
-            state.snapshot,
+            current,
             response,
-            state.snapshot.provider!,
+            current.provider ?? 'local',
           );
           set({ snapshot: merged, refreshInFlight: false });
           return merged;
         } catch (error) {
-          (get() as SessionState).clearTokens();
           set({ refreshInFlight: false });
+          // Only a definite 401 means the session is gone. 429, 5xx and
+          // network failures are transient and must not log the user out.
+          if (error instanceof ApiError && error.status === 401) {
+            await (get() as SessionState).clearTokens();
+          }
           throw error;
         }
       },
@@ -239,7 +262,7 @@ export const useSessionStore = create<SessionState>()(
       },
     }),
     {
-      name: 'web_session_tokens_v1',
+      name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => {
         const s = state as SessionState;
@@ -292,19 +315,26 @@ export const useSessionStore = create<SessionState>()(
           if (stored && stored !== current.anonId) {
             useSessionStore.setState({ anonId: stored });
           }
-
-          const handleStorage = (e: StorageEvent) => {
-            if (e.key !== 'web_session_tokens_v1') return;
-            if (e.newValue) return;
-            const live = useSessionStore.getState();
-            if (live.snapshot.userId) {
-              live.clearTokens();
-            }
-          };
-
-          window.addEventListener('storage', handleStorage);
         };
       },
     },
   ),
 );
+
+// Only an explicit logout marker from another tab signs this tab out. A bare
+// removal of the persisted snapshot is not enough. Registered at module level
+// (not inside onRehydrateStorage) so it is installed exactly once, regardless
+// of when persist hydration runs.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e: StorageEvent) => {
+    if (e.key !== LOGOUT_MARKER_KEY || !e.newValue) return;
+    const live = useSessionStore.getState();
+    if (!live.snapshot.userId && !live.snapshot.accessToken) return;
+    if (live.refreshTimeoutId) clearTimeout(live.refreshTimeoutId);
+    // Local reset only: do not re-broadcast the marker.
+    useSessionStore.setState({
+      snapshot: defaultSnapshot,
+      refreshTimeoutId: null,
+    });
+  });
+}

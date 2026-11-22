@@ -215,15 +215,9 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
         ? session.snapshot
         : await session.reload();
       if (!baseSnapshot.accessToken) {
-        try {
-          const refreshed = await useSessionStore.getState().refreshTokens();
-          if (refreshed.accessToken) {
-            applySnapshot(refreshed);
-            return;
-          }
-        } catch {
-          // Cookie refresh failed — no session to recover
-        }
+        // No in-memory access token (e.g. right after a page load).
+        // SessionRoleSync owns restoring it from the httpOnly refresh
+        // cookie; refreshing here would race it and burn the shared lock.
         setState((current) => ({
           ...current,
           loading: false,
@@ -283,7 +277,8 @@ export function useLocalAuth(session: SessionTokensValue): UseLocalAuthResult {
           });
           applySnapshot(merged);
         } catch (retryError) {
-          await session.clearTokens();
+          // The store already cleared the session on a definite 401;
+          // transient failures keep it so the user is not logged out.
           setState((current) => ({
             ...current,
             loading: false,

@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - auth lost after reload on staging: env-specific auth cookie names (`dev_` prefix on non-prod hosts), no inferred domain-wide cookies for dev/staging, legacy host-only cookies cleared on logout/refresh, and the web session restore retries after the refresh lock TTL
 
+## [1.31.12] - 2026-11-22
+
+### Fixed
+
+- quiet SSR catalog 502 spam and Turbopack file tracing warnings
+
 ## [1.31.11] - 2026-11-22
 
 ### Added

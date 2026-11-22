@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.12] - 2026-11-22
+
+### Fixed
+- quiet SSR catalog 502 spam and Turbopack file tracing warnings
+
+
 ## [1.31.11] - 2026-11-22
 
 ### Added

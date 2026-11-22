@@ -23,6 +23,11 @@ const HOUR_MS = 60 * 60 * 1000;
 const finite = (v: number, fallback: number): number =>
   Number.isFinite(v) ? v : fallback;
 
+/**
+ * Treats are minted only by the server (verified match wins), so a client can
+ * never raise a count. It may report consuming a treat (feeding runs on the
+ * client), which can only lower the server's stock.
+ */
 function mergeInventory(
   client: Partial<Record<string, number>> | undefined,
   server: PetState['inventory'],
@@ -31,7 +36,12 @@ function mergeInventory(
   for (const id of GAME_TREAT_IDS) {
     const value = client?.[id];
     if (typeof value === 'number' && Number.isFinite(value)) {
-      result[id as GameTreatId] = clamp(Math.floor(value), 0, MAX_TREAT_STOCK);
+      const stock = result[id as GameTreatId] ?? 0;
+      result[id as GameTreatId] = clamp(
+        Math.floor(value),
+        0,
+        Math.min(stock, MAX_TREAT_STOCK),
+      );
     }
   }
   return result;
@@ -42,8 +52,9 @@ function mergeInventory(
  * theme, bornAt) always comes from the server, and progression (growth, xp,
  * level, stage) may only move forward within what elapsed time plus a small
  * burst can explain, so a forged payload cannot jump a pet to a high level or
- * a rare stage. Care state (needs, sleep, sickness, name, treats) is
- * client-writable because care actions run on the client; it is range-checked.
+ * a rare stage. Care state (needs, sleep, sickness, name) is client-writable
+ * because care actions run on the client; it is range-checked. Treat stock is
+ * consume-only (see mergeInventory).
  */
 export function mergeClientPet(
   server: PetState,

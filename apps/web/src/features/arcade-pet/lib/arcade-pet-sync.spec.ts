@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createInitialPet } from '@arcadeum/games-core';
 import type { ArcadePetCollectionResponse } from '@arcadeum/games-core';
 import {
@@ -8,7 +8,9 @@ import {
   buildSyncPayload,
   decidePull,
   syncSignature,
+  performServerAction,
 } from './arcade-pet-sync';
+import { ApiError, apiClient } from '@/shared/lib/api-client';
 
 const server = (
   over: Partial<ArcadePetCollectionResponse> = {},
@@ -125,5 +127,49 @@ describe('sync payload', () => {
     expect(syncSignature(base)).not.toBe(
       syncSignature({ ...base, isAtHome: true }),
     );
+  });
+});
+
+describe('performServerAction', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('sends a uuid action id with the action', async () => {
+    const fetchSpy = vi
+      .spyOn(apiClient, 'fetch')
+      .mockResolvedValue({ ok: true, collection: {} });
+    await performServerAction({ type: 'claim_daily' }, 'id-1');
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/arcade-pet/collection/action',
+      expect.objectContaining({
+        method: 'POST',
+        data: { type: 'claim_daily', actionId: 'id-1' },
+      }),
+    );
+  });
+
+  it('turns an HTTP rejection into a result carrying the collection', async () => {
+    const collection = { revision: 3 };
+    vi.spyOn(apiClient, 'fetch').mockRejectedValue(
+      new ApiError('INSUFFICIENT_GEMS', 402, {
+        error: 'INSUFFICIENT_GEMS',
+        details: { collection },
+      }),
+    );
+    await expect(
+      performServerAction({ type: 'upgrade_home', currency: 'gems' }),
+    ).resolves.toEqual({
+      ok: false,
+      error: 'INSUFFICIENT_GEMS',
+      collection,
+    });
+  });
+
+  it('rethrows failures that carry no collection (offline, 404 flag off)', async () => {
+    vi.spyOn(apiClient, 'fetch').mockRejectedValue(
+      new ApiError('Not Found', 404, { statusCode: 404 }),
+    );
+    await expect(
+      performServerAction({ type: 'claim_daily' }),
+    ).rejects.toBeInstanceOf(ApiError);
   });
 });

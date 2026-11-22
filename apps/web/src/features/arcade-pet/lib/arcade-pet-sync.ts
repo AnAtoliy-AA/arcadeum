@@ -2,11 +2,13 @@ import { applyDeterministicDecay } from '@arcadeum/games-core';
 import type {
   ArcadePetCollectionResponse,
   ArcadePetEconomyAction,
+  ArcadePetEconomyError,
+  ArcadePetEconomyRequest,
   ArcadePetEconomyResult,
   SyncArcadePetCollectionRequest,
   SyncArcadePetCollectionResult,
 } from '@arcadeum/games-core';
-import { apiClient } from '@/shared/lib/api-client';
+import { ApiError, apiClient } from '@/shared/lib/api-client';
 import type { ArcadePetStoreState } from '../store/arcade-pet-store-types';
 
 const COLLECTION_PATH = '/arcade-pet/collection';
@@ -29,13 +31,50 @@ export function pushServerCollection(
   });
 }
 
-export function performServerAction(
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+/**
+ * Rejections arrive as HTTP errors (400/402/404/409) whose body carries the
+ * error code and the authoritative collection (`details.collection`).
+ * Returns null for any other failure (offline, 401, 404 flag-off, 5xx).
+ */
+export function parseEconomyRejection(
+  error: unknown,
+): Extract<ArcadePetEconomyResult, { ok: false }> | null {
+  if (!(error instanceof ApiError) || !isRecord(error.data)) return null;
+  const details = error.data.details;
+  const code = error.data.error;
+  if (!isRecord(details) || typeof code !== 'string') return null;
+  if (!isRecord(details.collection)) return null;
+  return {
+    ok: false,
+    // The server only emits codes from ArcadePetEconomyError.
+    error: code as ArcadePetEconomyError,
+    collection: details.collection as unknown as ArcadePetCollectionResponse,
+  };
+}
+
+/**
+ * Sends one action. `actionId` is generated once per user action so a retry
+ * of the same request is applied by the server only once.
+ */
+export async function performServerAction(
   action: ArcadePetEconomyAction,
+  actionId: string = crypto.randomUUID(),
 ): Promise<ArcadePetEconomyResult> {
-  return apiClient.fetch<ArcadePetEconomyResult>(`${COLLECTION_PATH}/action`, {
-    method: 'POST',
-    data: action,
-  });
+  const request: ArcadePetEconomyRequest = { ...action, actionId };
+  try {
+    return await apiClient.fetch<ArcadePetEconomyResult>(
+      `${COLLECTION_PATH}/action`,
+      { method: 'POST', data: request },
+    );
+  } catch (error) {
+    const rejection = parseEconomyRejection(error);
+    if (rejection) return rejection;
+    throw error;
+  }
 }
 
 /** Client-writable part of the collection; everything else is server-owned. */

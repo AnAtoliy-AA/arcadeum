@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useRecordGameResult } from './useRecordGameResult';
 import { useLocalStatsStore } from '../store/statsStore';
+import { useArcadePetStore } from '@/features/arcade-pet/store/useArcadePetStore';
 import type { GameResult } from '@/features/games/hooks/useGameResultModal';
 
 vi.mock('@/entities/session/model/useSessionTokens', () => ({
@@ -93,5 +94,14 @@ describe('useRecordGameResult', () => {
     expect(overview.totalGames).toBe(2);
     expect(overview.wins).toBe(1);
     expect(overview.losses).toBe(1);
+  });
+
+  it('never mints pet treats on a win (the server awards them)', () => {
+    useArcadePetStore.getState().initialize('test-user', 'retro');
+    const before = useArcadePetStore.getState().pet?.inventory.chess_cookie;
+    renderHook(() => useRecordGameResult('won', 'chess_v1', 'session-9'));
+    expect(useArcadePetStore.getState().pet?.inventory.chess_cookie).toBe(
+      before,
+    );
   });
 });

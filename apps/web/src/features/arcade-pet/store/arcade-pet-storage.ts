@@ -1,4 +1,9 @@
-import { applyDeterministicDecay, type PetState } from '@arcadeum/games-core';
+import {
+  ARCADE_PET_SCHEMA_VERSION,
+  applyDeterministicDecay,
+  migrateCollection,
+  type PetState,
+} from '@arcadeum/games-core';
 import type { PetGiftPresent } from '../lib/arcade-pet-economy';
 import {
   buildAwaySummary,
@@ -78,8 +83,26 @@ function sanitizePresents(value: unknown): PetGiftPresent[] {
 }
 
 /** Validates untrusted persisted data; returns null when it is unusable. */
-export function parseStoredCollection(raw: unknown): StoredCollection | null {
-  if (!isRecord(raw) || !raw.hasConfirmedCare) return null;
+export function parseStoredCollection(
+  rawInput: unknown,
+): StoredCollection | null {
+  if (!isRecord(rawInput) || !rawInput.hasConfirmedCare) return null;
+  // Older shapes are upgraded step by step (migrateCollection); newer
+  // versions pass through. Every field is still validated below.
+  const version =
+    typeof rawInput.schemaVersion === 'number' ? rawInput.schemaVersion : 0;
+  const raw: Record<string, unknown> =
+    version >= ARCADE_PET_SCHEMA_VERSION
+      ? rawInput
+      : {
+          ...rawInput,
+          pets: migrateCollection({
+            schemaVersion: version,
+            pets: Array.isArray(rawInput.pets)
+              ? rawInput.pets.filter(isValidPet)
+              : [],
+          }).pets,
+        };
   const pets = Array.isArray(raw.pets) ? raw.pets.filter(isValidPet) : [];
   if (pets.length === 0) return null;
   const activePetId =
@@ -147,7 +170,11 @@ export function saveStoredCollection(state: StoredCollection): void {
   try {
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ ...state, version: STORAGE_SCHEMA_VERSION }),
+      JSON.stringify({
+        ...state,
+        version: STORAGE_SCHEMA_VERSION,
+        schemaVersion: ARCADE_PET_SCHEMA_VERSION,
+      }),
     );
   } catch {}
 }

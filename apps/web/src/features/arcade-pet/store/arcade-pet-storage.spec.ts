@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createInitialPet } from '@arcadeum/games-core';
-import { parseStoredCollection } from './arcade-pet-storage';
+import {
+  ARCADE_PET_SCHEMA_VERSION,
+  createInitialPet,
+} from '@arcadeum/games-core';
+import {
+  STORAGE_KEY,
+  parseStoredCollection,
+  saveStoredCollection,
+} from './arcade-pet-storage';
 
 const pet = createInitialPet({
   id: 'p1',
@@ -33,5 +40,34 @@ describe('parseStoredCollection', () => {
     expect(parsed?.gemBalance).toBe(1_000_000);
     expect(parsed?.coinBalance).toBe(0);
     expect(parsed?.homeCapacity).toBe(1);
+  });
+});
+
+describe('schema versioning', () => {
+  it('migrates an unversioned save and normalizes treat stock', () => {
+    const legacy = {
+      hasConfirmedCare: true,
+      pets: [{ ...pet, inventory: { chess_cookie: 500 } }],
+      activePetId: 'p1',
+    };
+    const parsed = parseStoredCollection(legacy);
+    expect(parsed?.pets[0].inventory.chess_cookie).toBe(99);
+    expect(parsed?.pets[0].inventory.pachisi_spice).toBe(0);
+  });
+
+  it('stamps the current schema version when saving', () => {
+    saveStoredCollection({
+      pets: [pet],
+      activePetId: 'p1',
+      gemBalance: 1,
+      adoptionCount: 1,
+      queuedThemeForNextPet: null,
+      presents: [],
+      hasConfirmedCare: true,
+    });
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}') as {
+      schemaVersion?: number;
+    };
+    expect(saved.schemaVersion).toBe(ARCADE_PET_SCHEMA_VERSION);
   });
 });

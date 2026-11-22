@@ -1,42 +1,35 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-import {
-  useTranslation,
-  type TranslationKey,
-} from '@/shared/i18n/useTranslation';
+import { useMemo } from 'react';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useLanguage } from '@/shared/i18n';
 import { formatRelative } from '@/shared/i18n/formatters';
 import { GAME_ROOM_STATUS, type GameRoomSummary } from '@/shared/types/games';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
-import { cx } from '@arcadeum/ui/utils/cx';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { resolveGameDisplayInfo } from '@/features/games/lib/variantRegistry';
-import cardStyles from './RoomCardComponent.module.scss';
+import { cx } from '@arcadeum/ui/utils/cx';
+import { LinkButton } from '@arcadeum/ui';
+import type { TranslationKey } from '@/shared/i18n/useTranslation';
+import styles from './RoomCardComponent.module.scss';
 import {
   RoomCard,
-  RoomHeader,
   StatusBadge,
   GameName,
   RoomActions,
-  ParticipantsLabel,
   FastBadge,
   FastBadgeText,
   RankedBadge,
   AiVsAiBadge,
   BadgeIcon,
-  RoomMeta,
-  MetaGrid,
-  MetaRow,
-  MetaIcon,
-  MetaLabel,
-  MetaValue,
 } from './room-card-components';
-import { LinkButton } from '@arcadeum/ui';
-import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar';
-
-import { useRoutes } from '@/shared/config/useRoutes';
-
-const MAX_VISIBLE_PARTICIPANTS = 8;
+import { RoomCardAvatars } from './RoomCardAvatars';
+import {
+  isBotRoom,
+  memberLabel,
+  resolveRoomCta,
+  seatsLeft,
+} from './roomCardUtils';
 
 interface RoomCardComponentProps {
   room: GameRoomSummary;
@@ -48,349 +41,187 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
   const { locale } = useLanguage();
   const routes = useRoutes();
   const { snapshot } = useSessionTokens();
+  const isList = viewMode === 'list';
 
-  const isParticipant = useMemo(() => {
-    if (!snapshot.userId) return false;
-    return (
-      room.hostId === snapshot.userId ||
-      room.members?.some((m) => m.id === snapshot.userId) === true
-    );
-  }, [snapshot.userId, room.hostId, room.members]);
+  const isParticipant =
+    !!snapshot.userId &&
+    (room.hostId === snapshot.userId ||
+      room.members?.some((m) => m.id === snapshot.userId) === true);
 
   const {
     displayName: rawDisplayName,
     variantName,
-    gradient: variantGradient,
+    gradient,
   } = resolveGameDisplayInfo(room.gameId, room.gameOptions);
-
-  const translatedGameName =
+  const baseName =
     t(`games.${room.gameId}.name` as TranslationKey) || rawDisplayName;
-  const translatedVariantName =
+  const variantLabel =
     variantName && variantName.includes('.')
       ? t(variantName as TranslationKey)
       : variantName;
-  const gameName = translatedVariantName
-    ? `${translatedGameName}: ${translatedVariantName}`
-    : translatedGameName;
+  const gameName = variantLabel ? `${baseName}: ${variantLabel}` : baseName;
 
-  const hostDisplayName = useMemo(() => {
-    if (room.host?.displayName && !room.host.displayName.startsWith('anon_')) {
-      return room.host.displayName;
-    }
-    if (room.hostId.startsWith('anon_')) {
-      return `Guest #${room.hostId.slice(5, 9)}`;
-    }
-    if (room.hostId.startsWith('bot-')) {
-      return 'Bot';
-    }
-    return room.hostId;
-  }, [room.host?.displayName, room.hostId]);
+  const labelFor = useMemo(() => {
+    const labels = {
+      guest: (id: string) => t('roomsBrowser.card.guest', { id }),
+      bot: t('roomsBrowser.card.bot'),
+    };
+    return (m: Parameters<typeof memberLabel>[0]) => memberLabel(m, labels);
+  }, [t]);
 
-  const formatMemberLabel = useCallback(
-    (member: {
-      id: string;
-      displayName: string;
-      username?: string | null;
-      email?: string | null;
-      isHost: boolean;
-    }) => {
-      if (
-        member.displayName &&
-        member.displayName.trim().length > 0 &&
-        !member.displayName.startsWith('anon_')
-      ) {
-        return member.displayName;
-      }
-      if (member.id.startsWith('anon_')) {
-        return `Guest #${member.id.slice(5, 9)}`;
-      }
-      if (member.id.startsWith('bot-')) {
-        return 'Bot';
-      }
-      return member.username ?? member.email ?? member.id;
-    },
-    [],
+  const members = useMemo(
+    () => room.members ?? (room.host ? [room.host] : []),
+    [room.members, room.host],
   );
+  const hostLabel = room.host
+    ? labelFor(room.host)
+    : labelFor({ id: room.hostId });
 
   const isCompleted = room.status === GAME_ROOM_STATUS.COMPLETED;
+  const cta = resolveRoomCta(room, isParticipant);
+  const botRoom = isBotRoom(room);
+  const left = seatsLeft(room);
+  const canSpectate = isCompleted || !isParticipant || cta === 'full';
+  const watchHref = `${routes.gameRoom(room.id)}?mode=watch`;
+  const createdAgo = formatRelative(room.createdAt, locale || 'en');
 
-  const createdAgo = useMemo(
-    () => formatRelative(room.createdAt, locale || 'en'),
-    [room.createdAt, locale],
-  );
+  const seatsText =
+    room.maxPlayers != null
+      ? `${room.playerCount}/${room.maxPlayers}`
+      : `${room.playerCount}`;
+  const seatsHint =
+    room.status === GAME_ROOM_STATUS.LOBBY && left != null && left > 0
+      ? left === 1
+        ? t('roomsBrowser.card.seatsLeftOne')
+        : t('roomsBrowser.card.seatsLeft', { count: left })
+      : null;
+
+  const ctaLabel =
+    cta === 'resume'
+      ? t('roomsBrowser.card.resume')
+      : botRoom
+        ? t('roomsBrowser.card.play')
+        : t('roomsBrowser.card.join');
 
   return (
     <RoomCard
       status={isCompleted ? 'completed' : undefined}
-      className={`${cardStyles.roomCard} ${viewMode === 'list' ? cardStyles.listView : ''} ${isCompleted ? cardStyles.completed : ''}`}
+      className={cx(
+        styles.roomCard,
+        isList && styles.listView,
+        isCompleted && styles.completed,
+      )}
       data-testid="room-card"
     >
-      <div
-        className={
-          viewMode === 'list'
-            ? 'grid grid-cols-[1fr_110px_120px_80px_80px_120px_200px] items-center gap-x-4 max-[768px]:flex max-[768px]:flex-col max-[768px]:gap-2'
-            : undefined
-        }
-      >
-        <RoomHeader className={cardStyles.roomHeader}>
-          <div className="flex flex-col items-stretch gap-1 min-w-0">
-            <h3 className={cardStyles.roomTitle} title={room.name}>
-              {room.name}
-            </h3>
-            <GameName gradient={variantGradient}>{gameName}</GameName>
-          </div>
-
+      <div className={cx('flex min-w-0 flex-col gap-1', isList && 'flex-1')}>
+        <div className="flex items-center justify-between gap-2">
+          <GameName gradient={gradient}>{gameName}</GameName>
+          <StatusBadge status={room.status}>
+            {t(`games.rooms.status.${room.status}`) || room.status}
+          </StatusBadge>
+        </div>
+        <h3 className={styles.roomTitle} title={room.name}>
+          {room.name}
+        </h3>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {botRoom && (
+            <AiVsAiBadge data-testid="bot-room-badge">
+              <BadgeIcon>🤖</BadgeIcon>
+              <FastBadgeText>{t('roomsBrowser.card.botRoom')}</FastBadgeText>
+            </AiVsAiBadge>
+          )}
           {room.gameOptions?.idleTimerEnabled && (
             <FastBadge>
               <BadgeIcon>⚡</BadgeIcon>
               <FastBadgeText>{t('games.rooms.fastRoom')}</FastBadgeText>
             </FastBadge>
           )}
-
           {room.gameOptions?.ranked === true && (
             <RankedBadge data-testid="ranked-badge">
               <BadgeIcon>★</BadgeIcon>
               <FastBadgeText>{t('games.rooms.ranked')}</FastBadgeText>
             </RankedBadge>
           )}
-
-          {room.gameOptions?.aiVsAi === true && (
-            <AiVsAiBadge data-testid="ai-vs-ai-badge">
-              <BadgeIcon>🤖</BadgeIcon>
-              <FastBadgeText>
-                {t('games.lounge.filters.aiVsAi') || 'AI vs AI'}
-              </FastBadgeText>
-            </AiVsAiBadge>
+          {room.visibility === 'private' && (
+            <span className="text-xs text-[var(--textSecondary)]">
+              🔒 {t('roomsBrowser.card.private')}
+            </span>
           )}
-        </RoomHeader>
-
-        {viewMode === 'list' && (
-          <div className="flex flex-row items-center justify-center">
-            <StatusBadge status={room.status}>
-              {t(`games.rooms.status.${room.status}`) || room.status}
-            </StatusBadge>
-          </div>
-        )}
-
-        {viewMode === 'grid' ? (
-          <RoomMeta>
-            <MetaGrid>
-              <MetaRow>
-                <MetaIcon>👑</MetaIcon>
-                <div className="flex flex-col items-stretch min-w-0">
-                  <MetaLabel>{t('games.rooms.hostLabel')}</MetaLabel>
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <EquippedPlayerAvatar
-                      name={hostDisplayName}
-                      size="icon"
-                      equippedAvatarId={room.host?.equippedAvatarId ?? null}
-                      equippedBadgeId={room.host?.equippedBadgeId ?? null}
-                      equippedNameColorId={room.host?.equippedNameColorId}
-                      equippedFrameId={room.host?.equippedFrameId}
-                      equippedAuraId={room.host?.equippedAuraId}
-                      equippedBannerId={room.host?.equippedBannerId}
-                      fallbackAvatarUrl={
-                        room.hostId?.startsWith('anon_')
-                          ? '/shop/avatars/default-01.png'
-                          : undefined
-                      }
-                    />
-                    <MetaValue className="truncate">
-                      {hostDisplayName}
-                    </MetaValue>
-                  </div>
-                </div>
-              </MetaRow>
-              <MetaRow>
-                <MetaIcon>👥</MetaIcon>
-                <div className="flex flex-col items-stretch">
-                  <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
-                  <MetaValue>
-                    {room.maxPlayers
-                      ? `${room.playerCount}/${room.maxPlayers}`
-                      : `${room.playerCount}`}
-                  </MetaValue>
-                </div>
-              </MetaRow>
-              <MetaRow>
-                <MetaIcon>
-                  {room.visibility === 'private' ? '🔒' : '🌐'}
-                </MetaIcon>
-                <div className="flex flex-col items-stretch">
-                  <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
-                  <MetaValue>
-                    {room.visibility === 'private'
-                      ? t('games.rooms.visibility.private')
-                      : t('games.rooms.visibility.public')}
-                    {room.hasPassword ? ' 🔑' : ''}
-                  </MetaValue>
-                </div>
-              </MetaRow>
-              <MetaRow>
-                <MetaIcon>⏱️</MetaIcon>
-                <div className="flex flex-col items-stretch">
-                  <MetaLabel>{t('games.rooms.statusLabel')}</MetaLabel>
-                  <StatusBadge status={room.status}>
-                    {t(`games.rooms.status.${room.status}`) || room.status}
-                  </StatusBadge>
-                </div>
-              </MetaRow>
-            </MetaGrid>
-
-            {room.members && room.members.length > 0 && (
-              <div className="flex flex-col items-stretch gap-2">
-                <ParticipantsLabel>
-                  {t('games.rooms.participants')}
-                </ParticipantsLabel>
-                <div
-                  className={cx(
-                    'flex flex-row items-stretch',
-                    cardStyles.participantAvatars,
-                  )}
-                >
-                  {room.members
-                    .slice(0, MAX_VISIBLE_PARTICIPANTS)
-                    .map((member) => (
-                      <div
-                        key={member.id}
-                        className={cardStyles.avatarOverlap}
-                        title={formatMemberLabel(member)}
-                      >
-                        <EquippedPlayerAvatar
-                          name={formatMemberLabel(member)}
-                          size="icon"
-                          equippedAvatarId={member.equippedAvatarId ?? null}
-                          equippedBadgeId={member.equippedBadgeId ?? null}
-                          equippedNameColorId={member.equippedNameColorId}
-                          equippedFrameId={member.equippedFrameId}
-                          equippedAuraId={member.equippedAuraId}
-                          equippedBannerId={member.equippedBannerId}
-                          fallbackAvatarUrl={
-                            member.id.startsWith('anon_') ||
-                            member.id.startsWith('bot-')
-                              ? '/shop/avatars/default-01.png'
-                              : undefined
-                          }
-                        />
-                      </div>
-                    ))}
-                  {room.members.length > MAX_VISIBLE_PARTICIPANTS && (
-                    <div className={cardStyles.avatarOverlap}>
-                      <div className="flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
-                        <MetaLabel className="opacity-100 text-[10px] font-bold">
-                          +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
-                        </MetaLabel>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </RoomMeta>
-        ) : (
-          <>
-            <div
-              className={cx('flex flex-row items-center', cardStyles.metaCol)}
+          {room.hasPassword && (
+            <span
+              className="text-xs"
+              title={t('roomsBrowser.card.passwordProtected')}
+              aria-label={t('roomsBrowser.card.passwordProtected')}
             >
-              {room.members
-                ?.slice(0, MAX_VISIBLE_PARTICIPANTS)
-                .map((member) => (
-                  <div
-                    key={member.id}
-                    className={cardStyles.avatarOverlap}
-                    title={formatMemberLabel(member)}
-                  >
-                    <EquippedPlayerAvatar
-                      name={formatMemberLabel(member)}
-                      size="icon"
-                      equippedAvatarId={member.equippedAvatarId ?? null}
-                      equippedBadgeId={member.equippedBadgeId ?? null}
-                      equippedNameColorId={member.equippedNameColorId}
-                      equippedFrameId={member.equippedFrameId}
-                      equippedAuraId={member.equippedAuraId}
-                      equippedBannerId={member.equippedBannerId}
-                      fallbackAvatarUrl={
-                        member.id.startsWith('anon_') ||
-                        member.id.startsWith('bot-')
-                          ? '/shop/avatars/default-01.png'
-                          : undefined
-                      }
-                    />
-                  </div>
-                ))}
-              {room.members &&
-                room.members.length > MAX_VISIBLE_PARTICIPANTS && (
-                  <div className={cardStyles.avatarOverlap}>
-                    <div className="flex flex-col w-[32px] h-[32px] rounded-[16px] bg-[var(--backgroundFocus)] items-center justify-center">
-                      <MetaLabel className="opacity-100 text-[10px] font-bold">
-                        +{room.members.length - MAX_VISIBLE_PARTICIPANTS}
-                      </MetaLabel>
-                    </div>
-                  </div>
-                )}
-            </div>
-            <MetaRow className={cardStyles.metaCol}>
-              <div className="flex flex-col items-stretch">
-                <MetaLabel>{t('games.rooms.playersLabel')}</MetaLabel>
-                <MetaValue>
-                  {room.maxPlayers
-                    ? `${room.playerCount}/${room.maxPlayers}`
-                    : room.playerCount}
-                </MetaValue>
-              </div>
-            </MetaRow>
-            <MetaRow className={cardStyles.metaCol}>
-              <div className="flex flex-col items-stretch">
-                <MetaLabel>{t('games.rooms.visibilityLabel')}</MetaLabel>
-                <MetaValue>
-                  {room.visibility === 'private'
-                    ? t('games.rooms.visibility.private')
-                    : t('games.rooms.visibility.public')}
-                  {room.hasPassword ? ' 🔑' : ''}
-                </MetaValue>
-              </div>
-            </MetaRow>
-            <MetaRow className={cardStyles.metaCol}>
-              <div className="flex flex-col items-stretch">
-                <MetaLabel>{t('games.rooms.createdLabel')}</MetaLabel>
-                <MetaValue>{createdAgo}</MetaValue>
-              </div>
-            </MetaRow>
-          </>
-        )}
-
-        <RoomActions className={cardStyles.actionsCol}>
-          {!isCompleted &&
-            (room.status === GAME_ROOM_STATUS.LOBBY || isParticipant) && (
-              <LinkButton
-                href={routes.gameRoom(room.id)}
-                variant="primary"
-                size="sm"
-                style={{
-                  flex: viewMode === 'grid' ? 1 : 0,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {t('games.common.joinRoom')}
-              </LinkButton>
-            )}
-          {(isCompleted ||
-            room.status === GAME_ROOM_STATUS.LOBBY ||
-            !isParticipant) && (
-            <LinkButton
-              href={`${routes.gameRoom(room.id)}?mode=watch`}
-              variant="secondary"
-              size="sm"
-              style={{
-                whiteSpace: 'nowrap',
-                ...(isCompleted ? { opacity: 0.5 } : {}),
-              }}
-            >
-              {t('games.common.watchRoom')}
-            </LinkButton>
+              🔑
+            </span>
           )}
-        </RoomActions>
+        </div>
       </div>
+
+      <div
+        className={cx(
+          'flex items-center justify-between gap-3',
+          isList && 'w-[260px] max-[768px]:w-full',
+        )}
+      >
+        <div className="flex min-w-0 items-center gap-2">
+          {members.length > 0 && (
+            <RoomCardAvatars members={members} labelFor={labelFor} />
+          )}
+          <div className="flex min-w-0 flex-col">
+            <span
+              className="text-sm font-semibold text-[var(--color)]"
+              data-testid="room-card-seats"
+            >
+              {seatsText}
+              <span className="ml-1 text-xs font-normal text-[var(--textSecondary)]">
+                {t('roomsBrowser.card.players')}
+              </span>
+            </span>
+            {seatsHint && (
+              <span className="text-xs text-[var(--success)]">{seatsHint}</span>
+            )}
+          </div>
+        </div>
+        <div className="flex min-w-0 flex-col items-end text-xs text-[var(--textSecondary)]">
+          <span className="max-w-[120px] truncate" title={hostLabel}>
+            {t('roomsBrowser.card.host')}: {hostLabel}
+          </span>
+          <span>{createdAgo}</span>
+        </div>
+      </div>
+
+      <RoomActions className={isList ? 'min-w-[180px]' : undefined}>
+        {(cta === 'join' || cta === 'resume') && (
+          <LinkButton
+            href={routes.gameRoom(room.id)}
+            variant="primary"
+            size="sm"
+            className="flex-1 whitespace-nowrap"
+          >
+            {ctaLabel}
+          </LinkButton>
+        )}
+        {cta === 'full' && (
+          <span
+            className="flex flex-1 items-center justify-center rounded-xl border border-[var(--glassBorder)] px-3 text-xs font-semibold text-[var(--textSecondary)]"
+            data-testid="room-card-full"
+          >
+            {t('roomsBrowser.card.full')}
+          </span>
+        )}
+        {canSpectate && (
+          <LinkButton
+            href={watchHref}
+            variant="secondary"
+            size="sm"
+            className={cx('whitespace-nowrap', cta === 'none' && 'flex-1')}
+          >
+            {t('roomsBrowser.card.spectate')}
+          </LinkButton>
+        )}
+      </RoomActions>
     </RoomCard>
   );
 }

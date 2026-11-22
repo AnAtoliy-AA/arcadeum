@@ -21,6 +21,7 @@ import type { en as battlePassEn } from './battle-pass';
 import type { en as musicPlayerEn } from './music-player';
 import type { en as walletEn } from './wallet';
 import type { en as arcadePetCompanionEn } from './arcade-pet-companion';
+import type { en as roomsBrowserEn } from './roomsBrowser';
 import type { chatMessages, chatListMessages } from './chat';
 
 /** English translation type - used only for type inference, no runtime cost */
@@ -47,6 +48,7 @@ export type EnglishTranslations = {
   musicPlayer: typeof musicPlayerEn;
   wallet: typeof walletEn;
   arcadePetCompanion: typeof arcadePetCompanionEn;
+  roomsBrowser: typeof roomsBrowserEn;
 };
 
 /**
@@ -75,6 +77,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     musicPlayer,
     wallet,
     arcadePetCompanion,
+    roomsBrowser,
   ] = await Promise.all([
     import('./auth'),
     import('./pages'),
@@ -96,6 +99,7 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     import('./music-player'),
     import('./wallet'),
     import('./arcade-pet-companion'),
+    import('./roomsBrowser'),
   ]);
 
   const [gamesModule, authData, legalData, seoData, homeData] =
@@ -132,5 +136,6 @@ export async function loadMessages(locale: Locale): Promise<TranslationBundle> {
     musicPlayer: musicPlayer[locale],
     wallet: wallet[locale],
     arcadePetCompanion: arcadePetCompanion[locale],
+    roomsBrowser: roomsBrowser[locale],
   };
 }

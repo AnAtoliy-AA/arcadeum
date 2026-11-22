@@ -109,7 +109,12 @@ export function ArcadePetAdoptionRandomTab({
             {t('arcadePetCompanion.adoption.themesBadge')}
           </span>
         </div>
-        <div className="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto p-1 sm:grid-cols-3">
+        <div
+          role="region"
+          tabIndex={0}
+          aria-label={t('arcadePetCompanion.adoption.themesTitle')}
+          className="grid max-h-44 grid-cols-2 gap-2 overflow-y-auto p-1 sm:grid-cols-3"
+        >
           {Object.values(SPECIES_PALETTE).map((pal) => {
             const signature = getSignaturePet(pal.id);
             return (

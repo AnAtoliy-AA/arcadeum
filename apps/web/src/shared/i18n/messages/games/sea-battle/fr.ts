@@ -275,7 +275,7 @@ export const frMessages = {
         ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
         ctaPlayHuman: 'Trouver un adversaire',
         ctaGroupLabel: 'Démarrage rapide de Bataille Navale',
-        eyebrow: 'Gratuit · 2–4 joueurs · Sans inscription',
+        eyebrow: 'Gratuit · 2-4 joueurs · Sans inscription',
         chips: [
           'Dans le navigateur',
           'Jouez contre des bots IA',

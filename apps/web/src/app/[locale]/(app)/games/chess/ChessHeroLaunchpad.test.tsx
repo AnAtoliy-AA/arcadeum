@@ -15,7 +15,7 @@ describe('ChessHeroLaunchpad', () => {
 
     expect(screen.getByTestId('chess-hero-launchpad')).toBeInTheDocument();
     expect(screen.getByText('Quick Match & Modes')).toBeInTheDocument();
-    expect(screen.getByText('Blitz Matchmaking')).toBeInTheDocument();
+    expect(screen.queryByText('Blitz Matchmaking')).not.toBeInTheDocument();
     expect(screen.getByText('Daily Puzzle')).toBeInTheDocument();
     expect(screen.getByText('Chess960')).toBeInTheDocument();
     expect(screen.getByText('Lobby Browser')).toBeInTheDocument();

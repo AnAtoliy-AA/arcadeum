@@ -73,7 +73,7 @@ export default async function CascadeOpengraphImage({ params }: Props) {
   const gameName = messages.games?.cascade_v1?.name ?? 'Cascade';
 
   return renderGameOgCard({
-    kicker: 'Card Party Game · 2–10 Players',
+    kicker: 'Card Party Game · 2-10 Players',
     title: gameName,
     subtitle:
       landing?.hero?.subtitle ??
@@ -81,7 +81,7 @@ export default async function CascadeOpengraphImage({ params }: Props) {
     accent: '#6366f1',
     gradient: ['#1e1b4b', '#090726'],
     badges: [
-      '2–10 Players',
+      '2-10 Players',
       'Stacking Penalties',
       'Action Cards',
       'Custom Themes',

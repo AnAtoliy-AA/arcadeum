@@ -84,7 +84,7 @@ export default async function CatDashOpengraphImage({ params }: Props) {
   const gameName = messages.games?.cat_dash_v1?.name ?? 'Cat Dash';
 
   return renderGameOgCard({
-    kicker: 'Action Racing · 2–4 Players',
+    kicker: 'Action Racing · 2-4 Players',
     title: gameName,
     subtitle:
       landing?.hero?.subtitle ??
@@ -92,7 +92,7 @@ export default async function CatDashOpengraphImage({ params }: Props) {
     accent: '#a855f7',
     gradient: ['#280f48', '#100420'],
     badges: [
-      '2–4 Players',
+      '2-4 Players',
       'Power-Up Items',
       'Obstacle Tracks',
       'AI Bots',

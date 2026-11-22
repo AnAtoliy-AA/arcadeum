@@ -1,6 +1,7 @@
 import type { GameFaqSectionProps } from './types';
 
 export function GameFaqSection({
+  id = 'faq',
   title = 'Frequently Asked Questions',
   kicker = 'FAQ',
   items,
@@ -9,8 +10,8 @@ export function GameFaqSection({
 
   return (
     <section
-      id="faq"
-      className="box-border flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_400px]"
+      id={id}
+      className="box-border scroll-mt-32 flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_400px]"
     >
       <div className="box-border flex flex-col gap-1">
         {kicker ? (

@@ -18,7 +18,7 @@ export function TicTacToeLandingPreview() {
         return (
           <div
             aria-hidden="true"
-            className="box-border w-full max-w-[280px] mx-auto aspect-square p-3 rounded-2xl border shadow-xl grid grid-cols-3 grid-rows-3 gap-2"
+            className="box-border w-full max-w-[220px] sm:max-w-[280px] mx-auto aspect-square p-3 rounded-2xl border shadow-xl grid grid-cols-3 grid-rows-3 gap-2"
             style={{
               background: theme.boardBackground,
               borderColor: theme.gridLine + '55',

@@ -49,16 +49,13 @@ export default function CatDashLanding({
 }: CatDashLandingProps) {
   if (!landing) return null;
 
+  const x = landing.extra;
+
   const highlights = [
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'cats', icon: '🐱', ...landing.highlights.cats },
     { key: 'themes', icon: '🎨', ...landing.highlights.themes },
-    {
-      key: 'obstacles',
-      icon: '🐾',
-      title: 'Interactive Hazards',
-      body: 'Dodge yarn traps, slippery milk spills, and burst forward with tuna speed boosts.',
-    },
+    { key: 'obstacles', icon: '🐾', ...x.highlights.obstacles },
   ];
 
   const steps = [
@@ -66,47 +63,39 @@ export default function CatDashLanding({
       key: 'create',
       stepNumber: 1,
       ...landing.steps.create,
-      tip: 'Pick your track theme and set 1 to 3 laps for the race.',
+      tip: x.howTo.create,
     },
     {
       key: 'join',
       stepNumber: 2,
       ...landing.steps.join,
-      tip: 'Race against friends or compete with smart bot runners.',
+      tip: x.howTo.join,
     },
     {
       key: 'play',
       stepNumber: 3,
       ...landing.steps.play,
-      tip: 'Roll the dice, activate power-ups, and sprint across the finish line.',
+      tip: x.howTo.play,
     },
   ];
 
   const rulesList = rules
     ? [
-        { key: 'objective', head: 'Objective', body: rules.objective },
-        { key: 'howToPlay', head: 'Dice & Movement', body: rules.howToPlay },
-        { key: 'abilities', head: 'Cat Abilities', body: rules.abilities },
-        { key: 'trackSpaces', head: 'Track Spaces', body: rules.trackSpaces },
+        { key: 'objective', head: x.rules.objective, body: rules.objective },
+        { key: 'howToPlay', head: x.rules.howToPlay, body: rules.howToPlay },
+        { key: 'abilities', head: x.rules.abilities, body: rules.abilities },
+        {
+          key: 'trackSpaces',
+          head: x.rules.trackSpaces,
+          body: rules.trackSpaces,
+        },
       ]
     : [];
 
   const strategyTips = [
-    {
-      key: 'boostTiming',
-      title: 'Time Your Boosts',
-      body: 'Save speed boosts for straightaways or right after recovering from a hazard trap.',
-    },
-    {
-      key: 'hazards',
-      title: 'Guide Opponents Into Traps',
-      body: 'Position your cat to block safe lanes and force rival racers onto hazard tiles.',
-    },
-    {
-      key: 'finishSprint',
-      title: 'Final Lap Sprint',
-      body: 'Unleash all remaining stamina and power-ups on the final stretch to clinch victory.',
-    },
+    { key: 'boostTiming', ...x.strategy.boostTiming },
+    { key: 'hazards', ...x.strategy.hazards },
+    { key: 'finishSprint', ...x.strategy.finishSprint },
   ];
 
   const faqItems = Object.entries(landing.faq).map(([key, entry]) => {
@@ -137,16 +126,14 @@ export default function CatDashLanding({
       hero={{
         gameId,
         title: landing.hero.title,
-        eyebrow: 'Fast Multiplayer Race',
+        eyebrow: x.hero.eyebrow,
         subtitle: landing.hero.subtitle,
-        intro:
-          'A high-energy cat racing dice game filled with speed boosts, hilarious hazards, and themed tracks.',
-        category: 'Race / Casual',
-        playersBadge: '2–6 Players',
-        durationBadge: '5–15 min',
-        difficultyBadge: 'Fun for All',
-        chips: ['Dice Racing', 'Speed Boosts', '4 Track Themes', '2-6 Players'],
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
+        intro: x.hero.intro,
+        category: x.hero.category,
+        playersBadge: x.hero.playersBadge,
+        durationBadge: x.hero.durationBadge,
+        difficultyBadge: x.hero.difficultyBadge,
+        chips: x.hero.chips,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
         createRoomLabel: landing.hero.createRoom,
@@ -155,67 +142,63 @@ export default function CatDashLanding({
         heroVisual: <CatDashLandingPreview />,
       }}
       highlights={{
-        title: 'Why You’ll Love Cat Dash',
-        kicker: 'Key Features',
+        title: x.highlights.title,
+        kicker: x.highlights.kicker,
         items: highlights,
       }}
       howToPlay={{
-        title: 'How to Play Cat Dash',
-        kicker: 'Quick Start',
-        intro:
-          'Roll dice, activate powers, and be the first cat across the finish line.',
+        title: x.howTo.title,
+        kicker: x.howTo.kicker,
+        intro: x.howTo.intro,
         steps,
       }}
       themes={
         themesList.length > 0
           ? {
               title: landing.themes.title,
-              kicker: 'Track Selection',
+              kicker: x.themesSection.kicker,
               subtitle: landing.themes.subtitle,
               themes: themesList,
               baseHref: createRoomHref,
-              createRoomLabel: 'Race on Track',
+              createRoomLabel: x.themesSection.cta,
             }
           : undefined
       }
       rules={
         rulesList.length > 0
           ? {
-              title: rules?.title ?? 'Rules & Racing Mechanics',
-              kicker: 'Rulebook',
+              title: rules?.title ?? x.rules.fallbackTitle,
+              kicker: x.rules.kicker,
               rules: rulesList,
             }
           : undefined
       }
       strategy={{
-        title: 'Track Tactics & Strategies',
-        kicker: 'Pro Tips',
-        intro:
-          'Learn how to maximize dice rolls and dominate the leaderboards.',
+        title: x.strategy.title,
+        kicker: x.strategy.kicker,
+        intro: x.strategy.intro,
         tips: strategyTips,
       }}
       faq={{
-        title: 'Frequently Asked Questions',
-        kicker: 'FAQ',
+        title: x.faq.title,
+        kicker: x.faq.kicker,
         items: faqItems,
       }}
       relatedGames={{
-        title: 'Discover More Fast Games',
-        kicker: 'Discover',
+        title: x.related.title,
+        kicker: x.related.kicker,
         currentGameSlug: gameId,
         games: relatedGames,
       }}
       finalCta={{
         gameId,
-        title: 'Ready to Race?',
-        subtitle:
-          'Play against bots or challenge up to 5 friends in real-time cat racing mayhem.',
+        title: x.finalCta.title,
+        subtitle: x.finalCta.subtitle,
         roomsHref,
         gamesHref,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
-        backToGamesLabel: 'All Games',
+        backToGamesLabel: x.finalCta.allGames,
       }}
     />
   );

@@ -257,7 +257,7 @@ export const esMessages = {
     landing: {
       meta: {
         title: `Batalla Naval Online Gratis (Hundir la Flota) - Jugar con Amigos o Bot | ${APP}`,
-        description: `Juega a Batalla Naval (Hundir la Flota) online gratis sin registro en ${APP}. Modos para 2–4 jugadores: reta a tus amigos por enlace o compite contra la IA. Mejores tácticas y más de 10 temas visuales.`,
+        description: `Juega a Batalla Naval (Hundir la Flota) online gratis sin registro en ${APP}. Modos para 2-4 jugadores: reta a tus amigos por enlace o compite contra la IA. Mejores tácticas y más de 10 temas visuales.`,
         ogTitle:
           'Batalla Naval Online Gratis (Hundir la Flota) - Multijugador con Amigos o IA',
         ogDescription:
@@ -276,7 +276,7 @@ export const esMessages = {
         ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
         ctaPlayHuman: 'Buscar oponente humano',
         ctaGroupLabel: 'Inicio rápido de Batalla Naval',
-        eyebrow: 'Gratis · 2–4 jugadores · Sin registro',
+        eyebrow: 'Gratis · 2-4 jugadores · Sin registro',
         chips: [
           'En el navegador',
           'Juega contra bots IA',

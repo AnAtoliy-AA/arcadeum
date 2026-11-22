@@ -160,17 +160,17 @@ export default function ChessLanding({
         { label: navTranslations?.gamesTab ?? 'Games', href: gamesHref },
         { label: landing.hero.title ?? 'Chess' },
       ]}
-      quickNavItems={[
-        { id: 'play', label: '⚔️ Play', href: '#play' },
-        {
-          id: 'puzzles',
-          label: '🧩 Chess Puzzles',
-          badge: 'DAILY',
-          href: '#puzzles',
-        },
-        { id: 'themes', label: '🎨 Themes', href: '#themes' },
-        { id: 'how-to-play', label: '📖 Rules', href: '#how-to-play' },
-      ]}
+      extraNavItems={
+        puzzleHrefs
+          ? [
+              {
+                id: 'puzzles',
+                labelKey: 'games.landing.navPuzzles',
+                placement: 'afterPlay',
+              },
+            ]
+          : undefined
+      }
       topSection={
         puzzleHrefs ? (
           <ChessPuzzleHub
@@ -187,26 +187,27 @@ export default function ChessLanding({
         eyebrow: 'Classic Strategy',
         subtitle: landing.hero.subtitle,
         directAnswer:
-          'Arcadeum Chess is a free, web-based multiplayer chess platform featuring Stockfish 19 NNUE engine analysis, 20 AI bot personalities, Chess960, live matchmaking, and puzzle tactics, playable instantly with zero downloads or account creation required.',
+          'Free multiplayer chess with a Stockfish 19 engine, 20 AI bots, Chess960 and puzzles. No downloads or account needed.',
         category: 'Board Game',
         playersBadge: '2 Players',
         durationBadge: '10-30 min',
         difficultyBadge: 'Tactical',
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
         createRoomLabel: 'Create Room',
         roomsHref,
         createRoomHref,
         heroVisual: (
-          <ChessHeroLaunchpad
-            gameId={gameId}
-            roomsHref={roomsHref}
-            createRoomHref={createRoomHref}
-            dailyPuzzleHref={puzzleHrefs?.daily}
-            ratedPuzzlesHref={puzzleHrefs?.rated}
-            puzzleRushHref={puzzleHrefs?.rush}
-          />
+          <div className="box-border hidden lg:block w-full">
+            <ChessHeroLaunchpad
+              gameId={gameId}
+              roomsHref={roomsHref}
+              createRoomHref={createRoomHref}
+              dailyPuzzleHref={puzzleHrefs?.daily}
+              ratedPuzzlesHref={puzzleHrefs?.rated}
+              puzzleRushHref={puzzleHrefs?.rush}
+            />
+          </div>
         ),
       }}
       specifications={{
@@ -302,7 +303,6 @@ export default function ChessLanding({
           'Powered by Stockfish 19. Play against 20 AI personalities, solve puzzles, analyze games, and compete in tournaments. 100% free.',
         roomsHref,
         gamesHref,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
         backToGamesLabel: landing.hero.backToGames ?? 'All Games',

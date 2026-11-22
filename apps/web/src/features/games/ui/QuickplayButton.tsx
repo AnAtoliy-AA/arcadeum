@@ -9,6 +9,8 @@ import { gamesApi } from '@/features/games/api';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useMatchmaking } from './MatchmakingQueue';
 import { trackSocialQuickplayStarted } from '@/shared/analytics/funnel';
+import { saveStoredSettings } from '@/shared/lib/settings-storage';
+import type { StoredSettings } from '@/shared/lib/settings-storage';
 
 type Mode = 'ai' | 'human';
 
@@ -23,6 +25,12 @@ interface Props {
   buttonVariant?: ButtonProps['variant'];
   size?: ButtonProps['size'];
   disabled?: boolean;
+  /**
+   * Bot level for `mode='ai'`. The quickplay endpoint has no difficulty
+   * param, so it is persisted to the shared AI difficulty setting that the
+   * room lobby reads and applies as the room's `aiDifficulty` option.
+   */
+  difficulty?: StoredSettings['aiDifficulty'];
 }
 
 export function QuickplayButton({
@@ -36,6 +44,7 @@ export function QuickplayButton({
   buttonVariant,
   size = 'lg',
   disabled = false,
+  difficulty,
 }: Props) {
   const router = useRouter();
   const routes = useRoutes();
@@ -59,6 +68,7 @@ export function QuickplayButton({
       }
       return;
     }
+    if (difficulty) saveStoredSettings({ aiDifficulty: difficulty });
     setLoading(true);
     try {
       const { room } = await gamesApi.quickplay(

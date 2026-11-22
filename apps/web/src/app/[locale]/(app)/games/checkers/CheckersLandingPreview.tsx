@@ -21,7 +21,7 @@ export function CheckersLandingPreview() {
         return (
           <div
             aria-hidden="true"
-            className="box-border w-full max-w-[320px] mx-auto aspect-square p-[10px] rounded-[16px] border-2 border-[rgba(239,68,68,0.4)] shadow-[0_16px_40px_rgba(0,0,0,0.5)] grid grid-cols-8 grid-rows-8 gap-[2px] bg-[#1c1917]"
+            className="box-border w-full max-w-[240px] sm:max-w-[320px] mx-auto aspect-square p-[10px] rounded-[16px] border-2 border-[rgba(239,68,68,0.4)] shadow-[0_16px_40px_rgba(0,0,0,0.5)] grid grid-cols-8 grid-rows-8 gap-[2px] bg-[#1c1917]"
           >
             {DEMO_BOARD.map((row, rowIdx) =>
               row.map((cell, colIdx) => {

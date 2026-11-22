@@ -10,14 +10,15 @@ import { GameRelatedGames } from './GameRelatedGames';
 import { GameFinalCta } from './GameFinalCta';
 import { GameLandingThemeProvider } from './GameLandingThemeContext';
 import { GameSpecTable, PlatformComparisonTable } from '@arcadeum/ui';
-import type { UnifiedGameLandingProps } from './types';
+import { GameSectionNav } from './GameSectionNav';
+import type { GameSectionNavItem, UnifiedGameLandingProps } from './types';
 
 export function UnifiedGameLanding({
   breadcrumbs,
   accentGlow = 'blue',
   hero,
-  quickNavItems,
   topSection,
+  extraNavItems,
   specifications,
   comparison,
   highlights,
@@ -31,65 +32,87 @@ export function UnifiedGameLanding({
   extraSection,
   comingSoon = false,
 }: UnifiedGameLandingProps) {
+  const hasThemes = Boolean(themes?.themes && themes.themes.length > 0);
+  const hasRules = Boolean(rules?.rules && rules.rules.length > 0);
+  const hasStrategy = Boolean(strategy?.tips && strategy.tips.length > 0);
+  const hasFaq = Boolean(faq?.items && faq.items.length > 0);
+  const hasRelated = Boolean(
+    relatedGames?.games && relatedGames.games.length > 0,
+  );
+
+  // Page order: Play, How to play, Rules, Highlights, Themes, Strategy,
+  // Specs, FAQ, Related, Final CTA. The sticky nav mirrors this order; extra
+  // items with placement 'afterPlay' sit right after Play (topSection hubs).
+  const extras = extraNavItems ?? [];
+  const navItems: GameSectionNavItem[] = [
+    { id: 'play', labelKey: 'games.landing.navPlay' },
+    ...extras.filter((item) => item.placement === 'afterPlay'),
+  ];
+  if (howToPlay) {
+    navItems.push({
+      id: howToPlay.id ?? 'how-to-play',
+      labelKey: 'games.landing.navHowToPlay',
+    });
+  }
+  if (hasRules) {
+    navItems.push({
+      id: rules?.id ?? 'rules',
+      labelKey: 'games.landing.navRules',
+    });
+  }
+  if (highlights) {
+    navItems.push({
+      id: highlights.id ?? 'highlights',
+      labelKey: 'games.landing.navHighlights',
+    });
+  }
+  if (hasThemes) {
+    navItems.push({
+      id: themes?.id ?? 'themes',
+      labelKey: 'games.landing.navThemes',
+    });
+  }
+  if (hasStrategy) {
+    navItems.push({
+      id: strategy?.id ?? 'strategy',
+      labelKey: 'games.landing.navStrategy',
+    });
+  }
+  navItems.push(...extras.filter((item) => item.placement !== 'afterPlay'));
+  if (hasFaq) {
+    navItems.push({ id: faq?.id ?? 'faq', labelKey: 'games.landing.navFaq' });
+  }
+  if (hasRelated) {
+    navItems.push({
+      id: relatedGames?.id ?? 'related',
+      labelKey: 'games.landing.navRelated',
+    });
+  }
+
   return (
     <GameLandingLayout breadcrumbs={breadcrumbs} accentGlow={accentGlow}>
       <GameLandingThemeProvider initialTheme={hero.initialTheme}>
-        <GameLandingHero
-          gameId={hero.gameId}
-          title={hero.title}
-          eyebrow={hero.eyebrow}
-          subtitle={hero.subtitle}
-          intro={hero.intro}
-          directAnswer={hero.directAnswer}
-          category={hero.category}
-          playersBadge={hero.playersBadge}
-          durationBadge={hero.durationBadge}
-          difficultyBadge={hero.difficultyBadge}
-          chips={hero.chips}
-          ctaQuickplayLabel={hero.ctaQuickplayLabel}
-          ctaQuickplayErrorLabel={hero.ctaQuickplayErrorLabel}
-          ctaPlayHumanLabel={hero.ctaPlayHumanLabel}
-          ctaPlayHumanErrorLabel={hero.ctaPlayHumanErrorLabel}
-          browseRoomsLabel={hero.browseRoomsLabel}
-          createRoomLabel={hero.createRoomLabel}
-          roomsHref={hero.roomsHref}
-          createRoomHref={hero.createRoomHref}
-          heroVisual={hero.heroVisual}
-          comingSoon={comingSoon}
-          quickNavItems={quickNavItems ?? hero.quickNavItems}
-        />
+        <GameLandingHero {...hero} comingSoon={comingSoon} />
+
+        <GameSectionNav items={navItems} />
 
         {topSection}
 
-        {highlights ? (
-          <GameHighlightsGrid
-            title={highlights.title}
-            kicker={highlights.kicker}
-            items={highlights.items}
-          />
-        ) : null}
+        {howToPlay ? <GameHowToPlay {...howToPlay} /> : null}
 
-        {howToPlay ? (
-          <GameHowToPlay
-            title={howToPlay.title}
-            kicker={howToPlay.kicker}
-            intro={howToPlay.intro}
-            steps={howToPlay.steps}
-          />
-        ) : null}
+        {hasRules && rules ? <GameRulesSection {...rules} /> : null}
 
-        {themes && themes.themes && themes.themes.length > 0 ? (
+        {highlights ? <GameHighlightsGrid {...highlights} /> : null}
+
+        {hasThemes && themes ? (
           <GameThemesShowcase
+            {...themes}
             gameId={themes.gameId ?? hero.gameId}
-            title={themes.title}
-            kicker={themes.kicker}
-            subtitle={themes.subtitle}
-            themes={themes.themes}
-            baseHref={themes.baseHref}
-            createRoomLabel={themes.createRoomLabel}
             comingSoon={comingSoon}
           />
         ) : null}
+
+        {hasStrategy && strategy ? <GameStrategySection {...strategy} /> : null}
 
         {specifications ? (
           <GameSpecTable
@@ -109,57 +132,15 @@ export function UnifiedGameLanding({
           />
         ) : null}
 
-        {rules && rules.rules && rules.rules.length > 0 ? (
-          <GameRulesSection
-            title={rules.title}
-            kicker={rules.kicker}
-            rules={rules.rules}
-            note={rules.note}
-          />
-        ) : null}
-
-        {strategy && strategy.tips && strategy.tips.length > 0 ? (
-          <GameStrategySection
-            title={strategy.title}
-            kicker={strategy.kicker}
-            intro={strategy.intro}
-            tips={strategy.tips}
-          />
-        ) : null}
-
-        {faq && faq.items && faq.items.length > 0 ? (
-          <GameFaqSection
-            title={faq.title}
-            kicker={faq.kicker}
-            items={faq.items}
-          />
-        ) : null}
-
         {extraSection}
 
-        {relatedGames && relatedGames.games && relatedGames.games.length > 0 ? (
-          <GameRelatedGames
-            title={relatedGames.title}
-            kicker={relatedGames.kicker}
-            currentGameSlug={relatedGames.currentGameSlug}
-            games={relatedGames.games}
-          />
+        {hasFaq && faq ? <GameFaqSection {...faq} /> : null}
+
+        {hasRelated && relatedGames ? (
+          <GameRelatedGames {...relatedGames} />
         ) : null}
 
-        <GameFinalCta
-          gameId={finalCta.gameId}
-          title={finalCta.title}
-          subtitle={finalCta.subtitle}
-          roomsHref={finalCta.roomsHref}
-          gamesHref={finalCta.gamesHref}
-          ctaQuickplayLabel={finalCta.ctaQuickplayLabel}
-          ctaQuickplayErrorLabel={finalCta.ctaQuickplayErrorLabel}
-          ctaPlayHumanLabel={finalCta.ctaPlayHumanLabel}
-          ctaPlayHumanErrorLabel={finalCta.ctaPlayHumanErrorLabel}
-          browseRoomsLabel={finalCta.browseRoomsLabel}
-          backToGamesLabel={finalCta.backToGamesLabel}
-          comingSoon={comingSoon}
-        />
+        <GameFinalCta {...finalCta} comingSoon={comingSoon} />
       </GameLandingThemeProvider>
     </GameLandingLayout>
   );

@@ -131,7 +131,7 @@ test.describe('Game Landing SEO, AEO, GEO & Social Sharing', () => {
     );
 
     await expect(async () => {
-      const inviteBtn = page.getByRole('button', { name: /Invite \/ Share/i });
+      const inviteBtn = page.getByRole('button', { name: /Invite or share/i });
       await expect(inviteBtn).toBeVisible();
       await inviteBtn.click({ force: true });
       await expect(modalContent).toBeVisible();

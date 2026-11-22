@@ -102,11 +102,12 @@ test.describe('Sea Battle Rules Modal', () => {
       .first();
     await expect(rulesBtn).toBeVisible({});
 
-    await rulesBtn.waitFor({ state: 'visible' });
-    await rulesBtn.dispatchEvent('click');
-
     const modal = page.getByTestId('rules-modal');
-    await expect(modal).toBeVisible({});
+    // Retry the click: on WebKit it can land before React hydrates.
+    await expect(async () => {
+      await rulesBtn.dispatchEvent('click');
+      await expect(modal).toBeVisible({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
     await expect(modal).toContainText(/objective/i);
 
     await closeGameRulesModal(page);

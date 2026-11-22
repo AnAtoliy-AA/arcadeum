@@ -83,6 +83,16 @@ export async function navigateTo(
         page.locator('html[data-hydrated="true"], html[data-app-ready="true"]'),
       ).toBeAttached();
 
+      // Wait for React's streamed Suspense segments (`<div hidden id="S:n">`)
+      // to be swapped into place. Until then the streamed content exists twice
+      // in the DOM (once hidden, once placed), which makes locators resolve to
+      // two elements and report "hidden" on slower engines (WebKit).
+      await expect(page.locator('div[hidden][id^="S:"]'))
+        .toHaveCount(0)
+        .catch(() => {
+          // Best-effort: pages without streamed segments never block here.
+        });
+
       success = true;
     } catch (err) {
       attempt++;

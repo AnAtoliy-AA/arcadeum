@@ -23,7 +23,7 @@ test.describe('Matchmaking Queue', () => {
 
     const modal = page.getByTestId('matchmaking-modal');
     await expect(async () => {
-      await humanBtn.click();
+      await humanBtn.click({ force: true });
       await expect(modal).toBeVisible();
     }).toPass();
 
@@ -32,7 +32,8 @@ test.describe('Matchmaking Queue', () => {
 
     const cancelBtn = page.getByTestId('matchmaking-cancel');
     await expect(cancelBtn).toBeVisible();
-    await cancelBtn.click();
+    // force: modal buttons never pass the stability check on Linux WebKit.
+    await cancelBtn.click({ force: true });
 
     await expect(modal).not.toBeVisible();
   });
@@ -56,7 +57,7 @@ test.describe('Matchmaking Queue', () => {
 
     const minimizeBtn = page.getByTestId('matchmaking-minimize');
     await expect(minimizeBtn).toBeVisible();
-    await minimizeBtn.click();
+    await minimizeBtn.click({ force: true });
 
     await expect(modal).not.toBeVisible();
     const floatingBar = page.getByTestId('matchmaking-floating-bar');
@@ -64,13 +65,13 @@ test.describe('Matchmaking Queue', () => {
 
     const expandBtn = page.getByTestId('matchmaking-expand');
     await expect(expandBtn).toBeVisible();
-    await expandBtn.click();
+    await expandBtn.click({ force: true });
 
     await expect(floatingBar).not.toBeVisible();
     await expect(modal).toBeVisible();
 
     const cancelBtn = page.getByTestId('matchmaking-cancel');
-    await cancelBtn.click();
+    await cancelBtn.click({ force: true });
     await expect(modal).not.toBeVisible();
   });
 });

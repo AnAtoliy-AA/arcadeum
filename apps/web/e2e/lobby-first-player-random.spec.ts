@@ -105,8 +105,14 @@ test.describe('Lobby Random First Move Option', () => {
     await expect(randomCheckbox).not.toBeChecked();
     await expect(firstPlayerSelect).toHaveValue('host');
 
-    await randomCheckbox.click();
-    await expect(randomCheckbox).toBeChecked();
+    // Retry the click: it can land before React hydrates and be lost. Only
+    // click while unchecked so a retry never toggles the box back off.
+    await expect(async () => {
+      if (!(await randomCheckbox.isChecked())) {
+        await randomCheckbox.click();
+      }
+      await expect(randomCheckbox).toBeChecked({ timeout: 3000 });
+    }).toPass({ timeout: 20000 });
     await expect(firstPlayerSelect).toHaveValue('random');
 
     await firstPlayerSelect.selectOption('host');

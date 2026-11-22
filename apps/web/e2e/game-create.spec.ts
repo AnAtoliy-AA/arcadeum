@@ -103,14 +103,16 @@ test.describe('Game Room Creation', () => {
   test('should show validation error for empty name', async ({ page }) => {
     const nameInput = page.getByLabel(/room name/i).first();
     await expect(nameInput).toBeVisible();
-    await expect(async () => {
-      await nameInput.fill('');
-      await expect(nameInput).toHaveValue('');
-    }).toPass();
-
     const submitBtn = page.getByTestId('create-room-button').first();
     await expect(submitBtn).toBeVisible();
-    await expect(submitBtn).toBeDisabled();
+    // Type then clear so React state updates even if the first fill landed
+    // before hydration (WebKit).
+    await expect(async () => {
+      await nameInput.fill('x');
+      await nameInput.fill('');
+      await expect(nameInput).toHaveValue('');
+      await expect(submitBtn).toBeDisabled({ timeout: 2000 });
+    }).toPass({ timeout: 20000 });
 
     await expect(page).toHaveURL(/\/games\/create/);
   });

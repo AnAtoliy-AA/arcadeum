@@ -24,9 +24,15 @@ export async function closeGameRulesModal(page: Page): Promise<void> {
   const modalSelector = '[data-testid="rules-modal"]';
   const closeBtnSelector = `${modalSelector} [data-testid="modal-close-button"]`;
 
-  // 1. Wait for modal to be visible or return if it's not there
+  // 1. Wait for modal to be visible or return if it's not there. The wait is
+  // short: when no modal opens (most mocked rooms) it is pure dead time on
+  // every call, and the callers have already waited for the room container,
+  // so a modal that is going to open does so within this window.
   try {
-    await page.waitForSelector(modalSelector, { state: 'visible' });
+    await page.waitForSelector(modalSelector, {
+      state: 'visible',
+      timeout: 1500,
+    });
   } catch (_e) {
     // Modal not visible, nothing to close
     return;

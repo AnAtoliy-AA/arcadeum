@@ -15,6 +15,7 @@ import {
   isCreateBlocked,
 } from '@/features/games/ui/create/createPageState';
 import { Container } from '@arcadeum/ui/components/Container/Container';
+import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 
 import s from './GameCreateView.module.scss';
@@ -154,7 +155,21 @@ function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
   };
 }
 
+/**
+ * The create route is statically prerendered, so the server cannot know the
+ * URL query (gameId/theme) or the stored session the form is seeded from.
+ * Render the form only after hydration so its first client render matches the
+ * server HTML (avoids React hydration error #418).
+ */
 export function GameCreateView() {
+  const { isReady } = useLanguage();
+  if (!isReady) {
+    return <PageLoading layout="standard" />;
+  }
+  return <GameCreateForm />;
+}
+
+function GameCreateForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const routes = useRoutes();

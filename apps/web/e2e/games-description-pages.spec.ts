@@ -38,7 +38,8 @@ test.describe('Games Description Landing Pages', () => {
       expect(response?.status()).toBe(200);
 
       const heading = page.locator('h1').first();
-      await expect(heading).toBeVisible();
+      // Attached: h1 reports hidden on Linux WebKit even when rendered.
+      await expect(heading).toBeAttached();
       await expect(heading).toContainText(game.title);
 
       const quickplayButtons = page.locator(

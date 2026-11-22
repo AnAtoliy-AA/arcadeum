@@ -1,7 +1,9 @@
 import { test as base } from '@playwright/test';
 import { checkNoBackendErrors } from './backend';
+import { isExpectedConsoleNoise } from './console-noise';
 import { LIVE_INFO_FIXTURE } from './live-stats';
 import { handleRoute } from './network';
+import { applyTestSpeedups } from './test-speedups';
 
 // Chunk-load suppression notes:
 // Dev (Turbopack) occasionally truncates chunks; CI prod-build on WebKit
@@ -45,113 +47,14 @@ export const test = base.extend({
 
       // ALWAYS capture errors and warnings unless they are explicitly ignored
       if (isErrorOrWarning) {
-        // Skip expected test crash errors or hydration noise
-        if (
-          text.includes('This is a test crash!') ||
-          text.includes('handled by the <ErrorBoundaryHandler>') ||
-          text.includes('The above error occurred in the <TestCrashContent>') ||
-          text.includes(
-            'hydrated but some attributes of the server rendered HTML',
-          ) ||
-          text.includes('was preloaded using link preload but not used') ||
-          text.includes('webpack-hmr') ||
-          (/font|geist|preload/i.test(text) &&
-            /(download failed|rejected|decode|preloaded with link preload was not used)/i.test(
-              text,
-            )) ||
-          (/Loading failed for the <script>/i.test(text) &&
-            /_next\/static\/chunks\//.test(text)) ||
-          // Firefox flags forced reflow inside Playwright's own page.evaluate
-          // calls (the script source is reported as "debugger eval code"). Not
-          // an app bug — it's the test harness measuring layout state.
-          /Layout was forced before the page was fully loaded/i.test(text)
-        ) {
+        if (isExpectedConsoleNoise(page.url(), type, text)) {
           return;
         }
 
-        // Ignore intentional 500 errors in payment notes page tests
-        if (
-          type === 'error' &&
-          text.includes('500') &&
-          page.url().includes('/notes')
-        ) {
-          return;
-        }
-
-        // Ignore intentional 4xx noise from flows that mock-fulfill error
-        // responses or auth-gated specs where mockSession is in effect but the
-        // BE rejects the fake bearer token (BalanceChip/auth-blocked/etc fire
-        // header calls on every page). Allowlist by the page URL the noise
-        // emits from. Every auth-gated route in the app needs to be here —
-        // the header/shop-balance-chip widgets fire `/wallet/balance`,
-        // `/auth/check/*`, `/notifications/*`, etc. on every page render
-        // and the fake JWT from mockSession always 401s against the real BE.
-        if (
-          type === 'error' &&
-          /Failed to load resource.*status of 4\d{2}/i.test(text) &&
-          (/\/(?:wallet|payment|payments|gems|games|auth|settings|chat|chats|leaderboards|stats|history|notifications|notes|referrals|rewards|tournaments|shop|profile|players|admin|community|developers|help|contact|support|blog|cookies|privacy|terms|legal|home)/.test(
-            page.url(),
-          ) ||
-            /^https?:\/\/[^/]+\/?$/.test(page.url()) ||
-            /^https?:\/\/[^/]+\/(?:en|es|fr|ru|by)\/?$/.test(page.url()))
-        ) {
-          return;
-        }
-
-        // Ignore BE socket.io websocket handshake failures. Many specs don't
-        // mock the socket gateway and just navigate through pages that
-        // initialize a socket.io client; the unauthenticated handshake then
-        // logs identical noise across every browser ("Firefox can't establish
-        // a connection…", "WebSocket connection to … failed: WebSocket is
-        // closed before the connection is established", etc.). Firefox uses
-        // a Unicode right-single-quote in "can't", so we match a stable
-        // substring instead of the contraction.
-        if (
-          /(?:WebSocket connection to .* failed|establish a connection.*server.*ws:\/\/|WebSocket is closed before)/i.test(
-            text,
-          ) &&
-          /socket\.io\//.test(text) &&
-          /(?:localhost|127\.0\.0\.1):4000/.test(text)
-        ) {
-          return;
-        }
-
-        // Ignore Next.js stack-frame CORS errors during aborts
-        if (text.includes('__nextjs_original-stack-frames')) {
-          return;
-        }
-
-        // Suppress transient access control errors for endpoints we are mocking
-        if (
-          (text.includes('due to access control checks') ||
-            text.includes('Fetch API cannot load')) &&
-          (text.includes('localhost:4000') ||
-            text.includes('localhost:4500') ||
-            text.includes('localhost:3000') ||
-            text.includes('127.0.0.1:4000') ||
-            text.includes('127.0.0.1:4500') ||
-            text.includes('127.0.0.1:3000') ||
-            text.includes('localhost:3500') ||
-            text.includes('127.0.0.1:3500'))
-        ) {
-          return;
-        }
-
-        // Mobile Safari fires "due to access control checks" / "Fetch API
-        // cannot load" when an in-flight Next.js RSC fetch is cancelled by a
-        // subsequent navigation. The `?_rsc=` query is the unambiguous signal.
-        if (
-          (text.includes('due to access control checks') ||
-            text.includes('Fetch API cannot load')) &&
-          /[?&]_rsc=/.test(text)
-        ) {
-          return;
-        }
-
-        console.log(`BROWSER [${type}]: ${text}`);
+        console.log(`BROWSER [${type}] @ ${page.url()}: ${text}`);
       } else if (isRelevantKeyword && !isFetchNoise) {
         // Log relevant room/session events if they aren't fetch noise
-        console.log(`BROWSER [${type}]: ${text}`);
+        console.log(`BROWSER [${type}] @ ${page.url()}: ${text}`);
       }
     });
 
@@ -200,7 +103,9 @@ export const test = base.extend({
         if (
           response.url().includes('favicon.ico') ||
           response.url().includes('apple-touch-icon') ||
-          response.url().includes('/music/')
+          response.url().includes('/music/') ||
+          // Intentional 404s from not-found specs that request a bogus id.
+          response.url().includes('nonexistent-id')
         ) {
           return;
         }
@@ -265,8 +170,12 @@ export const test = base.extend({
         return;
       }
 
-      console.log(`BROWSER [error]: ${err.message}\n${err.stack || ''}`);
+      console.log(
+        `BROWSER [error] @ ${page.url()}: ${err.message}\n${err.stack || ''}`,
+      );
     });
+
+    await applyTestSpeedups(page);
 
     await page.addInitScript(() => {
       window.isPlaywright = true;

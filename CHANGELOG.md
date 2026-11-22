@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.15] - 2026-11-22
+
+### Added
+- rework game landings with clear hierarchy and bot play
+
+
 ## [1.31.14] - 2026-11-22
 
 ### Fixed

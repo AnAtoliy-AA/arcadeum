@@ -20,11 +20,6 @@ import { GameRoomsQuickplayService } from './rooms/game-rooms.quickplay.service'
 import { SeaBattleService } from './sea-battle/sea-battle.service';
 import { CriticalService } from './critical/critical.service';
 import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
-import { GamePostMatchService } from './game-post-match.service';
-import { RankingService } from '../ranking/ranking.service';
-import { recordRankedResultForSession } from './games.ranked-result';
-import { finalizeCompletedSession } from './games.completion';
-import { GameReplayService } from './replays/game-replay.service';
 import { stripDisabledRules } from './games.service-rules';
 import {
   sanitizeSessionForPlayer,
@@ -50,10 +45,7 @@ export class GamesService {
     @Inject(forwardRef(() => CriticalService))
     private readonly criticalService: CriticalService,
     private readonly leaderboardSync: GamesLeaderboardSyncService,
-    private readonly postMatch: GamePostMatchService,
-    private readonly rankingService: RankingService,
     private readonly ruleVisibility: GameRuleVisibilityService,
-    private readonly replayService: GameReplayService,
   ) {}
   // ========== Room Operations ==========
   async createRoom(userId: string, dto: CreateGameRoomDto) {
@@ -229,56 +221,6 @@ export class GamesService {
     );
 
     return { room: updatedRoom, session };
-  }
-
-  async executeAction(
-    sessionId: string,
-    action: string,
-    userId: string,
-    payload?: unknown,
-  ) {
-    const session = await this.sessionsService.executeAction({
-      sessionId,
-      action,
-      userId,
-      payload,
-    });
-
-    const isCompleted = session.status === 'completed';
-    // Ranked matches: apply ELO before broadcasting so the delta lands in `state.gameResult.ratingDeltas`.
-    const completedPlayers = isCompleted
-      ? await recordRankedResultForSession(
-          session,
-          this.roomsService,
-          this.sessionsService,
-          this.rankingService,
-          this.logger,
-        )
-      : null;
-
-    await this.realtimeService.emitActionExecuted(
-      session,
-      action,
-      userId,
-      (s, pId) => sanitizeSessionForPlayer(this.sessionsService, s, pId),
-    );
-
-    if (isCompleted) {
-      const players =
-        completedPlayers ??
-        (await this.roomsService.getRoomParticipants(session.roomId));
-      await finalizeCompletedSession(session, players, {
-        roomsService: this.roomsService,
-        sessionsService: this.sessionsService,
-        leaderboardSync: this.leaderboardSync,
-        postMatch: this.postMatch,
-        archiveService: this.archiveService,
-        replayService: this.replayService,
-        logger: this.logger,
-      });
-    }
-
-    return session;
   }
 
   async getSanitizedState(sessionId: string, playerId: string) {

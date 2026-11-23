@@ -13,7 +13,7 @@ interface SyncSoloScoreRecord {
   score: number;
   moves: number;
   durationMs: number;
-  result: 'won' | 'lost';
+  result: 'won' | 'lost' | 'draw';
   sessionId: string;
   timestamp: number;
   usedUndo?: boolean;
@@ -324,12 +324,12 @@ export class SoloScoresService {
         try {
           const amount = await this.xpSettings.getXpReward(
             r.gameId,
-            r.result === 'won' ? 'won' : 'lost',
+            r.result === 'won' ? 'won' : r.result === 'draw' ? 'draw' : 'lost',
             true,
             false,
           );
           if (amount > 0) {
-            await this.xpSettings.awardXp(userId, this.userModel, amount);
+            await this.xpSettings.awardXp(userId, amount);
           }
         } catch (err) {
           this.logger.warn(

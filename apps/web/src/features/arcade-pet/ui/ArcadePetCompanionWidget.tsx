@@ -240,7 +240,7 @@ export const ArcadePetCompanionWidget: React.FC<
         {isWidgetOpen && (
           <div
             data-testid="arcade-pet-companion-modal"
-            className="mb-3 w-80 rounded-2xl bg-[var(--glassBg)] border border-[var(--glassBorderStrong)] p-4 shadow-2xl backdrop-blur-md text-[var(--color)] font-sans flex flex-col gap-3 max-h-[calc(100dvh-8rem)] overflow-y-auto"
+            className="mb-3 w-80 rounded-2xl bg-[var(--glassBg)] border border-[var(--glassBorderStrong)] p-4 shadow-2xl backdrop-blur-md text-[var(--color)] font-sans flex flex-col gap-3 max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-2rem)] overflow-y-auto overflow-x-hidden"
           >
             <ArcadePetCompanionHeader
               pet={pet}
@@ -256,7 +256,7 @@ export const ArcadePetCompanionWidget: React.FC<
             {pets.length > 1 && (
               <div
                 data-testid="companion-pet-selector"
-                className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 border-b border-[var(--glassBorder)]"
+                className="flex flex-wrap items-center gap-1.5 pb-1 pt-0.5 border-b border-[var(--glassBorder)]"
               >
                 {pets.map((p, idx) => {
                   const cost = getPetFoodCost(idx);

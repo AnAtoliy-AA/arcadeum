@@ -34,8 +34,10 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
 
   if (!editing) {
     return (
-      <span className="flex items-center gap-1">
-        <span className="text-sm font-bold leading-tight">{name}</span>
+      <span className="flex min-w-0 items-center gap-1">
+        <span className="min-w-0 break-words text-sm font-bold leading-tight">
+          {name}
+        </span>
         <Button
           variant="icon"
           size="sm"
@@ -52,7 +54,7 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
 
   return (
     <form
-      className="flex items-center gap-1"
+      className="flex min-w-0 items-center gap-1"
       onSubmit={(e) => {
         e.preventDefault();
         submit();
@@ -73,7 +75,7 @@ export const ArcadePetRenameField: React.FC<ArcadePetRenameFieldProps> = ({
         }}
         aria-label={t('arcadePetCompanion.rename.label')}
         aria-invalid={invalid}
-        className={`w-28 rounded border bg-[var(--background)] px-1.5 py-0.5 text-xs text-[var(--color)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] ${
+        className={`w-28 min-w-0 rounded border bg-[var(--background)] px-1.5 py-0.5 text-xs text-[var(--color)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] ${
           invalid ? 'border-[var(--danger)]' : 'border-[var(--glassBorder)]'
         }`}
       />

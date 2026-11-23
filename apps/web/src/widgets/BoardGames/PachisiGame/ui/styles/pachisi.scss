@@ -4,7 +4,9 @@
   grid-template-rows: repeat(15, minmax(0, 1fr));
   background: var(--pachisi-board-bg);
   border-color: var(--pachisi-yard-border);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.65),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   --pachisi-counter-rot: 0deg;
 }
@@ -98,7 +100,9 @@
 .pachisi-cell {
   background: var(--pachisi-cell-bg);
   border-color: var(--pachisi-cell-border);
-  transition: box-shadow 0.3s ease, background 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    background 0.3s ease;
 }
 
 .pachisi-cell-seat-0 {
@@ -161,7 +165,9 @@
     0 3px 6px rgba(0, 0, 0, 0.45),
     inset 0 1.5px 2px rgba(255, 255, 255, 0.4),
     inset 0 -2px 3px rgba(0, 0, 0, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .pachisi-token-stacked {
@@ -170,6 +176,11 @@
     0 1px 3px rgba(0, 0, 0, 0.4),
     inset 0 1.5px 2px rgba(255, 255, 255, 0.5),
     inset 0 -2px 3px rgba(0, 0, 0, 0.45);
+}
+
+.pachisi-token-partner {
+  outline: 2px dashed rgba(255, 255, 255, 0.85);
+  outline-offset: 1px;
 }
 
 .pachisi-token-blockade {
@@ -201,22 +212,42 @@
 }
 
 .pachisi-token-seat-0 {
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-0) 70%, #ffffff) 0%, var(--pachisi-seat-0) 65%, color-mix(in srgb, var(--pachisi-seat-0) 65%, #000000) 100%);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--pachisi-seat-0) 70%, #ffffff) 0%,
+    var(--pachisi-seat-0) 65%,
+    color-mix(in srgb, var(--pachisi-seat-0) 65%, #000000) 100%
+  );
   border-color: color-mix(in srgb, var(--pachisi-seat-0) 50%, #ffffff);
 }
 
 .pachisi-token-seat-1 {
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-1) 70%, #ffffff) 0%, var(--pachisi-seat-1) 65%, color-mix(in srgb, var(--pachisi-seat-1) 65%, #000000) 100%);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--pachisi-seat-1) 70%, #ffffff) 0%,
+    var(--pachisi-seat-1) 65%,
+    color-mix(in srgb, var(--pachisi-seat-1) 65%, #000000) 100%
+  );
   border-color: color-mix(in srgb, var(--pachisi-seat-1) 50%, #ffffff);
 }
 
 .pachisi-token-seat-2 {
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-2) 70%, #ffffff) 0%, var(--pachisi-seat-2) 65%, color-mix(in srgb, var(--pachisi-seat-2) 65%, #000000) 100%);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--pachisi-seat-2) 70%, #ffffff) 0%,
+    var(--pachisi-seat-2) 65%,
+    color-mix(in srgb, var(--pachisi-seat-2) 65%, #000000) 100%
+  );
   border-color: color-mix(in srgb, var(--pachisi-seat-2) 50%, #ffffff);
 }
 
 .pachisi-token-seat-3 {
-  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--pachisi-seat-3) 70%, #ffffff) 0%, var(--pachisi-seat-3) 65%, color-mix(in srgb, var(--pachisi-seat-3) 65%, #000000) 100%);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--pachisi-seat-3) 70%, #ffffff) 0%,
+    var(--pachisi-seat-3) 65%,
+    color-mix(in srgb, var(--pachisi-seat-3) 65%, #000000) 100%
+  );
   border-color: color-mix(in srgb, var(--pachisi-seat-3) 50%, #ffffff);
 }
 
@@ -227,19 +258,35 @@
 }
 
 .pachisi-yard-active-seat-0 {
-  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-0) 50%, transparent);
+  --pachisi-glow-color: color-mix(
+    in srgb,
+    var(--pachisi-seat-0) 50%,
+    transparent
+  );
 }
 
 .pachisi-yard-active-seat-1 {
-  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-1) 50%, transparent);
+  --pachisi-glow-color: color-mix(
+    in srgb,
+    var(--pachisi-seat-1) 50%,
+    transparent
+  );
 }
 
 .pachisi-yard-active-seat-2 {
-  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-2) 50%, transparent);
+  --pachisi-glow-color: color-mix(
+    in srgb,
+    var(--pachisi-seat-2) 50%,
+    transparent
+  );
 }
 
 .pachisi-yard-active-seat-3 {
-  --pachisi-glow-color: color-mix(in srgb, var(--pachisi-seat-3) 50%, transparent);
+  --pachisi-glow-color: color-mix(
+    in srgb,
+    var(--pachisi-seat-3) 50%,
+    transparent
+  );
 }
 
 .pachisi-score-pill-seat-0 {
@@ -281,10 +328,14 @@
 
 @keyframes pachisi-cell-glow {
   0% {
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.3);
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.7),
+      0 0 8px rgba(255, 255, 255, 0.3);
   }
   100% {
-    box-shadow: inset 0 0 0 0px rgba(255, 255, 255, 0), 0 0 0 rgba(255, 255, 255, 0);
+    box-shadow:
+      inset 0 0 0 0px rgba(255, 255, 255, 0),
+      0 0 0 rgba(255, 255, 255, 0);
   }
 }
 
@@ -294,7 +345,8 @@
 }
 
 @keyframes pachisi-pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 var(--pachisi-glow-color, rgba(255, 255, 255, 0.2));
   }
   50% {
@@ -346,8 +398,13 @@
 }
 
 @keyframes pachisi-six-celebrate {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 .pachisi-six-celebrate {

@@ -53,10 +53,14 @@ export interface PachisiPlayer {
   seat: number;
   color: SeatColor;
   alive: boolean;
+  /** Team index (0 or 1) in 2v2 team mode. */
+  team?: 0 | 1;
 }
 
 export interface MoveTokenPayload {
   tokenId: number;
+  /** Set only when moving a finished partner's token (team mode). */
+  ownerId?: string;
 }
 
 export const PACHISI_MODES = ['standard', 'quick'] as const;
@@ -67,6 +71,8 @@ export interface PachisiOptions {
   variant?: PachisiTheme;
   mode?: PachisiMode;
   aiDifficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+  /** 2v2 team play (partners opposite); needs exactly 4 players. */
+  teams?: boolean;
 }
 
 export interface PachisiLogEntry {
@@ -93,6 +99,9 @@ export interface PachisiClientState {
   playerOrder: string[];
   players: PachisiPlayer[];
   winnerId: string | null;
+  winnerIds?: string[];
   isDraw: boolean;
+  teamMode?: boolean;
+  winnerTeam?: 0 | 1 | null;
   logs: PachisiLogEntry[];
 }

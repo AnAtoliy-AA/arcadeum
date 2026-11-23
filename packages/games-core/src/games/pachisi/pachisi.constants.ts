@@ -33,6 +33,15 @@ export const TOKENS_BY_MODE: Record<Mode, number> = {
   quick: 2,
 };
 
+/** Team play is only valid with exactly this many players (2v2). */
+export const TEAMS_PLAYER_COUNT = 4;
+export type TeamId = 0 | 1;
+/**
+ * Partners sit opposite each other: seats 0 and 2 form team 0 (red/yellow),
+ * seats 1 and 3 form team 1 (green/blue). Turns alternate between teams.
+ */
+export const TEAM_COUNT = 2;
+
 export const GAME_PHASE = {
   ROLL: 'roll',
   MOVE: 'move',
@@ -55,10 +64,13 @@ export interface PachisiOptions {
   theme: string;
   mode: Mode;
   aiDifficulty?: AiDifficulty;
+  /** 2v2 team play (partners opposite). Ignored unless exactly 4 players. */
+  teams?: boolean;
 }
 
 export const DEFAULT_OPTIONS: PachisiOptions = {
   theme: 'adventure',
   mode: 'standard',
   aiDifficulty: 'medium',
+  teams: false,
 };

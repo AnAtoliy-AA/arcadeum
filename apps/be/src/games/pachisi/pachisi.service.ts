@@ -16,12 +16,14 @@ import {
   MAX_PLAYERS,
   MIN_PLAYERS,
   MODES,
+  TEAMS_PLAYER_COUNT,
   type PachisiOptions,
   type Mode,
 } from '../engines/pachisi/pachisi.constants';
 import { PachisiBotService } from './pachisi-bot.service';
 import { isAiDifficulty } from '../ai-difficulty';
 import { BaseGameService } from '../common/base-game.service';
+import type { StartGameSessionResult } from '../games.types';
 
 @Injectable()
 export class PachisiService extends BaseGameService<PachisiOptions> {
@@ -55,8 +57,18 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
     return this.runAction(userId, roomId, 'roll_dice', {});
   }
 
-  async moveToken(userId: string, roomId: string, tokenId: number) {
-    return this.runAction(userId, roomId, 'move_token', { tokenId });
+  async moveToken(
+    userId: string,
+    roomId: string,
+    tokenId: number,
+    ownerId?: string,
+  ) {
+    return this.runAction(
+      userId,
+      roomId,
+      'move_token',
+      ownerId ? { tokenId, ownerId } : { tokenId },
+    );
   }
 
   async passTurn(userId: string, roomId: string) {
@@ -69,6 +81,7 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
       variant: string;
       mode: string;
       aiDifficulty: string;
+      teams: unknown;
     }>;
     return {
       theme: r.theme ?? r.variant ?? DEFAULT_OPTIONS.theme,
@@ -78,6 +91,36 @@ export class PachisiService extends BaseGameService<PachisiOptions> {
       aiDifficulty: isAiDifficulty(r.aiDifficulty)
         ? r.aiDifficulty
         : DEFAULT_OPTIONS.aiDifficulty,
+      teams: r.teams === true,
     };
+  }
+
+  /**
+   * Team play is 2v2 and needs exactly four seats, so a team room always
+   * starts with four players: bots fill the empty seats (partners sit
+   * opposite, i.e. seats 1/3 and 2/4 in join order).
+   */
+  async startSession(
+    userId: string,
+    roomId: string,
+    withBots?: boolean,
+    botCount?: number,
+    startExtras?: unknown,
+  ): Promise<StartGameSessionResult> {
+    const room = await this.roomsService.getRoom(roomId, userId);
+    if (this.resolveOptions(room.gameOptions).teams) {
+      const participants = await this.roomsService.getRoomParticipants(roomId);
+      const humans = participants.filter((p) => !p.startsWith('bot-')).length;
+      const existingBots = participants.length - humans;
+      const missing = Math.max(0, TEAMS_PLAYER_COUNT - participants.length);
+      return super.startSession(
+        userId,
+        roomId,
+        true,
+        existingBots + missing,
+        startExtras,
+      );
+    }
+    return super.startSession(userId, roomId, withBots, botCount, startExtras);
   }
 }

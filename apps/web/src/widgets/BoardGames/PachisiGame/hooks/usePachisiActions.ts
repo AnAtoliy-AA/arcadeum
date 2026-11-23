@@ -36,13 +36,14 @@ export function usePachisiActions(options: UsePachisiActionsOptions) {
   }, [roomId, userId, onActionStart]);
 
   const moveToken = useCallback(
-    (tokenId: number) => {
+    (tokenId: number, ownerId?: string) => {
       if (!userId) return;
       onActionStart?.('move');
       gameSocket.emit('pachisi.session.move', {
         roomId,
         userId,
         tokenId,
+        ...(ownerId ? { ownerId } : {}),
       });
     },
     [roomId, userId, onActionStart],

@@ -160,6 +160,20 @@ export const esMessages = {
       rules: 'Reglas del Juego',
       startWithBots: 'Empezar con Bot',
       aiDifficulty: 'Dificultad IA',
+      teams: {
+        title: 'Juego por equipos (2 contra 2)',
+        hint: 'Equipos: los compañeros se sientan enfrente y ganan juntos',
+        off: 'No',
+        on: 'Sí',
+        description:
+          'Se necesitan cuatro jugadores. Los asientos 1 y 3 forman un equipo y los asientos 2 y 4 el otro. Los bots ocupan los asientos vacíos.',
+        teamLabel: 'Equipo {{n}}',
+        seatLabel: 'Asiento {{n}}',
+        openSeat: 'Asiento libre (bot)',
+        needsFour: 'Los equipos necesitan una sala de 4 jugadores',
+        reorderHint:
+          'Arrastra a los jugadores de la lista para cambiar quién es pareja de quién.',
+      },
       ruleVariants: {
         standard: {
           name: 'Estándar',
@@ -195,6 +209,14 @@ export const esMessages = {
       dieValue: 'Dado: {{value}}',
       extraRoll: '¡Sacaste un 6! ¡Tira de nuevo!',
       lastRoll: 'Última tirada: {{value}}',
+      team: {
+        label: 'Equipo {{n}}',
+        partner: 'Compañero',
+        you: 'Tú',
+        movePartner: '¡Has terminado! Ahora mueve las fichas de tu compañero.',
+        movePartnerTokenAria: 'Mover la ficha {{id}} del compañero',
+        yourPartner: 'Tu compañero',
+      },
     },
     tutorial: {
       s1: {
@@ -225,9 +247,22 @@ export const esMessages = {
       captureTitle: 'Capturas y Casillas Seguras',
       capture:
         'Caer en una casilla ocupada por un rival devuelve su ficha al corral. Las casillas de estrella y tu salida son seguras: nadie puede capturarte allí.',
+      teamsTitle: 'Juego por equipos (2 contra 2)',
+      teams:
+        'Con equipos activados, cuatro jugadores forman dos equipos. Los compañeros se sientan enfrente (asientos 1 y 3 contra asientos 2 y 4) y los turnos se alternan entre equipos. Los compañeros nunca se capturan y pueden compartir casilla. Cuando todas tus fichas están en casa, mueves las de tu compañero en tu turno. Un equipo gana cuando todas las fichas de ambos compañeros están en casa.',
       sixesTitle: 'Seises',
       sixes:
         'Sacar un 6 otorga otra tirada. Sacar tres seges seguidos pierde el turno por completo.',
+    },
+    gameOverTeam: {
+      won: '¡Victoria del equipo!',
+      lost: 'Derrota del equipo',
+      draw: 'Empate',
+      messages: {
+        won: 'Tu compañero y tú llevasteis todas las fichas a casa: ¡vuestro equipo gana!',
+        lost: 'El otro equipo llevó todas sus fichas a casa primero.',
+        draw: 'La partida terminó en empate.',
+      },
     },
     gameOver: {
       won: '¡Victoria!',

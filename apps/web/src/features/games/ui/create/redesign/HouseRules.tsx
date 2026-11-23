@@ -26,6 +26,11 @@ const RULE_KEYS: Record<
   },
 };
 
+const PACHISI_TEAMS_KEYS: { title: TranslationKey; desc: TranslationKey } = {
+  title: 'createRoom.rules.teamsPachisi.title',
+  desc: 'createRoom.rules.teamsPachisi.desc',
+};
+
 interface Props {
   gameId: GameId;
   value: CreateRoomForm['rules'];
@@ -56,7 +61,12 @@ export function HouseRules({ gameId, value, onChange, ruleComingSoon }: Props) {
           {ruleIds.map((key) => {
             const on = value[key];
             const soon = ruleComingSoon?.get(`${gameId}::${key}`) ?? false;
-            const title = t(RULE_KEYS[key].title);
+            // Pachisi teams are a fixed 2v2 setup, so they get their own copy.
+            const keys =
+              key === 'teams' && gameId === 'pachisi_v1'
+                ? PACHISI_TEAMS_KEYS
+                : RULE_KEYS[key];
+            const title = t(keys.title);
             return (
               <div
                 key={key}
@@ -66,7 +76,7 @@ export function HouseRules({ gameId, value, onChange, ruleComingSoon }: Props) {
                 <div className={s.ruleHead}>
                   <div>
                     <h4 className={s.ruleTitle}>{title}</h4>
-                    <p className={s.ruleDesc}>{t(RULE_KEYS[key].desc)}</p>
+                    <p className={s.ruleDesc}>{t(keys.desc)}</p>
                   </div>
                   {soon ? (
                     <span className={s.comingSoonTag}>

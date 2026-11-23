@@ -138,14 +138,26 @@ function PachisiGameImpl({
   const prevGameOverRef = useRef(isGameOver);
   useEffect(() => {
     if (isGameOver && !prevGameOverRef.current) {
-      if (snapshot?.winnerId && snapshot.winnerId === currentUserId) {
+      const winners =
+        snapshot?.winnerIds && snapshot.winnerIds.length > 0
+          ? snapshot.winnerIds
+          : snapshot?.winnerId
+            ? [snapshot.winnerId]
+            : [];
+      if (currentUserId && winners.includes(currentUserId)) {
         play('win');
-      } else if (snapshot?.winnerId) {
+      } else if (winners.length > 0) {
         play('lose');
       }
     }
     prevGameOverRef.current = isGameOver;
-  }, [isGameOver, snapshot?.winnerId, currentUserId, play]);
+  }, [
+    isGameOver,
+    snapshot?.winnerId,
+    snapshot?.winnerIds,
+    currentUserId,
+    play,
+  ]);
 
   const handleRoll = useCallback(() => {
     play('roll');
@@ -188,8 +200,12 @@ function PachisiGameImpl({
     isGameOver,
     currentUserId,
     gameId: 'pachisi_v1',
-    gameOverKey: 'games.pachisi_v1.gameOver',
+    // Team matches show team wording ("Team victory!") on the result modal.
+    gameOverKey: snapshot?.teamMode
+      ? 'games.pachisi_v1.gameOverTeam'
+      : 'games.pachisi_v1.gameOver',
     winnerId: snapshot?.winnerId,
+    winnerIds: snapshot?.winnerIds,
     isDraw: snapshot?.isDraw,
     t,
   });

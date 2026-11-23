@@ -14,6 +14,7 @@ import {
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { PachisiOptions, PachisiMode, PachisiTheme } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
+import { PachisiTeamsPanel, type TeamSeatMember } from './PachisiTeamsPanel';
 
 export const PACHISI_LOBBY_THEME = {
   fallbackLightGradient:
@@ -53,6 +54,7 @@ export function resolvePachisiLobbyOptions(
     variant: string;
     mode: string;
     aiDifficulty: string;
+    teams: unknown;
   }>;
   return {
     theme: (r.theme ?? r.variant ?? fallbackTheme) as PachisiTheme,
@@ -60,6 +62,7 @@ export function resolvePachisiLobbyOptions(
     mode: (r.mode ?? 'standard') as PachisiMode,
     aiDifficulty: (r.aiDifficulty ?? 'medium') as
       'easy' | 'medium' | 'hard' | 'expert',
+    teams: r.teams === true,
   };
 }
 
@@ -68,11 +71,15 @@ export function PachisiLobbyOptionsPanel({
   roomId,
   userId,
   isHost,
+  members = [],
+  maxPlayers = null,
 }: {
   options: PachisiOptions;
   roomId: string;
   userId: string;
   isHost: boolean;
+  members?: readonly TeamSeatMember[];
+  maxPlayers?: number | null;
 }) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId, userId });
@@ -101,6 +108,13 @@ export function PachisiLobbyOptionsPanel({
           testIdPrefix="pachisi-rule-variant"
         />
       </LobbyOptionGroup>
+      <PachisiTeamsPanel
+        enabled={options.teams === true}
+        isHost={isHost}
+        members={members}
+        maxPlayers={maxPlayers}
+        onChange={(teams) => setOption({ teams })}
+      />
       <LobbyOptionGroup title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={variant}

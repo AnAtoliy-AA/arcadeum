@@ -408,6 +408,12 @@ export const GAME_CATALOG: ReadonlyArray<GameCatalogEntry> = [
         description:
           'Other users can watch the match in real time without joining.',
       },
+      {
+        ruleId: 'teams',
+        label: 'Team play (2v2)',
+        description:
+          'Four players form two teams; partners sit opposite and the team wins when all eight tokens are home.',
+      },
     ],
   },
 ];

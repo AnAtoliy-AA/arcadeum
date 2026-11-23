@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWidgetFullscreen } from '@/features/games/ui/GameWidgetContainer';
 import { usePachisiDiceState, usePachisiKeyboardTurn } from '../hooks';
 import { usePachisiTheme } from '../lib/PachisiThemeContext';
@@ -13,6 +13,7 @@ import {
   absoluteCell,
   movableTokenIds,
 } from '../lib/boardLayout';
+import { controlledOwnerId, partnerOf, teamOfPlayer } from '../lib/teams';
 import type { PachisiClientState } from '../types';
 import { FINISH_PROGRESS, MAIN_PATH_STEPS } from '../types';
 import { PachisiStatusStrip } from './PachisiStatusStrip';
@@ -30,7 +31,8 @@ interface PachisiBoardProps {
   myTurn: boolean;
   actionBusy?: boolean;
   onRoll: () => void;
-  onMove: (tokenId: number) => void;
+  /** `ownerId` is set only when moving the partner's token (team mode). */
+  onMove: (tokenId: number, ownerId?: string) => void;
   onPassTurn?: () => void;
   highlightedCells?: { row: number; col: number }[];
 }
@@ -62,7 +64,7 @@ export function PachisiBoard({
   myTurn,
   actionBusy = false,
   onRoll,
-  onMove,
+  onMove: onMoveToken,
   onPassTurn,
   highlightedCells = [],
 }: PachisiBoardProps) {
@@ -121,12 +123,25 @@ export function PachisiBoard({
     prevPositions.current = curr;
   }, [snapshot, snapshot.playerOrder, snapshot.seats, snapshot.tokens]);
 
+  // Team mode: once all own tokens are home the viewer moves the partner's.
+  const partnerId = partnerOf(snapshot, currentUserId);
+  const controlledId = controlledOwnerId(snapshot, currentUserId);
+  const movingPartner = controlledId !== null && controlledId !== currentUserId;
+
   const movable = useMemo(
     () =>
-      canMove && currentUserId
-        ? movableTokenIds(snapshot.tokens[currentUserId], snapshot.die)
+      canMove && controlledId
+        ? movableTokenIds(snapshot.tokens[controlledId], snapshot.die)
         : new Set<number>(),
-    [canMove, currentUserId, snapshot.die, snapshot.tokens],
+    [canMove, controlledId, snapshot.die, snapshot.tokens],
+  );
+
+  const onMove = useCallback(
+    (tokenId: number) => {
+      if (movingPartner && controlledId) onMoveToken(tokenId, controlledId);
+      else onMoveToken(tokenId);
+    },
+    [onMoveToken, movingPartner, controlledId],
   );
 
   usePachisiKeyboardTurn({
@@ -159,12 +174,17 @@ export function PachisiBoard({
         if (token.progress < 0 || token.progress >= MAIN_PATH_STEPS) continue;
         const cell = absoluteCell(seat, token.progress);
         const list = map.get(cell) ?? [];
-        list.push({ ownerId: playerId, seat, token });
+        list.push({
+          ownerId: playerId,
+          seat,
+          token,
+          isPartner: playerId === partnerId,
+        });
         map.set(cell, list);
       }
     }
     return map;
-  }, [snapshot.playerOrder, snapshot.seats, snapshot.tokens]);
+  }, [snapshot.playerOrder, snapshot.seats, snapshot.tokens, partnerId]);
 
   const finishedCounts = useMemo(() => {
     const counts = new Map<string, number>();
@@ -195,6 +215,7 @@ export function PachisiBoard({
         canMove={canMove}
         canRoll={canRoll}
         currentUserId={currentUserId}
+        movingPartner={movingPartner}
         finishedCounts={finishedCounts}
         isGameOver={isGameOver}
         isLastRollNoMoves={isLastRollNoMoves}
@@ -221,8 +242,11 @@ export function PachisiBoard({
               key={`yard-${seat}`}
               seat={seat}
               ownerId={owner}
-              currentUserId={currentUserId}
+              currentUserId={controlledId}
               isActive={seat === activeSeat}
+              team={owner ? teamOfPlayer(snapshot, owner) : null}
+              isSelf={owner != null && owner === currentUserId}
+              isPartner={owner != null && owner === partnerId}
               tokens={ownerTokens}
               movable={movable}
               onMove={onMove}
@@ -257,7 +281,7 @@ export function PachisiBoard({
               {occupants.length > 0 && (
                 <PachisiTokenStack
                   cellKey={`${idx}`}
-                  currentUserId={currentUserId}
+                  currentUserId={controlledId}
                   canMove={canMove}
                   movable={movable}
                   onMove={onMove}
@@ -275,7 +299,12 @@ export function PachisiBoard({
             const occupants: PlacedToken[] = owner
               ? (snapshot.tokens[owner] ?? [])
                   .filter((tok) => tok.progress === MAIN_PATH_STEPS + laneIdx)
-                  .map((token) => ({ ownerId: owner, seat, token }))
+                  .map((token) => ({
+                    ownerId: owner,
+                    seat,
+                    token,
+                    isPartner: owner === partnerId,
+                  }))
               : [];
             return (
               <div
@@ -286,7 +315,7 @@ export function PachisiBoard({
                 {occupants.length > 0 && (
                   <PachisiTokenStack
                     cellKey={`lane-token-${seat}-${laneIdx}`}
-                    currentUserId={currentUserId}
+                    currentUserId={controlledId}
                     canMove={canMove}
                     movable={movable}
                     onMove={onMove}

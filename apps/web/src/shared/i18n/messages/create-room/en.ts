@@ -96,6 +96,10 @@ export const en = {
       title: 'Team mode',
       desc: 'Players are split into teams and win together.',
     },
+    teamsPachisi: {
+      title: 'Team play (2v2)',
+      desc: 'Four players, two teams. Partners sit opposite and win when all of their tokens are home. Needs exactly 4 players.',
+    },
     none: 'This game has no extra house rules.',
     comingSoon: 'Coming soon',
   },

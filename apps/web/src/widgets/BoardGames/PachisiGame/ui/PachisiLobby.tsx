@@ -80,6 +80,8 @@ export function PachisiLobby({
             roomId={room.id}
             userId={userId}
             isHost={isHost}
+            members={room.members ?? []}
+            maxPlayers={room.maxPlayers}
           />
         }
         onStartGame={withBotDifficulty(onStartGame)}

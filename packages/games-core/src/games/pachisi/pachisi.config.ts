@@ -12,10 +12,11 @@ export function validatePachisiConfig(
   }
   if (
     options.mode !== undefined &&
-    !MODES.includes(
-      options.mode as (typeof MODES)[number],
-    )
+    !MODES.includes(options.mode as (typeof MODES)[number])
   ) {
+    return false;
+  }
+  if (options.teams !== undefined && typeof options.teams !== 'boolean') {
     return false;
   }
   if (options.theme !== undefined && typeof options.theme !== 'string') {

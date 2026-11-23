@@ -46,6 +46,8 @@ const parsedArgs = {
   theme: null,
   format: null,
   seed: null,
+  feature: false,
+  length: null,
 };
 
 for (let i = 2; i < process.argv.length; i++) {
@@ -71,6 +73,12 @@ for (let i = 2; i < process.argv.length; i++) {
     parsedArgs.theme = process.argv[++i];
   } else if (process.argv[i] === '--format' && process.argv[i + 1]) {
     parsedArgs.format = process.argv[++i];
+  } else if (process.argv[i] === '--feature') {
+    // Weekly 2-3 min YouTube story. Explicit opt-in, never part of the daily pick.
+    parsedArgs.feature = true;
+    parsedArgs.shortOnly = true;
+  } else if (process.argv[i] === '--length' && process.argv[i + 1]) {
+    parsedArgs.length = process.argv[++i];
   } else if (process.argv[i] === '--seed' && process.argv[i + 1]) {
     parsedArgs.seed = Number(process.argv[++i]);
   }
@@ -3127,7 +3135,8 @@ async function publishBoth(
     return { skipped: true, reason: 'unapproved' };
   }
 
-  const results = { full: null, short: null };
+  const results = { full: null, short: null, shortPosts: [] };
+  const youtubeOnly = Boolean(options.youtubeOnly);
   const postedPlatforms = [];
   const failedPlatforms = [];
 
@@ -3158,6 +3167,7 @@ async function publishBoth(
         try {
           results.short = await postToYouTube(shortFile, caption);
           log('info', 'YouTube Short posted', results.short);
+          results.shortPosts.push({ platform: 'youtube', data: results.short });
           postedPlatforms.push('YouTube Shorts');
         } catch (err) {
           log('error', 'YouTube Short post failed', { error: err.message });
@@ -3168,10 +3178,11 @@ async function publishBoth(
         }
       }
 
-      if (CONFIG.postizInstagramId) {
+      if (CONFIG.postizInstagramId && !youtubeOnly) {
         try {
           const igResult = await postToInstagram(shortFile, caption);
           log('info', 'Instagram Reel posted', igResult);
+          results.shortPosts.push({ platform: 'instagram', data: igResult });
           postedPlatforms.push('Instagram Reels');
         } catch (err) {
           log('error', 'Instagram Reel post failed', { error: err.message });
@@ -3182,10 +3193,11 @@ async function publishBoth(
         }
       }
 
-      if (CONFIG.postizTiktokId) {
+      if (CONFIG.postizTiktokId && !youtubeOnly) {
         try {
           const ttResult = await postToTikTok(shortFile, caption);
           log('info', 'TikTok posted', ttResult);
+          results.shortPosts.push({ platform: 'tiktok', data: ttResult });
           postedPlatforms.push('TikTok');
         } catch (err) {
           log('error', 'TikTok post failed', { error: err.message });
@@ -3193,10 +3205,11 @@ async function publishBoth(
         }
       }
 
-      if (CONFIG.postizXId) {
+      if (CONFIG.postizXId && !youtubeOnly) {
         try {
           const xResult = await postToX(shortFile, caption);
           log('info', 'X/Twitter posted', xResult);
+          results.shortPosts.push({ platform: 'x', data: xResult });
           postedPlatforms.push('X/Twitter');
         } catch (err) {
           log('error', 'X/Twitter post failed', { error: err.message });
@@ -3360,6 +3373,7 @@ async function main() {
           targetTotalSec:
             (shortCapture.durationMs - shortCapture.sceneStartOffsetMs) / 1000 +
             (CONFIG.endCardDuration || 2.5),
+          lengthClass: scenario.lengthClass,
         };
       } else {
         shortCapture = await scenarioFlow.withRetry(
@@ -3367,7 +3381,7 @@ async function main() {
             recordSession(
               game,
               scenarioFlow.MOBILE_VIEWPORT,
-              30000, // 30s total - enough for navigation + real gameplay
+              scenarioFlow.recordMsFor(scenario), // 30s for short, longer for medium+
               'mobile',
               true,
               {
@@ -3381,6 +3395,13 @@ async function main() {
             ),
           { label: 'mobile recording', log },
         );
+      }
+      if (!prepared.html) {
+        // Live recording: medium/long/feature cut to the class target length.
+        shortOptions = {
+          targetTotalSec: scenarioFlow.targetTotalSec(scenario),
+          lengthClass: scenario.lengthClass,
+        };
       }
       shortOutputPath = await processShortClip(
         shortCapture.videoPath,
@@ -3405,10 +3426,21 @@ async function main() {
       if (shortOutputPath)
         log('info', 'Short clip saved to: ' + shortOutputPath);
     } else {
-      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name, {
-        voiceUnavailable,
+      const posted = await publishBoth(
+        fullOutputPath,
+        shortOutputPath,
+        caption,
+        game.name,
+        { voiceUnavailable, youtubeOnly: parsedArgs.feature },
+      );
+      await scenarioFlow.afterPublish({
+        scenario,
+        date,
+        posted,
+        shortPath: shortOutputPath,
+        voice: CONFIG.ttsVoice,
+        log,
       });
-      scenarioFlow.markPublished(scenario, date);
     }
 
     await cleanDirectory(CONFIG.rawCapturesDir);

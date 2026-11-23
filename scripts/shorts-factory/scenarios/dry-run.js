@@ -10,7 +10,14 @@
  *   node scripts/shorts-factory/scenarios/dry-run.js --game chess --format guess_the_move
  *   node scripts/shorts-factory/scenarios/dry-run.js --date 2026-12-01 --no-record
  *
- * Flags: --game --format --theme --date YYYY-MM-DD --out <dir> --no-record --json
+ *   node scripts/shorts-factory/scenarios/dry-run.js --format comeback --length long --no-record
+ *   node scripts/shorts-factory/scenarios/dry-run.js --feature --game chess --no-record
+ *
+ * Flags: --game --format --theme --length short|medium|long --feature
+ *        --date YYYY-MM-DD --out <dir> --no-record --json
+ * --length forces a length class the format supports (otherwise the picker
+ * rotates/randomizes it). --feature builds the weekly 2-3 min YouTube story
+ * (never generated unless asked).
  * Scene formats (puzzle, guess_the_move, replay formats) need only Playwright.
  * bot_match delegates to gameplay.js in --preview mode (needs the running app).
  */
@@ -39,6 +46,8 @@ async function main() {
     format: arg('format'),
     theme: arg('theme'),
     available,
+    feature: process.argv.includes('--feature'),
+    lengthClass: arg('length'),
   });
   const prepared = await prepareScenario(scenario);
   const final = prepared.scenario;
@@ -47,6 +56,14 @@ async function main() {
     format: final.format,
     game: final.game,
     theme: final.theme,
+    lengthClass: final.lengthClass,
+    durationSec: final.durationSec,
+    beats: (final.beats || []).map((b) => ({
+      id: b.id,
+      startSec: b.startSec,
+      endSec: b.endSec,
+      lines: b.lines.length,
+    })),
     hook: final.hook,
     voiceScript: final.voiceScript,
     dramaticMoment: final.dramaticMoment,
@@ -67,6 +84,11 @@ async function main() {
         final.game,
         '--theme',
         final.theme,
+        '--format',
+        final.format,
+        '--length',
+        final.lengthClass,
+        ...(process.argv.includes('--feature') ? ['--feature'] : []),
         '--seed',
         String(final.seed),
       ],

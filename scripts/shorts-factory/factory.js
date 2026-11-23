@@ -33,6 +33,7 @@ const axios = require('axios');
 const FormData = require('form-data');
 const { renderShort } = require('./render/pipeline');
 const { formatQaReport } = require('./render/qa');
+const { recordPosted } = require('./analytics/record-post');
 const { listLocalTracks } = require('./render/audio');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
@@ -3658,6 +3659,22 @@ async function main() {
         outputVideoPath,
         caption,
         render.metadata.platforms,
+      );
+
+      // Hand the Postiz post ids to analytics (manifest line only, no network).
+      recordPosted(
+        {
+          game: 'showcase',
+          scenario,
+          format: 'showcase',
+          hook: render.metadata.hook,
+          voice: render.metadata.voice,
+          cta: render.metadata.ctaVariant,
+          lengthClass: render.metadata.lengthClass,
+          durationSec: render.metadata.durationSec,
+          results: result.results,
+        },
+        { log: (m) => log('info', m) },
       );
 
       if (approval.pendingId) {

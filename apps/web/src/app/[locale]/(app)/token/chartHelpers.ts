@@ -61,7 +61,7 @@ const RANGE_CONFIG: Record<
 };
 
 export function formatPrice(n: number): string {
-  if (!Number.isFinite(n) || n === 0) return '—';
+  if (!Number.isFinite(n) || n === 0) return '-';
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(2)}K`;
   if (n >= 1) return `$${n.toFixed(4)}`;
@@ -72,12 +72,12 @@ export function formatPrice(n: number): string {
 
 export function formatPriceWithUsdc(n: number): string {
   const price = formatPrice(n);
-  if (price === '—') return price;
+  if (price === '-') return price;
   return `${price} (${n.toFixed(2)} USDC)`;
 }
 
 export function formatVolume(n: number): string {
-  if (!Number.isFinite(n) || n === 0) return '—';
+  if (!Number.isFinite(n) || n === 0) return '-';
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
   return `$${n.toFixed(0)}`;

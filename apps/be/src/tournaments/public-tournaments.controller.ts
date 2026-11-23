@@ -28,6 +28,10 @@ import type { PublicTournamentsListResponse } from './interfaces/tournament.inte
 
 import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
 import type { SeaBattleBlitzCupResponse } from './sea-battle-blitz/sea-battle-blitz.types';
+import { WeeklyCupsService } from './weekly-cups/weekly-cups.service';
+import { ParseWeeklyCupGamePipe } from './weekly-cups/parse-weekly-cup-game.pipe';
+import type { WeeklyCupGame } from './weekly-cups/weekly-cups.config';
+import type { WeeklyCupResponse } from './weekly-cups/weekly-cups.types';
 
 interface RequestWithUser {
   user?: AuthenticatedUser | null;
@@ -66,6 +70,7 @@ export class PublicTournamentsController {
     private readonly service: TournamentsService,
     private readonly bracketsService: TournamentsBracketsService,
     private readonly blitzService: SeaBattleBlitzService,
+    private readonly weeklyCups: WeeklyCupsService,
   ) {}
 
   @Get()
@@ -105,6 +110,29 @@ export class PublicTournamentsController {
       'public, max-age=15, stale-while-revalidate=60',
     );
     return this.blitzService.getSeaBattleBlitzCup(
+      locale,
+      isAuthenticated,
+      isAuthenticated ? req.user?.userId : undefined,
+    );
+  }
+
+  @Get('weekly-cups/:game')
+  @UseGuards(JwtOptionalAuthGuard)
+  async getWeeklyCup(
+    @Param('game', ParseWeeklyCupGamePipe) game: WeeklyCupGame,
+    @Query() query: ListPublicTournamentsDto,
+    @Headers('accept-language') acceptLanguage: string | undefined,
+    @Req() req: RequestWithUser,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<WeeklyCupResponse> {
+    const locale = query.locale ?? pickLocaleFromHeader(acceptLanguage);
+    const isAuthenticated = isAuthenticatedUser(req.user);
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=15, stale-while-revalidate=60',
+    );
+    return this.weeklyCups.getCup(
+      game,
       locale,
       isAuthenticated,
       isAuthenticated ? req.user?.userId : undefined,

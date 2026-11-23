@@ -67,7 +67,7 @@ export default function PaymentCancelPageContent() {
               style={{ fontSize: '1rem', lineHeight: '1.6' }}
             >
               {t('payments.cancelPage.message') ||
-                "No worries! No charges were made to your account. You can always try again when you're ready—we'll be here."}
+                "No worries! No charges were made to your account. You can always try again when you're ready, we'll be here."}
             </span>
           </div>
 

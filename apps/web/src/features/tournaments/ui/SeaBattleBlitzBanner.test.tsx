@@ -17,11 +17,15 @@ vi.mock('@/entities/session/store/sessionStore', () => ({
     selector(mockSessionState),
 }));
 
+const mockUseWeeklyCup = vi.fn();
 const mockMutateAsync = vi.fn().mockResolvedValue({ ok: true });
 const mockUnregisterAsync = vi.fn().mockResolvedValue(undefined);
 
 vi.mock('../hooks', () => ({
-  useSeaBattleBlitzCup: () => ({ data: null }),
+  useWeeklyCup: (game: string) => {
+    mockUseWeeklyCup(game);
+    return { data: null };
+  },
   useRegisterTournament: () => ({
     mutateAsync: mockMutateAsync,
     isPending: false,
@@ -195,5 +199,62 @@ describe('SeaBattleBlitzBanner', () => {
     fireEvent.click(viewBracketBtn);
 
     expect(screen.getByTestId('sea-battle-blitz-modal')).toBeDefined();
+  });
+
+  it('defaults to the sea battle cup and keeps its test ids', () => {
+    render(<SeaBattleBlitzBanner initialData={makeBlitzData()} />);
+    expect(mockUseWeeklyCup).toHaveBeenCalledWith('sea-battle');
+  });
+
+  describe('checkers weekly cup', () => {
+    const checkersData = () =>
+      makeBlitzData({
+        id: 'checkers-cup-1',
+        gameType: 'checkers_v1',
+        name: 'Checkers Weekly Cup',
+        prizeDescription: '400 Coins + Crown Trophy',
+      });
+
+    it('requests the checkers cup and uses game specific test ids and icons', () => {
+      render(
+        <SeaBattleBlitzBanner game="checkers" initialData={checkersData()} />,
+      );
+      expect(mockUseWeeklyCup).toHaveBeenCalledWith('checkers');
+      expect(screen.getByTestId('checkers-weekly-cup-banner')).toBeDefined();
+      expect(screen.queryByTestId('sea-battle-blitz-banner')).toBeNull();
+      expect(screen.getByTestId('blitz-cup-title').textContent).toBe(
+        'Checkers Weekly Cup',
+      );
+      expect(screen.getByText('400 Coins + Crown Trophy')).toBeDefined();
+      expect(screen.getByText('♟️')).toBeDefined();
+      expect(screen.queryByText('⚓')).toBeNull();
+    });
+
+    it('registers for the checkers cup when authenticated', () => {
+      mockSessionState.snapshot = { accessToken: 't', userId: 'usr-1' };
+      render(
+        <SeaBattleBlitzBanner game="checkers" initialData={checkersData()} />,
+      );
+      fireEvent.click(screen.getByTestId('blitz-cup-register-button'));
+      expect(mockMutateAsync).toHaveBeenCalledWith({ id: 'checkers-cup-1' });
+    });
+
+    it('opens the checkers modal with its own test id', () => {
+      render(
+        <SeaBattleBlitzBanner game="checkers" initialData={checkersData()} />,
+      );
+      fireEvent.click(screen.getByTestId('blitz-cup-view-bracket'));
+      expect(screen.getByTestId('checkers-weekly-cup-modal')).toBeDefined();
+      expect(screen.queryByTestId('sea-battle-blitz-modal')).toBeNull();
+    });
+
+    it('hides the banner when the checkers cup is disabled', () => {
+      const data = checkersData();
+      data.enabled = false;
+      const { container } = render(
+        <SeaBattleBlitzBanner game="checkers" initialData={data} />,
+      );
+      expect(container.firstChild).toBeNull();
+    });
   });
 });

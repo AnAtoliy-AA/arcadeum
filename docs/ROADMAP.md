@@ -2047,5 +2047,5 @@ The platform core infrastructure is highly mature. Phases 1-13 are complete or a
 ### Remaining Priorities & Next Steps
 
 1. **Mobile Games Port Continuation (4P - ARC-902)**: Native Expo screens for Chess and Checkers.
-2. **Weekly Scheduled Tournament Cups Expansion**: Extending automated bracket tournament mechanics from Sea Battle Blitz Cups to Checkers and Connect Four.
+2. **Weekly Scheduled Tournament Cups Expansion** (**Partially implemented**): The Sea Battle blitz cup service was generalized into a shared, game-parameterized `WeeklyCupsService` (`apps/be/src/tournaments/weekly-cups/`) with a registry, one cron for all games, generic `GET /tournaments/weekly-cups/:game` and admin `weekly-cups/:game/status|toggle` routes, and a reusable `WeeklyCupBanner` on landing pages. Checkers is live (Sunday 18:00 UTC, `checkers_v1`). **Remaining**: Connect Four, which does not exist as a game yet (`cascade_v1` is a card game); once it ships, add one registry entry, a `TournamentGameType`, and one banner on its landing page.
 3. **Board Game Creator (4O)**: Visual board game editor (deferred until community scale).

@@ -142,6 +142,9 @@ export const byMessages = {
       addFriend: 'Дадаць сябра',
       friendAdded: 'Запыт адпраўлены',
     },
+    lobbyRefreshRoom: 'Абнавіць пакой',
+    lobbyWaiting: 'Чаканне...',
+    lobbyModeLabel: 'Рэжым',
     deleteRoom: {
       button: 'Выдаліць залу',
       confirmTitle: 'Выдаліць залу',
@@ -197,6 +200,16 @@ export const byMessages = {
       loss: 'Паражэнне',
       draw: 'Нічыя',
       viewReplay: 'Глядзець паўтор',
+      level: 'Узр. {{level}}',
+      xp: 'Досвед: {{xp}}',
+      joined: 'З намі з {{date}}',
+      you: 'Вы',
+      loadError: 'Не ўдалося загрузіць профіль',
+      loadErrorHint: 'Праверце злучэнне і паспрабуйце яшчэ раз.',
+      retry: 'Паўтарыць',
+      loading: 'Загрузка профілю...',
+      statsEmpty: 'Пакуль няма статыстыкі. Згуляйце некалькі матчаў.',
+      opponent: 'Супернік',
     },
   },
   create: createBy,
@@ -458,6 +471,22 @@ export const byMessages = {
     },
   },
   landing: {
+    academyKicker: 'Вучымся на практыцы',
+    academyTitle: 'Акадэмія Arcadeum: інтэрактыўныя задачы',
+    academySubtitle:
+      'Рашайце хуткія тактычныя задачы проста ў браўзеры. Акаўнт не патрэбны.',
+    academyPuzzle: 'Задача {{n}}',
+    academyTabsLabel: 'Выбар задачы',
+    academyTttTitle1: 'Задача 1: выйгрышная відэлка',
+    academyTttPrompt1:
+      'Гуляйце за X: знайдзіце клетку, якая адразу стварае дзве выйгрышныя лініі.',
+    academyTttExplanation1:
+      'Верхні правы кут стварае падвойную пагрозу па радку 1 і слупку 3.',
+    academyTttTitle2: 'Задача 2: абарона ад пасткі ў цэнтры',
+    academyTttPrompt2:
+      'O заняў цэнтр, вы занялі кут, O заняў супрацьлеглы кут. Заблакуйце дыяганальную пагрозу.',
+    academyTttExplanation2:
+      'Ход на бакавую клетку не дае O пабудаваць відэлку.',
     previewLabel: 'Жывое прадпрагляд',
     cycleHint: 'Націсніце, каб змяніць тэму',
     cycleAriaLabel: 'Змяніць тэму прадпрагляду, зараз {{variant}}',

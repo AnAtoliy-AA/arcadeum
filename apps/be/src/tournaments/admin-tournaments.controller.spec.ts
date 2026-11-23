@@ -11,6 +11,7 @@ import { AdminTournamentsController } from './admin-tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 import { TournamentsBracketsService } from './tournaments.brackets.service';
 import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
+import { WeeklyCupsService } from './weekly-cups/weekly-cups.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { User } from '../auth/schemas/user.schema';
@@ -55,6 +56,7 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
     isBlitzCupEnabled: jest.Mock;
     setBlitzCupEnabled: jest.Mock;
   };
+  const weeklyCups = { getConfig: jest.fn(), updateConfig: jest.fn() };
 
   const tournamentId = new Types.ObjectId().toHexString();
   const winnerId = new Types.ObjectId().toHexString();
@@ -90,6 +92,7 @@ describe('AdminTournamentsController — complete endpoint (Task 11)', () => {
         { provide: TournamentsService, useValue: service },
         { provide: TournamentsBracketsService, useValue: bracketsService },
         { provide: SeaBattleBlitzService, useValue: blitzService },
+        { provide: WeeklyCupsService, useValue: weeklyCups },
         { provide: getModelToken(User.name), useValue: userModel },
       ],
     })
@@ -163,6 +166,7 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
     isBlitzCupEnabled: jest.Mock;
     setBlitzCupEnabled: jest.Mock;
   };
+  const weeklyCups = { getConfig: jest.fn(), updateConfig: jest.fn() };
 
   const tournamentId = new Types.ObjectId().toHexString();
   const winnerId = new Types.ObjectId().toHexString();
@@ -196,6 +200,7 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
         { provide: TournamentsService, useValue: { markComplete: jest.fn() } },
         { provide: TournamentsBracketsService, useValue: bracketsService },
         { provide: SeaBattleBlitzService, useValue: blitzService },
+        { provide: WeeklyCupsService, useValue: weeklyCups },
         { provide: getModelToken(User.name), useValue: userModel },
       ],
     })
@@ -335,6 +340,48 @@ describe('AdminTournamentsController — bracket endpoints (ARC-926)', () => {
       await request(app.getHttpServer())
         .post('/admin/tournaments/sea-battle-blitz/toggle')
         .send({ enabled: 'invalid' })
+        .expect(400);
+    });
+  });
+
+  describe('weekly-cups/:game', () => {
+    it('GET status returns config for a valid game', async () => {
+      const config = {
+        enabled: true,
+        prizePoolCoins: 400,
+        prizeDescription: '400 Coins + Crown Trophy',
+      };
+      weeklyCups.getConfig.mockResolvedValue(config);
+      const res = await request(app.getHttpServer())
+        .get('/admin/tournaments/weekly-cups/checkers/status')
+        .expect(200);
+      expect(res.body).toEqual(config);
+      expect(weeklyCups.getConfig).toHaveBeenCalledWith('checkers');
+    });
+
+    it('GET status rejects an unknown game with 400', async () => {
+      await request(app.getHttpServer())
+        .get('/admin/tournaments/weekly-cups/chess/status')
+        .expect(400);
+    });
+
+    it('POST toggle validates the DTO and forwards the admin id', async () => {
+      weeklyCups.updateConfig.mockResolvedValue({ ok: true, enabled: false });
+      await request(app.getHttpServer())
+        .post('/admin/tournaments/weekly-cups/checkers/toggle')
+        .send({ enabled: false, prizePoolCoins: 250 })
+        .expect(201);
+      expect(weeklyCups.updateConfig).toHaveBeenCalledWith(
+        'checkers',
+        { enabled: false, prizePoolCoins: 250 },
+        mockAdminId,
+      );
+    });
+
+    it('POST toggle rejects invalid payloads with 400', async () => {
+      await request(app.getHttpServer())
+        .post('/admin/tournaments/weekly-cups/checkers/toggle')
+        .send({ prizePoolCoins: -5 })
         .expect(400);
     });
   });

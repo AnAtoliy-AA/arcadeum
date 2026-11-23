@@ -7,11 +7,11 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { useLanguage } from '@/shared/i18n';
 import { useSessionStore } from '@/entities/session/store/sessionStore';
 import {
-  useSeaBattleBlitzCup,
+  useWeeklyCup,
   useRegisterTournament,
   useUnregisterTournament,
 } from '../hooks';
-import type { SeaBattleBlitzCupResponse } from '../api';
+import type { SeaBattleBlitzCupResponse, WeeklyCupGame } from '../api';
 import { SeaBattleBlitzModal } from './SeaBattleBlitzModal';
 
 export interface SeaBattleBlitzBannerLabels {
@@ -56,6 +56,10 @@ export interface SeaBattleBlitzBannerLabels {
   intelRewardsDesc: string;
   fullPageView: string;
   closeModal: string;
+  /** Decorative emoji, not translated. */
+  iconFormat: string;
+  iconRoster: string;
+  iconIntel: string;
 }
 
 export const DEFAULT_BLITZ_BANNER_LABELS: SeaBattleBlitzBannerLabels = {
@@ -104,15 +108,40 @@ export const DEFAULT_BLITZ_BANNER_LABELS: SeaBattleBlitzBannerLabels = {
     'Tournament Winner receives 500 Coins, the coveted Admiral Trophy, and a top placement on the Sea Battle leaderboard.',
   fullPageView: 'Open Tournament Page',
   closeModal: 'Close',
+  iconFormat: '⚓',
+  iconRoster: '⚓',
+  iconIntel: '🚢',
+};
+
+/** Per-game decorative icons (copy comes from i18n overrides). */
+const GAME_ICONS: Record<
+  WeeklyCupGame,
+  Pick<SeaBattleBlitzBannerLabels, 'iconFormat' | 'iconRoster' | 'iconIntel'>
+> = {
+  'sea-battle': { iconFormat: '⚓', iconRoster: '⚓', iconIntel: '🚢' },
+  checkers: { iconFormat: '♟️', iconRoster: '♟️', iconIntel: '👑' },
+};
+
+export const WEEKLY_CUP_BANNER_TEST_IDS: Record<WeeklyCupGame, string> = {
+  'sea-battle': 'sea-battle-blitz-banner',
+  checkers: 'checkers-weekly-cup-banner',
+};
+
+export const WEEKLY_CUP_MODAL_TEST_IDS: Record<WeeklyCupGame, string> = {
+  'sea-battle': 'sea-battle-blitz-modal',
+  checkers: 'checkers-weekly-cup-modal',
 };
 
 export interface SeaBattleBlitzBannerProps {
+  /** Which weekly cup to show. Defaults to Sea Battle. */
+  game?: WeeklyCupGame;
   initialData?: SeaBattleBlitzCupResponse | null;
   labels?: Partial<SeaBattleBlitzBannerLabels>;
   className?: string;
 }
 
 export function SeaBattleBlitzBanner({
+  game = 'sea-battle',
   initialData,
   labels,
   className,
@@ -120,10 +149,18 @@ export function SeaBattleBlitzBanner({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { locale, messages } = useLanguage();
   const tournamentsMessages = messages?.pages?.tournaments as
-    { blitzBanner?: Partial<SeaBattleBlitzBannerLabels> } | undefined;
+    | {
+        blitzBanner?: Partial<SeaBattleBlitzBannerLabels>;
+        weeklyCups?: Partial<
+          Record<WeeklyCupGame, Partial<SeaBattleBlitzBannerLabels>>
+        >;
+      }
+    | undefined;
   const t: SeaBattleBlitzBannerLabels = {
     ...DEFAULT_BLITZ_BANNER_LABELS,
+    ...GAME_ICONS[game],
     ...(tournamentsMessages?.blitzBanner ?? {}),
+    ...(tournamentsMessages?.weeklyCups?.[game] ?? {}),
     ...(labels ?? {}),
   };
   const session = useSessionStore((s) => s.snapshot);
@@ -132,7 +169,7 @@ export function SeaBattleBlitzBanner({
     !!session.userId &&
     !session.userId.startsWith('anon_');
 
-  const { data } = useSeaBattleBlitzCup();
+  const { data } = useWeeklyCup(game);
   const blitzData = data ?? initialData;
 
   const registerMutation = useRegisterTournament();
@@ -163,7 +200,7 @@ export function SeaBattleBlitzBanner({
   return (
     <>
       <section
-        data-testid="sea-battle-blitz-banner"
+        data-testid={WEEKLY_CUP_BANNER_TEST_IDS[game]}
         aria-label={t.ariaLabel}
         className={cx(
           'relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-slate-900/80 p-5 backdrop-blur-md md:p-6 mb-8 shadow-xl shadow-cyan-950/20',
@@ -243,7 +280,7 @@ export function SeaBattleBlitzBanner({
                 </span>
               </span>
               <span className="flex items-center gap-1.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20 px-2.5 py-1 text-cyan-300">
-                <span>⚓</span>
+                <span>{t.iconFormat}</span>
                 <span>
                   {t.formatDetails.replace(
                     '{count}',
@@ -284,7 +321,7 @@ export function SeaBattleBlitzBanner({
                       >
                         {c.displayName
                           ? c.displayName.slice(0, 1).toUpperCase()
-                          : '⚓'}
+                          : t.iconRoster}
                       </span>
                     ))}
                   </div>
@@ -380,6 +417,7 @@ export function SeaBattleBlitzBanner({
       </section>
 
       <SeaBattleBlitzModal
+        testId={WEEKLY_CUP_MODAL_TEST_IDS[game]}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         tournament={tournament}
@@ -396,3 +434,6 @@ export function SeaBattleBlitzBanner({
     </>
   );
 }
+
+/** Game-neutral name for the shared weekly cup banner. */
+export const WeeklyCupBanner = SeaBattleBlitzBanner;

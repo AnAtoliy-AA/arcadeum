@@ -24,68 +24,69 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.31.26] - 2026-11-23
 
 ### Added
-- add analytics feedback loop with post history, scoring and format weights
 
+- add analytics feedback loop with post history, scoring and format weights
 
 ## [1.31.25] - 2026-11-23
 
 ### Fixed
-- refresh expired auth server-side for actions and SSR
 
+- refresh expired auth server-side for actions and SSR
 
 ## [1.31.24] - 2026-11-23
 
 ### Added
-- UX polish - hints, a11y, animations, layout, sounds hook
 
+- UX polish - hints, a11y, animations, layout, sounds hook
 
 ## [1.31.23] - 2026-11-23
 
 ### Added
-- add 2v2 team play
 
+- add 2v2 team play
 
 ## [1.31.22] - 2026-11-23
 
 ### Fixed
-- allow adding a 4th player (multiple bots, auto-size rooms)
 
+- allow adding a 4th player (multiple bots, auto-size rooms)
 
 ## [1.31.21] - 2026-11-23
 
 ### Fixed
-- award XP on live game completion and harden XP logic
 
+- award XP on live game completion and harden XP logic
 
 ## [1.31.20] - 2026-11-23
 
 ### Added
+
 - add checkers weekly cup banner, i18n and e2e
 - modern UI for profile page and landing extras
 - generalize blitz cups into shared weekly cups service
 
 ### Fixed
+
 - i18n remaining lobby strings, forward aria-pressed in BotCountButton, add lobby tests
 - remove em dashes from user-facing text and add lobby a11y labels
-
 
 ## [1.31.19] - 2026-11-23
 
 ### Fixed
-- send client session token when claiming daily reward
 
+- send client session token when claiming daily reward
 
 ## [1.31.18] - 2026-11-23
 
 ### Added
-- modern UI for game landings, rooms and room lobbies
 
+- modern UI for game landings, rooms and room lobbies
 
 ## [1.31.17] - 2026-11-23
 
 ### Fixed
-- keep persisted session identity until the cookie restore lands
 
+- keep persisted session identity until the cookie restore lands
 
 ## [1.31.16] - 2026-11-22
 

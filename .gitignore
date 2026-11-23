@@ -58,3 +58,6 @@ raw_captures/
 apps/be/bin/stockfish
 apps/web/.lighthouseci/
 scripts/data/
+
+# Shorts scenario variety history (local state)
+scripts/shorts-factory/.state/

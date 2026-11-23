@@ -46,6 +46,8 @@ export const adminTournamentsRu = {
   gameType: {
     critical_v1: 'Critical',
     sea_battle_v1: 'Морской бой',
+    chess_v1: 'Шахматы',
+    checkers_v1: 'Шашки',
   },
   form: {
     sections: { settings: 'Настройки', content: 'Содержимое' },

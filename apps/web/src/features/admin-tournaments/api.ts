@@ -2,7 +2,8 @@ import { apiClient } from '@/shared/lib/api-client';
 
 export type TournamentStatus =
   'scheduled' | 'registration_open' | 'live' | 'completed' | 'cancelled';
-export type TournamentGameType = 'critical_v1' | 'sea_battle_v1';
+export type TournamentGameType =
+  'critical_v1' | 'sea_battle_v1' | 'chess_v1' | 'checkers_v1';
 export type TournamentLocale = 'en' | 'ru' | 'es' | 'fr' | 'by';
 export type AdminTournamentStatusFilter = 'all' | TournamentStatus;
 
@@ -16,6 +17,8 @@ export const TOURNAMENT_STATUSES: readonly TournamentStatus[] = [
 export const TOURNAMENT_GAME_TYPES: readonly TournamentGameType[] = [
   'critical_v1',
   'sea_battle_v1',
+  'chess_v1',
+  'checkers_v1',
 ] as const;
 export const TOURNAMENT_LOCALES: readonly TournamentLocale[] = [
   'en',

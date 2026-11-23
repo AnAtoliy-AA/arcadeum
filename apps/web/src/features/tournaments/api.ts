@@ -73,6 +73,25 @@ export interface SeaBattleBlitzCupResponse {
   captains?: SeaBattleBlitzCaptain[];
 }
 
+/** Games that run an automated weekly bracket cup (mirrors the BE registry). */
+export type WeeklyCupGame = 'sea-battle' | 'checkers';
+
+export type WeeklyCupResponse = SeaBattleBlitzCupResponse;
+
+export async function fetchWeeklyCup(
+  game: WeeklyCupGame,
+  opts: FetchPublicTournamentsOptions,
+): Promise<WeeklyCupResponse> {
+  const qs = new URLSearchParams();
+  if (opts.locale) qs.set('locale', opts.locale);
+  const s = qs.toString();
+  const base = `/tournaments/weekly-cups/${encodeURIComponent(game)}`;
+  return apiClient.get<WeeklyCupResponse>(
+    s ? `${base}?${s}` : base,
+    opts.accessToken ? { token: opts.accessToken } : undefined,
+  );
+}
+
 export async function fetchSeaBattleBlitzCup(
   opts: FetchPublicTournamentsOptions,
 ): Promise<SeaBattleBlitzCupResponse> {

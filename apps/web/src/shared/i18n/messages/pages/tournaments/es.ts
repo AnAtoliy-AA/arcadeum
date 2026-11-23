@@ -129,4 +129,33 @@ export const tournamentsEs: TournamentsI18n = {
     fullPageView: 'Abrir Página del Torneo',
     closeModal: 'Cerrar',
   },
+  weeklyCups: {
+    checkers: {
+      ariaLabel: 'Copa Semanal de Damas',
+      kicker: 'Campeonato semanal de damas',
+      formatDetails: '{count} jugadores • Eliminación directa',
+      captainsReady: 'Jugadores listos',
+      battleStatus: 'Estado de las partidas',
+      signInNotice: 'Inicia sesión para entrar en la Copa Semanal',
+      leaveCup: 'Salir de la Copa',
+      registerCup: 'Inscribirse en la Copa',
+      modalTitle: 'Copa Semanal de Damas',
+      bracketPendingDesc:
+        'El cuadro se sorteará automáticamente al cerrar las inscripciones. Las partidas empiezan a la hora programada.',
+      rosterTitle: 'Jugadores inscritos',
+      rosterSubtitle: '{count} de {max} plazas ocupadas',
+      rosterYou: 'Tu plaza',
+      rosterEmpty: 'Aún no hay jugadores inscritos. ¡Sé el primero!',
+      intelFormatDesc:
+        'Damas con eliminación directa. Gana tu partida para avanzar en el cuadro hasta la gran final.',
+      intelFleet: 'Tablero y reglas',
+      intelFleetDesc:
+        'Reglas clásicas de Damas en el tablero estándar, igual que en una partida clasificatoria normal.',
+      intelClock: 'Reloj de jugada',
+      intelClockDesc:
+        'Las partidas se juegan con temporizador de jugada, así que vigila el reloj.',
+      intelRewardsDesc:
+        'El ganador de la Copa recibe 400 monedas, el Trofeo Corona y un puesto destacado en la clasificación de Damas.',
+    },
+  },
 };

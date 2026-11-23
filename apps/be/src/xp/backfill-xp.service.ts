@@ -3,19 +3,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import { PlayerStats } from '../games/schemas/player-stats.schema';
-import { levelFromXp } from './lib/xp-level';
+import { levelFromXp, xpForResult } from './lib/xp-level';
+import type { XpSettingsValues } from './lib/xp-level';
+import { XpSettingsService } from './xp-settings.service';
 import { grantLevelBadges } from './lib/level-rewards';
 import {
   UserInventoryItem,
   type UserInventoryItemDocument,
 } from '../shop/schemas/user-inventory-item.schema';
 
-const XP_PER_WIN = 100;
-const XP_PER_LOSS = 40;
-const XP_PER_DRAW = 60;
-
 interface AggregatedStats {
-  _id: string;
+  _id: { userId: string; gameId: string };
   totalWins: number;
   totalLosses: number;
   totalDraws: number;
@@ -40,6 +38,7 @@ export class BackfillXpService {
     private readonly playerStatsModel: Model<PlayerStats>,
     @InjectModel(UserInventoryItem.name)
     private readonly inventoryModel: Model<UserInventoryItemDocument>,
+    private readonly xpSettings: XpSettingsService,
   ) {}
 
   async backfill(dryRun = false): Promise<{
@@ -51,7 +50,7 @@ export class BackfillXpService {
       .aggregate<AggregatedStats>([
         {
           $group: {
-            _id: '$userId',
+            _id: { userId: '$userId', gameId: '$gameId' },
             totalWins: { $sum: '$wins' },
             totalLosses: { $sum: '$losses' },
             totalDraws: { $sum: '$draws' },
@@ -60,21 +59,32 @@ export class BackfillXpService {
       ])
       .exec();
 
-    this.logger.log(
-      `Found ${stats.length} users with game stats${dryRun ? ' (dry run)' : ''}`,
-    );
-
     const results: BackfillResult[] = [];
     let affected = 0;
     let skipped = 0;
 
+    // Sum per user using the admin-configured rewards of each game (PvP rate).
+    const perUser = new Map<string, number>();
+    const settingsByGame = new Map<string, XpSettingsValues>();
     for (const s of stats) {
-      const userId = s._id;
-      const calculatedXp =
-        s.totalWins * XP_PER_WIN +
-        s.totalLosses * XP_PER_LOSS +
-        s.totalDraws * XP_PER_DRAW;
+      const { userId, gameId } = s._id;
+      let settings = settingsByGame.get(gameId);
+      if (!settings) {
+        settings = await this.xpSettings.getSettings(gameId);
+        settingsByGame.set(gameId, settings);
+      }
+      const xp =
+        s.totalWins * xpForResult('won', settings, false, false) +
+        s.totalLosses * xpForResult('lost', settings, false, false) +
+        s.totalDraws * xpForResult('draw', settings, false, false);
+      perUser.set(userId, (perUser.get(userId) ?? 0) + xp);
+    }
 
+    this.logger.log(
+      `Found ${perUser.size} users with game stats${dryRun ? ' (dry run)' : ''}`,
+    );
+
+    for (const [userId, calculatedXp] of perUser) {
       if (calculatedXp === 0) {
         skipped++;
         continue;
@@ -100,9 +110,11 @@ export class BackfillXpService {
       }
 
       if (!dryRun) {
+        // $inc by the delta (not $set) so XP awarded concurrently by a live
+        // game between the read above and this write is preserved.
         await this.userModel.findOneAndUpdate(
           { _id: userId },
-          { $set: { xp: calculatedXp } },
+          { $inc: { xp: calculatedXp - previousXp } },
         );
 
         const level = levelFromXp(calculatedXp);

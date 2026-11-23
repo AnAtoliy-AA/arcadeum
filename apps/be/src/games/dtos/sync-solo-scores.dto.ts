@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-const SOLO_RESULT_VALUES = ['won', 'lost'] as const;
+const SOLO_RESULT_VALUES = ['won', 'lost', 'draw'] as const;
 type SoloResultValue = (typeof SOLO_RESULT_VALUES)[number];
 
 export class SyncSoloScoreRecordDto {

@@ -9,6 +9,7 @@ import {
   levelFromXp as computeLevelFromXp,
   xpProgress as computeXpProgress,
 } from './lib/xp-level';
+import { User, type UserDocument } from '../auth/schemas/user.schema';
 import { grantLevelBadges } from './lib/level-rewards';
 import {
   UserInventoryItem,
@@ -24,17 +25,19 @@ export class XpSettingsService {
   constructor(
     @InjectModel(XpSettings.name)
     private readonly settingsModel: Model<XpSettingsDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     @Optional()
     @InjectModel(UserInventoryItem.name)
     private readonly inventoryModel?: Model<UserInventoryItemDocument>,
   ) {}
 
   async getSettings(gameId?: string): Promise<XpSettingsValues> {
-    const global = await this.loadScope(GLOBAL_SCOPE);
+    const global = await this.loadRaw(GLOBAL_SCOPE);
     if (!gameId || gameId === GLOBAL_SCOPE) {
-      return global;
+      return this.mergeSettings(global);
     }
-    const game = await this.loadScope(gameId);
+    const game = await this.loadRaw(gameId);
     return this.mergeSettings(global, game);
   }
 
@@ -48,23 +51,29 @@ export class XpSettingsService {
     return computeXpForResult(result, settings, isSolo, hasBots);
   }
 
-  async awardXp(
-    userId: string,
-    userModel: Model<unknown>,
-    amount: number,
-  ): Promise<void> {
-    if (amount <= 0) return;
-    const updated = await (
-      userModel as unknown as Model<{ xp?: number }>
-    ).findOneAndUpdate(
-      { _id: userId },
-      { $inc: { xp: amount } },
-      { new: true, projection: { xp: 1 } },
-    );
-    if (updated?.xp && this.inventoryModel) {
-      const level = computeLevelFromXp(updated.xp);
+  /**
+   * Atomically add XP to a user (default connection, same DB the profile API
+   * reads from). Throws when the user does not exist so failures are visible
+   * to callers instead of silently no-op'ing.
+   */
+  async awardXp(userId: string, amount: number): Promise<number> {
+    if (!Number.isFinite(amount) || amount <= 0) return 0;
+    const updated = await this.userModel
+      .findOneAndUpdate(
+        { _id: userId },
+        { $inc: { xp: amount } },
+        { new: true, projection: { xp: 1 } },
+      )
+      .lean<{ xp?: number } | null>();
+    if (!updated) {
+      throw new Error(`XP award failed: user ${userId} not found`);
+    }
+    const total = updated.xp ?? 0;
+    if (total > 0 && this.inventoryModel) {
+      const level = computeLevelFromXp(total);
       await grantLevelBadges(userId, level, this.inventoryModel);
     }
+    return total;
   }
 
   async listAll(): Promise<
@@ -126,38 +135,39 @@ export class XpSettingsService {
     return computeXpProgress(xp);
   }
 
-  private async loadScope(scope: string): Promise<XpSettingsValues> {
+  /** Raw stored overrides for a scope (only fields that were explicitly set). */
+  private async loadRaw(scope: string): Promise<Partial<XpSettingsValues>> {
     const doc = await this.settingsModel
       .findOne({ scope })
       .lean<XpSettingsDocument | null>();
-    if (!doc) {
-      return {
-        winXp: DEFAULT_XP.WIN,
-        lossXp: DEFAULT_XP.LOSS,
-        drawXp: DEFAULT_XP.DRAW,
-        soloCoefficient: DEFAULT_XP.SOLO_COEFF,
-        botCoefficient: DEFAULT_XP.BOT_COEFF,
-      };
-    }
-    return {
-      winXp: doc.winXp ?? DEFAULT_XP.WIN,
-      lossXp: doc.lossXp ?? DEFAULT_XP.LOSS,
-      drawXp: doc.drawXp ?? DEFAULT_XP.DRAW,
-      soloCoefficient: doc.soloCoefficient ?? DEFAULT_XP.SOLO_COEFF,
-      botCoefficient: doc.botCoefficient ?? DEFAULT_XP.BOT_COEFF,
-    };
+    if (!doc) return {};
+    const raw: Partial<XpSettingsValues> = {};
+    if (doc.winXp != null) raw.winXp = doc.winXp;
+    if (doc.lossXp != null) raw.lossXp = doc.lossXp;
+    if (doc.drawXp != null) raw.drawXp = doc.drawXp;
+    if (doc.soloCoefficient != null) raw.soloCoefficient = doc.soloCoefficient;
+    if (doc.botCoefficient != null) raw.botCoefficient = doc.botCoefficient;
+    return raw;
   }
 
+  /** Precedence: built-in defaults < global scope < per-game scope. A stored 0 is respected. */
   private mergeSettings(
-    global: XpSettingsValues,
-    override: XpSettingsValues,
+    ...layers: Array<Partial<XpSettingsValues>>
   ): XpSettingsValues {
-    return {
-      winXp: override.winXp || global.winXp,
-      lossXp: override.lossXp || global.lossXp,
-      drawXp: override.drawXp || global.drawXp,
-      soloCoefficient: override.soloCoefficient || global.soloCoefficient,
-      botCoefficient: override.botCoefficient || global.botCoefficient,
+    const merged: XpSettingsValues = {
+      winXp: DEFAULT_XP.WIN,
+      lossXp: DEFAULT_XP.LOSS,
+      drawXp: DEFAULT_XP.DRAW,
+      soloCoefficient: DEFAULT_XP.SOLO_COEFF,
+      botCoefficient: DEFAULT_XP.BOT_COEFF,
     };
+    for (const layer of layers) {
+      merged.winXp = layer.winXp ?? merged.winXp;
+      merged.lossXp = layer.lossXp ?? merged.lossXp;
+      merged.drawXp = layer.drawXp ?? merged.drawXp;
+      merged.soloCoefficient = layer.soloCoefficient ?? merged.soloCoefficient;
+      merged.botCoefficient = layer.botCoefficient ?? merged.botCoefficient;
+    }
+    return merged;
   }
 }

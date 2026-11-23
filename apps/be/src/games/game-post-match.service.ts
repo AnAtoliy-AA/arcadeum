@@ -1,6 +1,4 @@
-import { Injectable, Logger, Optional } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable, Logger, OnModuleInit, Optional } from '@nestjs/common';
 import { DailyChallengesService } from '../daily-challenges/daily-challenges.service';
 import { AchievementsService } from '../achievements/achievements.service';
 import { WalletService } from '../wallet/wallet.service';
@@ -10,15 +8,19 @@ import { GameSessionsService } from './sessions/game-sessions.service';
 import { PlayerStatsService } from './player-stats.service';
 import { ChessProfilesService } from './chess/profiles/chess-profiles.service';
 import { XpSettingsService } from '../xp/xp-settings.service';
-import { User } from '../auth/schemas/user.schema';
-import { OCI_CONNECTION } from '../common/providers/mongo-connections.provider';
 import { ActivityFeedService } from './activity-feed/activity-feed.service';
 import { ClanWarsQueueService } from '../clans/clan-wars-queue.service';
 import { ArcadePetTreatRewardService } from '../arcade-pet/arcade-pet-treat-reward.service';
+import { GameRoomsService } from './rooms/game-rooms.service';
+import { GamesLeaderboardSyncService } from './games.leaderboard-sync.service';
+import { GameSessionsArchiveService } from './sessions/game-sessions.archive.service';
+import { RankingService } from '../ranking/ranking.service';
+import { recordRankedResultForSession } from './games.ranked-result';
+import { GameReplayService } from './replays/game-replay.service';
 import { ClanWarsAutomationService } from '../clans/clan-wars-automation.service';
 
 @Injectable()
-export class GamePostMatchService {
+export class GamePostMatchService implements OnModuleInit {
   private readonly logger = new Logger(GamePostMatchService.name);
 
   constructor(
@@ -30,9 +32,12 @@ export class GamePostMatchService {
     private readonly playerStats: PlayerStatsService,
     private readonly chessProfiles: ChessProfilesService,
     private readonly xpSettings: XpSettingsService,
-    @InjectModel(User.name, OCI_CONNECTION)
-    private readonly userModel: Model<User>,
     private readonly activityFeed: ActivityFeedService,
+    private readonly roomsService: GameRoomsService,
+    private readonly leaderboardSync: GamesLeaderboardSyncService,
+    private readonly archiveService: GameSessionsArchiveService,
+    private readonly replayService: GameReplayService,
+    private readonly rankingService: RankingService,
     @Optional()
     private readonly clanWarsQueue?: ClanWarsQueueService,
     @Optional()
@@ -40,6 +45,70 @@ export class GamePostMatchService {
     @Optional()
     private readonly petTreats?: ArcadePetTreatRewardService,
   ) {}
+
+  onModuleInit(): void {
+    this.sessionsService.onSessionCompleted((session) =>
+      this.processCompletedSession(session),
+    );
+  }
+
+  /**
+   * Single entry point for a finished live game. Runs once per session
+   * (atomic claim on the session document) so retries, reconnects and
+   * duplicate completion signals never double-award.
+   */
+  async processCompletedSession(session: GameSessionSummary): Promise<void> {
+    const claimed = await this.sessionsService.claimPostMatchProcessing(
+      session.id,
+    );
+    if (!claimed) {
+      this.logger.debug(
+        `Post-match already processed for session ${session.id}`,
+      );
+      return;
+    }
+
+    const players = await this.roomsService.getRoomParticipants(session.roomId);
+
+    // Ranked ELO (no-op for unranked rooms; failures are logged inside).
+    await recordRankedResultForSession(
+      session,
+      this.roomsService,
+      this.sessionsService,
+      this.rankingService,
+      this.logger,
+    );
+
+    try {
+      await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+      await this.leaderboardSync.syncInMatch(players, false);
+    } catch (err) {
+      this.logger.warn(
+        `Room/leaderboard sync failed for session ${session.id}: ${(err as Error).message}`,
+      );
+    }
+
+    await this.payoutGameWin(session, players);
+    await this.archiveService.archiveSessionToAtlas(session);
+
+    try {
+      const room = await this.roomsService.getRoomRaw(session.roomId);
+      if (room) await this.replayService.createReplay(session, room);
+    } catch (err) {
+      this.logger.warn(
+        `Replay creation failed for session ${session.id}: ${(err as Error).message}`,
+      );
+    }
+
+    const winners = await this.sessionsService.getWinners(session.id);
+    await this.onGameCompleted(
+      players,
+      session.gameId,
+      winners,
+      {},
+      session.id,
+    );
+  }
 
   async onGameCompleted(
     playerIds: string[],
@@ -256,22 +325,28 @@ export class GamePostMatchService {
     const hasBots = playerIds.some((id) => id.startsWith('bot-'));
 
     for (const userId of humanIds) {
-      const isWinner = winners.includes(userId);
-      const isDraw = winners.length === 0;
-      const result: 'won' | 'lost' | 'draw' = isWinner
-        ? 'won'
-        : isDraw
-          ? 'draw'
-          : 'lost';
+      try {
+        const isWinner = winners.includes(userId);
+        const isDraw = winners.length === 0;
+        const result: 'won' | 'lost' | 'draw' = isWinner
+          ? 'won'
+          : isDraw
+            ? 'draw'
+            : 'lost';
 
-      const amount = await this.xpSettings.getXpReward(
-        gameId,
-        result,
-        false,
-        hasBots,
-      );
-      if (amount > 0) {
-        await this.xpSettings.awardXp(userId, this.userModel, amount);
+        const amount = await this.xpSettings.getXpReward(
+          gameId,
+          result,
+          false,
+          hasBots,
+        );
+        if (amount > 0) {
+          await this.xpSettings.awardXp(userId, amount);
+        }
+      } catch (err) {
+        this.logger.error(
+          `XP award failed for user ${userId} (${gameId}): ${(err as Error).message}`,
+        );
       }
     }
   }

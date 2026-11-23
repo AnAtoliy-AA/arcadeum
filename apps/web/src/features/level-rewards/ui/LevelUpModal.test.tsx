@@ -15,6 +15,11 @@ vi.mock('../api/level-rewards.api', () => ({
   getLevelRewardsStatus: vi.fn(),
 }));
 
+const mockRefreshXp = vi.fn();
+vi.mock('@/entities/session/lib/refreshSessionXp', () => ({
+  refreshSessionXp: () => mockRefreshXp(),
+}));
+
 vi.mock('@/shared/i18n/useTranslation', () => ({
   useTranslation: () => ({
     t: (key: string, params?: { level?: string }) => {
@@ -26,6 +31,7 @@ vi.mock('@/shared/i18n/useTranslation', () => ({
         'stats.milestoneBadgeUnlocked': 'Milestone Badge Unlocked!',
         'stats.claimReward': 'Claim Reward',
         'stats.rewardClaimed': 'Claimed!',
+        'stats.claimRewardFailed': 'Could not claim',
         'pages.shop.items.badge.scout.name': 'Scout',
       };
       return map[key] ?? key;
@@ -42,6 +48,7 @@ vi.mock('next/image', () => ({
 describe('LevelUpModal', () => {
   beforeEach(() => {
     mockClaimAction.mockReset();
+    mockRefreshXp.mockReset();
     useLevelUpModalStore.setState({
       isOpen: false,
       level: 5,
@@ -144,5 +151,30 @@ describe('LevelUpModal', () => {
     fireEvent.click(inventoryBtn);
     expect(mockPush).toHaveBeenCalledWith('/en/shop/inventory#row-badges');
     expect(useLevelUpModalStore.getState().isOpen).toBe(false);
+  });
+
+  it('shows an error and stays claimable when the claim fails', async () => {
+    mockClaimAction.mockRejectedValue(new Error('401'));
+    useLevelUpModalStore.setState({ isOpen: true, level: 5, coinAmount: 250 });
+    render(<LevelUpModal />);
+
+    fireEvent.click(screen.getByTestId('level-up-claim-btn'));
+
+    expect(await screen.findByTestId('level-up-claim-error')).toHaveTextContent(
+      'Could not claim',
+    );
+    expect(useLevelUpModalStore.getState().isClaimed).toBe(false);
+    expect(useLevelUpModalStore.getState().isClaiming).toBe(false);
+    expect(mockRefreshXp).not.toHaveBeenCalled();
+  });
+
+  it('refreshes session xp/level after a successful claim', async () => {
+    mockClaimAction.mockResolvedValue({ coinsAwarded: 250 });
+    useLevelUpModalStore.setState({ isOpen: true, level: 5, coinAmount: 250 });
+    render(<LevelUpModal />);
+
+    fireEvent.click(screen.getByTestId('level-up-claim-btn'));
+
+    await waitFor(() => expect(mockRefreshXp).toHaveBeenCalledTimes(1));
   });
 });

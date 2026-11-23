@@ -9,7 +9,7 @@
  *     [--input recording.webm]   (default: generated test pattern)
  *     [--scenario chess_demo] [--caption "text"] [--out ./output]
  *     [--music file-or-url] [--voice-file voice.mp3] [--no-voice]
- *     [--cta A|B] [--dramatic-ms 4000]
+ *     [--cta A|B] [--dramatic-ms 4000] [--sidecar x.scenario.json]
  *
  * Voice uses edge-tts when installed (network call to Microsoft TTS),
  * otherwise renders without voice and the QA gate reports it.
@@ -96,10 +96,13 @@ async function main() {
     dramaticMomentMs: args['dramatic-ms']
       ? Number(args['dramatic-ms'])
       : undefined,
+    sidecarPath: args.sidecar ? path.resolve(args.sidecar) : undefined,
     scenario: args.scenario || 'chess_demo',
     caption:
       args.caption ||
-      'Chess against Stockfish in your browser. Forty AI bots, ranked seasons, and daily puzzles. Play free, no download.',
+      (args.sidecar
+        ? undefined
+        : 'Chess against Stockfish in your browser. Forty AI bots, ranked seasons, and daily puzzles. Play free, no download.'),
     tags: '#arcadeumgames #gaming #chess #gamers #onlinegaming',
     outputDir,
     tracks: music ? [music] : [],

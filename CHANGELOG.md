@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - shorts factory: on-screen hook, burned-in word-highlight captions, voice rotation, music ducking and loudness normalization, A/B end-card CTA, per-platform metadata, and an automatic QA gate before approval (with `pnpm shorts:render:dry-run`)
 
+## [1.31.29] - 2026-11-23
+
+### Added
+
+- scenario variety, puzzle/replay formats, dry-run for gameplay shorts
+
 ## [1.31.28] - 2026-11-23
 
 ### Fixed

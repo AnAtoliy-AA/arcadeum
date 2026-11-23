@@ -145,6 +145,9 @@ jobs:
       - name: Run Linting
         run: pnpm run lint
 
+      - name: Run Shorts Scenario Tests
+        run: pnpm run shorts:test
+
       - name: Run Web Unit Tests
         run: pnpm exec turbo run test --filter web --log-order=stream -- --passWithNoTests
 

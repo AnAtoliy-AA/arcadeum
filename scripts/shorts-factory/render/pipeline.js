@@ -15,6 +15,7 @@ const { buildRenderArgs } = require('./ffmpeg-graph');
 const { buildPlatformMetadata } = require('./metadata');
 const { evaluateQuality, formatQaReport } = require('./qa');
 const probe = require('./probe');
+const { loadSidecar, applySidecar } = require('./sidecar');
 
 const DEFAULT_LOGO = path.join(
   __dirname,
@@ -93,7 +94,13 @@ function chooseMusic({
  *   musicVolume, voiceFile (optional pre-made voice, dry-run), noVoice,
  *   log, logoPath.
  */
-async function renderShort(opts) {
+async function renderShort(inputOpts) {
+  const opts = applySidecar(
+    inputOpts,
+    inputOpts.sidecarPath
+      ? loadSidecar(inputOpts.sidecarPath)
+      : loadSidecar(inputOpts.rawVideoPath),
+  );
   const log = opts.log || defaultLog;
   const env = opts.env || process.env;
   const outputDir = opts.outputDir;

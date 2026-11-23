@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.24] - 2026-11-23
+
+### Added
+- UX polish - hints, a11y, animations, layout, sounds hook
+
+
 ## [1.31.23] - 2026-11-23
 
 ### Added

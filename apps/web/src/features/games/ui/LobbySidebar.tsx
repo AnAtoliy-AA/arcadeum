@@ -6,6 +6,7 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { Sidebar, DeleteButton } from './lobbyStyles';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LobbySidebarPlayers } from './LobbySidebarPlayers';
+import { useLobbyInvitations } from '@/features/games/hooks/useLobbyInvitations';
 import { LobbySidebarInvited, type RematchUser } from './LobbySidebarInvited';
 import { LobbySidebarRoomInfo } from './LobbySidebarRoomInfo';
 
@@ -104,6 +105,7 @@ export function LobbySidebar({
     room.rematchDeclinedUsers ||
     (room.gameOptions?.rematchDeclinedUsers as RematchUser[]) ||
     [];
+  const invitations = useLobbyInvitations(room.id);
   const joinedIds = new Set(members.map((m) => m.id));
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
   const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
@@ -169,7 +171,9 @@ export function LobbySidebar({
             invitedPlayersLabel={invitedPlayersLabel}
             declinedLabel={declinedLabel}
             reinviteLabel={reinviteLabel}
-            onReinvite={onReinvite}
+            onReinvite={onReinvite ?? invitations.resend}
+            onCancelInvite={invitations.cancel}
+            busyIds={invitations.busyIds}
           />
         )}
 

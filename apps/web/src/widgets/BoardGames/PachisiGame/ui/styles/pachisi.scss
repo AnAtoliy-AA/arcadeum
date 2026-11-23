@@ -378,23 +378,24 @@
   animation: pachisi-token-land 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* Played by a captured token as it reappears in its yard. */
 @keyframes pachisi-token-sent-home {
   0% {
-    transform: scale(1);
+    transform: scale(1.5) rotate(-25deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.9);
     opacity: 1;
   }
-  30% {
-    transform: scale(1.3);
-    opacity: 0.8;
-  }
   100% {
-    transform: scale(0.3);
-    opacity: 0;
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
 .pachisi-token-sent-home {
-  animation: pachisi-token-sent-home 0.4s ease-in forwards;
+  animation: pachisi-token-sent-home 0.5s ease-out;
 }
 
 @keyframes pachisi-six-celebrate {
@@ -422,6 +423,66 @@
 
 .pachisi-auto-pass-timer {
   animation: pachisi-auto-pass 2.5s linear forwards;
+}
+
+/* Destination hints for movable tokens. Static outlines, no motion. */
+.pachisi-cell-dest {
+  box-shadow: inset 0 0 0 2px
+    color-mix(in srgb, var(--primary, #38bdf8) 55%, transparent);
+  border-style: dashed;
+}
+
+.pachisi-cell-dest-active {
+  background-color: color-mix(
+    in srgb,
+    var(--primary, #38bdf8) 28%,
+    transparent
+  );
+  box-shadow:
+    inset 0 0 0 2px var(--primary, #38bdf8),
+    0 0 8px color-mix(in srgb, var(--primary, #38bdf8) 60%, transparent);
+}
+
+.pachisi-cell-dest-capture {
+  background-color: rgba(239, 68, 68, 0.3);
+  box-shadow:
+    inset 0 0 0 2px #ef4444,
+    0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+/* Cell highlighted from chat; the pulse is dropped under reduced motion. */
+.pachisi-cell-chat-highlight {
+  background-color: color-mix(
+    in srgb,
+    var(--primary, #38bdf8) 22%,
+    transparent
+  );
+  box-shadow: inset 0 0 0 2px
+    color-mix(in srgb, var(--primary, #38bdf8) 80%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pachisi-cell-chat-highlight {
+    animation: pachisi-chat-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pachisi-chat-pulse {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Invisible 32px minimum touch target around movable tokens. */
+.pachisi-token-hit::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 32px);
+  height: max(100%, 32px);
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
 }
 
 /* ── Reduced Motion ── */

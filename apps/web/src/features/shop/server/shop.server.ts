@@ -1,6 +1,6 @@
 import 'server-only';
-import { cookies } from 'next/headers';
 import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   CatalogFilter,
   EffectiveShopItem,
@@ -8,18 +8,7 @@ import type {
 } from './shop.types';
 
 async function authFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-  const res = await fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      'Content-Type': 'application/json',
-    },
-  });
+  const res = await serverAuthFetch(path, init);
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`Shop fetch failed: ${res.status} ${body}`);

@@ -3,6 +3,7 @@ import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import type { PachisiToken } from '../types';
 import { YARD_PROGRESS } from '../types';
 import { PachisiTokenView } from './PachisiTokenView';
+import { moveAriaFor } from '../lib/moveAria';
 import { TEAM_ACCENTS, type TeamIndex } from '../lib/teams';
 
 interface PachisiYardProps {
@@ -19,6 +20,12 @@ interface PachisiYardProps {
   isSelf?: boolean;
   /** True for the viewer's partner's yard. */
   isPartner?: boolean;
+  /** Current die, used to describe the destination in aria labels. */
+  die?: number | null;
+  /** Token ids just captured; they play the sent-home animation. */
+  sentHomeIds?: ReadonlySet<number>;
+  /** Destination preview: token id on hover/focus, null on leave. */
+  onPreview?: (tokenId: number | null) => void;
 }
 
 export function PachisiYard({
@@ -32,6 +39,9 @@ export function PachisiYard({
   team = null,
   isSelf = false,
   isPartner = false,
+  die = null,
+  sentHomeIds,
+  onPreview,
 }: PachisiYardProps) {
   const { t } = useTranslation();
   const isMine = ownerId != null && ownerId === currentUserId;
@@ -75,23 +85,30 @@ export function PachisiYard({
                 isMovable={clickable}
                 isButton={clickable}
                 isPartner={isPartner}
+                progress={tok.progress}
+                onHoverChange={
+                  clickable && onPreview
+                    ? (active) => onPreview(active ? tok.id : null)
+                    : undefined
+                }
                 ariaLabel={
                   clickable
                     ? isPartner
                       ? t('games.pachisi_v1.game.team.movePartnerTokenAria', {
                           id: tok.id,
                         })
-                      : t('games.pachisi_v1.game.moveTokenAria', {
-                          id: tok.id,
-                        })
+                      : (() => {
+                          const { key, params } = moveAriaFor(seat, tok, die);
+                          return t(key, params);
+                        })()
                     : undefined
                 }
                 data-testid={`yard-token-${seat}-${slot}`}
                 testId={`yard-token-${seat}-${slot}`}
                 onClick={clickable ? () => onMove(tok.id) : undefined}
                 className={`pointer-events-auto z-30 aspect-square w-[62%] ${
-                  clickable ? BOARD_CELL_FOCUS_CLASS : ''
-                }`}
+                  sentHomeIds?.has(tok.id) ? 'pachisi-token-sent-home' : ''
+                } ${clickable ? BOARD_CELL_FOCUS_CLASS : ''}`}
               />
             );
           }

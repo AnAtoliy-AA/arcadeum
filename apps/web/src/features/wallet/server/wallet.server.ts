@@ -1,6 +1,5 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   PaginatedWalletTransactions,
   WalletBalance,
@@ -15,20 +14,7 @@ export class WalletUnauthorizedError extends Error {
 }
 
 async function fetchWithAuth<T>(path: string, init?: RequestInit): Promise<T> {
-  const cookieJar = await cookies();
-  // Cookie name confirmed from apps/web/src/entities/session/api/serverTokens.ts
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  const res = await fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      'Content-Type': 'application/json',
-    },
-  });
+  const res = await serverAuthFetch(path, init);
 
   if (!res.ok) {
     if (res.status === 401) {

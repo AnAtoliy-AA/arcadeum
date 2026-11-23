@@ -1,6 +1,6 @@
 {
   "name": "aicoapp-monorepo",
-  "version": "1.31.23",
+  "version": "1.31.26",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
@@ -33,6 +33,8 @@
     "shorts:factory": "node scripts/shorts-factory/factory.js",
     "shorts:dry-run": "node scripts/shorts-factory/scenarios/dry-run.js",
     "shorts:test": "node --test scripts/shorts-factory/scenarios/__tests__/*.test.js",
+    "shorts:analytics:report": "node scripts/shorts-factory/analytics/report.js",
+    "shorts:analytics:test": "node --test scripts/shorts-factory/analytics/analytics.test.js",
     "vercel:clean": "python3 scripts/clean-vercel-deployments.sh",
     "vercel:clean:all": "python3 scripts/clean-vercel-deployments.sh --all",
     "vercel:clean:dry": "python3 scripts/clean-vercel-deployments.sh --dry-run",

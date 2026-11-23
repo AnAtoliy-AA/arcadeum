@@ -3,6 +3,11 @@ import {
   ANONYMOUS_ID_COOKIE_NAME,
   ANONYMOUS_ID_PATTERN,
 } from '@/shared/lib/api-client';
+import {
+  ACCESS_COOKIE_NAMES,
+  REFRESH_COOKIE_NAMES,
+  findCookie,
+} from '@/shared/lib/auth-cookies';
 
 /**
  * Server-only utility to retrieve the session access token from httpOnly cookies.
@@ -10,7 +15,7 @@ import {
  */
 export async function getServerAccessToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get('access_token')?.value || null;
+  return findCookie(cookieStore, ACCESS_COOKIE_NAMES)?.value ?? null;
 }
 
 /**
@@ -31,5 +36,5 @@ export async function getServerAnonymousId(): Promise<string | null> {
  */
 export async function getServerRefreshToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get('refresh_token')?.value || null;
+  return findCookie(cookieStore, REFRESH_COOKIE_NAMES)?.value ?? null;
 }

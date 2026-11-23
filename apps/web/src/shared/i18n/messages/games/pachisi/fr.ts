@@ -205,6 +205,27 @@ export const frMessages = {
       passTurn: 'Passer le tour',
       tapToken: 'Touchez un pion surligné pour le déplacer',
       moveTokenAria: 'Déplacer le pion {{id}}',
+      boardAria: 'Plateau de Pachisi',
+      moveTokenFromYardAria:
+        'Déplacer le pion {{id}} de la cour vers le parcours',
+      moveTokenToCellAria:
+        'Déplacer le pion {{id}} de la case {{from}} à la case {{to}}',
+      moveTokenLaneAria: 'Déplacer le pion {{id}} dans le couloir final',
+      moveTokenHomeAria: 'Déplacer le pion {{id}} au centre',
+      announce: {
+        rolled: '{{name}} a obtenu {{value}}',
+        captured: 'Le pion de {{name}} est renvoyé à la cour',
+        tokenHome: '{{name}} a ramené un pion à la maison',
+        yourTurn: 'À vous de jouer',
+      },
+      legend: {
+        title: 'Légende',
+        safe: 'Case étoile sûre',
+        start: 'Case de départ (sûre pour son propriétaire)',
+        stack: 'Pile de pions de même couleur',
+        destination: 'Destination',
+        capture: 'Capture',
+      },
       dieValue: 'Dé : {{value}}',
       extraRoll: 'Un 6 obtenu ! Relancez !',
       lastRoll: 'Dernier lancer : {{value}}',

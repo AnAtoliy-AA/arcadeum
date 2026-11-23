@@ -113,6 +113,20 @@ function markPublished(scenario, date) {
   } catch {
     // history is best effort; never fail a post over it
   }
+  try {
+    // Hand scenario metadata to the analytics feedback loop (best effort).
+    require('../analytics/manifest').appendManifest({
+      game: scenario.game,
+      scenario: scenario.id,
+      format: scenario.format,
+      hook: scenario.hook,
+      voice: scenario.voiceScript,
+      platforms: [],
+      posts: [],
+    });
+  } catch {
+    // analytics is optional
+  }
 }
 
 module.exports = {

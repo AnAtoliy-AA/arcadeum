@@ -4,11 +4,13 @@
  * Optional bridge to worker C's analytics module (../analytics).
  *
  * Contract (all optional, all wrapped in try/catch):
- *   analytics.getFormatWeights() -> { [format]: number } or null
+ *   analytics.getFormatWeights(formats) -> { [format]: number } or null
  *     Higher = better results (views / watch time). Any positive scale; it is
  *     normalised here. Missing module, missing function, bad output, or
  *     thrown errors all give null, and the picker falls back to uniform weights.
  */
+const { FORMATS } = require('./constants');
+
 function loadFormatWeights() {
   try {
     // eslint-disable-next-line global-require, import/no-unresolved
@@ -17,7 +19,7 @@ function loadFormatWeights() {
       mod &&
       (mod.getFormatWeights || (mod.default && mod.default.getFormatWeights));
     if (typeof fn !== 'function') return null;
-    return normalizeWeights(fn());
+    return normalizeWeights(fn(FORMATS));
   } catch {
     return null;
   }

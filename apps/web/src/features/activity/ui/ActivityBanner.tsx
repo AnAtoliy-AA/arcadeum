@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
 import { track } from '@/shared/lib/analytics';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface ActivityStats {
   activeGames: number;
@@ -17,6 +18,7 @@ const REFRESH_INTERVAL_MS = 30_000;
 const API_PATH = '/api/activity';
 
 export function ActivityBanner({ className }: ActivityBannerProps) {
+  const { t } = useTranslation();
   const [stats, setStats] = useState<ActivityStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,14 +53,14 @@ export function ActivityBanner({ className }: ActivityBannerProps) {
   if (stats.activeGames > 0) {
     items.push({
       icon: '🔴',
-      label: 'games happening now',
+      label: t('home.activityBannerGames'),
       value: stats.activeGames,
     });
   }
   if (stats.onlinePlayers > 0) {
     items.push({
       icon: '🟢',
-      label: 'players online',
+      label: t('home.activityBannerPlayers'),
       value: stats.onlinePlayers,
     });
   }
@@ -79,7 +81,7 @@ export function ActivityBanner({ className }: ActivityBannerProps) {
         <span key={item.label} className="flex items-center gap-1.5">
           <span aria-hidden>{item.icon}</span>
           <span className="tabular-nums">{item.value}</span>
-          <span className="text-slate-400">{item.label}</span>
+          <span className="text-slate-300">{item.label}</span>
         </span>
       ))}
     </div>

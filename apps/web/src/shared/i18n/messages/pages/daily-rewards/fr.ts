@@ -6,6 +6,8 @@ export const dailyRewardsFr = {
   gemBonusSuffix: ' + {n} 💎',
   claimed: 'Reviens demain',
   signInToClaim: 'Connecte-toi pour réclamer',
+  signInToClaimHint:
+    'Des pièces gratuites chaque jour pour tous les joueurs. Connectez-vous pour récupérer les vôtres.',
   nextResetIn: 'Réinitialisation dans {time}',
   streakLabel: 'Série : {n} / 7',
   dayLabel: 'Jour {n}',

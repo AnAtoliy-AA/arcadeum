@@ -116,6 +116,41 @@ export const ru = {
   liveMatchesCount: '{{count}} матчей',
   liveViewAllRooms: 'Все комнаты',
   liveViewAllGames: 'Весь каталог',
+  liveOnlineSub: 'Игроки на сайте прямо сейчас',
+  liveOnlineEmpty: 'Сейчас никого нет онлайн. Пока ждёте, сыграйте с ботом.',
+  liveActiveSub: 'Матчи, которые идут прямо сейчас',
+  liveActiveEmpty:
+    'Сейчас нет активных матчей. Начните свой, и другие смогут наблюдать.',
+  liveActiveAction: 'Смотреть матчи',
+  liveLobbiesEmpty:
+    'Сейчас нет открытых комнат. Создайте комнату или сыграйте с ботом.',
+  liveLobbiesAction: 'Войти в комнату',
+  liveCreateRoomAction: 'Создать комнату',
+  livePlayBotAction: 'Играть с ботом',
+  liveSeekingSub: 'Подбор находит игрока, который хочет ту же игру',
+  liveSeekingEmpty:
+    'Подбор находит игрока, который хочет ту же игру. Сейчас никто не ждёт, станьте первым.',
+  liveQuickMatchAction: 'Быстрая игра',
+  liveTodaySub: 'Матчи, завершённые сегодня',
+  liveTodayEmpty: 'Сегодня ещё нет завершённых матчей. Сыграйте первый.',
+  liveTodayAction: 'Смотреть результаты',
+  liveBrowseGamesAction: 'Выбрать игру',
+  activityBannerGames: 'игр идёт сейчас',
+  activityBannerPlayers: 'игроков онлайн',
+  liveStatsUnknown: 'Живые данные загружаются или сейчас недоступны.',
+  homeRecentActivityTitle: 'Недавняя активность',
+  homeRecentActivityEmpty:
+    'Пока нет активности. Завершите матч, и он появится здесь.',
+  homeRecentActivityError: 'Не удалось загрузить активность. Попробуйте позже.',
+  homeRecentActivityMore: 'Показать ещё',
+  homeRecentActivityLoading: 'Загрузка...',
+  eventBadgeLive: 'СЕЙЧАС',
+  eventBadgeUpcoming: 'СКОРО',
+  eventActionLive: 'Играть',
+  eventActionUpcoming: 'Открыть событие',
+  eventStartsAt: 'Начало: {{date}}',
+  eventDefaultDescription:
+    'Запланированное событие сообщества. Откройте его, чтобы узнать правила, призы и время начала.',
   // Coming soon labels
   comingSoon: 'Скоро',
   // Footer

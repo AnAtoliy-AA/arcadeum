@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.22] - 2026-11-23
+
+### Fixed
+- allow adding a 4th player (multiple bots, auto-size rooms)
+
+
 ## [1.31.21] - 2026-11-23
 
 ### Fixed

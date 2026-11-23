@@ -49,8 +49,11 @@ export function LobbySidebarInvited({
       <CardTitle>{invitedPlayersLabel}</CardTitle>
       <PlayerList>
         {pendingInvited.map((u) => (
-          <PlayerItem key={u.id} data-testid={`lobby-invited-${u.id}`}>
-            <div className="flex flex-1 items-center gap-2 opacity-80">
+          <PlayerItem key={u.id}>
+            <div
+              className="flex flex-1 items-center gap-2 opacity-80"
+              data-testid={`lobby-invited-${u.id}`}
+            >
               <InGameAvatar
                 playerId={u.id}
                 name={u.displayName}

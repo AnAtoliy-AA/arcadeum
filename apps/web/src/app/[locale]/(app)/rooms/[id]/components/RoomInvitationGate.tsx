@@ -54,11 +54,11 @@ export function RoomInvitationGate({
   };
 
   return (
-    <ErrorContainer data-testid="room-invitation-gate">
+    <ErrorContainer>
       <span aria-hidden="true" className="text-[32px]">
         ✉️
       </span>
-      <h1 className="text-lg font-semibold">
+      <h1 className="text-lg font-semibold" data-testid="room-invitation-gate">
         {t('games.roomPage.invitation.title', { host: hostName })}
       </h1>
       <p className="max-w-sm text-sm text-[var(--textSecondary)]">

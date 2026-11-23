@@ -86,7 +86,7 @@ export const SeaBattleLobby = React.memo(function SeaBattleLobby({
         headerActionsSlot={
           <IconButton
             onClick={() => onShowRules(true)}
-            title="Game Rules"
+            title={t('games.rules.button')}
             style={{ fontSize: '1.2rem' }}
           >
             📖

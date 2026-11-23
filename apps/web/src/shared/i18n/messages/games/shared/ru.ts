@@ -200,6 +200,16 @@ export const ruMessages = {
       loss: 'Поражение',
       draw: 'Ничья',
       viewReplay: 'Смотреть повтор',
+      level: 'Ур. {{level}}',
+      xp: 'Опыт: {{xp}}',
+      joined: 'С нами с {{date}}',
+      you: 'Вы',
+      loadError: 'Не удалось загрузить профиль',
+      loadErrorHint: 'Проверьте соединение и попробуйте снова.',
+      retry: 'Повторить',
+      loading: 'Загрузка профиля...',
+      statsEmpty: 'Пока нет статистики. Сыграйте несколько матчей.',
+      opponent: 'Соперник',
     },
   },
   create: createRu,
@@ -458,6 +468,21 @@ export const ruMessages = {
     },
   },
   landing: {
+    academyKicker: 'Учимся на практике',
+    academyTitle: 'Академия Arcadeum: интерактивные задачи',
+    academySubtitle:
+      'Решайте быстрые тактические задачи прямо в браузере. Аккаунт не нужен.',
+    academyPuzzle: 'Задача {{n}}',
+    academyTabsLabel: 'Выбор задачи',
+    academyTttTitle1: 'Задача 1: выигрышная вилка',
+    academyTttPrompt1:
+      'Играйте за X: найдите клетку, создающую сразу две выигрышные линии.',
+    academyTttExplanation1:
+      'Верхний правый угол создаёт двойную угрозу по строке 1 и столбцу 3.',
+    academyTttTitle2: 'Задача 2: защита от ловушки в центре',
+    academyTttPrompt2:
+      'O занял центр, вы заняли угол, O занял противоположный угол. Заблокируйте диагональную угрозу.',
+    academyTttExplanation2: 'Ход на боковую клетку не даёт O построить вилку.',
     previewLabel: 'Живой превью',
     cycleHint: 'Нажмите, чтобы сменить тему',
     cycleAriaLabel: 'Сменить тему превью, сейчас {{variant}}',

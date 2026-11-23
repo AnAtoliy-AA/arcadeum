@@ -197,6 +197,16 @@ export const enMessages = {
       loss: 'Lost',
       draw: 'Draw',
       viewReplay: 'Watch Replay',
+      level: 'Lv. {{level}}',
+      xp: 'XP: {{xp}}',
+      joined: 'Joined {{date}}',
+      you: 'You',
+      loadError: 'Could not load this profile',
+      loadErrorHint: 'Check your connection and try again.',
+      retry: 'Try again',
+      loading: 'Loading profile...',
+      statsEmpty: 'No stats yet. Play a few matches to fill this in.',
+      opponent: 'Opponent',
     },
   },
   create: createEn,
@@ -458,6 +468,22 @@ export const enMessages = {
     },
   },
   landing: {
+    academyKicker: 'Learn by doing',
+    academyTitle: 'Arcadeum Academy: interactive puzzles',
+    academySubtitle:
+      'Solve quick tactical puzzles right in your browser. No account needed.',
+    academyPuzzle: 'Puzzle {{n}}',
+    academyTabsLabel: 'Puzzle selector',
+    academyTttTitle1: 'Challenge 1: the winning fork',
+    academyTttPrompt1:
+      'Play as X: find the square that creates two winning lines at once.',
+    academyTttExplanation1:
+      'The top-right corner creates a double threat across row 1 and column 3.',
+    academyTttTitle2: 'Challenge 2: defend the center trap',
+    academyTttPrompt2:
+      'O took the center, you took a corner, O took the opposite corner. Block their diagonal threat.',
+    academyTttExplanation2:
+      'Taking an edge square stops O from building a fork.',
     previewLabel: 'Live preview',
     cycleHint: 'Click to change theme',
     cycleAriaLabel: 'Cycle theme preview, currently {{variant}}',

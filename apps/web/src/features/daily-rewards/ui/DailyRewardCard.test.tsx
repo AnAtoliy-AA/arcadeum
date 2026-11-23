@@ -128,9 +128,7 @@ describe('StampRow', () => {
         dayLabel={dayLabel}
       />,
     );
-    expect(
-      screen.queryByTestId('daily-reward-stamp-7-gem'),
-    ).not.toBeNull();
+    expect(screen.queryByTestId('daily-reward-stamp-7-gem')).not.toBeNull();
     // None of the other stamps should have a gem badge marker.
     for (let i = 1; i <= 6; i++) {
       const stamp = screen.getByTestId(`daily-reward-stamp-${i}`);

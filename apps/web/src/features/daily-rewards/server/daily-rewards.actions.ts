@@ -9,16 +9,22 @@ export type ClaimDailyRewardResult =
   | { ok: false; code: 'already_claimed' | 'unauthorized' | 'unknown' };
 
 /**
- * Claim today's daily reward. On success, revalidates `/wallet` and `/` so
+ * Claim today's daily reward. `accessToken` is the client session token (the
+ * httpOnly cookie lives 15 min and is not refreshed by server actions). On success, revalidates `/wallet` and `/` so
  * the next render reflects the new balance + streak; the existing
  * `WalletLiveBridge` socket will also push the balance update to the header
  * chip in real time.
  */
-export async function claimDailyRewardAction(): Promise<ClaimDailyRewardResult> {
+export async function claimDailyRewardAction(
+  accessToken?: string,
+): Promise<ClaimDailyRewardResult> {
   let res: Response;
   try {
     res = await serverAuthFetch('/daily-rewards/claim', {
       method: 'POST',
+      // The backend still validates the token; this only supplies the same
+      // credential the status request used when the cookie is missing.
+      accessToken: typeof accessToken === 'string' ? accessToken : undefined,
     });
   } catch (err) {
     console.error('[claimDailyReward] fetch failed:', err);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { claimDailyRewardAction } from '../server/daily-rewards.actions';
 
 export interface ClaimButtonLabels {
@@ -63,7 +64,9 @@ export function ClaimButton({
     setFeedback(null);
 
     startTransition(async () => {
-      const res = await claimDailyRewardAction();
+      const accessToken =
+        useSessionStore.getState().snapshot.accessToken || undefined;
+      const res = await claimDailyRewardAction(accessToken);
       if (res.ok) {
         let msg = labels.toastClaimed.replace(
           '{n}',

@@ -13,6 +13,8 @@ interface DiceOverlayProps {
   myLastDie?: number | null;
   isExtraRoll?: boolean;
   boardRotation: number;
+  /** Pulse the dice when a six was rolled. */
+  celebrate?: boolean;
   onRoll: () => void;
 }
 
@@ -26,13 +28,16 @@ export function DiceOverlay({
   myLastDie,
   isExtraRoll = false,
   boardRotation,
+  celebrate = false,
   onRoll,
 }: DiceOverlayProps) {
   const { t } = useTranslation();
   const effectiveLastDie = isExtraRoll ? 6 : (myLastDie ?? lastDie);
 
   return (
-    <div className="pachisi-center-overlay w-full h-full">
+    <div
+      className={`pachisi-center-overlay h-full w-full ${celebrate ? 'pachisi-six-celebrate' : ''}`}
+    >
       <DiceRollOverlay
         canRoll={canRoll}
         diceCount={1}

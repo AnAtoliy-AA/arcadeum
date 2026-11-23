@@ -6,6 +6,8 @@ export const dailyRewardsRu = {
   gemBonusSuffix: ' + {n} 💎',
   claimed: 'Возвращайтесь завтра',
   signInToClaim: 'Войдите, чтобы забрать',
+  signInToClaimHint:
+    'Бесплатные монеты каждый день для всех игроков. Войдите, чтобы забрать свои.',
   nextResetIn: 'Обновится через {time}',
   streakLabel: 'Серия: {n} / 7',
   dayLabel: 'День {n}',

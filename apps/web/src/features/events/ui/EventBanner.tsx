@@ -6,6 +6,7 @@ import { Button } from '@arcadeum/ui';
 import { useEventsStore } from '../store/eventsStore';
 import { EventPrizeBadge } from './EventPrizeBadge';
 import { buildRoutes, type Locale } from '@/shared/config/routes';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface EventBannerTranslations {
   bannerTitle?: string;
@@ -23,6 +24,7 @@ export const EventBanner = ({
   locale?: string;
   translations?: EventBannerTranslations;
 }) => {
+  const { t } = useTranslation();
   const featuredEvent = useEventsStore((s) => s.featuredEvent);
   const fetchFeaturedEvent = useEventsStore((s) => s.fetchFeaturedEvent);
   const routes = buildRoutes(locale as Locale);
@@ -38,6 +40,13 @@ export const EventBanner = ({
     : `/${locale}/events/${featuredEvent.id}`;
 
   const isLive = featuredEvent.status === 'active';
+  const startDate = new Date(featuredEvent.startTime);
+  const startsAtLabel = Number.isNaN(startDate.getTime())
+    ? null
+    : startDate.toLocaleString(locale, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
 
   return (
     <div className="w-full max-w-[1400px] mx-auto px-4 my-6">
@@ -51,11 +60,11 @@ export const EventBanner = ({
               {isLive ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--errorBgSoft)] text-[var(--danger)] border border-[var(--errorBorder)] animate-pulse">
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--danger)]" />
-                  {translations.liveBadge ?? 'LIVE NOW'}
+                  {translations.liveBadge ?? t('home.eventBadgeLive')}
                 </span>
               ) : (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--primary)]/15 text-[var(--accent)] border border-[var(--primary)]/30">
-                  {translations.upcomingBadge ?? 'UPCOMING'}
+                  {translations.upcomingBadge ?? t('home.eventBadgeUpcoming')}
                 </span>
               )}
               <span className="text-xs font-bold uppercase tracking-wider text-[var(--accent)] px-2.5 py-0.5 rounded-md bg-[var(--glassBorder)]/40 border border-[var(--glassBorder)]">
@@ -75,8 +84,16 @@ export const EventBanner = ({
             <p className="text-sm md:text-base text-[var(--textSecondary)] line-clamp-2 m-0 opacity-90 leading-relaxed">
               {featuredEvent.description ||
                 translations.bannerSubtitle ||
-                'Join the scheduled community showdown right now.'}
+                t('home.eventDefaultDescription')}
             </p>
+            {!isLive && startsAtLabel && (
+              <p
+                data-testid="event-banner-starts-at"
+                className="m-0 text-sm font-semibold text-[var(--color)]"
+              >
+                {t('home.eventStartsAt', { date: startsAtLabel })}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
@@ -86,8 +103,8 @@ export const EventBanner = ({
                 className="w-full md:w-auto justify-center px-6 py-2.5 text-sm font-bold shadow-md shadow-[var(--primary)]/20"
               >
                 {isLive
-                  ? (translations.playNow ?? 'Play Now')
-                  : (translations.joinEvent ?? 'View Event')}
+                  ? (translations.playNow ?? t('home.eventActionLive'))
+                  : (translations.joinEvent ?? t('home.eventActionUpcoming'))}
               </Button>
             </Link>
           </div>

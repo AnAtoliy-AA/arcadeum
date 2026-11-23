@@ -116,6 +116,44 @@ export const fr = {
   liveMatchesCount: '{{count}} parties',
   liveViewAllRooms: 'Voir tous les salons',
   liveViewAllGames: 'Explorer le catalogue',
+  liveOnlineSub: 'Joueurs actifs sur le site en ce moment',
+  liveOnlineEmpty:
+    "Personne n'est en ligne pour l'instant. En attendant, jouez contre un bot.",
+  liveActiveSub: 'Parties en cours en ce moment',
+  liveActiveEmpty:
+    'Aucune partie en cours. Lancez-en une et les autres pourront la regarder.',
+  liveActiveAction: 'Regarder les parties',
+  liveLobbiesEmpty:
+    "Aucun salon ouvert pour l'instant. Créez un salon ou jouez contre un bot.",
+  liveLobbiesAction: 'Rejoindre un salon',
+  liveCreateRoomAction: 'Créer un salon',
+  livePlayBotAction: 'Jouer contre un bot',
+  liveSeekingSub:
+    'Le matchmaking vous associe à un joueur qui veut le même jeu',
+  liveSeekingEmpty:
+    "Le matchmaking vous associe à un joueur qui veut le même jeu. Personne n'attend pour l'instant, soyez le premier.",
+  liveQuickMatchAction: 'Partie rapide',
+  liveTodaySub: "Parties terminées aujourd'hui",
+  liveTodayEmpty: "Aucune partie terminée aujourd'hui. Jouez la première.",
+  liveTodayAction: 'Voir les résultats',
+  liveBrowseGamesAction: 'Parcourir les jeux',
+  activityBannerGames: 'parties en cours',
+  activityBannerPlayers: 'joueurs en ligne',
+  liveStatsUnknown: 'Les données en direct se chargent ou sont indisponibles.',
+  homeRecentActivityTitle: 'Activité récente',
+  homeRecentActivityEmpty:
+    "Pas encore d'activité. Terminez une partie et elle apparaîtra ici.",
+  homeRecentActivityError:
+    "Impossible de charger l'activité. Réessayez plus tard.",
+  homeRecentActivityMore: 'Voir plus',
+  homeRecentActivityLoading: 'Chargement...',
+  eventBadgeLive: 'EN DIRECT',
+  eventBadgeUpcoming: 'À VENIR',
+  eventActionLive: 'Jouer',
+  eventActionUpcoming: "Voir l'événement",
+  eventStartsAt: 'Début : {{date}}',
+  eventDefaultDescription:
+    "Un événement communautaire programmé. Ouvrez-le pour voir les règles, les prix et l'heure de début.",
   // Coming soon labels
   comingSoon: 'Bientôt disponible',
   mobileComingSoonDescription:

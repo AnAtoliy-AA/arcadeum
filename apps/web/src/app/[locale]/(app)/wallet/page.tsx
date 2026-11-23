@@ -32,7 +32,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  return isLocale(locale) ? buildPageMetadata({ locale, page: 'wallet', noIndex: true }) : {};
+  return isLocale(locale)
+    ? buildPageMetadata({ locale, page: 'wallet', noIndex: true })
+    : {};
 }
 
 interface SearchParams {
@@ -133,8 +135,8 @@ export default async function WalletPage({
       <PageBreadcrumb locale={locale} page="wallet" />
       {/* Daily reward CTA. Rendered above the wallet view so the claim flow is
           the first thing a returning player sees. The card self-suppresses
-          (returns null) when the BE call fails — same defensive pattern as
-          BalanceChip — so it never blocks the page from rendering. */}
+          (returns null) when the BE call fails - same defensive pattern as
+          BalanceChip - so it never blocks the page from rendering. */}
       <DailyRewardCard />
 
       <WalletBalanceSummary balance={balance} locale={typedLocale} />

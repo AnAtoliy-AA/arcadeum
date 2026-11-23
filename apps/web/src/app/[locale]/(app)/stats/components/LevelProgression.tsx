@@ -215,7 +215,7 @@ export function LevelProgression({ currentLevel }: { currentLevel: number }) {
                     />
                   ) : (
                     <span className="text-[var(--textTertiary)] opacity-25">
-                      —
+                      -
                     </span>
                   )}
                 </td>

@@ -254,7 +254,7 @@ export function ContactForm({ form }: ContactFormProps) {
               <div className="flex flex-wrap-reverse items-center justify-between gap-3 mt-1">
                 <span className="inline-flex items-center gap-1.5 text-[12.5px] text-[var(--textSecondary)]">
                   <span aria-hidden="true">🔒</span>
-                  {form?.privacy ?? 'Private — we never share your email.'}
+                  {form?.privacy ?? 'Private - we never share your email.'}
                 </span>
                 <SubmitButton
                   idleLabel={form?.submit ?? 'Launch message'}

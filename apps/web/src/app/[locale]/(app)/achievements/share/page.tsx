@@ -14,10 +14,10 @@ export async function generateMetadata({
   const rarity = searchParams.rarity ?? 'common';
 
   return {
-    title: `${name} — Arcadeum Games`,
+    title: `${name} - Arcadeum Games`,
     description: `I unlocked the "${name}" achievement (${rarity}) on Arcadeum Games! Play free online board games with friends.`,
     openGraph: {
-      title: `${name} — Arcadeum Games`,
+      title: `${name} - Arcadeum Games`,
       description: `Achievement unlocked: ${name} (${rarity})`,
       images: [
         {
@@ -29,7 +29,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${name} — Arcadeum Games`,
+      title: `${name} - Arcadeum Games`,
       description: `Achievement unlocked: ${name} (${rarity})`,
     },
   };

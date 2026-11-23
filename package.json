@@ -31,6 +31,8 @@
     "shorts:gameplay": "node scripts/shorts-factory/gameplay.js",
     "shorts:gameplay:preview": "node scripts/shorts-factory/gameplay.js --preview",
     "shorts:factory": "node scripts/shorts-factory/factory.js",
+    "shorts:render:dry-run": "node scripts/shorts-factory/render/dry-run.js",
+    "shorts:render:test": "node --test \"scripts/shorts-factory/render/__tests__/*.test.js\"",
     "vercel:clean": "python3 scripts/clean-vercel-deployments.sh",
     "vercel:clean:all": "python3 scripts/clean-vercel-deployments.sh --all",
     "vercel:clean:dry": "python3 scripts/clean-vercel-deployments.sh --dry-run",

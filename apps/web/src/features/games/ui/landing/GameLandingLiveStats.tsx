@@ -79,49 +79,50 @@ export function GameLandingLiveStats({ gameId }: GameLandingLiveStatsProps) {
       ? t('home.liveWaitingPlayersForGame', { count: queuedPlayersCount })
       : `${stats.waitingPlayers} ${t('home.liveWaitingPlayersSub')}`;
 
+  const pill =
+    'flex min-h-[36px] items-center gap-1.5 rounded-lg border px-2.5 py-1 font-medium text-[var(--textPrimary)] transition-colors motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]';
+
   return (
     <div
       data-testid="game-landing-live-stats"
-      className="box-border flex flex-wrap items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.04] p-3 text-xs backdrop-blur-md"
+      className="box-border flex flex-wrap items-center gap-2.5 rounded-2xl border border-[var(--glassBorder)] bg-[var(--glassBg)] p-3 text-xs backdrop-blur-md"
     >
-      <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-emerald-400">
-        <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-[var(--success)]">
+        <span aria-hidden className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75 motion-safe:animate-ping" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--success)]" />
         </span>
         <span>{t('home.liveBadgeOnline')}</span>
       </div>
 
-      <div className="h-3.5 w-px bg-white/20" />
+      <div aria-hidden className="h-3.5 w-px bg-[var(--glassBorder)]" />
 
       <Link
         href={roomsHref}
         data-testid="landing-live-open-lobbies"
-        className="flex items-center gap-1.5 rounded-lg bg-indigo-500/10 px-2.5 py-1 font-medium text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/20 transition-colors"
+        className={`${pill} border-[var(--primary)]/30 bg-[var(--primary)]/10 hover:bg-[var(--primary)]/20`}
       >
-        <span>🎮</span>
-        <span className="text-indigo-200">{lobbyLabel}</span>
+        <span aria-hidden>🎮</span>
+        <span>{lobbyLabel}</span>
       </Link>
 
       <Link
         href={routes.games}
         data-testid="landing-live-waiting-players"
-        className="flex items-center gap-1.5 rounded-lg bg-fuchsia-500/10 px-2.5 py-1 font-medium text-fuchsia-300 border border-fuchsia-500/20 hover:bg-fuchsia-500/20 transition-colors"
+        className={`${pill} border-[var(--info)]/30 bg-[var(--info)]/10 hover:bg-[var(--info)]/20`}
       >
-        <span>👥</span>
-        <span className="text-fuchsia-200">{playersLabel}</span>
+        <span aria-hidden>👥</span>
+        <span>{playersLabel}</span>
       </Link>
 
       <Link
         href={inProgressHref}
         data-testid="landing-live-active-matches"
-        className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2.5 py-1 font-medium text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
+        className={`${pill} border-[var(--success)]/30 bg-[var(--success)]/10 hover:bg-[var(--success)]/20`}
       >
-        <span>⚔️</span>
-        <span className="font-bold text-white">{activeMatchesCount}</span>
-        <span className="text-emerald-200">
-          {t('home.liveBadgeActiveGames')}
-        </span>
+        <span aria-hidden>⚔️</span>
+        <span className="font-bold">{activeMatchesCount}</span>
+        <span>{t('home.liveBadgeActiveGames')}</span>
       </Link>
     </div>
   );

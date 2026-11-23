@@ -198,6 +198,16 @@ export const esMessages = {
       loss: 'Derrota',
       draw: 'Empate',
       viewReplay: 'Ver repetición',
+      level: 'Nv. {{level}}',
+      xp: 'XP: {{xp}}',
+      joined: 'Se unió el {{date}}',
+      you: 'Tú',
+      loadError: 'No se pudo cargar este perfil',
+      loadErrorHint: 'Revisa tu conexión e inténtalo de nuevo.',
+      retry: 'Reintentar',
+      loading: 'Cargando perfil...',
+      statsEmpty: 'Aún no hay estadísticas. Juega unas partidas.',
+      opponent: 'Rival',
     },
   },
   create: createEs,
@@ -463,6 +473,22 @@ export const esMessages = {
     },
   },
   landing: {
+    academyKicker: 'Aprende practicando',
+    academyTitle: 'Academia Arcadeum: puzzles interactivos',
+    academySubtitle:
+      'Resuelve puzzles tácticos rápidos en tu navegador. Sin cuenta.',
+    academyPuzzle: 'Puzzle {{n}}',
+    academyTabsLabel: 'Selector de puzzle',
+    academyTttTitle1: 'Reto 1: la bifurcación ganadora',
+    academyTttPrompt1:
+      'Juega con X: encuentra la casilla que crea dos líneas ganadoras a la vez.',
+    academyTttExplanation1:
+      'La esquina superior derecha crea una doble amenaza en la fila 1 y la columna 3.',
+    academyTttTitle2: 'Reto 2: defiende la trampa del centro',
+    academyTttPrompt2:
+      'O tomó el centro, tú una esquina y O la esquina opuesta. Bloquea su amenaza diagonal.',
+    academyTttExplanation2:
+      'Ocupar una casilla de borde impide que O arme una bifurcación.',
     previewLabel: 'Vista previa',
     cycleHint: 'Haz clic para cambiar el tema',
     cycleAriaLabel: 'Cambiar tema de la vista previa, actualmente {{variant}}',

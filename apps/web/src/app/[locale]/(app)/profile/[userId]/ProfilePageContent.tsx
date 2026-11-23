@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  Card,
   Badge,
-  Spinner,
   Button,
   EmptyState,
+  ErrorState,
   PageLayout,
   Container,
 } from '@arcadeum/ui';
@@ -17,7 +16,7 @@ import {
   useTranslation,
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
-import { xpProgress, toRoman } from '@/shared/lib/xp-level';
+import { ApiError } from '@/shared/lib/api-client';
 import {
   getUserProfile,
   getUserFriends,
@@ -33,7 +32,6 @@ import {
   getFriends,
   getPendingRequests,
 } from '@/shared/api/friends';
-import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
 import { UserIcon } from '@arcadeum/ui/components/Icons/index';
 import { GiftDialog } from '@/features/shop/ui/GiftDialog';
 import type { Friend, FriendRequest } from '@/shared/api/friends';
@@ -50,6 +48,8 @@ import { MatchHistoryFeed } from '@/features/profile/ui/MatchHistoryFeed';
 import { ProfileAchievementsShowcase } from '@/features/profile/ui/ProfileAchievementsShowcase';
 import { ProfileFriendsList } from '@/features/profile/ui/ProfileFriendsList';
 import { ShareProfileButton } from '@/features/profile/ui/ShareProfileButton';
+import { ProfileHeroCard } from '@/features/profile/ui/ProfileHeroCard';
+import { ProfileSkeleton } from '@/features/profile/ui/ProfileSkeleton';
 
 export default function ProfilePageContent() {
   const params = useParams();
@@ -67,7 +67,8 @@ export default function ProfilePageContent() {
     outgoing: FriendRequest[];
   }>({ incoming: [], outgoing: [] });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<'notFound' | 'failed' | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [friendSent, setFriendSent] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
   const [giftDialogOpen, setGiftDialogOpen] = useState(false);
@@ -91,6 +92,8 @@ export default function ProfilePageContent() {
     let cancelled = false;
 
     const load = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const [profileData, friendsData] = await Promise.all([
           getUserProfile(userId),
@@ -157,8 +160,14 @@ export default function ProfilePageContent() {
           const achievementData = await getUserAchievements(userId);
           if (!cancelled) setAchievements(achievementData);
         } catch {}
-      } catch {
-        if (!cancelled) setError(true);
+      } catch (err) {
+        if (!cancelled) {
+          setError(
+            err instanceof ApiError && err.status === 404
+              ? 'notFound'
+              : 'failed',
+          );
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -168,7 +177,7 @@ export default function ProfilePageContent() {
     return () => {
       cancelled = true;
     };
-  }, [userId, snapshot.accessToken, snapshot.userId]);
+  }, [userId, snapshot.accessToken, snapshot.userId, reloadKey]);
 
   const handleAddFriend = async () => {
     if (!snapshot.accessToken || !userId) return;
@@ -187,15 +196,29 @@ export default function ProfilePageContent() {
     return (
       <PageLayout>
         <Container size="md">
-          <div className="flex flex-col items-center p-12 gap-3">
-            <Spinner size="md" />
-          </div>
+          <ProfileSkeleton />
         </Container>
       </PageLayout>
     );
   }
 
-  if (error || !profile) {
+  if (error === 'failed') {
+    return (
+      <PageLayout>
+        <Container size="md">
+          <ErrorState
+            data-testid="profile-error"
+            title={t('games.common.profile.loadError')}
+            message={t('games.common.profile.loadErrorHint')}
+            retryLabel={t('games.common.profile.retry')}
+            onRetry={() => setReloadKey((k) => k + 1)}
+          />
+        </Container>
+      </PageLayout>
+    );
+  }
+
+  if (!profile) {
     return (
       <PageLayout>
         <Container size="md">
@@ -210,63 +233,14 @@ export default function ProfilePageContent() {
     );
   }
 
-  const { level } = xpProgress(profile.xp ?? 0);
-
   return (
     <PageLayout>
       <Container size="md">
         <div className="flex flex-col items-stretch gap-5 p-4">
-          <Card variant="elevated">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-row gap-4 items-center min-w-0">
-                <EquippedPlayerAvatar
-                  name={profile.displayName || profile.username}
-                  size="lg"
-                  equippedAvatarId={profile.equippedAvatarId}
-                  equippedBadgeId={profile.equippedBadgeId}
-                  equippedNameColorId={profile.equippedNameColorId}
-                  equippedFrameId={profile.equippedFrameId}
-                  equippedAuraId={profile.equippedAuraId}
-                  equippedBannerId={profile.equippedBannerId}
-                />
-                <div className="flex flex-col items-start min-w-0 gap-1">
-                  <span className="text-[20px] font-bold truncate text-[var(--color)]">
-                    {profile.displayName || profile.username}
-                  </span>
-                  <span className="text-[14px] text-[var(--textSecondary)] truncate">
-                    @{profile.username}
-                  </span>
-                  <div className="flex flex-row flex-wrap items-center gap-1.5 mt-1">
-                    <Badge variant="info" size="sm">
-                      {profile.role}
-                    </Badge>
-                    {profile.prestige > 0 && (
-                      <Badge variant="warning" size="sm">
-                        P{toRoman(profile.prestige)}
-                      </Badge>
-                    )}
-                    <Badge variant="info" size="sm">
-                      Lv. {level}
-                    </Badge>
-                    <Badge variant="neutral" size="sm">
-                      XP: {profile.xp?.toLocaleString() ?? '0'}
-                    </Badge>
-                    {profile.countryCode && (
-                      <Badge variant="neutral" size="sm">
-                        {profile.countryCode}
-                      </Badge>
-                    )}
-                    {profile.createdAt && (
-                      <span className="text-[12px] text-[var(--textSecondary)]">
-                        Joined{' '}
-                        {new Date(profile.createdAt).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-row flex-wrap items-center gap-2">
+          <ProfileHeroCard
+            profile={profile}
+            actions={
+              <>
                 <ShareProfileButton
                   userId={userId}
                   displayName={profile.displayName || profile.username}
@@ -331,14 +305,14 @@ export default function ProfilePageContent() {
                     {t('common.actions.login') || 'Log In'}
                   </Button>
                 )}
-              </div>
-            </div>
-          </Card>
+              </>
+            }
+          />
 
           {headToHead && (
             <HeadToHeadCard
               data={headToHead}
-              myDisplayName="You"
+              myDisplayName={t('games.common.profile.you')}
               rivalDisplayName={profile.displayName || profile.username}
             />
           )}

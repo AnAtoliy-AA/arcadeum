@@ -126,6 +126,8 @@ export function InviteFriendPicker({
             setOpen(false);
             setSearchQuery('');
             setSelected(new Set());
+            // Invites may be cancelled from the lobby list; let the host re-pick.
+            setInvited(new Set());
           }}
         >
           Close

@@ -215,6 +215,15 @@ export const esMessages = {
   },
   create: createEs,
   roomPage: {
+    invitation: {
+      title: '{{host}} te invitó a jugar',
+      subtitle:
+        'Acepta para ocupar tu lugar en el lobby, o recházala para avisar al anfitrión de que no te unirás.',
+      accept: 'Aceptar y unirse',
+      accepting: 'Uniéndose...',
+      decline: 'Rechazar',
+      error: 'No se pudo actualizar la invitación. Inténtalo de nuevo.',
+    },
     loading: 'Cargando...',
     loadingGame: 'Cargando juego...',
     errors: {
@@ -342,6 +351,9 @@ export const esMessages = {
     waitingForPlayerSlot: 'Esperando jugador...',
     notesLabel: 'Notas',
     invitedWaiting: 'Esperando...',
+    invitedAwaitingReply: 'Esperando respuesta',
+    cancelInviteLabel: 'Cancelar invitación',
+    resendInviteLabel: 'Reenviar',
     hostOnlyNote: 'Solo el anfitrión puede cambiar estos ajustes',
     bot: 'Robot',
     botCountLabel: 'Número de robots',

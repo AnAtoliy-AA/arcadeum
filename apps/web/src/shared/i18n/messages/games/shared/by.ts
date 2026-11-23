@@ -214,6 +214,15 @@ export const byMessages = {
   },
   create: createBy,
   roomPage: {
+    invitation: {
+      title: '{{host}} запрашае вас згуляць',
+      subtitle:
+        'Прыміце запрашэнне, каб заняць месца ў лобі, або адмоўцеся, каб гаспадар ведаў, што вы не прыйдзеце.',
+      accept: 'Прыняць і ўвайсці',
+      accepting: 'Уваход...',
+      decline: 'Адхіліць',
+      error: 'Не атрымалася абнавіць запрашэнне. Паспрабуйце зноў.',
+    },
     loading: 'Загрузка...',
     loadingGame: 'Загрузка гульні...',
     errors: {
@@ -339,6 +348,9 @@ export const byMessages = {
     waitingForPlayerSlot: 'Чаканне гульца...',
     notesLabel: 'Нататкі',
     invitedWaiting: 'Чаканне...',
+    invitedAwaitingReply: 'Чаканне адказу',
+    cancelInviteLabel: 'Адмяніць запрашэнне',
+    resendInviteLabel: 'Адправіць зноў',
     hostOnlyNote: 'Гэтыя налады можа змяняць толькі хост',
     bot: 'Бот',
     botCountLabel: 'Колькасць ботаў',

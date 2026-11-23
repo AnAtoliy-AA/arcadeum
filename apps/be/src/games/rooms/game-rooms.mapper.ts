@@ -283,6 +283,11 @@ export class GameRoomsMapper {
     summary.viewerHasJoined = room.participants.some(
       (p) => p.userId === viewerId,
     );
+    summary.viewerInvited =
+      !summary.viewerHasJoined &&
+      (
+        (room.gameOptions?.rematchInvitedIds as string[] | undefined) ?? []
+      ).includes(viewerId);
     summary.viewerRole = summary.viewerIsHost
       ? 'host'
       : summary.viewerHasJoined

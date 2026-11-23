@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.26] - 2026-11-23
+
+### Added
+- add analytics feedback loop with post history, scoring and format weights
+
+
 ## [1.31.25] - 2026-11-23
 
 ### Fixed

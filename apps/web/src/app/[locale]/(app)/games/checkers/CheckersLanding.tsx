@@ -5,6 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
+import { WeeklyCupBanner } from '@/features/tournaments/ui/SeaBattleBlitzBanner';
 import { CheckersLandingPreview } from './CheckersLandingPreview';
 
 type CkMessages = CheckersMessages['checkers_v1'];
@@ -136,6 +137,7 @@ export default function CheckersLanding({
   return (
     <UnifiedGameLanding
       accentGlow="orange"
+      topSection={<WeeklyCupBanner game="checkers" />}
       comingSoon={comingSoon}
       breadcrumbs={[
         { label: navTranslations?.homeTab ?? 'Home', href: homeHref },

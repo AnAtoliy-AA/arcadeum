@@ -126,6 +126,35 @@ export const tournamentsEn = {
     fullPageView: 'Open Tournament Page',
     closeModal: 'Close',
   },
+  weeklyCups: {
+    checkers: {
+      ariaLabel: 'Checkers Weekly Cup',
+      kicker: 'Weekly Draughts Championship',
+      formatDetails: '{count} Players • Single Elimination',
+      captainsReady: 'Players Ready',
+      battleStatus: 'Match Status',
+      signInNotice: 'Sign in to enter the Weekly Cup',
+      leaveCup: 'Leave Weekly Cup',
+      registerCup: 'Register for Weekly Cup',
+      modalTitle: 'Checkers Weekly Cup',
+      bracketPendingDesc:
+        'The bracket will be seeded automatically once registration closes. Matches start at the scheduled hour.',
+      rosterTitle: 'Registered Players',
+      rosterSubtitle: '{count} of {max} seats taken',
+      rosterYou: 'Your Seat',
+      rosterEmpty: 'No players registered yet. Be the first to sit down!',
+      intelFormatDesc:
+        'Single elimination draughts. Win your match to advance through the bracket to the grand final.',
+      intelFleet: 'Board and Rules',
+      intelFleetDesc:
+        'Classic Checkers rules on the standard board, the same as a regular ranked match.',
+      intelClock: 'Move Clock',
+      intelClockDesc:
+        'Matches are played against a move timer, so keep an eye on the clock.',
+      intelRewardsDesc:
+        'The Cup Winner receives 400 Coins, the Crown Trophy, and a top placement on the Checkers leaderboard.',
+    },
+  },
 };
 
 export type TournamentsI18n = typeof tournamentsEn;

@@ -165,6 +165,7 @@ export const by = {
     },
     monitoring: {
       title: 'Маніторынг',
+      liveRefresh: 'У рэжыме рэальнага часу, абнаўленне кожныя 10 с',
       loading: 'Загрузка метрык...',
       enableHint: 'Уключыце METRICS_ENABLED=true у .env для прагляду метрык',
       status: 'Статус',

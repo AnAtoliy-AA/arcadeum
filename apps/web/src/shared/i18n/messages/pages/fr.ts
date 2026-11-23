@@ -170,6 +170,7 @@ export const fr = {
     },
     monitoring: {
       title: 'Surveillance',
+      liveRefresh: 'En direct, actualisation toutes les 10 s',
       loading: 'Chargement des métriques...',
       enableHint:
         'Activez METRICS_ENABLED=true dans .env pour voir les métriques',

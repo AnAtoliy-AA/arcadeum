@@ -20,7 +20,7 @@ export function ProfileStatsShowcase({
     : null;
 
   return (
-    <Card variant="default">
+    <Card variant="default" data-testid="profile-stats">
       <div className="flex flex-col gap-4">
         <div className="flex flex-row items-center justify-between">
           <span className="text-[18px] font-bold">
@@ -33,31 +33,31 @@ export function ProfileStatsShowcase({
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          <div className="flex flex-col gap-1 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[var(--backgroundHover)] p-3">
+          <div className="flex flex-col gap-1 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
             <span className="text-[11px] uppercase tracking-wider text-[var(--textSecondary)]">
               {t('games.common.profile.totalGames')}
             </span>
-            <span className="text-[18px] font-bold text-[var(--color)]">
+            <span className="text-2xl font-extrabold tabular-nums text-[var(--color)]">
               {stats.totalGames}
             </span>
           </div>
-          <div className="flex flex-col gap-1 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[var(--backgroundHover)] p-3">
+          <div className="flex flex-col gap-1 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
             <span className="text-[11px] uppercase tracking-wider text-[var(--textSecondary)]">
               {t('games.common.profile.wins')} /{' '}
               {t('games.common.profile.losses')}
             </span>
-            <span className="text-[18px] font-bold text-[var(--success)]">
+            <span className="text-2xl font-extrabold tabular-nums text-[var(--success)]">
               {stats.wins}{' '}
-              <span className="text-[13px] text-[var(--danger)]">
+              <span className="text-[13px] text-[var(--error)]">
                 / {stats.losses}
               </span>
             </span>
           </div>
-          <div className="flex flex-col gap-1 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[var(--backgroundHover)] p-3">
+          <div className="flex flex-col gap-1 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
             <span className="text-[11px] uppercase tracking-wider text-[var(--textSecondary)]">
               {t('games.common.profile.streak')}
             </span>
-            <span className="text-[18px] font-bold text-[var(--color)]">
+            <span className="text-2xl font-extrabold tabular-nums text-[var(--color)]">
               {stats.currentStreak}
               {stats.currentStreakType && (
                 <span className="ml-1 text-[12px] text-[var(--textSecondary)]">
@@ -70,18 +70,18 @@ export function ProfileStatsShowcase({
               )}
             </span>
           </div>
-          <div className="flex flex-col gap-1 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[var(--backgroundHover)] p-3">
+          <div className="flex flex-col gap-1 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
             <span className="text-[11px] uppercase tracking-wider text-[var(--textSecondary)]">
               {t('games.common.profile.bestStreak')}
             </span>
-            <span className="text-[18px] font-bold text-[var(--warning)]">
+            <span className="text-2xl font-extrabold tabular-nums text-[var(--warning)]">
               🔥 {stats.bestWinStreak}
             </span>
           </div>
         </div>
 
         {trends && trends.records.length > 0 && (
-          <div className="flex flex-col gap-2 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] p-3">
+          <div className="flex flex-col gap-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3">
             <div className="flex flex-row items-center justify-between">
               <span className="text-[12px] font-semibold text-[var(--textSecondary)]">
                 {t('games.common.profile.recentForm')}
@@ -136,7 +136,7 @@ export function ProfileStatsShowcase({
               {stats.byGameType.map((gt) => (
                 <div
                   key={gt.gameId}
-                  className="flex flex-row items-center justify-between rounded-lg border border-[rgba(255,255,255,0.04)] bg-[var(--backgroundHover)] p-2.5 text-[13px]"
+                  className="flex flex-row items-center justify-between rounded-lg border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-2.5 text-[13px]"
                 >
                   <span className="font-medium capitalize text-[var(--color)]">
                     {gt.gameId.replace(/_v\d+$/, '').replace(/_/g, ' ')}

@@ -201,6 +201,16 @@ export const frMessages = {
       loss: 'Défaite',
       draw: 'Nul',
       viewReplay: 'Regarder le replay',
+      level: 'Niv. {{level}}',
+      xp: 'XP : {{xp}}',
+      joined: 'Inscrit le {{date}}',
+      you: 'Vous',
+      loadError: 'Impossible de charger ce profil',
+      loadErrorHint: 'Vérifiez votre connexion et réessayez.',
+      retry: 'Réessayer',
+      loading: 'Chargement du profil...',
+      statsEmpty: 'Pas encore de statistiques. Jouez quelques parties.',
+      opponent: 'Adversaire',
     },
   },
   create: createFr,
@@ -469,6 +479,22 @@ export const frMessages = {
     },
   },
   landing: {
+    academyKicker: 'Apprendre en pratiquant',
+    academyTitle: 'Académie Arcadeum : puzzles interactifs',
+    academySubtitle:
+      'Résolvez des puzzles tactiques rapides dans votre navigateur. Sans compte.',
+    academyPuzzle: 'Puzzle {{n}}',
+    academyTabsLabel: 'Sélecteur de puzzle',
+    academyTttTitle1: 'Défi 1 : la fourchette gagnante',
+    academyTttPrompt1:
+      'Jouez X : trouvez la case qui crée deux lignes gagnantes à la fois.',
+    academyTttExplanation1:
+      'Le coin supérieur droit crée une double menace sur la ligne 1 et la colonne 3.',
+    academyTttTitle2: 'Défi 2 : parer le piège du centre',
+    academyTttPrompt2:
+      'O a pris le centre, vous un coin, O le coin opposé. Bloquez sa menace en diagonale.',
+    academyTttExplanation2:
+      'Jouer sur une case de bord empêche O de construire une fourchette.',
     previewLabel: 'Aperçu en direct',
     cycleHint: 'Cliquez pour changer le thème',
     cycleAriaLabel: 'Changer le thème de l’aperçu, actuellement {{variant}}',

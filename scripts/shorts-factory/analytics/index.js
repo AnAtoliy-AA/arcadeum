@@ -6,6 +6,8 @@ module.exports = {
   ...require('./refresh'),
   ...require('./score'),
   ...require('./weights'),
+  ...require('./length'),
+  ...require('./record-post'),
   ...require('./summary'),
   fetchPostStats: require('./postiz').fetchPostStats,
 };

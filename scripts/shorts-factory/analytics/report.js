@@ -11,6 +11,7 @@ const { readHistory } = require('./store');
 const { rankAll } = require('./score');
 const { refreshStats } = require('./refresh');
 const { weeklySummary } = require('./summary');
+const { formatLengthSection, lengthStats } = require('./length');
 
 function formatReport(records) {
   const analyzed = records.filter((r) => r.stats);
@@ -26,6 +27,9 @@ function formatReport(records) {
       );
     }
   }
+  lines.push(
+    formatLengthSection(records, { minSamples: getConfig().minSamples }),
+  );
   return lines.join('\n');
 }
 
@@ -38,8 +42,13 @@ async function main(argv = process.argv.slice(2)) {
   }
   const records = readHistory(getConfig().historyPath);
   if (argv.includes('--json')) {
+    const analyzed = records.filter((r) => r.stats);
     console.log(
-      JSON.stringify(rankAll(records.filter((r) => r.stats)), null, 2),
+      JSON.stringify(
+        { ...rankAll(analyzed), byLengthClass: lengthStats(analyzed) },
+        null,
+        2,
+      ),
     );
   } else if (argv.includes('--weekly')) {
     console.log(weeklySummary(records));

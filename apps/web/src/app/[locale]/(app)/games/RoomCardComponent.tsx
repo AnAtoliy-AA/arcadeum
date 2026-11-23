@@ -167,12 +167,29 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
       >
         <div className="flex min-w-0 items-center gap-2">
           {members.length > 0 && (
-            <RoomCardAvatars members={members} labelFor={labelFor} />
+            <RoomCardAvatars
+              members={members}
+              labelFor={labelFor}
+              maxPlayers={room.maxPlayers}
+              emptySlotLabel={
+                room.status === GAME_ROOM_STATUS.LOBBY
+                  ? t('roomsBrowser.card.openSeat')
+                  : undefined
+              }
+            />
           )}
           <div className="flex min-w-0 flex-col">
             <span
               className="text-sm font-semibold text-[var(--color)]"
               data-testid="room-card-seats"
+              aria-label={
+                room.maxPlayers != null
+                  ? t('roomsBrowser.card.seatsAria', {
+                      filled: room.playerCount,
+                      max: room.maxPlayers,
+                    })
+                  : undefined
+              }
             >
               {seatsText}
               <span className="ml-1 text-xs font-normal text-[var(--textSecondary)]">
@@ -185,7 +202,7 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           </div>
         </div>
         <div className="flex min-w-0 flex-col items-end text-xs text-[var(--textSecondary)]">
-          <span className="max-w-[120px] truncate" title={hostLabel}>
+          <span className="max-w-[140px] truncate" title={hostLabel}>
             {t('roomsBrowser.card.host')}: {hostLabel}
           </span>
           <span>{createdAgo}</span>
@@ -197,15 +214,15 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           <LinkButton
             href={routes.gameRoom(room.id)}
             variant="primary"
-            size="sm"
-            className="flex-1 whitespace-nowrap"
+            size="md"
+            className="min-h-11 flex-1 whitespace-nowrap"
           >
             {ctaLabel}
           </LinkButton>
         )}
         {cta === 'full' && (
           <span
-            className="flex flex-1 items-center justify-center rounded-xl border border-[var(--glassBorder)] px-3 text-xs font-semibold text-[var(--textSecondary)]"
+            className="flex min-h-11 flex-1 items-center justify-center rounded-xl border border-[var(--glassBorder)] px-3 text-sm font-semibold text-[var(--textSecondary)]"
             data-testid="room-card-full"
           >
             {t('roomsBrowser.card.full')}
@@ -215,8 +232,11 @@ export function RoomCardComponent({ room, viewMode }: RoomCardComponentProps) {
           <LinkButton
             href={watchHref}
             variant="secondary"
-            size="sm"
-            className={cx('whitespace-nowrap', cta === 'none' && 'flex-1')}
+            size="md"
+            className={cx(
+              'min-h-11 whitespace-nowrap',
+              cta === 'none' && 'flex-1',
+            )}
           >
             {t('roomsBrowser.card.spectate')}
           </LinkButton>

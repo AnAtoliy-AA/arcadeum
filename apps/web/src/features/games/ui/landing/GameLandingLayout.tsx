@@ -32,11 +32,11 @@ export function GameLandingLayout({
         />
 
         <Container size="lg" className="px-4 sm:px-6 lg:px-8">
-          <div className="box-border relative flex flex-col gap-6 py-6 sm:py-8">
+          <div className="box-border relative flex flex-col gap-2 py-6 sm:py-8 pb-24 lg:pb-8">
             {breadcrumbs && breadcrumbs.length > 0 ? (
               <nav
                 aria-label="Breadcrumb"
-                className="box-border flex flex-wrap items-center gap-2 text-xs sm:text-sm text-[var(--foreground)] opacity-85"
+                className="box-border flex flex-wrap items-center gap-2 text-xs sm:text-sm text-[var(--foreground)] opacity-80"
               >
                 <ol className="box-border m-0 p-0 list-none flex flex-wrap items-center gap-2">
                   {breadcrumbs.map((crumb, idx) => {
@@ -49,7 +49,7 @@ export function GameLandingLayout({
                         {crumb.href && !isLast ? (
                           <Link
                             href={crumb.href}
-                            className="box-border hover:text-[var(--primary)] hover:underline transition-colors"
+                            className="box-border hover:text-[var(--primary)] hover:underline motion-safe:transition-colors"
                           >
                             {crumb.label}
                           </Link>

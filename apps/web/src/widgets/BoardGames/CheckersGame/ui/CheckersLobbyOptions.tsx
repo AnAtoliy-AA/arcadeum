@@ -1,11 +1,14 @@
 'use client';
 
-import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-} from '@/features/games/ui/LobbyOptions';
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+  LobbySubAdvanced,
+  LobbySwitchRow,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { CheckersOptions, CheckersTheme, Mode } from '../types';
 import { MODE_CONFIGS } from '../types';
@@ -81,40 +84,32 @@ export function CheckersLobbyOptionsPanel({
   const { setOption } = useRoomOptions({ roomId, userId });
   const variant = options.variant;
   const mode = options.mode;
-  const modeOptions = MODE_OPTIONS.map((rv) => ({
+  const ruleConfig = MODE_CONFIGS[mode];
+  const modeItems = MODE_OPTIONS.map((rv) => ({
     id: rv.id,
     label: `${t(rv.nameKey)} (${rv.id === 'international' ? '10×10' : '8×8'})`,
     emoji:
       rv.id === 'american' ? '🇺🇸' : rv.id === 'international' ? '🌍' : '🇷🇺',
+    description: t(rv.descriptionKey),
   }));
 
-  const ruleConfig = MODE_CONFIGS[mode];
-
   return (
-    <div className="flex flex-col items-stretch gap-4">
-      <div
+    <LobbyOptionStack>
+      <LobbyHostOnlyNote show={!isHost} />
+      <LobbyOptionGroup
         data-testid="checkers-board-size-section"
-        className="flex flex-col items-stretch gap-2 p-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+        title={t('games.checkers_v1.lobby.ruleVariant')}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-base">📐</span>
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
-            {t('games.checkers_v1.lobby.ruleVariant')}
-          </span>
-        </div>
-        <LobbyChipGroup
-          options={modeOptions}
+        <LobbyChoice
+          aria-label={t('games.checkers_v1.lobby.ruleVariant')}
+          items={modeItems}
           value={mode}
-          onChange={(v) => setOption({ mode: v })}
           disabled={!isHost}
-          accentColor="#2563eb"
+          onChange={(v) => setOption({ mode: v })}
           testIdPrefix="checkers-rule-variant"
         />
-        <span className="text-xs text-[var(--textSecondary)] opacity-80">
-          {t(MODE_OPTIONS.find((rv) => rv.id === mode)!.descriptionKey)}
-        </span>
-      </div>
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+      </LobbyOptionGroup>
+      <LobbyOptionGroup title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={variant}
           onSelect={(themeId) =>
@@ -122,59 +117,38 @@ export function CheckersLobbyOptionsPanel({
           }
           disabled={!isHost}
         />
-      </LobbyOptionSection>
-      <LobbyOptionSection title={t('games.checkers_v1.lobby.rules')}>
-        <div className="flex flex-col items-stretch gap-2">
-          <label
-            className={cx(
-              'flex items-center gap-2',
-              isHost
-                ? 'cursor-pointer opacity-100'
-                : 'cursor-not-allowed opacity-50',
-            )}
-          >
-            <input
-              type="checkbox"
-              checked={options.forcedCaptures}
-              disabled={!isHost}
-              onChange={(e) => setOption({ forcedCaptures: e.target.checked })}
-              className="h-4 w-4 accent-[#2563eb]"
-            />
-            <span className="text-[16px]">
-              {t('games.checkers_v1.lobby.forcedCaptures')}
-            </span>
-          </label>
-          <label
-            className={cx(
-              'flex items-center gap-2',
-              isHost
-                ? 'cursor-pointer opacity-100'
-                : 'cursor-not-allowed opacity-50',
-            )}
-          >
-            <input
-              type="checkbox"
-              checked={
-                options.backwardCaptures || ruleConfig.backwardCapturesForMen
-              }
-              disabled={!isHost || ruleConfig.backwardCapturesForMen}
-              onChange={(e) =>
-                setOption({ backwardCaptures: e.target.checked })
-              }
-              className="h-4 w-4 accent-[#2563eb]"
-            />
-            <span className="text-[16px]">
-              {t('games.checkers_v1.lobby.backwardCaptures')}
-              {ruleConfig.backwardCapturesForMen
-                ? ` (${t('games.checkers_v1.lobby.alwaysEnabled')})`
-                : ''}
-            </span>
-          </label>
-        </div>
-      </LobbyOptionSection>
-      <span className="text-[14px] opacity-[0.7]">
+      </LobbyOptionGroup>
+      <LobbySubAdvanced
+        testId="checkers-capture-rules"
+        title={t('games.checkers_v1.lobby.rules')}
+      >
+        <LobbySwitchRow
+          testId="checkers-forced-captures"
+          label={t('games.checkers_v1.lobby.forcedCaptures')}
+          hint={t('games.checkers_v1.lobby.forcedCapturesHint')}
+          checked={options.forcedCaptures}
+          disabled={!isHost}
+          onCheckedChange={(v) => setOption({ forcedCaptures: v })}
+        />
+        <LobbySwitchRow
+          testId="checkers-backward-captures"
+          label={t('games.checkers_v1.lobby.backwardCaptures')}
+          hint={t('games.checkers_v1.lobby.backwardCapturesHint')}
+          badge={
+            ruleConfig.backwardCapturesForMen
+              ? t('games.checkers_v1.lobby.alwaysEnabled')
+              : undefined
+          }
+          checked={
+            options.backwardCaptures || ruleConfig.backwardCapturesForMen
+          }
+          disabled={!isHost || ruleConfig.backwardCapturesForMen}
+          onCheckedChange={(v) => setOption({ backwardCaptures: v })}
+        />
+      </LobbySubAdvanced>
+      <p className="text-xs text-[var(--textMuted)]">
         {t('games.checkers_v1.rules.steps')}
-      </span>
-    </div>
+      </p>
+    </LobbyOptionStack>
   );
 }

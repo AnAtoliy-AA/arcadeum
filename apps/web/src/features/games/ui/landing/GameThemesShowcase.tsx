@@ -6,6 +6,8 @@ import type { GameThemesShowcaseProps } from './types';
 import { GameArt } from '@/features/games/ui/create/redesign/art/GameArt';
 import type { GameId } from '@/features/games/ui/create/redesign/data/themes';
 import { useGameLandingTheme } from './GameLandingThemeContext';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { GameSectionHeading } from './GameSectionHeading';
 import { SeaBattleFieldSvg } from './SeaBattleFieldSvg';
 
 interface ThemeVisualPreset {
@@ -124,14 +126,15 @@ const SUPPORTED_GAME_IDS = new Set<string>([
 export function GameThemesShowcase({
   id = 'themes',
   gameId,
-  title = 'Visual Themes & Board Styles',
-  kicker = 'Customization',
+  title,
+  kicker,
   subtitle,
   themes,
   baseHref,
-  createRoomLabel = 'Play with Theme',
+  createRoomLabel,
   comingSoon = false,
 }: GameThemesShowcaseProps) {
+  const { t } = useTranslation();
   const { theme: activeTheme, setTheme } = useGameLandingTheme();
 
   if (!themes || themes.length === 0) return null;
@@ -150,38 +153,26 @@ export function GameThemesShowcase({
   return (
     <section
       id={id}
-      className="box-border scroll-mt-32 flex flex-col gap-6 py-8 [content-visibility:auto] [contain-intrinsic-size:auto_500px]"
+      className="box-border scroll-mt-32 flex flex-col gap-8 py-10 sm:py-12 [content-visibility:auto] [contain-intrinsic-size:auto_500px]"
     >
-      <div className="box-border flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div className="box-border flex flex-col gap-1">
-          {kicker ? (
-            <span className="box-border text-xs font-bold uppercase tracking-wider text-[var(--color)]">
-              {kicker}
-            </span>
-          ) : null}
-          <h2 className="box-border m-0 text-2xl sm:text-3xl font-bold text-[var(--foreground)]">
-            {title}
-          </h2>
-          {subtitle ? (
-            <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 max-w-2xl">
-              {subtitle}
-            </p>
-          ) : null}
-        </div>
-
-        {activeHref ? (
-          <div className="box-border shrink-0">
+      <GameSectionHeading
+        kicker={kicker ?? t('games.landing.themesKicker')}
+        title={title ?? t('games.landing.themesTitle')}
+        subtitle={subtitle}
+        action={
+          activeHref ? (
             <Link
               href={activeHref}
-              className="box-border inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold bg-[var(--primary)] text-white hover:opacity-95 shadow-md transition-all no-underline"
+              className="box-border inline-flex items-center gap-1.5 min-h-11 px-4 py-2 rounded-xl text-sm font-bold bg-[var(--primary)] text-[var(--primaryText)] hover:opacity-95 shadow-md motion-safe:transition-all no-underline"
             >
               <span>
-                {createRoomLabel}: {selectedThemeObj.name} →
+                {createRoomLabel ?? t('games.landing.playWithTheme')}:{' '}
+                {selectedThemeObj.name} →
               </span>
             </Link>
-          </div>
-        ) : null}
-      </div>
+          ) : null
+        }
+      />
 
       <div className="box-border grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
         {themes.map((theme) => {
@@ -189,27 +180,21 @@ export function GameThemesShowcase({
           const isCurrent = activeTheme === theme.id;
 
           return (
-            <div
+            <button
               key={theme.id}
-              role="button"
-              tabIndex={0}
+              type="button"
+              aria-pressed={isCurrent}
               onClick={() => setTheme(theme.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setTheme(theme.id);
-                }
-              }}
               data-testid={`theme-card-${theme.id}`}
               className={cx(
-                'box-border flex flex-col justify-between p-2.5 sm:p-3 rounded-xl bg-[var(--glassBg)] border backdrop-blur-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 group overflow-hidden cursor-pointer text-left',
+                'box-border flex flex-col justify-between p-2.5 sm:p-3 rounded-2xl bg-[var(--glassBg)] border backdrop-blur-md motion-safe:transition-all motion-safe:duration-200 hover:shadow-lg motion-safe:hover:-translate-y-0.5 group overflow-hidden cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-[var(--primary)]',
                 isCurrent
                   ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/50 shadow-md bg-[var(--primary)]/5'
                   : visual.accentBorder,
               )}
             >
               <div className="box-border flex flex-col gap-2">
-                <div className="box-border h-24 sm:h-28 w-full rounded-lg border border-[var(--borderColor)] flex flex-col items-center justify-center relative overflow-hidden group-hover:scale-[1.02] transition-transform shadow-inner bg-[var(--background)] p-1">
+                <div className="box-border h-24 sm:h-28 w-full rounded-lg border border-[var(--borderColor)] flex flex-col items-center justify-center relative overflow-hidden motion-safe:group-hover:scale-[1.02] motion-safe:transition-transform shadow-inner bg-[var(--background)] p-1">
                   {theme.preview ? (
                     theme.preview
                   ) : isSeaBattle ? (
@@ -253,13 +238,13 @@ export function GameThemesShowcase({
                     </span>
                     {isCurrent ? (
                       <span className="box-border text-[9px] px-1 py-0.5 rounded font-bold uppercase bg-[var(--primary)] text-white shrink-0">
-                        Previewing
+                        {t('games.landing.previewing')}
                       </span>
                     ) : null}
                   </div>
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

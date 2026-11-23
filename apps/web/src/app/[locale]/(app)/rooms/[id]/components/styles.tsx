@@ -117,7 +117,7 @@ export function LoadingContainer({
   return (
     <div
       className={cx(
-        'flex min-h-[50vh] flex-col items-center justify-center text-[18px] text-[var(--textSecondary)]',
+        'flex min-h-[50vh] flex-col items-center justify-center gap-4 text-base text-[var(--textSecondary)]',
         className,
       )}
     >
@@ -136,7 +136,7 @@ export function ErrorContainer({
   return (
     <div
       className={cx(
-        'flex flex-col items-center p-8 text-[var(--danger)]',
+        'flex w-full max-w-[460px] flex-col items-center gap-3 rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] p-8 text-center text-[var(--color)]',
         className,
       )}
     >
@@ -179,7 +179,7 @@ export function Card({
   return (
     <div
       className={cx(
-        'flex w-full max-w-[460px] flex-col items-stretch gap-0 overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-10 pb-10 pt-14 mx-auto backdrop-blur-[32px]',
+        'flex w-full max-w-[460px] flex-col items-stretch gap-0 overflow-hidden rounded-[24px] border border-[var(--glassBorder)] bg-[var(--glassBg)] px-6 pb-8 pt-10 mx-auto sm:px-10 sm:pb-10 sm:pt-12 backdrop-blur-[32px]',
         className,
       )}
       style={
@@ -238,15 +238,15 @@ export function Title({
   style?: CSSProperties;
 }) {
   return (
-    <span
+    <h1
       className={cx(
-        'mb-2.5 text-center text-[26px] font-bold tracking-[-0.15px] text-[var(--accent)]',
+        'mb-2.5 text-center text-2xl font-bold tracking-[-0.01em] text-[var(--color)] sm:text-[26px]',
         className,
       )}
       style={style}
     >
       {children}
-    </span>
+    </h1>
   );
 }
 
@@ -261,7 +261,7 @@ export function Description({
 }) {
   return (
     <div
-      className={cx('mb-8 flex flex-col items-center px-4', className)}
+      className={cx('mb-6 flex flex-col items-center sm:mb-8', className)}
       style={style}
     >
       {children}
@@ -279,7 +279,7 @@ export function DescriptionText({
   return (
     <span
       className={cx(
-        'text-center text-[15px] leading-[22px] opacity-[0.6] text-[var(--color)]',
+        'text-center text-[15px] leading-[22px] text-[var(--textSecondary)]',
         className,
       )}
     >
@@ -379,7 +379,7 @@ export function LoginLink({
   return (
     <a
       className={cx(
-        'mt-4 inline-block text-[var(--accent)] underline',
+        'mt-2 inline-flex min-h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-5 text-sm font-semibold text-white no-underline',
         className,
       )}
       href={href}

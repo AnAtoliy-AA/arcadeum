@@ -126,6 +126,10 @@ export const esMessages = {
       boardSize: 'Tamaño del tablero',
       maxPlayersShort: 'hasta {{n}}',
       teamMode: 'Modo por equipos',
+      teamModeHint: 'Los jugadores se dividen en equipos que juegan juntos',
+      expansionMarginHint:
+        'Cuánto crece el tablero cuando se juega cerca del borde',
+      winLengthLabel: 'Fichas en línea para ganar',
       startWithBots: 'Empezar con bots',
       addBot: 'Añadir bot',
       waitingForPlayers: 'Esperando jugadores…',

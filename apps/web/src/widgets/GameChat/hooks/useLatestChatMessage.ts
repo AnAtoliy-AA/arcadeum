@@ -31,16 +31,14 @@ export function useLatestChatMessage(
   const derivedMessage = useMemo<LatestChatMessage | null>(() => {
     if (logs.length === 0) return null;
 
-    const lastChatMessage = [...logs]
-      .reverse()
-      .find((log) => {
-        if (log.type !== 'message' || !log.senderId) return false;
-        if (isEmoteMessage(log.message)) return false;
-        const t = log.createdAt
-          ? new Date(log.createdAt).getTime()
-          : Number.POSITIVE_INFINITY;
-        return t > mountTime;
-      });
+    const lastChatMessage = [...logs].reverse().find((log) => {
+      if (log.type !== 'message' || !log.senderId) return false;
+      if (isEmoteMessage(log.message)) return false;
+      const t = log.createdAt
+        ? new Date(log.createdAt).getTime()
+        : Number.POSITIVE_INFINITY;
+      return t > mountTime;
+    });
 
     if (!lastChatMessage) return null;
 

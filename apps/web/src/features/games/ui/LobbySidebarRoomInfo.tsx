@@ -1,64 +1,45 @@
 'use client';
 
-import { useTranslation } from '@/shared/i18n/useTranslation';
 import type { GameRoomSummary } from '@/shared/types/games';
 import {
   LobbyCard,
   CardTitle,
   InfoRow,
   InfoLabel,
-  StatusBadge,
   InfoValue,
-  FastBadge,
-  FastBadgeText,
 } from './lobbyStyles';
 import { InviteFriendPicker } from './InviteFriendPicker';
 
 export interface LobbySidebarRoomInfoProps {
   room: GameRoomSummary;
   isHost: boolean;
+  /** @deprecated Shown in the header now. */
   isFastMode?: boolean;
   roomInfoLabel: string;
-  statusLabel: string;
+  /** @deprecated Status chip lives in the header. */
+  statusLabel?: string;
   visibilityLabel: string;
   visibilityPublicLabel: string;
   visibilityPrivateLabel: string;
-  inviteCodeLabel: string;
-  fastRoomLabel: string;
-  notesLabel?: string;
+  /** @deprecated Room code lives in the header. */
+  inviteCodeLabel?: string;
+  /** @deprecated Fast badge lives in the header. */
+  fastRoomLabel?: string;
+  notesLabel: string;
 }
 
 export function LobbySidebarRoomInfo({
   room,
   isHost,
-  isFastMode,
   roomInfoLabel,
-  statusLabel,
   visibilityLabel,
   visibilityPublicLabel,
   visibilityPrivateLabel,
-  inviteCodeLabel,
-  fastRoomLabel,
   notesLabel,
 }: LobbySidebarRoomInfoProps) {
-  const { t } = useTranslation();
   return (
     <LobbyCard>
       <CardTitle>{roomInfoLabel}</CardTitle>
-      <InfoRow>
-        <InfoLabel>{statusLabel}</InfoLabel>
-        <StatusBadge status={room.status}>
-          {t(`games.rooms.status.${room.status}`) || room.status}
-        </StatusBadge>
-      </InfoRow>
-      {isFastMode && (
-        <InfoRow>
-          <InfoLabel>Mode</InfoLabel>
-          <FastBadge>
-            <FastBadgeText>⚡ {fastRoomLabel}</FastBadgeText>
-          </FastBadge>
-        </InfoRow>
-      )}
       <InfoRow>
         <InfoLabel>{visibilityLabel}</InfoLabel>
         <InfoValue>
@@ -67,17 +48,9 @@ export function LobbySidebarRoomInfo({
             : `🔒 ${visibilityPrivateLabel}`}
         </InfoValue>
       </InfoRow>
-      {room.inviteCode && (
-        <InfoRow>
-          <InfoLabel>{inviteCodeLabel}</InfoLabel>
-          <InfoValue className="font-mono tracking-[1px]">
-            {room.inviteCode}
-          </InfoValue>
-        </InfoRow>
-      )}
       {room.notes ? (
         <InfoRow>
-          <InfoLabel>{notesLabel || 'Notes'}</InfoLabel>
+          <InfoLabel>{notesLabel}</InfoLabel>
           <InfoValue className="text-xs break-words max-w-[180px] text-right">
             {room.notes}
           </InfoValue>
@@ -85,7 +58,9 @@ export function LobbySidebarRoomInfo({
       ) : null}
 
       {isHost && room.status === 'lobby' && (
-        <InviteFriendPicker roomId={room.id} />
+        <div id="lobby-invite-section">
+          <InviteFriendPicker roomId={room.id} />
+        </div>
       )}
     </LobbyCard>
   );

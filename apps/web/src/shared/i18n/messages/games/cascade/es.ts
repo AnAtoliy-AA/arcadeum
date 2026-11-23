@@ -230,6 +230,7 @@ export const esMessages = {
     },
     lobby: {
       stacking: 'Permitir penalizaciones encadenables',
+      stackingAutoHint: 'Se define automáticamente según el modo de juego',
       lastCardCall:
         'Carrera por la Última Carta (pulsa Cascade cuando un rival llegue a 1)',
       startWithBots: 'Empezar con bots',

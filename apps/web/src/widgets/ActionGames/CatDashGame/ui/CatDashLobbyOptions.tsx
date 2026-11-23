@@ -7,9 +7,11 @@ import {
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
 import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-} from '@/features/games/ui/LobbyOptions';
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { useEquippedGameTheme } from '@/features/games/hooks/useEquippedGameTheme';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -56,59 +58,66 @@ export function CatDashLobbyOptionsPanel({
     if (!isHost) return;
     setOption({ trackLength: Number(len) });
   };
+  const columnItems = [8, 10, 12].map((cols) => ({
+    id: String(cols),
+    label: `${cols} ${t('games.cat_dash_v1.lobby.columnsUnit')}`,
+  }));
+  const lengthItems = [40, 60, 80, 100].map((len) => ({
+    id: String(len),
+    label: `${len} ${t('games.cat_dash_v1.lobby.spacesUnit')}`,
+  }));
   return (
     <>
-      <div className="flex flex-col items-stretch gap-3 p-2">
-        <LobbyOptionSection title={t('games.create.sectionVariant')}>
+      <LobbyOptionStack>
+        <LobbyHostOnlyNote show={!isHost} />
+        <LobbyOptionGroup
+          title={t('games.cat_dash_v1.lobby.columns')}
+          hint={t('games.cat_dash_v1.lobby.columnsHint')}
+        >
+          <LobbyChoice
+            aria-label={t('games.cat_dash_v1.lobby.columns')}
+            items={columnItems}
+            value={String(columnsVal)}
+            onChange={handleColumnsChange}
+            disabled={!isHost}
+            testIdPrefix="catdash-columns"
+          />
+        </LobbyOptionGroup>
+
+        <LobbyOptionGroup
+          title={t('games.cat_dash_v1.lobby.trackLength')}
+          hint={t('games.cat_dash_v1.lobby.trackLengthHint')}
+        >
+          <LobbyChoice
+            aria-label={t('games.cat_dash_v1.lobby.trackLength')}
+            items={lengthItems}
+            value={String(trackLengthVal)}
+            onChange={handleTrackLengthChange}
+            disabled={!isHost}
+            testIdPrefix="catdash-track"
+          />
+        </LobbyOptionGroup>
+
+        <LobbyOptionGroup title={t('games.create.sectionVariant')}>
           <GameThemePicker
             selectedTheme={options.theme ?? equippedTheme}
             onSelect={handleThemeChange}
             disabled={!isHost}
           />
-        </LobbyOptionSection>
+        </LobbyOptionGroup>
 
-        <LobbyOptionSection title={t('games.cat_dash_v1.lobby.columns')}>
-          <LobbyChipGroup
-            options={[8, 10, 12].map((cols) => ({
-              id: String(cols),
-              label: `${cols} ${t('games.cat_dash_v1.lobby.columnsUnit')}`,
-            }))}
-            value={String(columnsVal)}
-            onChange={handleColumnsChange}
-            disabled={!isHost}
-            accentColor="#7c3aed"
-            testIdPrefix="catdash-columns"
-          />
-        </LobbyOptionSection>
-
-        <LobbyOptionSection title={t('games.cat_dash_v1.lobby.trackLength')}>
-          <LobbyChipGroup
-            options={[40, 60, 80, 100].map((len) => ({
-              id: String(len),
-              label: `${len} ${t('games.cat_dash_v1.lobby.spacesUnit')}`,
-            }))}
-            value={String(trackLengthVal)}
-            onChange={handleTrackLengthChange}
-            disabled={!isHost}
-            accentColor="#7c3aed"
-            testIdPrefix="catdash-track"
-          />
-        </LobbyOptionSection>
-
-        <div className="pt-2 border-t border-white/10">
-          <button
-            type="button"
-            onClick={() => setShowRacerBio(true)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-purple-900/40 hover:bg-purple-900/60 border border-purple-500/40 text-purple-200 hover:text-white font-bold text-xs transition-all shadow-md cursor-pointer"
-            data-testid="lobby-racers-btn"
-          >
-            <span>🏎️</span>
-            <span>
-              {t('games.cat_dash_v1.lobby.meetRacers' as TranslationKey)}
-            </span>
-          </button>
-        </div>
-      </div>
+        <button
+          type="button"
+          onClick={() => setShowRacerBio(true)}
+          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-4 text-sm font-semibold text-[var(--textPrimary)] transition-colors hover:bg-[var(--glassBgHover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] motion-reduce:transition-none"
+          data-testid="lobby-racers-btn"
+        >
+          <span aria-hidden>🏎️</span>
+          <span>
+            {t('games.cat_dash_v1.lobby.meetRacers' as TranslationKey)}
+          </span>
+        </button>
+      </LobbyOptionStack>
       {showRacerBio && (
         <RacerBioModal
           open={showRacerBio}

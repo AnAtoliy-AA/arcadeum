@@ -50,7 +50,8 @@ test.describe('Game Room Detail', () => {
     // Check for "Create Room" button
     const createRoomBtn = page
       .getByRole('link', { name: /create room/i })
-      .or(page.getByTestId('create-room-link'));
+      .or(page.getByTestId('create-room-link'))
+      .first();
     await expect(createRoomBtn).toBeVisible();
     await expect(createRoomBtn).toHaveAttribute(
       'href',
@@ -74,7 +75,10 @@ test.describe('Game Room Detail', () => {
 
   test('should navigate to create room page', async ({ page }) => {
     await navigateTo(page, '/games/critical_v1');
-    const createRoomBtn = page.getByRole('link', { name: /create room/i });
+    // The header link and the empty-state CTA both create a room.
+    const createRoomBtn = page
+      .getByRole('link', { name: /create room/i })
+      .first();
     await createRoomBtn.click();
 
     await expect(page).toHaveURL(/\/games\/create/);

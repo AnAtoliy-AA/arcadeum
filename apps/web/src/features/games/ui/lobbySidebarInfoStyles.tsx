@@ -90,7 +90,7 @@ export const FastBadge = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-center gap-2 px-3 py-1 rounded-[8px] bg-[rgba(234,179,8,0.15)]',
+      'flex flex-row items-center gap-2 px-3 py-1 rounded-[8px] bg-[var(--warning)]/15 border border-[var(--warning)]/50',
       className,
     )}
   >
@@ -105,7 +105,12 @@ export const FastBadgeText = ({
   className?: string;
   children?: ReactNode;
 }) => (
-  <span className={cx('text-[14px] font-medium text-[#eab308]', className)}>
+  <span
+    className={cx(
+      'text-[14px] font-medium text-[var(--textPrimary)]',
+      className,
+    )}
+  >
     {children}
   </span>
 );

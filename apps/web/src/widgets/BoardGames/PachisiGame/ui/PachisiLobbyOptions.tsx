@@ -6,9 +6,11 @@ import {
   type TranslationKey,
 } from '@/shared/i18n/useTranslation';
 import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-} from '@/features/games/ui/LobbyOptions';
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { PachisiOptions, PachisiMode, PachisiTheme } from '../types';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -76,20 +78,30 @@ export function PachisiLobbyOptionsPanel({
   const { setOption } = useRoomOptions({ roomId, userId });
   const variant = options.variant;
   const mode = options.mode ?? 'standard';
-  const modeOptions = useMemo(
+  const modeItems = useMemo(
     () =>
       MODE_OPTIONS.map((rv) => ({
         id: rv.id,
         label: t(rv.nameKey),
         emoji: rv.emoji,
+        description: t(rv.descriptionKey),
       })),
     [t],
   );
-  const activeModeMeta =
-    MODE_OPTIONS.find((rv) => rv.id === mode) ?? MODE_OPTIONS[0];
   return (
-    <div className="flex flex-col gap-4">
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+    <LobbyOptionStack>
+      <LobbyHostOnlyNote show={!isHost} />
+      <LobbyOptionGroup title={t('games.pachisi_v1.lobby.ruleVariant')}>
+        <LobbyChoice
+          aria-label={t('games.pachisi_v1.lobby.ruleVariant')}
+          items={modeItems}
+          value={mode}
+          onChange={(v) => setOption({ mode: v })}
+          disabled={!isHost}
+          testIdPrefix="pachisi-rule-variant"
+        />
+      </LobbyOptionGroup>
+      <LobbyOptionGroup title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={variant}
           onSelect={(themeId) =>
@@ -97,20 +109,7 @@ export function PachisiLobbyOptionsPanel({
           }
           disabled={!isHost}
         />
-      </LobbyOptionSection>
-      <LobbyOptionSection title={t('games.pachisi_v1.lobby.ruleVariant')}>
-        <LobbyChipGroup
-          options={modeOptions}
-          value={mode}
-          onChange={(v) => setOption({ mode: v })}
-          disabled={!isHost}
-          accentColor="#f59e0b"
-          testIdPrefix="pachisi-rule-variant"
-        />
-        <span className="text-[14px] opacity-60">
-          {t(activeModeMeta.descriptionKey)}
-        </span>
-      </LobbyOptionSection>
-    </div>
+      </LobbyOptionGroup>
+    </LobbyOptionStack>
   );
 }

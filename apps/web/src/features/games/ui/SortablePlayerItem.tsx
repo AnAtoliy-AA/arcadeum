@@ -2,7 +2,9 @@ import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GameRoomMemberSummary } from '@/shared/types/games';
-import { Button, Badge } from '@arcadeum/ui';
+import { Button } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { LobbyMemberChips } from './LobbyChips';
 import { PlayerItem, PlayerInfo, LobbyPlayerName } from './lobbyStyles';
 import { InGameAvatar } from './InGameAvatar';
 
@@ -27,6 +29,7 @@ export interface SortablePlayerItemProps {
   onMoveDown: () => void;
   onKick?: () => void;
   isBot?: boolean;
+  isYou?: boolean;
 }
 
 export function SortablePlayerItem({
@@ -39,7 +42,9 @@ export function SortablePlayerItem({
   onMoveDown,
   onKick,
   isBot,
+  isYou,
 }: SortablePlayerItemProps) {
+  const { t } = useTranslation();
   const {
     attributes,
     listeners,
@@ -73,22 +78,17 @@ export function SortablePlayerItem({
             <LobbyPlayerName className="break-words" title={member.displayName}>
               {member.displayName}
             </LobbyPlayerName>
-            {isRoomHost && (
-              <Badge variant="info" className="shrink-0">
-                HOST
-              </Badge>
-            )}
-            {isBot && (
-              <span className="text-[11px]" title="AI Bot">
-                🤖
-              </span>
-            )}
+            <LobbyMemberChips
+              isRoomHost={isRoomHost}
+              isBot={!!isBot}
+              isYou={isYou}
+            />
           </div>
         </PlayerInfo>
         {isHost && totalCount > 1 && (
           <div className="flex flex-row items-center gap-1 shrink-0 ml-auto">
             <Button
-              className="py-1 px-2 min-w-[auto]"
+              className="min-h-[44px] min-w-[44px]"
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -96,12 +96,13 @@ export function SortablePlayerItem({
                 onMoveUp();
               }}
               disabled={index === 0}
+              aria-label={`${member.displayName} ↑`}
               data-testid={`player-move-up-${member.id}`}
             >
               ↑
             </Button>
             <Button
-              className="py-1 px-2 min-w-[auto]"
+              className="min-h-[44px] min-w-[44px]"
               variant="ghost"
               size="sm"
               onClick={(e: { stopPropagation: () => void }) => {
@@ -109,6 +110,7 @@ export function SortablePlayerItem({
                 onMoveDown();
               }}
               disabled={index === totalCount - 1}
+              aria-label={`${member.displayName} ↓`}
               data-testid={`player-move-down-${member.id}`}
             >
               ↓
@@ -117,7 +119,8 @@ export function SortablePlayerItem({
         )}
         {onKick && !isRoomHost && (
           <Button
-            className="py-1 px-2 min-w-[auto] shrink-0 ml-auto"
+            className="min-h-[44px] min-w-[44px] shrink-0 ml-auto"
+            aria-label={`${t(isBot ? 'games.lobby.removeBot' : 'games.lobby.kickPlayer')}: ${member.displayName}`}
             variant="danger"
             ghost
             size="sm"

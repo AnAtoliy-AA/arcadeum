@@ -1,8 +1,13 @@
 'use client';
 
-import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import {
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+  LobbySubAdvanced,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
 import { GO_BOARD_SIZES, resolveGoOptions } from '../lib/constants';
@@ -14,30 +19,10 @@ export const GO_LOBBY_THEME = {
 };
 
 const AI_DIFFICULTY_OPTIONS = [
-  {
-    id: 'easy',
-    label: 'Easy',
-    emoji: '🌱',
-    description: 'Random moves with capture priority',
-  },
-  {
-    id: 'medium',
-    label: 'Medium',
-    emoji: '🌿',
-    description: 'Greedy heuristic strategy',
-  },
-  {
-    id: 'hard',
-    label: 'Hard',
-    emoji: '🌳',
-    description: 'MCTS search (220 simulations)',
-  },
-  {
-    id: 'expert',
-    label: 'Expert',
-    emoji: '🏔️',
-    description: 'Advanced MCTS (550 simulations)',
-  },
+  { id: 'easy', emoji: '🌱' },
+  { id: 'medium', emoji: '🌿' },
+  { id: 'hard', emoji: '🌳' },
+  { id: 'expert', emoji: '🏔️' },
 ] as const;
 
 export function GoLobbyOptionsPanel({
@@ -55,44 +40,48 @@ export function GoLobbyOptionsPanel({
   const { setOption } = useRoomOptions({ roomId, userId });
   const variant = options.variant;
   const currentDifficulty = options.aiDifficulty ?? 'medium';
+  const sizeItems = GO_BOARD_SIZES.map(({ size, label }) => ({
+    id: String(size),
+    label,
+    testId: `go-board-size-${size}`,
+  }));
+  const diffLabels = {
+    easy: t('games.lobby.difficultyEasy'),
+    medium: t('games.lobby.difficultyMedium'),
+    hard: t('games.lobby.difficultyHard'),
+    expert: t('games.lobby.difficultyExpert'),
+  };
+  const diffDescriptions = {
+    easy: t('games.go_v1.lobby.aiEasyDesc'),
+    medium: t('games.go_v1.lobby.aiMediumDesc'),
+    hard: t('games.go_v1.lobby.aiHardDesc'),
+    expert: t('games.go_v1.lobby.aiExpertDesc'),
+  };
+  const diffItems = AI_DIFFICULTY_OPTIONS.map((d) => ({
+    id: d.id,
+    emoji: d.emoji,
+    label: diffLabels[d.id],
+    description: diffDescriptions[d.id],
+    testId: `go-ai-difficulty-${d.id}`,
+  }));
+
   return (
-    <div className="flex flex-col items-stretch gap-4">
-      <div
+    <LobbyOptionStack>
+      <LobbyHostOnlyNote show={!isHost} />
+      <LobbyOptionGroup
         data-testid="go-board-size-section"
-        className="flex flex-col items-stretch gap-2 p-3.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--surface)]/50"
+        title={t('games.go_v1.lobby.boardSize')}
+        hint={t('games.go_v1.lobby.boardSizeHint')}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-base">📐</span>
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
-            {t('games.go_v1.lobby.boardSize')}
-          </span>
-        </div>
-        <div className="flex flex-row flex-wrap gap-2">
-          {GO_BOARD_SIZES.map(({ size, label }) => (
-            <button
-              key={size}
-              type="button"
-              data-testid={`go-board-size-${size}`}
-              disabled={!isHost}
-              aria-pressed={options.boardSize === size}
-              onClick={() => setOption({ boardSize: size })}
-              className={cx(
-                'rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all',
-                options.boardSize === size
-                  ? 'border-blue-500 bg-blue-600 text-white shadow-md ring-1 ring-blue-400/50'
-                  : 'border-[var(--borderColor)] bg-[var(--surface)] text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)] hover:text-[var(--textPrimary)]',
-                !isHost && 'cursor-not-allowed opacity-50',
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <span className="text-xs text-[var(--textSecondary)] opacity-80">
-          {t('games.go_v1.lobby.boardSizeHint')}
-        </span>
-      </div>
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <LobbyChoice
+          aria-label={t('games.go_v1.lobby.boardSize')}
+          items={sizeItems}
+          value={String(options.boardSize)}
+          disabled={!isHost}
+          onChange={(id) => setOption({ boardSize: Number(id) })}
+        />
+      </LobbyOptionGroup>
+      <LobbyOptionGroup title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={variant}
           onSelect={(themeId) =>
@@ -100,34 +89,24 @@ export function GoLobbyOptionsPanel({
           }
           disabled={!isHost}
         />
-      </LobbyOptionSection>
-      <LobbyOptionSection title={t('games.go_v1.lobby.aiDifficulty')}>
-        <div className="grid grid-cols-2 gap-2">
-          {AI_DIFFICULTY_OPTIONS.map((diff) => (
-            <button
-              key={diff.id}
-              type="button"
-              data-testid={`go-ai-difficulty-${diff.id}`}
-              disabled={!isHost}
-              aria-pressed={currentDifficulty === diff.id}
-              onClick={() => setOption({ aiDifficulty: diff.id })}
-              className={cx(
-                'flex flex-col items-center gap-1 rounded-lg border px-3 py-2.5 text-sm transition-colors',
-                currentDifficulty === diff.id
-                  ? 'border-[#3fd38666] bg-[#2563eb] text-white'
-                  : 'border-[var(--borderColor)] bg-[var(--backgroundHover)]',
-                !isHost && 'cursor-not-allowed opacity-50',
-              )}
-            >
-              <span className="text-lg">{diff.emoji}</span>
-              <span className="font-semibold">{diff.label}</span>
-              <span className="text-[10px] opacity-70 leading-tight">
-                {diff.description}
-              </span>
-            </button>
-          ))}
-        </div>
-      </LobbyOptionSection>
-    </div>
+      </LobbyOptionGroup>
+      <LobbySubAdvanced
+        testId="go-ai-difficulty-section"
+        title={t('games.go_v1.lobby.aiDifficulty')}
+      >
+        <LobbyOptionGroup
+          title={t('games.go_v1.lobby.aiDifficulty')}
+          hint={t('games.go_v1.lobby.aiDifficultyHint')}
+        >
+          <LobbyChoice
+            aria-label={t('games.go_v1.lobby.aiDifficulty')}
+            items={diffItems}
+            value={currentDifficulty}
+            disabled={!isHost}
+            onChange={(id) => setOption({ aiDifficulty: id })}
+          />
+        </LobbyOptionGroup>
+      </LobbySubAdvanced>
+    </LobbyOptionStack>
   );
 }

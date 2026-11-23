@@ -5,6 +5,8 @@ import {
   buildTableRoomInfoLabels,
   getDefaultSubtitle,
   getFieldSizeBadge,
+  getLobbyPhase,
+  getLobbyStartHint,
   initialBotCount,
   pickBotOptions,
   resolveLobbyConfig,
@@ -171,5 +173,49 @@ describe('buildTableRoomInfoLabels / buildBotLabels', () => {
       botCountLabel: 'T:games.lobby.botCountLabel',
       startWithBotsLabel: 'T:games.lobby.startWithBots',
     });
+  });
+});
+
+describe('getLobbyPhase / getLobbyStartHint', () => {
+  it('maps room state to a phase', () => {
+    expect(
+      getLobbyPhase({ status: 'lobby', playerCount: 1, minPlayers: 2 }),
+    ).toBe('waiting');
+    expect(
+      getLobbyPhase({ status: 'lobby', playerCount: 2, minPlayers: 2 }),
+    ).toBe('ready');
+    expect(
+      getLobbyPhase({ status: 'in_progress', playerCount: 2, minPlayers: 2 }),
+    ).toBe('inProgress');
+  });
+
+  it('explains why start is blocked', () => {
+    const base = { busy: false, disabled: false, enableBots: false };
+    expect(
+      getLobbyStartHint({ ...base, playerCount: 1, minPlayers: 2 }),
+    ).toMatchObject({
+      key: 'subtitleNeedPlayers',
+      count: 2,
+      canStart: false,
+    });
+    expect(
+      getLobbyStartHint({
+        ...base,
+        enableBots: true,
+        playerCount: 2,
+        minPlayers: 3,
+      }),
+    ).toMatchObject({
+      key: 'startHintNeedMore',
+      count: 1,
+      canStart: false,
+    });
+    expect(
+      getLobbyStartHint({ ...base, playerCount: 2, minPlayers: 2 }).canStart,
+    ).toBe(true);
+    expect(
+      getLobbyStartHint({ ...base, busy: true, playerCount: 2, minPlayers: 2 })
+        .key,
+    ).toBe('startingHint');
   });
 });

@@ -49,16 +49,9 @@ test.describe('Tutorial Overlay', () => {
     const tutorialOverlay = page.getByTestId('tutorial-overlay');
     await expect(tutorialOverlay).toBeHidden();
 
-    const moreOptionsBtn = page.getByTestId('more-options-button');
-    const isMoreOptionsVisible = await moreOptionsBtn.isVisible();
+    await page.getByTestId('more-options-button').click();
 
-    if (isMoreOptionsVisible) {
-      await moreOptionsBtn.click();
-    }
-
-    const showTutorialBtn = isMoreOptionsVisible
-      ? page.getByTestId('show-tutorial-button-mobile')
-      : page.getByTestId('show-tutorial-button-desktop');
+    const showTutorialBtn = page.getByTestId('show-tutorial-button');
     await expect(showTutorialBtn).toBeVisible();
     await showTutorialBtn.click();
 
@@ -70,10 +63,7 @@ test.describe('Tutorial Overlay', () => {
     await closeBtn.click();
     await expect(tutorialOverlay).toBeHidden();
 
-    if (isMoreOptionsVisible) {
-      await expect(moreOptionsBtn).toBeVisible();
-      await moreOptionsBtn.click();
-    }
+    await page.getByTestId('more-options-button').click();
     await expect(showTutorialBtn).toBeVisible();
     await showTutorialBtn.click();
     await expect(tutorialOverlay).toBeVisible();

@@ -15,6 +15,7 @@ import { gamesApi, GetRoomsResponse } from '@/features/games/api';
 import { gameMetadata } from '@/features/games/registry';
 import { GameCard } from '@/features/games/ui/GameCard';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { gameSocket } from '@/shared/lib/socket';
 import { useRefreshStore } from '@/shared/model/useRefreshStore';
 import { GamesEmpty } from './components/GamesEmpty';
@@ -307,6 +308,11 @@ export default function GamesPage({
     );
   }, []);
 
+  const routes = useRoutes();
+  const createRoomHref = gameId
+    ? `${routes.gameCreate}?gameId=${encodeURIComponent(gameId)}`
+    : routes.games;
+
   const error = Boolean(queryError);
   const hasActiveFilters =
     selectedStatuses.length > 0 ||
@@ -343,6 +349,7 @@ export default function GamesPage({
         <GamesEmpty
           hasFilters={hasActiveFilters}
           onClearFilters={handleClearAll}
+          createRoomHref={createRoomHref}
         />
       );
     }
@@ -395,7 +402,7 @@ export default function GamesPage({
               'mt-6 gap-5 max-[800px]:grid-cols-1',
               viewMode === 'list'
                 ? 'flex flex-col gap-2'
-                : 'grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))]',
+                : 'grid grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))]',
             )}
           >
             {renderContent()}

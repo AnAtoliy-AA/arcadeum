@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Select } from '@arcadeum/ui';
 import type { ButtonProps } from '@arcadeum/ui';
 import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import { useTranslation } from '@/shared/i18n/useTranslation';
@@ -19,10 +18,6 @@ const LEVEL_KEYS: Record<BotLevel, TranslationKey> = {
   hard: 'games.landing.botLevelHard',
   expert: 'games.landing.botLevelExpert',
 };
-
-function isBotLevel(value: string): value is BotLevel {
-  return (BOT_LEVELS as readonly string[]).includes(value);
-}
 
 interface GameBotPlayProps {
   gameId: string;
@@ -51,14 +46,9 @@ export function GameBotPlay({
     () => loadStoredSettings().aiDifficulty ?? 'medium',
   );
 
-  const options = BOT_LEVELS.map((value) => ({
-    value,
-    label: t(LEVEL_KEYS[value]),
-  }));
-
   return (
     <div
-      className="box-border inline-flex flex-wrap items-center gap-2"
+      className="box-border flex flex-col gap-3 sm:flex-row sm:items-center"
       data-testid="game-bot-play"
     >
       <QuickplayButton
@@ -72,17 +62,33 @@ export function GameBotPlay({
         disabled={disabled}
         difficulty={level}
       />
-      <Select
-        size="sm"
-        value={level}
-        options={options}
-        disabled={disabled}
+      <div
+        role="radiogroup"
         aria-label={t('games.landing.botLevel')}
         data-testid="game-bot-level"
-        onValueChange={(next) => {
-          if (isBotLevel(next)) setLevel(next);
-        }}
-      />
+        className="box-border inline-flex w-full sm:w-auto items-center gap-1 rounded-xl border border-[var(--borderColor)] bg-[var(--surfaceBg)] p-1"
+      >
+        {BOT_LEVELS.map((value) => {
+          const active = value === level;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              disabled={disabled}
+              onClick={() => setLevel(value)}
+              className={`box-border flex-1 sm:flex-none min-h-11 px-3 rounded-lg text-xs sm:text-sm font-semibold cursor-pointer motion-safe:transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-[var(--primary)] ${
+                active
+                  ? 'bg-[var(--primary)] text-[var(--primaryText)] shadow-sm'
+                  : 'text-[var(--foreground)] hover:bg-[var(--primary)]/10'
+              }`}
+            >
+              {t(LEVEL_KEYS[value])}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ export const en = {
   emptyHint: 'Be the first to open a table, or play against a bot right now.',
   clearFilters: 'Clear filters',
   createRoom: 'Create room',
+  backToRooms: 'Back to rooms',
   card: {
     join: 'Join',
     play: 'Play',
@@ -31,6 +32,8 @@ export const en = {
     host: 'Host',
     players: 'Players',
     guest: 'Guest #{{id}}',
+    seatsAria: '{{filled}} of {{max}} seats taken',
+    openSeat: 'Open seat',
     bot: 'Bot',
   },
 };
@@ -54,6 +57,7 @@ export const es: typeof en = {
   emptyHint: 'Sé el primero en abrir una mesa o juega contra un bot ahora.',
   clearFilters: 'Quitar filtros',
   createRoom: 'Crear sala',
+  backToRooms: 'Volver a las salas',
   card: {
     join: 'Unirse',
     play: 'Jugar',
@@ -68,6 +72,8 @@ export const es: typeof en = {
     host: 'Anfitrión',
     players: 'Jugadores',
     guest: 'Invitado #{{id}}',
+    seatsAria: '{{filled}} de {{max}} plazas ocupadas',
+    openSeat: 'Plaza libre',
     bot: 'Bot',
   },
 };
@@ -92,6 +98,7 @@ export const fr: typeof en = {
   emptyHint: 'Soyez le premier à ouvrir une table ou jouez contre un bot.',
   clearFilters: 'Effacer les filtres',
   createRoom: 'Créer un salon',
+  backToRooms: 'Retour aux salles',
   card: {
     join: 'Rejoindre',
     play: 'Jouer',
@@ -106,6 +113,8 @@ export const fr: typeof en = {
     host: 'Hôte',
     players: 'Joueurs',
     guest: 'Invité #{{id}}',
+    seatsAria: '{{filled}} places sur {{max}} occupées',
+    openSeat: 'Place libre',
     bot: 'Bot',
   },
 };
@@ -130,6 +139,7 @@ export const ru: typeof en = {
   emptyHint: 'Откройте стол первым или сыграйте с ботом прямо сейчас.',
   clearFilters: 'Сбросить фильтры',
   createRoom: 'Создать комнату',
+  backToRooms: 'К списку комнат',
   card: {
     join: 'Войти',
     play: 'Играть',
@@ -144,6 +154,8 @@ export const ru: typeof en = {
     host: 'Хозяин',
     players: 'Игроки',
     guest: 'Гость #{{id}}',
+    seatsAria: 'Занято мест: {{filled}} из {{max}}',
+    openSeat: 'Свободное место',
     bot: 'Бот',
   },
 };
@@ -168,6 +180,7 @@ export const by: typeof en = {
   emptyHint: 'Адкрыйце стол першымі або згуляйце з ботам проста зараз.',
   clearFilters: 'Скінуць фільтры',
   createRoom: 'Стварыць пакой',
+  backToRooms: 'Да спісу пакояў',
   card: {
     join: 'Увайсці',
     play: 'Гуляць',
@@ -182,6 +195,8 @@ export const by: typeof en = {
     host: 'Гаспадар',
     players: 'Гульцы',
     guest: 'Госць #{{id}}',
+    seatsAria: 'Занята месцаў: {{filled}} з {{max}}',
+    openSeat: 'Вольнае месца',
     bot: 'Бот',
   },
 };

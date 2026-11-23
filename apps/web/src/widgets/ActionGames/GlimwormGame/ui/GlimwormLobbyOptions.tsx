@@ -1,11 +1,13 @@
 'use client';
 
-import { Button } from '@arcadeum/ui';
 import { type GameLobbyTheme } from '@/features/games/ui/ReusableGameLobby';
 import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-} from '@/features/games/ui/LobbyOptions';
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+  LobbySwitchRow,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import {
   useTranslation,
@@ -62,97 +64,94 @@ export function GlimwormLobbyOptionsPanel({
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId: room.id, userId });
   const equippedTheme = useEquippedGameTheme() ?? 'adventure';
-  const variantOptions = visibleVariants.map((v) => ({
+  const variantItems = visibleVariants.map((v) => ({
     id: v.id,
     label: t(v.name as TranslationKey),
     emoji: v.emoji,
-    comingSoon: v.comingSoon,
+    disabled: v.comingSoon,
+    badge: v.comingSoon ? t('games.lobby.comingSoon') : undefined,
+    testId: `glimworm-variant-${v.id}`,
   }));
 
   if (room.status !== 'lobby') return null;
   return (
-    <div className="flex flex-col items-stretch gap-4 p-3 rounded-xl">
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+    <LobbyOptionStack>
+      <LobbyHostOnlyNote show={!isHost} />
+      <LobbyOptionGroup title={t('games.glimworm_v1.lobby.variant')}>
+        <LobbyChoice
+          aria-label={t('games.glimworm_v1.lobby.variant')}
+          items={variantItems}
+          value={variant}
+          onChange={(v) => setVariant(v as GlimwormVariant)}
+          disabled={!isHost}
+        />
+      </LobbyOptionGroup>
+
+      <LobbySwitchRow
+        testId="glimworm-powerups-switch"
+        label={t('games.glimworm_v1.lobby.powerups')}
+        hint={t('games.glimworm_v1.lobby.powerupsHint')}
+        checked={powerupsEnabled}
+        disabled={!isHost}
+        onCheckedChange={(on) => setPowerupsEnabled(on)}
+      />
+
+      <LobbyOptionGroup
+        title={t('games.glimworm_v1.lobby.pickColor')}
+        hint={t('games.glimworm_v1.lobby.pickColorHint')}
+      >
+        <div
+          role="group"
+          aria-label={t('games.glimworm_v1.lobby.pickColor')}
+          className="flex flex-row flex-wrap gap-1"
+        >
+          {PALETTE.map((color) => {
+            const isSelected = color === effectiveSelectedColor;
+            const isTaken = takenColors.has(color) && !isSelected;
+            return (
+              <button
+                type="button"
+                key={color}
+                disabled={isTaken}
+                aria-label={color}
+                aria-pressed={isSelected}
+                title={
+                  isTaken ? t('games.glimworm_v1.lobby.colorTaken') : color
+                }
+                onClick={() => !isTaken && handleColor(color)}
+                className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] disabled:cursor-not-allowed"
+              >
+                <span
+                  aria-hidden
+                  className={`block h-8 w-8 rounded-full border-2 transition-transform motion-reduce:transition-none ${
+                    isSelected
+                      ? 'scale-110 border-[var(--textPrimary)] ring-2 ring-[var(--primary)]'
+                      : 'border-[var(--glassBorder)]'
+                  } ${isTaken ? 'opacity-30' : 'opacity-100'}`}
+                  style={{ backgroundColor: color }}
+                />
+              </button>
+            );
+          })}
+        </div>
+      </LobbyOptionGroup>
+
+      <LobbyOptionGroup title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={(room.gameOptions?.theme as string) || equippedTheme}
           onSelect={(themeId) => setOption({ theme: themeId })}
           disabled={!isHost}
         />
-      </LobbyOptionSection>
-
-      <LobbyOptionSection title={t('games.glimworm_v1.lobby.variant')}>
-        <LobbyChipGroup
-          options={variantOptions}
-          value={variant}
-          onChange={(v) => setVariant(v as GlimwormVariant)}
-          disabled={!isHost}
-          accentColor="#5ee0ff"
-          testIdPrefix="glimworm-variant"
-        />
-        {!isHost && (
-          <span className="-mt-2 text-[12px] text-[rgba(180,_180,_200,_0.7)] italic">
-            Host chooses the variant.
-          </span>
-        )}
-      </LobbyOptionSection>
-
-      <LobbyOptionSection title={t('games.glimworm_v1.lobby.powerups')}>
-        <Button
-          className={`rounded-[20px] font-medium text-[13px] ${
-            powerupsEnabled
-              ? 'bg-[rgba(177,94,255,0.20)] border-[rgba(177,94,255,0.6)] text-[#d4a8ff] hover:bg-[rgba(177,94,255,0.25)]'
-              : 'bg-[rgba(255,255,255,0.04)] border-[rgba(255,255,255,0.10)] text-[#cbd5e1] hover:bg-[rgba(255,255,255,0.08)]'
-          } ${isHost ? 'opacity-100' : 'opacity-[0.7]'}`}
-          variant="chip"
-          size="sm"
-          disabled={!isHost}
-          data-active={powerupsEnabled ? 'on' : undefined}
-          onClick={() => isHost && setPowerupsEnabled((p) => !p)}
-        >
-          {powerupsEnabled
-            ? `✓ ${t('games.glimworm_v1.lobby.powerupsOn')}`
-            : t('games.glimworm_v1.lobby.powerupsOff')}
-        </Button>
-      </LobbyOptionSection>
-
-      <LobbyOptionSection title={t('games.glimworm_v1.lobby.pickColor')}>
-        <div className="flex flex-row items-stretch gap-2 flex-wrap">
-          {PALETTE.map((color) => {
-            const isSelected = color === effectiveSelectedColor;
-            const isTaken = takenColors.has(color) && !isSelected;
-            return (
-              <Button
-                className={`w-[32px] h-[32px] rounded-[16px] ${
-                  isSelected ? 'border-[3px]' : 'border-2'
-                } ${
-                  isTaken
-                    ? 'opacity-[0.3] hover:opacity-[0.3]'
-                    : 'opacity-100 hover:opacity-[0.8]'
-                }`}
-                style={{
-                  backgroundColor: color,
-                  padding: 0,
-                  borderColor: isSelected ? '#fff' : 'rgba(255,255,255,0.18)',
-                }}
-                key={color}
-                variant="chip"
-                size="sm"
-                disabled={isTaken}
-                aria-label={color}
-                aria-pressed={isSelected}
-                title={isTaken ? 'Taken by another player' : color}
-                onClick={() => !isTaken && handleColor(color)}
-              />
-            );
-          })}
-        </div>
-      </LobbyOptionSection>
+      </LobbyOptionGroup>
 
       {error && (
-        <span className="text-[14px] py-6 px-10 rounded-2xl bg-[rgba(255,94,94,0.12)] text-[#ffb0b0]">
+        <p
+          role="alert"
+          className="rounded-xl border border-[var(--error)]/40 bg-[var(--error)]/10 px-4 py-3 text-sm text-[var(--textPrimary)]"
+        >
           {error}
-        </span>
+        </p>
       )}
-    </div>
+    </LobbyOptionStack>
   );
 }

@@ -229,6 +229,7 @@ export const ruMessages = {
     },
     lobby: {
       stacking: 'Разрешить цепочки штрафов',
+      stackingAutoHint: 'Задаётся автоматически режимом игры',
       lastCardCall:
         'Гонка за Последнюю Карту (жмите Cascade, когда у соперника останется 1)',
       startWithBots: 'Начать с ботами',

@@ -143,6 +143,8 @@ export const enMessages = {
       startWithBots: 'Start with Bot',
       aiDifficulty: 'AI Difficulty',
       nilEnabled: 'Allow Nil bids',
+      nilEnabledHint: 'Bid zero tricks for a bonus or a penalty',
+      targetScoreHint: 'The first team to reach this score wins',
       targetScore: 'Target Score',
     },
     gameOver: {

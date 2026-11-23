@@ -212,3 +212,54 @@ export function buildBotLabels(t: (key: string) => string): LobbyLabels {
     startWithBotsLabel: t('games.lobby.startWithBots'),
   };
 }
+
+export type LobbyPhase = 'waiting' | 'ready' | 'inProgress';
+
+/** Coarse room phase that drives the status chip. */
+export function getLobbyPhase(args: {
+  status: string;
+  playerCount: number;
+  minPlayers: number;
+}): LobbyPhase {
+  if (args.status !== 'lobby') return 'inProgress';
+  return args.playerCount >= args.minPlayers ? 'ready' : 'waiting';
+}
+
+export interface LobbyStartHint {
+  /** i18n key under `games.lobby.*` explaining why start is blocked (or ready). */
+  key:
+    | 'startingHint'
+    | 'startHintReady'
+    | 'startHintNeedMore'
+    | 'startHintNeedBots'
+    | 'subtitleNeedPlayers';
+  count?: number;
+  /** True when the host can press Start. */
+  canStart: boolean;
+}
+
+/** Why the Start button is (not) available, as an i18n key plus params. */
+export function getLobbyStartHint(args: {
+  busy: boolean;
+  disabled: boolean;
+  enableBots: boolean;
+  playerCount: number;
+  minPlayers: number;
+}): LobbyStartHint {
+  const missing = Math.max(0, args.minPlayers - args.playerCount);
+  if (args.busy) return { key: 'startingHint', canStart: false };
+  if (args.enableBots && args.playerCount === 1)
+    return { key: 'startHintReady', canStart: !args.disabled };
+  if (missing > 0) {
+    return {
+      key: args.enableBots
+        ? missing === 1
+          ? 'startHintNeedMore'
+          : 'startHintNeedBots'
+        : 'subtitleNeedPlayers',
+      count: args.enableBots ? missing : args.minPlayers,
+      canStart: false,
+    };
+  }
+  return { key: 'startHintReady', canStart: !args.disabled };
+}

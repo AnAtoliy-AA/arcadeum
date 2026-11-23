@@ -8,57 +8,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
 - shorts factory: on-screen hook, burned-in word-highlight captions, voice rotation, music ducking and loudness normalization, A/B end-card CTA, per-platform metadata, and an automatic QA gate before approval (with `pnpm shorts:render:dry-run`)
 
 ## [1.31.23] - 2026-11-23
 
 ### Added
-
 - add 2v2 team play
+
 
 ## [1.31.22] - 2026-11-23
 
 ### Fixed
-
 - allow adding a 4th player (multiple bots, auto-size rooms)
+
 
 ## [1.31.21] - 2026-11-23
 
 ### Fixed
-
 - award XP on live game completion and harden XP logic
+
 
 ## [1.31.20] - 2026-11-23
 
 ### Added
-
 - add checkers weekly cup banner, i18n and e2e
 - modern UI for profile page and landing extras
 - generalize blitz cups into shared weekly cups service
 
 ### Fixed
-
 - i18n remaining lobby strings, forward aria-pressed in BotCountButton, add lobby tests
 - remove em dashes from user-facing text and add lobby a11y labels
+
 
 ## [1.31.19] - 2026-11-23
 
 ### Fixed
-
 - send client session token when claiming daily reward
+
 
 ## [1.31.18] - 2026-11-23
 
 ### Added
-
 - modern UI for game landings, rooms and room lobbies
+
 
 ## [1.31.17] - 2026-11-23
 
 ### Fixed
-
 - keep persisted session identity until the cookie restore lands
+
 
 ## [1.31.16] - 2026-11-22
 

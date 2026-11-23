@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.28] - 2026-11-23
+
+### Fixed
+- put invite test ids on plain elements
+- show invite gate despite SSR room fallback and stabilize e2e
+- let invited friends accept and join lobby invites
+
+
 ## [1.31.27] - 2026-11-23
 
 ### Added

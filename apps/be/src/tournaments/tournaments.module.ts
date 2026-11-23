@@ -17,7 +17,8 @@ import { TournamentsBootstrap } from './lib/tournaments-bootstrap';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { TournamentsNotificationCron } from './tournaments.notification.cron';
 import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
-import { SeaBattleBlitzCron } from './sea-battle-blitz/sea-battle-blitz.cron';
+import { WeeklyCupsService } from './weekly-cups/weekly-cups.service';
+import { WeeklyCupsCron } from './weekly-cups/weekly-cups.cron';
 
 @Module({
   imports: [
@@ -38,12 +39,14 @@ import { SeaBattleBlitzCron } from './sea-battle-blitz/sea-battle-blitz.cron';
     TournamentsBootstrap,
     TournamentsNotificationCron,
     SeaBattleBlitzService,
-    SeaBattleBlitzCron,
+    WeeklyCupsService,
+    WeeklyCupsCron,
   ],
   exports: [
     TournamentsService,
     TournamentsBracketsService,
     SeaBattleBlitzService,
+    WeeklyCupsService,
   ],
 })
 export class TournamentsModule {}

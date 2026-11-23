@@ -232,7 +232,7 @@ export function MonitoringView({ t }: MonitoringClientProps) {
           </h1>
           <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
             <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--success)]" />
-            Live - 10s refresh
+            {t?.liveRefresh ?? 'Live - 10s refresh'}
           </div>
         </div>
 

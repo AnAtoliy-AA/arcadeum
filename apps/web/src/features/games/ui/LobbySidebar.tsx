@@ -207,7 +207,7 @@ export function LobbySidebar({
             {onRefresh && (
               <RefreshButton
                 onClick={onRefresh}
-                title="Refresh Room"
+                title={t('games.common.lobbyRefreshRoom')}
                 data-testid="refresh-room-button"
               >
                 <RefreshIcon size={16} />
@@ -363,7 +363,7 @@ export function LobbySidebar({
                   />
                   <PlayerInfo>
                     <LobbyPlayerName>{u.displayName}</LobbyPlayerName>
-                    <InfoLabel>Waiting...</InfoLabel>
+                    <InfoLabel>{t('games.common.lobbyWaiting')}</InfoLabel>
                   </PlayerInfo>
                 </PlayerItem>
               ))}
@@ -411,7 +411,7 @@ export function LobbySidebar({
         </InfoRow>
         {isFastMode && (
           <InfoRow>
-            <InfoLabel>Mode</InfoLabel>
+            <InfoLabel>{t('games.common.lobbyModeLabel')}</InfoLabel>
             <FastBadge>
               <FastBadgeText>⚡ {fastRoomLabel}</FastBadgeText>
             </FastBadge>

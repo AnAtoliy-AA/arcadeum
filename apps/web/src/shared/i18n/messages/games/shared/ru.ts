@@ -145,6 +145,9 @@ export const ruMessages = {
       addFriend: 'Добавить друга',
       friendAdded: 'Заявка отправлена',
     },
+    lobbyRefreshRoom: 'Обновить комнату',
+    lobbyWaiting: 'Ожидание...',
+    lobbyModeLabel: 'Режим',
     deleteRoom: {
       button: 'Удалить зал',
       confirmTitle: 'Удалить зал',

@@ -142,6 +142,9 @@ export const enMessages = {
       addFriend: 'Add Friend',
       friendAdded: 'Friend Request Sent',
     },
+    lobbyRefreshRoom: 'Refresh Room',
+    lobbyWaiting: 'Waiting...',
+    lobbyModeLabel: 'Mode',
     deleteRoom: {
       button: 'Delete Room',
       confirmTitle: 'Delete Room',

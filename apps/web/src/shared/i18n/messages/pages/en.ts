@@ -172,6 +172,7 @@ export const en = {
     },
     monitoring: {
       title: 'Monitoring',
+      liveRefresh: 'Live - 10s refresh',
       loading: 'Loading metrics...',
       enableHint: 'Enable METRICS_ENABLED=true in .env to see metrics',
       status: 'Status',

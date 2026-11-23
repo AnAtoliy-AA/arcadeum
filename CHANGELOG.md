@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.21] - 2026-11-23
+
+### Fixed
+- award XP on live game completion and harden XP logic
+
+
 ## [1.31.20] - 2026-11-23
 
 ### Added

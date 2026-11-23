@@ -7,11 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.18] - 2026-11-23
+
+### Added
+- modern UI for game landings, rooms and room lobbies
+
+
+## [1.31.17] - 2026-11-23
+
+### Fixed
+- keep persisted session identity until the cookie restore lands
+
+
 ## [1.31.16] - 2026-11-22
 
 ### Fixed
-- let a reloaded tab restore its session without waiting on the cross-tab lock
 
+- let a reloaded tab restore its session without waiting on the cross-tab lock
 
 ## [1.31.15] - 2026-11-22
 

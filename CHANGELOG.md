@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.19] - 2026-11-23
+
+### Fixed
+- send client session token when claiming daily reward
+
+
 ## [1.31.18] - 2026-11-23
 
 ### Added

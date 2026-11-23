@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.20] - 2026-11-23
+
+### Added
+- add checkers weekly cup banner, i18n and e2e
+- modern UI for profile page and landing extras
+- generalize blitz cups into shared weekly cups service
+
+### Fixed
+- i18n remaining lobby strings, forward aria-pressed in BotCountButton, add lobby tests
+- remove em dashes from user-facing text and add lobby a11y labels
+
+
 ## [1.31.19] - 2026-11-23
 
 ### Fixed

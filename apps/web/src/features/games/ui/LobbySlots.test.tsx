@@ -99,6 +99,7 @@ describe('LobbySidebarPlayers slots', () => {
         minPlayers={2}
         members={members}
         showReorderControls={false}
+        maxPlayers={3}
         canAddBots
         canRemoveBots
         playersLabel="Players"
@@ -126,6 +127,7 @@ describe('LobbySidebarPlayers slots', () => {
         minPlayers={2}
         members={members}
         showReorderControls={false}
+        maxPlayers={3}
         canAddBots={false}
         canRemoveBots={false}
         playersLabel="Players"

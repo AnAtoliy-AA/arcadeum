@@ -46,6 +46,8 @@ interface LobbySidebarProps {
   extraPlayersCardSlot?: React.ReactNode;
   onRefresh?: () => void;
   enableBots?: boolean;
+  /** Seat cap from the game (rooms created with "auto" have no maxPlayers). */
+  maxPlayers?: number;
   onAddBot?: () => void;
   onRemoveBot?: (botId: string) => void;
 }
@@ -68,6 +70,7 @@ export function LobbySidebar({
   onRefresh,
   labels,
   enableBots,
+  maxPlayers: maxPlayersProp,
   onAddBot,
   onRemoveBot,
 }: LobbySidebarProps) {
@@ -83,9 +86,13 @@ export function LobbySidebar({
     visibilityPrivateLabel = t('games.lobby.visibilityPrivate'),
     waitingForPlayerLabel = t('games.lobby.waitingForPlayerSlot'),
   } = labels;
-  const hasBotsInRoom = members.some((m) => m.id.startsWith('bot-'));
+  const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 5;
+  // Bots fill free seats one by one; only a full room hides the button.
   const canAddBots =
-    !!enableBots && isHost && room.status === 'lobby' && !hasBotsInRoom;
+    !!enableBots &&
+    isHost &&
+    room.status === 'lobby' &&
+    room.playerCount < maxPlayers;
   const canRemoveBots = !!enableBots && isHost && room.status === 'lobby';
 
   // Get invited/declined for rematch
@@ -134,6 +141,7 @@ export function LobbySidebar({
         minPlayers={minPlayers}
         members={members}
         showReorderControls={showReorderControls}
+        maxPlayers={maxPlayers}
         canAddBots={canAddBots}
         canRemoveBots={canRemoveBots}
         playersLabel={playersLabel}

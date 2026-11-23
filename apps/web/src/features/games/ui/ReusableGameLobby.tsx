@@ -299,6 +299,7 @@ export function ReusableGameLobby(props: ReusableGameLobbyProps) {
           onRefresh={onRefresh}
           labels={labels}
           enableBots={enableBots}
+          maxPlayers={maxPlayers}
           onAddBot={
             isHost && room.status === 'lobby' ? handleAddBot : undefined
           }

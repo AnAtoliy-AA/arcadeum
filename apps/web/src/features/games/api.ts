@@ -326,6 +326,19 @@ export const gamesApi = {
     );
   },
 
+  /** Host-only: cancel pending invitations for the given users. */
+  revokeInvitations: async (
+    roomId: string,
+    userIds: string[],
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post<void>(
+      `/games/rooms/${roomId}/invitation/revoke`,
+      { userIds },
+      options,
+    );
+  },
+
   declineInvitation: async (
     roomId: string,
     options?: ApiClientOptions,

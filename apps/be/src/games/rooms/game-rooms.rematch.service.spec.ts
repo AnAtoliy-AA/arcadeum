@@ -45,6 +45,7 @@ describe('GameRoomsRematchService', () => {
       maxPlayers: 2,
       participants: [{ userId: 'host-1', joinedAt: new Date() }],
       gameOptions: {
+        rematchPreviousRoomId: 'old-room',
         rematchInvitedIds: ['invited-1'],
         rematchDeclinedIds: [],
       },
@@ -73,6 +74,7 @@ describe('GameRoomsRematchService', () => {
       maxPlayers: 2,
       participants: [{ userId: 'host-1', joinedAt: new Date() }],
       gameOptions: {
+        rematchPreviousRoomId: 'old-room',
         rematchInvitedIds: ['invited-1'],
         rematchDeclinedIds: [],
         rematchBlockedIds: [],
@@ -275,5 +277,96 @@ describe('GameRoomsRematchService', () => {
       'invited-1',
     ]);
     expect(mockSave).toHaveBeenCalled();
+  });
+
+  describe('lobby (non-rematch) invitations', () => {
+    const makeRoom = (overrides: Record<string, unknown> = {}) => ({
+      _id: 'room-1',
+      hostId: 'host-1',
+      status: 'lobby',
+      maxPlayers: 2,
+      participants: [{ userId: 'host-1', joinedAt: new Date() }],
+      gameOptions: { rematchInvitedIds: ['friend-1'] },
+      markModified: jest.fn(),
+      save: jest.fn().mockResolvedValue(true),
+      ...overrides,
+    });
+    const mockFind = (room: unknown) =>
+      (roomModel.findById as jest.Mock).mockReturnValue({
+        exec: jest.fn().mockResolvedValue(room),
+      });
+
+    it('does not add a bot when a friend declines a plain lobby invite', async () => {
+      const room = makeRoom();
+      mockFind(room);
+      await service.declineRematchInvitation('room-1', 'friend-1');
+      expect(room.participants).toHaveLength(1);
+      expect(room.gameOptions.rematchDeclinedIds).toEqual(['friend-1']);
+    });
+
+    it('accepting seats the invitee and clears the pending invite', async () => {
+      const room = makeRoom();
+      mockFind(room);
+      await service.acceptRematchInvitation('room-1', 'friend-1');
+      expect(room.participants.map((p) => p.userId)).toEqual([
+        'host-1',
+        'friend-1',
+      ]);
+      expect(room.gameOptions.rematchInvitedIds).toEqual([]);
+    });
+
+    it('rejects accepting when the room is already full', async () => {
+      const room = makeRoom({
+        maxPlayers: 1,
+      });
+      mockFind(room);
+      await expect(
+        service.acceptRematchInvitation('room-1', 'friend-1'),
+      ).rejects.toThrow('Room is full');
+    });
+
+    it('does not invite users who already hold a seat', async () => {
+      const room = makeRoom({
+        participants: [
+          { userId: 'host-1', joinedAt: new Date() },
+          { userId: 'friend-2', joinedAt: new Date() },
+        ],
+      });
+      mockFind(room);
+      await service.reinviteRematchPlayers('room-1', 'host-1', [
+        'friend-2',
+        'friend-3',
+      ]);
+      expect(room.gameOptions.rematchInvitedIds).toEqual([
+        'friend-1',
+        'friend-3',
+      ]);
+    });
+
+    it('refuses invitations once the game has started', async () => {
+      mockFind(makeRoom({ status: 'in_progress' }));
+      await expect(
+        service.reinviteRematchPlayers('room-1', 'host-1', ['friend-3']),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('lets only the host revoke pending invitations', async () => {
+      const room = makeRoom({
+        gameOptions: {
+          rematchInvitedIds: ['friend-1', 'friend-2'],
+          rematchDeclinedIds: ['friend-3'],
+        },
+      });
+      mockFind(room);
+      await expect(
+        service.revokeInvitations('room-1', 'someone', ['friend-1']),
+      ).rejects.toThrow('Only the host');
+      await service.revokeInvitations('room-1', 'host-1', [
+        'friend-1',
+        'friend-3',
+      ]);
+      expect(room.gameOptions.rematchInvitedIds).toEqual(['friend-2']);
+      expect(room.gameOptions.rematchDeclinedIds).toEqual([]);
+    });
   });
 });

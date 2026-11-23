@@ -9,7 +9,8 @@ import React, {
   useCallback,
 } from 'react';
 import { useQuery } from '@/shared/hooks/useQuery';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useRoutes } from '@/shared/config/useRoutes';
 import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { GamePageLayout } from './GamePageLayout';
 import { gamesApi } from '@/features/games/api';
@@ -38,6 +39,7 @@ import {
 } from './styles';
 import { GameRoomLoading } from './GameRoomLoading';
 import { GameRoomError } from './GameRoomError';
+import { RoomInvitationGate } from './RoomInvitationGate';
 import { PrivateRoomForm } from './PrivateRoomForm';
 import { PasswordRequiredForm } from './PasswordRequiredForm';
 import { DynamicGameRenderer } from './DynamicGameRenderer';
@@ -65,12 +67,15 @@ export default function GameRoomPage({
   const handleCloseTutorial = useCallback(() => setShowTutorial(false), []);
   const handleShowTutorial = useCallback(() => setShowTutorial(true), []);
 
+  const router = useRouter();
+  const routes = useRoutes();
   const isAuthenticated = !!snapshot.accessToken && !!snapshot.userId;
 
   const {
     data: roomData = null,
     isLoading: roomInfoLoading,
     error: queryError,
+    refetch: refetchRoomInfo,
   } = useQuery({
     queryKey: ['games', 'room-info', roomId],
     queryFn: async () => {
@@ -132,6 +137,19 @@ export default function GameRoomPage({
     [roomInfo, initialSessionData],
   );
 
+  // The invitee must accept (or decline) before taking a seat.
+  const isInvitePending = !!roomInfo?.viewerInvited;
+
+  // SSR data is fetched without the viewer, so re-read the room once the
+  // session is known to learn whether this user holds a pending invitation.
+  const viewerRefetchedRef = useRef(false);
+  useEffect(() => {
+    if (!isAuthenticated || !roomInfo || viewerRefetchedRef.current) return;
+    if (roomInfo.viewerRole !== undefined) return;
+    viewerRefetchedRef.current = true;
+    void refetchRoomInfo();
+  }, [isAuthenticated, roomInfo, refetchRoomInfo]);
+
   const {
     room,
     session: initialSession,
@@ -145,7 +163,10 @@ export default function GameRoomPage({
     accessToken: snapshot.accessToken,
     mode: roomMode,
     inviteCode: urlInviteCode || undefined,
-    enabled: (!roomInfoLoading || !!serverInitialData) && !visibilityError,
+    enabled:
+      (!roomInfoLoading || !!serverInitialData) &&
+      !visibilityError &&
+      !isInvitePending,
     initialData,
   });
 
@@ -306,6 +327,21 @@ export default function GameRoomPage({
           <GameRoomError
             error={visibilityError}
             isPrivateRoomError={visibilityError === 'private_room_error'}
+          />
+        </CenteredContainer>
+      </Page>
+    );
+  }
+
+  if (isInvitePending && !room && roomInfo) {
+    return (
+      <Page fixedHeight>
+        <CenteredContainer>
+          <RoomInvitationGate
+            roomId={roomId}
+            hostName={roomInfo.host?.displayName || ''}
+            onAccepted={() => void refetchRoomInfo()}
+            onDeclined={() => router.push(routes.rooms)}
           />
         </CenteredContainer>
       </Page>

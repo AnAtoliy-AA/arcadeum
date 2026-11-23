@@ -215,6 +215,15 @@ export const frMessages = {
   },
   create: createFr,
   roomPage: {
+    invitation: {
+      title: '{{host}} vous invite à jouer',
+      subtitle:
+        "Acceptez pour prendre votre place dans le lobby, ou refusez pour prévenir l'hôte que vous ne viendrez pas.",
+      accept: 'Accepter et rejoindre',
+      accepting: 'Connexion...',
+      decline: 'Refuser',
+      error: "Impossible de mettre à jour l'invitation. Réessayez.",
+    },
     loading: 'Chargement...',
     loadingGame: 'Chargement du jeu...',
     errors: {
@@ -344,6 +353,9 @@ export const frMessages = {
     waitingForPlayerSlot: "En attente d'un joueur...",
     notesLabel: 'Notes',
     invitedWaiting: 'En attente...',
+    invitedAwaitingReply: 'En attente de réponse',
+    cancelInviteLabel: "Annuler l'invitation",
+    resendInviteLabel: 'Renvoyer',
     hostOnlyNote: "Seul l'hôte peut modifier ces réglages",
     bot: 'Robot',
     botCountLabel: 'Nombre de robots',

@@ -122,6 +122,9 @@ describe('DailyRewardChip', () => {
     const cta = screen.getByTestId('daily-reward-claim-btn');
     expect(cta).toHaveTextContent('Sign in to claim');
     expect(cta).toHaveAttribute('href', routes.auth);
+    expect(screen.getByTestId('daily-reward-hint')).toHaveTextContent(
+      /free daily coins/i,
+    );
   });
 
   it('shows the sign-in CTA when the session is invalid (401)', async () => {

@@ -116,6 +116,43 @@ export const by = {
   liveMatchesCount: '{{count}} матчаў',
   liveViewAllRooms: 'Усе пакоі',
   liveViewAllGames: 'Увесь каталог',
+  liveOnlineSub: 'Гульцы на сайце проста зараз',
+  liveOnlineEmpty:
+    'Зараз нікога няма анлайн. Пакуль чакаеце, згуляйце з ботам.',
+  liveActiveSub: 'Матчы, якія ідуць проста зараз',
+  liveActiveEmpty:
+    'Зараз няма актыўных матчаў. Пачніце свой, і іншыя змогуць назіраць.',
+  liveActiveAction: 'Глядзець матчы',
+  liveLobbiesEmpty:
+    'Зараз няма адкрытых пакояў. Стварыце пакой або згуляйце з ботам.',
+  liveLobbiesAction: 'Увайсці ў пакой',
+  liveCreateRoomAction: 'Стварыць пакой',
+  livePlayBotAction: 'Гуляць з ботам',
+  liveSeekingSub: 'Падбор знаходзіць гульца, які хоча тую ж гульню',
+  liveSeekingEmpty:
+    'Падбор знаходзіць гульца, які хоча тую ж гульню. Зараз ніхто не чакае, станьце першым.',
+  liveQuickMatchAction: 'Хуткая гульня',
+  liveTodaySub: 'Матчы, завершаныя сёння',
+  liveTodayEmpty: 'Сёння яшчэ няма завершаных матчаў. Згуляйце першы.',
+  liveTodayAction: 'Глядзець вынікі',
+  liveBrowseGamesAction: 'Выбраць гульню',
+  activityBannerGames: 'гульняў ідзе зараз',
+  activityBannerPlayers: 'гульцоў анлайн',
+  liveStatsUnknown: 'Жывыя даныя загружаюцца або зараз недаступныя.',
+  homeRecentActivityTitle: 'Нядаўняя актыўнасць',
+  homeRecentActivityEmpty:
+    "Пакуль няма актыўнасці. Завяршыце матч, і ён з'явіцца тут.",
+  homeRecentActivityError:
+    'Не ўдалося загрузіць актыўнасць. Паспрабуйце пазней.',
+  homeRecentActivityMore: 'Паказаць яшчэ',
+  homeRecentActivityLoading: 'Загрузка...',
+  eventBadgeLive: 'ЗАРАЗ',
+  eventBadgeUpcoming: 'СКОРА',
+  eventActionLive: 'Гуляць',
+  eventActionUpcoming: 'Адкрыць падзею',
+  eventStartsAt: 'Пачатак: {{date}}',
+  eventDefaultDescription:
+    'Запланаваная падзея суполкі. Адкрыйце яе, каб даведацца правілы, прызы і час пачатку.',
   // Coming soon labels
   comingSoon: 'Хутка',
   // Footer

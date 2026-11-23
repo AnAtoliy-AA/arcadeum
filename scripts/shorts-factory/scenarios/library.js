@@ -7,6 +7,8 @@ const {
   PUZZLE_FORMATS,
   THEMES,
 } = require('./constants');
+const { applyLength } = require('../length/apply');
+const { FEATURE_FORMAT } = require('../length/classes');
 
 /**
  * Per game copy for the bot_match format. `drama` is the move number worth
@@ -136,35 +138,48 @@ const GAME_COPY = {
 
 const FORMAT_COPY = {
   puzzle: {
+    spoken: 'Find the winning move',
     hook: 'Can you find the winning move?',
     voice:
       'Can you find the winning move? You have five seconds. Think about checks, captures and threats. Here is the answer.',
     durationSec: 22,
   },
   guess_the_move: {
+    spoken: 'Guess the move',
     hook: 'Guess the move before the reveal',
     voice:
       'Pause the video and guess the best move. Ready? Here is the reveal.',
     durationSec: 22,
   },
   comeback: {
+    spoken: 'Losing? Watch this',
     hook: 'He was losing the whole game. Then this happened',
     voice:
       'Down almost the entire match, then one move turned everything around. Watch this comeback.',
     durationSec: 24,
   },
   last_second_win: {
+    spoken: 'Won on the last move',
     hook: 'Won on the very last move',
     voice:
       'The game was almost over, and then the last move won it. Watch this last second win.',
     durationSec: 24,
   },
   replay_highlight: {
+    spoken: 'Watch this move',
     hook: 'Watch this move',
     voice:
       'A real match played on Arcadeum. Watch the moment everything changes.',
     durationSec: 24,
   },
+};
+
+/** Weekly YouTube feature (2-3 min). Opt-in only: never part of the daily pool. */
+const FEATURE_COPY = {
+  spoken: 'The match nobody expected',
+  hook: 'The match that nobody saw coming',
+  voice: 'The story of one match on Arcadeum. Play free.',
+  durationSec: 150,
 };
 
 function slugify(s) {
@@ -184,7 +199,7 @@ function makeCaption(copy, themeName, tags) {
 }
 
 /** Build one scenario (without a seed; the picker assigns it). */
-function buildScenario(game, format, theme) {
+function buildScenario(game, format, theme, lengthClass) {
   const g = GAME_COPY[game];
   if (!g) throw new Error(`Unknown game: ${game}`);
   const themeObj =
@@ -199,11 +214,19 @@ function buildScenario(game, format, theme) {
     label: 'first big move',
   };
   if (format === 'bot_match') {
-    copy = { hook: g.hook, voice: g.voice };
+    copy = {
+      hook: g.hook,
+      voice: g.voice,
+      spoken: `${g.label} vs the bot`,
+    };
   } else {
-    const f = FORMAT_COPY[format];
+    const f = format === FEATURE_FORMAT ? FEATURE_COPY : FORMAT_COPY[format];
     if (!f) throw new Error(`Unknown format: ${format}`);
-    copy = { hook: `${g.label}: ${f.hook}`.slice(0, 80), voice: f.voice };
+    copy = {
+      hook: `${g.label}: ${f.hook}`.slice(0, 80),
+      voice: f.voice,
+      spoken: f.spoken,
+    };
     durationSec = f.durationSec;
     dramaticMoment = {
       type: 'timestamp',
@@ -215,7 +238,7 @@ function buildScenario(game, format, theme) {
     format === 'puzzle' || format === 'guess_the_move'
       ? `${g.tags} #puzzle`
       : g.tags;
-  return {
+  const base = {
     id: makeId(game, format, themeObj.id),
     game,
     gameId: GAME_IDS[game],
@@ -228,6 +251,10 @@ function buildScenario(game, format, theme) {
     durationSec,
     seed: 0,
   };
+  return applyLength(base, lengthClass, {
+    label: g.label,
+    spoken: copy.spoken,
+  });
 }
 
 /**
@@ -237,8 +264,13 @@ function buildScenario(game, format, theme) {
 function buildPool(available = { replay: false, puzzle: true }, opts = {}) {
   const games = opts.games || Object.keys(GAME_COPY);
   const pool = [];
+  // The weekly feature is opt-in: it is only built when explicitly requested,
+  // and then it is the only format in the pool.
+  const formats = opts.featureOnly
+    ? [FEATURE_FORMAT]
+    : ['bot_match', ...Object.keys(FORMAT_COPY)];
   for (const game of games) {
-    for (const format of ['bot_match', ...Object.keys(FORMAT_COPY)]) {
+    for (const format of formats) {
       if (REPLAY_FORMATS.has(format) && !available.replay) continue;
       if (
         PUZZLE_FORMATS.has(format) &&
@@ -251,4 +283,11 @@ function buildPool(available = { replay: false, puzzle: true }, opts = {}) {
   return pool;
 }
 
-module.exports = { GAME_COPY, FORMAT_COPY, buildScenario, buildPool, makeId };
+module.exports = {
+  GAME_COPY,
+  FORMAT_COPY,
+  FEATURE_COPY,
+  buildScenario,
+  buildPool,
+  makeId,
+};

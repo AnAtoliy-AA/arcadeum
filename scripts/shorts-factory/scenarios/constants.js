@@ -1,5 +1,7 @@
 'use strict';
 
+const { FEATURE_FORMAT } = require('../length/classes');
+
 /**
  * Formats the daily gameplay short can take.
  *  - bot_match:        classic recorded match vs AI (the original format)
@@ -8,6 +10,7 @@
  *  - comeback:         replay highlight where the winner was losing
  *  - last_second_win:  replay highlight where the win came on the final move
  *  - replay_highlight: replay highlight on a capture / big combo
+ *  - feature_story:    weekly 2-3 min story for YouTube (opt-in only, never in the daily pool)
  */
 const FORMATS = [
   'bot_match',
@@ -16,6 +19,7 @@ const FORMATS = [
   'comeback',
   'last_second_win',
   'replay_highlight',
+  FEATURE_FORMAT,
 ];
 
 /** Formats that need real replay data from the backend. */

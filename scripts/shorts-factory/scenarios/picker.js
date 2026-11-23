@@ -1,9 +1,12 @@
 'use strict';
 
-const { buildPool } = require('./library');
+const { buildPool, buildScenario, GAME_COPY } = require('./library');
+const { applyLength } = require('../length/apply');
+const { assignLength } = require('../length/assign');
+const { FEATURE_FORMAT } = require('../length/classes');
 const { createRng, dateKey, hashString } = require('./seed');
 const { loadHistory } = require('./history');
-const { loadFormatWeights } = require('./analytics-adapter');
+const { loadFormatWeights, loadLengthWeights } = require('./analytics-adapter');
 
 const DEFAULTS = {
   scenarioWindowDays: 21, // never repeat the same scenario inside this window
@@ -33,8 +36,13 @@ function recent(history, date, days, key) {
  * Constraints relax in this order if nothing is left: format/theme windows,
  * then game window, then scenario window.
  *
- * opts: { date, history, available, formatWeights, game, format, theme,
- *         salt, windows, pool }
+ * Also assigns the length class (the length experiment): rotated or randomized
+ * among the classes the format supports, weighted by `lengthWeights` when
+ * analytics has enough samples. `lengthClass` forces one; `feature: true`
+ * builds the opt-in weekly feature_story (never picked otherwise).
+ *
+ * opts: { date, history, available, formatWeights, lengthWeights, lengthClass,
+ *         feature, game, format, theme, salt, windows, pool }
  */
 function pickScenario(opts = {}) {
   const cfg = { ...DEFAULTS, ...(opts.windows || {}) };
@@ -44,7 +52,11 @@ function pickScenario(opts = {}) {
   const weights = opts.formatWeights === undefined ? null : opts.formatWeights;
 
   let pool =
-    opts.pool || buildPool(available, opts.game ? { games: [opts.game] } : {});
+    opts.pool ||
+    buildPool(available, {
+      ...(opts.game ? { games: [opts.game] } : {}),
+      ...(opts.feature ? { featureOnly: true } : {}),
+    });
   if (opts.game) pool = pool.filter((s) => s.game === opts.game);
   if (opts.format) pool = pool.filter((s) => s.format === opts.format);
   if (opts.theme) pool = pool.filter((s) => s.theme === opts.theme);
@@ -113,7 +125,19 @@ function pickScenario(opts = {}) {
   }
   const list = byFormat.get(chosenFormat);
   const chosen = list[Math.floor(rng() * list.length)];
-  return { ...chosen, seed: hashString(`${date}|${chosen.id}`) };
+  const lengthClass = assignLength({
+    format: chosen.format,
+    date,
+    history,
+    weights: opts.lengthWeights === undefined ? null : opts.lengthWeights,
+    forced:
+      opts.lengthClass || (chosen.format === FEATURE_FORMAT ? 'feature' : null),
+    salt: opts.salt || '',
+  });
+  const sized = GAME_COPY[chosen.game]
+    ? buildScenario(chosen.game, chosen.format, chosen.theme, lengthClass)
+    : applyLength(chosen, lengthClass);
+  return { ...sized, seed: hashString(`${date}|${chosen.id}`) };
 }
 
 /** Convenience: pick using on-disk history and the analytics module if present. */
@@ -125,6 +149,10 @@ function pickForToday(opts = {}) {
       opts.formatWeights === undefined
         ? loadFormatWeights()
         : opts.formatWeights,
+    lengthWeights:
+      opts.lengthWeights === undefined
+        ? loadLengthWeights()
+        : opts.lengthWeights,
   });
 }
 

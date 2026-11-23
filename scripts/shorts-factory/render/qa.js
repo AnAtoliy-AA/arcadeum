@@ -1,12 +1,14 @@
 'use strict';
 
-const { DURATION, LOUDNESS, VIDEO } = require('./config');
+const { durationBounds, LOUDNESS, VIDEO } = require('./config');
 const { rectWithinZone, getSafeZone } = require('./safezone');
 
 /**
  * Pure quality gate. `m` holds measurements (see probe.js):
  *   durationSec, width, height, loudnessLufs, hasAudio, firstFrameLuma (0-255),
  *   voiceExpected, voiceMeanDb, captionRects [{x,y,width,height}]
+ * `opts.lengthClass` ('short' | 'medium' | 'long' | 'feature') selects the
+ * allowed duration range; without it the legacy 15-30s window applies.
  * Returns { passed, checks, failures } where each check is
  * { id, ok, value, expected, detail }.
  */
@@ -17,14 +19,15 @@ function evaluateQuality(m, opts = {}) {
     checks.push({ id, ok: !!ok, value, expected, detail });
 
   const dur = m.durationSec;
+  const bounds = durationBounds(opts.lengthClass);
   add(
     'duration',
     typeof dur === 'number' &&
-      dur >= DURATION.minTotalSec &&
-      dur <= DURATION.maxTotalSec,
+      dur >= bounds.minTotalSec &&
+      dur <= bounds.maxTotalSec,
     dur,
-    `${DURATION.minTotalSec}-${DURATION.maxTotalSec}s`,
-    `duration ${fmt(dur)}s`,
+    `${bounds.minTotalSec}-${bounds.maxTotalSec}s`,
+    `duration ${fmt(dur)}s${opts.lengthClass ? ` (${opts.lengthClass})` : ''}`,
   );
 
   add(

@@ -3,7 +3,14 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const { DURATION, HOOK_WINDOW_SEC, MUSIC, SITE, envFlag } = require('./config');
+const {
+  DURATION,
+  durationBounds,
+  HOOK_WINDOW_SEC,
+  MUSIC,
+  SITE,
+  envFlag,
+} = require('./config');
 const { deriveHook, pickStartOffsetSec } = require('./hook');
 const { placeLines, wordWeight, round3 } = require('./captions');
 const { estimateLineDurations } = require('./voice-plan');
@@ -30,6 +37,9 @@ const DEFAULT_LOGO = path.join(
 
 const defaultLog = (level, msg, data) =>
   console.log(`[render:${level}] ${msg}`, data ? JSON.stringify(data) : '');
+
+/** Spoken line budget per length class (short keeps the original 9). */
+const MAX_VOICE_LINES = { short: 9, medium: 16, long: 26, feature: 48 };
 
 function clamp(n, lo, hi) {
   return Math.min(hi, Math.max(lo, n));
@@ -92,7 +102,9 @@ function chooseMusic({
  *   scenario (name string or object with optional .hook), caption (voice/body
  *   text), tags (hashtag string), outputDir, tracks (fallback list/URLs),
  *   musicVolume, voiceFile (optional pre-made voice, dry-run), noVoice,
- *   log, logoPath.
+ *   log, logoPath, lengthClass ('short' | 'medium' | 'long' | 'feature': sets
+ *   the allowed duration, QA range and script line budget), voiceScript
+ *   (structured script from the scenario; replaces the caption body).
  */
 async function renderShort(inputOpts) {
   const opts = applySidecar(
@@ -110,7 +122,12 @@ async function renderShort(inputOpts) {
   fs.mkdirSync(workDir, { recursive: true });
 
   const hook = deriveHook({ scenario: opts.scenario, caption: opts.caption });
-  const script = buildVoiceScript({ hook, caption: opts.caption });
+  const bounds = durationBounds(opts.lengthClass);
+  const script = buildVoiceScript({
+    hook,
+    caption: opts.voiceScript || opts.caption,
+    maxLines: MAX_VOICE_LINES[opts.lengthClass] || 9,
+  });
 
   // Voice: synthesize (rotating voices), use a supplied file, or none.
   let voice = null;
@@ -142,8 +159,8 @@ async function renderShort(inputOpts) {
   const lastEnd = lineTimes[lineTimes.length - 1].end;
   const mainSec = clamp(
     lastEnd + DURATION.voiceTailSec,
-    DURATION.minMainSec,
-    DURATION.maxMainSec,
+    bounds.minMainSec,
+    bounds.maxMainSec,
   );
 
   const { startSec, usedDramatic } = pickStartOffsetSec({
@@ -191,7 +208,7 @@ async function renderShort(inputOpts) {
 
   // Quality gate.
   const info = await probe.probeInfo(outPath);
-  const qa = evaluateQuality({
+  const qaInput = {
     durationSec: info.durationSec,
     width: info.width,
     height: info.height,
@@ -201,7 +218,8 @@ async function renderShort(inputOpts) {
     captionRects: overlays.rects,
     voiceExpected: !opts.noVoice,
     voiceMeanDb: voice ? await probe.measureMeanVolume(voice.path) : null,
-  });
+  };
+  const qa = evaluateQuality(qaInput, { lengthClass: opts.lengthClass });
   log(qa.passed ? 'info' : 'warn', formatQaReport(qa));
 
   const metadata = {
@@ -217,6 +235,7 @@ async function renderShort(inputOpts) {
     startSec: round3(startSec),
     startedOnDramaticMoment: usedDramatic,
     durationSec: info.durationSec,
+    lengthClass: opts.lengthClass || null,
     platforms: buildPlatformMetadata({
       caption: opts.caption,
       hook,

@@ -15,7 +15,7 @@ function historyFile() {
   return process.env.SHORTS_SCENARIO_HISTORY_FILE || DEFAULT_FILE;
 }
 
-/** Entries: [{ date: 'YYYY-MM-DD', scenarioId, game, format, theme }] newest last. */
+/** Entries: [{ date: 'YYYY-MM-DD', scenarioId, game, format, theme, lengthClass, durationSec }] newest last. */
 function loadHistory(file = historyFile()) {
   try {
     const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -25,7 +25,8 @@ function loadHistory(file = historyFile()) {
   }
 }
 
-function recordScenario(scenario, date, file = historyFile()) {
+/** `extra.actualDurationSec` is the measured length of the rendered video. */
+function recordScenario(scenario, date, file = historyFile(), extra = {}) {
   const entries = loadHistory(file).filter(
     (e) => !(e.date === date && e.scenarioId === scenario.id),
   );
@@ -35,6 +36,12 @@ function recordScenario(scenario, date, file = historyFile()) {
     game: scenario.game,
     format: scenario.format,
     theme: scenario.theme,
+    lengthClass: scenario.lengthClass || null,
+    durationSec: scenario.durationSec || null,
+    actualDurationSec:
+      typeof extra.actualDurationSec === 'number'
+        ? extra.actualDurationSec
+        : null,
   });
   const trimmed = entries.slice(-MAX_ENTRIES);
   fs.mkdirSync(path.dirname(file), { recursive: true });

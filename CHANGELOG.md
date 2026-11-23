@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- anon after a fast double reload: the persisted session identity is no longer wiped when the store is re-persisted before the cookie restore finishes
+
 ## [1.31.16] - 2026-11-22
 
 ### Fixed
-- let a reloaded tab restore its session without waiting on the cross-tab lock
 
+- let a reloaded tab restore its session without waiting on the cross-tab lock
 
 ## [1.31.15] - 2026-11-22
 

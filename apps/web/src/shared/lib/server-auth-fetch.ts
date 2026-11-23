@@ -10,22 +10,26 @@ import { resolveApiUrl } from './api-base';
  */
 export async function serverAuthFetch(
   path: string,
-  init?: RequestInit,
+  init?: RequestInit & { accessToken?: string },
 ): Promise<Response> {
+  const { accessToken, ...fetchInit } = init ?? {};
   const cookieJar = await cookies();
+  // An explicit token (forwarded by a client component from the session
+  // store) wins over the httpOnly cookie: the 15 minute cookie can be gone
+  // while the client session is still valid (it refreshes in the browser).
   const token =
-    cookieJar.get('dev_access_token')?.value ??
+    (accessToken || cookieJar.get('dev_access_token')?.value) ??
     cookieJar.get('access_token')?.value ??
     cookieJar.get('web_access_token')?.value;
   const url = resolveApiUrl(path);
 
   return fetch(url, {
-    ...init,
+    ...fetchInit,
     cache: 'no-store',
     headers: {
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest',
-      ...(init?.headers ?? {}),
+      ...(fetchInit.headers ?? {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });

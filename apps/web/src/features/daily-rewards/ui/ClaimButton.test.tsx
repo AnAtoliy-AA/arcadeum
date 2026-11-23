@@ -7,6 +7,7 @@ vi.mock('../server/daily-rewards.actions', () => ({
 }));
 
 import { ClaimButton } from './ClaimButton';
+import { useSessionStore } from '@/entities/session/store/sessionStore';
 import { claimDailyRewardAction } from '../server/daily-rewards.actions';
 
 const labels = {
@@ -179,5 +180,32 @@ describe('ClaimButton', () => {
 
     fireEvent.click(screen.getByTestId('daily-reward-claim-btn'));
     expect(claimDailyRewardAction).not.toHaveBeenCalled();
+  });
+
+  it('passes the client session access token to the claim action (cookie may be expired)', async () => {
+    useSessionStore.setState({
+      snapshot: {
+        ...useSessionStore.getState().snapshot,
+        accessToken: 'tok-123',
+      },
+    });
+    vi.mocked(claimDailyRewardAction).mockResolvedValueOnce({
+      ok: true,
+      result: {
+        awardedCoins: 10,
+        awardedGems: 0,
+        currentStreak: 1,
+        balanceAfter: 110,
+      },
+    } as never);
+
+    render(
+      <ClaimButton canClaim={true} nextRewardCoins={10} labels={labels} />,
+    );
+    fireEvent.click(screen.getByTestId('daily-reward-claim-btn'));
+
+    await waitFor(() =>
+      expect(claimDailyRewardAction).toHaveBeenCalledWith('tok-123'),
+    );
   });
 });

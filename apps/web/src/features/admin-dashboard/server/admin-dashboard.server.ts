@@ -1,6 +1,5 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   AdminDashboardData,
   AdminDbHealth,
@@ -8,19 +7,7 @@ import type {
 } from '../types';
 
 async function adminFetch(path: string, init?: RequestInit): Promise<Response> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  return fetch(url, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers ?? {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+  return serverAuthFetch(path, init);
 }
 
 export async function getAdminDashboardData(): Promise<AdminDashboardData> {

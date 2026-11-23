@@ -33,6 +33,11 @@ import type {
 import { SeaBattleBlitzService } from './sea-battle-blitz/sea-battle-blitz.service';
 import type { SeaBattleBlitzCupConfig } from './sea-battle-blitz/sea-battle-blitz.types';
 import { ToggleBlitzCupDto } from './dto/toggle-blitz.dto';
+import { UpdateWeeklyCupDto } from './dto/update-weekly-cup.dto';
+import { WeeklyCupsService } from './weekly-cups/weekly-cups.service';
+import { ParseWeeklyCupGamePipe } from './weekly-cups/parse-weekly-cup-game.pipe';
+import type { WeeklyCupGame } from './weekly-cups/weekly-cups.config';
+import type { WeeklyCupConfig } from './weekly-cups/weekly-cups.types';
 
 interface RequestWithUser {
   user?: AuthenticatedUser;
@@ -46,7 +51,24 @@ export class AdminTournamentsController {
     private readonly service: TournamentsService,
     private readonly bracketsService: TournamentsBracketsService,
     private readonly blitzService: SeaBattleBlitzService,
+    private readonly weeklyCups: WeeklyCupsService,
   ) {}
+
+  @Get('weekly-cups/:game/status')
+  getWeeklyCupStatus(
+    @Param('game', ParseWeeklyCupGamePipe) game: WeeklyCupGame,
+  ): Promise<WeeklyCupConfig> {
+    return this.weeklyCups.getConfig(game);
+  }
+
+  @Post('weekly-cups/:game/toggle')
+  updateWeeklyCup(
+    @Param('game', ParseWeeklyCupGamePipe) game: WeeklyCupGame,
+    @Body() dto: UpdateWeeklyCupDto,
+    @Req() req: RequestWithUser,
+  ): Promise<{ ok: boolean } & WeeklyCupConfig> {
+    return this.weeklyCups.updateConfig(game, dto, req.user?.userId);
+  }
 
   @Get('sea-battle-blitz/status')
   async getBlitzStatus(): Promise<SeaBattleBlitzCupConfig> {

@@ -61,7 +61,7 @@ test.describe('Interactive Tutorials & Academy', () => {
     await expect(puzzle2Tab).toBeVisible();
 
     const challenge2Title = page.getByText(
-      'Academy Challenge 2: Defend the Center Trap',
+      'Challenge 2: defend the center trap',
     );
     await expect(async () => {
       // The landing has a sticky section nav; center the tab so it is not

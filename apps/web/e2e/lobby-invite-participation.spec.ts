@@ -72,7 +72,7 @@ test.describe('Lobby invite participation', () => {
       room: {
         id: roomId,
         name: 'Friends Lobby',
-        gameId: 'go_v1',
+        gameId: 'critical_v1',
         status: 'lobby',
         hostId: MOCK_OBJECT_ID,
         playerCount: 1,

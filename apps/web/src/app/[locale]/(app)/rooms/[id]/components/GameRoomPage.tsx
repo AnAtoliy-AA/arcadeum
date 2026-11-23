@@ -137,11 +137,10 @@ export default function GameRoomPage({
     [roomInfo, initialSessionData],
   );
 
-  // The invitee must accept (or decline) before taking a seat.
+  // Invitee must accept/decline first; not keyed on `room` (SSR fallback).
   const isInvitePending = !!roomInfo?.viewerInvited;
 
-  // SSR data is fetched without the viewer, so re-read the room once the
-  // session is known to learn whether this user holds a pending invitation.
+  // SSR room info has no viewer data; re-read once to detect a pending invite.
   const viewerRefetchedRef = useRef(false);
   useEffect(() => {
     if (!isAuthenticated || !roomInfo || viewerRefetchedRef.current) return;
@@ -333,7 +332,7 @@ export default function GameRoomPage({
     );
   }
 
-  if (isInvitePending && !room && roomInfo) {
+  if (isInvitePending && roomInfo) {
     return (
       <Page fixedHeight>
         <CenteredContainer>

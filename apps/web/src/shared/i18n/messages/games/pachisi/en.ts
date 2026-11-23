@@ -156,6 +156,20 @@ export const enMessages = {
       rules: 'Game Rules',
       startWithBots: 'Start with Bot',
       aiDifficulty: 'AI Difficulty',
+      teams: {
+        title: 'Team play (2v2)',
+        hint: 'Teams: partners sit opposite and win together',
+        off: 'Off',
+        on: 'On',
+        description:
+          'Four players needed. Seats 1 and 3 are one team, seats 2 and 4 the other. Empty seats are filled by bots.',
+        teamLabel: 'Team {{n}}',
+        seatLabel: 'Seat {{n}}',
+        openSeat: 'Open seat (bot)',
+        needsFour: 'Teams need a 4-player room',
+        reorderHint:
+          'Drag players in the list to change who partners with whom.',
+      },
       ruleVariants: {
         standard: {
           name: 'Standard',
@@ -190,6 +204,14 @@ export const enMessages = {
       dieValue: 'Die showing {{value}}',
       extraRoll: 'Rolled a 6! Roll again!',
       lastRoll: 'Last roll: {{value}}',
+      team: {
+        label: 'Team {{n}}',
+        partner: 'Partner',
+        you: 'You',
+        movePartner: "You are done! Move your partner's tokens now.",
+        movePartnerTokenAria: 'Move partner token {{id}}',
+        yourPartner: 'Your partner',
+      },
     },
     tutorial: {
       s1: {
@@ -220,9 +242,22 @@ export const enMessages = {
       captureTitle: 'Captures & Safe Cells',
       capture:
         'Landing on a cell held by an opponent sends their token back to the yard. Star cells and your own start cell are safe - nobody can capture you there.',
+      teamsTitle: 'Team Play (2v2)',
+      teams:
+        "With teams on, four players form two teams. Partners sit opposite each other (seats 1 and 3 versus seats 2 and 4) and turns alternate between the teams. Partners never capture each other and may share a cell. Once all your tokens are home you move your partner's tokens on your turns. A team wins when all tokens of both partners are home.",
       sixesTitle: 'Sixes',
       sixes:
         'Rolling a 6 grants another roll. Rolling three 6s in a row forfeits the turn entirely.',
+    },
+    gameOverTeam: {
+      won: 'Team victory!',
+      lost: 'Team defeat',
+      draw: 'Draw',
+      messages: {
+        won: 'You and your partner got every token home - your team wins!',
+        lost: 'The other team got all their tokens home first.',
+        draw: 'The game ended in a draw.',
+      },
     },
     gameOver: {
       won: 'Victory!',

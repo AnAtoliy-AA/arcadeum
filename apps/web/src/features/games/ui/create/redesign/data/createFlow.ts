@@ -18,6 +18,7 @@ const SUPPORTED_RULES: Partial<Record<GameId, RuleKey[]>> = {
   critical_v1: ['combos', 'idle'],
   sea_battle_v1: ['teams'],
   tic_tac_toe_v1: ['teams'],
+  pachisi_v1: ['teams'],
 };
 
 export function supportedRules(gameId: GameId): RuleKey[] {
@@ -113,7 +114,27 @@ export function applyGamePreset(
     (next.maxPlayers < players.min || next.maxPlayers > players.max)
       ? 'auto'
       : next.maxPlayers;
-  return { ...next, rules, maxPlayers };
+  return applyTeamsConstraint(
+    { ...next, rules: { ...rules, teams: false } },
+    { ...next, rules, maxPlayers },
+  );
+}
+
+/**
+ * Pachisi teams are 2v2 and need exactly four players: turning teams on pins
+ * the seat count to 4, and picking another explicit seat count turns teams
+ * off again so the form can never describe an impossible room.
+ */
+export function applyTeamsConstraint(
+  prev: CreateRoomForm,
+  next: CreateRoomForm,
+): CreateRoomForm {
+  if (next.gameId !== 'pachisi_v1' || !next.rules.teams) return next;
+  if (!prev.rules.teams) return { ...next, maxPlayers: 4 };
+  if (next.maxPlayers !== 'auto' && next.maxPlayers !== 4) {
+    return { ...next, rules: { ...next.rules, teams: false } };
+  }
+  return next;
 }
 
 export type RoomNameError = 'required' | 'tooLong' | null;
@@ -160,7 +181,9 @@ export function buildGameOptions(
       : false;
   }
   if (allowed.includes('teams') && form.rules.teams) {
-    options.teamMode = true;
+    // Pachisi reads `teams` (2v2); the other team games read `teamMode`.
+    if (form.gameId === 'pachisi_v1') options.teams = true;
+    else options.teamMode = true;
   }
   return {
     ...options,

@@ -10,6 +10,8 @@ export interface PlacedToken {
   ownerId: string;
   seat: number;
   token: PachisiToken;
+  /** Owned by the viewer's partner (team mode). */
+  isPartner?: boolean;
 }
 
 interface PachisiTokenStackProps {
@@ -18,6 +20,7 @@ interface PachisiTokenStackProps {
   currentUserId: string | null;
   canMove: boolean;
   movable: Set<number>;
+  /** Called with the token id; the board adds the partner owner when needed. */
   onMove: (tokenId: number) => void;
   isLandingCell?: boolean;
 }
@@ -35,6 +38,8 @@ export function PachisiTokenStack({
 
   const isBlockade =
     tokens.length >= 2 && tokens.every((t) => t.ownerId === tokens[0].ownerId);
+  const partnerTokenAria = (id: number) =>
+    t('games.pachisi_v1.game.team.movePartnerTokenAria', { id });
 
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -78,11 +83,14 @@ export function PachisiTokenStack({
               isButton={movableToken}
               stackIndex={tokens.length > 1 ? i : undefined}
               isBlockade={isBlockade}
+              isPartner={placed.isPartner}
               ariaLabel={
                 movableToken
-                  ? t('games.pachisi_v1.game.moveTokenAria', {
-                      id: placed.token.id,
-                    })
+                  ? placed.isPartner
+                    ? partnerTokenAria(placed.token.id)
+                    : t('games.pachisi_v1.game.moveTokenAria', {
+                        id: placed.token.id,
+                      })
                   : undefined
               }
               onClick={movableToken ? () => onMove(placed.token.id) : undefined}

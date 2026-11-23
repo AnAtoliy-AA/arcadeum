@@ -2,6 +2,7 @@
 
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { PachisiTokenView } from './PachisiTokenView';
+import { TEAM_ACCENTS, partnerOf, teamOfPlayer } from '../lib/teams';
 import type { PachisiClientState } from '../types';
 
 interface PachisiStatusStripProps {
@@ -19,6 +20,8 @@ interface PachisiStatusStripProps {
   isLastRollNoMoves?: boolean;
   finishedCounts: Map<string, number>;
   onPassTurn?: () => void;
+  /** Team mode: the viewer finished and now moves the partner's tokens. */
+  movingPartner?: boolean;
 }
 
 function HomeIcon({ className }: { className?: string }) {
@@ -61,10 +64,12 @@ export function PachisiStatusStrip({
   isLastRollNoMoves = false,
   finishedCounts,
   onPassTurn,
+  movingPartner = false,
 }: PachisiStatusStripProps) {
   const { t } = useTranslation();
 
   const seatOf = (pid: string): number => snapshot.seats[pid] ?? 0;
+  const partnerId = partnerOf(snapshot, currentUserId);
   const isExtraRoll = myTurn && canRoll && snapshot.consecutiveSixes > 0;
   const displayLastDie = isExtraRoll
     ? 6
@@ -78,6 +83,7 @@ export function PachisiStatusStrip({
           const finished = finishedCounts.get(pid) ?? 0;
           const total = snapshot.tokens[pid]?.length ?? 4;
           const isMe = pid === currentUserId;
+          const team = teamOfPlayer(snapshot, pid);
           return (
             <span
               key={`score-${pid}`}
@@ -85,18 +91,42 @@ export function PachisiStatusStrip({
                 isMe ? 'ring-1 ring-white/60' : ''
               }`}
             >
+              {team !== null && (
+                <span
+                  className="rounded px-1 text-[9px] font-black leading-4 text-white"
+                  style={{ backgroundColor: TEAM_ACCENTS[team].solid }}
+                  data-testid={`pachisi-team-chip-${pid}`}
+                >
+                  {t('games.pachisi_v1.game.team.label', { n: team + 1 })}
+                </span>
+              )}
               <PachisiTokenView
                 seat={seat}
+                isPartner={pid === partnerId}
                 className="h-3.5 w-3.5 shrink-0 shadow-sm"
               />
               <HomeIcon className="h-3 w-3 opacity-70" />
               {finished}/{total}
+              {pid === partnerId && (
+                <span className="text-[10px] font-semibold opacity-80">
+                  {t('games.pachisi_v1.game.team.partner')}
+                </span>
+              )}
             </span>
           );
         })}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
+        {movingPartner && myTurn && !isGameOver && (
+          <span
+            className="flex items-center gap-1 rounded-md bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-200 ring-1 ring-sky-400/40"
+            data-testid="pachisi-moving-partner-badge"
+          >
+            {t('games.pachisi_v1.game.team.movePartner')}
+          </span>
+        )}
+
         {isExtraRoll && (
           <span
             className="flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 ring-1 ring-amber-400/40"

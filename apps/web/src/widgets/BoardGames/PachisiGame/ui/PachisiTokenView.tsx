@@ -10,6 +10,8 @@ interface PachisiTokenViewProps {
   isButton?: boolean;
   stackIndex?: number;
   isBlockade?: boolean;
+  /** Token belongs to the viewer's partner (team mode). */
+  isPartner?: boolean;
 }
 
 function CrownIcon(): ReactElement {
@@ -78,6 +80,7 @@ export function PachisiTokenView({
   isButton = false,
   stackIndex,
   isBlockade = false,
+  isPartner = false,
 }: PachisiTokenViewProps): ReactElement {
   const normalizedSeat = ((seat % 4) + 4) % 4;
   const seatTokenClass = `pachisi-token pachisi-token-seat-${normalizedSeat}`;
@@ -86,9 +89,10 @@ export function PachisiTokenView({
       ? `pachisi-token-stacked pachisi-token-layer-${Math.min(stackIndex, 3)}`
       : '';
   const blockadeClass = isBlockade ? 'pachisi-token-blockade' : '';
+  const partnerClass = isPartner ? 'pachisi-token-partner' : '';
 
   const positionClass = className.includes('absolute') ? '' : 'relative';
-  const baseClasses = `${seatTokenClass} ${stackClass} ${blockadeClass} aspect-square shrink-0 overflow-hidden rounded-full flex items-center justify-center ${positionClass} ${className}`;
+  const baseClasses = `${seatTokenClass} ${stackClass} ${blockadeClass} ${partnerClass} aspect-square shrink-0 overflow-hidden rounded-full flex items-center justify-center ${positionClass} ${className}`;
 
   const innerContent = (
     <span className="pachisi-token-content pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -106,6 +110,7 @@ export function PachisiTokenView({
         type="button"
         aria-label={ariaLabel}
         data-testid={testId}
+        data-partner={isPartner ? 'true' : undefined}
         onClick={onClick}
         className={`${baseClasses} transition-transform active:scale-95 ${
           isMovable
@@ -119,7 +124,11 @@ export function PachisiTokenView({
   }
 
   return (
-    <span data-testid={testId} className={baseClasses}>
+    <span
+      data-testid={testId}
+      data-partner={isPartner ? 'true' : undefined}
+      className={baseClasses}
+    >
       {innerContent}
     </span>
   );

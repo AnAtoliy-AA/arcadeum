@@ -17,6 +17,7 @@ import { themesFor, type GameId } from './data/themes';
 import type { CreateRoomForm, PresetId } from './data/form';
 import {
   applyGamePreset,
+  applyTeamsConstraint,
   buildGameOptions,
   initialForm,
   parseInitialGameId,
@@ -161,7 +162,7 @@ export function useCreateRoomForm() {
 
   const patchForm = useCallback((patch: FormPatch) => {
     if (patch.roomName !== undefined) setCustomRoomName(patch.roomName);
-    setForm((prev) => ({ ...prev, ...patch }));
+    setForm((prev) => applyTeamsConstraint(prev, { ...prev, ...patch }));
   }, []);
 
   const applyPresetChoice = useCallback(
@@ -172,7 +173,9 @@ export function useCreateRoomForm() {
   );
 
   const setRules = useCallback((rules: CreateRoomForm['rules']) => {
-    setForm((prev) => ({ ...prev, rules, preset: 'custom' }));
+    setForm((prev) =>
+      applyTeamsConstraint(prev, { ...prev, rules, preset: 'custom' }),
+    );
   }, []);
 
   const setPacks = useCallback((expansionPackIds: string[]) => {

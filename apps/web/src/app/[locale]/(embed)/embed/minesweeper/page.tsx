@@ -4,7 +4,7 @@ import { EmbedGameView } from '../../EmbedGameView';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Minesweeper — Arcadeum Games',
+  title: 'Minesweeper - Arcadeum Games',
   description: 'Play Minesweeper online for free',
 };
 

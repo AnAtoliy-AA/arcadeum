@@ -207,7 +207,7 @@ export function HandRail({
         {/* Native tooltip carries the full combo label so the user can
             hover-confirm what 'Play 3× Targeted…' truncates to. The
             arena's ComboCard is the canonical surface for the verbose
-            label — the rail is the action surface. Wrapper div is the
+            label - the rail is the action surface. Wrapper div is the
             only place we can attach `title` since the legacy Button
             doesn't forward HTML title through. */}
         <div title={combo.label}>

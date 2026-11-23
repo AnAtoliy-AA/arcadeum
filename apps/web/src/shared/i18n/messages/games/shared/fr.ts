@@ -143,6 +143,9 @@ export const frMessages = {
       addFriend: 'Ajouter un ami',
       friendAdded: 'Demande envoyée',
     },
+    lobbyRefreshRoom: 'Actualiser la salle',
+    lobbyWaiting: 'En attente...',
+    lobbyModeLabel: 'Mode',
     deleteRoom: {
       button: 'Supprimer la salle',
       confirmTitle: 'Supprimer la salle',

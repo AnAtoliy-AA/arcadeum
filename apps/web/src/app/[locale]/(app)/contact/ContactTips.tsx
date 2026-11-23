@@ -11,21 +11,21 @@ export type ContactTipsProps = {
 export function ContactTips({ tips }: ContactTipsProps) {
   const items = [
     tips?.orderId ??
-      'Include your order ID for refund or payment questions — we can pull the receipt instantly.',
+      'Include your order ID for refund or payment questions - we can pull the receipt instantly.',
     tips?.bugs ??
       'For bugs: steps to reproduce, your browser, and your device. The more specific, the faster we triage.',
     tips?.screenshots ??
-      'Screenshots are welcome — paste them straight into the message field, no need to attach.',
+      'Screenshots are welcome - paste them straight into the message field, no need to attach.',
     tips?.account ??
       'For login or account issues, include the email you registered with so we can match the account.',
     tips?.urgent ??
       "Time-sensitive? Add 'urgent' to the subject and we'll route it to the on-call team.",
     tips?.language ??
-      'Write in whichever language you think in — we answer in EN, RU, ES, FR, BY.',
+      'Write in whichever language you think in - we answer in EN, RU, ES, FR, BY.',
   ];
   const footer =
     tips?.footer ??
-    'Every message is read by a human on our team — no chatbots, no autoresponders.';
+    'Every message is read by a human on our team - no chatbots, no autoresponders.';
   return (
     <GlassCard>
       <span className="text-[11px] font-semibold tracking-[1.4px] uppercase text-[var(--textSecondary)]">

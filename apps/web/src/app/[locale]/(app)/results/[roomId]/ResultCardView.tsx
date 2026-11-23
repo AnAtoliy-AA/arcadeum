@@ -63,7 +63,7 @@ export function ResultCardView({ roomId, result }: ResultCardViewProps) {
         : `Played ${result?.gameName}`;
 
     const success = await shareLink({
-      title: `${result?.gameName ?? 'Game'} Result — Arcadeum Games`,
+      title: `${result?.gameName ?? 'Game'} Result - Arcadeum Games`,
       text: `${resultText} Play free online games at Arcadeum!`,
       url,
       event: 'result.shared',

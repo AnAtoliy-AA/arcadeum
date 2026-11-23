@@ -4,7 +4,7 @@ import { EmbedGameView } from '../../EmbedGameView';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Tic-Tac-Toe — Arcadeum Games',
+  title: 'Tic-Tac-Toe - Arcadeum Games',
   description: 'Play Tic-Tac-Toe online for free',
 };
 

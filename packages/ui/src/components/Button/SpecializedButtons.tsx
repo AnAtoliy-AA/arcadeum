@@ -15,8 +15,12 @@ export const BotCountButton = ({
   onClick,
   disabled,
   'data-testid': dataTestId,
+  'aria-pressed': ariaPressed,
   children,
-}: Pick<ButtonProps, 'onClick' | 'disabled' | 'data-testid' | 'children'> & {
+}: Pick<
+  ButtonProps,
+  'onClick' | 'disabled' | 'data-testid' | 'aria-pressed' | 'children'
+> & {
   active?: boolean;
 }) => (
   <Button
@@ -27,6 +31,7 @@ export const BotCountButton = ({
     onClick={onClick}
     data-testid={dataTestId}
     data-active={active ? 'on' : undefined}
+    aria-pressed={ariaPressed}
     padding="px-2 py-2"
     className="font-semibold"
   >

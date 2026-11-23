@@ -142,6 +142,9 @@ export const byMessages = {
       addFriend: 'Дадаць сябра',
       friendAdded: 'Запыт адпраўлены',
     },
+    lobbyRefreshRoom: 'Абнавіць пакой',
+    lobbyWaiting: 'Чаканне...',
+    lobbyModeLabel: 'Рэжым',
     deleteRoom: {
       button: 'Выдаліць залу',
       confirmTitle: 'Выдаліць залу',

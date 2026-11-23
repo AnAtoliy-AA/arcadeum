@@ -143,6 +143,9 @@ export const esMessages = {
       addFriend: 'Agregar amigo',
       friendAdded: 'Solicitud enviada',
     },
+    lobbyRefreshRoom: 'Actualizar sala',
+    lobbyWaiting: 'Esperando...',
+    lobbyModeLabel: 'Modo',
     deleteRoom: {
       button: 'Eliminar sala',
       confirmTitle: 'Eliminar sala',

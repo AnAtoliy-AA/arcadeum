@@ -39,6 +39,7 @@ export interface LobbySidebarPlayersProps {
   minPlayers: number;
   members: Required<GameRoomSummary>['members'];
   showReorderControls: boolean;
+  maxPlayers: number;
   canAddBots: boolean;
   canRemoveBots: boolean;
   playersLabel: string;
@@ -60,6 +61,7 @@ export function LobbySidebarPlayers({
   minPlayers,
   members,
   showReorderControls,
+  maxPlayers,
   canAddBots,
   canRemoveBots,
   playersLabel,
@@ -74,7 +76,6 @@ export function LobbySidebarPlayers({
   onInvite,
 }: LobbySidebarPlayersProps) {
   const { t } = useTranslation();
-  const maxPlayers = room.maxPlayers ?? 5;
   const emptySeats = Math.min(
     Math.max(0, maxPlayers - members.length),
     Math.max(0, Math.max(minPlayers, 8) - members.length),

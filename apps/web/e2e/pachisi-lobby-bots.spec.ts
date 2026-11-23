@@ -30,6 +30,11 @@ test.describe('Pachisi lobby add bot', () => {
     const roomId = MOCK_OBJECT_ID;
     const userId = '507f191e810c19729de860ea';
 
+    const members = [
+      { id: userId, userId, displayName: 'Test User', isHost: true },
+      { id: 'u-2', userId: 'u-2', displayName: 'Friend' },
+      { id: 'bot-abc', userId: 'bot-abc', displayName: 'Bot' },
+    ];
     await mockRoomInfo(page, {
       room: {
         id: roomId,
@@ -37,16 +42,18 @@ test.describe('Pachisi lobby add bot', () => {
         name: 'Pachisi 4th seat',
         maxPlayers: 4,
         hostId: userId,
-        members: [
-          { id: userId, userId, displayName: 'Test User', isHost: true },
-          { id: 'u-2', userId: 'u-2', displayName: 'Friend' },
-          { id: 'bot-abc', userId: 'bot-abc', displayName: 'Bot' },
-        ],
+        members,
         playerCount: 3,
       },
     });
     await mockGameSocket(page, roomId, userId, {
-      roomJoinedPayload: { gameId: 'pachisi_v1', maxPlayers: 4 },
+      gameId: 'pachisi_v1',
+      roomJoinedPayload: {
+        gameId: 'pachisi_v1',
+        maxPlayers: 4,
+        playerCount: 3,
+        members,
+      },
     });
 
     await navigateTo(page, routes.gameRoom(roomId));

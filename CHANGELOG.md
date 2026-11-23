@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.18] - 2026-11-23
+
+### Added
+- modern UI for game landings, rooms and room lobbies
+
+
 ## [1.31.17] - 2026-11-23
 
 ### Fixed

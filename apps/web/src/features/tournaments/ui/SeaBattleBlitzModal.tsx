@@ -25,6 +25,7 @@ import type { SeaBattleBlitzBannerLabels } from './SeaBattleBlitzBanner';
 export type BlitzModalTab = 'bracket' | 'roster' | 'intel';
 
 export interface SeaBattleBlitzModalProps {
+  testId?: string;
   open: boolean;
   onClose: () => void;
   tournament: PublicTournamentItem;
@@ -40,6 +41,7 @@ export interface SeaBattleBlitzModalProps {
 }
 
 export function SeaBattleBlitzModal({
+  testId = 'sea-battle-blitz-modal',
   open,
   onClose,
   tournament,
@@ -78,7 +80,7 @@ export function SeaBattleBlitzModal({
     <Modal open={open} onClose={onClose}>
       <ModalContent
         maxWidth={780}
-        data-testid="sea-battle-blitz-modal"
+        data-testid={testId}
         className="border-cyan-500/30 bg-slate-950/95 text-slate-100 shadow-2xl shadow-cyan-950/50"
       >
         <ModalHeader
@@ -141,7 +143,9 @@ export function SeaBattleBlitzModal({
                 : 'border-transparent text-slate-400 hover:text-slate-200',
             )}
           >
-            <span>⚓ {labels.tabRoster}</span>
+            <span>
+              {labels.iconRoster} {labels.tabRoster}
+            </span>
             <span className="rounded-full bg-cyan-950 px-2 py-0.5 text-[10px] text-cyan-300 border border-cyan-500/30">
               {tournament.registeredCount}
             </span>
@@ -276,7 +280,7 @@ export function SeaBattleBlitzModal({
 
               <div className="rounded-xl border border-cyan-500/20 bg-slate-900/50 p-4">
                 <div className="flex items-center gap-2 mb-2 text-cyan-300 font-bold text-xs uppercase tracking-wider">
-                  <span>🚢</span>
+                  <span>{labels.iconIntel}</span>
                   <span>{labels.intelFleet}</span>
                 </div>
                 <p className="text-xs text-slate-300 leading-relaxed">

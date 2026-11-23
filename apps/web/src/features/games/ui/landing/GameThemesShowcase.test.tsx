@@ -1,10 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import {
   GameLandingThemeProvider,
   useGameLandingTheme,
 } from './GameLandingThemeContext';
 import { GameThemesShowcase } from './GameThemesShowcase';
+
+vi.mock('@/shared/i18n/useTranslation', async () =>
+  (await import('./__tests__/landingMocks')).translationMock(),
+);
 
 function ActiveThemeDisplay() {
   const { theme } = useGameLandingTheme();
@@ -39,7 +43,7 @@ describe('GameThemesShowcase', () => {
 
     expect(screen.getByText('Adventure')).toBeInTheDocument();
     expect(screen.getByText('Cyberpunk')).toBeInTheDocument();
-    expect(screen.getByText('Previewing')).toBeInTheDocument();
+    expect(screen.getByText('previewing')).toBeInTheDocument();
     expect(screen.getByTestId('active-theme-display')).toHaveTextContent(
       'adventure',
     );

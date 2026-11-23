@@ -131,6 +131,10 @@ export const byMessages = {
       boardSize: 'Памер поля',
       maxPlayersShort: 'да {{n}}',
       teamMode: 'Камандны рэжым',
+      teamModeHint: 'Гульцы дзеляцца на каманды і гуляюць разам',
+      expansionMarginHint:
+        'Наколькі павялічваецца поле, калі хадзіць каля краю',
+      winLengthLabel: 'Фішак у рад для перамогі',
       startWithBots: 'Пачаць з ботамі',
       addBot: 'Дадаць бота',
       waitingForPlayers: 'Чаканне гульцоў…',

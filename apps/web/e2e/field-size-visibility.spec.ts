@@ -55,7 +55,8 @@ test.describe('Lobby Field Size Visibility', () => {
     const size3Btn = page.getByTestId('ttt-board-size-3');
     await expect(size3Btn).toBeVisible();
     const box = await size3Btn.boundingBox();
-    expect(box?.height).toBeGreaterThanOrEqual(48);
+    // 44px is the lobby option kit's minimum touch target.
+    expect(box?.height).toBeGreaterThanOrEqual(44);
 
     const size5Btn = page.getByTestId('ttt-board-size-5');
     await expect(size5Btn).toBeVisible();

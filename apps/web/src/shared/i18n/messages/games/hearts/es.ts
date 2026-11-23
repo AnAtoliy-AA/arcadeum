@@ -144,6 +144,10 @@ export const esMessages = {
       startWithBots: 'Empezar con Bot',
       aiDifficulty: 'Dificultad IA',
       passingEnabled: 'Paso de Cartas',
+      passingEnabledHint:
+        'Intercambia cartas con otro jugador antes de cada mano',
+      targetScoreHint:
+        'La partida termina cuando un jugador llega a esta puntuación',
       targetScore: 'Puntuación Objetivo',
     },
     passDirection: {

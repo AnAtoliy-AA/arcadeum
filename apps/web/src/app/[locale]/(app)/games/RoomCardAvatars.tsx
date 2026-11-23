@@ -5,14 +5,28 @@ import styles from './RoomCardComponent.module.scss';
 
 const MAX_VISIBLE = 5;
 
+const MAX_EMPTY_SLOTS = 6;
+
 interface RoomCardAvatarsProps {
   members: GameRoomMemberSummary[];
   labelFor: (member: GameRoomMemberSummary) => string;
+  /** When set (and small), unfilled seats render as dashed placeholders. */
+  maxPlayers?: number | null;
+  emptySlotLabel?: string;
 }
 
-export function RoomCardAvatars({ members, labelFor }: RoomCardAvatarsProps) {
+export function RoomCardAvatars({
+  members,
+  labelFor,
+  maxPlayers,
+  emptySlotLabel,
+}: RoomCardAvatarsProps) {
   const visible = members.slice(0, MAX_VISIBLE);
   const extra = members.length - visible.length;
+  const emptySlots =
+    maxPlayers != null && maxPlayers <= MAX_EMPTY_SLOTS
+      ? Math.max(0, maxPlayers - members.length)
+      : 0;
 
   return (
     <div className={styles.avatarStack} data-testid="room-card-avatars">
@@ -46,6 +60,18 @@ export function RoomCardAvatars({ members, labelFor }: RoomCardAvatarsProps) {
           </div>
         </div>
       )}
+      {Array.from({ length: emptySlots }, (_, i) => (
+        <div
+          key={`empty-${i}`}
+          className={styles.avatarOverlap}
+          title={emptySlotLabel}
+          data-testid="room-card-empty-slot"
+        >
+          <div className={styles.emptySlot} aria-hidden="true">
+            +
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

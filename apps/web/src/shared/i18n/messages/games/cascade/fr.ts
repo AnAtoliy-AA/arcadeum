@@ -231,6 +231,7 @@ export const frMessages = {
     },
     lobby: {
       stacking: 'Autoriser les pénalités enchaînables',
+      stackingAutoHint: 'Défini automatiquement par le mode de jeu',
       lastCardCall:
         'Course à la Dernière Carte (appuyez sur Cascade quand un adversaire arrive à 1)',
       startWithBots: 'Démarrer avec des bots',

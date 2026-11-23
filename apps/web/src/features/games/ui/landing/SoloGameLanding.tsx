@@ -5,6 +5,7 @@ import { Badge, Button } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { GameLandingLayout } from './GameLandingLayout';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
+import { GameStickyPlayBar } from './GameStickyPlayBar';
 import { GameSectionNav } from './GameSectionNav';
 import { GameHowToPlay } from './GameHowToPlay';
 import { GameRulesSection } from './GameRulesSection';
@@ -99,7 +100,7 @@ export function SoloGameLanding({
       <header
         id="play"
         data-testid="solo-landing-hero"
-        className="box-border relative w-full pt-6 pb-10 scroll-mt-32 flex flex-col gap-5 max-w-4xl"
+        className="box-border relative w-full pt-4 pb-10 scroll-mt-32 flex flex-col gap-6 max-w-4xl"
       >
         <div className="box-border flex flex-wrap items-center gap-2">
           <Badge variant="info" size="sm">
@@ -107,41 +108,45 @@ export function SoloGameLanding({
           </Badge>
         </div>
         <div className="box-border flex flex-col gap-3">
-          <h1 className="box-border m-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1]">
+          <h1 className="box-border m-0 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.05]">
             {copy.name}
           </h1>
-          <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 leading-relaxed max-w-2xl">
+          <p className="box-border m-0 text-base sm:text-lg text-[var(--foreground)] opacity-85 leading-relaxed max-w-2xl">
             {copy.heroSubtitle}
           </p>
         </div>
 
         <div
+          id="solo-play-panel"
           role="group"
           aria-label={t('games.landing.primaryActions')}
-          className="box-border flex flex-wrap items-center gap-3"
+          className="box-border flex flex-col gap-2 p-4 sm:p-5 rounded-3xl border border-[var(--borderColor)] bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 backdrop-blur-xl shadow-xl max-w-md"
         >
-          <Link href={playHref} className="box-border inline-flex">
-            <Button variant="primary" size="lg">
+          <Link href={playHref} className="box-border flex">
+            <Button variant="primary" size="lg" className="w-full min-h-14">
               {copy.ctaPlayLabel}
             </Button>
           </Link>
+          <p className="box-border m-0 text-xs text-[var(--foreground)] opacity-70 text-center">
+            {t('games.landing.soloHint')}
+          </p>
         </div>
 
         {facts.length > 0 ? (
           <dl
             aria-label={t('games.landing.facts')}
             data-testid="game-hero-facts"
-            className="box-border m-0 flex flex-wrap items-stretch gap-x-6 gap-y-3 pt-4 border-t border-[var(--borderColor)]/40"
+            className="box-border m-0 flex flex-wrap items-stretch gap-2"
           >
             {facts.map((fact) => (
               <div
                 key={fact.label}
-                className="box-border flex flex-col gap-0.5"
+                className="box-border inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--borderColor)] bg-[var(--glassBg)] backdrop-blur-sm"
               >
-                <dt className="box-border text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-60">
+                <dt className="box-border text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-65">
                   {fact.label}
                 </dt>
-                <dd className="box-border m-0 text-sm sm:text-base font-semibold text-[var(--foreground)]">
+                <dd className="box-border m-0 text-sm font-semibold text-[var(--foreground)]">
                   {fact.value}
                 </dd>
               </div>
@@ -150,6 +155,14 @@ export function SoloGameLanding({
         ) : null}
 
         <GameLandingLiveStats />
+
+        <GameStickyPlayBar watchId="solo-play-panel">
+          <Link href={playHref} className="box-border flex">
+            <Button variant="primary" size="lg" className="w-full">
+              {copy.ctaPlayLabel}
+            </Button>
+          </Link>
+        </GameStickyPlayBar>
       </header>
 
       <GameSectionNav items={navItems} />
@@ -198,9 +211,9 @@ export function SoloGameLanding({
 
       <section
         data-testid="solo-final-cta"
-        className="box-border my-10 p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 border border-[var(--borderColor)] flex flex-col items-center text-center gap-6"
+        className="box-border my-10 sm:my-12 p-8 sm:p-14 rounded-[2rem] bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/15 border border-[var(--borderColor)] shadow-2xl flex flex-col items-center text-center gap-8"
       >
-        <h2 className="box-border m-0 text-2xl sm:text-4xl font-extrabold text-[var(--foreground)] tracking-tight">
+        <h2 className="box-border m-0 text-3xl sm:text-5xl font-extrabold text-[var(--foreground)] tracking-tight">
           {copy.name}
         </h2>
         <div className="box-border flex flex-wrap items-center justify-center gap-3">

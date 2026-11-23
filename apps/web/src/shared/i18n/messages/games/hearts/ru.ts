@@ -141,6 +141,9 @@ export const ruMessages = {
       startWithBots: 'Начать с Ботом',
       aiDifficulty: 'Сложность ИИ',
       passingEnabled: 'Передача Карт',
+      passingEnabledHint:
+        'Обмен картами с другим игроком перед каждой раздачей',
+      targetScoreHint: 'Игра заканчивается, когда игрок набирает столько очков',
       targetScore: 'Целевой Счёт',
     },
     passDirection: {

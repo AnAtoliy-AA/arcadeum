@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spinner } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ServerLoadingNotice } from '@arcadeum/ui/components/ServerLoadingNotice/ServerLoadingNotice';
 import { useServerWakeUpProgress } from '@/shared/hooks/useServerWakeUpProgress';
@@ -36,7 +37,10 @@ export function GameRoomLoading({
           }}
         />
       ) : (
-        <span className="">{message || t('games.roomPage.loading')}</span>
+        <>
+          <Spinner />
+          <span role="status">{message || t('games.roomPage.loading')}</span>
+        </>
       )}
     </LoadingContainer>
   );

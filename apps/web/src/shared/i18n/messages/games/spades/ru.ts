@@ -143,6 +143,8 @@ export const ruMessages = {
       startWithBots: 'Начать с ботом',
       aiDifficulty: 'Сложность ИИ',
       nilEnabled: 'Разрешить заказы Ниль',
+      nilEnabledHint: 'Ставка на ноль взяток: бонус или штраф',
+      targetScoreHint: 'Побеждает команда, первой набравшая столько очков',
       targetScore: 'Целевой счёт',
     },
     gameOver: {

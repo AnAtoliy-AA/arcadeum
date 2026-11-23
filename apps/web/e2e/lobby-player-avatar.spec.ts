@@ -49,7 +49,7 @@ test.describe('Lobby Player Avatar & Host Badge', () => {
     await navigateTo(page, routes.gameRoom(roomId));
     await waitForRoomReady(page);
 
-    const hostBadge = page.getByText('HOST', { exact: true });
+    const hostBadge = page.getByText(/^host$/i);
     await expect(hostBadge).toBeVisible();
 
     const hostName = page.getByText('HostPlayer');

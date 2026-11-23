@@ -34,7 +34,7 @@ export function GamesLoading({ isLoadingLongPending }: GamesLoadingProps) {
       {Array.from({ length: SKELETON_COUNT }, (_, i) => (
         <Skeleton
           key={i}
-          className="h-[190px] w-full rounded-2xl"
+          className="h-[220px] w-full rounded-[20px]"
           data-testid="room-card-skeleton"
         />
       ))}

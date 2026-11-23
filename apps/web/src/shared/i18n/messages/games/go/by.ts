@@ -146,6 +146,11 @@ export const byMessages = {
       boardSizeHint: '9×9 ≈ 10 хв · 13×13 ≈ 20 хв · 19×19 ≈ 40+ хв',
       startWithBots: 'Пачаць з ботамі',
       aiDifficulty: 'Складанасць ІІ',
+      aiDifficultyHint: 'Наколькі моцныя байцы-сапернікі',
+      aiEasyDesc: 'Выпадковыя хады, захопы ў прыярытэце',
+      aiMediumDesc: 'Прагная эўрыстычная стратэгія',
+      aiHardDesc: 'Пошук MCTS (220 сімуляцый)',
+      aiExpertDesc: 'Пашыраны MCTS (550 сімуляцый)',
     },
     status: {
       yourTurn: 'Ваш ход',

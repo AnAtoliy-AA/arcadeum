@@ -2,10 +2,13 @@
 
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-  LobbyToggle,
-} from '@/features/games/ui/LobbyOptions';
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+  LobbySubAdvanced,
+  LobbySwitchRow,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import {
   type CascadeMode,
@@ -59,44 +62,38 @@ export function CascadeLobbyOptionsPanel({
 }) {
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId, userId });
-  const modeOptions = [
+  const modeItems = [
     {
       id: 'classic',
-      label: t('games.create.cascadeModeClassic') || 'Classic',
+      label: t('games.create.cascadeModeClassic'),
+      description: t('games.create.cascadeModeClassicHint'),
     },
     {
       id: 'pure',
-      label: t('games.create.cascadeModePure') || 'Pure',
+      label: t('games.create.cascadeModePure'),
+      description: t('games.create.cascadeModePureHint'),
     },
     {
       id: 'speed',
-      label: t('games.create.cascadeModeSpeed') || 'Speed',
+      label: t('games.create.cascadeModeSpeed'),
+      description: t('games.create.cascadeModeSpeedHint'),
     },
   ];
 
-  const getModeHint = () => {
-    switch (options.mode) {
-      case 'pure':
-        return (
-          t('games.create.cascadeModePureHint') ||
-          'No stacking: draw cards resolve immediately'
-        );
-      case 'speed':
-        return (
-          t('games.create.cascadeModeSpeedHint') ||
-          'Stacking enabled with per-turn timer'
-        );
-      default:
-        return (
-          t('games.create.cascadeModeClassicHint') ||
-          'Full ruleset with stacking'
-        );
-    }
-  };
-
   return (
-    <div className="flex flex-col items-stretch gap-4">
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
+    <LobbyOptionStack>
+      <LobbyHostOnlyNote show={!isHost} />
+      <LobbyOptionGroup title={t('games.create.cascadeMode')}>
+        <LobbyChoice
+          aria-label={t('games.create.cascadeMode')}
+          items={modeItems}
+          value={options.mode}
+          disabled={!isHost}
+          onChange={(v) => setOption({ mode: v })}
+          testIdPrefix="cascade-mode"
+        />
+      </LobbyOptionGroup>
+      <LobbyOptionGroup title={t('games.create.sectionVariant')}>
         <GameThemePicker
           selectedTheme={options.variant}
           onSelect={(themeId) =>
@@ -104,36 +101,26 @@ export function CascadeLobbyOptionsPanel({
           }
           disabled={!isHost}
         />
-      </LobbyOptionSection>
-
-      {isHost && (
-        <LobbyOptionSection
-          title={t('games.create.cascadeMode') || 'Game Mode'}
-          hint={getModeHint()}
-        >
-          <LobbyChipGroup
-            options={modeOptions}
-            value={options.mode}
-            onChange={(v) => setOption({ mode: v })}
-            accentColor="#fbbf24"
-            testIdPrefix="cascade-mode"
-          />
-        </LobbyOptionSection>
-      )}
-
-      <LobbyToggle
-        label={t('games.cascade_v1.lobby.stacking')}
-        checked={options.stackingEnabled}
-        onCheckedChange={() => {}}
-        disabled
-      />
-
-      <LobbyToggle
-        label={t('games.cascade_v1.lobby.lastCardCall')}
-        checked={options.lastCardCallEnabled}
-        onCheckedChange={(val) => setOption({ lastCardCallEnabled: val })}
-        disabled={!isHost}
-      />
-    </div>
+      </LobbyOptionGroup>
+      <LobbySubAdvanced
+        testId="cascade-house-rules"
+        title={t('games.lobby.advancedSettings')}
+      >
+        <LobbySwitchRow
+          label={t('games.cascade_v1.lobby.stacking')}
+          hint={t('games.cascade_v1.lobby.stackingAutoHint')}
+          checked={options.stackingEnabled}
+          onCheckedChange={() => {}}
+          disabled
+        />
+        <LobbySwitchRow
+          testId="cascade-last-card-call"
+          label={t('games.cascade_v1.lobby.lastCardCall')}
+          checked={options.lastCardCallEnabled}
+          onCheckedChange={(val) => setOption({ lastCardCallEnabled: val })}
+          disabled={!isHost}
+        />
+      </LobbySubAdvanced>
+    </LobbyOptionStack>
   );
 }

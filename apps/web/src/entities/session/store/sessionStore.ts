@@ -266,7 +266,14 @@ export const useSessionStore = create<SessionState>()(
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => {
         const s = state as SessionState;
-        const hasToken = !!s.snapshot.accessToken;
+        // After a reload the access token is never in memory until the
+        // refresh cookie restore finishes, but the identity (userId) is. That
+        // "restore pending" state must survive being re-persisted (any store
+        // write before the restore lands triggers a persist), otherwise a
+        // second fast reload finds no prior session, skips the restore and
+        // the user turns anon. A real logout resets the snapshot to defaults
+        // (userId null), so stale profile data still never outlives it.
+        const hasIdentity = !!s.snapshot.accessToken || !!s.snapshot.userId;
         return {
           snapshot: {
             ...s.snapshot,
@@ -274,7 +281,7 @@ export const useSessionStore = create<SessionState>()(
             refreshToken: null,
             accessTokenExpiresAt: null,
             refreshTokenExpiresAt: null,
-            ...(hasToken
+            ...(hasIdentity
               ? {}
               : {
                   userId: null,

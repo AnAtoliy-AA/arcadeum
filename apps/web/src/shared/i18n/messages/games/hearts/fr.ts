@@ -146,6 +146,9 @@ export const frMessages = {
       startWithBots: 'Commencer avec Bot',
       aiDifficulty: 'Difficulté IA',
       passingEnabled: 'Passage de Cartes',
+      passingEnabledHint:
+        'Échangez des cartes avec un autre joueur avant chaque donne',
+      targetScoreHint: 'La partie se termine quand un joueur atteint ce score',
       targetScore: 'Score Cible',
     },
     passDirection: {

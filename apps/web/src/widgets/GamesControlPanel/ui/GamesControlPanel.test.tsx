@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { GamesControlPanel } from './GamesControlPanel';
 import { useGameRematchStore } from '@/features/games/store/gameRematchStore';
 
@@ -57,9 +57,19 @@ describe('GamesControlPanel', () => {
     expect(screen.getByTestId('games-control-panel')).toBeInTheDocument();
     expect(screen.getByTestId('fullscreen-button')).toBeInTheDocument();
     expect(screen.getByTestId('sound-toggle-button')).toBeInTheDocument();
+    expect(screen.queryByTestId('exit-room-button')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('more-options-button'));
     expect(screen.getByTestId('music-toggle-button')).toBeInTheDocument();
     expect(screen.getByTestId('exit-room-button')).toBeInTheDocument();
     expect(screen.getByTestId('leave-game-button')).toBeInTheDocument();
+  });
+
+  it('closes the overflow menu on Escape', () => {
+    render(<GamesControlPanel isFullscreen={false} />);
+    fireEvent.click(screen.getByTestId('more-options-button'));
+    expect(screen.getByTestId('more-options-menu')).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByTestId('more-options-menu')).not.toBeInTheDocument();
   });
 
   it('renders rematch button when isGameOver and onRematch are active', () => {

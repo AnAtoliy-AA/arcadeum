@@ -146,6 +146,11 @@ export const ruMessages = {
       boardSizeHint: '9×9 ≈ 10 мин · 13×13 ≈ 20 мин · 19×19 ≈ 40+ мин',
       startWithBots: 'Начать с ботами',
       aiDifficulty: 'Сложность ИИ',
+      aiDifficultyHint: 'Насколько сильны боты-соперники',
+      aiEasyDesc: 'Случайные ходы, но взятия в приоритете',
+      aiMediumDesc: 'Жадная эвристическая стратегия',
+      aiHardDesc: 'Поиск MCTS (220 симуляций)',
+      aiExpertDesc: 'Продвинутый MCTS (550 симуляций)',
     },
     status: {
       yourTurn: 'Ваш ход',

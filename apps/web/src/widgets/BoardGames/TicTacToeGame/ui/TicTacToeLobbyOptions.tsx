@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { cx } from '@arcadeum/ui/utils/cx';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { LobbyOptionSection } from '@/features/games/ui/LobbyOptions';
+import {
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+  LobbySwitchRow,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { BoardSizeSelector } from './BoardSizeSelector';
@@ -83,16 +87,8 @@ export function TicTacToeLobbyOptionsPanel({
   };
 
   return (
-    <div className="flex flex-col items-stretch gap-4">
-      <LobbyOptionSection title={t('games.create.sectionVariant')}>
-        <GameThemePicker
-          selectedTheme={variant}
-          onSelect={(themeId) =>
-            setOption({ theme: themeId, variant: themeId })
-          }
-          disabled={!isHost}
-        />
-      </LobbyOptionSection>
+    <LobbyOptionStack>
+      <LobbyHostOnlyNote show={!isHost} />
       <BoardSizeSelector
         roomId={room.id}
         hostId={userId}
@@ -103,39 +99,32 @@ export function TicTacToeLobbyOptionsPanel({
         onMarginChange={handleMarginChange}
         onWinLengthChange={handleWinLengthChange}
       />
-      <LobbyOptionSection title={t('games.tic_tac_toe_v1.lobby.teamMode')}>
-        <div className="flex flex-row items-center gap-3">
-          <button
-            type="button"
-            role="switch"
-            aria-checked={internalTeamMode}
-            aria-label={t('games.tic_tac_toe_v1.lobby.teamMode')}
-            disabled={!isHost}
-            onClick={() => handleTeamModeToggle(!internalTeamMode)}
-            className={cx(
-              'h-6 w-11 rounded-full p-1 transition-colors duration-200 ease-out',
-              internalTeamMode ? 'bg-[#2563eb]' : 'bg-[rgba(255,255,255,0.15)]',
-              !isHost && 'cursor-not-allowed opacity-50',
-            )}
-          >
-            <span
-              className={cx(
-                'block h-4 w-4 rounded-full bg-white transition-transform duration-200 ease-out',
-                internalTeamMode ? 'translate-x-5' : 'translate-x-0',
-              )}
-            />
-          </button>
-        </div>
-      </LobbyOptionSection>
+      <LobbySwitchRow
+        testId="ttt-team-mode-switch"
+        label={t('games.tic_tac_toe_v1.lobby.teamMode')}
+        hint={t('games.tic_tac_toe_v1.lobby.teamModeHint')}
+        checked={internalTeamMode}
+        disabled={!isHost}
+        onCheckedChange={handleTeamModeToggle}
+      />
       {internalTeamMode ? (
         <TicTacToeTeamPanel room={room} isHost={isHost} />
       ) : null}
-      <span className="text-[16px] opacity-[0.7]">
+      <LobbyOptionGroup title={t('games.create.sectionVariant')}>
+        <GameThemePicker
+          selectedTheme={variant}
+          onSelect={(themeId) =>
+            setOption({ theme: themeId, variant: themeId })
+          }
+          disabled={!isHost}
+        />
+      </LobbyOptionGroup>
+      <p className="text-xs text-[var(--textMuted)]">
         {options.boardSize === 'infinity'
           ? t('games.tic_tac_toe_v1.lobby.winCondition')
           : t('games.tic_tac_toe_v1.rules.winLengths')}
-      </span>
-    </div>
+      </p>
+    </LobbyOptionStack>
   );
 }
 

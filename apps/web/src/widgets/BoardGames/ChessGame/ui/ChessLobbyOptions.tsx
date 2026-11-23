@@ -4,9 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { type GameLobbyTheme } from '@/features/games/ui/ReusableGameLobby';
 import {
-  LobbyOptionSection,
-  LobbyChipGroup,
-} from '@/features/games/ui/LobbyOptions';
+  LobbyChoice,
+  LobbyHostOnlyNote,
+  LobbyOptionGroup,
+  LobbyOptionStack,
+} from '@/features/games/ui/LobbyOptionKit';
 import { GameThemePicker } from '@/features/games/ui/GameThemePicker';
 import type { GameRoomSummary } from '@/shared/types/games';
 import { useRoomOptions } from '@/features/games/hooks/useRoomOptions';
@@ -137,7 +139,7 @@ export function ChessLobbyOptionsPanel({
   const { t } = useTranslation();
   const { setOption } = useRoomOptions({ roomId, userId });
   const [showPgnImport, setShowPgnImport] = useState(false);
-  const variantOptions = [
+  const variantItems = [
     {
       id: 'standard',
       label: t('games.chess_v1.lobby.standard'),
@@ -172,17 +174,18 @@ export function ChessLobbyOptionsPanel({
 
   return (
     <>
-      <div className="flex flex-col items-stretch gap-4">
-        <LobbyOptionSection title={t('games.chess_v1.lobby.variant')}>
-          <LobbyChipGroup
-            options={variantOptions}
+      <LobbyOptionStack>
+        <LobbyHostOnlyNote show={!isHost} />
+        <LobbyOptionGroup title={t('games.chess_v1.lobby.variant')}>
+          <LobbyChoice
+            aria-label={t('games.chess_v1.lobby.variant')}
+            items={variantItems}
             value={options.variant}
             onChange={(v) => setOption({ variant: v })}
             disabled={!isHost}
-            accentColor="#6366f1"
             testIdPrefix="chess-variant"
           />
-        </LobbyOptionSection>
+        </LobbyOptionGroup>
 
         <QuickPlayPanel
           selectedTimeControl={options.timeControl}
@@ -192,31 +195,31 @@ export function ChessLobbyOptionsPanel({
           }}
         />
 
-        <LobbyOptionSection title={t('games.create.sectionVariant')}>
+        <LobbyOptionGroup title={t('games.create.sectionVariant')}>
           <GameThemePicker
             selectedTheme={options.theme}
             onSelect={(themeId) => setOption({ theme: themeId })}
             disabled={!isHost}
           />
-        </LobbyOptionSection>
+        </LobbyOptionGroup>
 
-        <LobbyOptionSection title={t('games.chess_v1.lobby.botPersonality')}>
+        <LobbyOptionGroup title={t('games.chess_v1.lobby.botPersonality')}>
           <BotSelector
             personalities={personalityOptions}
             selectedId={selectedPersonality}
             onSelect={onSelectPersonality}
             disabled={!isHost}
           />
-        </LobbyOptionSection>
+        </LobbyOptionGroup>
 
         <button
           type="button"
           onClick={() => setShowPgnImport(true)}
-          className="w-full py-2 px-4 rounded-lg bg-[var(--backgroundHover)] border border-[var(--glassBorder)] text-[var(--textSecondary)] text-xs font-semibold cursor-pointer hover:text-[var(--color)] transition-colors"
+          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] px-4 text-sm font-semibold text-[var(--textPrimary)] transition-colors hover:bg-[var(--glassBgHover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] motion-reduce:transition-none"
         >
           {t('games.chess_v1.actions.importPgn')}
         </button>
-      </div>
+      </LobbyOptionStack>
 
       <PgnImportModal
         isOpen={showPgnImport}

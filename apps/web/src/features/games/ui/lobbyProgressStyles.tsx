@@ -108,7 +108,7 @@ export const LobbyStickyStart = ({
 }) => (
   <div
     className={cx(
-      'flex flex-col items-center py-3 px-5 overflow-hidden max-[800px]:fixed max-[800px]:left-0 max-[800px]:right-0 max-[800px]:bottom-0 max-[800px]:py-2.5 max-[800px]:px-4 max-[800px]:pb-[calc(env(safe-area-inset-bottom,0px)+10px)] max-[800px]:bg-[rgba(15,23,42,0.95)] max-[800px]:backdrop-blur-[16px] max-[800px]:border-t max-[800px]:border-[rgba(255,255,255,0.1)] max-[800px]:z-[150] max-[800px]:items-center max-[800px]:overflow-hidden',
+      'sticky bottom-0 z-[150] flex flex-col items-center border-t border-[var(--glassBorder)] bg-[var(--surface)]/90 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] backdrop-blur-lg',
       className,
     )}
   >

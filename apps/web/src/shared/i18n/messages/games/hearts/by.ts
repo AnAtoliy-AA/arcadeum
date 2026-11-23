@@ -141,6 +141,8 @@ export const byMessages = {
       startWithBots: 'Пачаць з Ботам',
       aiDifficulty: 'Складанасць ІІ',
       passingEnabled: 'Перадача Карт',
+      passingEnabledHint: 'Абмен картамі з іншым гульцом перад кожнай раздачай',
+      targetScoreHint: 'Гульня заканчваецца, калі гулец набірае столькі ачкоў',
       targetScore: 'Мэтаў Лік',
     },
     passDirection: {

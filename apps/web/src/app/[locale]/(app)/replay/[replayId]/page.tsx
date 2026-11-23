@@ -19,7 +19,7 @@ export async function generateMetadata({
     });
     const playerNames = replay.players.map((p) => p.displayName).join(' vs ');
     return {
-      title: `${replay.gameId} Replay — ${playerNames}`,
+      title: `${replay.gameId} Replay - ${playerNames}`,
       description: `Watch ${replay.gameId} replay: ${playerNames} (${replay.totalMoves} moves)`,
     };
   } catch {

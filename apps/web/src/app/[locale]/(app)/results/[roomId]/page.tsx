@@ -17,7 +17,7 @@ export async function generateMetadata({
     const res = await fetch(resolveApiUrl(`/games/rooms/${roomId}/result`), {
       next: { revalidate: 30 },
     });
-    if (!res.ok) return { title: 'Game Result — Arcadeum Games' };
+    if (!res.ok) return { title: 'Game Result - Arcadeum Games' };
     const data: {
       gameName: string;
       participants: Array<{ displayName: string; isWinner: boolean }>;
@@ -31,10 +31,10 @@ export async function generateMetadata({
         : 'Game completed';
 
     return {
-      title: `${data.gameName} Result — Arcadeum Games`,
-      description: `${resultText} — played on Arcadeum Games`,
+      title: `${data.gameName} Result - Arcadeum Games`,
+      description: `${resultText} - played on Arcadeum Games`,
       openGraph: {
-        title: `${data.gameName} — Arcadeum Games`,
+        title: `${data.gameName} - Arcadeum Games`,
         description: resultText,
         images: [
           {
@@ -46,12 +46,12 @@ export async function generateMetadata({
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${data.gameName} — Arcadeum Games`,
+        title: `${data.gameName} - Arcadeum Games`,
         description: resultText,
       },
     };
   } catch {
-    return { title: 'Game Result — Arcadeum Games' };
+    return { title: 'Game Result - Arcadeum Games' };
   }
 }
 

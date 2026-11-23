@@ -307,6 +307,7 @@ export function LobbySidebar({
                       ghost
                       size="sm"
                       onClick={() => onRemoveBot(member.id)}
+                      aria-label={t('games.common.kickPlayer.button')}
                       data-testid={`remove-bot-${member.id}`}
                     >
                       ✕
@@ -317,6 +318,7 @@ export function LobbySidebar({
                       variant="danger"
                       ghost
                       size="sm"
+                      aria-label={t('games.common.kickPlayer.button')}
                       onClick={() =>
                         setKickTarget({
                           id: member.id,

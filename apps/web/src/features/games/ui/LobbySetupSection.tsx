@@ -94,6 +94,7 @@ export function LobbySetupSection({
                       key={count}
                       data-testid={`bot-count-${count}`}
                       active={botCount === count}
+                      aria-pressed={botCount === count}
                       onClick={() => setBotCount(count)}
                     >
                       {count}
@@ -130,6 +131,7 @@ export function LobbySetupSection({
                     key={d.key}
                     data-testid={`difficulty-${d.key}`}
                     active={difficulty === d.key}
+                    aria-pressed={difficulty === d.key}
                     onClick={() => setDifficulty(d.key)}
                   >
                     {d.label}

@@ -86,6 +86,7 @@ export function LobbyHeroSection({
           <button
             type="button"
             onClick={onToggleQueue}
+            aria-pressed={isQueued}
             className={`w-full rounded-xl px-5 py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
               isQueued
                 ? 'border border-[var(--borderColor)] bg-transparent text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'

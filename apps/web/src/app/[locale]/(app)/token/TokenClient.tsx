@@ -265,7 +265,7 @@ export default function TokenClient({
                       undefined,
                       { maximumFractionDigits: 2 },
                     )
-              : '—'}
+              : '-'}
           </span>
           {metadata?.treasuryBalance?.arcadeum != null && (
             <span className="text-xs text-[var(--textSecondary)] mt-0.5">
@@ -295,7 +295,7 @@ export default function TokenClient({
                   : metadata.treasuryBalance.sol < 0.01
                     ? `${metadata.treasuryBalance.sol.toFixed(4)}`
                     : `${metadata.treasuryBalance.sol.toFixed(2)}`
-                : '—'}
+                : '-'}
             </span>
             {metadata?.treasuryBalance?.sol != null && (
               <span className="text-xs text-[var(--textSecondary)] mt-0.5">

@@ -43,7 +43,7 @@ export function MatchHistoryFeed({ userId, matches }: MatchHistoryFeedProps) {
         </div>
         <Link
           href="/history"
-          className="text-[13px] text-[var(--color)] hover:underline"
+          className="rounded text-[13px] font-semibold text-[var(--primary)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
         >
           {t('games.common.profile.viewAll')} →
         </Link>
@@ -51,7 +51,13 @@ export function MatchHistoryFeed({ userId, matches }: MatchHistoryFeedProps) {
 
       {matches.length === 0 ? (
         <Card variant="default">
-          <div className="py-6 text-center text-[13px] text-[var(--textSecondary)]">
+          <div
+            data-testid="profile-matches-empty"
+            className="flex flex-col items-center gap-2 py-6 text-center text-[13px] text-[var(--textSecondary)]"
+          >
+            <span aria-hidden className="text-2xl">
+              ⚔️
+            </span>
             {t('games.common.profile.noMatches')}
           </div>
         </Card>
@@ -60,7 +66,12 @@ export function MatchHistoryFeed({ userId, matches }: MatchHistoryFeedProps) {
           {matches.map((match) => {
             const opponents = match.participants
               .filter((p) => p.id !== userId)
-              .map((p) => p.displayName || p.username || 'Opponent')
+              .map(
+                (p) =>
+                  p.displayName ||
+                  p.username ||
+                  t('games.common.profile.opponent'),
+              )
               .join(', ');
 
             const dateStr =
@@ -72,7 +83,7 @@ export function MatchHistoryFeed({ userId, matches }: MatchHistoryFeedProps) {
               <Card key={match.roomId} variant="default">
                 <div className="flex flex-row items-center justify-between gap-3 text-[13px]">
                   <div className="flex flex-row items-center gap-3 min-w-0 flex-1">
-                    <span className="text-[22px]">
+                    <span aria-hidden className="text-[22px]">
                       {getGameEmoji(match.gameId)}
                     </span>
                     <div className="flex flex-col min-w-0 flex-1">
@@ -102,7 +113,7 @@ export function MatchHistoryFeed({ userId, matches }: MatchHistoryFeedProps) {
                     </span>
                     <Link
                       href="/history"
-                      className="text-[11px] text-[var(--primary)] hover:underline"
+                      className="rounded text-[11px] font-semibold text-[var(--primary)] hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)]"
                     >
                       {t('games.common.profile.viewReplay')}
                     </Link>

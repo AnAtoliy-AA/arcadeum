@@ -81,7 +81,7 @@ const tickerItems = [
     tag: 'status',
     who: 'All systems',
     what: 'operational · 99.98% uptime',
-    when: '—',
+    when: '-',
     color: '#34d399',
   },
 ];

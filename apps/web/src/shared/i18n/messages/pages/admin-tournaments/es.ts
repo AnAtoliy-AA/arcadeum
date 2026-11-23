@@ -46,6 +46,8 @@ export const adminTournamentsEs = {
   gameType: {
     critical_v1: 'Critical',
     sea_battle_v1: 'Batalla naval',
+    chess_v1: 'Ajedrez',
+    checkers_v1: 'Damas',
   },
   form: {
     sections: { settings: 'Ajustes', content: 'Contenido' },

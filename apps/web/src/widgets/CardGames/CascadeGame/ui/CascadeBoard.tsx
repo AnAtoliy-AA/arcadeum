@@ -193,7 +193,7 @@ export function CascadeBoard({
         </div>
 
         {/* Last-Card race: pulsing call button visible to ALL alive players
-            while the window is open. First press wins — the engine sorts the
+            while the window is open. First press wins - the engine sorts the
             race by arrival order. Self-press = safe; other-press = at-risk
             player draws 2 penalty cards. */}
         {cascadeOpen && onCallCascade ? (

@@ -167,6 +167,7 @@ export const ru = {
     },
     monitoring: {
       title: 'Мониторинг',
+      liveRefresh: 'В реальном времени, обновление каждые 10 с',
       loading: 'Загрузка метрик...',
       enableHint: 'Включите METRICS_ENABLED=true в .env для просмотра метрик',
       status: 'Статус',

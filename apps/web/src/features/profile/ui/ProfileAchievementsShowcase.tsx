@@ -14,24 +14,24 @@ const RARITY_CLASSES: Record<
   { bg: string; text: string; border: string }
 > = {
   common: {
-    bg: 'bg-neutral-500/20',
-    text: 'text-neutral-300',
-    border: 'border-neutral-500/40',
+    bg: 'bg-[var(--textSecondary)]/20',
+    text: 'text-[var(--textSecondary)]',
+    border: 'border-[var(--textSecondary)]/40',
   },
   rare: {
-    bg: 'bg-blue-500/20',
-    text: 'text-blue-400',
-    border: 'border-blue-500/40',
+    bg: 'bg-[var(--info)]/20',
+    text: 'text-[var(--info)]',
+    border: 'border-[var(--info)]/40',
   },
   epic: {
-    bg: 'bg-purple-500/20',
-    text: 'text-purple-400',
-    border: 'border-purple-500/40',
+    bg: 'bg-[var(--primary)]/20',
+    text: 'text-[var(--primary)]',
+    border: 'border-[var(--primary)]/40',
   },
   legendary: {
-    bg: 'bg-amber-500/20',
-    text: 'text-amber-400',
-    border: 'border-amber-500/40',
+    bg: 'bg-[var(--warning)]/20',
+    text: 'text-[var(--warning)]',
+    border: 'border-[var(--warning)]/40',
   },
 };
 
@@ -52,12 +52,12 @@ export function ProfileAchievementsShowcase({
           {achievements.length}
         </Badge>
       </div>
-      <div className="flex flex-row gap-2 overflow-x-auto pb-1">
+      <ul className="m-0 flex list-none flex-row gap-2 overflow-x-auto p-0 pb-1">
         {achievements.map((achievement) => {
           const style =
             RARITY_CLASSES[achievement.rarity] || RARITY_CLASSES.common;
           return (
-            <div
+            <li
               key={achievement.achievementId}
               className="flex min-w-[100px] shrink-0 flex-col items-center gap-1.5 rounded-xl border border-[var(--glassBorder)] bg-[var(--backgroundHover)] p-3 backdrop-blur-md"
             >
@@ -85,10 +85,10 @@ export function ProfileAchievementsShowcase({
               >
                 {achievement.rarity}
               </span>
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }

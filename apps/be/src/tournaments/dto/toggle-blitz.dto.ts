@@ -1,24 +1,4 @@
-import {
-  IsBoolean,
-  IsInt,
-  IsOptional,
-  IsString,
-  MaxLength,
-  Min,
-} from 'class-validator';
+import { UpdateWeeklyCupDto } from './update-weekly-cup.dto';
 
-export class ToggleBlitzCupDto {
-  @IsOptional()
-  @IsBoolean()
-  enabled?: boolean;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  prizePoolCoins?: number;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(120)
-  prizeDescription?: string;
-}
+/** Sea Battle blitz cup toggle payload (same shape as any weekly cup). */
+export class ToggleBlitzCupDto extends UpdateWeeklyCupDto {}

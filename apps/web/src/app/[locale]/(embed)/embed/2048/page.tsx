@@ -4,7 +4,7 @@ import { EmbedGameView } from '../../EmbedGameView';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: '2048 — Arcadeum Games',
+  title: '2048 - Arcadeum Games',
   description: 'Play 2048 online for free',
 };
 

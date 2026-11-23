@@ -88,7 +88,10 @@ export function CriticalLobby({
           />
         }
         headerActionsSlot={
-          <IconButton onClick={() => setShowRules(true)} title="Game Rules">
+          <IconButton
+            onClick={() => setShowRules(true)}
+            title={t('games.rules.button')}
+          >
             📖
           </IconButton>
         }

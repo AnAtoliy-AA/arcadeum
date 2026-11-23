@@ -160,6 +160,10 @@ test.describe('Profile Match Showcase & Head to Head', () => {
 
     await expect(page.getByText('Grand Master').first()).toBeVisible();
     await expect(page.getByText('@grandmaster')).toBeVisible();
+    await expect(page.getByTestId('profile-hero')).toBeVisible();
+    await expect(page.getByTestId('profile-name')).toHaveText('Grand Master');
+    await expect(page.getByTestId('profile-level')).toBeVisible();
+    await expect(page.getByTestId('profile-stats')).toBeVisible();
 
     const shareBtn = page.getByTestId('profile-share-button');
     await expect(shareBtn).toBeVisible();
@@ -169,5 +173,41 @@ test.describe('Profile Match Showcase & Head to Head', () => {
 
     await expect(page.getByText('First Victory')).toBeVisible();
     await expect(page.getByText('Streak Master')).toBeVisible();
+  });
+
+  test('shows an error state with retry when the profile fails to load', async ({
+    page,
+  }) => {
+    let calls = 0;
+    await page.route(`**/auth/users/${targetUserId}`, async (route) => {
+      if (route.request().resourceType() === 'document') {
+        return route.fallback();
+      }
+      calls += 1;
+      if (calls === 1) {
+        await route.fulfill({
+          status: 500,
+          contentType: 'application/json',
+          body: JSON.stringify({ message: 'boom' }),
+        });
+        return;
+      }
+      await handleRoute(route, {
+        id: targetUserId,
+        username: 'grandmaster',
+        displayName: 'Grand Master',
+        role: 'pro',
+        xp: 15400,
+        prestige: 0,
+        createdAt: '2025-01-15T10:00:00.000Z',
+      });
+    });
+
+    await navigateTo(page, `/profile/${targetUserId}`);
+
+    const error = page.getByTestId('profile-error');
+    await expect(error).toBeVisible();
+    await error.getByRole('button').click();
+    await expect(page.getByTestId('profile-hero')).toBeVisible();
   });
 });

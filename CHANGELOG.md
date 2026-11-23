@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.29] - 2026-11-23
+
+### Added
+- scenario variety, puzzle/replay formats, dry-run for gameplay shorts
+
+
 ## [1.31.28] - 2026-11-23
 
 ### Fixed

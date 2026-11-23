@@ -18,6 +18,7 @@
 
 const { spawn } = require('child_process');
 const path = require('path');
+const { runAnalyticsHook } = require('./analytics/runner-hook');
 
 const isPreview = process.argv.includes('--preview');
 const isGameplayOnly = process.argv.includes('--gameplay-only');
@@ -98,6 +99,15 @@ async function main() {
     );
     results.push({ name: 'App Showcase Short', success: showcaseSuccess });
   }
+
+  // Analytics: record today's posts and refresh stats of older ones.
+  // Never posts, never fails the run. Skipped in preview mode.
+  await runAnalyticsHook({
+    isPreview,
+    targetGame,
+    results,
+    log: (m) => console.log(`[DAILY RUNNER] ${m}`),
+  });
 
   const durationSec = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log(`\n============================================================`);

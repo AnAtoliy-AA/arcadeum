@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+## [1.31.17] - 2026-11-23
 
-- anon after a fast double reload: the persisted session identity is no longer wiped when the store is re-persisted before the cookie restore finishes
+### Fixed
+- keep persisted session identity until the cookie restore lands
+
 
 ## [1.31.16] - 2026-11-22
 

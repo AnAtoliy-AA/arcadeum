@@ -12,6 +12,10 @@ interface PachisiTokenViewProps {
   isBlockade?: boolean;
   /** Token belongs to the viewer's partner (team mode). */
   isPartner?: boolean;
+  /** Fires with true on hover/focus and false on leave/blur (destination preview). */
+  onHoverChange?: (active: boolean) => void;
+  /** Token progress, exposed as data-progress for focus ordering. */
+  progress?: number;
 }
 
 function CrownIcon(): ReactElement {
@@ -81,6 +85,8 @@ export function PachisiTokenView({
   stackIndex,
   isBlockade = false,
   isPartner = false,
+  onHoverChange,
+  progress,
 }: PachisiTokenViewProps): ReactElement {
   const normalizedSeat = ((seat % 4) + 4) % 4;
   const seatTokenClass = `pachisi-token pachisi-token-seat-${normalizedSeat}`;
@@ -92,10 +98,10 @@ export function PachisiTokenView({
   const partnerClass = isPartner ? 'pachisi-token-partner' : '';
 
   const positionClass = className.includes('absolute') ? '' : 'relative';
-  const baseClasses = `${seatTokenClass} ${stackClass} ${blockadeClass} ${partnerClass} aspect-square shrink-0 overflow-hidden rounded-full flex items-center justify-center ${positionClass} ${className}`;
+  const baseClasses = `${seatTokenClass} ${stackClass} ${blockadeClass} ${partnerClass} aspect-square shrink-0 rounded-full flex items-center justify-center ${positionClass} ${className}`;
 
   const innerContent = (
-    <span className="pachisi-token-content pointer-events-none absolute inset-0 flex items-center justify-center">
+    <span className="pachisi-token-content pointer-events-none absolute inset-0 overflow-hidden rounded-full flex items-center justify-center">
       <span className="pachisi-token-gloss pointer-events-none absolute inset-x-1 top-0.5 h-[42%] rounded-t-full bg-gradient-to-b from-white/45 to-transparent" />
       <span className="pachisi-token-ridge pointer-events-none absolute inset-1 rounded-full border border-white/30" />
       <span className="relative z-10 flex h-full w-full items-center justify-center">
@@ -111,10 +117,16 @@ export function PachisiTokenView({
         aria-label={ariaLabel}
         data-testid={testId}
         data-partner={isPartner ? 'true' : undefined}
+        data-movable={isMovable ? 'true' : undefined}
+        data-progress={progress}
         onClick={onClick}
-        className={`${baseClasses} transition-transform active:scale-95 ${
+        onMouseEnter={onHoverChange ? () => onHoverChange(true) : undefined}
+        onMouseLeave={onHoverChange ? () => onHoverChange(false) : undefined}
+        onFocus={onHoverChange ? () => onHoverChange(true) : undefined}
+        onBlur={onHoverChange ? () => onHoverChange(false) : undefined}
+        className={`${baseClasses} pachisi-token-hit transition-transform active:scale-95 ${
           isMovable
-            ? 'animate-bounce cursor-pointer ring-2 ring-white shadow-[0_0_14px_rgba(255,255,255,0.85)] hover:scale-110'
+            ? 'motion-safe:animate-bounce cursor-pointer ring-2 ring-white shadow-[0_0_14px_rgba(255,255,255,0.85)] hover:scale-110'
             : ''
         }`}
       >

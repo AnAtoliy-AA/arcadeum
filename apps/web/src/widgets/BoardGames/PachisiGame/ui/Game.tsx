@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
 import { UndoButton } from '@/features/games/ui/UndoButton';
 import { GameEndModals } from '@/features/games/ui/GameEndModals';
@@ -15,15 +15,11 @@ import { usePostGameAnalytics } from '@/features/games/hooks/usePostGameAnalytic
 import { PostGameAnalytics } from '@/features/games/ui/PostGameAnalytics';
 import { resolveDisplayName } from '@/features/games/lib/resolveDisplayName';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { useGameSound } from '@/shared/lib/game-sounds';
-import type {
-  PachisiGameProps,
-  PachisiOptions,
-  PachisiTheme,
-  PachisiToken,
-} from '../types';
+import type { PachisiGameProps, PachisiOptions, PachisiTheme } from '../types';
 import { usePachisiState } from '../hooks/usePachisiState';
 import { usePachisiActions } from '../hooks/usePachisiActions';
+import { usePachisiSounds } from '../hooks/usePachisiSounds';
+import { usePachisiAnnouncement } from '../hooks/usePachisiAnnouncement';
 import { PachisiThemeProvider } from '../lib/PachisiThemeContext';
 import { useGameChatStore } from '@/widgets/GameChat';
 import { PachisiLobby } from './PachisiLobby';
@@ -88,76 +84,12 @@ function PachisiGameImpl({
     onActionStart: (action) => setActionBusy(action),
   });
 
-  const { play } = useGameSound('pachisi_v1');
-
-  const prevMyTurnRef = useRef(myTurn);
-  useEffect(() => {
-    if (myTurn && !prevMyTurnRef.current && !isGameOver) play('notification');
-    prevMyTurnRef.current = myTurn;
-  }, [myTurn, isGameOver, play]);
-
-  const prevFinishedCountRef = useRef(0);
-  useEffect(() => {
-    if (!snapshot?.tokens) return;
-    const finished = Object.values(snapshot.tokens).reduce(
-      (acc, tokens) => acc + tokens.filter((t) => t.progress === 56).length,
-      0,
-    );
-    if (
-      finished > prevFinishedCountRef.current &&
-      prevFinishedCountRef.current > 0
-    ) {
-      play('success');
-    }
-    prevFinishedCountRef.current = finished;
-  }, [snapshot?.tokens, play]);
-
-  const prevTokensRef = useRef<Record<string, PachisiToken[]>>({});
-  useEffect(() => {
-    if (!snapshot?.tokens) return;
-    let hasCapture = false;
-    for (const [playerId, tokens] of Object.entries(snapshot.tokens)) {
-      const prevTokens = prevTokensRef.current[playerId];
-      if (prevTokens) {
-        for (const t of tokens) {
-          const prev = prevTokens.find((pt) => pt.id === t.id);
-          if (prev && prev.progress >= 0 && t.progress === -1) {
-            hasCapture = true;
-            break;
-          }
-        }
-      }
-      if (hasCapture) break;
-    }
-    if (hasCapture) {
-      play('capture');
-    }
-    prevTokensRef.current = snapshot.tokens;
-  }, [snapshot?.tokens, play]);
-
-  const prevGameOverRef = useRef(isGameOver);
-  useEffect(() => {
-    if (isGameOver && !prevGameOverRef.current) {
-      const winners =
-        snapshot?.winnerIds && snapshot.winnerIds.length > 0
-          ? snapshot.winnerIds
-          : snapshot?.winnerId
-            ? [snapshot.winnerId]
-            : [];
-      if (currentUserId && winners.includes(currentUserId)) {
-        play('win');
-      } else if (winners.length > 0) {
-        play('lose');
-      }
-    }
-    prevGameOverRef.current = isGameOver;
-  }, [
+  const { play } = usePachisiSounds({
+    snapshot,
+    myTurn,
     isGameOver,
-    snapshot?.winnerId,
-    snapshot?.winnerIds,
     currentUserId,
-    play,
-  ]);
+  });
 
   const handleRoll = useCallback(() => {
     play('roll');
@@ -186,6 +118,13 @@ function PachisiGameImpl({
       }),
     [currentUserId, room, snapshot],
   );
+
+  const a11yAnnouncement = usePachisiAnnouncement({
+    snapshot,
+    myTurn,
+    currentUserId,
+    nameOf: resolveDisplayNameBound,
+  });
 
   const sendChat = useGameChatSend(roomId, currentUserId, 'pachisi_v1');
   useGameChatIntegration(snapshot?.logs, sendChat, resolveDisplayNameBound);
@@ -340,6 +279,7 @@ function PachisiGameImpl({
   return (
     <PachisiThemeProvider variant={options.variant}>
       <GameWidgetContainer
+        a11yAnnouncement={a11yAnnouncement}
         board={board}
         headerProps={{
           variantEmoji: variantTokens.emoji,

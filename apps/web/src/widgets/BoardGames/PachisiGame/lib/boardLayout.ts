@@ -1,6 +1,7 @@
 import type { PachisiToken } from '../types';
 import {
   FINISH_PROGRESS,
+  MAIN_PATH_STEPS,
   SEAT_START_OFFSETS,
   STAR_CELLS,
   TRACK_LENGTH,
@@ -135,4 +136,45 @@ export function movableTokenIds(
     }
   }
   return movable;
+}
+
+export type PachisiDestination =
+  | { kind: 'track'; cell: number; fromCell: number | null }
+  | { kind: 'lane'; seat: number; laneIdx: number; fromCell: number | null }
+  | { kind: 'home'; fromCell: number | null };
+
+/**
+ * Where a token lands for `die`, or null if it cannot move.
+ * Mirrors the engine's `computeMoveOutcome` target rule.
+ */
+export function destinationOf(
+  seat: number,
+  token: PachisiToken,
+  die: number | null,
+): PachisiDestination | null {
+  if (die === null) return null;
+  const inYard = token.progress < 0 || token.progress === YARD_PROGRESS;
+  let target: number;
+  if (inYard) {
+    if (die !== 6) return null;
+    target = 0;
+  } else {
+    if (token.progress >= FINISH_PROGRESS) return null;
+    target = token.progress + die;
+    if (target > FINISH_PROGRESS) return null;
+  }
+  const fromCell =
+    !inYard && token.progress < MAIN_PATH_STEPS
+      ? absoluteCell(seat, token.progress)
+      : null;
+  if (target < MAIN_PATH_STEPS) {
+    return { kind: 'track', cell: absoluteCell(seat, target), fromCell };
+  }
+  if (target === FINISH_PROGRESS) return { kind: 'home', fromCell };
+  return { kind: 'lane', seat, laneIdx: target - MAIN_PATH_STEPS, fromCell };
+}
+
+/** Star cells are safe for everyone, a start cell for its own seat. */
+export function isSafeCellFor(cell: number, moverSeat: number): boolean {
+  return STAR_CELLS.has(cell) || SEAT_START_OFFSETS[moverSeat] === cell;
 }

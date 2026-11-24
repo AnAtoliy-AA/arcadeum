@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.33] - 2026-11-24
+
+### Fixed
+- serve fixed open-lobby stats in live-info card test so WebKit does not stay on Create a room
+
+
 ## [1.31.32] - 2026-11-24
 
 ### Fixed

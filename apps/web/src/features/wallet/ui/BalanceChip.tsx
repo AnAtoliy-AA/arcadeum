@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiClient } from '@/shared/lib/api-client';
+import { walletSocket } from '@/shared/lib/socket';
 import { useRoutes } from '@/shared/config/useRoutes';
 
 interface WalletBalance {
@@ -21,6 +22,22 @@ export function BalanceChip() {
       .get<WalletBalance>('/wallet/balance')
       .then(setBalance)
       .catch(() => {});
+  }, []);
+
+  // The header lives in the root layout, so it never remounts and the fetch
+  // above runs once. `wallet:updated` (pushed by the backend after every
+  // credit/debit, connected by WalletLiveBridge) carries the fresh balance.
+  useEffect(() => {
+    const onUpdate = (next: Partial<WalletBalance> | null) => {
+      const { coins, gems } = next ?? {};
+      if (typeof coins === 'number' && typeof gems === 'number') {
+        setBalance({ coins, gems });
+      }
+    };
+    walletSocket.on('wallet:updated', onUpdate);
+    return () => {
+      walletSocket.off('wallet:updated', onUpdate);
+    };
   }, []);
 
   if (!balance) return null;

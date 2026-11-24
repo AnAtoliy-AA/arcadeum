@@ -54,17 +54,23 @@ export class WalletService {
     this.assertPositiveInteger(amount);
     this.assertCurrency(currency);
     try {
-      return await this.withSession(parentSession, async (session, isOwn) =>
-        this.doWrite(session, isOwn, {
-          userId,
-          currency,
-          amount,
-          reason,
-          idempotencyKey,
-          metadata,
-          direction: 1,
-        }),
+      const { view, balance } = await this.withSession(
+        parentSession,
+        async (session) =>
+          this.doWrite(session, {
+            userId,
+            currency,
+            amount,
+            reason,
+            idempotencyKey,
+            metadata,
+            direction: 1,
+          }),
       );
+      // Own-session path: the transaction has committed by now. With a parent
+      // session the caller emits via emitAfterCommit once it commits.
+      if (!parentSession) this.safeEmit(userId, balance);
+      return view;
     } catch (err) {
       // Own-session path: recover from duplicate key by returning the prior tx.
       // Parent-session path: re-throw so the caller's transaction aborts.
@@ -88,17 +94,23 @@ export class WalletService {
     this.assertPositiveInteger(amount);
     this.assertCurrency(currency);
     try {
-      return await this.withSession(parentSession, async (session, isOwn) =>
-        this.doWrite(session, isOwn, {
-          userId,
-          currency,
-          amount,
-          reason,
-          idempotencyKey,
-          metadata,
-          direction: -1,
-        }),
+      const { view, balance } = await this.withSession(
+        parentSession,
+        async (session) =>
+          this.doWrite(session, {
+            userId,
+            currency,
+            amount,
+            reason,
+            idempotencyKey,
+            metadata,
+            direction: -1,
+          }),
       );
+      // Own-session path: the transaction has committed by now. With a parent
+      // session the caller emits via emitAfterCommit once it commits.
+      if (!parentSession) this.safeEmit(userId, balance);
+      return view;
     } catch (err) {
       // Own-session path: recover from duplicate key by returning the prior tx.
       // Parent-session path: re-throw so the caller's transaction aborts.
@@ -190,7 +202,7 @@ export class WalletService {
   }
 
   emitAfterCommit(userId: string, balance: WalletBalance): void {
-    this.gateway.emitBalance(userId, balance);
+    this.safeEmit(userId, balance);
   }
 
   private async withSession<T>(
@@ -203,9 +215,19 @@ export class WalletService {
     return runInTransaction(this.connection, (session) => fn(session, true));
   }
 
+  private safeEmit(userId: string, balance: WalletBalance): void {
+    try {
+      this.gateway.emitBalance(userId, balance);
+    } catch (err) {
+      // A failed push must never undo or fail an already committed write.
+      this.logger.warn(
+        `Wallet balance emit failed for ${userId}: ${(err as Error).message}`,
+      );
+    }
+  }
+
   private async doWrite(
     session: ClientSession | undefined,
-    isOwnSession: boolean,
     args: {
       userId: string;
       currency: WalletCurrency;
@@ -215,7 +237,7 @@ export class WalletService {
       metadata?: Record<string, unknown>;
       direction: 1 | -1;
     },
-  ): Promise<WalletTransactionView> {
+  ): Promise<{ view: WalletTransactionView; balance: WalletBalance }> {
     const {
       userId,
       currency,
@@ -282,13 +304,7 @@ export class WalletService {
       throw new InternalServerErrorException('wallet.transactionFailed');
     }
 
-    // Emit only after the transaction is durably committed. Inside a parent
-    // session we don't know if the parent will commit, so defer to the caller.
-    if (isOwnSession) {
-      this.gateway.emitBalance(userId, lastBalance);
-    }
-
-    return this.toView(createdTx);
+    return { view: this.toView(createdTx), balance: lastBalance };
   }
 
   private pickBalance(

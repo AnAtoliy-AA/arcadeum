@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.31] - 2026-11-24
+
+### Added
+- wire manifest into factory/gameplay, sidecar length class, --feature and --length flags
+- length class analytics, weights and manifest recorder
+- per-format length classes, structured scripts and QA ranges
+
+
 ## [1.31.30] - 2026-11-24
 
 ### Added

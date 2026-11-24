@@ -15,6 +15,8 @@ export {
   GAME_PHASE,
   ACTION,
   DEFAULT_OPTIONS,
+  TEAMS_PLAYER_COUNT,
+  TEAM_COUNT,
 } from '@arcadeum/games-core/games/pachisi/pachisi.constants';
 export type {
   PachisiOptions,
@@ -22,4 +24,5 @@ export type {
   Mode,
   GamePhase,
   ActionType,
+  TeamId,
 } from '@arcadeum/games-core/games/pachisi/pachisi.constants';

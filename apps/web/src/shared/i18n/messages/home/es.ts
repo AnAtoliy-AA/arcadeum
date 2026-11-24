@@ -116,6 +116,45 @@ export const es = {
   liveMatchesCount: '{{count}} partidas',
   liveViewAllRooms: 'Ver todas las salas',
   liveViewAllGames: 'Explorar catálogo',
+  liveOnlineSub: 'Jugadores activos en el sitio ahora mismo',
+  liveOnlineEmpty:
+    'Nadie está en línea en este momento. Mientras esperas, juega contra un bot.',
+  liveActiveSub: 'Partidas que se están jugando ahora mismo',
+  liveActiveEmpty:
+    'No hay partidas en curso. Empieza una y otros podrán verla.',
+  liveActiveAction: 'Ver partidas',
+  liveLobbiesEmpty:
+    'No hay salas abiertas ahora mismo. Crea una sala o juega contra un bot.',
+  liveLobbiesAction: 'Unirse a una sala',
+  liveCreateRoomAction: 'Crear una sala',
+  livePlayBotAction: 'Jugar contra bot',
+  liveSeekingSub:
+    'El emparejamiento te une con alguien que quiere el mismo juego',
+  liveSeekingEmpty:
+    'El emparejamiento te une con alguien que quiere el mismo juego. Nadie espera ahora mismo, sé el primero.',
+  liveQuickMatchAction: 'Partida rápida',
+  liveTodaySub: 'Partidas terminadas hoy',
+  liveTodayEmpty: 'Aún no hay partidas terminadas hoy. Juega la primera.',
+  liveTodayAction: 'Ver resultados',
+  liveBrowseGamesAction: 'Explorar juegos',
+  activityBannerGames: 'partidas en juego ahora',
+  activityBannerPlayers: 'jugadores en línea',
+  liveStatsUnknown:
+    'Los datos en vivo se están cargando o no están disponibles.',
+  homeRecentActivityTitle: 'Actividad reciente',
+  homeRecentActivityEmpty:
+    'Aún no hay actividad. Termina una partida y aparecerá aquí.',
+  homeRecentActivityError:
+    'No se pudo cargar la actividad. Inténtalo más tarde.',
+  homeRecentActivityMore: 'Cargar más',
+  homeRecentActivityLoading: 'Cargando...',
+  eventBadgeLive: 'EN VIVO',
+  eventBadgeUpcoming: 'PRÓXIMAMENTE',
+  eventActionLive: 'Jugar ahora',
+  eventActionUpcoming: 'Ver evento',
+  eventStartsAt: 'Empieza {{date}}',
+  eventDefaultDescription:
+    'Un evento programado de la comunidad. Ábrelo para ver las reglas, los premios y cuándo empieza.',
   // Coming soon labels
   comingSoon: 'Próximamente',
   mobileComingSoonDescription:

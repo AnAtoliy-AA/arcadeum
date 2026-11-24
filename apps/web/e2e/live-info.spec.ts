@@ -70,11 +70,20 @@ test.describe('Live Platform Info & Online Users', () => {
   test('should navigate to rooms page filtered by lobby status when clicking open lobbies', async ({
     page,
   }) => {
-    const waitingRoomsCard = page.getByTestId('live-waiting-rooms-card');
-    await expect(waitingRoomsCard).toBeVisible();
-    await expect(waitingRoomsCard).toHaveAttribute('href', /.*status=lobby/);
+    // With real (often zero) data the action is "Create a room"; mock open
+    // lobbies so the card links to the lobby-filtered rooms list.
+    await page.route('**/games/live-info', async (route) => {
+      const response = await route.fetch();
+      const body = (await response.json()) as Record<string, unknown>;
+      await route.fulfill({ response, json: { ...body, waitingRooms: 2 } });
+    });
+    await navigateTo(page, '/en');
+
+    const waitingRoomsAction = page.getByTestId('live-waiting-rooms-action');
+    await expect(waitingRoomsAction).toBeVisible();
+    await expect(waitingRoomsAction).toHaveAttribute('href', /.*status=lobby/);
     await expect(async () => {
-      await waitingRoomsCard.click();
+      await waitingRoomsAction.click();
       await expect(page).toHaveURL(/.*status=lobby/);
     }).toPass();
   });

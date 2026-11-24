@@ -1,6 +1,6 @@
 import 'server-only';
-import { cookies } from 'next/headers';
 import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type { GemPackagePublic, GemPurchaseView } from './gems.types';
 
 // ─── Shared fetch helpers ──────────────────────────────────────────────────────
@@ -16,17 +16,7 @@ async function fetchPublic<T>(path: string): Promise<T> {
 }
 
 async function fetchWithAuth<T>(path: string): Promise<T> {
-  const cookieJar = await cookies();
-  const token = cookieJar.get('access_token')?.value;
-  const url = resolveApiUrl(path);
-
-  const res = await fetch(url, {
-    cache: 'no-store',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
+  const res = await serverAuthFetch(path);
 
   if (!res.ok) {
     const body = await res.text();

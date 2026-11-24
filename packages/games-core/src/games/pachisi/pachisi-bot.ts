@@ -5,6 +5,7 @@ import type {
 } from './pachisi.types';
 import {
   absoluteCell,
+  areTeammates,
   computeMoveOutcome,
   getAllLegalMoves,
   tokensByPlayer,
@@ -19,6 +20,12 @@ import {
 /**
  * Framework-agnostic Pachisi bot decision logic (basic positional strategy).
  */
+
+function toPayload(move: LegalMove): MoveTokenPayload {
+  return move.ownerId
+    ? { tokenId: move.tokenId, ownerId: move.ownerId }
+    : { tokenId: move.tokenId };
+}
 
 /** Heuristic weights (basic positional strategy). */
 const SCORE = {
@@ -44,7 +51,7 @@ export class PachisiBot {
     const difficulty = state.options.aiDifficulty ?? 'medium';
     if (difficulty === 'easy') {
       const chosen = legalMoves[Math.floor(Math.random() * legalMoves.length)];
-      return { tokenId: chosen.tokenId };
+      return toPayload(chosen);
     }
 
     let bestScore = -Infinity;
@@ -58,7 +65,7 @@ export class PachisiBot {
         best = move;
       }
     }
-    return { tokenId: best.tokenId };
+    return toPayload(best);
   }
 
   /**
@@ -71,10 +78,11 @@ export class PachisiBot {
     botId: string,
     move: LegalMove,
   ): number {
-    const outcome = computeMoveOutcome(state, botId, move.tokenId);
+    const ownerId = move.ownerId ?? botId;
+    const outcome = computeMoveOutcome(state, botId, move.tokenId, ownerId);
     if (!outcome) return -Infinity;
 
-    const token = tokensByPlayer(state, botId).find(
+    const token = tokensByPlayer(state, ownerId).find(
       (t) => t.id === move.tokenId,
     );
 
@@ -109,14 +117,14 @@ export class PachisiBot {
 
     if (
       outcome.targetCell !== null &&
-      this.isSafeCell(state, botId, outcome.targetCell)
+      this.isSafeCell(state, ownerId, outcome.targetCell)
     ) {
       score += SCORE.landSafe;
     }
 
     if (
       outcome.targetCell !== null &&
-      this.isDangerous(state, botId, outcome.targetCell)
+      this.isDangerous(state, ownerId, outcome.targetCell)
     ) {
       score += SCORE.dangerPenalty;
     }
@@ -143,7 +151,7 @@ export class PachisiBot {
     cell: number,
   ): boolean {
     for (const ownerId of state.playerOrder) {
-      if (ownerId === botId) continue;
+      if (ownerId === botId || areTeammates(state, ownerId, botId)) continue;
       const ownerSeat = state.seats[ownerId];
       if (ownerSeat === undefined) continue;
       for (const token of tokensByPlayer(state, ownerId)) {
@@ -168,9 +176,10 @@ export class PachisiBot {
     botId: string,
     move: LegalMove,
   ): number {
-    const outcome = computeMoveOutcome(state, botId, move.tokenId);
+    const ownerId = move.ownerId ?? botId;
+    const outcome = computeMoveOutcome(state, botId, move.tokenId, ownerId);
     if (!outcome || outcome.targetCell === null) return 0;
-    const seat = state.seats[botId];
+    const seat = state.seats[ownerId];
     if (seat === undefined) return 0;
     if (
       outcome.targetCell === SEAT_START_OFFSETS[seat] &&

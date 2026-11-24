@@ -9,7 +9,13 @@ import { Model } from 'mongoose';
 import { GameRoom } from '../schemas/game-room.schema';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { GameRoomSummary } from './game-rooms.types';
+import { validateMaxPlayers } from './game-rooms.validation';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
+
+/** Rooms created by a rematch carry a pointer to the room they came from. */
+function isRematchRoom(gameOptions: Record<string, unknown>): boolean {
+  return typeof gameOptions.rematchPreviousRoomId === 'string';
+}
 
 @Injectable()
 export class GameRoomsRematchService {
@@ -49,6 +55,7 @@ export class GameRoomsRematchService {
     const acceptedIds = (gameOptions.rematchAcceptedIds as string[]) || [];
 
     if (
+      isRematchRoom(gameOptions) &&
       room.status === 'lobby' &&
       remainingInvited.length === 0 &&
       acceptedIds.length <= 1 &&
@@ -89,9 +96,11 @@ export class GameRoomsRematchService {
       throw new ForbiddenException('This rematch is no longer available');
     }
 
-    if (
-      !room.participants.some((participant) => participant.userId === userId)
-    ) {
+    const alreadySeated = room.participants.some(
+      (participant) => participant.userId === userId,
+    );
+    if (!alreadySeated) {
+      validateMaxPlayers(room);
       room.participants.push({ userId, joinedAt: new Date() });
     }
     gameOptions.rematchInvitedIds = invitedIds.filter((id) => id !== userId);
@@ -203,6 +212,7 @@ export class GameRoomsRematchService {
     }
 
     if (
+      isRematchRoom(gameOptions) &&
       room.status === 'lobby' &&
       ((gameOptions.rematchInvitedIds as string[]) || []).length === 0 &&
       room.participants.length < (room.maxPlayers ?? 2)
@@ -233,6 +243,9 @@ export class GameRoomsRematchService {
     if (room.hostId !== hostId) {
       throw new ForbiddenException('Only the host can re-invite players');
     }
+    if (room.status !== 'lobby') {
+      throw new BadRequestException('Players can only be invited in the lobby');
+    }
 
     const gameOptions = room.gameOptions || {};
     const invitedIds = (gameOptions.rematchInvitedIds as string[]) || [];
@@ -240,7 +253,10 @@ export class GameRoomsRematchService {
     const blockedIds = (gameOptions.rematchBlockedIds as string[]) || [];
 
     // Filter out room-blocked users - they can't be re-invited to this room
-    const allowedUserIds = userIds.filter((uid) => !blockedIds.includes(uid));
+    const seatedIds = new Set(room.participants.map((p) => p.userId));
+    const allowedUserIds = userIds.filter(
+      (uid) => !blockedIds.includes(uid) && !seatedIds.has(uid),
+    );
 
     const newInvitedIds = [...invitedIds];
     allowedUserIds.forEach((uid) => {
@@ -258,6 +274,33 @@ export class GameRoomsRematchService {
     room.markModified('gameOptions');
     await room.save();
 
+    return this.gameRoomsMapper.prepareRoomSummary(room);
+  }
+
+  /** Host cancels pending invitations (the invitee loses access to the seat). */
+  async revokeInvitations(
+    roomId: string,
+    hostId: string,
+    userIds: string[],
+  ): Promise<GameRoomSummary> {
+    const room = await this.gameRoomModel.findById(roomId).exec();
+    if (!room) {
+      throw new NotFoundException(`Room not found: ${roomId}`);
+    }
+    if (room.hostId !== hostId) {
+      throw new ForbiddenException('Only the host can cancel invitations');
+    }
+    const gameOptions = room.gameOptions || {};
+    const invitedIds = (gameOptions.rematchInvitedIds as string[]) || [];
+    const declinedIds = (gameOptions.rematchDeclinedIds as string[]) || [];
+    gameOptions.rematchInvitedIds = invitedIds.filter(
+      (id) => !userIds.includes(id),
+    );
+    gameOptions.rematchDeclinedIds = declinedIds.filter(
+      (id) => !userIds.includes(id),
+    );
+    room.markModified('gameOptions');
+    await room.save();
     return this.gameRoomsMapper.prepareRoomSummary(room);
   }
 }

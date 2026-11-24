@@ -6,6 +6,7 @@ import type { GameRoomSummary } from '@/shared/types/games';
 import { Sidebar, DeleteButton } from './lobbyStyles';
 import { ConfirmationModal } from './ConfirmationModal';
 import { LobbySidebarPlayers } from './LobbySidebarPlayers';
+import { useLobbyInvitations } from '@/features/games/hooks/useLobbyInvitations';
 import { LobbySidebarInvited, type RematchUser } from './LobbySidebarInvited';
 import { LobbySidebarRoomInfo } from './LobbySidebarRoomInfo';
 
@@ -46,6 +47,8 @@ interface LobbySidebarProps {
   extraPlayersCardSlot?: React.ReactNode;
   onRefresh?: () => void;
   enableBots?: boolean;
+  /** Seat cap from the game (rooms created with "auto" have no maxPlayers). */
+  maxPlayers?: number;
   onAddBot?: () => void;
   onRemoveBot?: (botId: string) => void;
 }
@@ -68,6 +71,7 @@ export function LobbySidebar({
   onRefresh,
   labels,
   enableBots,
+  maxPlayers: maxPlayersProp,
   onAddBot,
   onRemoveBot,
 }: LobbySidebarProps) {
@@ -83,9 +87,13 @@ export function LobbySidebar({
     visibilityPrivateLabel = t('games.lobby.visibilityPrivate'),
     waitingForPlayerLabel = t('games.lobby.waitingForPlayerSlot'),
   } = labels;
-  const hasBotsInRoom = members.some((m) => m.id.startsWith('bot-'));
+  const maxPlayers = maxPlayersProp ?? room.maxPlayers ?? 5;
+  // Bots fill free seats one by one; only a full room hides the button.
   const canAddBots =
-    !!enableBots && isHost && room.status === 'lobby' && !hasBotsInRoom;
+    !!enableBots &&
+    isHost &&
+    room.status === 'lobby' &&
+    room.playerCount < maxPlayers;
   const canRemoveBots = !!enableBots && isHost && room.status === 'lobby';
 
   // Get invited/declined for rematch
@@ -97,6 +105,7 @@ export function LobbySidebar({
     room.rematchDeclinedUsers ||
     (room.gameOptions?.rematchDeclinedUsers as RematchUser[]) ||
     [];
+  const invitations = useLobbyInvitations(room.id);
   const joinedIds = new Set(members.map((m) => m.id));
   const pendingInvited = invitedUsers.filter((u) => !joinedIds.has(u.id));
   const pendingDeclined = declinedUsers.filter((u) => !joinedIds.has(u.id));
@@ -134,6 +143,7 @@ export function LobbySidebar({
         minPlayers={minPlayers}
         members={members}
         showReorderControls={showReorderControls}
+        maxPlayers={maxPlayers}
         canAddBots={canAddBots}
         canRemoveBots={canRemoveBots}
         playersLabel={playersLabel}
@@ -161,7 +171,9 @@ export function LobbySidebar({
             invitedPlayersLabel={invitedPlayersLabel}
             declinedLabel={declinedLabel}
             reinviteLabel={reinviteLabel}
-            onReinvite={onReinvite}
+            onReinvite={onReinvite ?? invitations.resend}
+            onCancelInvite={invitations.cancel}
+            busyIds={invitations.busyIds}
           />
         )}
 

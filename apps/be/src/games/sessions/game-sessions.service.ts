@@ -17,6 +17,12 @@ import {
 } from '../engines/base/game-engine.interface';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 import { enforceStateSizeLimit } from './game-sessions.size-check';
+import { KeyedLock } from './session-lock';
+import {
+  SessionCompletionHooks,
+  claimPostMatchProcessing,
+  type SessionCompletionListener,
+} from './session-completion.hooks';
 
 export interface GameSessionSummary {
   id: string;
@@ -59,27 +65,14 @@ export interface ExecuteActionOptions {
 @Injectable()
 export class GameSessionsService {
   private readonly logger = new Logger(GameSessionsService.name);
-  private readonly sessionLocks = new Map<string, Promise<void>>();
+  private readonly sessionLocks = new KeyedLock();
+  private readonly completionHooks = new SessionCompletionHooks();
 
   constructor(
     @InjectModel(GameSession.name, OCI_CONNECTION)
     private readonly ociSessionModel: Model<GameSession>,
     private readonly engineRegistry: GameEngineRegistry,
   ) {}
-
-  private async acquireSessionLock(sessionId: string): Promise<() => void> {
-    let release: () => void;
-    const prev = this.sessionLocks.get(sessionId) ?? Promise.resolve();
-    const next = new Promise<void>((resolve) => {
-      release = () => {
-        resolve();
-        this.sessionLocks.delete(sessionId);
-      };
-    });
-    this.sessionLocks.set(sessionId, next);
-    await prev;
-    return release!;
-  }
 
   /**
    * Create a new game session
@@ -224,15 +217,29 @@ export class GameSessionsService {
     return this.toSessionSummary(session);
   }
 
-  /**
-   * Execute a player action using the game engine
-   */
+  /** Execute a player action; fires completion hooks when it ends the game. */
   async executeAction(
     options: ExecuteActionOptions,
   ): Promise<GameSessionSummary> {
-    const { sessionId, action, userId, payload } = options;
+    const summary = await this.runExecuteAction(options);
+    if (summary.status === 'completed') {
+      await this.completionHooks.notify(summary, this.logger);
+    }
+    return summary;
+  }
 
-    const release = await this.acquireSessionLock(sessionId);
+  onSessionCompleted(listener: SessionCompletionListener): void {
+    this.completionHooks.register(listener);
+  }
+
+  claimPostMatchProcessing(sessionId: string): Promise<boolean> {
+    return claimPostMatchProcessing(this.ociSessionModel, sessionId);
+  }
+  private async runExecuteAction(
+    options: ExecuteActionOptions,
+  ): Promise<GameSessionSummary> {
+    const { sessionId, action, userId, payload } = options;
+    const release = await this.sessionLocks.acquire(sessionId);
     try {
       const session = await this.ociSessionModel.findById(sessionId).exec();
 

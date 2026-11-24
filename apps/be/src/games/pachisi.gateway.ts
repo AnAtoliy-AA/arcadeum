@@ -36,7 +36,18 @@ export class PachisiGateway extends BaseGameGateway<PachisiOptions> {
           ) {
             throw new WsException('tokenId (number) is required');
           }
-          await this.gameService.moveToken(userId, roomId, payload.tokenId);
+          if (
+            payload.ownerId !== undefined &&
+            typeof payload.ownerId !== 'string'
+          ) {
+            throw new WsException('ownerId must be a string');
+          }
+          await this.gameService.moveToken(
+            userId,
+            roomId,
+            payload.tokenId,
+            payload.ownerId,
+          );
           client.emit(
             'pachisi.session.moved',
             maybeEncrypt({

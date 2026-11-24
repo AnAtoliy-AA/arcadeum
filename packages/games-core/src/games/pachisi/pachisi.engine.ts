@@ -23,6 +23,10 @@ import {
   computeMoveOutcome,
   countFinished,
   getAllLegalMoves,
+  partnerOf,
+  teamHasWon,
+  teamOfSeat,
+  teamsAllowed,
   tokensPerVariant,
 } from './pachisi.utils';
 import {
@@ -69,6 +73,9 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
     config?: InitializeConfig,
   ): PachisiState {
     const options = { ...DEFAULT_OPTIONS, ...(config?.options ?? {}) };
+    // Team play (2v2) only exists with exactly four players.
+    const teamMode = options.teams === true && teamsAllowed(playerIds.length);
+    options.teams = teamMode;
     const seats = assignSeats(playerIds);
     const tokenCount = tokensPerVariant(options.mode);
 
@@ -77,6 +84,7 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       seat: seats[playerId],
       color: SEAT_COLORS[seats[playerId]],
       alive: true,
+      ...(teamMode ? { team: teamOfSeat(seats[playerId]) } : {}),
     }));
 
     const tokens: Record<string, PachisiToken[]> = {};
@@ -102,7 +110,16 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       winnerId: null,
       winnerIds: [],
       isDraw: false,
-      logs: [this.createLogEntry('system', 'Pachisi game started.')],
+      teamMode,
+      winnerTeam: null,
+      logs: [
+        this.createLogEntry(
+          'system',
+          teamMode
+            ? 'Pachisi team game started (2v2, partners sit opposite).'
+            : 'Pachisi game started.',
+        ),
+      ],
     };
   }
 
@@ -189,11 +206,18 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       if (!check.ok) return this.errorResult(check.error);
 
       const p = payload as MoveTokenPayload;
-      const outcome = computeMoveOutcome(newState, context.userId, p.tokenId);
+      const ownerId = p.ownerId ?? context.userId;
+      const outcome = computeMoveOutcome(
+        newState,
+        context.userId,
+        p.tokenId,
+        ownerId,
+      );
       if (!outcome)
         return this.errorResult('Illegal move for current die roll');
 
-      const moverTokens = newState.tokens[context.userId];
+      // Team mode: a finished player may move the partner's tokens.
+      const moverTokens = newState.tokens[ownerId];
       const movedToken = moverTokens.find((t) => t.id === p.tokenId)!;
       movedToken.progress = outcome.targetProgress;
 
@@ -213,8 +237,16 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
 
       const finishedCount = countFinished(moverTokens);
       const progress = movedToken.progress;
-      const trackRow = progress <= 11 ? progress : progress <= 23 ? 23 - progress : progress <= 35 ? progress - 24 : 47 - progress;
-      const trackCol = progress <= 11 ? 0 : progress <= 23 ? 1 : progress <= 35 ? 2 : 3;
+      const trackRow =
+        progress <= 11
+          ? progress
+          : progress <= 23
+            ? 23 - progress
+            : progress <= 35
+              ? progress - 24
+              : 47 - progress;
+      const trackCol =
+        progress <= 11 ? 0 : progress <= 23 ? 1 : progress <= 35 ? 2 : 3;
       newState.logs.push(
         this.createLogEntry(
           'action',
@@ -223,7 +255,27 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
         ),
       );
 
-      if (finishedCount >= tokensPerVariant(newState.options.mode)) {
+      if (newState.teamMode) {
+        if (teamHasWon(newState, context.userId)) {
+          const partnerId = partnerOf(newState, context.userId);
+          const winners = newState.playerOrder.filter(
+            (id) => id === context.userId || id === partnerId,
+          );
+          newState.phase = GAME_PHASE.GAME_OVER;
+          newState.winnerId = winners[0] ?? context.userId;
+          newState.winnerIds = winners;
+          newState.winnerTeam = teamOfSeat(newState.seats[context.userId]);
+          newState.die = null;
+          newState.consecutiveSixes = 0;
+          newState.logs.push(
+            this.createLogEntry(
+              'system',
+              'Game over! Both partners have all tokens home - team wins.',
+            ),
+          );
+          return this.successResult(newState);
+        }
+      } else if (finishedCount >= tokensPerVariant(newState.options.mode)) {
         newState.phase = GAME_PHASE.GAME_OVER;
         newState.winnerId = context.userId;
         newState.winnerIds = [context.userId];
@@ -262,8 +314,19 @@ export class PachisiEngine extends BaseGameEngine<PachisiState> {
       const forfeitingPlayerId = context.userId;
       // Multi-player forfeit: end the match and award ALL remaining players
       // (mirrors hearts.engine.ts) instead of crowning one arbitrary player.
-      const winnerIds =
-        newState.playerOrder.filter((id) => id !== forfeitingPlayerId) ?? [];
+      // Team mode: the forfeiting player's whole team loses.
+      const forfeiterTeam = newState.teamMode
+        ? teamOfSeat(newState.seats[forfeitingPlayerId])
+        : null;
+      const winnerIds = newState.playerOrder.filter(
+        (id) =>
+          id !== forfeitingPlayerId &&
+          (forfeiterTeam === null ||
+            teamOfSeat(newState.seats[id]) !== forfeiterTeam),
+      );
+      if (forfeiterTeam !== null) {
+        newState.winnerTeam = forfeiterTeam === 0 ? 1 : 0;
+      }
 
       newState.phase = GAME_PHASE.GAME_OVER;
       newState.winnerIds = winnerIds;

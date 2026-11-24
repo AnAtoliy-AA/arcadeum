@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   applyGamePreset,
+  applyTeamsConstraint,
   buildGameOptions,
   initialForm,
   parseInitialGameId,
@@ -141,5 +142,55 @@ describe('toApiVisibility', () => {
     expect(toApiVisibility('public')).toBe('public');
     expect(toApiVisibility('unlisted')).toBe('private');
     expect(toApiVisibility('private')).toBe('private');
+  });
+});
+
+describe('Pachisi teams in the create form', () => {
+  const base = initialForm('pachisi_v1', undefined, null);
+  const withTeams = {
+    ...base,
+    rules: { ...base.rules, teams: true },
+  };
+
+  it('offers the teams rule', () => {
+    expect(supportedRules('pachisi_v1')).toEqual(['teams']);
+  });
+
+  it('sends options.teams (not teamMode) when enabled', () => {
+    const opts = buildGameOptions({ ...withTeams, maxPlayers: 4 });
+    expect(opts.teams).toBe(true);
+    expect(opts).not.toHaveProperty('teamMode');
+    expect(buildGameOptions(base)).not.toHaveProperty('teams');
+  });
+
+  it('turning teams on pins the room to 4 players', () => {
+    expect(applyTeamsConstraint(base, withTeams).maxPlayers).toBe(4);
+  });
+
+  it('picking another explicit player count turns teams off', () => {
+    const prev = { ...withTeams, maxPlayers: 4 };
+    const next = applyTeamsConstraint(prev, { ...prev, maxPlayers: 3 });
+    expect(next.rules.teams).toBe(false);
+    expect(next.maxPlayers).toBe(3);
+  });
+
+  it('keeps teams when staying at 4 or auto', () => {
+    const prev = { ...withTeams, maxPlayers: 4 };
+    expect(
+      applyTeamsConstraint(prev, { ...prev, maxPlayers: 'auto' }).rules.teams,
+    ).toBe(true);
+    expect(applyTeamsConstraint(prev, prev).rules.teams).toBe(true);
+  });
+
+  it('does not touch other games', () => {
+    const chess = initialForm('chess_v1', undefined, null);
+    const next = { ...chess, rules: { ...chess.rules, teams: true } };
+    expect(applyTeamsConstraint(chess, next)).toBe(next);
+  });
+
+  it('the party preset applies teams with exactly 4 seats for Pachisi', () => {
+    const out = applyGamePreset(base, 'party');
+    expect(out.rules.teams).toBe(true);
+    expect(out.maxPlayers).toBe(4);
   });
 });

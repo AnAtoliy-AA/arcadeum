@@ -214,6 +214,15 @@ export const enMessages = {
   },
   create: createEn,
   roomPage: {
+    invitation: {
+      title: '{{host}} invited you to play',
+      subtitle:
+        'Accept to take your seat in the lobby, or decline to let the host know you will not join.',
+      accept: 'Accept and join',
+      accepting: 'Joining...',
+      decline: 'Decline',
+      error: 'Could not update the invitation. Try again.',
+    },
     loading: 'Loading...',
     loadingGame: 'Loading game...',
     errors: {
@@ -339,6 +348,9 @@ export const enMessages = {
     waitingForPlayerSlot: 'Waiting for player...',
     notesLabel: 'Notes',
     invitedWaiting: 'Waiting...',
+    invitedAwaitingReply: 'Waiting for a reply',
+    cancelInviteLabel: 'Cancel invite',
+    resendInviteLabel: 'Resend',
     hostOnlyNote: 'Only the host can change these settings',
     bot: 'Bot',
     botCountLabel: 'Number of bots',

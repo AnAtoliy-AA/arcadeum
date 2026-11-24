@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import type { GameSessionSummary } from '@/shared/types/games';
+import { refreshSessionXp } from '@/entities/session/lib/refreshSessionXp';
 import { useGameResultStore } from '../store/gameResultStore';
 
 export type GameResult = 'won' | 'lost' | 'draw' | null;
@@ -33,6 +34,11 @@ export function useGameResultModal(
     if (!wasAlreadyOver && isGameOver && result) {
       useGameResultStore.getState().setHasResult(true);
       useGameResultStore.getState().setIsOpen(true);
+      // Post-match XP is awarded server-side when the game completes; pull the
+      // new xp/level into the session so header/profile/level-up update live.
+      void refreshSessionXp();
+      const retry = setTimeout(() => void refreshSessionXp(), 3000);
+      return () => clearTimeout(retry);
     }
   }, [wasAlreadyOver, isGameOver, result]);
 

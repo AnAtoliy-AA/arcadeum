@@ -160,6 +160,20 @@ export const frMessages = {
       rules: 'Règles du Jeu',
       startWithBots: 'Commencer avec un Bot',
       aiDifficulty: 'Difficulté IA',
+      teams: {
+        title: 'Jeu par équipes (2 contre 2)',
+        hint: "Équipes : les partenaires s'assoient en face et gagnent ensemble",
+        off: 'Non',
+        on: 'Oui',
+        description:
+          "Quatre joueurs sont nécessaires. Les places 1 et 3 forment une équipe, les places 2 et 4 l'autre. Les bots occupent les places vides.",
+        teamLabel: 'Équipe {{n}}',
+        seatLabel: 'Place {{n}}',
+        openSeat: 'Place libre (bot)',
+        needsFour: 'Les équipes nécessitent un salon de 4 joueurs',
+        reorderHint:
+          'Faites glisser les joueurs dans la liste pour changer les partenaires.',
+      },
       ruleVariants: {
         standard: {
           name: 'Standard',
@@ -191,9 +205,39 @@ export const frMessages = {
       passTurn: 'Passer le tour',
       tapToken: 'Touchez un pion surligné pour le déplacer',
       moveTokenAria: 'Déplacer le pion {{id}}',
+      boardAria: 'Plateau de Pachisi',
+      moveTokenFromYardAria:
+        'Déplacer le pion {{id}} de la cour vers le parcours',
+      moveTokenToCellAria:
+        'Déplacer le pion {{id}} de la case {{from}} à la case {{to}}',
+      moveTokenLaneAria: 'Déplacer le pion {{id}} dans le couloir final',
+      moveTokenHomeAria: 'Déplacer le pion {{id}} au centre',
+      announce: {
+        rolled: '{{name}} a obtenu {{value}}',
+        captured: 'Le pion de {{name}} est renvoyé à la cour',
+        tokenHome: '{{name}} a ramené un pion à la maison',
+        yourTurn: 'À vous de jouer',
+      },
+      legend: {
+        title: 'Légende',
+        safe: 'Case étoile sûre',
+        start: 'Case de départ (sûre pour son propriétaire)',
+        stack: 'Pile de pions de même couleur',
+        destination: 'Destination',
+        capture: 'Capture',
+      },
       dieValue: 'Dé : {{value}}',
       extraRoll: 'Un 6 obtenu ! Relancez !',
       lastRoll: 'Dernier lancer : {{value}}',
+      team: {
+        label: 'Équipe {{n}}',
+        partner: 'Partenaire',
+        you: 'Vous',
+        movePartner:
+          'Vous avez terminé ! Déplacez maintenant les pions de votre partenaire.',
+        movePartnerTokenAria: 'Déplacer le pion {{id}} du partenaire',
+        yourPartner: 'Votre partenaire',
+      },
     },
     tutorial: {
       s1: {
@@ -224,9 +268,22 @@ export const frMessages = {
       captureTitle: 'Captures et Cases Sûres',
       capture:
         'Atterrir sur une case occupée par un adversaire renvoie son pion au parc. Les cases étoile et votre case départ sont sûres : personne ne peut vous y capturer.',
+      teamsTitle: 'Jeu par équipes (2 contre 2)',
+      teams:
+        'Avec les équipes activées, quatre joueurs forment deux équipes. Les partenaires sont assis en face (places 1 et 3 contre places 2 et 4) et les tours alternent entre les équipes. Les partenaires ne se capturent jamais et peuvent partager une case. Quand tous vos pions sont arrivés, vous déplacez ceux de votre partenaire à votre tour. Une équipe gagne quand tous les pions des deux partenaires sont arrivés.',
       sixesTitle: 'Les Six',
       sixes:
         "Un 6 offre un lancer supplémentaire. Trois 6 d'affilée font perdre le tour entier.",
+    },
+    gameOverTeam: {
+      won: "Victoire d'équipe !",
+      lost: "Défaite d'équipe",
+      draw: 'Égalité',
+      messages: {
+        won: 'Votre partenaire et vous avez ramené tous les pions à la maison : votre équipe gagne !',
+        lost: "L'autre équipe a ramené tous ses pions à la maison en premier.",
+        draw: "La partie s'est terminée par une égalité.",
+      },
     },
     gameOver: {
       won: 'Victoire !',

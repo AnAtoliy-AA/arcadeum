@@ -38,6 +38,8 @@ export interface GameRoomSummary {
   viewerRole?: 'host' | 'participant' | 'none';
   viewerHasJoined?: boolean;
   viewerIsHost?: boolean;
+  /** True when the viewer has a pending invitation they have not accepted. */
+  viewerInvited?: boolean;
   chatLogs?: Array<{
     id: string;
     senderId: string;

@@ -106,7 +106,13 @@ export function DailyRewardChip() {
         <span aria-hidden className="inline-flex text-[24px] leading-none">
           {'🪙'}
         </span>
-        <div className="flex-1 min-w-0">
+        <div className="flex min-w-0 flex-1 flex-col gap-2">
+          <p
+            data-testid="daily-reward-hint"
+            className="m-0 text-[13px] leading-snug text-[var(--textSecondary)]"
+          >
+            {t('pages.dailyRewards.signInToClaimHint')}
+          </p>
           <Link
             href={routes.auth}
             data-testid="daily-reward-claim-btn"

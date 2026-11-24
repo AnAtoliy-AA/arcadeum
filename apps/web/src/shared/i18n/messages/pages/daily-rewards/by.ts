@@ -6,6 +6,8 @@ export const dailyRewardsBy = {
   gemBonusSuffix: ' + {n} 💎',
   claimed: 'Вяртайцеся заўтра',
   signInToClaim: 'Увайдзіце, каб забраць',
+  signInToClaimHint:
+    'Бясплатныя манеты кожны дзень для ўсіх гульцоў. Увайдзіце, каб забраць свае.',
   nextResetIn: 'Абновіцца праз {time}',
   streakLabel: 'Серыя: {n} / 7',
   dayLabel: 'Дзень {n}',

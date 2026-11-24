@@ -6,6 +6,7 @@ import {
   fetchActivityFeed,
   type ActivityFeedItem,
 } from '@/shared/api/activity';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { ActivityItem } from './ActivityItem';
 
 interface ActivityFeedProps {
@@ -13,6 +14,7 @@ interface ActivityFeedProps {
 }
 
 export function ActivityFeed({ initialItems }: ActivityFeedProps) {
+  const { t } = useTranslation();
   const [items, setItems] = useState<ActivityFeedItem[]>(initialItems ?? []);
   const [loading, setLoading] = useState(!initialItems);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -66,7 +68,7 @@ export function ActivityFeed({ initialItems }: ActivityFeedProps) {
   if (error) {
     return (
       <p className="py-4 text-center text-sm text-[var(--textSecondary)]">
-        Failed to load activity
+        {t('home.homeRecentActivityError')}
       </p>
     );
   }
@@ -74,7 +76,7 @@ export function ActivityFeed({ initialItems }: ActivityFeedProps) {
   if (items.length === 0) {
     return (
       <p className="py-4 text-center text-sm text-[var(--textSecondary)]">
-        No recent activity
+        {t('home.homeRecentActivityEmpty')}
       </p>
     );
   }
@@ -89,7 +91,9 @@ export function ActivityFeed({ initialItems }: ActivityFeedProps) {
         disabled={loadingMore}
         className="mt-1 rounded-lg border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] px-3 py-2 text-xs font-semibold text-[var(--textSecondary)] transition-colors hover:bg-[rgba(255,255,255,0.06)]"
       >
-        {loadingMore ? 'Loading...' : 'Load More'}
+        {loadingMore
+          ? t('home.homeRecentActivityLoading')
+          : t('home.homeRecentActivityMore')}
       </button>
     </div>
   );

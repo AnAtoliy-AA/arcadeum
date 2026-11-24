@@ -26,6 +26,8 @@ const {
 } = require('fs/promises');
 const path = require('path');
 const axios = require('axios');
+const { createRng } = require('./scenarios/seed');
+const scenarioFlow = require('./scenarios/gameplay-flow');
 const FormData = require('form-data');
 const rootDir = path.join(__dirname, '..', '..');
 require('dotenv').config({ path: path.join(rootDir, '.env') });
@@ -41,6 +43,11 @@ const parsedArgs = {
   preview: false,
   shortOnly: false,
   desktopOnly: false,
+  theme: null,
+  format: null,
+  seed: null,
+  feature: false,
+  length: null,
 };
 
 for (let i = 2; i < process.argv.length; i++) {
@@ -62,6 +69,18 @@ for (let i = 2; i < process.argv.length; i++) {
     parsedArgs.shortOnly = true;
   } else if (process.argv[i] === '--desktop-only') {
     parsedArgs.desktopOnly = true;
+  } else if (process.argv[i] === '--theme' && process.argv[i + 1]) {
+    parsedArgs.theme = process.argv[++i];
+  } else if (process.argv[i] === '--format' && process.argv[i + 1]) {
+    parsedArgs.format = process.argv[++i];
+  } else if (process.argv[i] === '--feature') {
+    // Weekly 2-3 min YouTube story. Explicit opt-in, never part of the daily pick.
+    parsedArgs.feature = true;
+    parsedArgs.shortOnly = true;
+  } else if (process.argv[i] === '--length' && process.argv[i + 1]) {
+    parsedArgs.length = process.argv[++i];
+  } else if (process.argv[i] === '--seed' && process.argv[i + 1]) {
+    parsedArgs.seed = Number(process.argv[++i]);
   }
 }
 
@@ -365,7 +384,7 @@ const GAMES = [
       const targetCells = getAttackable();
       const count = await targetCells.count();
       if (count > 0) {
-        const idx = Math.floor(Math.random() * count);
+        const idx = Math.floor(rand() * count);
         const cell = targetCells.nth(idx);
         const row = await cell.getAttribute('data-row');
         const col = await cell.getAttribute('data-col');
@@ -541,12 +560,12 @@ const GAMES = [
       );
       const pieceCount = await myPieces.count();
       for (let i = 0; i < Math.min(pieceCount, 10); i++) {
-        const piece = myPieces.nth(Math.floor(Math.random() * pieceCount));
+        const piece = myPieces.nth(Math.floor(rand() * pieceCount));
         await piece.click({ force: true });
         await sleep(200);
         const legalTargets = page.locator('[aria-label*="legal move"]');
         if ((await legalTargets.count()) > 0) {
-          const idx = Math.floor(Math.random() * (await legalTargets.count()));
+          const idx = Math.floor(rand() * (await legalTargets.count()));
           await legalTargets.nth(idx).click({ force: true });
           return true;
         }
@@ -598,7 +617,7 @@ const GAMES = [
         });
         if (pieceCells.length > 0) {
           const randomPiece =
-            pieceCells[Math.floor(Math.random() * pieceCells.length)];
+            pieceCells[Math.floor(rand() * pieceCells.length)];
           randomPiece.click();
           return true;
         }
@@ -752,7 +771,7 @@ const GAMES = [
           }
         }
 
-        const idx = Math.floor(Math.random() * count);
+        const idx = Math.floor(rand() * count);
         await playable.nth(idx).click({ force: true });
         return true;
       }
@@ -814,7 +833,7 @@ const GAMES = [
       const cards = page.locator('[data-testid^="hand-card-"]');
       const count = await cards.count();
       if (count > 0) {
-        const idx = Math.floor(Math.random() * count);
+        const idx = Math.floor(rand() * count);
         await cards.nth(idx).click({ force: true });
         return true;
       }
@@ -872,7 +891,7 @@ const GAMES = [
       );
       const mCount = await movable.count();
       if (mCount > 0) {
-        const idx = Math.floor(Math.random() * mCount);
+        const idx = Math.floor(rand() * mCount);
         await movable.nth(idx).click({ force: true });
         await sleep(400);
         const targets = page.locator('[data-testid^="checker-target-"]');
@@ -972,7 +991,7 @@ const GAMES = [
       if ((await playable.count()) > 0) {
         // Pick a random empty intersection for varied shorts.
         const count = await playable.count();
-        const index = Math.floor(Math.random() * Math.min(count, 40));
+        const index = Math.floor(rand() * Math.min(count, 40));
         await playable.nth(index).click({ force: true });
         return true;
       }
@@ -1145,7 +1164,7 @@ const GAMES = [
       );
       if ((await playable.count()) > 0) {
         const count = await playable.count();
-        const idx = Math.floor(Math.random() * count);
+        const idx = Math.floor(rand() * count);
         await playable.nth(idx).click({ force: true });
         return true;
       }
@@ -1220,7 +1239,7 @@ const GAMES = [
         const tokens = page.locator(sel);
         const count = await tokens.count();
         if (count > 0) {
-          const activeIdx = Math.floor(Math.random() * count);
+          const activeIdx = Math.floor(rand() * count);
           const token = tokens.nth(activeIdx);
           const isDisabled = await token.getAttribute('disabled');
           const ariaDisabled = await token.getAttribute('aria-disabled');
@@ -1338,12 +1357,18 @@ function log(level, message, data = null) {
   }
 }
 
+// Seeded when a scenario seed is known (deterministic re-runs), else Math.random.
+let rand = Math.random;
+function useSeed(seed) {
+  if (Number.isInteger(seed)) rand = createRng(seed);
+}
+
 function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(rand() * (max - min + 1)) + min;
 }
 
 function randomElement(array) {
-  return array[Math.floor(Math.random() * array.length)];
+  return array[Math.floor(rand() * array.length)];
 }
 
 function sleep(ms) {
@@ -1893,6 +1918,7 @@ async function recordSession(
   maxDurationMs,
   label,
   isMobile = false,
+  options = {},
 ) {
   log(
     'info',
@@ -1924,7 +1950,7 @@ async function recordSession(
       viewport,
       recordVideo: {
         dir: CONFIG.rawCapturesDir,
-        size: viewport,
+        size: options.videoSize || viewport,
       },
     };
 
@@ -2014,7 +2040,7 @@ async function recordSession(
 
     await injectLoadingOverlay(page);
 
-    const gameUrl = `${CONFIG.baseUrl}${game.url}`;
+    const gameUrl = `${CONFIG.baseUrl}${options.url || game.url}`;
     await page.goto(gameUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await injectLoadingOverlay(page);
 
@@ -2068,7 +2094,7 @@ async function recordSession(
       .locator('[data-testid^="cascade-variant-"]')
       .all();
     if (themes.length > 0) {
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+      const randomTheme = themes[Math.floor(rand() * themes.length)];
       await randomTheme.click({ force: true });
       log(
         'info',
@@ -2102,7 +2128,7 @@ async function recordSession(
       `${label}: gameplay ready (accurate trim offset: ${(gameplayStartOffsetMs / 1000).toFixed(2)}s)`,
     );
 
-    const urlThemeMatch = game.url.match(/[?&]theme=([^&]+)/);
+    const urlThemeMatch = (options.url || game.url).match(/[?&]theme=([^&]+)/);
     if (urlThemeMatch) {
       const themeId = urlThemeMatch[1];
       const THEME_LABELS = {
@@ -2132,6 +2158,7 @@ async function recordSession(
     const startTime = Date.now();
     let moveCount = 0;
     let moveIndex = 0;
+    let dramaticMomentMs = null;
 
     while (Date.now() - startTime < maxDurationMs) {
       let attempts = 0;
@@ -2154,6 +2181,13 @@ async function recordSession(
         if (success) {
           moveCount++;
           log('info', `${label}: move ${moveCount}`);
+          if (moveCount === options.dramaticStep && dramaticMomentMs === null) {
+            // Offset from the start of the trimmed gameplay clip.
+            dramaticMomentMs = Math.max(
+              0,
+              Date.now() - sessionStartTime - gameplayStartOffsetMs,
+            );
+          }
 
           if (isMobile) {
             await showMoveCounter(page, moveCount);
@@ -2199,6 +2233,7 @@ async function recordSession(
       videoPath: latestVideo,
       duration: finalDuration,
       gameplayStartOffsetMs,
+      dramaticMomentMs,
     };
   } catch (error) {
     log('error', `${label} recording failed`, { error: error.message });
@@ -2645,6 +2680,7 @@ async function processShortClip(
   recordedDuration,
   gameplayStartOffsetMs = 0,
   voiceoverPath = null,
+  shortOptions = {},
 ) {
   log('info', 'Processing short clip (mobile)...');
 
@@ -2659,10 +2695,9 @@ async function processShortClip(
   const timestamp = Date.now();
   const totalSec = recordedDuration / 1000;
   // Total video target: 10 to 15s (gameplay clip: 8 to 12s + logo endcard: 2.5s)
-  const targetTotal = randomInt(
-    CONFIG.shortDuration.min,
-    CONFIG.shortDuration.max,
-  );
+  const targetTotal =
+    shortOptions.targetTotalSec ||
+    randomInt(CONFIG.shortDuration.min, CONFIG.shortDuration.max);
   const endCardDur = CONFIG.endCardDuration || 2.5;
   const shortLen = Math.max(5, targetTotal - endCardDur);
   const clipStart = Math.max(0, (gameplayStartOffsetMs || 0) / 1000);
@@ -3100,7 +3135,8 @@ async function publishBoth(
     return { skipped: true, reason: 'unapproved' };
   }
 
-  const results = { full: null, short: null };
+  const results = { full: null, short: null, shortPosts: [] };
+  const youtubeOnly = Boolean(options.youtubeOnly);
   const postedPlatforms = [];
   const failedPlatforms = [];
 
@@ -3131,6 +3167,7 @@ async function publishBoth(
         try {
           results.short = await postToYouTube(shortFile, caption);
           log('info', 'YouTube Short posted', results.short);
+          results.shortPosts.push({ platform: 'youtube', data: results.short });
           postedPlatforms.push('YouTube Shorts');
         } catch (err) {
           log('error', 'YouTube Short post failed', { error: err.message });
@@ -3141,10 +3178,11 @@ async function publishBoth(
         }
       }
 
-      if (CONFIG.postizInstagramId) {
+      if (CONFIG.postizInstagramId && !youtubeOnly) {
         try {
           const igResult = await postToInstagram(shortFile, caption);
           log('info', 'Instagram Reel posted', igResult);
+          results.shortPosts.push({ platform: 'instagram', data: igResult });
           postedPlatforms.push('Instagram Reels');
         } catch (err) {
           log('error', 'Instagram Reel post failed', { error: err.message });
@@ -3155,10 +3193,11 @@ async function publishBoth(
         }
       }
 
-      if (CONFIG.postizTiktokId) {
+      if (CONFIG.postizTiktokId && !youtubeOnly) {
         try {
           const ttResult = await postToTikTok(shortFile, caption);
           log('info', 'TikTok posted', ttResult);
+          results.shortPosts.push({ platform: 'tiktok', data: ttResult });
           postedPlatforms.push('TikTok');
         } catch (err) {
           log('error', 'TikTok post failed', { error: err.message });
@@ -3166,10 +3205,11 @@ async function publishBoth(
         }
       }
 
-      if (CONFIG.postizXId) {
+      if (CONFIG.postizXId && !youtubeOnly) {
         try {
           const xResult = await postToX(shortFile, caption);
           log('info', 'X/Twitter posted', xResult);
+          results.shortPosts.push({ platform: 'x', data: xResult });
           postedPlatforms.push('X/Twitter');
         } catch (err) {
           log('error', 'X/Twitter post failed', { error: err.message });
@@ -3243,37 +3283,45 @@ async function main() {
   log('info', `Target Base URL: ${CONFIG.baseUrl}`);
 
   try {
-    let game = null;
-    if (parsedArgs.game) {
-      game = GAMES.find(
-        (g) =>
-          g.name.toLowerCase() === parsedArgs.game ||
-          g.slug.toLowerCase() === parsedArgs.game ||
-          g.name.toLowerCase().replace(/[-_]/g, '') ===
-            parsedArgs.game.replace(/[-_]/g, ''),
-      );
-      if (!game) {
-        log(
-          'warn',
-          `Game "${parsedArgs.game}" not found in [${GAMES.map((g) => g.name).join(', ')}]. Falling back to random.`,
-        );
-        game = randomElement(GAMES);
-      }
-    } else {
-      game = randomElement(GAMES);
-    }
+    useSeed(parsedArgs.seed);
+    const { prepared, date } = await scenarioFlow.chooseScenario({
+      args: parsedArgs,
+      gameNames: GAMES.map((g) => g.name),
+      log,
+    });
+    const scenario = prepared.scenario;
+    const baseGame =
+      GAMES.find((g) => g.name === scenario.game) || randomElement(GAMES);
+    useSeed(scenario.seed);
+    // Scenario hook replaces the generic overlay text; same game behaviour.
+    const game = Object.assign(Object.create(baseGame), {
+      hookText: scenario.hook,
+    });
+    const themedUrl =
+      scenario.theme && scenario.theme !== 'default'
+        ? `${baseGame.url}?theme=${scenario.theme}`
+        : baseGame.url;
 
-    log('info', `Selected game: ${game.name} (${game.url})`);
+    log(
+      'info',
+      `Selected scenario: ${scenario.id} (format=${scenario.format}, seed=${scenario.seed})`,
+    );
+    log('info', `Hook: ${scenario.hook}`);
 
     const voiceoverPath = path.join(
       CONFIG.rawCapturesDir,
       `voice-${Date.now()}.mp3`,
     );
+    // Classic bot matches keep their tuned post captions; new formats use the scenario caption.
     const caption =
-      game.captions && game.captions.length > 0
-        ? randomElement(game.captions)
-        : game.caption;
-    const voicePath = await generateVoiceover(caption, voiceoverPath);
+      scenario.format === 'bot_match' && baseGame.captions?.length
+        ? randomElement(baseGame.captions)
+        : scenario.caption;
+    await ensureDir(CONFIG.rawCapturesDir);
+    const voicePath = await generateVoiceover(
+      scenario.voiceScript,
+      voiceoverPath,
+    );
     const voiceUnavailable = !voicePath;
     if (voiceUnavailable) {
       log('warn', 'Voiceover unavailable - video will have no voice track');
@@ -3288,12 +3336,17 @@ async function main() {
         CONFIG.fullDuration.min,
         CONFIG.fullDuration.max,
       );
-      const desktopCapture = await recordSession(
-        game,
-        { width: 1920, height: 1080 },
-        fullDuration,
-        'desktop',
-        false,
+      const desktopCapture = await scenarioFlow.withRetry(
+        () =>
+          recordSession(
+            game,
+            { width: 1920, height: 1080 },
+            fullDuration,
+            'desktop',
+            false,
+            { url: themedUrl },
+          ),
+        { label: 'desktop recording', log },
       );
       fullOutputPath = await processFullVideo(
         desktopCapture.videoPath,
@@ -3303,21 +3356,67 @@ async function main() {
       );
     }
 
-    // --- Session 2: Mobile (real phone viewport) for short clip ---
+    // --- Session 2: vertical short (1080x1920) ---
     if (!parsedArgs.desktopOnly) {
-      const mobileCapture = await recordSession(
-        game,
-        { width: 430, height: 932 },
-        30000, // 30s total - enough for navigation + real gameplay
-        'mobile',
-        true,
-      );
+      let shortCapture;
+      let shortOptions = {};
+      if (prepared.html) {
+        // Scene formats (puzzle, guess the move, replay highlights): board is
+        // rendered full frame from the first frame, no loading or empty state.
+        shortCapture = await scenarioFlow.recordPrepared(prepared, {
+          outDir: CONFIG.rawCapturesDir,
+          log,
+        });
+        shortCapture.duration = shortCapture.durationMs;
+        shortCapture.gameplayStartOffsetMs = shortCapture.sceneStartOffsetMs;
+        shortOptions = {
+          targetTotalSec:
+            (shortCapture.durationMs - shortCapture.sceneStartOffsetMs) / 1000 +
+            (CONFIG.endCardDuration || 2.5),
+          lengthClass: scenario.lengthClass,
+        };
+      } else {
+        shortCapture = await scenarioFlow.withRetry(
+          () =>
+            recordSession(
+              game,
+              scenarioFlow.MOBILE_VIEWPORT,
+              scenarioFlow.recordMsFor(scenario), // 30s for short, longer for medium+
+              'mobile',
+              true,
+              {
+                url: themedUrl,
+                videoSize: scenarioFlow.MOBILE_VIDEO_SIZE,
+                dramaticStep:
+                  scenario.dramaticMoment.type === 'step'
+                    ? scenario.dramaticMoment.value
+                    : undefined,
+              },
+            ),
+          { label: 'mobile recording', log },
+        );
+      }
+      if (!prepared.html) {
+        // Live recording: medium/long/feature cut to the class target length.
+        shortOptions = {
+          targetTotalSec: scenarioFlow.targetTotalSec(scenario),
+          lengthClass: scenario.lengthClass,
+        };
+      }
       shortOutputPath = await processShortClip(
-        mobileCapture.videoPath,
-        mobileCapture.duration,
-        mobileCapture.gameplayStartOffsetMs,
+        shortCapture.videoPath,
+        shortCapture.duration,
+        shortCapture.gameplayStartOffsetMs,
         voicePath,
+        shortOptions,
       );
+      scenarioFlow.writeSidecar(shortOutputPath, scenario, {
+        dramaticMomentMs:
+          shortCapture.dramaticMomentMs ??
+          (scenario.dramaticMoment.type === 'timestamp'
+            ? scenario.dramaticMoment.value * 1000
+            : null),
+      });
     }
 
     // --- Publish (skip in preview mode) ---
@@ -3327,8 +3426,20 @@ async function main() {
       if (shortOutputPath)
         log('info', 'Short clip saved to: ' + shortOutputPath);
     } else {
-      await publishBoth(fullOutputPath, shortOutputPath, caption, game.name, {
-        voiceUnavailable,
+      const posted = await publishBoth(
+        fullOutputPath,
+        shortOutputPath,
+        caption,
+        game.name,
+        { voiceUnavailable, youtubeOnly: parsedArgs.feature },
+      );
+      await scenarioFlow.afterPublish({
+        scenario,
+        date,
+        posted,
+        shortPath: shortOutputPath,
+        voice: CONFIG.ttsVoice,
+        log,
       });
     }
 

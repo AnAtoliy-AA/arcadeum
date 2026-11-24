@@ -217,6 +217,15 @@ export const ruMessages = {
   },
   create: createRu,
   roomPage: {
+    invitation: {
+      title: '{{host}} приглашает вас сыграть',
+      subtitle:
+        'Примите приглашение, чтобы занять место в лобби, или откажитесь, чтобы хозяин знал, что вы не придете.',
+      accept: 'Принять и войти',
+      accepting: 'Вход...',
+      decline: 'Отклонить',
+      error: 'Не удалось обновить приглашение. Попробуйте снова.',
+    },
     loading: 'Загрузка...',
     loadingGame: 'Загрузка игры...',
     errors: {
@@ -342,6 +351,9 @@ export const ruMessages = {
     waitingForPlayerSlot: 'Ожидание игрока...',
     notesLabel: 'Заметки',
     invitedWaiting: 'Ожидание...',
+    invitedAwaitingReply: 'Ожидание ответа',
+    cancelInviteLabel: 'Отменить приглашение',
+    resendInviteLabel: 'Отправить снова',
     hostOnlyNote: 'Эти настройки может менять только хост',
     bot: 'Бот',
     botCountLabel: 'Количество ботов',

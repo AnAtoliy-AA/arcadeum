@@ -14,14 +14,22 @@
  *   --gameplay-only  Run only gameplay shorts pipeline
  *   --showcase-only  Run only app showcase shorts pipeline
  *   --game <name>    Run gameplay shorts for a specific game
+ *   --length <class> Force the length class (short | medium | long) for the gameplay short
+ *   --feature        Also make the weekly 2-3 min story for YouTube (opt-in, never default;
+ *                    runs as its own extra gameplay run, YouTube only)
  */
 
 const { spawn } = require('child_process');
 const path = require('path');
+const { runAnalyticsHook } = require('./analytics/runner-hook');
 
 const isPreview = process.argv.includes('--preview');
 const isGameplayOnly = process.argv.includes('--gameplay-only');
 const isShowcaseOnly = process.argv.includes('--showcase-only');
+const isFeature = process.argv.includes('--feature');
+const lengthFlag = process.argv.find(
+  (arg, i, arr) => arr[i - 1] === '--length',
+);
 const targetGame = process.argv.find(
   (arg, i, arr) => arr[i - 1] === '--game' || arr[i - 1] === '-g',
 );
@@ -83,11 +91,23 @@ async function main() {
   if (shouldRunGameplay) {
     const gameplayArgs = [...baseArgs];
     if (targetGame) gameplayArgs.push('--game', targetGame);
+    if (lengthFlag) gameplayArgs.push('--length', lengthFlag);
     const gameplaySuccess = await runScript(
       path.join(__dirname, 'gameplay.js'),
       gameplayArgs,
     );
     results.push({ name: 'Gameplay Short', success: gameplaySuccess });
+  }
+
+  // 1b. Weekly feature (explicit opt-in): a separate run, YouTube only.
+  if (isFeature) {
+    const featureArgs = [...baseArgs, '--feature'];
+    if (targetGame) featureArgs.push('--game', targetGame);
+    const featureSuccess = await runScript(
+      path.join(__dirname, 'gameplay.js'),
+      featureArgs,
+    );
+    results.push({ name: 'Weekly Feature (YouTube)', success: featureSuccess });
   }
 
   // 2. Run App Showcase Pipeline
@@ -98,6 +118,15 @@ async function main() {
     );
     results.push({ name: 'App Showcase Short', success: showcaseSuccess });
   }
+
+  // Analytics: record today's posts and refresh stats of older ones.
+  // Never posts, never fails the run. Skipped in preview mode.
+  await runAnalyticsHook({
+    isPreview,
+    targetGame,
+    results,
+    log: (m) => console.log(`[DAILY RUNNER] ${m}`),
+  });
 
   const durationSec = ((Date.now() - startTime) / 1000).toFixed(1);
   console.log(`\n============================================================`);

@@ -11,6 +11,7 @@ import type { GameRoomSummary } from './game-rooms.types';
 import { GameRoomsMapper } from './game-rooms.mapper';
 import { validateRoomId, validateHost } from './game-rooms.validation';
 import { loadRoomEntity } from './game-rooms.helpers';
+import { GameEngineRegistry } from '../engines/registry/game-engine.registry';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 
 @Injectable()
@@ -19,7 +20,21 @@ export class GameRoomsBotService {
     @InjectModel(GameRoom.name, OCI_CONNECTION)
     private readonly ociRoomModel: Model<GameRoom>,
     private readonly mapper: GameRoomsMapper,
+    private readonly engineRegistry: GameEngineRegistry,
   ) {}
+
+  /**
+   * Seat cap for a room: the room's own limit, or the engine's maximum when
+   * the room was created with "auto" players (maxPlayers = null).
+   */
+  private resolveSeatCap(room: { gameId: string; maxPlayers?: number | null }) {
+    if (room.maxPlayers) return room.maxPlayers;
+    try {
+      return this.engineRegistry.getMetadata(room.gameId).maxPlayers;
+    } catch {
+      return null;
+    }
+  }
 
   async addBotToRoom(roomId: string, hostId: string): Promise<GameRoomSummary> {
     validateRoomId(roomId);
@@ -27,7 +42,8 @@ export class GameRoomsBotService {
     validateHost(room.hostId, hostId);
     if (room.status !== 'lobby')
       throw new BadRequestException('Cannot add bots after game started');
-    if (room.maxPlayers && room.participants.length >= room.maxPlayers)
+    const cap = this.resolveSeatCap(room);
+    if (cap && room.participants.length >= cap)
       throw new BadRequestException('Room is full');
     const botId = `bot-${randomBytes(5).toString('hex')}`;
     room.participants.push({ userId: botId, joinedAt: new Date() });

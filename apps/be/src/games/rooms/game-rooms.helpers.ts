@@ -45,8 +45,19 @@ export async function mirrorRoomToAtlas(
   }
 }
 
+/** Ids of users with a pending (not yet accepted) invitation to this room. */
+export function getPendingInvitedIds(room: GameRoom): string[] {
+  const ids = room.gameOptions?.rematchInvitedIds;
+  return Array.isArray(ids) ? (ids as string[]) : [];
+}
+
 export function canViewRoom(room: GameRoom, userId?: string | null): boolean {
   if (room.visibility === 'public') return true;
   if (!userId) return false;
-  return room.hostId === userId || isRoomParticipant(room.participants, userId);
+  return (
+    room.hostId === userId ||
+    isRoomParticipant(room.participants, userId) ||
+    // An invited user must be able to open a private room to accept/decline.
+    getPendingInvitedIds(room).includes(userId)
+  );
 }

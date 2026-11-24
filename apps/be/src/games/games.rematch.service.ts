@@ -265,7 +265,10 @@ export class GamesRematchService {
     const previousRoomId = gameOptions.rematchPreviousRoomId as string;
 
     // Filter out users who have blocked the host
-    const filteredUserIds = await this.filterBlockedUsers(hostId, userIds);
+    const seatedIds = new Set((room.members ?? []).map((m) => m.id));
+    const filteredUserIds = (
+      await this.filterBlockedUsers(hostId, userIds)
+    ).filter((id) => !seatedIds.has(id));
 
     if (previousRoomId && filteredUserIds.length > 0) {
       this.realtimeService.emitRematchInvited(
@@ -303,6 +306,20 @@ export class GamesRematchService {
     }
 
     // Also broadcast update to the current room so host sees updated status
+    this.realtimeService.emitRoomUpdated(room);
+  }
+
+  /** Host cancels pending invitations; everyone in the room sees the update. */
+  async revokeInvitations(
+    roomId: string,
+    hostId: string,
+    userIds: string[],
+  ): Promise<void> {
+    const room = await this.rematchRoomsService.revokeInvitations(
+      roomId,
+      hostId,
+      userIds,
+    );
     this.realtimeService.emitRoomUpdated(room);
   }
 

@@ -78,4 +78,21 @@ export class GamesRematchController {
     if (!user) throw new UnauthorizedException();
     await this.rematchService.reinvitePlayers(roomId, user.userId, dto.userIds);
   }
+
+  @UseGuards(JwtOptionalAuthGuard)
+  @Post('rooms/:roomId/invitation/revoke')
+  @HttpCode(204)
+  async revokeInvitations(
+    @Req() req: Request,
+    @Param('roomId') roomId: string,
+    @Body() dto: InvitePlayersDto,
+  ): Promise<void> {
+    const user = req.user as AuthenticatedUser | undefined;
+    if (!user) throw new UnauthorizedException();
+    await this.rematchService.revokeInvitations(
+      roomId,
+      user.userId,
+      dto.userIds,
+    );
+  }
 }

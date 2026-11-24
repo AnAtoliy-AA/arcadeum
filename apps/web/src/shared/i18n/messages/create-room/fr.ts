@@ -99,6 +99,10 @@ export const fr: CreateRoomMessages = {
       title: 'Mode équipes',
       desc: 'Les joueurs sont répartis en équipes et gagnent ensemble.',
     },
+    teamsPachisi: {
+      title: 'Jeu par équipes (2 contre 2)',
+      desc: 'Quatre joueurs, deux équipes. Les partenaires sont en face et gagnent quand tous leurs pions sont arrivés. Exactement 4 joueurs requis.',
+    },
     none: "Ce jeu n'a pas de règles maison supplémentaires.",
     comingSoon: 'Bientôt',
   },

@@ -90,3 +90,16 @@ SHORTS_ANALYTICS_DIR=$(mktemp -d) pnpm shorts:analytics:report
 Postiz analytics endpoint used: `GET {POSTIZ_BASE_URL}/analytics/post/{postId}?date={days}`;
 label names are mapped leniently (views/impressions, likes, comments, shares,
 link clicks, average view duration). Verify against the live instance once.
+
+## Length classes
+
+Posts carry `lengthClass` and `durationSec` (measured). `report.js` prints a
+"by length class" section (avg views, avg watch time, completion rate =
+avg view duration / video length when both exist). `getLengthWeights()` is
+uniform until at least two classes have >= 3 scored posts, then favors the
+better class with an exploration floor; the scenario picker uses it.
+
+`record-post.js` is called by `factory.js` and `gameplay.js` right after a
+publish: it turns the Postiz create-post responses into one manifest line
+(game, format, hook, voice, CTA variant, length class, duration, post ids) via
+`appendManifest`. It only writes a local file; it never calls Postiz.

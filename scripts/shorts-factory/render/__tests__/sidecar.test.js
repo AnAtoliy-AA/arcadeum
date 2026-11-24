@@ -51,3 +51,33 @@ test('applySidecar fills gaps but never overrides explicit options', () => {
   assert.equal(explicit.dramaticMomentMs, 100);
   assert.deepEqual(applySidecar({ a: 1 }, null), { a: 1 });
 });
+
+test('sidecar carries the length class; structured scripts replace the caption body', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sc-'));
+  const video = path.join(dir, 'clip.mp4');
+  fs.writeFileSync(
+    sidecarPathFor(video),
+    JSON.stringify({
+      id: 's',
+      hook: 'H',
+      voiceScript: 'One. Two.',
+      lengthClass: 'medium',
+    }),
+  );
+  const sc = loadSidecar(video);
+  assert.equal(sc.lengthClass, 'medium');
+  const merged = applySidecar({ scenario: 'x' }, sc);
+  assert.equal(merged.lengthClass, 'medium');
+  assert.equal(merged.voiceScript, 'One. Two.');
+  assert.equal(applySidecar({ lengthClass: 'long' }, sc).lengthClass, 'long');
+  const short = applySidecar(
+    { scenario: 'x' },
+    { ...sc, lengthClass: 'short' },
+  );
+  assert.equal(short.voiceScript, undefined);
+  assert.equal(loadSidecar(video) && normalizeLen('bogus'), undefined);
+});
+
+function normalizeLen(v) {
+  return require('../sidecar').normalizeSidecar({ lengthClass: v }).lengthClass;
+}

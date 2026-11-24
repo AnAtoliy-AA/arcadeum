@@ -8,6 +8,8 @@ const { puzzleScene, replayScene } = require('./scene-html');
 const { captureScene } = require('./capture');
 const { buildScenario } = require('./library');
 const { assertScenario } = require('./schema');
+const { captureMaxMs } = require('./timing');
+const { FEATURE_FORMAT } = require('../length/classes');
 
 /** Backend API base for puzzle/replay reads. Never contains credentials. */
 function apiBaseFrom(env = process.env) {
@@ -46,16 +48,32 @@ async function prepareScenario(
       data: { puzzle },
     };
   }
-  if (REPLAY_FORMATS.has(scenario.format)) {
+  // The weekly feature tells a real match as a story; without replay data it
+  // is recorded live by gameplay.js with the same structure and length.
+  if (
+    REPLAY_FORMATS.has(scenario.format) ||
+    scenario.format === FEATURE_FORMAT
+  ) {
     const found = await findReplayFor({
-      format: scenario.format,
+      format:
+        scenario.format === FEATURE_FORMAT
+          ? 'replay_highlight'
+          : scenario.format,
       gameId: scenario.gameId,
       baseApiUrl,
       http,
     });
+    if (!found && scenario.format === FEATURE_FORMAT) {
+      return { scenario, html: null, data: null, fellBack: true };
+    }
     if (!found) {
       const fallback = {
-        ...buildScenario(scenario.game, 'bot_match', scenario.theme),
+        ...buildScenario(
+          scenario.game,
+          'bot_match',
+          scenario.theme,
+          scenario.lengthClass,
+        ),
         seed: scenario.seed,
       };
       return { scenario: fallback, html: null, data: null, fellBack: true };
@@ -85,6 +103,7 @@ async function recordPrepared(prepared, { outDir, log, chromium } = {}) {
     throw new Error('bot_match scenarios are recorded by gameplay.js');
   const res = await captureScene({
     html: prepared.html,
+    maxMs: captureMaxMs(prepared.scenario),
     outDir: outDir || path.join(__dirname, '..', '..', '..', 'raw_captures'),
     log,
     chromium,

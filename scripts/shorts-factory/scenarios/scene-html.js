@@ -2,6 +2,7 @@
 
 const { GLYPHS, parseFen, applyUci, sq } = require('./chess-board');
 const { messageOf } = require('./replay-source');
+const { puzzleTiming, replayTiming } = require('./timing');
 
 /**
  * Self contained HTML scenes rendered at 1080x1920. Content is present at the
@@ -114,6 +115,7 @@ function puzzleScene({ scenario, puzzle }) {
     to: sq(uci.slice(2, 4)),
   }));
   const isGuess = scenario.format === 'guess_the_move';
+  const T = puzzleTiming(scenario);
   const cells = [];
   for (let vr = 0; vr < 8; vr++) {
     for (let vc = 0; vc < 8; vc++) {
@@ -136,7 +138,7 @@ function puzzleScene({ scenario, puzzle }) {
   `;
   const script = `
   const states=${safeJson(states)};const moves=${safeJson(moves)};
-  const GL=${safeJson(GLYPHS)};const isGuess=${isGuess};
+  const GL=${safeJson(GLYPHS)};const isGuess=${isGuess};const T=${safeJson(T)};
   const grid=document.getElementById('grid');const wrap=document.getElementById('wrap');
   const sub=document.getElementById('sub');const count=document.getElementById('count');
   function draw(b,hl,key){document.querySelectorAll('.cell').forEach(el=>{
@@ -153,17 +155,22 @@ function puzzleScene({ scenario, puzzle }) {
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     window.__sceneStarted=Date.now();draw(states[0]);
     sub.textContent=${safeJson(turn === 'w' ? 'WHITE TO MOVE' : 'BLACK TO MOVE')};
-    for(let n=5;n>=1;n--){count.textContent=n;count.classList.remove('pulse');void count.offsetWidth;count.classList.add('pulse');await sleep(1000);}
+    if(T.setupMs>0)await sleep(T.setupMs);
+    const H=T.hints.length;
+    for(let n=T.count;n>=1;n--){
+      const e=T.count-n;const hi=Math.floor(e*H/T.count);
+      if(H&&(e===0||hi!==Math.floor((e-1)*H/T.count)))sub.textContent=T.hints[hi];
+      count.textContent=n;count.classList.remove('pulse');void count.offsetWidth;count.classList.add('pulse');await sleep(1000);}
     sub.textContent=isGuess?'THE REVEAL':'THE ANSWER';
     window.__sceneMarkerMs=Date.now()-window.__sceneStarted;
     for(let i=0;i<moves.length;i++){
       const mine=i%2===0;const slow=mine&&i===0;
       draw(states[i+1],moves[i],mine);
-      if(slow){zoomTo(moves[i]);sub.textContent='FIND THIS MOVE';await sleep(2200);grid.style.transform='scale(1)';await sleep(900);}
+      if(slow){zoomTo(moves[i]);sub.textContent='FIND THIS MOVE';await sleep(T.slowMs);grid.style.transform='scale(1)';await sleep(900);}
       else await sleep(mine?900:350);
     }
     sub.textContent='Play free on arcadeum.games';
-    await sleep(1500);window.__sceneDone=true;}
+    await sleep(T.endMs);window.__sceneDone=true;}
   run();`;
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=1080"><style>${css}</style></head><body>
   <div class="hook">${esc(scenario.hook)}</div>
@@ -181,6 +188,7 @@ function replayScene({ scenario, replay, moment }) {
   const names = Object.fromEntries(
     (replay.players || []).map((pl) => [pl.id, pl.displayName]),
   );
+  const T = replayTiming(scenario);
   const winnerId =
     replay.result && replay.result.winnerIds && replay.result.winnerIds[0];
   const actions = replay.actions.map((a) => ({
@@ -195,7 +203,7 @@ function replayScene({ scenario, replay, moment }) {
   .bar{width:960px;height:14px;border-radius:7px;background:#ffffff22}.bar i{display:block;height:100%;width:0;border-radius:7px;background:linear-gradient(90deg,${p.accent},${p.accent2})}
   `;
   const script = `
-  const A=${safeJson(actions)};const KEY=${moment.step};const W=${safeJson(winnerId ? names[winnerId] || 'Player' : '')};
+  const A=${safeJson(actions)};const KEY=${moment.step};const T=${safeJson(T)};const W=${safeJson(winnerId ? names[winnerId] || 'Player' : '')};
   const feed=document.getElementById('feed'),bar=document.getElementById('bar'),sub=document.getElementById('sub');
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   function add(i,key){const d=document.createElement('div');d.className='row'+(key?' key':'');
@@ -204,15 +212,17 @@ function replayScene({ scenario, replay, moment }) {
   async function run(){
     await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     window.__sceneStarted=Date.now();
-    const from=Math.max(0,KEY-4);add(from,false);sub.textContent='Real match, move '+(from+1)+' of '+A.length;
-    await sleep(1200);
-    for(let i=from+1;i<KEY;i++){add(i,false);sub.textContent='Fast forward... '+(i+1)+'/'+A.length;await sleep(180);}
+    const from=Math.max(0,KEY-T.lead);add(from,false);sub.textContent='Real match, move '+(from+1)+' of '+A.length;
+    await sleep(T.introMs);
+    const steps=Math.max(1,KEY-from-1);const stepMs=Math.min(2500,Math.max(180,T.buildMs/steps));
+    for(let i=from+1;i<KEY;i++){add(i,false);
+      sub.textContent=T.hints.length?T.hints[Math.floor((i-from-1)*T.hints.length/steps)]:'Fast forward... '+(i+1)+'/'+A.length;await sleep(stepMs);}
     sub.textContent='WATCH THIS';await sleep(700);
     window.__sceneMarkerMs=Date.now()-window.__sceneStarted;
-    add(KEY,true);feed.style.transformOrigin='50% 90%';feed.style.transform='scale(1.15)';await sleep(2400);feed.style.transform='scale(1)';
-    for(let i=KEY+1;i<A.length;i++){add(i,false);await sleep(260);}
+    add(KEY,true);feed.style.transformOrigin='50% 90%';feed.style.transform='scale(1.15)';await sleep(T.keyMs);feed.style.transform='scale(1)';
+    for(let i=KEY+1;i<A.length;i++){add(i,false);await sleep(T.afterMs);}
     sub.textContent=W?W+' wins!':'Game over';await sleep(1800);
-    sub.textContent='Play free on arcadeum.games';await sleep(1500);window.__sceneDone=true;}
+    sub.textContent='Play free on arcadeum.games';await sleep(T.endMs);window.__sceneDone=true;}
   run();`;
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=1080"><style>${css}</style></head><body>
   <div class="hook">${esc(scenario.hook)}</div>

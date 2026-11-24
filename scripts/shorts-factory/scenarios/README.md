@@ -24,3 +24,9 @@ plain Node (no deps for the logic, Playwright only for capture).
     pnpm shorts:dry-run -- --date 2026-12-01 --no-record     # just print the pick
 
 `bot_match` delegates to `gameplay.js --preview` (needs the web app running). Tests: `pnpm shorts:test`.
+
+## Length classes
+
+Scenarios carry `lengthClass`, `durationSec`, `beats` and (for medium and up) a
+structured `voiceScript` with a short `spokenHook`. See `../length/README.md`.
+`--length short|medium|long` and `--feature` work on `dry-run.js`, `gameplay.js` and `daily-runner.js`.

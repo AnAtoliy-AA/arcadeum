@@ -24,7 +24,8 @@ function writeHistory(records, historyPath = getConfig().historyPath) {
 
 /**
  * Record metadata for one posted video.
- * Fields: date, game, scenario, format, hook, voice, cta, platforms,
+ * Fields: date, game, scenario, format, hook, voice, cta, lengthClass,
+ * durationSec (actual measured length of the posted video), platforms,
  * posts: [{platform, postId}], stats (filled by refresh).
  */
 function recordPost(meta, historyPath = getConfig().historyPath) {
@@ -41,6 +42,8 @@ function recordPost(meta, historyPath = getConfig().historyPath) {
     hook: meta.hook || null,
     voice: meta.voice || null,
     cta: meta.cta || null,
+    lengthClass: meta.lengthClass || null,
+    durationSec: typeof meta.durationSec === 'number' ? meta.durationSec : null,
     platforms: meta.platforms || [],
     posts: meta.posts || [],
     stats: null,

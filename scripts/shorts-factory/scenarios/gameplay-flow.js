@@ -17,6 +17,9 @@ const {
 const { buildScenario } = require('./library');
 const { dateKey } = require('./seed');
 const { FORMATS } = require('./constants');
+const { FEATURE_FORMAT, LENGTH_CLASSES } = require('../length/classes');
+const { recordPosted } = require('../analytics/record-post');
+const { probeInfo } = require('../render/probe');
 
 /** Mobile short capture: 540x960 CSS px recorded at 1080x1920 (fills 9:16, no letterbox). */
 const MOBILE_VIEWPORT = { width: 540, height: 960 };
@@ -56,8 +59,18 @@ async function chooseScenario({ args, gameNames, log, date = dateKey() }) {
   if (args.format && !FORMATS.includes(args.format)) {
     log('warn', `Unknown --format "${args.format}", ignoring`);
   }
-  const format =
-    args.format && FORMATS.includes(args.format)
+  if (args.format === FEATURE_FORMAT && !args.feature) {
+    log('warn', 'feature_story needs the explicit --feature flag, ignoring');
+  }
+  if (args.length && !LENGTH_CLASSES[args.length]) {
+    log('warn', `Unknown --length "${args.length}", ignoring`);
+  }
+  // --feature builds the weekly 2-3 min story; it is never picked otherwise.
+  const format = args.feature
+    ? undefined
+    : args.format &&
+        FORMATS.includes(args.format) &&
+        args.format !== FEATURE_FORMAT
       ? args.format
       : args.game
         ? 'bot_match'
@@ -68,6 +81,8 @@ async function chooseScenario({ args, gameNames, log, date = dateKey() }) {
     format,
     theme: args.theme || undefined,
     available,
+    feature: Boolean(args.feature),
+    lengthClass: LENGTH_CLASSES[args.length] ? args.length : undefined,
     salt: args.seed ? String(args.seed) : '',
   });
   const prepared = await prepareScenario(scenario);
@@ -93,6 +108,9 @@ function writeSidecar(videoPath, scenario, extra = {}) {
         id: scenario.id,
         game: scenario.game,
         format: scenario.format,
+        lengthClass: scenario.lengthClass,
+        durationSec: scenario.durationSec,
+        beats: scenario.beats,
         theme: scenario.theme,
         hook: scenario.hook,
         voiceScript: scenario.voiceScript,
@@ -107,9 +125,57 @@ function writeSidecar(videoPath, scenario, extra = {}) {
   return file;
 }
 
-function markPublished(scenario, date) {
+/** How long to record a live (bot_match / feature) session for a scenario. */
+function recordMsFor(scenario) {
+  const cls = LENGTH_CLASSES[scenario.lengthClass];
+  if (!cls || cls.id === 'short') return 30000;
+  return (cls.maxSec + 15) * 1000;
+}
+
+/** Fixed target for medium+ classes; null lets short keep its random 15-25s. */
+function targetTotalSec(scenario) {
+  return scenario.lengthClass && scenario.lengthClass !== 'short'
+    ? scenario.durationSec
+    : null;
+}
+
+async function measureDuration(file) {
   try {
-    recordScenario(scenario, date);
+    return (await probeInfo(file)).durationSec;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * After a publish: queue the post ids for analytics (manifest only, no
+ * network) and remember the scenario in the variety history, both with the
+ * length class and the measured duration. Best effort, never throws.
+ */
+async function afterPublish({ scenario, date, posted, shortPath, voice, log }) {
+  const actual = shortPath ? await measureDuration(shortPath) : null;
+  if (posted && Array.isArray(posted.shortPosts) && posted.shortPosts.length) {
+    recordPosted(
+      {
+        game: scenario.game,
+        scenario: scenario.id,
+        format: scenario.format,
+        hook: scenario.hook,
+        voice,
+        cta: null,
+        lengthClass: scenario.lengthClass,
+        durationSec: actual,
+        results: posted.shortPosts,
+      },
+      { log: (m) => log('info', m) },
+    );
+  }
+  markPublished(scenario, date, actual);
+}
+
+function markPublished(scenario, date, actualDurationSec = null) {
+  try {
+    recordScenario(scenario, date, undefined, { actualDurationSec });
   } catch {
     // history is best effort; never fail a post over it
   }
@@ -136,6 +202,9 @@ module.exports = {
   chooseScenario,
   writeSidecar,
   markPublished,
+  afterPublish,
+  recordMsFor,
+  targetTotalSec,
   recordPrepared,
   buildScenario,
   path,

@@ -5,6 +5,8 @@
  * Env toggles are read lazily through helpers so tests can override them.
  */
 
+const { lengthRange } = require('../length/classes');
+
 const VIDEO = { width: 1080, height: 1920, fps: 30 };
 
 /** Platform UI covers the top ~12% and bottom ~20% of a 9:16 frame. */
@@ -19,6 +21,29 @@ const DURATION = {
   voiceLeadInSec: 0.25,
   voiceTailSec: 1.2,
 };
+
+/**
+ * Duration bounds for a length class (see ../length/classes.js), or the legacy
+ * 15-30s window when no class is given (showcase factory).
+ * Main segment = total minus the end card.
+ */
+function durationBounds(lengthClass) {
+  if (!lengthClass) {
+    return {
+      minTotalSec: DURATION.minTotalSec,
+      maxTotalSec: DURATION.maxTotalSec,
+      minMainSec: DURATION.minMainSec,
+      maxMainSec: DURATION.maxMainSec,
+    };
+  }
+  const { minSec, maxSec } = lengthRange(lengthClass);
+  return {
+    minTotalSec: minSec,
+    maxTotalSec: maxSec,
+    minMainSec: minSec - DURATION.endCardSec,
+    maxMainSec: maxSec - DURATION.endCardSec,
+  };
+}
 
 const LOUDNESS = {
   targetLufs: -14,
@@ -54,6 +79,7 @@ module.exports = {
   VIDEO,
   SAFE_ZONE,
   DURATION,
+  durationBounds,
   LOUDNESS,
   MUSIC,
   SITE,

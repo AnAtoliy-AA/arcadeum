@@ -1,10 +1,11 @@
 'use strict';
 
 const fs = require('fs');
+const { isLengthClass } = require('../length/classes');
 
 /**
  * Scenario sidecar written by scenarios/gameplay-flow.js (`<video>.scenario.json`):
- * { hook, voiceScript, dramaticMomentSec, ... }. Optional: returns null if absent.
+ * { hook, voiceScript, dramaticMomentSec, lengthClass, ... }. Optional: returns null if absent.
  */
 function sidecarPathFor(videoPath) {
   return `${String(videoPath).replace(/\.[^.]+$/, '')}.scenario.json`;
@@ -33,6 +34,7 @@ function normalizeSidecar(raw) {
       typeof sec === 'number' && Number.isFinite(sec) && sec > 0
         ? sec * 1000
         : undefined,
+    lengthClass: isLengthClass(raw.lengthClass) ? raw.lengthClass : undefined,
   };
 }
 
@@ -52,6 +54,14 @@ function applySidecar(opts, sidecar) {
         sidecar.hook,
     },
     caption: opts.caption || sidecar.voiceScript,
+    // Length class (see ../length): sets the QA range and, for medium and up,
+    // the structured script replaces the caption body. Short keeps the legacy path.
+    lengthClass: opts.lengthClass ?? sidecar.lengthClass,
+    voiceScript:
+      opts.voiceScript ??
+      (sidecar.lengthClass && sidecar.lengthClass !== 'short'
+        ? sidecar.voiceScript
+        : undefined),
     dramaticMomentMs: opts.dramaticMomentMs ?? sidecar.dramaticMomentMs,
   };
 }

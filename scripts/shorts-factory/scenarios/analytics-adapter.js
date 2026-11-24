@@ -25,6 +25,23 @@ function loadFormatWeights() {
   }
 }
 
+/**
+ * analytics.getLengthWeights() -> { short, medium, long } or null. Uniform
+ * (equal numbers) until every class has enough samples, so an inert module
+ * and a missing module behave the same: the picker rotates evenly.
+ */
+function loadLengthWeights() {
+  try {
+    // eslint-disable-next-line global-require, import/no-unresolved
+    const mod = require('../analytics');
+    const fn = mod && mod.getLengthWeights;
+    if (typeof fn !== 'function') return null;
+    return normalizeWeights(fn());
+  } catch {
+    return null;
+  }
+}
+
 function normalizeWeights(raw) {
   if (!raw || typeof raw !== 'object') return null;
   const entries = Object.entries(raw).filter(
@@ -36,4 +53,4 @@ function normalizeWeights(raw) {
   return Object.fromEntries(entries.map(([k, v]) => [k, v / max]));
 }
 
-module.exports = { loadFormatWeights, normalizeWeights };
+module.exports = { loadFormatWeights, loadLengthWeights, normalizeWeights };

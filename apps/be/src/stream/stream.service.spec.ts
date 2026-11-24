@@ -53,10 +53,11 @@ describe('StreamService', () => {
       find: jest.fn(() => q(audit)),
     };
     const commandModel = {
-      findOne: jest.fn((f: { type: string }) =>
+      findOne: jest.fn((f: { type: { $eq: string } }) =>
         q(
-          commands.find((c) => c.type === f.type && c.status === 'pending') ??
-            null,
+          commands.find(
+            (c) => c.type === f.type.$eq && c.status === 'pending',
+          ) ?? null,
         ),
       ),
       create: jest.fn((doc: Record<string, unknown>) => {

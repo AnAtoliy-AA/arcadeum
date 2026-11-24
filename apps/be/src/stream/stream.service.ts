@@ -34,7 +34,10 @@ import {
   type StreamSettings,
 } from './stream-settings.model';
 import type { UpdateStreamSettingsDto } from './dto/update-stream-settings.dto';
-import type { StreamCommandDto } from './dto/stream-command.dto';
+import {
+  STREAM_COMMANDS,
+  type StreamCommandDto,
+} from './dto/stream-command.dto';
 import type { StreamStatusDto } from './dto/stream-status.dto';
 import type { AckCommandDto } from './dto/ack-command.dto';
 import type {
@@ -266,13 +269,17 @@ export class StreamService {
     dto: StreamCommandDto,
     adminUserId: string,
   ): Promise<StreamCommandView> {
-    if (dto.type === 'start' || dto.type === 'stop') {
+    // Literal from the allow-list (never the raw request value) and `$eq` in
+    // the query below, so an operator object can never reach it.
+    const type = STREAM_COMMANDS.find((c) => c === dto.type);
+    if (!type) throw new BadRequestException('stream.invalidCommand');
+    if (type === 'start' || type === 'stop') {
       const current = await this.getSettings();
       const merged: StreamSettings = {
         ...current.settings,
-        enabled: dto.type === 'start',
+        enabled: type === 'start',
         stopGracefully:
-          dto.type === 'stop'
+          type === 'stop'
             ? (dto.graceful ?? false)
             : current.settings.stopGracefully,
       };
@@ -281,16 +288,16 @@ export class StreamService {
     const since = new Date(Date.now() - COMMAND_TTL_MS);
     const existing = await this.commandModel
       .findOne({
-        type: dto.type,
+        type: { $eq: type },
         status: 'pending',
         createdAt: { $gte: since },
       })
       .lean<CommandLean | null>();
     if (existing) return this.toCommandView(existing);
 
-    const graceful = dto.type === 'stop' ? (dto.graceful ?? false) : false;
+    const graceful = type === 'stop' ? (dto.graceful ?? false) : false;
     const created = await this.commandModel.create({
-      type: dto.type,
+      type,
       graceful,
       status: 'pending',
       requestedBy: new Types.ObjectId(adminUserId),
@@ -303,7 +310,7 @@ export class StreamService {
         {
           path: 'command',
           from: null,
-          to: graceful ? `${dto.type} (graceful)` : dto.type,
+          to: graceful ? `${type} (graceful)` : type,
         },
       ],
     });

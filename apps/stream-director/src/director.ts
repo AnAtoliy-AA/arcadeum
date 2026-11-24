@@ -19,11 +19,12 @@ export const RESULT_TEXT: Record<string, string> = {
   timeout: 'Time limit reached',
   stuck: 'Game skipped',
   error: 'Game skipped',
+  skipped: 'Game skipped',
 };
 
 /** Contract URLs: /{locale}/stream/{roomId} and /{locale}/stream/idle?... */
 export function sceneUrl(
-  config: Pick<StreamConfig, 'web'>,
+  config: Pick<StreamConfig, 'web'> & Partial<Pick<StreamConfig, 'scene'>>,
   roomId: string | null,
   params: Record<string, string> = {},
 ): string {
@@ -31,12 +32,21 @@ export function sceneUrl(
   const path = roomId
     ? `/${locale}/stream/${roomId}`
     : `/${locale}/stream/idle`;
-  const qs = new URLSearchParams(params).toString();
+  const overlay = config.scene?.overlay;
+  const all: Record<string, string> = { ...params };
+  if (overlay) {
+    if (overlay.joinUrl) all.join = overlay.joinUrl;
+    if (!overlay.showQr) all.qr = '0';
+    if (overlay.banner) all.banner = overlay.banner;
+    if (overlay.hide.length) all.hide = overlay.hide.join(',');
+  }
+  const qs = new URLSearchParams(all).toString();
   return `${baseUrl}${path}${qs ? `?${qs}` : ''}`;
 }
 
 export interface DirectorOptions {
-  config: Pick<StreamConfig, 'web' | 'director'>;
+  config: Pick<StreamConfig, 'web' | 'director'> &
+    Partial<Pick<StreamConfig, 'scene'>>;
   api: DirectorApi;
   browser: SceneBrowser;
   health: Pick<Health, 'update'>;
@@ -58,6 +68,15 @@ export class Director {
   private readonly wait: (ms: number) => Promise<void>;
   private readonly rotation: Rotation;
   stopped = false;
+  /** Set by the supervisor: runs between games (e.g. ffmpeg restart). */
+  onBoundary: (() => Promise<void>) | null = null;
+  /** Called once after a graceful stop drained the running game. */
+  onDrained: (() => void) | null = null;
+  private playing = false;
+  private skipRequested = false;
+  private stopAfterGame = false;
+  private rotationGames: GameConfig[];
+  private currentUrl: string | null = null;
   gamesPlayed = 0;
   last: { gameId: string; result: string } | null = null;
   consecutiveFailures = 0;
@@ -71,11 +90,60 @@ export class Director {
     this.alert = opts.alert ?? (() => Promise.resolve(false));
     this.now = opts.now ?? Date.now;
     this.wait = opts.wait ?? sleep;
-    this.rotation = new Rotation(opts.config.director.games, opts.rng);
+    this.rotationGames = opts.config.director.games;
+    this.rotation = new Rotation(this.rotationGames, opts.rng);
   }
 
   stop(): void {
     this.stopped = true;
+  }
+
+  /** Admin command: end the running game now (it is abandoned like a timeout). */
+  skipCurrent(): void {
+    this.skipRequested = true;
+  }
+
+  /** Admin command: finish the running game, then stop without a new one. */
+  requestStopAfterGame(): void {
+    this.stopAfterGame = true;
+  }
+
+  cancelStopAfterGame(): void {
+    this.stopAfterGame = false;
+  }
+
+  /** Graceful stop: true when a requested stop is now due. */
+  private drainIfRequested(): boolean {
+    if (!this.stopAfterGame) return false;
+    this.stopAfterGame = false;
+    this.stopped = true;
+    this.onDrained?.();
+    return true;
+  }
+
+  /** True while a room is being played (a skip command can act on it). */
+  get inGame(): boolean {
+    return this.playing;
+  }
+
+  /** Relaunch Chromium and return to the scene that was on screen. */
+  async restartBrowser(): Promise<void> {
+    await this.browser.recycle();
+    if (this.currentUrl) await this.browser.goto(this.currentUrl);
+  }
+
+  private async show(url: string): Promise<void> {
+    this.currentUrl = url;
+    await this.browser.goto(url);
+  }
+
+  /** Pick up live changes to the enabled games / weights before each pick. */
+  private syncRotation(): void {
+    const games = this.config.director.games;
+    if (games !== this.rotationGames) {
+      this.rotationGames = games;
+      this.rotation.setGames(games);
+    }
   }
 
   /** Watch one game until finished / timeout / stuck / error. */
@@ -92,6 +160,10 @@ export class Director {
     let lastSig: string | null = null;
     let errors = 0;
     while (!this.stopped) {
+      if (this.skipRequested) {
+        this.skipRequested = false;
+        return 'skipped';
+      }
       let completed = false;
       try {
         const info = await this.api.getRoomInfo(roomId);
@@ -113,7 +185,10 @@ export class Director {
       const { verdict } = evaluateGame({
         now: this.now(),
         startedAt,
-        maxDurationMs: game.maxDurationMs,
+        // Looked up each poll so an admin duration change applies live.
+        maxDurationMs:
+          this.config.director.games.find((g) => g.id === game.id)
+            ?.maxDurationMs ?? game.maxDurationMs,
         stuckMs: game.stuckMs,
         lastChangeAt,
         completed,
@@ -135,12 +210,20 @@ export class Director {
       params.last = this.last.gameId;
       params.result = this.last.result;
     }
-    await this.browser.goto(sceneUrl(this.config, null, params));
-    await this.wait(seconds * 1000);
+    await this.show(sceneUrl(this.config, null, params));
+    // Between-game work (e.g. an ffmpeg restart) hides behind the idle scene.
+    await Promise.all([
+      this.wait(seconds * 1000),
+      this.onBoundary?.().catch((err: Error) =>
+        this.log.warn('boundary hook failed', { error: err.message }),
+      ),
+    ]);
   }
 
   /** One full cycle: create room, watch, end, return the verdict. */
   async playOne(): Promise<{ verdict: Verdict; game: GameConfig }> {
+    this.skipRequested = false;
+    this.syncRotation();
     const { game, theme } = this.rotation.next();
     const moveDelayMs = this.config.director.moveDelayMs ?? game.moveDelayMs;
     this.health.update({
@@ -153,6 +236,7 @@ export class Director {
         gameId: game.id,
         theme,
         moveDelayMs,
+        botDifficulty: this.config.director.botDifficulty,
         personalities: game.personalities,
       });
     } catch (err) {
@@ -182,13 +266,18 @@ export class Director {
       },
     });
     try {
-      await this.browser.goto(sceneUrl(this.config, room.id, { lang: 'en' }));
+      await this.show(sceneUrl(this.config, room.id, { lang: 'en' }));
     } catch (err) {
       this.log.error('open scene failed', { error: (err as Error).message });
       await this.browser.recycle();
     }
 
-    const verdict = await this.watchGame({ roomId: room.id, game });
+    this.playing = true;
+    const verdict = await this.watchGame({ roomId: room.id, game }).finally(
+      () => {
+        this.playing = false;
+      },
+    );
     if (verdict === 'stopped') return { verdict, game };
     if (verdict !== 'finished') {
       this.log.warn('abandoning game', {
@@ -197,10 +286,13 @@ export class Director {
         verdict,
       });
       await this.api.abandonRoom(room.id);
-      await this.alert(`skip-${verdict}`, `Skipped ${game.id}: ${verdict}`);
+      if (verdict !== 'skipped') {
+        await this.alert(`skip-${verdict}`, `Skipped ${game.id}: ${verdict}`);
+      }
     }
-    this.consecutiveFailures =
-      verdict === 'finished' ? 0 : this.consecutiveFailures + 1;
+    // An admin skip is deliberate, not a failure.
+    if (verdict === 'finished') this.consecutiveFailures = 0;
+    else if (verdict !== 'skipped') this.consecutiveFailures += 1;
     if (this.consecutiveFailures === 5) {
       await this.alert(
         'repeated-failures',
@@ -223,10 +315,13 @@ export class Director {
 
   /** Main loop: play, recycle browser every N games, show the idle scene. */
   async run(): Promise<void> {
-    const { idleSeconds, recycleBrowserEvery } = this.config.director;
     while (!this.stopped) {
+      if (this.drainIfRequested()) break;
+      // Read each loop so admin changes apply from the next game.
+      const { idleSeconds, recycleBrowserEvery } = this.config.director;
       await this.playOne();
       if (this.stopped) break;
+      if (this.drainIfRequested()) break;
       if (
         recycleBrowserEvery > 0 &&
         this.gamesPlayed % recycleBrowserEvery === 0

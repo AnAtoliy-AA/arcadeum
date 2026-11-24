@@ -19,6 +19,19 @@ export function listTracks(
   }
 }
 
+/**
+ * Keep only the tracks whose file name is on the admin allow-list. Names
+ * only: the files themselves stay on the VM. null = no restriction.
+ */
+export function filterTracks(
+  tracks: string[],
+  allowed: string[] | null,
+): string[] {
+  if (!allowed) return tracks;
+  const names = new Set(allowed.map((n) => n.toLowerCase()));
+  return tracks.filter((t) => names.has(path.basename(t).toLowerCase()));
+}
+
 /** ffconcat playlist body. Looped forever by ffmpeg with -stream_loop -1. */
 export function buildConcatList(tracks: string[]): string {
   return (

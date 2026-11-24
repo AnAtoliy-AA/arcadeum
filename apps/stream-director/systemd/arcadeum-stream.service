@@ -10,7 +10,9 @@ Type=simple
 User=arcadeum
 WorkingDirectory=/opt/arcadeum
 # Holds STREAM_RTMP_URL, STREAM_KEY (or STREAM_KEY_FILE), STREAM_BOT_PASSWORD,
-# STREAM_ALERT_WEBHOOK_URL, ... Keep it chmod 600, owned by the service user.
+# STREAM_ALERT_WEBHOOK_URL, STREAM_SERVICE_TOKEN (admin control), ...
+# Keep it chmod 600, owned by the service user. The stream key and RTMP URL
+# live only here: the admin UI and the BE never store or return them.
 EnvironmentFile=/etc/arcadeum-stream/stream.env
 # Build once on deploy: pnpm --filter stream-director build
 ExecStart=/opt/arcadeum/apps/stream-director/run.sh

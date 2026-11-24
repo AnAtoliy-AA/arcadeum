@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { gameMetadata } from '@/features/games/registry';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getStreamJoinHost, getStreamJoinUrl } from '../lib/streamConfig';
+import type { OverlayOptions } from '../lib/streamConfig';
 import { StreamFrame } from './StreamFrame';
 import { StreamGlobalStyles } from './StreamGlobalStyles';
 import { StreamQr } from './StreamQr';
@@ -31,6 +32,7 @@ export interface IdleSceneProps {
   result: string;
   seconds: number;
   debug: boolean;
+  overlay?: OverlayOptions;
 }
 
 /**
@@ -46,9 +48,16 @@ export function IdleScene({
   result,
   seconds,
   debug,
+  overlay,
 }: IdleSceneProps) {
   const { t } = useTranslation();
-  const joinUrl = useMemo(() => getStreamJoinUrl(), []);
+  const joinUrl = useMemo(
+    () => overlay?.joinUrl ?? getStreamJoinUrl(),
+    [overlay?.joinUrl],
+  );
+  const showCta = overlay?.parts.cta !== false;
+  const showArc = overlay?.parts.arc !== false;
+  const banner = overlay?.banner ?? '';
   const host = getStreamJoinHost(joinUrl);
   const next = metaFor(nextGameId);
   const last = metaFor(lastGameId);
@@ -85,9 +94,11 @@ export function IdleScene({
               {t('pages.stream.botVsBot')}
             </span>
           </div>
-          <span className="rounded-[0.4cqw] border border-[var(--borderColor)] px-[0.7cqw] text-[1.15cqw] font-bold tracking-widest text-[var(--neutral)]">
-            {t('pages.stream.arc')}
-          </span>
+          {showArc ? (
+            <span className="rounded-[0.4cqw] border border-[var(--borderColor)] px-[0.7cqw] text-[1.15cqw] font-bold tracking-widest text-[var(--neutral)]">
+              {t('pages.stream.arc')}
+            </span>
+          ) : null}
         </header>
 
         <div className="grid min-h-0 grid-cols-2 gap-[3cqw]">
@@ -178,15 +189,33 @@ export function IdleScene({
           data-testid="idle-cta"
           className="flex items-center justify-center gap-[1.6cqw]"
         >
-          <StreamQr url={joinUrl} sizeClass="size-[8cqw]" testId="idle-qr" />
-          <div>
-            <div className="text-[2.2cqw] font-extrabold">
-              {t('pages.stream.playAt', { host })}
+          {showCta ? (
+            <>
+              {overlay?.showQr === false ? null : (
+                <StreamQr
+                  url={joinUrl}
+                  sizeClass="size-[8cqw]"
+                  testId="idle-qr"
+                />
+              )}
+              <div>
+                <div className="text-[2.2cqw] font-extrabold">
+                  {t('pages.stream.playAt', { host })}
+                </div>
+                <div className="text-[1.4cqw] text-[var(--neutral)]">
+                  {t('pages.stream.playFree')}
+                </div>
+              </div>
+            </>
+          ) : null}
+          {banner ? (
+            <div
+              data-testid="idle-banner"
+              className="rounded-[0.9cqw] border border-[var(--goldAccent)] px-[1.4cqw] py-[0.8cqw] text-[1.8cqw] font-bold text-[var(--goldAccent)]"
+            >
+              {banner}
             </div>
-            <div className="text-[1.4cqw] text-[var(--neutral)]">
-              {t('pages.stream.playFree')}
-            </div>
-          </div>
+          ) : null}
         </footer>
 
         {debug ? (

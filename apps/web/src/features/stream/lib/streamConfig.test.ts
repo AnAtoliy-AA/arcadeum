@@ -6,6 +6,8 @@ import {
   isValidRoomId,
   parseDebug,
   parseGameId,
+  parseJoinUrl,
+  parseOverlayOptions,
   parseSeconds,
   sanitizeText,
   STREAM_GAME_IDS,
@@ -71,5 +73,35 @@ describe('streamConfig', () => {
     expect(isValidRoomId('abc-123_X')).toBe(true);
     expect(isValidRoomId('../etc')).toBe(false);
     expect(isValidRoomId('')).toBe(false);
+  });
+});
+
+describe('overlay options', () => {
+  it('defaults to everything visible with no banner', () => {
+    const o = parseOverlayOptions({});
+    expect(o.banner).toBe('');
+    expect(o.showQr).toBe(true);
+    expect(Object.values(o.parts).every(Boolean)).toBe(true);
+  });
+
+  it('reads join, qr, banner and hide from the query', () => {
+    const o = parseOverlayOptions({
+      join: 'https://example.com/play',
+      qr: '0',
+      banner: 'Join us tonight',
+      hide: 'players, cta,bogus',
+    });
+    expect(o.joinUrl).toBe('https://example.com/play');
+    expect(o.showQr).toBe(false);
+    expect(o.banner).toBe('Join us tonight');
+    expect(o.parts).toMatchObject({ players: false, cta: false, status: true });
+  });
+
+  it('rejects non-http join URLs and clamps the banner', () => {
+    expect(parseJoinUrl('javascript:alert(1)')).toBeNull();
+    expect(parseJoinUrl('x'.repeat(300))).toBeNull();
+    expect(
+      parseOverlayOptions({ banner: 'a'.repeat(200) }).banner,
+    ).toHaveLength(80);
   });
 });

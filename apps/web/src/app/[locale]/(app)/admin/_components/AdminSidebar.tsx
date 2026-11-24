@@ -48,6 +48,8 @@ function getItemIcon(id: AdminSidebarItem['id']): ReactElement {
       return <GiftIcon size={18} />;
     case 'economy':
       return <WalletIcon size={18} />;
+    case 'stream':
+      return <GlobeIcon size={18} />;
     case 'gemPackages':
       return <PlusCircleIcon size={18} />;
     case 'shop':

@@ -5,6 +5,7 @@ import {
   isValidRoomId,
   parseCaptionLang,
   parseDebug,
+  parseOverlayOptions,
   type RawSearchParams,
 } from '@/features/stream/lib/streamConfig';
 
@@ -31,5 +32,11 @@ export default async function StreamGameRoute({
   const query = await searchParams;
   if (!isValidRoomId(roomId)) notFound();
   parseCaptionLang(query.lang); // English only for now; accepted for forward compat.
-  return <BroadcastScene roomId={roomId} debug={parseDebug(query.debug)} />;
+  return (
+    <BroadcastScene
+      roomId={roomId}
+      debug={parseDebug(query.debug)}
+      overlay={parseOverlayOptions(query)}
+    />
+  );
 }

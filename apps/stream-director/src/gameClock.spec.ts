@@ -57,6 +57,7 @@ const game: GameConfig = {
   maxDurationMs: 10_000,
   stuckMs: 4000,
   moveDelayMs: 2000,
+  weight: 1,
   themes: ['x'],
   personalities: null,
 };

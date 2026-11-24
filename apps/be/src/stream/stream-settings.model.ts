@@ -226,7 +226,7 @@ export function bannerProblem(text: string): string | null {
   if (text.length > LIMITS.bannerLength) return 'stream.bannerTooLong';
   // eslint-disable-next-line no-control-regex -- rejecting control chars is the point
   if (/[\u0000-\u001f\u007f<>]/.test(text)) return 'stream.bannerInvalid';
-  if (/—|–/.test(text)) return 'stream.bannerInvalid';
+  if (/\u2014|\u2013/.test(text)) return 'stream.bannerInvalid';
   if (/https?:|www\./i.test(text)) return 'stream.bannerInvalid';
   if (containsProfanity(text)) return 'stream.bannerProfanity';
   return null;

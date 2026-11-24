@@ -20,6 +20,8 @@ export type FetchFn = typeof fetch;
 
 export interface BeApi extends DirectorApi {
   login(): Promise<void>;
+  /** Bearer token of the stream user (logs in on first use). */
+  getToken(force?: boolean): Promise<string>;
 }
 
 interface ErrorBody {
@@ -100,17 +102,23 @@ export function createApi({
 
   return {
     login,
+    async getToken(force = false): Promise<string> {
+      if (!token || force) await login();
+      return token ?? '';
+    },
     /** Create + auto-start an AI-vs-AI room. Returns the room summary. */
     async createAiVsAi({
       gameId,
       theme,
       moveDelayMs,
+      botDifficulty,
       personalities,
     }): Promise<RoomSummary> {
       const req: CreateAiVsAiRequest = {
         gameId,
         theme,
         aiMoveDelayMs: moveDelayMs,
+        ...(botDifficulty ? { botDifficulty } : {}),
         ...(personalities
           ? {
               botPersonalityWhite: personalities[0],

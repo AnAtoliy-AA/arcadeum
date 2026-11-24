@@ -7,6 +7,7 @@ import { adminWalletFr } from './admin-wallet/fr';
 import { gemsFr } from './gems/fr';
 import { adminGemPackagesFr } from './admin-gem-packages/fr';
 import { adminEconomyFr } from './admin-economy/fr';
+import { adminStreamFr } from './admin-stream/fr';
 import { adminStatisticsFr } from './admin-statistics/fr';
 import { dailyRewardsFr } from './daily-rewards/fr';
 import { dailyChallengesFr } from './daily-challenges/fr';
@@ -48,6 +49,7 @@ export const fr = {
       announcements: 'Annonces',
       tournaments: 'Tournois',
       economy: 'Économie',
+      stream: 'Direct',
       shop: 'Boutique',
       gemPackages: 'Packs de Gemmes',
       games: 'Jeux',
@@ -473,6 +475,7 @@ export const fr = {
   gems: gemsFr,
   adminGemPackages: adminGemPackagesFr,
   adminEconomy: adminEconomyFr,
+  adminStream: adminStreamFr,
   dailyRewards: dailyRewardsFr,
   dailyChallenges: dailyChallengesFr,
   achievements: achievementsFr,

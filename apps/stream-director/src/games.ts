@@ -43,6 +43,7 @@ const SEEDS: GameSeed[] = [
 ];
 
 export const GAMES: GameConfig[] = SEEDS.map((g) => ({
+  weight: 1,
   moveDelayMs: 2000,
   stuckMs: 2 * MIN,
   themes: DEFAULT_THEMES,
@@ -51,7 +52,9 @@ export const GAMES: GameConfig[] = SEEDS.map((g) => ({
 }));
 
 export const EXCLUDED_GAME_IDS = ['texas_holdem_v1', 'glimworm_v1'];
-export const ALLOWED_DELAYS_MS = [1000, 2000, 5000];
+/** The BE accepts any bot move delay in this range (admin setting). */
+export const MIN_DELAY_MS = 500;
+export const MAX_DELAY_MS = 8000;
 
 /** Validate a rotation config. Returns a list of problems (empty = ok). */
 export function validateGames(games: GameConfig[]): string[] {
@@ -66,9 +69,9 @@ export function validateGames(games: GameConfig[]): string[] {
     if (EXCLUDED_GAME_IDS.includes(g.id)) {
       problems.push(`${g.id} is not supported`);
     }
-    if (!ALLOWED_DELAYS_MS.includes(g.moveDelayMs)) {
+    if (!(g.moveDelayMs >= MIN_DELAY_MS && g.moveDelayMs <= MAX_DELAY_MS)) {
       problems.push(
-        `${g.id}: moveDelayMs must be one of ${ALLOWED_DELAYS_MS.join('/')}`,
+        `${g.id}: moveDelayMs must be ${MIN_DELAY_MS}-${MAX_DELAY_MS}`,
       );
     }
     if (!(g.maxDurationMs > 0))

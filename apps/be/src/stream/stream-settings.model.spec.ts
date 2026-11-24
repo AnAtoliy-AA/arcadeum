@@ -102,7 +102,7 @@ describe('stream settings model', () => {
       expect(bannerProblem('go to http://evil.test')).toBe(
         'stream.bannerInvalid',
       );
-      expect(bannerProblem('a — b')).toBe('stream.bannerInvalid');
+      expect(bannerProblem('a \u2014 b')).toBe('stream.bannerInvalid');
     });
 
     it('validates join URLs: empty ok, http(s) only', () => {

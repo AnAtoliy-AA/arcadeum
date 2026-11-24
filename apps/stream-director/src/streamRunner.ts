@@ -174,6 +174,16 @@ export class StreamRunner extends EventEmitter {
     }, inMs);
   }
 
+  /**
+   * Clean restart between games (profile or audio change): stop ffmpeg with
+   * SIGINT, then start it again immediately without counting as a failure.
+   */
+  async restart(reason: string): Promise<void> {
+    this.log.info('ffmpeg restarting on request', { reason });
+    await this.stop();
+    this.start();
+  }
+
   /** Graceful stop: ask ffmpeg to finalize (SIGINT), then SIGKILL after 8s. */
   async stop(): Promise<void> {
     this.stopping = true;

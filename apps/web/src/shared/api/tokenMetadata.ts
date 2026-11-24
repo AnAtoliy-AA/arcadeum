@@ -24,15 +24,25 @@ export function fetchTokenMetadata(): Promise<TokenMetadata | null> {
   if (cachePromise && now < cacheExpiry) return cachePromise;
 
   const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
-  cachePromise = fetch(`${base}/solana/token-metadata`)
+  const request: Promise<TokenMetadata | null> = fetch(
+    `${base}/solana/token-metadata`,
+    // Never hang a render/build on a dead API.
+    { signal: AbortSignal.timeout(5_000) },
+  )
     .then((r) => (r.ok ? r.json() : null))
     .then((data) => {
       if (data?.name && data?.symbol) return data as TokenMetadata;
       return null;
     })
     .catch(() => null);
+  cachePromise = request;
   cacheExpiry = now + CACHE_TTL_MS;
-  return cachePromise;
+  // An empty/error result must never stick: drop it so the next call retries.
+  void request.then((value) => {
+    if (value === null && cachePromise === request)
+      invalidateTokenMetadataCache();
+  });
+  return request;
 }
 
 export function invalidateTokenMetadataCache() {

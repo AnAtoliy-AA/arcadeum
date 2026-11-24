@@ -5,6 +5,8 @@ import { Connection, Model, Types } from 'mongoose';
 import { User, type UserDocument } from '../../auth/schemas/user.schema';
 import { WalletService } from '../../wallet/wallet.service';
 import { SolanaService } from '../../solana/solana.service';
+import { ArcPaymentService } from '../../solana/lib/arc-payment.service';
+import { EconomySettingsService } from '../../economy/economy-settings.service';
 import {
   UserInventoryItem,
   type UserInventoryItemDocument,
@@ -52,6 +54,8 @@ export class ShopWalletService {
     private readonly inventory: InventoryService,
     private readonly wallet: WalletService,
     private readonly solana: SolanaService,
+    private readonly arcPayment: ArcPaymentService,
+    private readonly economy: EconomySettingsService,
   ) {}
 
   async purchaseWithWallet(
@@ -59,8 +63,12 @@ export class ShopWalletService {
     itemId: string,
     purchaseId: string,
     signature: string,
-    senderAddress: string,
+    senderAddress?: string,
   ): Promise<PurchaseResult> {
+    if ((await this.economy.getNumber('shop_allow_arcadeum')) !== 1) {
+      throw new BadRequestException('shop.arcPaymentDisabled');
+    }
+
     const prior = await this.inventory.findByUserAndPurchaseId(
       userId,
       purchaseId,
@@ -90,9 +98,7 @@ export class ShopWalletService {
     const effective = await this.catalog.getEffective(itemId);
     if (!effective) throw new BadRequestException('shop.unknownItem');
     if (!effective.available) throw new BadRequestException('shop.unavailable');
-    if (effective.priceCurrency !== 'arcadeum') {
-      throw new BadRequestException('shop.walletPaymentOnlyForArc');
-    }
+    const expectedAmount = await this.arcAmountFor(effective);
 
     const existing = await this.inventory.findLiveByItem(userId, effective.id);
     if (existing) {
@@ -105,14 +111,14 @@ export class ShopWalletService {
       };
     }
 
-    const isValid = await this.solana.verifyTransaction(
+    await this.arcPayment.verifyAndRedeem({
+      userId,
       signature,
-      effective.priceAmount,
       senderAddress,
-    );
-    if (!isValid) {
-      throw new BadRequestException('shop.invalidTransaction');
-    }
+      expectedAmount,
+      kind: 'shop',
+      subjectId: effective.id,
+    });
 
     let inventoryRow!: InventoryRowSnapshot;
     let equipped: EquippedView = {
@@ -135,10 +141,10 @@ export class ShopWalletService {
               itemId: effective.id,
               purchaseId,
               acquiredVia: 'arcadeum',
-              paidAmount: effective.priceAmount,
+              paidAmount: expectedAmount,
               paidCurrency: 'arcadeum',
               walletSignature: signature,
-              walletSender: senderAddress,
+              walletSender: senderAddress ?? null,
             },
           ],
           { session },
@@ -163,6 +169,31 @@ export class ShopWalletService {
       equipped,
       balance,
     };
+  }
+
+  /**
+   * ARC owed for an item. ARC-priced items cost their price; gem-priced items
+   * can also be paid in ARC at the same quote the shop UI shows:
+   * ceil(gems * gem_to_usd_rate * (1 - discount) / ARC price). A price that is
+   * unavailable or stale (0) refuses the quote instead of guessing.
+   */
+  private async arcAmountFor(effective: {
+    priceCurrency: string;
+    priceAmount: number;
+  }): Promise<number> {
+    if (effective.priceCurrency === 'arcadeum') return effective.priceAmount;
+    if (effective.priceCurrency !== 'gems') {
+      throw new BadRequestException('shop.walletPaymentOnlyForArc');
+    }
+    const [gemToUsd, discount, arcUsd] = await Promise.all([
+      this.economy.getNumber('gem_to_usd_rate'),
+      this.economy.getNumber('arcadeum_discount_percent'),
+      this.solana.getArcadeumPrice(),
+    ]);
+    if (arcUsd <= 0) throw new BadRequestException('shop.arcPriceUnavailable');
+    return Math.ceil(
+      (effective.priceAmount * gemToUsd * (1 - discount / 100)) / arcUsd,
+    );
   }
 
   private async ensureEquipped(

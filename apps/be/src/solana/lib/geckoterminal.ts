@@ -39,11 +39,16 @@ interface PoolsResponse {
   }>;
 }
 
-async function getJson<T>(path: string): Promise<T | null> {
-  const res = await fetch(`${BASE}${path}`, {
+async function getJson<T>(
+  path: string,
+  fetchFn: typeof fetch,
+): Promise<T | null> {
+  const res = await fetchFn(`${BASE}${path}`, {
     headers: { Accept: 'application/json' },
     signal: AbortSignal.timeout(TIMEOUT_MS),
   });
+  // Surface rate limits so callers can back off instead of retrying hot.
+  if (res.status === 429) throw new Error('geckoterminal 429 rate limited');
   if (!res.ok) return null;
   return (await res.json()) as T;
 }
@@ -55,11 +60,14 @@ function positive(value: string | null | undefined): number | null {
 
 export async function fetchGeckoTerminalToken(
   mintAddress: string,
+  fetchFn: typeof fetch = (input: string | URL | Request, init?: RequestInit) =>
+    fetch(input, init),
 ): Promise<GeckoTokenSnapshot | null> {
   const mint = encodeURIComponent(mintAddress);
+  // A 429 on either call propagates; other failures degrade to "no data".
   const [token, pools] = await Promise.all([
-    getJson<TokenResponse>(`/tokens/${mint}`).catch(() => null),
-    getJson<PoolsResponse>(`/tokens/${mint}/pools`).catch(() => null),
+    getJson<TokenResponse>(`/tokens/${mint}`, fetchFn),
+    getJson<PoolsResponse>(`/tokens/${mint}/pools`, fetchFn),
   ]);
   const attrs = token?.data?.attributes;
   // Deepest pool is the most representative quote.

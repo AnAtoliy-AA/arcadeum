@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslation } from '@/shared/i18n/useTranslation';
@@ -41,11 +41,14 @@ function formatDate(ts: number): string {
 
 interface Props {
   mintAddress?: string;
+  /** ARC/USDC pool from the backend config (NEXT_PUBLIC_ARC_POOL_ADDRESS still overrides). */
+  poolAddress?: string;
   initialMetadata?: TokenMetadata | null;
 }
 
 export default function TokenClient({
-  mintAddress = '',
+  mintAddress: mintProp = '',
+  poolAddress,
   initialMetadata = null,
 }: Props) {
   const { t } = useTranslation();
@@ -53,15 +56,55 @@ export default function TokenClient({
   const [metadata, setMetadata] = useState<TokenMetadata | null>(
     initialMetadata,
   );
+  const [mintAddress, setMintAddress] = useState(mintProp);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
 
-  const handleRefresh = async () => {
+  const load = useCallback(async () => {
     setRefreshing(true);
     const { fetchTokenMetadata } = await import('@/shared/api/tokenMetadata');
     const data = await fetchTokenMetadata();
-    if (data) setMetadata(data);
+    if (data) {
+      setMetadata(data);
+      setLoadFailed(false);
+    } else {
+      setLoadFailed(true);
+    }
     setRefreshing(false);
-  };
+  }, []);
+
+  const handleRefresh = load;
+
+  // The server may have rendered without data (API down at build or ISR
+  // time). Fetch on the client so an empty page is never the final state.
+  useEffect(() => {
+    if (initialMetadata) return;
+    let cancelled = false;
+    void (async () => {
+      const { fetchTokenMetadata } = await import('@/shared/api/tokenMetadata');
+      const data = await fetchTokenMetadata();
+      if (cancelled) return;
+      if (data) setMetadata(data);
+      else setLoadFailed(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [initialMetadata]);
+
+  useEffect(() => {
+    if (mintProp) return;
+    let cancelled = false;
+    void import('@/shared/api/arc-config')
+      .then((m) => m.getArcConfig())
+      .then((c) => {
+        if (!cancelled && c.mintAddress) setMintAddress(c.mintAddress);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [mintProp]);
 
   const handleCopy = async () => {
     if (!mintAddress) return;
@@ -183,7 +226,25 @@ export default function TokenClient({
         </div>
       )}
 
-      <MarketCapSparkline />
+      {loadFailed && !metadata && (
+        <div
+          role="alert"
+          data-testid="token-load-error"
+          className="flex items-center justify-between gap-3 px-5 py-3 rounded-xl border border-[rgba(239,68,68,0.35)] bg-[rgba(239,68,68,0.08)] mb-6 text-[13px] text-[var(--color)]"
+        >
+          <span>{t('wallet.tokenPage.loadError')}</span>
+          <button
+            type="button"
+            onClick={() => void load()}
+            disabled={refreshing}
+            className="px-3 py-1.5 rounded-lg border border-[var(--glassBorder)] font-semibold cursor-pointer disabled:opacity-60"
+          >
+            {t('wallet.tokenPage.retry')}
+          </button>
+        </div>
+      )}
+
+      <MarketCapSparkline poolAddress={poolAddress} />
 
       <div className="grid grid-cols-3 gap-4 mb-[48px] max-[480px]:grid-cols-1 max-[480px]:gap-3">
         {metadata?.marketCapUsd != null && (

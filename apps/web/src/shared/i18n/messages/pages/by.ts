@@ -30,6 +30,8 @@ import { changelogBy } from './changelog/by';
 import { featuresBy } from './features/by';
 import { roadmapBy } from './roadmap/by';
 
+import { streamBy } from './stream/by';
+
 export const by = {
   admin: {
     title: 'Адмін',
@@ -479,4 +481,5 @@ export const by = {
   changelog: changelogBy,
   features: featuresBy,
   roadmap: roadmapBy,
+  stream: streamBy,
 };

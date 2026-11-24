@@ -30,6 +30,8 @@ import { changelogFr } from './changelog/fr';
 import { featuresFr } from './features/fr';
 import { roadmapFr } from './roadmap/fr';
 
+import { streamFr } from './stream/fr';
+
 export const fr = {
   admin: {
     title: 'Administration',
@@ -484,4 +486,5 @@ export const fr = {
   changelog: changelogFr,
   features: featuresFr,
   roadmap: roadmapFr,
+  stream: streamFr,
 };

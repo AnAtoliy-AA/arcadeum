@@ -1,5 +1,7 @@
 import { type Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
+import { STREAM_HEADER } from '@/features/stream/lib/streamConfig';
 
 import { appConfig } from '@/shared/config/app-config';
 import { Header } from '@/widgets/header/ui/Header';
@@ -110,6 +112,20 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
+
+  // Broadcast scenes (/{locale}/stream/**): translations only. No header,
+  // footer, announcement banner, PWA/sound providers, socket registry, modals,
+  // pets widget, daily reward chip or live-stats widgets are mounted.
+  if ((await headers()).get(STREAM_HEADER) === '1') {
+    return (
+      <LanguageProvider
+        locale={locale}
+        initialMessages={await getInitialTranslations(locale)}
+      >
+        {children}
+      </LanguageProvider>
+    );
+  }
 
   const [seoMessages, initialMessages, announcement] = await Promise.all([
     loadSeo(locale),

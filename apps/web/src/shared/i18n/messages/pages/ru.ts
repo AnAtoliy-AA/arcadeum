@@ -30,6 +30,8 @@ import { changelogRu } from './changelog/ru';
 import { featuresRu } from './features/ru';
 import { roadmapRu } from './roadmap/ru';
 
+import { streamRu } from './stream/ru';
+
 export const ru = {
   admin: {
     title: 'Админ',
@@ -488,4 +490,5 @@ export const ru = {
   changelog: changelogRu,
   features: featuresRu,
   roadmap: roadmapRu,
+  stream: streamRu,
 };

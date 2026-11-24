@@ -5,6 +5,21 @@ import {
   ensureNavigationVisible,
 } from './fixtures/test-utils';
 
+const OPEN_LOBBY_STATS = {
+  onlineUsers: 5,
+  totalUsers: 10,
+  totalMatches: 10,
+  totalSubscribers: 0,
+  platformSubscribers: {},
+  activeGames: 1,
+  waitingRooms: 2,
+  waitingPlayers: 1,
+  matchesToday: 3,
+  popularGames: [],
+  openRooms: [],
+  recentActivity: [],
+};
+
 test.describe('Live Platform Info & Online Users', () => {
   test.beforeEach(async ({ page }) => {
     await navigateTo(page, '/en');
@@ -70,13 +85,19 @@ test.describe('Live Platform Info & Online Users', () => {
   test('should navigate to rooms page filtered by lobby status when clicking open lobbies', async ({
     page,
   }) => {
-    // With real (often zero) data the action is "Create a room"; mock open
-    // lobbies so the card links to the lobby-filtered rooms list.
-    await page.route('**/games/live-info', async (route) => {
-      const response = await route.fetch();
-      const body = (await response.json()) as Record<string, unknown>;
-      await route.fulfill({ response, json: { ...body, waitingRooms: 2 } });
-    });
+    // With real (often zero) data the action is "Create a room"; serve a
+    // complete, fixed payload with open lobbies so the card links to the
+    // lobby-filtered rooms list. Not route.fetch() + patch: relaying the
+    // real response was flaky on WebKit and left the stats unknown (Create).
+    await page.route('**/games/live-info', (route) =>
+      route.fulfill({ json: OPEN_LOBBY_STATS }),
+    );
+    // The BE also broadcasts full stats over the games socket
+    // ('games.live_stats') whenever anyone connects/disconnects, and the app
+    // applies them over the fetched ones. With zero real lobbies that flips
+    // the card back to "Create a room" mid-test. Close the real socket so
+    // the mocked fetch is the only source of stats.
+    await page.routeWebSocket('**/socket.io/**', (ws) => ws.close());
     await navigateTo(page, '/en');
 
     const waitingRoomsAction = page.getByTestId('live-waiting-rooms-action');

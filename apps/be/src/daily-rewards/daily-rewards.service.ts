@@ -117,7 +117,7 @@ export class DailyRewardsService {
   ): Promise<DailyRewardClaimResult> {
     const today = todayUtc(new Date());
 
-    return this.withSession(parentSession, async (session) => {
+    const result = await this.withSession(parentSession, async (session) => {
       // Re-read inside the session so concurrent claims race on the same
       // snapshot. The unique index on userId + the same-day guard below
       // form the safety net against double-claim from parallel requests.
@@ -197,6 +197,21 @@ export class DailyRewardsService {
         gemsBalanceAfter,
       };
     });
+    // Credits ran inside the claim transaction, so the wallet could not push
+    // the new balance itself. Do it now that the transaction has committed
+    // (a caller-owned session is responsible for emitting after its commit).
+    if (!parentSession) await this.emitBalance(userId);
+    return result;
+  }
+
+  private async emitBalance(userId: string): Promise<void> {
+    try {
+      this.wallet.emitAfterCommit(userId, await this.wallet.getBalance(userId));
+    } catch (err) {
+      this.logger.warn(
+        `Daily reward balance push failed for ${userId}: ${(err as Error).message}`,
+      );
+    }
   }
 
   async buyFreezeTokens(
@@ -212,7 +227,7 @@ export class DailyRewardsService {
     );
     const totalCost = pricePerToken * quantity;
 
-    return runInTransaction(this.connection, async (session) => {
+    const result = await runInTransaction(this.connection, async (session) => {
       await this.wallet.debit(
         userId,
         'coins',
@@ -243,6 +258,8 @@ export class DailyRewardsService {
         coinsSpent: totalCost,
       };
     });
+    await this.emitBalance(userId);
+    return result;
   }
 
   private async withSession<T>(

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { applyDeterministicDecay } from '@arcadeum/games-core';
 import { useArcadePetStore } from './useArcadePetStore';
+import { STORAGE_KEY } from './arcade-pet-storage';
 
 describe('useArcadePetStore', () => {
   beforeEach(() => {
@@ -105,6 +106,47 @@ describe('useArcadePetStore', () => {
     expect(result.pet?.theme).toBe('steampunk');
     expect(result.pet?.name).toBe('Brass Whiskers');
     expect(useArcadePetStore.getState().gemBalance).toBe(50);
+  });
+
+  it('keeps a directly adopted adult an adult after decay runs', () => {
+    useArcadePetStore.setState({
+      gemBalance: 800,
+      pets: [],
+      adoptionCount: 1,
+    });
+    const result = useArcadePetStore
+      .getState()
+      .adoptSelectedPet('dragon', 'steampunk', 'Brass');
+    const pet = result.pet!;
+    const later = applyDeterministicDecay(pet, Date.now() + 60 * 60 * 1000);
+    expect(later.stage).toBe('adult');
+  });
+
+  it('sanitizes the name of a directly adopted pet like the server does', () => {
+    useArcadePetStore.setState({ gemBalance: 800, pets: [], adoptionCount: 1 });
+    const result = useArcadePetStore
+      .getState()
+      .adoptSelectedPet('dragon', 'steampunk', 'x'.repeat(200));
+    expect(result.pet!.name.length).toBeLessThanOrEqual(24);
+  });
+
+  it('does not show the away summary again after it was dismissed and reloaded', () => {
+    const store = useArcadePetStore.getState();
+    store.initialize('u', 'cyberpunk');
+    store.adoptRandomPet();
+    store.hatch('Waky', 'cyber_cat', 'cyberpunk');
+    // Simulate a 5h absence: rewind the stored timestamp, then reload.
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+    raw.pets[0].timestamps.lastInteractedAt = Date.now() - 5 * 3600_000;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(raw));
+    useArcadePetStore.setState({ pet: null, hasConfirmedCare: false });
+    useArcadePetStore.getState().initialize('u', 'cyberpunk');
+    expect(useArcadePetStore.getState().awaySummary).not.toBeNull();
+
+    useArcadePetStore.getState().dismissAwaySummary();
+    useArcadePetStore.setState({ pet: null, hasConfirmedCare: false });
+    useArcadePetStore.getState().initialize('u', 'cyberpunk');
+    expect(useArcadePetStore.getState().awaySummary).toBeNull();
   });
 
   it('refuses to send a gift while offline and keeps balances untouched', async () => {

@@ -27,6 +27,7 @@ export function useDraggableHome() {
   const basePosition = useRef<Position>({ x: 0, y: 0 });
   const isPointerDown = useRef(false);
   const hasMoved = useRef(false);
+  const capturedPointer = useRef<number | null>(null);
 
   useEffect(() => {
     try {
@@ -72,11 +73,7 @@ export function useDraggableHome() {
     startOffset.current = { ...currentOffset.current };
     isPointerDown.current = true;
     hasMoved.current = false;
-    setIsDragging(true);
-
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {}
+    capturedPointer.current = null;
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -85,9 +82,18 @@ export function useDraggableHome() {
     const deltaX = e.clientX - startPointer.current.x;
     const deltaY = e.clientY - startPointer.current.y;
 
-    if (Math.hypot(deltaX, deltaY) > 5) {
+    if (!hasMoved.current && Math.hypot(deltaX, deltaY) > 5) {
       hasMoved.current = true;
+      setIsDragging(true);
+      // Capture only once a real drag starts. Capturing on pointerdown makes
+      // the browser retarget the follow-up click to this wrapper, so the house
+      // onClick (wake the pet) never fired for plain taps.
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        capturedPointer.current = e.pointerId;
+      } catch {}
     }
+    if (!hasMoved.current) return;
 
     const rect = boothRef.current.getBoundingClientRect();
     const targetLeft = basePosition.current.x + startOffset.current.x + deltaX;
@@ -115,9 +121,12 @@ export function useDraggableHome() {
     isPointerDown.current = false;
     setIsDragging(false);
 
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {}
+    if (capturedPointer.current !== null) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch {}
+      capturedPointer.current = null;
+    }
 
     if (hasMoved.current) {
       try {

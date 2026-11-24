@@ -192,4 +192,66 @@ describe('ArcadePetHomeBooth', () => {
     fireEvent.keyDown(handle, { key: 'ArrowDown', shiftKey: true });
     expect(booth.style.getPropertyValue('--home-drag-y')).toBe('64px');
   });
+
+  it('does not capture the pointer on a plain tap so the click wakes the pet', () => {
+    const handleToggle = vi.fn();
+    render(
+      <ArcadePetHomeBooth
+        isAtHome={true}
+        onToggleHome={handleToggle}
+        localPetName="Cyber Drake"
+        localPetSpecies="dragon"
+        localPetTheme="cyberpunk"
+        isKnocked={false}
+        onOpenDoor={vi.fn()}
+      />,
+    );
+
+    const booth = screen.getByTestId('arcade-pet-home-booth');
+    const capture = vi.fn();
+    booth.setPointerCapture = capture;
+    booth.releasePointerCapture = vi.fn();
+    const house = screen.getByTestId('arcade-pet-house-structure');
+
+    // Real browsers retarget the click to the capturing element, which would
+    // skip the house onClick. A tap must therefore never capture.
+    fireEvent.pointerDown(house, {
+      clientX: 220,
+      clientY: 320,
+      button: 0,
+      pointerId: 1,
+    });
+    fireEvent.pointerMove(booth, { clientX: 222, clientY: 321, pointerId: 1 });
+    fireEvent.pointerUp(booth, { clientX: 222, clientY: 321, pointerId: 1 });
+    fireEvent.click(house);
+
+    expect(capture).not.toHaveBeenCalled();
+    expect(handleToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it('captures the pointer once a real drag starts', () => {
+    render(
+      <ArcadePetHomeBooth
+        isAtHome={true}
+        onToggleHome={vi.fn()}
+        localPetName="Cyber Drake"
+        localPetSpecies="dragon"
+        localPetTheme="cyberpunk"
+        isKnocked={false}
+        onOpenDoor={vi.fn()}
+      />,
+    );
+    const booth = screen.getByTestId('arcade-pet-home-booth');
+    const capture = vi.fn();
+    booth.setPointerCapture = capture;
+    booth.releasePointerCapture = vi.fn();
+    fireEvent.pointerDown(booth, {
+      clientX: 0,
+      clientY: 0,
+      button: 0,
+      pointerId: 2,
+    });
+    fireEvent.pointerMove(booth, { clientX: 40, clientY: 40, pointerId: 2 });
+    expect(capture).toHaveBeenCalledWith(2);
+  });
 });

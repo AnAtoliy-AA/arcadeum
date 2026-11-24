@@ -36,6 +36,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   presents: [DEFAULT_WELCOME_PRESENT],
   isWidgetOpen: false,
   isAtHome: false,
+  wakeNotice: null,
+  clearWakeNotice: () => set({ wakeNotice: null }),
   activeTreat: null,
   hasConfirmedCare: false,
   syncRevision: null,
@@ -327,10 +329,15 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
   performAction: (action, treatId, targetPetId) => {
     const { pets, pet, coinBalance } = get();
-    const target = targetPetId
+    const found = targetPetId
       ? (pets.find((p) => p.id === targetPetId) ?? pet)
       : pet;
-    if (!target) return { success: false, error: 'NO_PET' };
+    if (!found) return { success: false, error: 'NO_PET' };
+    // A pet put to sleep (e.g. in the game room) rejects every care action, so
+    // petting or feeding it wakes it first instead of failing silently.
+    const wakesPet =
+      found.isSleeping && (action === 'praise' || action === 'feed_snack');
+    const target = wakesPet ? executePetAction(found, 'wake').state : found;
 
     if (action === 'feed_snack') {
       const petIndex = Math.max(
@@ -360,6 +367,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
           pets: updatedPets,
           coinBalance: nextCoins,
           actionError: null,
+          ...(wakesPet ? { wakeNotice: found.name } : {}),
         });
         persistStore({
           ...get(),
@@ -370,6 +378,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
           type: 'feed_snack',
           petId: target.id,
         });
+        // Feeding a pet that is resting at home wakes it up.
+        if (get().isAtHome) get().setAtHome(false);
         return { success: true };
       }
       return { success: false };
@@ -383,11 +393,17 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       );
       const nextActive =
         get().activePetId === target.id ? result.state : get().pet;
-      set({ pet: nextActive, pets: updatedPets });
+      set({
+        pet: nextActive,
+        pets: updatedPets,
+        ...(wakesPet ? { wakeNotice: found.name } : {}),
+      });
       persistStore({
         ...get(),
         pets: updatedPets,
       });
+      // Petting a pet that is resting at home wakes it up.
+      if (action === 'praise' && get().isAtHome) get().setAtHome(false);
       return { success: true };
     }
     return { success: false };
@@ -424,10 +440,12 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       refreshedPets.find((p) => p.id === get().activePetId) ??
       refreshedPets[0] ??
       null;
+    const woke = prevAtHome && !atHome && active?.stage !== 'egg';
     set({
       isAtHome: atHome,
       pets: refreshedPets,
       pet: active,
+      wakeNotice: woke ? (active?.name ?? null) : null,
     });
     persistStore({
       ...get(),

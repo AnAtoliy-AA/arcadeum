@@ -3,6 +3,8 @@ import {
   applyDeterministicDecay,
   createInitialPet,
   executePetAction,
+  sanitizePetName,
+  STAGE_THRESHOLDS_HOURS,
 } from '@arcadeum/games-core';
 import {
   getPetAdoptionCost,
@@ -49,7 +51,12 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   newMilestones: [],
   checkMilestones: () => checkMilestones(get, set),
   dismissMilestones: () => set({ newMilestones: [] }),
-  dismissAwaySummary: () => set({ awaySummary: null }),
+  dismissAwaySummary: () => {
+    // Persist the decayed pets too: the summary is rebuilt from the stored
+    // lastInteractedAt on load, so without this "Got it" reappears on reload.
+    set({ awaySummary: null });
+    if (get().hasConfirmedCare) persistStore(get());
+  },
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
@@ -190,11 +197,14 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     const newId = `pet-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const newPet = createInitialPet({
       id: newId,
-      name: name.trim() || 'Custom Pet',
+      name: sanitizePetName(name) ?? 'Custom Pet',
       theme,
     });
     newPet.species = species;
     newPet.stage = 'adult';
+    // Growth must match the forced stage or the next decay demotes the pet
+    // (the server does the same in the adopt_selected reducer).
+    newPet.stats.growthHours = STAGE_THRESHOLDS_HOURS.adult;
 
     const nextPets = [...pets, newPet];
     const nextGems = gemBalance - SELECT_PET_COST;

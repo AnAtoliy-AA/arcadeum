@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.34] - 2026-11-24
+
+### Fixed
+- close real games socket in live-info lobby test so broadcasts cannot override mocked stats
+
+
 ## [1.31.33] - 2026-11-24
 
 ### Fixed

@@ -12,6 +12,10 @@ import {
   PRIVATE_GAME_SUBPATHS,
 } from '@/shared/config/noindex-pages';
 
+import {
+  STREAM_HEADER,
+  STREAM_SEGMENT,
+} from '@/features/stream/lib/streamConfig';
 import { ACCESS_COOKIE_NAMES, findCookie } from '@/shared/lib/auth-cookies';
 import {
   applyRefreshedCookies,
@@ -210,6 +214,18 @@ export async function proxy(req: NextRequest) {
   // the canonical localized slug in one hop.
   if (localeFromUrl) {
     const secondSegment = segments[1];
+    // Broadcast scenes (/{locale}/stream/**) are chrome-less and anonymous:
+    // flag the request so the layouts skip header, footer, modals, analytics
+    // and the session refresh, and keep the page out of search indexes.
+    if (secondSegment === STREAM_SEGMENT) {
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set(STREAM_HEADER, '1');
+      const streamResponse = NextResponse.next({
+        request: { headers: requestHeaders },
+      });
+      streamResponse.headers.set('x-robots-tag', 'noindex, nofollow');
+      return streamResponse;
+    }
     if (localeFromUrl !== 'en' && secondSegment) {
       const key = EN_SLUG_TO_KEY[secondSegment];
       if (key) {

@@ -178,22 +178,7 @@ export class ArcPriceOracle {
       this.fromSource('coingecko', () => this.coingecko(mint)),
       this.fromSource('pumpfun', () => this.pumpfun(mint)),
     ]);
-    let source: ArcPriceSourceName = 'coingecko';
-    let candidate = 0;
-    if (cg > 0 && pf > 0) {
-      // Require rough agreement, take the lower one.
-      candidate = Math.min(cg, pf);
-      source = cg <= pf ? 'coingecko' : 'pumpfun';
-    } else if (cg > 0 || pf > 0) {
-      candidate = Math.max(cg, pf);
-      source = cg > 0 ? 'coingecko' : 'pumpfun';
-    } else {
-      candidate = await this.fromSource('geckoterminal', async () => {
-        const t = await fetchGeckoTerminalToken(mint, this.fetchFn);
-        return t?.priceUsd ?? 0;
-      });
-      source = 'geckoterminal';
-    }
+    const { candidate, source } = await this.pickPrice(mint, cg, pf);
 
     const reject = this.sanityRejection(candidate, now);
     if (reject) {
@@ -208,6 +193,27 @@ export class ArcPriceOracle {
       this.logger.log(`ARC price source: ${source} (${candidate} USD)`);
       this.lastLoggedSource = source;
     }
+  }
+
+  /** Chooses the price and its source; GeckoTerminal only when both others gave nothing. */
+  private async pickPrice(
+    mint: string,
+    cg: number,
+    pf: number,
+  ): Promise<{ candidate: number; source: ArcPriceSourceName }> {
+    if (cg > 0 && pf > 0) {
+      // Require rough agreement, take the lower one.
+      return cg <= pf
+        ? { candidate: cg, source: 'coingecko' }
+        : { candidate: pf, source: 'pumpfun' };
+    }
+    if (cg > 0) return { candidate: cg, source: 'coingecko' };
+    if (pf > 0) return { candidate: pf, source: 'pumpfun' };
+    const candidate = await this.fromSource('geckoterminal', async () => {
+      const t = await fetchGeckoTerminalToken(mint, this.fetchFn);
+      return t?.priceUsd ?? 0;
+    });
+    return { candidate, source: 'geckoterminal' };
   }
 
   private sanityRejection(candidate: number, now: number): string | null {

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.32] - 2026-11-24
+
+### Fixed
+- push ARC coin balance after commit and keep header chip live
+
+
 ## [1.31.31] - 2026-11-24
 
 ### Added

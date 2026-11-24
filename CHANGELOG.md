@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.35] - 2026-11-24
+
+### Fixed
+- fall back to GeckoTerminal for ARC price and token metadata
+
+
 ## [1.31.34] - 2026-11-24
 
 ### Fixed

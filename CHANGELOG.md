@@ -7,35 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- chrome-less broadcast scenes for the 24/7 bot-vs-bot stream: /{locale}/stream/{roomId} and /{locale}/stream/idle
+
 ## [1.31.33] - 2026-11-24
 
 ### Fixed
-- serve fixed open-lobby stats in live-info card test so WebKit does not stay on Create a room
 
+- serve fixed open-lobby stats in live-info card test so WebKit does not stay on Create a room
 
 ## [1.31.32] - 2026-11-24
 
 ### Fixed
-- push ARC coin balance after commit and keep header chip live
 
+- push ARC coin balance after commit and keep header chip live
 
 ## [1.31.31] - 2026-11-24
 
 ### Added
+
 - wire manifest into factory/gameplay, sidecar length class, --feature and --length flags
 - length class analytics, weights and manifest recorder
 - per-format length classes, structured scripts and QA ranges
 
-
 ## [1.31.30] - 2026-11-24
 
 ### Added
+
 - hook, captions, voice rotation, ducking, CTA A/B, platform metadata and QA gate for renders
 
 ### Documentation
+
 - keep changelog diff minimal (no reformat)
 - changelog entry for render pipeline
-
 
 ## [1.31.29] - 2026-11-23
 

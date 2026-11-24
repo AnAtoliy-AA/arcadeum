@@ -31,6 +31,8 @@
     "shorts:gameplay": "node scripts/shorts-factory/gameplay.js",
     "shorts:gameplay:preview": "node scripts/shorts-factory/gameplay.js --preview",
     "shorts:factory": "node scripts/shorts-factory/factory.js",
+    "shorts:render:dry-run": "node scripts/shorts-factory/render/dry-run.js",
+    "shorts:render:test": "node --test \"scripts/shorts-factory/render/__tests__/*.test.js\"",
     "shorts:dry-run": "node scripts/shorts-factory/scenarios/dry-run.js",
     "shorts:test": "node --test scripts/shorts-factory/scenarios/__tests__/*.test.js",
     "shorts:analytics:report": "node scripts/shorts-factory/analytics/report.js",

@@ -92,6 +92,12 @@ test.describe('Live Platform Info & Online Users', () => {
     await page.route('**/games/live-info', (route) =>
       route.fulfill({ json: OPEN_LOBBY_STATS }),
     );
+    // The BE also broadcasts full stats over the games socket
+    // ('games.live_stats') whenever anyone connects/disconnects, and the app
+    // applies them over the fetched ones. With zero real lobbies that flips
+    // the card back to "Create a room" mid-test. Close the real socket so
+    // the mocked fetch is the only source of stats.
+    await page.routeWebSocket('**/socket.io/**', (ws) => ws.close());
     await navigateTo(page, '/en');
 
     const waitingRoomsAction = page.getByTestId('live-waiting-rooms-action');

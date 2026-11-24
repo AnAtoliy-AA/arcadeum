@@ -36,6 +36,9 @@ export interface ArcadePetStoreState {
   presents: PetGiftPresent[];
   isWidgetOpen: boolean;
   isAtHome: boolean;
+  /** Name of the pet that was just woken from the house; drives a short toast. */
+  wakeNotice: string | null;
+  clearWakeNotice: () => void;
   activeTreat: GameTreatId | null;
   hasConfirmedCare: boolean;
   /** Last server revision this state was synced with; null if never synced. */

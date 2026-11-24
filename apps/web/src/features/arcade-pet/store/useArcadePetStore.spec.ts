@@ -431,4 +431,44 @@ describe('useArcadePetStore', () => {
     ).toEqual({ success: false, error: 'SYNC_PENDING' });
     expect(useArcadePetStore.getState().pets).toEqual([]);
   });
+
+  describe('waking a pet resting at home', () => {
+    function adoptHatchedAtHome() {
+      const store = useArcadePetStore.getState();
+      store.initialize('u', 'cyberpunk');
+      store.adoptRandomPet();
+      store.hatch('Waky', 'cyber_cat', 'cyberpunk');
+      useArcadePetStore.setState({ isAtHome: true, coinBalance: 100 });
+    }
+
+    it('petting wakes the pet and sets a wake notice', () => {
+      adoptHatchedAtHome();
+      const result = useArcadePetStore.getState().performAction('praise');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().isAtHome).toBe(false);
+      expect(useArcadePetStore.getState().wakeNotice).toBe('Waky');
+    });
+
+    it('a snack wakes the pet', () => {
+      adoptHatchedAtHome();
+      const result = useArcadePetStore.getState().performAction('feed_snack');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().isAtHome).toBe(false);
+    });
+
+    it('a failed snack (no coins) keeps the pet resting', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.setState({ coinBalance: 0 });
+      useArcadePetStore.getState().performAction('feed_snack');
+      expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    });
+
+    it('toggleHome from home wakes and clears the notice when going home', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.getState().toggleHome();
+      expect(useArcadePetStore.getState().wakeNotice).toBe('Waky');
+      useArcadePetStore.getState().toggleHome();
+      expect(useArcadePetStore.getState().wakeNotice).toBeNull();
+    });
+  });
 });

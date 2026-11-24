@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.31.30] - 2026-11-24
 
-- shorts factory: on-screen hook, burned-in word-highlight captions, voice rotation, music ducking and loudness normalization, A/B end-card CTA, per-platform metadata, and an automatic QA gate before approval (with `pnpm shorts:render:dry-run`)
+### Added
+- hook, captions, voice rotation, ducking, CTA A/B, platform metadata and QA gate for renders
+
+### Documentation
+- keep changelog diff minimal (no reformat)
+- changelog entry for render pipeline
+
 
 ## [1.31.29] - 2026-11-23
 

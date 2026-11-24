@@ -32,6 +32,17 @@ export const AI_VS_AI_DELAYS_MS = [1000, 2000, 5000] as const;
 
 export const AI_VS_AI_DEFAULT_DELAY_MS = 2000;
 
+/** Free-form delay bounds (the stream admin can pick any value in range). */
+export const AI_VS_AI_MIN_DELAY_MS = 500;
+export const AI_VS_AI_MAX_DELAY_MS = 8000;
+
+export const AI_VS_AI_DIFFICULTIES = [
+  'medium',
+  'hard',
+  'expert',
+  'master',
+] as const;
+
 export interface AiVsAiExtras {
   aiVsAi: true;
   aiMoveDelayMs?: number;

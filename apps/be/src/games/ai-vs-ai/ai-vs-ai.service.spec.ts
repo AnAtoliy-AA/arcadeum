@@ -163,14 +163,36 @@ describe('AiVsAiService', () => {
     expect(result).toEqual(expect.objectContaining({ id: 'room-1' }));
   });
 
-  it('falls back to the 2s default delay for invalid values', async () => {
+  it('falls back to the 2s default delay for out-of-range values', async () => {
+    for (const bad of [100, 9000, Number.NaN]) {
+      const { service, gameRoomModel } = buildService();
+      await service.createAIvsAIRoom('user-1', {
+        gameId: 'chess_v1',
+        aiMoveDelayMs: bad,
+      });
+      const roomArg = createdRoomArg(gameRoomModel);
+      expect(roomArg.gameOptions.aiMoveDelayMs).toBe(2000);
+    }
+  });
+
+  it('accepts any delay inside 500-8000 ms (stream admin setting)', async () => {
     const { service, gameRoomModel } = buildService();
     await service.createAIvsAIRoom('user-1', {
       gameId: 'chess_v1',
       aiMoveDelayMs: 1500,
     });
-    const roomArg = createdRoomArg(gameRoomModel);
-    expect(roomArg.gameOptions.aiMoveDelayMs).toBe(2000);
+    expect(createdRoomArg(gameRoomModel).gameOptions.aiMoveDelayMs).toBe(1500);
+  });
+
+  it('uses the requested bot difficulty when given', async () => {
+    const { service, gameRoomModel } = buildService();
+    await service.createAIvsAIRoom('user-1', {
+      gameId: 'chess_v1',
+      botDifficulty: 'medium',
+    });
+    expect(createdRoomArg(gameRoomModel).gameOptions.botDifficulty).toBe(
+      'medium',
+    );
   });
 
   it('starts chess with expert bot difficulty in the extras', async () => {

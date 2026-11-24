@@ -20,6 +20,7 @@ import { TournamentsModule } from './tournaments/tournaments.module';
 import { WalletModule } from './wallet/wallet.module';
 import { GemsModule } from './gems/gems.module';
 import { EconomyModule } from './economy/economy.module';
+import { StreamModule } from './stream/stream.module';
 import { DailyRewardsModule } from './daily-rewards/daily-rewards.module';
 import { DailyChallengesModule } from './daily-challenges/daily-challenges.module';
 import { AchievementsModule } from './achievements/achievements.module';
@@ -76,6 +77,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     WalletModule,
     GemsModule,
     EconomyModule,
+    StreamModule,
     DailyRewardsModule,
     DailyChallengesModule,
     AchievementsModule,

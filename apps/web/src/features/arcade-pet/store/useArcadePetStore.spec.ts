@@ -463,6 +463,29 @@ describe('useArcadePetStore', () => {
       expect(useArcadePetStore.getState().isAtHome).toBe(true);
     });
 
+    it('petting a pet that is asleep (isSleeping) wakes it instead of failing', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.setState((s) => {
+        const sleeping = { ...s.pet!, isSleeping: true };
+        return { pet: sleeping, pets: [sleeping], isAtHome: false };
+      });
+      const result = useArcadePetStore.getState().performAction('praise');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().pet?.isSleeping).toBe(false);
+      expect(useArcadePetStore.getState().wakeNotice).toBe('Waky');
+    });
+
+    it('a snack wakes a pet that is asleep (isSleeping)', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.setState((s) => {
+        const sleeping = { ...s.pet!, isSleeping: true };
+        return { pet: sleeping, pets: [sleeping], isAtHome: false };
+      });
+      const result = useArcadePetStore.getState().performAction('feed_snack');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().pet?.isSleeping).toBe(false);
+    });
+
     it('toggleHome from home wakes and clears the notice when going home', () => {
       adoptHatchedAtHome();
       useArcadePetStore.getState().toggleHome();

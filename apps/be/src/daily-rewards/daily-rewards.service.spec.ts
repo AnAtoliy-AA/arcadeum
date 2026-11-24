@@ -20,7 +20,12 @@ describe('DailyRewardsService', () => {
   };
   let connection: { startSession: jest.Mock };
   let session: { withTransaction: jest.Mock; endSession: jest.Mock };
-  let walletService: { credit: jest.Mock; debit: jest.Mock };
+  let walletService: {
+    credit: jest.Mock;
+    debit: jest.Mock;
+    getBalance: jest.Mock;
+    emitAfterCommit: jest.Mock;
+  };
   let economy: { getNumber: jest.Mock };
 
   // Freeze the clock so YYYY-MM-DD is deterministic.
@@ -46,6 +51,10 @@ describe('DailyRewardsService', () => {
     walletService = {
       credit: jest.fn().mockResolvedValue({}),
       debit: jest.fn().mockResolvedValue({}),
+      getBalance: jest
+        .fn()
+        .mockResolvedValue({ coins: 10, gems: 0, arcadeum: 0 }),
+      emitAfterCommit: jest.fn(),
     };
     economy = {
       getNumber: jest.fn().mockImplementation((key: string) => {
@@ -162,6 +171,51 @@ describe('DailyRewardsService', () => {
   });
 
   describe('claim', () => {
+    it('pushes the new balance over the wallet socket after the claim commits', async () => {
+      stubFindOne(null);
+      model.findOneAndUpdate.mockResolvedValue({});
+      walletService.credit.mockResolvedValue({ balanceAfter: 10 });
+      const order: string[] = [];
+      session.withTransaction.mockImplementation(
+        async (cb: TransactionCallback) => {
+          await cb();
+          order.push('commit');
+        },
+      );
+      walletService.emitAfterCommit.mockImplementation(() => {
+        order.push('emit');
+      });
+
+      await service.claim(userId);
+
+      expect(walletService.emitAfterCommit).toHaveBeenCalledWith(userId, {
+        coins: 10,
+        gems: 0,
+        arcadeum: 0,
+      });
+      expect(order).toEqual(['commit', 'emit']);
+    });
+
+    it('does not emit when the claim fails', async () => {
+      stubFindOne(null);
+      walletService.credit.mockRejectedValue(new Error('wallet-down'));
+
+      await expect(service.claim(userId)).rejects.toThrow('wallet-down');
+
+      expect(walletService.emitAfterCommit).not.toHaveBeenCalled();
+    });
+
+    it('never fails a committed claim because the balance push failed', async () => {
+      stubFindOne(null);
+      model.findOneAndUpdate.mockResolvedValue({});
+      walletService.credit.mockResolvedValue({ balanceAfter: 10 });
+      walletService.getBalance.mockRejectedValue(new Error('db-blip'));
+
+      await expect(service.claim(userId)).resolves.toMatchObject({
+        awardedCoins: 10,
+      });
+    });
+
     it('first claim awards Day 1, credits wallet, persists state', async () => {
       stubFindOne(null);
       model.findOneAndUpdate.mockResolvedValue({

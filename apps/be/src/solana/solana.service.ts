@@ -6,6 +6,7 @@ import {
   fromRawAmount,
   SOLANA_TOKEN_PROGRAM_IDS,
 } from './lib/arcadeum-token';
+import { fetchGeckoTerminalToken } from './lib/geckoterminal';
 
 type Web3Module = typeof import('@solana/web3.js');
 type SplTokenModule = typeof import('@solana/spl-token');
@@ -154,6 +155,18 @@ export class SolanaService {
       // Fall through
     }
 
+    // Neither CoinGecko nor pump.fun cover a token that is still on the
+    // bonding curve; GeckoTerminal indexes its pool.
+    let geckoPrice = 0;
+    if (coinGeckoPrice <= 0 && pumpFunPrice <= 0) {
+      try {
+        geckoPrice =
+          (await fetchGeckoTerminalToken(mintAddress))?.priceUsd ?? 0;
+      } catch {
+        // Fall through
+      }
+    }
+
     // Sanity band: the price drives how many ARC a payment requires, so a
     // manipulated oracle directly changes gem pricing. Reject quotes that
     // move too far from the previously accepted reference within one TTL
@@ -161,7 +174,7 @@ export class SolanaService {
     const candidate =
       coinGeckoPrice > 0 && pumpFunPrice > 0
         ? Math.min(coinGeckoPrice, pumpFunPrice)
-        : Math.max(coinGeckoPrice, pumpFunPrice);
+        : Math.max(coinGeckoPrice, pumpFunPrice, geckoPrice);
 
     if (candidate <= 0) {
       this.logger.warn('Could not fetch ARCADEUM price from any source');
@@ -208,7 +221,7 @@ export class SolanaService {
       );
       if (!res.ok) {
         this.logger.warn(`pump.fun API returned ${res.status}`);
-        return null;
+        return this.getTokenMetadataFromGecko(mintAddress);
       }
 
       const data = (await res.json()) as {
@@ -237,6 +250,28 @@ export class SolanaService {
       };
     } catch {
       this.logger.warn('Failed to fetch token metadata from pump.fun');
+      return this.getTokenMetadataFromGecko(mintAddress);
+    }
+  }
+
+  private async getTokenMetadataFromGecko(mintAddress: string) {
+    try {
+      const token = await fetchGeckoTerminalToken(mintAddress);
+      if (!token?.name || !token.symbol) return null;
+      return {
+        name: token.name,
+        symbol: token.symbol,
+        description: '',
+        image: token.image,
+        pumpfunUrl: `https://pump.fun/coin/${mintAddress}`,
+        marketCapUsd: token.fdvUsd,
+        totalSupply: token.totalSupply,
+        createdAt: null,
+        twitter: null,
+        website: null,
+      };
+    } catch {
+      this.logger.warn('Failed to fetch token metadata from GeckoTerminal');
       return null;
     }
   }

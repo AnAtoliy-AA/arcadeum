@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.37] - 2026-11-24
+
+### Fixed
+- keep directly adopted adults adult, persist away dismissal
+
+
 ## [1.31.36] - 2026-11-24
 
 ### Fixed

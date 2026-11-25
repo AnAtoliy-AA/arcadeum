@@ -29,6 +29,8 @@ module.exports = {
   'apps/mobile/**/*.{json,md,yml,yaml}': formatOnly,
   'apps/be/**/*.{ts,js}': lintAndFormat('be'),
   'apps/be/**/*.{json,md,yml,yaml}': formatOnly,
+  'apps/stream-director/**/*.ts': lintAndFormat('stream-director'),
+  'apps/stream-director/**/*.{json,md,yml,yaml}': formatOnly,
   'apps/web/**/*.{ts,tsx,js,jsx}': lintAndFormat('web'),
   'apps/web/**/*.{json,md,yml,yaml,css}': formatOnly,
   '*.{js,json,md,yml,yaml}': formatOnly,

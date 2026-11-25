@@ -1,0 +1,38 @@
+# Template. Copy to /etc/systemd/system/arcadeum-stream.service and adjust
+# User, WorkingDirectory and paths. See ../README.md.
+[Unit]
+Description=Arcadeum 24/7 live stream (director + ffmpeg push)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=arcadeum
+WorkingDirectory=/opt/arcadeum
+# Holds STREAM_RTMP_URL, STREAM_KEY (or STREAM_KEY_FILE), STREAM_BOT_PASSWORD,
+# STREAM_ALERT_WEBHOOK_URL, ... Keep it chmod 600, owned by the service user.
+EnvironmentFile=/etc/arcadeum-stream/stream.env
+# Build once on deploy: pnpm --filter stream-director build
+ExecStart=/opt/arcadeum/apps/stream-director/run.sh
+Restart=always
+RestartSec=10
+# Graceful stop: the director asks ffmpeg to finalize before exiting.
+KillSignal=SIGINT
+TimeoutStopSec=30
+# ARM friendly: keep the stream from starving the BE on a shared 3-core box.
+Nice=10
+CPUWeight=50
+# Chromium + x264 on ARM: cap memory so the OOM killer hits this unit first.
+MemoryHigh=2200M
+MemoryMax=3000M
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/arcadeum-stream
+StateDirectory=arcadeum-stream
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

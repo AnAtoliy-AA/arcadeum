@@ -7,6 +7,9 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import type { App } from 'supertest/types';
 import { Types } from 'mongoose';
+jest.mock('../../solana/lib/arc-payment.service', () => ({
+  ArcPaymentService: class {},
+}));
 import { GemPurchasesController } from './gem-purchases.controller';
 import { GemPurchasesService } from '../services/gem-purchases.service';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';

@@ -98,26 +98,32 @@ function ChartTooltip({
   );
 }
 
-export default function MarketCapSparkline() {
+export default function MarketCapSparkline({
+  poolAddress: poolFromConfig,
+}: {
+  poolAddress?: string;
+}) {
   const [selectedRange, setSelectedRange] = useState<TimeRange>('1D');
   const [data, setData] = useState<DataPoint[]>([]);
   const [poolStats, setPoolStats] = useState<PoolStats | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Explicit env override wins, then the backend config (single source of
+  // truth shared with the API). No pool copy lives in the web bundle.
   const poolAddress =
-    process.env.NEXT_PUBLIC_ARC_POOL_ADDRESS ??
-    'BHYF1uFfwujrZyLrAQw3vZJQFQ6XEkRk4TNxHo8kTTXj';
+    process.env.NEXT_PUBLIC_ARC_POOL_ADDRESS || poolFromConfig;
 
   useEffect(() => {
     if (!poolAddress) return;
 
     let cancelled = false;
+    const pool: string = poolAddress;
 
     async function load() {
       setLoading(true);
       const [ohlcv, stats] = await Promise.all([
-        fetchOHLCV(poolAddress, selectedRange),
-        fetchPoolStats(poolAddress),
+        fetchOHLCV(pool, selectedRange),
+        fetchPoolStats(pool),
       ]);
       if (!cancelled) {
         setData(ohlcv);

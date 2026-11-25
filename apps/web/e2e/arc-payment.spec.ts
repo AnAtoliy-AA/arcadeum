@@ -26,6 +26,9 @@ const MOCK_GEM_PACKAGES = [
 
 const MOCK_ARC_PRICING = {
   arcUsdPrice: 0.01,
+  priceStatus: 'ok',
+  priceSource: 'geckoterminal',
+  priceAgeSeconds: 5,
   gemToUsdRate: 0.1,
   discountPercent: 20,
 };
@@ -133,9 +136,7 @@ test.describe('ARC payment flow (mocked)', () => {
     await navigateTo(page, '/en/wallet');
 
     const data = await page.evaluate(async () => {
-      const res = await fetch(
-        '/api/proxy/solana/pay/status/test-session-123',
-      );
+      const res = await fetch('/api/proxy/solana/pay/status/test-session-123');
       return res.json();
     });
     expect(data).toHaveProperty('status');
@@ -150,6 +151,25 @@ test.describe('ARC payment flow (mocked)', () => {
     const arcPrice = page.locator('[data-testid="arc-price"]').first();
     await expect(arcPrice).toBeVisible();
     await expect(arcPrice).toContainText('ARC');
+  });
+
+  test('gem store hides the ARC price when the price is not fresh', async ({
+    page,
+  }) => {
+    await page.route('**/solana/pricing', async (route) => {
+      await handleRoute(route, {
+        ...MOCK_ARC_PRICING,
+        arcUsdPrice: 0,
+        priceStatus: 'unavailable',
+        priceSource: null,
+        priceAgeSeconds: null,
+      });
+    });
+    await navigateTo(page, '/wallet');
+
+    await page.waitForSelector('[data-testid="gem-store"]');
+
+    await expect(page.locator('[data-testid="arc-price"]')).toHaveCount(0);
   });
 
   test('shop shows ARC price on items', async ({ page }) => {

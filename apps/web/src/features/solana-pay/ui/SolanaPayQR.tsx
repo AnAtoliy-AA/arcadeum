@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { Typography, Button } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import {
   createSolanaPayRequest,
   getSolanaPayStatus,
@@ -17,6 +18,8 @@ interface SolanaPayQRProps {
   onCancel?: () => void;
 }
 
+type PayState = 'pending' | 'failed' | 'expired';
+
 export function SolanaPayQR({
   amount,
   tokenAddress,
@@ -26,12 +29,14 @@ export function SolanaPayQR({
 }: SolanaPayQRProps) {
   const [request, setRequest] = useState<SolanaPayRequest | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const [error, setError] = useState(false);
+  const [payState, setPayState] = useState<PayState>('pending');
+  const [attempt, setAttempt] = useState(0);
   const [copied, setCopied] = useState<'address' | 'amount' | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-
     async function createRequest() {
       try {
         const req = await createSolanaPayRequest(amount, tokenAddress);
@@ -41,9 +46,9 @@ export function SolanaPayQR({
         }
       } catch {
         if (!cancelled) {
-          setError('Failed to create payment request');
+          setError(true);
           setLoading(false);
-          onError?.('Failed to create payment request');
+          onError?.('create_failed');
         }
       }
     }
@@ -52,7 +57,7 @@ export function SolanaPayQR({
     return () => {
       cancelled = true;
     };
-  }, [amount, tokenAddress, onError]);
+  }, [amount, tokenAddress, onError, attempt]);
 
   useEffect(() => {
     if (!request) return;
@@ -63,7 +68,11 @@ export function SolanaPayQR({
     const currentRequest = request;
 
     async function pollStatus() {
-      if (cancelled || pollCount >= maxPolls) return;
+      if (cancelled) return;
+      if (pollCount >= maxPolls) {
+        setPayState('expired');
+        return;
+      }
 
       try {
         const status = await getSolanaPayStatus(currentRequest.sessionId);
@@ -74,9 +83,15 @@ export function SolanaPayQR({
           return;
         }
 
+        if (status.status === 'failed') {
+          setPayState('failed');
+          onError?.(status.reason ?? 'failed');
+          return;
+        }
+
         if (status.status === 'expired') {
-          setError('Payment request expired');
-          onError?.('Payment request expired');
+          setPayState('expired');
+          onError?.('expired');
           return;
         }
 
@@ -95,6 +110,14 @@ export function SolanaPayQR({
       cancelled = true;
     };
   }, [request, onConfirmed, onError]);
+
+  const retry = () => {
+    setRequest(null);
+    setLoading(true);
+    setError(false);
+    setPayState('pending');
+    setAttempt((n) => n + 1);
+  };
 
   const copyToClipboard = useCallback(
     async (text: string, type: 'address' | 'amount') => {
@@ -121,7 +144,7 @@ export function SolanaPayQR({
     return (
       <div className="flex flex-col items-center p-4">
         <Typography variant="body" alpha="high">
-          Creating payment request...
+          {t('wallet.arcCheckout.creating')}
         </Typography>
       </div>
     );
@@ -131,11 +154,14 @@ export function SolanaPayQR({
     return (
       <div className="flex flex-col items-center p-4 gap-3">
         <Typography className={'text-[#dc2626]'} variant="body">
-          {error}
+          {t('wallet.arcCheckout.errorCreate')}
         </Typography>
+        <Button onClick={retry} variant="primary">
+          {t('wallet.arcCheckout.retry')}
+        </Button>
         {onCancel && (
           <Button onClick={onCancel} variant="secondary">
-            Cancel
+            {t('wallet.arcCheckout.cancel')}
           </Button>
         )}
       </div>
@@ -143,6 +169,30 @@ export function SolanaPayQR({
   }
 
   if (!request) return null;
+
+  if (payState !== 'pending') {
+    return (
+      <div
+        className="flex flex-col items-center p-4 gap-3"
+        data-testid={`solana-pay-${payState}`}
+        role="alert"
+      >
+        <Typography className={'text-[#dc2626] text-center'} variant="body">
+          {payState === 'failed'
+            ? t('wallet.arcCheckout.statusFailed')
+            : t('wallet.arcCheckout.statusExpired')}
+        </Typography>
+        <Button onClick={retry} variant="primary">
+          {t('wallet.arcCheckout.retry')}
+        </Button>
+        {onCancel && (
+          <Button onClick={onCancel} variant="secondary">
+            {t('wallet.arcCheckout.cancel')}
+          </Button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -154,12 +204,12 @@ export function SolanaPayQR({
         variant="body"
         alpha="high"
       >
-        Send ARC to pay
+        {t('wallet.arcCheckout.title')}
       </Typography>
 
       <div className="flex flex-col items-center gap-1">
         <Typography variant="caption" alpha="high">
-          Amount
+          {t('wallet.arcCheckout.amount')}
         </Typography>
         <Typography
           className={'text-[24px] font-bold text-[#22c55e]'}
@@ -172,7 +222,7 @@ export function SolanaPayQR({
       <div className="flex flex-col p-2 bg-[white] rounded-xl items-center w-full max-w-[200px]">
         <Image
           src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(request.solanaPayUrl)}&color=000000&bgcolor=FFFFFF&format=svg`}
-          alt="Solana Pay QR Code"
+          alt={t('wallet.arcCheckout.qrAlt')}
           width={200}
           height={200}
           style={{ display: 'block', width: '100%', height: 'auto' }}
@@ -182,7 +232,7 @@ export function SolanaPayQR({
 
       <div className="flex flex-col items-center gap-2 p-2 rounded-xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.12)] w-full">
         <Typography className={'text-[11px]'} variant="caption" alpha="high">
-          Recipient
+          {t('wallet.arcCheckout.recipient')}
         </Typography>
         <Typography
           className="text-[11px] text-[#f5f7ff]"
@@ -200,7 +250,9 @@ export function SolanaPayQR({
           variant="ghost"
           size="sm"
         >
-          {copied === 'address' ? 'Copied!' : 'Copy Address'}
+          {copied === 'address'
+            ? t('wallet.arcCheckout.copied')
+            : t('wallet.arcCheckout.copyAddress')}
         </Button>
       </div>
 
@@ -213,7 +265,7 @@ export function SolanaPayQR({
           }}
           size="sm"
         >
-          Open in Phantom
+          {t('wallet.arcCheckout.openPhantom')}
         </Button>
         <Button
           className="rounded-[12px]"
@@ -221,7 +273,9 @@ export function SolanaPayQR({
           variant="secondary"
           size="sm"
         >
-          {copied === 'amount' ? 'Copied!' : 'Copy Payment Link'}
+          {copied === 'amount'
+            ? t('wallet.arcCheckout.copied')
+            : t('wallet.arcCheckout.copyLink')}
         </Button>
       </div>
 
@@ -230,7 +284,20 @@ export function SolanaPayQR({
         variant="caption"
         alpha="low"
       >
-        Scan the QR code or copy the address to send {request.amount} ARC
+        {t('wallet.arcCheckout.scanHint').replace(
+          '{amount}',
+          String(request.amount),
+        )}
+      </Typography>
+
+      <Typography
+        className={'text-center text-[12px]'}
+        variant="caption"
+        alpha="high"
+        data-testid="solana-pay-pending"
+        role="status"
+      >
+        {t('wallet.arcCheckout.statusPending')}
       </Typography>
 
       {onCancel && (

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.38] - 2026-11-25
+
+### Fixed
+- remove useless initial assignment in ARC price selection
+- harden ARC payments end to end
+
+
 ## [1.31.37] - 2026-11-24
 
 ### Fixed

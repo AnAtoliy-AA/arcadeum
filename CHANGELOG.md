@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.39] - 2026-11-25
+
+### Added
+- add 24/7 stream director and RTMP push runner
+
+### Refactored
+- port stream director to a TypeScript app
+
+
 ## [1.31.38] - 2026-11-25
 
 ### Fixed

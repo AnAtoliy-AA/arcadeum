@@ -1,5 +1,6 @@
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessClientState } from '../types';
+import { getChessEndReason } from './end-reason';
 
 type TranslateFn = (
   key: TranslationKey,
@@ -24,15 +25,14 @@ export function getChessA11yAnnouncement(
     const winner = snapshot.players.find(
       (p) => p.color === snapshot.winnerColor,
     );
-    const isDraw =
-      snapshot.isDrawByAgreement ||
-      snapshot.isStalemate ||
-      snapshot.isDrawByRepetition ||
-      snapshot.isDrawByFiftyMoveRule;
-    if (isDraw) return t('games.chess_v1.status.draw');
-    return t('games.chess_v1.status.winner', {
-      player: winner?.playerId ? resolveName(winner.playerId) : '',
-    });
+    const headline = winner
+      ? t('games.chess_v1.status.winner', {
+          player: winner.playerId ? resolveName(winner.playerId) : '',
+        })
+      : t('games.chess_v1.status.draw');
+    const reason = getChessEndReason(snapshot, true);
+    if (!reason) return headline;
+    return `${headline}. ${t(`games.chess_v1.endReason.${reason}` as TranslationKey)}`;
   }
 
   if (snapshot.isCheck) return t('games.chess_v1.status.check');

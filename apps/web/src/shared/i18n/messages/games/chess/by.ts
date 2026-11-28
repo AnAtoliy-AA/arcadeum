@@ -1,5 +1,7 @@
+import { byEndReasons } from './end-reasons-by';
 export const byMessages = {
   chess_v1: {
+    endReason: byEndReasons,
     name: 'Шахматы',
     description:
       'Класічная стратэгічная настольная гульня з поўнымі правіламі, уключаючы рокіраванне, узяцце на праходзе і прэміяцыю',

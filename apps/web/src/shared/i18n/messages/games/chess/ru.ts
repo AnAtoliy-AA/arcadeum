@@ -1,5 +1,7 @@
+import { ruEndReasons } from './end-reasons-ru';
 export const ruMessages = {
   chess_v1: {
+    endReason: ruEndReasons,
     name: 'Шахматы',
     description:
       'Классическая стратегическая настольная игра с полными правилами, включая рокировку, взятие на проходе и превращение пешки',

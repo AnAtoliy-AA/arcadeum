@@ -1,5 +1,7 @@
+import { enEndReasons } from './end-reasons-en';
 export const enMessages = {
   chess_v1: {
+    endReason: enEndReasons,
     name: 'Chess',
     description:
       'The classic strategy board game with full rules including castling, en passant, and promotion',

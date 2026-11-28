@@ -3,7 +3,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.scss';
 import './fonts.css';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
+import { STREAM_HEADER } from '@/features/stream/lib/streamConfig';
 import { appConfig } from '@/shared/config/app-config';
 import { JsonLd } from '@/shared/ui/JsonLd';
 import { WebVitalsReporter } from '@/shared/seo/WebVitalsReporter';
@@ -94,6 +95,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
+  // Broadcast scenes render with no site chrome, analytics or skip link.
+  const isStream = (await headers()).get(STREAM_HEADER) === '1';
   const theme =
     (cookieStore.get('app-theme')?.value as ThemeName) || DEFAULT_THEME_NAME;
   const themePreference =
@@ -200,19 +203,23 @@ export default async function RootLayout({
             process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.arcadeum.games'
           }
         />
-        <JsonLd data={jsonLd} />
+        {isStream ? null : <JsonLd data={jsonLd} />}
       </head>
       <body className={FONT_CLASS}>
-        <a href="#main-content" className="skip-link">
-          Skip to content
-        </a>
-        <WebVitalsReporter />
-        <AnalyticsProvider />
-        {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
-          <VercelAnalytics />
+        {isStream ? null : (
+          <>
+            <a href="#main-content" className="skip-link">
+              Skip to content
+            </a>
+            <WebVitalsReporter />
+            <AnalyticsProvider />
+            {process.env.NODE_ENV === 'production' && process.env.VERCEL && (
+              <VercelAnalytics />
+            )}
+          </>
         )}
         <AppThemeProvider initialTheme={theme}>
-          <LazySessionRoleSync />
+          {isStream ? null : <LazySessionRoleSync />}
           {children}
         </AppThemeProvider>
       </body>

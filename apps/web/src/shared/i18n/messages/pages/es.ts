@@ -30,6 +30,8 @@ import { changelogEs } from './changelog/es';
 import { featuresEs } from './features/es';
 import { roadmapEs } from './roadmap/es';
 
+import { streamEs } from './stream/es';
+
 export const es = {
   admin: {
     title: 'Administración',
@@ -485,4 +487,5 @@ export const es = {
   changelog: changelogEs,
   features: featuresEs,
   roadmap: roadmapEs,
+  stream: streamEs,
 };

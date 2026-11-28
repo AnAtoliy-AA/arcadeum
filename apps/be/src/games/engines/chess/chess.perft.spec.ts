@@ -9,7 +9,12 @@ import { restoreFromFen } from '@arcadeum/games-core/games/chess/chess-engine-ru
  * and checks through the real engine move pipeline.
  */
 const engine = new ChessEngine();
-const ctx = { userId: 'w', roomId: 'r', sessionId: 's', timestamp: new Date() };
+const ctxFor = (state: ChessState) => ({
+  userId: state.currentTurnColor === 'white' ? 'w' : 'b',
+  roomId: 'r',
+  sessionId: 's',
+  timestamp: new Date(),
+});
 
 function fromFen(fen: string): ChessState {
   const state = engine.initializeState(['w', 'b']);
@@ -30,7 +35,7 @@ function perft(state: ChessState, depth: number): number {
       toRank: m.to.rank,
       promotion: m.promotion ?? undefined,
     };
-    const res = engine.executeAction(state, 'move', ctx, payload);
+    const res = engine.executeAction(state, 'move', ctxFor(state), payload);
     if (!res.success || !res.state) throw new Error('perft move failed');
     nodes += perft(res.state, depth - 1);
   }

@@ -272,6 +272,15 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     context: GameActionContext,
     payload?: unknown,
   ): GameActionResult<ChessState> {
+    // The session layer calls executeAction directly, so the rules in
+    // validateAction (turn order, offer and abort windows) are enforced here.
+    if (!this.validateAction(state, action, context, payload)) {
+      return this.errorResult(
+        action === ACTION.MOVE
+          ? 'Invalid move'
+          : `Action not allowed: ${action}`,
+      );
+    }
     if (action === ACTION.MOVE) {
       return this.executeMove(state, context, payload as MovePayload);
     }

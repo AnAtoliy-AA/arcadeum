@@ -352,6 +352,12 @@ describe('Chess FIDE rules', () => {
       const s = play(engine.initializeState(['w', 'b']), 'e2e4', 'e7e5');
       expect(engine.validateAction(s, 'abort', ctx('w'))).toBe(false);
     });
+
+    it('rejects a mid-game abort on the executeAction path', () => {
+      const s = play(engine.initializeState(['w', 'b']), 'e2e4', 'e7e5');
+      const res = engine.executeAction(s, 'abort', ctx('w'));
+      expect(res.success).toBe(false);
+    });
   });
 
   describe('draw offers', () => {
@@ -418,6 +424,21 @@ describe('Chess FIDE rules', () => {
       s = engine.executeAction(s, 'takeback_offer', ctx('w')).state!;
       s = play(s, 'e7e5');
       expect(s.takebackOfferedBy).toBeNull();
+    });
+
+    it('cannot be accepted by the requester on the executeAction path', () => {
+      let s = play(engine.initializeState(['w', 'b']), 'e2e4');
+      s = engine.executeAction(s, 'takeback_offer', ctx('w')).state!;
+      expect(engine.executeAction(s, 'takeback_accept', ctx('w')).success).toBe(
+        false,
+      );
+    });
+
+    it('rejects a move out of turn on the executeAction path', () => {
+      const s = engine.initializeState(['w', 'b']);
+      expect(
+        engine.executeAction(s, 'move', ctx('b'), mv('e7e5')).success,
+      ).toBe(false);
     });
 
     it('cannot be offered before moving', () => {

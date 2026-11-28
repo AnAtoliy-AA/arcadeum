@@ -31,6 +31,10 @@ const {
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
+const { renderShort } = require('./render/pipeline');
+const { formatQaReport } = require('./render/qa');
+const { recordPosted } = require('./analytics/record-post');
+const { listLocalTracks } = require('./render/audio');
 require('dotenv').config({ path: path.join(__dirname, '..', '..', '.env') });
 
 // Parse CLI arguments
@@ -107,12 +111,8 @@ const CONFIG = {
   approvalTimeoutMs: 3 * 60 * 60 * 1000, // 3 hours
   pollIntervalMs: 30 * 1000, // 30 seconds
   enableApproval: process.env.SHORTS_FACTORY_APPROVAL === 'true',
-  // TTS / Voice
-  edgeTtsBin:
-    process.env.EDGE_TTS_BIN ||
-    `${process.env.HOME || '/home/ubuntu'}/tts-venv/bin/edge-tts`,
-  ttsVoice: process.env.EDGE_TTS_VOICE || 'en-US-GuyNeural',
-  ttsEnabled: process.env.EDGE_TTS_ENABLED !== 'false',
+  // TTS / voice, music and render settings live in ./render (env toggles:
+  // EDGE_TTS_ENABLED, EDGE_TTS_VOICE(S), SHORTS_MUSIC_DIR, SHORTS_CTA_VARIANT).
 };
 
 const FALLBACK_GAME_SLUGS = [
@@ -176,66 +176,16 @@ async function ensurePendingDir() {
   await mkdir(CONFIG.pendingDir, { recursive: true });
 }
 
-async function resolveEdgeTtsBin() {
-  const { access } = require('fs/promises');
-  const candidates = [
-    CONFIG.edgeTtsBin,
-    '/usr/local/bin/edge-tts',
-    '/usr/bin/edge-tts',
-    '/home/ubuntu/tts-venv/bin/edge-tts',
-    path.join(process.env.HOME || '', 'tts-venv/bin/edge-tts'),
-  ].filter(Boolean);
-  for (const bin of candidates) {
-    try {
-      await access(bin);
-      return bin;
-    } catch {}
+/** Approval note: voice warning plus any failed automatic QA checks. */
+function buildApprovalNote(options) {
+  const parts = [];
+  if (options.voiceUnavailable) {
+    parts.push('⚠️ Voice unavailable (edge-tts offline)');
   }
-  return null;
-}
-
-async function generateVoiceover(text, outputPath) {
-  if (!CONFIG.ttsEnabled) return null;
-  const bin = await resolveEdgeTtsBin();
-  if (!bin) {
-    log('warn', 'edge-tts binary not found - skipping voice');
-    return null;
+  if (options.qa && !options.qa.passed) {
+    parts.push(`⚠️ ${formatQaReport(options.qa)}`);
   }
-  try {
-    const cleanText = text
-      .replace(/[#\n]/g, ' ')
-      .replace(/https?:\/\/\S+/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 300);
-    await new Promise((resolve, reject) => {
-      const proc = spawn(bin, [
-        '--voice',
-        CONFIG.ttsVoice,
-        '--text',
-        cleanText,
-        '--write-media',
-        outputPath,
-      ]);
-      let stderr = '';
-      proc.stderr.on('data', (d) => {
-        stderr += d.toString();
-      });
-      proc.on('close', (code) => {
-        if (code === 0) resolve();
-        else
-          reject(new Error(`edge-tts exited ${code}: ${stderr.slice(-200)}`));
-      });
-      proc.on('error', reject);
-    });
-    log('info', `Voiceover generated: ${outputPath}`);
-    return outputPath;
-  } catch (err) {
-    log('warn', 'edge-tts failed - video will have no voice', {
-      error: err.message,
-    });
-    return null;
-  }
+  return parts.length ? parts.join('\n') : undefined;
 }
 
 /**
@@ -258,9 +208,9 @@ async function requestApproval(videoPath, caption, scenario, options = {}) {
     status: 'pending',
     createdAt: new Date().toISOString(),
     voiceUnavailable: options.voiceUnavailable || false,
-    note: options.voiceUnavailable
-      ? '⚠️ Voice unavailable (edge-tts offline)'
-      : undefined,
+    note: buildApprovalNote(options),
+    qa: options.qa || undefined,
+    renderMeta: options.renderMeta || undefined,
   };
 
   // Save pending metadata
@@ -3206,6 +3156,9 @@ async function captureBrowsing() {
       startOffsetMs,
       caption: scenario.caption,
       scenario: scenario.name,
+      // Optional scenario-provided render hints (see render/hook.js)
+      hook: scenario.hook,
+      dramaticMomentMs: scenario.dramaticMomentMs,
     };
   } catch (error) {
     log('error', 'Failed to capture browsing', {
@@ -3280,14 +3233,6 @@ function getTrackVolume(trackUrl) {
   }
   return CONFIG.musicVolume;
 }
-
-const END_CARD_CTAS = [
-  'Play Online Now!',
-  'Join the Arena!',
-  'Ready to Play?',
-  'Play Free Games!',
-  'Challenge Players!',
-];
 
 function getScenarioTags(scenarioName) {
   const name = (scenarioName || '').toLowerCase();
@@ -3381,216 +3326,6 @@ function getScenarioTags(scenarioName) {
   return tags.join(' ');
 }
 
-/**
- * Processes the raw video with FFmpeg: trim, add audio, append end card
- */
-async function processVideo(
-  rawVideoPath,
-  recordedDuration,
-  startOffsetMs = 0,
-  voiceoverPath = null,
-) {
-  log('info', 'Starting FFmpeg video processing...');
-
-  await ensureDir(CONFIG.outputDir);
-
-  const tracks = await getAudioTracks();
-  const audioTrack = randomElement(tracks);
-  const trackVolume = getTrackVolume(audioTrack);
-  log('info', `Selected audio track: ${audioTrack} with volume ${trackVolume}`);
-
-  const startOffsetSec = Math.max(0, startOffsetMs / 1000);
-  const remainingDuration = Math.max(
-    3,
-    (recordedDuration - startOffsetMs) / 1000,
-  );
-  const trimDuration = Math.min(remainingDuration, 13);
-  const fadeOutStart = Math.max(0, trimDuration - CONFIG.fadeOutDuration);
-  const endCardDuration = 2;
-
-  log(
-    'info',
-    `Trim offset: ${startOffsetSec.toFixed(3)}s, trim duration: ${trimDuration.toFixed(3)}s, end card: ${endCardDuration}s, fade-out starts at: ${fadeOutStart.toFixed(3)}s`,
-  );
-
-  const timestamp = Date.now();
-  const mainVideoPath = path.join(
-    CONFIG.outputDir,
-    `arcadeum-main-${timestamp}.mp4`,
-  );
-  const endCardPath = path.join(
-    CONFIG.outputDir,
-    `arcadeum-endcard-${timestamp}.mp4`,
-  );
-  const outputPath = path.join(CONFIG.outputDir, `arcadeum-${timestamp}.mp4`);
-
-  if (voiceoverPath) {
-    await runFFmpeg(
-      [
-        '-i',
-        rawVideoPath,
-        '-ss',
-        startOffsetSec.toFixed(3),
-        '-i',
-        audioTrack,
-        '-i',
-        voiceoverPath,
-        '-t',
-        trimDuration.toFixed(3),
-        '-filter_complex',
-        `[0:v]fade=t=in:st=0:d=0.35,eq=contrast=1.06:saturation=1.18,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration},format=yuv420p[v];` +
-          `[1:a]volume=${(trackVolume * 0.5).toFixed(2)}[bg];` +
-          `[2:a]adelay=500|500,volume=1.4[voice];` +
-          `[bg][voice]amix=inputs=2:duration=first:dropout_transition=2,afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}[a]`,
-        '-map',
-        '[v]',
-        '-map',
-        '[a]',
-        '-c:v',
-        'libx264',
-        '-preset',
-        'fast',
-        '-crf',
-        '22',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-y',
-        mainVideoPath,
-      ],
-      'main video with voice',
-    );
-  } else {
-    await runFFmpeg(
-      [
-        '-i',
-        rawVideoPath,
-        '-ss',
-        startOffsetSec.toFixed(3),
-        '-i',
-        audioTrack,
-        '-t',
-        trimDuration.toFixed(3),
-        '-vf',
-        `fade=t=in:st=0:d=0.35,eq=contrast=1.06:saturation=1.18,drawbox=x=0:y=ih-10:w=iw*t/${trimDuration.toFixed(3)}:h=10:color=yellow@0.8:t=fill,fade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration},format=yuv420p`,
-        '-af',
-        `volume=${trackVolume},afade=t=out:st=${fadeOutStart.toFixed(3)}:d=${CONFIG.fadeOutDuration}`,
-        '-c:v',
-        'libx264',
-        '-preset',
-        'fast',
-        '-crf',
-        '22',
-        '-c:a',
-        'aac',
-        '-b:a',
-        '128k',
-        '-y',
-        '-shortest',
-        mainVideoPath,
-      ],
-      'main video',
-    );
-  }
-
-  // Step 2: Create end card (black background + logo.png overlay + random CTA + fade-in audio)
-  const logoPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'apps',
-    'web',
-    'public',
-    'logo.png',
-  );
-  const endCardCta = randomElement(END_CARD_CTAS);
-  const logoScale = Math.round(CONFIG.viewport.width * 0.45);
-  const fontSize = Math.round(CONFIG.viewport.width * 0.055);
-  const urlFontSize = Math.round(CONFIG.viewport.width * 0.07);
-  const textOffsetY = Math.round(CONFIG.viewport.height * 0.06);
-  const urlOffsetY = Math.round(CONFIG.viewport.height * 0.14);
-
-  await runFFmpeg(
-    [
-      '-f',
-      'lavfi',
-      '-i',
-      `color=c=black:s=${CONFIG.viewport.width}x${CONFIG.viewport.height}:d=${endCardDuration}:r=30`,
-      '-i',
-      logoPath,
-      '-f',
-      'lavfi',
-      '-i',
-      `anullsrc=r=44100:cl=stereo`,
-      '-filter_complex',
-      `[1:v]scale=${logoScale}:-1[logo];[0:v][logo]overlay=(W-w)/2:(H-h)/2-180:format=auto,drawtext=text='${endCardCta}':fontcolor=white:fontsize=${fontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${textOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)',drawtext=text='arcadeum.games':fontcolor=yellow:fontsize=${urlFontSize}:x=(w-text_w)/2:y=(h-text_h)/2+${urlOffsetY}:font=sans-serif:alpha='if(lt(t,0.5),t/0.5,1)'[v]`,
-      '-map',
-      '[v]',
-      '-map',
-      '2:a',
-      '-af',
-      `afade=t=in:st=0:d=0.5`,
-      '-t',
-      String(endCardDuration),
-      '-c:v',
-      'libx264',
-      '-preset',
-      'fast',
-      '-crf',
-      '23',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-shortest',
-      '-y',
-      endCardPath,
-    ],
-    'end card',
-  );
-
-  // Step 3: Concatenate main video + end card
-  const concatListPath = path.join(CONFIG.outputDir, `concat-${timestamp}.txt`);
-  const { writeFile } = require('fs/promises');
-  await writeFile(
-    concatListPath,
-    `file '${mainVideoPath}'\nfile '${endCardPath}'`,
-  );
-
-  await runFFmpeg(
-    [
-      '-f',
-      'concat',
-      '-safe',
-      '0',
-      '-i',
-      concatListPath,
-      '-c:v',
-      'libx264',
-      '-preset',
-      'fast',
-      '-crf',
-      '23',
-      '-c:a',
-      'aac',
-      '-b:a',
-      '128k',
-      '-y',
-      outputPath,
-    ],
-    'concat',
-  );
-
-  // Cleanup temp files
-  await unlink(mainVideoPath).catch(() => {});
-  await unlink(endCardPath).catch(() => {});
-  await unlink(concatListPath).catch(() => {});
-
-  log('info', `Final video with end card: ${outputPath}`);
-  return outputPath;
-}
-
 // ============================================================================
 // DISTRIBUTION LAYER
 // ============================================================================
@@ -3598,7 +3333,7 @@ async function processVideo(
 /**
  * Publishes video to YouTube via Postiz Public API
  */
-async function publishToSocials(videoPath, caption) {
+async function publishToSocials(videoPath, caption, platformMeta = null) {
   log('info', 'Publishing to social platforms via Postiz API...');
 
   if (!CONFIG.postizApiKey) {
@@ -3615,16 +3350,18 @@ async function publishToSocials(videoPath, caption) {
         integration: { id: CONFIG.postizIntegrationId },
         value: [
           {
-            content: cap,
+            content: platformMeta?.youtube?.content ?? cap,
             image: [{ id: uploadedFile.id, path: uploadedFile.path }],
           },
         ],
         settings: {
           __type: 'youtube',
-          title: cap
-            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
-            .trim()
-            .slice(0, 100),
+          title:
+            platformMeta?.youtube?.title ||
+            cap
+              .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
+              .trim()
+              .slice(0, 100),
           type: 'public',
           selfDeclaredMadeForKids: 'no',
         },
@@ -3640,7 +3377,7 @@ async function publishToSocials(videoPath, caption) {
         integration: { id: CONFIG.postizInstagramId },
         value: [
           {
-            content: cap,
+            content: platformMeta?.instagram?.content ?? cap,
             image: [{ id: uploadedFile.id, path: uploadedFile.path }],
           },
         ],
@@ -3660,16 +3397,18 @@ async function publishToSocials(videoPath, caption) {
         integration: { id: CONFIG.postizTiktokId },
         value: [
           {
-            content: cap,
+            content: platformMeta?.tiktok?.content ?? cap,
             image: [{ id: uploadedFile.id, path: uploadedFile.path }],
           },
         ],
         settings: {
           __type: 'tiktok',
-          title: cap
-            .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
-            .trim()
-            .slice(0, 90),
+          title:
+            platformMeta?.tiktok?.title ||
+            cap
+              .replace(/[🎮🏆⚡🕹️💰🚀🎯🔄]/g, '')
+              .trim()
+              .slice(0, 90),
           privacy_level: 'PUBLIC_TO_EVERYONE',
           duet: true,
           stitch: true,
@@ -3872,33 +3611,71 @@ async function main() {
     const caption = `${baseCaption}\n\nPlay now: ${CONFIG.baseUrl}\n\n${hashtags}`;
     log('info', `Selected caption: "${caption}"`);
 
-    const voiceoverPath = path.join(
-      CONFIG.rawCapturesDir,
-      `voice-${Date.now()}.mp3`,
-    );
-    const voicePath = await generateVoiceover(baseCaption, voiceoverPath);
-    const voiceUnavailable = !voicePath;
-    if (voiceUnavailable) {
-      log('warn', 'Voiceover unavailable - video will have no voice track');
-    }
-
-    log('info', 'Step 2: Processing video with FFmpeg...');
-    outputVideoPath = await processVideo(
+    log('info', 'Step 2: Rendering video (voice, captions, music, QA)...');
+    const localTracks = listLocalTracks(process.env.SHORTS_MUSIC_DIR);
+    const render = await renderShort({
       rawVideoPath,
-      captureResult.duration,
-      captureResult.startOffsetMs,
-      voicePath,
-    );
+      recordedDurationMs: captureResult.duration,
+      startOffsetMs: captureResult.startOffsetMs,
+      dramaticMomentMs: captureResult.dramaticMomentMs,
+      scenario: captureResult.hook
+        ? { name: scenario, hook: captureResult.hook }
+        : scenario,
+      caption: baseCaption,
+      tags: hashtags,
+      outputDir: CONFIG.outputDir,
+      tracks: localTracks.length ? [] : await getAudioTracks(),
+      musicVolumeFor: getTrackVolume,
+      log,
+    });
+    outputVideoPath = render.outputPath;
+    const voiceUnavailable = !render.voiceAvailable;
     log('info', `Processed video saved at: ${outputVideoPath}`);
 
     const approval = await requestApproval(outputVideoPath, caption, scenario, {
       voiceUnavailable,
+      qa: render.qa,
+      renderMeta: {
+        ctaVariant: render.metadata.ctaVariant,
+        voice: render.metadata.voice,
+        music: render.metadata.music,
+        hook: render.metadata.hook,
+      },
     });
+
+    // Never auto-post a render that failed QA: it needs a human decision.
+    if (approval.approved && !render.qa.passed && approval.autoApproved) {
+      log('error', 'QA failed and approval was automatic - not publishing', {
+        report: formatQaReport(render.qa),
+      });
+      await cleanup();
+      process.exit(3);
+    }
 
     if (approval.approved) {
       // Step 4: Post to social media
       log('info', 'Step 3: Publishing to social platforms...');
-      const result = await publishToSocials(outputVideoPath, caption);
+      const result = await publishToSocials(
+        outputVideoPath,
+        caption,
+        render.metadata.platforms,
+      );
+
+      // Hand the Postiz post ids to analytics (manifest line only, no network).
+      recordPosted(
+        {
+          game: 'showcase',
+          scenario,
+          format: 'showcase',
+          hook: render.metadata.hook,
+          voice: render.metadata.voice,
+          cta: render.metadata.ctaVariant,
+          lengthClass: render.metadata.lengthClass,
+          durationSec: render.metadata.durationSec,
+          results: result.results,
+        },
+        { log: (m) => log('info', m) },
+      );
 
       if (approval.pendingId) {
         await reportResult(

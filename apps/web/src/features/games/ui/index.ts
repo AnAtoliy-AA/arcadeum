@@ -53,12 +53,23 @@ export {
   GameWidgetErrorBoundary,
   type GameWidgetErrorBoundaryProps,
 } from './GameWidgetErrorBoundary';
-export {
-  LobbyOptionSection,
-  LobbyChipGroup,
-  LobbyToggle,
-} from './LobbyOptions';
 export { getLobbyTheme } from './lobbyTheme';
+export {
+  resolveLobbyConfig,
+  withBotDifficulty,
+  withDifficultyDefault,
+  pickBotOptions,
+  buildTableLabels,
+  buildTableRoomInfoLabels,
+  buildBotLabels,
+  type GameLobbyConfig,
+} from './lobbyConfig';
+export type {
+  GameLobbyHostProps,
+  LobbyBotStartOptions,
+  LobbyLabels,
+  LobbyStartOptions,
+} from './ReusableGameLobby.types';
 export { MatchmakingQueueModal, useMatchmaking } from './MatchmakingQueue';
 export { QuickplayButton } from './QuickplayButton';
 export { GuestTermsNotice } from './GuestTermsNotice';

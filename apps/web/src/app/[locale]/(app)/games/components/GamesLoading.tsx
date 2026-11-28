@@ -1,10 +1,12 @@
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { ServerLoadingNotice } from '@arcadeum/ui';
-import { Loading, ServerWakeUpContainer, Spinner } from '../styles';
+import { ServerLoadingNotice, Skeleton } from '@arcadeum/ui';
+import { ServerWakeUpContainer } from '../styles';
 
 interface GamesLoadingProps {
   isLoadingLongPending: boolean;
 }
+
+const SKELETON_COUNT = 6;
 
 export function GamesLoading({ isLoadingLongPending }: GamesLoadingProps) {
   const { t } = useTranslation();
@@ -25,11 +27,17 @@ export function GamesLoading({ isLoadingLongPending }: GamesLoadingProps) {
   }
 
   return (
-    <ServerWakeUpContainer data-testid="games-loading">
-      <Loading>
-        <Spinner aria-label="Loading" />
-        <div>{t('games.lounge.loadingRooms')}</div>
-      </Loading>
-    </ServerWakeUpContainer>
+    <>
+      <span className="sr-only" role="status" data-testid="games-loading">
+        {t('games.lounge.loadingRooms')}
+      </span>
+      {Array.from({ length: SKELETON_COUNT }, (_, i) => (
+        <Skeleton
+          key={i}
+          className="h-[220px] w-full rounded-[20px]"
+          data-testid="room-card-skeleton"
+        />
+      ))}
+    </>
   );
 }

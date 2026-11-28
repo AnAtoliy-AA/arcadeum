@@ -1,25 +1,13 @@
 import 'server-only';
-import { cookies } from 'next/headers';
-import { resolveApiUrl } from '@/shared/lib/api-base';
+import { serverAuthFetch } from '@/shared/lib/server-auth-fetch';
 import type {
   AchievementsStatus,
   ClaimAchievementResult,
 } from './achievements.types';
 
-async function getToken(): Promise<string | null> {
-  const cookieStore = await cookies();
-  return cookieStore.get('access_token')?.value ?? null;
-}
-
 export async function getAchievementsStatus(): Promise<AchievementsStatus | null> {
   try {
-    const token = await getToken();
-    if (!token) return null;
-
-    const res = await fetch(resolveApiUrl('/achievements/me'), {
-      headers: { Authorization: `Bearer ${token}` },
-      cache: 'no-store',
-    });
+    const res = await serverAuthFetch('/achievements/me');
 
     if (!res.ok) return null;
     return res.json();
@@ -30,18 +18,9 @@ export async function getAchievementsStatus(): Promise<AchievementsStatus | null
 
 export async function checkAchievements(): Promise<string[]> {
   try {
-    const token = await getToken();
-    if (!token) return [];
-
-    const res = await fetch(resolveApiUrl('/achievements/check'), {
+    const res = await serverAuthFetch('/achievements/check', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
       body: JSON.stringify({}),
-      cache: 'no-store',
     });
 
     // A stale/invalid session is expected (logout, expiry) — no unlocks.
@@ -61,18 +40,9 @@ export async function claimAchievementReward(
   { ok: true; result: ClaimAchievementResult } | { ok: false; code: string }
 > {
   try {
-    const token = await getToken();
-    if (!token) return { ok: false, code: 'unauthorized' };
-
-    const res = await fetch(resolveApiUrl('/achievements/claim'), {
+    const res = await serverAuthFetch('/achievements/claim', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
       body: JSON.stringify({ achievementId }),
-      cache: 'no-store',
     });
 
     if (res.status === 409) return { ok: false, code: 'already_claimed' };

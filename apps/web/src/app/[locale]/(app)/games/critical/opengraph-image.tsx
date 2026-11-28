@@ -132,7 +132,7 @@ export default async function CriticalOpengraphImage({ params }: Props) {
   const landing = messages.games?.critical_v1?.landing;
 
   return renderOgCard({
-    kicker: landing?.hero?.eyebrow ?? 'Free · 2–5 players · No signup',
+    kicker: landing?.hero?.eyebrow ?? 'Free · 2-5 players · No signup',
     title: 'Critical',
     subtitle:
       landing?.hero?.tagline ??

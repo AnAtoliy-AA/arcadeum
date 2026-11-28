@@ -3,11 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
-import { QuickplayCta } from '@/features/games/ui/QuickplayCta';
+import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
 import { Badge, Button } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { GameBotPlay } from './GameBotPlay';
 import type { GameLandingHeroProps } from './types';
 import { useGameLandingTheme } from './GameLandingThemeContext';
 import { isAiVsAiSupported } from '@/features/games/lib/aiVsAi';
+import { GameStickyPlayBar } from './GameStickyPlayBar';
+import { FACT_ICONS } from './landingIcons';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
 import { gamesApi } from '@/features/games/api';
 
@@ -33,18 +37,18 @@ export function GameLandingHero({
   durationBadge,
   difficultyBadge,
   chips,
-  ctaQuickplayLabel = 'Quick Match (AI)',
+  ctaQuickplayLabel,
   ctaQuickplayErrorLabel = 'Matchmaking Error',
   ctaPlayHumanLabel,
   ctaPlayHumanErrorLabel,
-  browseRoomsLabel = 'Browse Active Rooms',
-  createRoomLabel = 'Create Room',
+  browseRoomsLabel,
+  createRoomLabel,
   roomsHref,
   createRoomHref,
   heroVisual,
   comingSoon = false,
-  quickNavItems,
 }: GameLandingHeroProps) {
+  const { t } = useTranslation();
   const { theme } = useGameLandingTheme();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isAiBattleOpen, setIsAiBattleOpen] = useState(false);
@@ -73,64 +77,75 @@ export function GameLandingHero({
       : `${createRoomHref}?theme=${encodeURIComponent(theme)}`
     : undefined;
 
+  const aiBattleAvailable = !effectiveComingSoon && isAiVsAiSupported(gameId);
+  const facts = [
+    {
+      key: 'players',
+      label: t('games.landing.factPlayers'),
+      value: playersBadge,
+    },
+    {
+      key: 'duration',
+      label: t('games.landing.factDuration'),
+      value: durationBadge,
+    },
+    {
+      key: 'difficulty',
+      label: t('games.landing.factDifficulty'),
+      value: difficultyBadge,
+    },
+  ].filter((fact) => Boolean(fact.value));
+
+  const tertiaryClass =
+    'box-border inline-flex items-center justify-center min-h-11 px-3 rounded-xl text-sm font-medium text-[var(--foreground)] opacity-90 hover:bg-[var(--primary)]/10 hover:text-[var(--primary)] hover:opacity-100 motion-safe:transition-colors bg-transparent border-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--primary)]';
+
+  const playLabel = ctaPlayHumanLabel ?? t('games.landing.playNow');
+
   return (
     <header
       id="play"
-      className="box-border relative w-full pt-6 pb-12 overflow-hidden"
+      className="box-border relative w-full pt-4 pb-10 scroll-mt-32"
     >
-      <div className="box-border grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      <div className="box-border grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
         <div
-          className={`box-border flex flex-col gap-5 ${
+          className={`box-border flex flex-col gap-6 ${
             heroVisual ? 'lg:col-span-7' : 'lg:col-span-12 max-w-4xl'
           }`}
         >
-          <div className="box-border flex flex-wrap items-center gap-2">
-            {eyebrow ? (
-              <Badge variant="info" size="sm">
-                {eyebrow}
-              </Badge>
-            ) : null}
-            {category ? (
-              <Badge variant="neutral" size="sm">
-                {category}
-              </Badge>
-            ) : null}
-            {playersBadge ? (
-              <Badge variant="success" size="sm">
-                {playersBadge}
-              </Badge>
-            ) : null}
-            {durationBadge ? (
-              <Badge variant="warning" size="sm">
-                {durationBadge}
-              </Badge>
-            ) : null}
-            {difficultyBadge ? (
-              <Badge variant="error" size="sm">
-                {difficultyBadge}
-              </Badge>
-            ) : null}
-          </div>
+          {eyebrow || category ? (
+            <div className="box-border flex flex-wrap items-center gap-2">
+              {eyebrow ? (
+                <Badge variant="info" size="sm">
+                  {eyebrow}
+                </Badge>
+              ) : null}
+              {category ? (
+                <Badge variant="neutral" size="sm">
+                  {category}
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="box-border flex flex-col gap-3">
-            <h1 className="box-border m-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.1]">
+            <h1 className="box-border m-0 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.05]">
               {title}
             </h1>
             {subtitle ? (
-              <p className="box-border m-0 text-lg sm:text-xl font-medium text-[var(--color)] leading-snug">
+              <p className="box-border m-0 text-lg sm:text-xl lg:text-2xl font-medium text-[var(--primary)] leading-snug">
                 {subtitle}
               </p>
             ) : null}
             {intro ? (
-              <p className="box-border m-0 text-sm sm:text-base text-[var(--foreground)] opacity-90 leading-relaxed max-w-2xl">
+              <p className="box-border m-0 text-base text-[var(--foreground)] opacity-85 leading-relaxed max-w-2xl">
                 {intro}
               </p>
             ) : null}
             {directAnswer ? (
               <div className="box-border flex flex-col gap-1.5 p-4 rounded-2xl border border-[var(--primary)]/30 bg-[var(--primary)]/10 backdrop-blur-sm max-w-2xl">
-                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--color)]">
-                  <span>✦</span>
-                  <span>Quick Overview</span>
+                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[var(--primary)]">
+                  <span aria-hidden="true">✦</span>
+                  <span>{t('games.landing.overview')}</span>
                 </div>
                 <p className="m-0 text-sm font-medium text-[var(--foreground)] opacity-95 leading-relaxed">
                   {directAnswer}
@@ -139,68 +154,88 @@ export function GameLandingHero({
             ) : null}
           </div>
 
-          <GameLandingLiveStats gameId={gameId} />
-
-          <div className="box-border flex flex-col gap-2.5 pt-2">
-            <div className="box-border flex flex-wrap items-center gap-2.5">
-              <QuickplayCta
+          <div
+            id="hero-play-panel"
+            role="group"
+            aria-label={t('games.landing.primaryActions')}
+            className="box-border flex flex-col gap-4 p-4 sm:p-5 rounded-3xl border border-[var(--borderColor)] bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 backdrop-blur-xl shadow-xl max-w-2xl"
+          >
+            <div className="box-border flex flex-col gap-1.5 [&_button]:w-full [&_button]:min-h-14 [&_button]:text-base">
+              <QuickplayButton
                 gameId={gameId}
+                label={playLabel}
+                mode="human"
                 theme={theme}
-                ctaQuickplay={ctaQuickplayLabel}
-                ctaQuickplayError={ctaQuickplayErrorLabel}
-                ctaPlayHuman={ctaPlayHumanLabel}
-                ctaPlayHumanError={ctaPlayHumanErrorLabel}
-                size="md"
+                size="lg"
+                errorLabel={ctaPlayHumanErrorLabel ?? ctaQuickplayErrorLabel}
                 disabled={effectiveComingSoon}
               />
+              <p className="box-border m-0 text-xs text-[var(--foreground)] opacity-70 text-center">
+                {t('games.landing.playNowHint')}
+              </p>
+            </div>
 
+            <div className="box-border flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-60">
+              <span className="h-px flex-1 bg-[var(--borderColor)]" />
+              {t('games.landing.orPractice')}
+              <span className="h-px flex-1 bg-[var(--borderColor)]" />
+            </div>
+
+            <GameBotPlay
+              gameId={gameId}
+              theme={theme}
+              label={ctaQuickplayLabel}
+              errorLabel={ctaQuickplayErrorLabel}
+              size="md"
+              disabled={effectiveComingSoon}
+            />
+
+            <div
+              className="box-border flex flex-wrap items-center gap-1 pt-3 border-t border-[var(--borderColor)]/60"
+              aria-label={t('games.landing.moreWays')}
+              role="group"
+            >
               {createHref ? (
                 effectiveComingSoon ? (
                   <span className="box-border inline-flex">
                     <Button variant="outline" size="md" disabled>
-                      {createRoomLabel}
+                      {createRoomLabel ?? t('games.landing.createRoom')}
                     </Button>
                   </span>
                 ) : (
                   <Link href={createHref} className="box-border inline-flex">
                     <Button variant="outline" size="md">
-                      {createRoomLabel}
+                      {createRoomLabel ?? t('games.landing.createRoom')}
                     </Button>
                   </Link>
                 )
               ) : null}
-            </div>
-
-            <div className="box-border flex flex-wrap items-center gap-2">
-              <Link href={roomsHref} className="box-border inline-flex">
-                <Button variant="secondary" size="sm">
-                  {browseRoomsLabel}
-                </Button>
+              <Link href={roomsHref} className={tertiaryClass}>
+                {browseRoomsLabel ?? t('games.landing.browseRooms')}
               </Link>
-
-              <Button
-                variant="outline"
-                size="sm"
+              <button
+                type="button"
+                className={tertiaryClass}
                 onClick={() => setIsInviteOpen(true)}
               >
-                Invite / Share 🔗
-              </Button>
-
-              {!effectiveComingSoon && isAiVsAiSupported(gameId) ? (
-                <Button
-                  variant={isAiBattleOpen ? 'primary' : 'outline'}
-                  size="sm"
+                {t('games.landing.invite')}
+              </button>
+              {aiBattleAvailable ? (
+                <button
+                  type="button"
+                  className={tertiaryClass}
+                  aria-expanded={isAiBattleOpen}
                   onClick={() => setIsAiBattleOpen(!isAiBattleOpen)}
                 >
-                  {isAiBattleOpen ? 'Close AI Battle ▴' : 'Watch AI vs AI 🤖'}
-                </Button>
+                  {isAiBattleOpen
+                    ? t('games.landing.closeAi')
+                    : t('games.landing.watchAi')}
+                </button>
               ) : null}
             </div>
 
-            {isAiBattleOpen &&
-            !effectiveComingSoon &&
-            isAiVsAiSupported(gameId) ? (
-              <div className="box-border p-4 rounded-2xl bg-[var(--surfaceBg)] border border-[var(--borderColor)] backdrop-blur-md max-w-md">
+            {isAiBattleOpen && aiBattleAvailable ? (
+              <div className="box-border p-4 rounded-2xl bg-[var(--surfaceBg)] border border-[var(--borderColor)] backdrop-blur-md">
                 <AIvsAIViewer
                   gameId={gameId}
                   theme={theme}
@@ -210,33 +245,35 @@ export function GameLandingHero({
             ) : null}
           </div>
 
-          {quickNavItems && quickNavItems.length > 0 ? (
-            <nav
-              aria-label="Quick navigation"
-              className="box-border flex flex-wrap items-center gap-2 pt-2.5 border-t border-[var(--borderColor)]/40 mt-1"
+          {facts.length > 0 ? (
+            <dl
+              aria-label={t('games.landing.facts')}
+              data-testid="game-hero-facts"
+              className="box-border m-0 flex flex-wrap items-stretch gap-2"
             >
-              <span className="box-border text-xs font-semibold uppercase tracking-wider text-[var(--color)] mr-1">
-                Explore:
-              </span>
-              {quickNavItems.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.href ?? `#${item.id}`}
-                  className="box-border inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--surfaceBg)] border border-[var(--borderColor)] text-[var(--foreground)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/10 transition-all"
+              {facts.map((fact) => (
+                <div
+                  key={fact.key}
+                  className="box-border inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--borderColor)] bg-[var(--glassBg)] backdrop-blur-sm"
                 >
-                  <span>{item.label}</span>
-                  {item.badge ? (
-                    <span className="box-border px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--primary)] text-white">
-                      {item.badge}
-                    </span>
-                  ) : null}
-                </a>
+                  <span className="box-border text-[var(--primary)]">
+                    {FACT_ICONS[fact.key]}
+                  </span>
+                  <dt className="box-border text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-65">
+                    {fact.label}
+                  </dt>
+                  <dd className="box-border m-0 text-sm font-semibold text-[var(--foreground)]">
+                    {fact.value}
+                  </dd>
+                </div>
               ))}
-            </nav>
+            </dl>
           ) : null}
 
+          <GameLandingLiveStats gameId={gameId} />
+
           {chips && chips.length > 0 ? (
-            <div className="box-border flex flex-wrap items-center gap-2 pt-1">
+            <div className="box-border flex flex-wrap items-center gap-2">
               {chips.map((chip) => (
                 <span
                   key={chip}
@@ -250,13 +287,25 @@ export function GameLandingHero({
         </div>
 
         {heroVisual ? (
-          <div className="box-border lg:col-span-5 flex justify-center items-center w-full">
-            <div className="box-border relative w-full max-w-full sm:max-w-[480px] flex flex-col items-center justify-center">
+          <div className="box-border lg:col-span-5 flex justify-center items-center w-full lg:sticky lg:top-40">
+            <div className="box-border relative w-full max-w-full sm:max-w-[480px] flex flex-col items-center justify-center p-3 rounded-3xl border border-[var(--borderColor)] bg-[var(--glassBg)] backdrop-blur-xl shadow-2xl">
               {heroVisual}
             </div>
           </div>
         ) : null}
       </div>
+
+      <GameStickyPlayBar watchId="hero-play-panel">
+        <QuickplayButton
+          gameId={gameId}
+          label={playLabel}
+          mode="human"
+          theme={theme}
+          size="lg"
+          errorLabel={ctaPlayHumanErrorLabel ?? ctaQuickplayErrorLabel}
+          disabled={effectiveComingSoon}
+        />
+      </GameStickyPlayBar>
 
       <GameInviteModal
         open={isInviteOpen}

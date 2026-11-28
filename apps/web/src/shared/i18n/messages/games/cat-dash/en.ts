@@ -14,10 +14,96 @@ export const enMessages = {
       nature: { name: 'Nature Wild', description: 'Forest and meadow trails' },
     },
     landing: {
+      extra: {
+        hero: {
+          eyebrow: 'Fast Multiplayer Race',
+          intro:
+            'A high-energy cat racing dice game filled with speed boosts, hilarious hazards, and themed tracks.',
+          category: 'Race / Casual',
+          playersBadge: '2-6 Players',
+          durationBadge: '5-15 min',
+          difficultyBadge: 'Fun for All',
+          chips: [
+            'Dice Racing',
+            'Speed Boosts',
+            '4 Track Themes',
+            '2-6 Players',
+          ],
+        },
+        highlights: {
+          title: 'Why You’ll Love Cat Dash',
+          kicker: 'Key Features',
+          obstacles: {
+            title: 'Interactive Hazards',
+            body: 'Dodge yarn traps, slippery milk spills, and burst forward with tuna speed boosts.',
+          },
+        },
+        howTo: {
+          title: 'How to Play Cat Dash',
+          kicker: 'Quick Start',
+          intro:
+            'Roll dice, activate powers, and be the first cat across the finish line.',
+          create: 'Pick your track theme and set 1 to 3 laps for the race.',
+          join: 'Race against friends or compete with smart bot runners.',
+          play: 'Roll the dice, activate power-ups, and sprint across the finish line.',
+        },
+        themesSection: {
+          kicker: 'Track Selection',
+          cta: 'Race on Track',
+        },
+        rules: {
+          kicker: 'Rulebook',
+          fallbackTitle: 'Rules & Racing Mechanics',
+          objective: 'Objective',
+          howToPlay: 'Dice & Movement',
+          abilities: 'Cat Abilities',
+          trackSpaces: 'Track Spaces',
+        },
+        strategy: {
+          title: 'Track Tactics & Strategies',
+          kicker: 'Pro Tips',
+          intro:
+            'Learn how to maximize dice rolls and dominate the leaderboards.',
+          boostTiming: {
+            title: 'Time Your Boosts',
+            body: 'Save speed boosts for straightaways or right after recovering from a hazard trap.',
+          },
+          hazards: {
+            title: 'Guide Opponents Into Traps',
+            body: 'Position your cat to block safe lanes and force rival racers onto hazard tiles.',
+          },
+          finishSprint: {
+            title: 'Final Lap Sprint',
+            body: 'Unleash all remaining stamina and power-ups on the final stretch to clinch victory.',
+          },
+        },
+        faq: {
+          title: 'Frequently Asked Questions',
+          kicker: 'FAQ',
+        },
+        related: {
+          title: 'Discover More Fast Games',
+          kicker: 'Discover',
+        },
+        finalCta: {
+          title: 'Ready to Race?',
+          subtitle:
+            'Play against bots or challenge up to 5 friends in real-time cat racing mayhem.',
+          allGames: 'All Games',
+        },
+        preview: {
+          raceTrack: 'Race Track',
+          lap: 'Lap 3/3',
+          first: '1st',
+          second: '2nd',
+          third: '3rd',
+          diceRoll: 'Dice Roll: 6 + Boost',
+        },
+      },
       meta: {
         title: 'Cat Dash - multiplayer cat racing dice game',
         description:
-          'Play Cat Dash online for free. 2–6 players, unique cat characters, dice + powers, four themed tracks. Roll, race, win!',
+          'Play Cat Dash online for free. 2-6 players, unique cat characters, dice + powers, four themed tracks. Roll, race, win!',
         keywords:
           'cat game, dice game, racing game, multiplayer cat race, family game',
       },
@@ -32,7 +118,7 @@ export const enMessages = {
       },
       highlights: {
         players: {
-          title: '2–6 players',
+          title: '2-6 players',
           body: 'Race against friends or fill seats with bots. Never wait for a game.',
         },
         cats: {
@@ -129,8 +215,10 @@ export const enMessages = {
       theme: 'Track theme',
       trackType: 'Track type',
       columns: 'Board width (columns)',
+      columnsHint: 'More columns make the track wider',
       columnsUnit: 'columns',
       trackLength: 'Track length (spaces)',
+      trackLengthHint: 'Longer tracks mean longer races',
       spacesUnit: 'spaces',
       startWithBots: 'Start with bots',
       addBot: 'Add bot',

@@ -8,12 +8,15 @@ import { useLanguage } from '@/shared/i18n';
 import {
   fetchPublicTournaments,
   fetchSeaBattleBlitzCup,
+  fetchWeeklyCup,
   fetchTournamentBracket,
   registerForTournament,
   unregisterFromTournament,
   type PublicTournamentsResponse,
   type SeaBattleBlitzCupResponse,
   type TournamentBracketResponse,
+  type WeeklyCupGame,
+  type WeeklyCupResponse,
 } from './api';
 
 export const PUBLIC_TOURNAMENTS_REFRESH_KEY = 'public-tournaments';
@@ -40,6 +43,16 @@ export function useSeaBattleBlitzCup() {
   return useQuery<SeaBattleBlitzCupResponse>({
     queryKey: ['sea-battle-blitz-cup', locale, accessToken ?? null],
     queryFn: () => fetchSeaBattleBlitzCup({ locale, accessToken }),
+    refreshKey: PUBLIC_TOURNAMENTS_REFRESH_KEY,
+  });
+}
+
+export function useWeeklyCup(game: WeeklyCupGame) {
+  const accessToken = useSessionStore((s) => s.snapshot.accessToken);
+  const { locale } = useLanguage();
+  return useQuery<WeeklyCupResponse>({
+    queryKey: ['weekly-cup', game, locale, accessToken ?? null],
+    queryFn: () => fetchWeeklyCup(game, { locale, accessToken }),
     refreshKey: PUBLIC_TOURNAMENTS_REFRESH_KEY,
   });
 }

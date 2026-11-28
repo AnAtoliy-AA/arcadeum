@@ -42,6 +42,8 @@ interface GetRoomsParams {
   gameId?: string;
   categories?: string;
   aiVsAi?: boolean;
+  openSeats?: boolean;
+  hasBots?: boolean;
 }
 
 export interface GetRoomsResponse {
@@ -319,6 +321,19 @@ export const gamesApi = {
   ): Promise<void> => {
     return apiClient.post<void>(
       `/games/rooms/${roomId}/invitation/invite`,
+      { userIds },
+      options,
+    );
+  },
+
+  /** Host-only: cancel pending invitations for the given users. */
+  revokeInvitations: async (
+    roomId: string,
+    userIds: string[],
+    options?: ApiClientOptions,
+  ): Promise<void> => {
+    return apiClient.post<void>(
+      `/games/rooms/${roomId}/invitation/revoke`,
       { userIds },
       options,
     );

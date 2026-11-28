@@ -59,7 +59,7 @@ test.describe('Lobby UX Rework - Setup Card & Hero Layout', () => {
     const boardSize13Btn = page.getByTestId('go-board-size-13');
     await expect(boardSize13Btn).toBeVisible();
 
-    const hostBadge = page.getByText('HOST', { exact: true });
+    const hostBadge = page.getByText(/^host$/i);
     await expect(hostBadge).toBeVisible();
   });
 });

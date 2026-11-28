@@ -40,27 +40,6 @@ export function ChessHeroLaunchpad({
       </div>
 
       <div className="box-border grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-        <a
-          href="#quickplay-human-button"
-          className="box-border flex flex-col p-3 rounded-xl bg-[var(--surfaceBg)] border border-[var(--borderColor)] hover:border-[var(--primary)] hover:bg-[var(--primary)]/5 transition-all no-underline group"
-        >
-          <div className="box-border flex items-center justify-between mb-2">
-            <span className="box-border text-lg leading-none">⚡</span>
-            <span className="box-border shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
-              Rated
-            </span>
-          </div>
-          <span className="box-border text-xs font-bold text-[var(--foreground)] group-hover:text-[var(--color)] transition-colors mb-1">
-            Blitz Matchmaking
-          </span>
-          <p className="box-border m-0 text-[11px] text-[var(--foreground)] opacity-75 mb-3 leading-snug">
-            3+2 rated auto-matchmaking against human opponents.
-          </p>
-          <span className="box-border mt-auto text-xs font-semibold text-[var(--color)] inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-            Quick Match →
-          </span>
-        </a>
-
         <Link
           href={dailyPuzzleHref}
           className="box-border flex flex-col p-3 rounded-xl bg-[var(--surfaceBg)] border border-[var(--borderColor)] hover:border-amber-500 hover:bg-amber-500/5 transition-all no-underline group"

@@ -200,7 +200,7 @@ export function StatsOverview({
             data-testid="stats-favorite-game"
             className="text-[20px] font-bold text-[var(--textSecondary)]"
           >
-            —
+            -
           </span>
         </Card>
       )}

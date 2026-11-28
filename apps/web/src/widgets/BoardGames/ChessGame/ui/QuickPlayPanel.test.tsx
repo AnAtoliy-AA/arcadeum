@@ -2,6 +2,15 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { QuickPlayPanel } from './QuickPlayPanel';
 
+const STRINGS: Record<string, string> = {
+  'games.chess_v1.lobby.noClock': 'No clock',
+  'games.chess_v1.lobby.unlimited': 'Unlimited',
+  'games.chess_v1.lobby.timeControl': 'Time control',
+};
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => ({ t: (key: string) => STRINGS[key] ?? key }),
+}));
+
 describe('QuickPlayPanel', () => {
   it('renders all time control cards including classical and no clock', () => {
     render(<QuickPlayPanel onSelectTimeControl={vi.fn()} />);

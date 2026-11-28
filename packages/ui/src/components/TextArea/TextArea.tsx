@@ -19,6 +19,8 @@ export type TextAreaProps = {
   autoFocus?: boolean;
   rows?: number;
   required?: boolean;
+  /** Id of the element that describes the field (hint or error text). */
+  'aria-describedby'?: string;
   className?: string;
   style?: React.CSSProperties;
 };
@@ -41,6 +43,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       autoFocus,
       rows,
       required,
+      'aria-describedby': ariaDescribedBy,
       className,
       style,
     },
@@ -59,6 +62,8 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         rows={rows}
         required={required}
         aria-required={required || undefined}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={error ? true : undefined}
         data-testid={dataTestId}
         onChange={onChange}
         onFocus={onFocus}

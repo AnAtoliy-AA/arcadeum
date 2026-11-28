@@ -35,21 +35,18 @@ export function xpForResult(
 }
 
 /**
- * XP required to reach a given level.
- * Formula: xpForLevel = 103 * level^2.5
+ * Total XP required to reach a given level.
+ * Formula: xpForLevel = round(103 * level^2.5), level 1 = 0 XP.
  *
  * Target: ~100,000 PvP wins to reach level 99 (~1 year of dedicated play)
  *
- * Progression:
- *   Lv  1→2:     103 XP  (1 win)
- *   Lv  2→3:     240 XP  (2 wins)
- *   Lv  3→4:     422 XP  (4 wins)
- *   Lv  5→6:   1,022 XP  (10 wins)
- *   Lv 10→11:   3,577 XP  (36 wins)
- *   Lv 25→26:  28,139 XP  (281 wins)
- *   Lv 50→51: 124,901 XP  (1,249 wins)
- *   Lv 98→99: 288,873 XP  (2,889 wins)
- *   Lv 99 total: ~10,000,000 XP (~100,000 wins)
+ * Thresholds (total XP to REACH the level):
+ *   Lv 2:       583 XP  (6 wins at 100 XP)
+ *   Lv 3:     1,606 XP
+ *   Lv 4:     3,296 XP  (33 wins)
+ *   Lv 5:     5,758 XP
+ *   Lv 10:   32,571 XP
+ *   Lv 99: 10,044,428 XP (~100,000 wins)
  */
 export function xpForLevel(level: number): number {
   if (level <= 1) return 0;
@@ -57,9 +54,13 @@ export function xpForLevel(level: number): number {
 }
 
 export function levelFromXp(xp: number): number {
-  // Solve: 103 * L^2.5 <= xp  =>  L <= (xp / 103)^(1/2.5)
-  const level = Math.floor(Math.pow(xp / 103, 1 / 2.5));
-  return Math.max(level, 1);
+  if (!Number.isFinite(xp) || xp <= 0) return 1;
+  // Closed-form estimate, then correct against the exact (rounded) thresholds:
+  // the floating-point inverse can land one level off at exact boundaries.
+  let level = Math.max(Math.floor(Math.pow(xp / 103, 1 / 2.5)), 1);
+  while (xp >= xpForLevel(level + 1)) level++;
+  while (level > 1 && xp < xpForLevel(level)) level--;
+  return level;
 }
 
 export function xpProgress(xp: number): {

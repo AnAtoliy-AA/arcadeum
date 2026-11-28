@@ -150,6 +150,11 @@ export const esMessages = {
       boardSizeHint: '9×9 ≈ 10 min · 13×13 ≈ 20 min · 19×19 ≈ 40+ min',
       startWithBots: 'Empezar con bots',
       aiDifficulty: 'Dificultad IA',
+      aiDifficultyHint: 'Qué tan fuertes son los bots rivales',
+      aiEasyDesc: 'Jugadas al azar, priorizando capturas',
+      aiMediumDesc: 'Estrategia heurística voraz',
+      aiHardDesc: 'Búsqueda MCTS (220 simulaciones)',
+      aiExpertDesc: 'MCTS avanzado (550 simulaciones)',
     },
     status: {
       yourTurn: 'Tu turno',

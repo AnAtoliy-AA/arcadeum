@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import type { Request } from 'express';
+import { resolveCookieNames } from '../lib/cookie-domain';
 import { resolveJwtSecret } from '../../common/utils/jwt-secret.util';
 import {
   cookieCipherKey,
@@ -21,10 +22,19 @@ export interface AuthenticatedUser {
   username: string;
 }
 
+function headerValue(
+  req: { headers: Record<string, string | string[] | undefined> },
+  name: string,
+): string | undefined {
+  const v = req.headers[name];
+  return Array.isArray(v) ? v[0] : v;
+}
+
 export function extractJwtFromRequest(
   req: {
     headers: Record<string, string | string[] | undefined>;
     cookies?: Record<string, string>;
+    get?: (name: string) => string | undefined;
   },
   cookieKey: Buffer,
 ): string | null {
@@ -37,7 +47,11 @@ export function extractJwtFromRequest(
     // fails the GCM auth tag and falls through to the raw value.
     return decryptTokenCookie(token, cookieKey) ?? token;
   }
-  const cookie = req.cookies?.access_token;
+  const cookie =
+    req.cookies?.[
+      resolveCookieNames({ get: (n) => req.get?.(n) ?? headerValue(req, n) })
+        .access
+    ];
   if (cookie) {
     // Pre-encryption cookies are accepted as-is so existing sessions
     // survive the deploy; they are re-encrypted on the next refresh.

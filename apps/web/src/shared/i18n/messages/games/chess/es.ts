@@ -177,6 +177,9 @@ export const esMessages = {
     lobby: {
       variant: 'Variante',
       timeControl: 'Control de tiempo',
+      timeControlHint:
+        'Tiempo de reloj por jugador. Elige Sin reloj para una partida relajada',
+      unlimited: 'Ilimitado',
       startWithBots: 'Empezar con bots',
       waitingForPlayers: 'Esperando jugadores…',
       minPlayers: 'Mínimo 2 jugadores',

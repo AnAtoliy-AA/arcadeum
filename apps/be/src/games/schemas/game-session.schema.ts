@@ -35,6 +35,10 @@ export class GameSession extends Document {
   @Prop({ type: SchemaTypes.Mixed })
   options?: Record<string, unknown>;
 
+  /** Set once post-match processing (XP, stats, rewards) has been claimed. */
+  @Prop({ type: Date })
+  postMatchProcessedAt?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 }

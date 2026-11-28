@@ -113,7 +113,9 @@ test.describe('Anonymous Play', () => {
 
     await waitForRoomReady(page);
 
-    await expect(page.getByTestId('exit-room-button').first()).toBeVisible({});
+    await expect(page.getByTestId('more-options-button').first()).toBeVisible(
+      {},
+    );
 
     // The host should be able to start the game directly.
     const startBtn = page.getByTestId('start-with-bots-button');
@@ -256,9 +258,9 @@ test.describe('Anonymous Play', () => {
     });
     await waitForRoomReady(newPage);
 
-    await expect(newPage.getByTestId('exit-room-button').first()).toBeVisible(
-      {},
-    );
+    await expect(
+      newPage.getByTestId('more-options-button').first(),
+    ).toBeVisible({});
 
     await expect(newPage.getByTestId('player-count-heading')).toBeVisible();
   });

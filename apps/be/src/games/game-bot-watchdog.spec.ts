@@ -1,4 +1,4 @@
-import { AI_VS_AI_DELAYS_MS } from './common/ai-vs-ai';
+import { AI_VS_AI_MAX_DELAY_MS } from './common/ai-vs-ai';
 import { STALE_THRESHOLD_MS } from './game-bot-watchdog';
 
 /**
@@ -8,12 +8,12 @@ import { STALE_THRESHOLD_MS } from './game-bot-watchdog';
  */
 describe('GameBotWatchdog constants', () => {
   it('stale threshold exceeds the longest configured AI-vs-AI pause', () => {
-    const longestPause = Math.max(...AI_VS_AI_DELAYS_MS);
+    const longestPause = AI_VS_AI_MAX_DELAY_MS;
     expect(STALE_THRESHOLD_MS).toBeGreaterThan(longestPause);
   });
 
   it('keeps stuck-turn recovery bounded (~2× the longest pause)', () => {
-    const longestPause = Math.max(...AI_VS_AI_DELAYS_MS);
+    const longestPause = AI_VS_AI_MAX_DELAY_MS;
     expect(STALE_THRESHOLD_MS).toBeLessThanOrEqual(longestPause * 3);
   });
 });

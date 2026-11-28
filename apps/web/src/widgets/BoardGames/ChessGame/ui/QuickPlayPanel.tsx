@@ -2,6 +2,8 @@
 
 import { memo } from 'react';
 import { cx } from '@arcadeum/ui/utils/cx';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { LobbyOptionGroup } from '@/features/games/ui/LobbyOptionKit';
 import type { TimeControl } from '../types';
 
 export interface QuickPlayCard {
@@ -112,30 +114,26 @@ function QuickPlayPanelImpl({
   onSelectTimeControl,
   disabled = false,
 }: QuickPlayPanelProps) {
+  const { t } = useTranslation();
   return (
-    <div className="flex flex-col gap-2.5 w-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-[var(--textPrimary)]">
-            Time Control
-          </span>
-          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--primary)]/15 text-[var(--color)] border border-[var(--primary)]/30">
-            Presets
-          </span>
-        </div>
-        {disabled && (
-          <span className="text-[11px] text-[var(--textMuted)]">
-            Host controls time
-          </span>
-        )}
-      </div>
-
+    <LobbyOptionGroup
+      data-testid="chess-time-control"
+      title={t('games.chess_v1.lobby.timeControl')}
+      hint={t('games.chess_v1.lobby.timeControlHint')}
+    >
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {QUICK_PLAY_CARDS.map((card) => {
           const isSelected = isCardSelected(
             card.timeControl,
             selectedTimeControl,
           );
+          const isNoClock = card.timeControl === null;
+          const cardLabel = isNoClock
+            ? t('games.chess_v1.lobby.noClock')
+            : card.label;
+          const cardDuration = isNoClock
+            ? t('games.chess_v1.lobby.unlimited')
+            : card.durationLabel;
           const buttonId = `quick-play-${card.label.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
 
           return (
@@ -149,20 +147,21 @@ function QuickPlayPanelImpl({
               disabled={disabled}
               onClick={() => onSelectTimeControl(card.timeControl)}
               className={cx(
-                'relative flex flex-col items-center justify-between p-2.5 rounded-xl border transition-all text-center',
+                'relative flex min-h-[64px] flex-col items-center justify-between p-2.5 rounded-xl border transition-colors motion-reduce:transition-none text-center',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)]',
                 'bg-[var(--surface)]/90 backdrop-blur-md',
                 disabled && 'opacity-60 cursor-not-allowed',
                 !disabled &&
-                  'cursor-pointer hover:border-indigo-400/60 hover:bg-[var(--surfaceHover)] active:scale-95',
+                  'cursor-pointer hover:border-[var(--primary)]/60 hover:bg-[var(--surfaceHover)]',
                 isSelected
-                  ? 'border-indigo-500 ring-2 ring-indigo-500/60 bg-indigo-500/15 shadow-[0_0_16px_rgba(99,102,241,0.3)] scale-[1.02]'
+                  ? 'border-[var(--primary)] ring-2 ring-[var(--primary)]/50 bg-[var(--primary)]/15'
                   : 'border-[var(--glassBorder)] text-[var(--textSecondary)]',
               )}
             >
               {isSelected && (
                 <span
                   data-testid="selected-indicator"
-                  className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white shadow-sm"
+                  className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] font-bold text-[var(--primaryText)] shadow-sm"
                 >
                   ✓
                 </span>
@@ -172,13 +171,13 @@ function QuickPlayPanelImpl({
                 <span
                   className={cx(
                     'text-base font-extrabold font-mono leading-none tracking-tight',
-                    isSelected ? 'text-white' : 'text-[var(--textPrimary)]',
+                    'text-[var(--textPrimary)]',
                   )}
                 >
-                  {card.label}
+                  {cardLabel}
                 </span>
                 <span className="text-[10px] font-medium text-[var(--textMuted)] leading-none">
-                  {card.durationLabel}
+                  {cardDuration}
                 </span>
               </div>
 
@@ -194,7 +193,7 @@ function QuickPlayPanelImpl({
           );
         })}
       </div>
-    </div>
+    </LobbyOptionGroup>
   );
 }
 

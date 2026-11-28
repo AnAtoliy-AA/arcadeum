@@ -143,6 +143,8 @@ export const byMessages = {
       startWithBots: 'Пачаць з ботам',
       aiDifficulty: 'Складанасць ІА',
       nilEnabled: 'Дазволіць заказы Ніль',
+      nilEnabledHint: 'Стаўка на нуль узяткаў: бонус або штраф',
+      targetScoreHint: 'Перамагае каманда, якая першай набера столькі ачкоў',
       targetScore: 'Мэтавы лік',
     },
     gameOver: {

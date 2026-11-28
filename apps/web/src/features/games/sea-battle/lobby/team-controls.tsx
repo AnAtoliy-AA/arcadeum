@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Typography } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 import { MIN_TEAM_SIZE, TEAM_DEFAULT_COLORS } from './team-mode.types';
 
 interface ColorPaletteProps {
@@ -11,7 +12,7 @@ interface ColorPaletteProps {
 export function ColorPalette({ color, onChange }: ColorPaletteProps) {
   return (
     <div
-      className="flex flex-row items-stretch gap-1"
+      className="flex flex-row flex-wrap items-center"
       data-testid="color-palette"
     >
       {TEAM_DEFAULT_COLORS.map((c) => {
@@ -23,19 +24,14 @@ export function ColorPalette({ color, onChange }: ColorPaletteProps) {
             aria-label={c}
             aria-pressed={selected}
             onClick={() => onChange(c)}
-            style={{
-              backgroundColor: c,
-              outline: selected ? '2px solid white' : 'none',
-              outlineOffset: 1,
-              width: 20,
-              height: 20,
-              padding: 0,
-              minWidth: 20,
-              border: 'none',
-              borderRadius: 5,
-              cursor: 'pointer',
-            }}
-          />
+            className="flex h-11 w-9 items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)]"
+          >
+            <span
+              aria-hidden
+              className={`block h-6 w-6 rounded-md ${selected ? 'ring-2 ring-[var(--textPrimary)] ring-offset-1 ring-offset-[var(--surface)]' : ''}`}
+              style={{ backgroundColor: c }}
+            />
+          </button>
         );
       })}
     </div>
@@ -49,6 +45,7 @@ interface SizeStepperProps {
 }
 
 export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
+  const { t } = useTranslation();
   return (
     <div
       className="flex flex-row items-center gap-1"
@@ -57,7 +54,8 @@ export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
       <Button
         size="sm"
         variant="secondary"
-        aria-label="decrement"
+        className="min-h-[44px] min-w-[44px]"
+        aria-label={t('games.create.teamSizeDecrease')}
         onClick={() => onChange(Math.max(MIN_TEAM_SIZE, value - 1))}
       >
         −
@@ -72,7 +70,8 @@ export function SizeStepper({ value, onChange, max }: SizeStepperProps) {
       <Button
         size="sm"
         variant="secondary"
-        aria-label="increment"
+        className="min-h-[44px] min-w-[44px]"
+        aria-label={t('games.create.teamSizeIncrease')}
         disabled={max !== undefined && value >= max}
         onClick={() => onChange(value + 1)}
       >

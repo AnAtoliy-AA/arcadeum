@@ -7,12 +7,371 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.41] - 2026-11-28
+
+### Added
+- admin Live stream page, director polling and overlay options (ARC-000) (ARC-000)
+- admin stream settings, status and command queue API (ARC-000) (ARC-000)
+
+### Fixed
+- build the command lookup from an allow-listed literal (ARC-000) (ARC-000)
+
+
+## [1.31.40] - 2026-11-28
+
+### Added
+
+- add chrome-less broadcast scenes for the 24/7 bot stream
+
+### Documentation
+
+- add changelog entry for broadcast scenes
+
+## [1.31.39] - 2026-11-25
+
+### Added
+
+- add 24/7 stream director and RTMP push runner
+
+### Refactored
+
+- port stream director to a TypeScript app
+
+## [1.31.38] - 2026-11-25
+
+### Fixed
+
+- remove useless initial assignment in ARC price selection
+- harden ARC payments end to end
+
+## [1.31.37] - 2026-11-24
+
+### Fixed
+
+- keep directly adopted adults adult, persist away dismissal
+
+## [1.31.36] - 2026-11-24
+
+### Fixed
+
+- petting or feeding an asleep pet wakes it
+- clicking the sleeping pet's house wakes it
+
+## [1.31.35] - 2026-11-24
+
+### Fixed
+
+- fall back to GeckoTerminal for ARC price and token metadata
+
+## [1.31.34] - 2026-11-24
+
+### Fixed
+
+- close real games socket in live-info lobby test so broadcasts cannot override mocked stats
+
+## [1.31.33] - 2026-11-24
+
+### Fixed
+
+- serve fixed open-lobby stats in live-info card test so WebKit does not stay on Create a room
+
+## [1.31.32] - 2026-11-24
+
+### Fixed
+
+- push ARC coin balance after commit and keep header chip live
+
+## [1.31.31] - 2026-11-24
+
+### Added
+
+- wire manifest into factory/gameplay, sidecar length class, --feature and --length flags
+- length class analytics, weights and manifest recorder
+- per-format length classes, structured scripts and QA ranges
+
+## [1.31.30] - 2026-11-24
+
+### Added
+
+- hook, captions, voice rotation, ducking, CTA A/B, platform metadata and QA gate for renders
+
+### Documentation
+
+- keep changelog diff minimal (no reformat)
+- changelog entry for render pipeline
+
+## [1.31.29] - 2026-11-23
+
+### Added
+
+- scenario variety, puzzle/replay formats, dry-run for gameplay shorts
+
+## [1.31.28] - 2026-11-23
+
+### Fixed
+
+- put invite test ids on plain elements
+- show invite gate despite SSR room fallback and stabilize e2e
+- let invited friends accept and join lobby invites
+
+## [1.31.27] - 2026-11-23
+
+### Added
+
+- explain home live activity, event, reward and feed states in plain words
+
+## [1.31.26] - 2026-11-23
+
+### Added
+
+- add analytics feedback loop with post history, scoring and format weights
+
+## [1.31.25] - 2026-11-23
+
+### Fixed
+
+- refresh expired auth server-side for actions and SSR
+
+## [1.31.24] - 2026-11-23
+
+### Added
+
+- UX polish - hints, a11y, animations, layout, sounds hook
+
+## [1.31.23] - 2026-11-23
+
+### Added
+
+- add 2v2 team play
+
+## [1.31.22] - 2026-11-23
+
+### Fixed
+
+- allow adding a 4th player (multiple bots, auto-size rooms)
+
+## [1.31.21] - 2026-11-23
+
+### Fixed
+
+- award XP on live game completion and harden XP logic
+
+## [1.31.20] - 2026-11-23
+
+### Added
+
+- add checkers weekly cup banner, i18n and e2e
+- modern UI for profile page and landing extras
+- generalize blitz cups into shared weekly cups service
+
+### Fixed
+
+- i18n remaining lobby strings, forward aria-pressed in BotCountButton, add lobby tests
+- remove em dashes from user-facing text and add lobby a11y labels
+
+## [1.31.19] - 2026-11-23
+
+### Fixed
+
+- send client session token when claiming daily reward
+
+## [1.31.18] - 2026-11-23
+
+### Added
+
+- modern UI for game landings, rooms and room lobbies
+
+## [1.31.17] - 2026-11-23
+
+### Fixed
+
+- keep persisted session identity until the cookie restore lands
+
+## [1.31.16] - 2026-11-22
+
+### Fixed
+
+- let a reloaded tab restore its session without waiting on the cross-tab lock
+
+## [1.31.15] - 2026-11-22
+
+### Added
+
+- rework game landings with clear hierarchy and bot play
+
+## [1.31.14] - 2026-11-22
+
+### Fixed
+
+- isolate auth cookies per env so staging keeps session after reload
+
+## [1.31.13] - 2026-11-22
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.31.12] - 2026-11-22
+
+### Fixed
+
+- quiet SSR catalog 502 spam and Turbopack file tracing warnings
+
+## [1.31.11] - 2026-11-22
+
+### Added
+
+- rework create-room flow with guided steps, presets and clearer states
+
+## [1.31.10] - 2026-11-22
+
+### Fixed
+
+- defer session rehydrate fix-ups to avoid TDZ on first load
+
+## [1.31.9] - 2026-11-22
+
+### Fixed
+
+- stop Google login reverting to anon (refresh grace, token cookies, cookie domain)
+
+### Refactored
+
+- shared lobby config layer and split oversized lobby files
+
+## [1.31.8] - 2026-11-22
+
+### Added
+
+- add anonymous room cleanup with separate configurable period
+- add MongoDB cleanup service with admin-configurable periods
+
+## [1.31.7] - 2026-11-22
+
+### Changed
+
+- Internal improvements and maintenance
+
+## [1.31.6] - 2026-11-22
+
+### Fixed
+
+- run pre-commit checks via PreToolUse hook on git commit
+
+## [1.31.5] - 2026-11-22
+
+### Fixed
+
+- stop session reverting to anonymous after sign-in
+
+## [1.31.4] - 2026-11-22
+
+### Fixed
+
+- make scrollable themes grid keyboard focusable (ARC-1047) (ARC-1047)
+
+## [1.31.3] - 2026-11-22
+
+### Added
+
+- web quality pass with accessible modals, shared UI primitives and a11y specs (ARC-1047) (ARC-1047)
+
+### Fixed
+
+- make the themes scroll region keyboard focusable (ARC-1047) (ARC-1047)
+- keep guest trigger aria-disabled, cap widget height, align e2e selectors (ARC-1047) (ARC-1047)
+- restore aria-disabled on guest trigger and align theme e2e with Button (ARC-1047) (ARC-1047)
+- reseed real arcade-pet session on every page load (ARC-1046) (ARC-1046)
+- prevent double milestone payout and lost first adoption during sync (ARC-1046) (ARC-1046)
+
+## [1.31.2] - 2026-11-22
+
+### Added
+
+- stop minting treats on the client and send idempotent action ids
+- server-verified treats, flag gating, idempotent actions and HTTP error codes
+
+### Fixed
+
+- keep the feature flag on for e2e runs on a production build
+- apply review findings on treat award race and flag defaults
+
+### Documentation
+
+- note ArcadePet backend hardening
+
+## [1.31.1] - 2026-11-22
+
+### Added
+
+- make pet economy server-authoritative and sync new progress fields (ARC-1046) (ARC-1046)
+- sync pet collection to server with revisioned writes and deliver admin gifts (ARC-1046) (ARC-1046)
+- add care milestones that reward coins with a toast (ARC-1046) (ARC-1046)
+- let players rename their pets with validated inline editing (ARC-1046) (ARC-1046)
+- flag needy pets on the companion button with an accessible indicator (ARC-1046) (ARC-1046)
+- localize adoption modal and VIP tab, make modal an accessible dialog (ARC-1046) (ARC-1046)
+- localize gifts modal and make it an accessible dialog (ARC-1046) (ARC-1046)
+- localize commitment modal and stage names, make modal an accessible dialog (ARC-1046) (ARC-1046)
+- add daily coin bonus with streak to ease the economy (ARC-1046) (ARC-1046)
+- show while-you-were-away summary and announce errors (ARC-1046) (ARC-1046)
+- add keyboard controls for the draggable home booth (ARC-1046) (ARC-1046)
+- count only running hours for growth and update hunger curve (ARC-1046) (ARC-1046)
+- make pets home booth draggable across screen (ARC-1046) (ARC-1046)
+- hide pet identity while in egg until it grows (ARC-1046) (ARC-1046)
+- add differential growth and hunger rates for home vs screen and hunger scaling (ARC-1046) (ARC-1046)
+- add pet home capacity places and upgrade for coins or gems (ARC-1046) (ARC-1046)
+- add multi-pet escalating food costs and home rest mechanics (ARC-1046) (ARC-1046)
+- hide home and home button in AP button by default (ARC-1046) (ARC-1046)
+- add coin economy for feeding snacks and expand theme rosters (ARC-1046) (ARC-1046)
+- organize pets by game theme with 5 pets per theme roster (ARC-1046) (ARC-1046)
+- enable administrators to gift companion pets individually and in bulk (ARC-1046) (ARC-1046)
+- allow administrators to enable or disable pets feature and visibility (ARC-1046) (ARC-1046)
+- implement species-specific behaviors, movement cadences, and distinct animations (ARC-1046) (ARC-1046)
+- require registration for pets and adoption pledge confirmation (ARC-1046) (ARC-1046)
+- add pet home booth with hiding and opponent knocking interaction (ARC-1046) (ARC-1046)
+- add gem mounts economy, random rolls, pet gifts, and theme guarantees (ARC-1046) (ARC-1046)
+- add whole-screen waypoint roaming for animated companion (ARC-1046) (ARC-1046)
+- enable whole-screen 2D roaming for animated pet companion (ARC-1046) (ARC-1046)
+- animated walking companion with multiplayer friendly pet social stage (ARC-1046) (ARC-1046)
+- mount arcade pet companion globally across all games (ARC-1046) (ARC-1046)
+- register arcade pet in games catalog and home featured games (ARC-1046) (ARC-1046)
+- implement ArcadePet game and platform companion (ARC-1046) (ARC-1046)
+
+### Fixed
+
+- repair e2e seeds, localize landing and improve web UX (ARC-1046) (ARC-1046)
+- harden server-side sync, gifts and economy (ARC-1046) (ARC-1046)
+- harden user-id queries with $eq and use sha256 for gift ids (ARC-1046) (ARC-1046)
+- localize remaining companion widget and social stage strings (ARC-1046) (ARC-1046)
+- hide free bonus gems button in production builds (ARC-1046) (ARC-1046)
+- add empty state to pet collection list (ARC-1046) (ARC-1046)
+- move companion strings to i18n in all five locales (ARC-1046) (ARC-1046)
+- validate persisted collection and clamp offline decay gap (ARC-1046) (ARC-1046)
+- isolate local player from opponent pet and enforce care confirmation (ARC-1046) (ARC-1046)
+- smooth rounded blob contour and prevent mirrored name tag (ARC-1046) (ARC-1046)
+
+### Improved
+
+- pause pet simulation in background tabs and honor reduced motion (ARC-1046) (ARC-1046)
+
+### Refactored
+
+- extract companion status panel and localize its banners (ARC-1046) (ARC-1046)
+- store action errors as codes and extract home upgrade (ARC-1046) (ARC-1046)
+- split games-core utils into core and decay modules (ARC-1046) (ARC-1046)
+
+## [1.31.0] - 2026-11-22
+
+### Changed
+
+- Internal improvements and maintenance
+
 ## [1.30.116] - 2026-11-22
 
 ### Fixed
+
 - scope backdrop-filter override to WebKit so chromium keeps the effect
 - stop Linux WebKit memory runaway from backdrop-filter in e2e builds
-
 
 ## [1.30.115] - 2026-11-22
 

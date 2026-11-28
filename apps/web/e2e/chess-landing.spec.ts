@@ -26,14 +26,14 @@ test.describe('Chess Landing Rework & Hierarchy', () => {
     const quickPlayAiBtn = hero.locator('[data-testid="quickplay-ai-button"]');
     await expect(quickPlayAiBtn).toBeVisible();
 
-    const browseRoomsBtn = hero.getByRole('button', { name: /browse/i });
-    await expect(browseRoomsBtn).toBeVisible();
+    const browseRoomsLink = hero.getByRole('link', { name: /browse/i }).first();
+    await expect(browseRoomsLink).toBeVisible();
 
-    const exploreBar = hero.getByText('Explore:');
-    await expect(exploreBar).toBeVisible();
-
-    const puzzlesNav = hero.getByRole('link', { name: /chess puzzles/i });
-    await expect(puzzlesNav).toBeVisible();
+    const sectionNav = page.locator('[data-testid="game-section-nav"]');
+    await expect(sectionNav).toBeVisible();
+    await expect(
+      sectionNav.getByRole('link', { name: /rules/i }),
+    ).toBeVisible();
   });
 
   test('displays chess puzzles & tactics hub prominently below hero', async ({

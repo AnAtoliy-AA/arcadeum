@@ -61,9 +61,12 @@ test.describe('Interactive Tutorials & Academy', () => {
     await expect(puzzle2Tab).toBeVisible();
 
     const challenge2Title = page.getByText(
-      'Academy Challenge 2: Defend the Center Trap',
+      'Challenge 2: defend the center trap',
     );
     await expect(async () => {
+      // The landing has a sticky section nav; center the tab so it is not
+      // covered by it before clicking.
+      await puzzle2Tab.evaluate((el) => el.scrollIntoView({ block: 'center' }));
       await puzzle2Tab.click({ force: true });
       await expect(challenge2Title).toBeVisible();
     }).toPass();

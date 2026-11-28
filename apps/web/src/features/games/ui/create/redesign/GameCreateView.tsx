@@ -1,159 +1,27 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useMutation } from '@/shared/hooks/useMutation';
-import { useRefreshStore } from '@/shared/model/useRefreshStore';
-import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
+import { useId, useState } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { useLanguage, formatMessage } from '@/shared/i18n';
-import { useRoutes } from '@/shared/config/useRoutes';
-import { gamesApi, type CatalogResponse } from '@/features/games/api';
-import { trackSocialRoomCreated } from '@/shared/analytics/funnel';
-import {
-  buildComingSoonMaps,
-  isCreateBlocked,
-} from '@/features/games/ui/create/createPageState';
+import { useLanguage } from '@/shared/i18n';
 import { Container } from '@arcadeum/ui/components/Container/Container';
 import { PageLoading } from '@arcadeum/ui/components/LoadingState/PageLoading';
 import { PageLayout } from '@arcadeum/ui/components/PageLayout/PageLayout';
 
 import s from './GameCreateView.module.scss';
+import f from './CreateFlow.module.scss';
 import { SectionGroup } from './SectionGroup';
 import { SelectedGameCard } from './SelectedGameCard';
+import { GamePicker } from './GamePicker';
+import { ThemePicker } from './ThemePicker';
+import { ExpansionPacks } from './ExpansionPacks';
+import { QuickPresets } from './QuickPresets';
 import { RoomDetails } from './RoomDetails';
+import { AdvancedOptions } from './AdvancedOptions';
+import { CreateProgress } from './CreateProgress';
 import { PreviewRail } from './PreviewRail';
-import { VISIBLE_GAMES, themesFor, type GameId } from './data/themes';
-import { skinIdToThemeId } from '@/features/games/lib/shared-themes';
-import {
-  ROOM_NAME_MAX,
-  type CreateRoomForm,
-  type Visibility,
-} from './data/form';
-import { buildLabels } from './data/labels';
-
-const URL_TO_GAME_ID: Record<string, GameId> = {
-  critical_v1: 'critical_v1',
-  sea_battle_v1: 'sea_battle_v1',
-  glimworm_v1: 'glimworm_v1',
-  tic_tac_toe_v1: 'tic_tac_toe_v1',
-  cascade_v1: 'cascade_v1',
-  chess_v1: 'chess_v1',
-  checkers_v1: 'checkers_v1',
-  cat_dash_v1: 'cat_dash_v1',
-  backgammon_v1: 'backgammon_v1',
-  hearts_v1: 'hearts_v1',
-  spades_v1: 'spades_v1',
-  go_v1: 'go_v1',
-  pachisi_v1: 'pachisi_v1',
-};
-
-function parseInitialGameId(raw: string | null | undefined): GameId {
-  if (raw && URL_TO_GAME_ID[raw]) return URL_TO_GAME_ID[raw];
-  return VISIBLE_GAMES[0];
-}
-
-function defaultThemeFor(gameId: GameId): string {
-  const themes = themesFor(gameId);
-  const preferred = themes.find(
-    (t) => t.id === 'adventure' || t.id === 'classic',
-  );
-  return preferred?.id ?? themes[0]?.id ?? 'adventure';
-}
-
-function initialForm(
-  gameId: GameId,
-  themeId: string | undefined,
-  equippedSkinId: string | null,
-): CreateRoomForm {
-  const themes = themesFor(gameId);
-  const defaultTheme = defaultThemeFor(gameId);
-  const equippedTheme = skinIdToThemeId(equippedSkinId);
-  const resolvedTheme =
-    (themeId && themes.some((t) => t.id === themeId)
-      ? themeId
-      : equippedTheme && themes.some((t) => t.id === equippedTheme)
-        ? equippedTheme
-        : defaultTheme) ?? defaultTheme;
-  return {
-    gameId,
-    themeId: resolvedTheme,
-    expansionPackIds: ['core'],
-    maxPlayers: 'auto',
-    visibility: 'public',
-    roomName: '',
-    notes: '',
-    password: '',
-    rules: {
-      combos: false,
-      idle: false,
-      teams: false,
-      spectators: true,
-    },
-    preset: 'custom',
-    ranked: false,
-  };
-}
-
-function toApiVisibility(v: Visibility): 'public' | 'private' {
-  return v === 'public' ? 'public' : 'private';
-}
-
-function buildGameOptions(form: CreateRoomForm): Record<string, unknown> {
-  let options: Record<string, unknown>;
-  if (form.gameId === 'critical_v1') {
-    options = {
-      expansionPacks: form.expansionPackIds.filter((id) => id !== 'core'),
-    };
-  } else if (form.gameId === 'chess_v1') {
-    options = {
-      variant: 'standard',
-    };
-  } else if (form.gameId === 'sea_battle_v1') {
-    options = {
-      variant: 'classic',
-      gridSize: 10,
-      shipCount: 10,
-    };
-  } else if (form.gameId === 'checkers_v1') {
-    options = {
-      mode: 'american',
-    };
-  } else if (form.gameId === 'cat_dash_v1') {
-    options = {
-      variant: 'standard',
-    };
-  } else if (form.gameId === 'backgammon_v1') {
-    options = {
-      mode: 'standard',
-    };
-  } else if (form.gameId === 'hearts_v1') {
-    options = {
-      passingEnabled: true,
-      targetScore: 100,
-    };
-  } else if (form.gameId === 'spades_v1') {
-    options = {
-      nilEnabled: true,
-      targetScore: 500,
-    };
-  } else if (form.gameId === 'go_v1') {
-    options = {
-      boardSize: 9,
-    };
-  } else if (form.gameId === 'pachisi_v1') {
-    options = {
-      mode: 'standard',
-    };
-  } else {
-    options = {};
-  }
-  return {
-    ...options,
-    theme: form.themeId || 'adventure',
-    ranked: form.ranked,
-  };
-}
+import { GAMES } from './data/themes';
+import { FLOW_STEPS } from './data/createFlow';
+import { useCreateRoomForm } from './useCreateRoomForm';
 
 /**
  * The create route is statically prerendered, so the server cannot know the
@@ -170,229 +38,14 @@ export function GameCreateView() {
 }
 
 function GameCreateForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const routes = useRoutes();
-  const { snapshot } = useSessionTokens();
   const { t } = useTranslation();
-  const { messages } = useLanguage();
-  const triggerRefresh = useRefreshStore((state) => state.triggerRefresh);
-
-  const urlGameId = parseInitialGameId(searchParams?.get('gameId'));
-  const urlVariant =
-    searchParams?.get('theme') ?? searchParams?.get('variant') ?? undefined;
-
-  const [hostRoomNumber, setHostRoomNumber] = useState<number>(1);
-
-  useEffect(() => {
-    let cancelled = false;
-    gamesApi
-      .getMyRoomCount({ token: snapshot.accessToken || undefined })
-      .then((res) => {
-        if (!cancelled && res?.nextRoomNumber) {
-          setHostRoomNumber(res.nextRoomNumber);
-        }
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [snapshot.accessToken]);
-
-  const defaultRoomName = useMemo(() => {
-    const playerName = snapshot.accessToken
-      ? snapshot.displayName || snapshot.username || 'Anonymous'
-      : 'Anonymous';
-    const template =
-      messages.home?.defaultRoomName ?? "{{name}}'s game #{{number}}";
-    const formatted = formatMessage(template, {
-      name: playerName,
-      number: hostRoomNumber,
-    });
-    if (formatted && formatted.includes('#')) {
-      return formatted;
-    }
-    return `${formatted || `${playerName}'s game`} #${hostRoomNumber}`;
-  }, [
-    snapshot.accessToken,
-    snapshot.displayName,
-    snapshot.username,
-    hostRoomNumber,
-    messages.home?.defaultRoomName,
-  ]);
-
-  const [form, setForm] = useState<CreateRoomForm>(() =>
-    initialForm(urlGameId, urlVariant, snapshot.equippedGameSkinId),
-  );
-  const [customRoomName, setCustomRoomName] = useState<string | null>(null);
-
-  const activeRoomName =
-    customRoomName !== null ? customRoomName : defaultRoomName;
-
-  const currentForm = useMemo(
-    () => ({ ...form, roomName: activeRoomName }),
-    [form, activeRoomName],
-  );
-
-  const updateUrl = useCallback(
-    (next: { gameId: GameId; themeId: string }) => {
-      const params = new URLSearchParams(searchParams?.toString());
-      params.set('gameId', next.gameId);
-      if (next.themeId) {
-        params.set('theme', next.themeId);
-      } else {
-        params.delete('theme');
-      }
-      params.delete('variant');
-      router.replace(`${routes.games}/create?${params.toString()}`, {
-        scroll: false,
-      });
-    },
-    [router, searchParams, routes.games],
-  );
-
-  useEffect(() => {
-    const currentTheme = searchParams?.get('theme');
-    const currentVariant = searchParams?.get('variant');
-    if (
-      form.themeId &&
-      (!currentTheme || currentVariant) &&
-      currentTheme !== form.themeId
-    ) {
-      updateUrl({ gameId: form.gameId, themeId: form.themeId });
-    }
-  }, [form.gameId, form.themeId, searchParams, updateUrl]);
-
-  const handleThemeChange = useCallback(
-    (nextThemeId: string) => {
-      setForm((prev) => ({ ...prev, themeId: nextThemeId }));
-      updateUrl({ gameId: form.gameId, themeId: nextThemeId });
-    },
-    [form.gameId, updateUrl],
-  );
-
-  const handleCycleTheme = useCallback(() => {
-    const themes = themesFor(form.gameId);
-    if (themes.length <= 1) return;
-    const idx = themes.findIndex((t) => t.id === form.themeId);
-    const next = themes[(idx + 1) % themes.length];
-    if (next?.id) {
-      handleThemeChange(next.id);
-    }
-  }, [form.gameId, form.themeId, handleThemeChange]);
-
-  function patchForm(
-    patch: Partial<
-      Pick<
-        CreateRoomForm,
-        | 'roomName'
-        | 'maxPlayers'
-        | 'visibility'
-        | 'notes'
-        | 'password'
-        | 'preset'
-        | 'ranked'
-      >
-    >,
-  ) {
-    if (patch.roomName !== undefined) {
-      setCustomRoomName(patch.roomName);
-    }
-    setForm((prev) => ({ ...prev, ...patch }));
-  }
-
-  const [catalog, setCatalog] = useState<CatalogResponse | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    gamesApi
-      .getCatalog({ token: snapshot.accessToken || undefined })
-      .then((d) => {
-        if (!cancelled) setCatalog(d);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [snapshot.accessToken]);
-  const { gameComingSoon, variantComingSoon } = useMemo(
-    () => buildComingSoonMaps(catalog),
-    [catalog],
-  );
-
-  const blocked = isCreateBlocked(
-    gameComingSoon,
-    variantComingSoon,
-    form.gameId,
-    form.themeId,
-  );
-
-  const isValid =
-    activeRoomName.trim().length > 0 &&
-    activeRoomName.trim().length <= ROOM_NAME_MAX;
-
-  const {
-    mutate: submit,
-    isLoading: loading,
-    error: mutationError,
-  } = useMutation({
-    mutationFn: async () => {
-      return gamesApi.createRoom(
-        {
-          gameId: form.gameId,
-          name: activeRoomName.trim(),
-          visibility: toApiVisibility(form.visibility),
-          maxPlayers: form.maxPlayers === 'auto' ? undefined : form.maxPlayers,
-          notes: form.notes.trim() || undefined,
-          password: form.password.trim() || undefined,
-          gameOptions: buildGameOptions(currentForm),
-        },
-        { token: snapshot.accessToken || undefined },
-      );
-    },
-    onSuccess: async (data) => {
-      triggerRefresh(['games', 'rooms']);
-      if (!data?.room?.id) return;
-      trackSocialRoomCreated(form.gameId);
-
-      const inviteUserId = searchParams?.get('inviteUser');
-
-      if (inviteUserId && snapshot.accessToken) {
-        try {
-          await gamesApi.invitePlayers(data.room.id, [inviteUserId], {
-            token: snapshot.accessToken,
-          });
-        } catch {
-          // Non-critical — room is still created
-        }
-      }
-
-      let roomUrl = routes.gameRoom(data.room.id);
-      if (data.room.inviteCode) {
-        roomUrl += `?inviteCode=${encodeURIComponent(data.room.inviteCode)}`;
-      }
-      router.push(roomUrl);
-    },
-  });
-
-  const errorMessage = mutationError?.message ?? null;
-
-  const handleSubmit = useCallback(() => {
-    if (!isValid || loading || blocked) return;
-    submit({});
-  }, [isValid, loading, blocked, submit]);
-
-  useEffect(() => {
-    function onKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        e.preventDefault();
-        handleSubmit();
-      }
-    }
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [handleSubmit]);
-
-  const L = useMemo(() => buildLabels(t), [t]);
+  const flow = useCreateRoomForm();
+  const { form } = flow;
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const pickerId = useId();
+  const game = GAMES[form.gameId];
+  const [stepGame, stepLook, stepRoom] = FLOW_STEPS;
+  const showNameError = flow.nameTouched && flow.nameError;
 
   return (
     <PageLayout>
@@ -401,47 +54,150 @@ function GameCreateForm() {
           <div className={s.container}>
             <header className={`${s.head} ${s.fade}`}>
               <div>
-                <span className={s.eyebrow}>{L.eyebrow}</span>
+                <span className={s.eyebrow}>
+                  {t('createRoom.header.eyebrow')}
+                </span>
                 <h1>
-                  <span className={s.srOnly}>{L.heading}</span>
-                  <span aria-hidden="true">
-                    {L.titleMain} <em>{L.titleAccent}</em>
-                  </span>
+                  <span className={s.srOnly}>{t('games.create.title')}</span>
+                  <span aria-hidden="true">{t('createRoom.header.title')}</span>
                 </h1>
-                <p className={s.intro}>{L.intro}</p>
+                <p className={s.intro}>{t('createRoom.header.intro')}</p>
+                <p className={f.quickNote}>{t('createRoom.header.quick')}</p>
               </div>
             </header>
 
-            <div className={s.grid}>
-              <div className={s.colLeft}>
-                <SelectedGameCard
-                  gameId={form.gameId}
-                  themeId={form.themeId}
-                  roomNumber={hostRoomNumber}
-                  labels={{ changeGame: L.changeGame }}
-                  onCycleTheme={handleCycleTheme}
-                />
+            <CreateProgress roomReady={flow.isValid} />
 
-                <SectionGroup num="01" title={L.sectionDetails}>
-                  <RoomDetails
+            {flow.catalogFailed ? (
+              <div
+                className={f.notice}
+                role="status"
+                data-testid="catalog-error"
+                style={{ marginBottom: 24 }}
+              >
+                <span className={f.noticeTitle}>
+                  {t('createRoom.errors.catalogTitle')}
+                </span>
+                <span>{t('createRoom.errors.catalogHelp')}</span>
+              </div>
+            ) : null}
+
+            <div className={s.grid}>
+              <div className={`${s.colLeft} ${f.stack}`}>
+                <SectionGroup
+                  id={stepGame.anchor}
+                  num="01"
+                  title={t('createRoom.steps.game.title')}
+                  why={t('createRoom.steps.game.why')}
+                >
+                  <SelectedGameCard
                     gameId={form.gameId}
-                    form={currentForm}
-                    labels={L.details}
-                    onChange={patchForm}
+                    themeId={form.themeId}
+                    roomNumber={flow.hostRoomNumber}
+                    pickerOpen={pickerOpen}
+                    pickerId={pickerId}
+                    onTogglePicker={() => setPickerOpen((v) => !v)}
+                    onCycleTheme={flow.cycleTheme}
                   />
+                  {pickerOpen ? (
+                    <div className={f.pickerPanel} id={pickerId}>
+                      <div className={f.pickerHead}>
+                        <h3 className={f.pickerTitle}>
+                          {t('createRoom.game.pickerTitle')}
+                        </h3>
+                      </div>
+                      <p className={f.helper} style={{ marginBottom: 12 }}>
+                        {t('createRoom.game.pickerHint')}
+                      </p>
+                      <GamePicker
+                        value={form.gameId}
+                        themeId={form.themeId}
+                        comingSoon={flow.gameComingSoon}
+                        onChange={(id) => {
+                          flow.changeGame(id);
+                          setPickerOpen(false);
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </SectionGroup>
+
+                <SectionGroup
+                  id={stepLook.anchor}
+                  num="02"
+                  title={t('createRoom.steps.look.title')}
+                  why={t('createRoom.steps.look.why')}
+                >
+                  <ThemePicker
+                    gameId={form.gameId}
+                    value={form.themeId}
+                    label={t('createRoom.theme.groupLabel', {
+                      game: game.title,
+                    })}
+                    onChange={flow.setTheme}
+                  />
+                  {game.hasExpansion ? (
+                    <div style={{ marginTop: 28 }}>
+                      <h3 className={f.subhead}>
+                        {t('createRoom.steps.packs.title')}
+                      </h3>
+                      <p className={f.helper} style={{ marginBottom: 12 }}>
+                        {t('createRoom.steps.packs.why')}
+                      </p>
+                      <ExpansionPacks
+                        value={form.expansionPackIds}
+                        onChange={flow.setPacks}
+                      />
+                    </div>
+                  ) : null}
+                </SectionGroup>
+
+                <SectionGroup
+                  id={stepRoom.anchor}
+                  num="03"
+                  title={t('createRoom.steps.room.title')}
+                  why={t('createRoom.steps.room.why')}
+                >
+                  <div className={f.stack}>
+                    <div>
+                      <h3 className={f.subhead}>
+                        {t('createRoom.steps.preset.title')}
+                      </h3>
+                      <p className={f.helper} style={{ marginBottom: 12 }}>
+                        {t('createRoom.steps.preset.why')}
+                      </p>
+                      <QuickPresets
+                        value={form.preset}
+                        onChange={flow.applyPresetChoice}
+                      />
+                    </div>
+                    <RoomDetails
+                      gameId={form.gameId}
+                      form={form}
+                      nameError={showNameError ? flow.nameError : null}
+                      onNameBlur={flow.markNameTouched}
+                      onChange={flow.patchForm}
+                    />
+                    <AdvancedOptions
+                      gameId={form.gameId}
+                      form={form}
+                      ruleComingSoon={flow.ruleComingSoon}
+                      onChange={flow.patchForm}
+                      onRulesChange={flow.setRules}
+                    />
+                  </div>
                 </SectionGroup>
               </div>
 
               <PreviewRail
-                form={currentForm}
-                isValid={isValid}
-                loading={loading}
-                blocked={blocked}
-                error={errorMessage}
-                labels={L.rail(defaultRoomName)}
-                cta={L.cta}
-                onSubmit={handleSubmit}
-                onThemeChange={handleThemeChange}
+                form={form}
+                defaultRoomName={flow.defaultRoomName}
+                isValid={flow.isValid}
+                loading={flow.loading}
+                blocked={flow.blocked}
+                error={flow.error}
+                onSubmit={flow.submit}
+                onThemeChange={flow.setTheme}
               />
             </div>
           </div>

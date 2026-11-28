@@ -7,6 +7,7 @@ import { adminWalletRu } from './admin-wallet/ru';
 import { gemsRu } from './gems/ru';
 import { adminGemPackagesRu } from './admin-gem-packages/ru';
 import { adminEconomyRu } from './admin-economy/ru';
+import { adminStreamRu } from './admin-stream/ru';
 import { adminStatisticsRu } from './admin-statistics/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
 import { dailyChallengesRu } from './daily-challenges/ru';
@@ -30,6 +31,8 @@ import { changelogRu } from './changelog/ru';
 import { featuresRu } from './features/ru';
 import { roadmapRu } from './roadmap/ru';
 
+import { streamRu } from './stream/ru';
+
 export const ru = {
   admin: {
     title: 'Админ',
@@ -46,6 +49,7 @@ export const ru = {
       announcements: 'Объявления',
       tournaments: 'Турниры',
       economy: 'Экономика',
+      stream: 'Прямой эфир',
       shop: 'Магазин',
       gemPackages: 'Пакеты Гемов',
       games: 'Игры',
@@ -167,6 +171,7 @@ export const ru = {
     },
     monitoring: {
       title: 'Мониторинг',
+      liveRefresh: 'В реальном времени, обновление каждые 10 с',
       loading: 'Загрузка метрик...',
       enableHint: 'Включите METRICS_ENABLED=true в .env для просмотра метрик',
       status: 'Статус',
@@ -474,6 +479,7 @@ export const ru = {
   gems: gemsRu,
   adminGemPackages: adminGemPackagesRu,
   adminEconomy: adminEconomyRu,
+  adminStream: adminStreamRu,
   dailyRewards: dailyRewardsRu,
   dailyChallenges: dailyChallengesRu,
   achievements: achievementsRu,
@@ -487,4 +493,5 @@ export const ru = {
   changelog: changelogRu,
   features: featuresRu,
   roadmap: roadmapRu,
+  stream: streamRu,
 };

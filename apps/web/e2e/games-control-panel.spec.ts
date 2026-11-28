@@ -34,7 +34,7 @@ test.describe('Games Control Panel Responsiveness', () => {
 
     // Fullscreen button should have text
     await expect(
-      page.getByRole('button', { name: /fullscreen/i }),
+      controlPanel.getByRole('button', { name: /fullscreen/i }),
     ).toBeVisible();
   });
 

@@ -4,7 +4,7 @@ export const frMessages = {
     description:
       'Assortis par couleur ou numéro, enchaînez les cartes Pioche-Deux et Joker +4 pour submerger le joueur suivant, et videz votre main en premier pour gagner.',
     summary:
-      'Un jeu de cartes de défausse de la famille des Huit Américain - huit thèmes au choix, 2–10 joueurs, pénalités enchaînables.',
+      'Un jeu de cartes de défausse de la famille des Huit Américain - huit thèmes au choix, 2-10 joueurs, pénalités enchaînables.',
     variants: {
       cosmic: {
         name: 'Cosmique',
@@ -49,17 +49,95 @@ export const frMessages = {
       },
     },
     landing: {
+      extra: {
+        hero: {
+          eyebrow: 'Cartes rapides pour soirées',
+          intro:
+            'Le duel effréné de défausse de cartes avec des pénalités cumulables impitoyables, des changements de couleur et 4 thèmes.',
+          category: 'Jeu de cartes',
+          playersBadge: '2-10 joueurs',
+          durationBadge: '5-15 min',
+          difficultyBadge: 'Soirée décontractée',
+          chips: [
+            'Pénalités cumulables',
+            '4 paquets thématiques',
+            'Jusqu’à 10 joueurs',
+            'Partie rapide instantanée',
+          ],
+          createRoom: 'Créer une salle',
+        },
+        highlights: {
+          title: 'Défausse de cartes pleine d’action',
+          kicker: 'Fonctionnalités clés',
+          combos: {
+            title: 'Chaînes de cartes d’action',
+            body: 'Contrez les cartes d’attaque avec des pénalités équivalentes pour faire passer le poids de la pioche à vos adversaires.',
+          },
+        },
+        howTo: {
+          title: 'Comment jouer à Cascade',
+          kicker: 'Démarrage rapide',
+          intro:
+            'Associez les cartes par numéro, couleur ou symbole et soyez le premier à vider votre main.',
+          create:
+            'Configurez la taille de la main de départ et les règles de cumul des pénalités.',
+          join: 'Jusqu’à 10 joueurs simultanés dans une même salle.',
+          play: 'Jouez par couleur ou numéro et gardez les jokers pour des échappatoires tactiques.',
+        },
+        themesSection: {
+          kicker: 'Thèmes de paquets',
+          cta: 'Jouer avec ce paquet',
+        },
+        rules: {
+          kicker: 'Livre de règles',
+          fallbackTitle: 'Règles et mécaniques',
+          objective: 'Objectif',
+          steps: 'Comment fonctionne le cumul',
+          stacking: 'Défense contre les pénalités',
+        },
+        strategy: {
+          title: 'Stratégies et combos gagnants',
+          kicker: 'Conseils de pro',
+          intro:
+            'Apprenez à contrer les chaînes de pioche et à contrôler le rythme de la partie.',
+          saveWilds: {
+            title: 'Gardez les jokers pour les urgences',
+            body: 'Conservez vos jokers jusqu’à être forcé vers une couleur défavorable pour reprendre le rythme.',
+          },
+          colorTracking: {
+            title: 'Suivez les préférences de couleur adverses',
+            body: 'Surveillez les couleurs que les autres joueurs passent et éloignez la couleur active d’eux.',
+          },
+          stackDefend: {
+            title: 'Gardez des contres +2 et +4',
+            body: 'Ne jouez jamais votre dernière carte de pioche sans nécessité si vous soupçonnez une chaîne de pioche.',
+          },
+        },
+        faq: {
+          title: 'Questions fréquentes',
+          kicker: 'FAQ',
+        },
+        related: {
+          title: 'Plus de jeux de cartes multijoueurs',
+          kicker: 'Découvrir',
+        },
+        finalCta: {
+          title: 'Lancez-vous dans la prochaine manche',
+          subtitle:
+            'Jouez contre des bots IA intelligents ou organisez une partie à haut risque pour jusqu’à 10 amis.',
+        },
+      },
       meta: {
         title: 'Cascade - jeu de cartes multijoueur de défausse en ligne',
         description:
-          'Jouez à Cascade en ligne - un jeu de cartes de défausse avec chaînes Pioche-Deux / Joker +4 et quatre thèmes visuels. 2–10 joueurs, salons gratuits instantanés, sans installation.',
+          'Jouez à Cascade en ligne - un jeu de cartes de défausse avec chaînes Pioche-Deux / Joker +4 et quatre thèmes visuels. 2-10 joueurs, salons gratuits instantanés, sans installation.',
         keywords:
           'cascade, huit américain, jeu de cartes multijoueur, jeu de cartes en ligne, jeu de défausse, jeu de cartes assorties',
       },
       hero: {
         title: 'Cascade - le jeu de cartes à chaînes, réinventé',
         subtitle:
-          'Assortissez par couleur ou numéro. Enchaînez les pénalités. Choisissez parmi huit thèmes visuels. 2–10 joueurs.',
+          'Assortissez par couleur ou numéro. Enchaînez les pénalités. Choisissez parmi huit thèmes visuels. 2-10 joueurs.',
         createRoom: 'Créer un salon',
         ctaQuickplay: "Jouer contre l'IA",
         ctaQuickplayError: 'Impossible de lancer la partie - réessayez',
@@ -67,7 +145,7 @@ export const frMessages = {
       },
       highlights: {
         players: {
-          title: '2–10 joueurs',
+          title: '2-10 joueurs',
           body: 'Chacun pour soi ; les bots remplissent les places vides pour démarrer immédiatement.',
         },
         themes: {
@@ -153,6 +231,7 @@ export const frMessages = {
     },
     lobby: {
       stacking: 'Autoriser les pénalités enchaînables',
+      stackingAutoHint: 'Défini automatiquement par le mode de jeu',
       lastCardCall:
         'Course à la Dernière Carte (appuyez sur Cascade quand un adversaire arrive à 1)',
       startWithBots: 'Démarrer avec des bots',

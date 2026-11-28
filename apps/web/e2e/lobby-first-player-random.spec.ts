@@ -101,6 +101,11 @@ test.describe('Lobby Random First Move Option', () => {
     const randomCheckbox = page.getByTestId('random-first-player-checkbox');
     const firstPlayerSelect = page.getByTestId('first-player-select');
 
+    // House rules live in the collapsed "Advanced settings" disclosure.
+    await page
+      .getByTestId('lobby-advanced-settings')
+      .evaluate((el) => ((el as HTMLDetailsElement).open = true));
+
     await expect(randomCheckbox).toBeVisible();
     await expect(randomCheckbox).not.toBeChecked();
     await expect(firstPlayerSelect).toHaveValue('host');

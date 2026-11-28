@@ -20,6 +20,7 @@ import { TournamentsModule } from './tournaments/tournaments.module';
 import { WalletModule } from './wallet/wallet.module';
 import { GemsModule } from './gems/gems.module';
 import { EconomyModule } from './economy/economy.module';
+import { StreamModule } from './stream/stream.module';
 import { DailyRewardsModule } from './daily-rewards/daily-rewards.module';
 import { DailyChallengesModule } from './daily-challenges/daily-challenges.module';
 import { AchievementsModule } from './achievements/achievements.module';
@@ -38,6 +39,8 @@ import { SocialRewardsModule } from './social-rewards/social-rewards.module';
 import { AsyncMatchModule } from './games/async-match/async-match.module';
 import { XpModule } from './xp/xp.module';
 import { LeaguesModule } from './leagues/leagues.module';
+import { ArcadePetModule } from './arcade-pet/arcade-pet.module';
+import { CleanupModule } from './cleanup/cleanup.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import {
@@ -74,6 +77,7 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     WalletModule,
     GemsModule,
     EconomyModule,
+    StreamModule,
     DailyRewardsModule,
     DailyChallengesModule,
     AchievementsModule,
@@ -100,6 +104,8 @@ import { GlobalThrottlerGuard } from './common/guards/global-throttler.guard';
     AsyncMatchModule,
     LeaguesModule,
     XpModule,
+    ArcadePetModule,
+    CleanupModule,
     MongooseModule.forRoot(resolveMongoUri(), {
       ...resolveMongoOptions(),
       connectionName: OCI_CONNECTION,

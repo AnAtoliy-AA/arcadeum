@@ -1,4 +1,88 @@
 export const landing = {
+  extra: {
+    category: 'Card Game',
+    badges: {
+      players: '2-5 Players',
+      duration: '10-20 min',
+      difficulty: 'High Tension',
+    },
+    rankedChip: 'Ranked 1v1 ELO',
+    createRoom: 'Create Room',
+    highlights: {
+      title: 'Ruthless Card Party Mechanics',
+      kicker: 'Key Features',
+      tension: {
+        title: 'High-Stakes Card Roulette',
+        body: 'Every draw from the deck could be the fatal Critical bomb that knocks you out.',
+      },
+      defuse: {
+        title: 'Defusal Tactics',
+        body: 'Use Defuse cards to survive bomb draws and strategically re-insert the bomb anywhere into the deck.',
+      },
+      actionCards: {
+        title: 'Aggressive Action Cards',
+        body: 'Attack opponents, skip turns, steal cards, and peek at the upcoming deck order.',
+      },
+      party: {
+        title: '2-5 Player Chaos',
+        body: 'Fast party matches with instant matchmaking against friends or smart AI bots.',
+      },
+    },
+    tips: {
+      setup: 'Everyone starts with a secret Defuse card in hand.',
+      draw: 'Play actions to avoid drawing, but eventually someone must pull a card.',
+      play: 'Chain attacks together to force double draws on your opponents.',
+      survive: 'The last player remaining without exploding wins the match.',
+    },
+    themes: {
+      title: 'Custom Card Visual Themes',
+      kicker: 'Visual Styles',
+      subtitle: 'Explore distinct visual aesthetics and card designs.',
+      cta: 'Play Theme',
+    },
+    rules: {
+      title: 'Core Rules & Bomb Defusal',
+      bombCard: {
+        head: 'Critical Bomb Cards',
+        body: 'Drawing a Bomb card eliminates you unless you immediately play a Defuse card from your hand.',
+      },
+      reinsert: {
+        head: 'Secret Re-Insertion',
+        body: 'When you defuse a bomb, you secretly choose which position in the draw pile to put the bomb back in.',
+      },
+      turnEnd: {
+        head: 'Turn End by Drawing',
+        body: 'Playing cards does not end your turn; your turn only ends after you draw a card from the deck or play a Skip card.',
+      },
+    },
+    strategy: {
+      title: 'Survival Strategies & Mind Games',
+      kicker: 'Pro Tips',
+      intro: 'Master card counts and outwit opponents when the deck runs low.',
+      deckCounting: {
+        title: 'Count the Remaining Bombs',
+        body: 'Track how many bombs and defuse cards have been revealed to calculate risk before drawing.',
+      },
+      seeFuture: {
+        title: 'Combo See the Future with Shuffle',
+        body: 'Peek at the top 3 cards; if a bomb is on top, immediately play a Shuffle or Skip card.',
+      },
+      bombPosition: {
+        title: 'Strategic Bomb Placement',
+        body: 'When re-inserting a defused bomb, place it right at the top if the next player has no Defuse left.',
+      },
+    },
+    related: {
+      title: 'More High-Stakes Multiplayer Games',
+      kicker: 'Discover',
+    },
+    preview: {
+      bomb: 'Bomb',
+      defuse: 'Defuse',
+      attack: 'Attack',
+      seeFuture: 'See Future',
+    },
+  },
   meta: {
     title: 'Critical - Free Exploding Card Game Online | Play in Browser',
     description:
@@ -127,6 +211,7 @@ export const landing = {
     critical: 'Critical',
   },
   ranked: {
+    navLabel: 'Ranked 1v1',
     kicker: 'Competitive 1v1',
     title: 'Critical Ranked ELO & Duel Arena',
     subtitle:

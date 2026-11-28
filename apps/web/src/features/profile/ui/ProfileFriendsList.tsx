@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, Badge, EmptyState } from '@arcadeum/ui';
 import { UserIcon } from '@arcadeum/ui/components/Icons/index';
 import { EquippedPlayerAvatar } from '@/shared/ui/PlayerAvatar/EquippedPlayerAvatar';
@@ -13,7 +13,6 @@ interface ProfileFriendsListProps {
 }
 
 export function ProfileFriendsList({ friends }: ProfileFriendsListProps) {
-  const router = useRouter();
   const routes = useRoutes();
   const { t } = useTranslation();
 
@@ -38,37 +37,42 @@ export function ProfileFriendsList({ friends }: ProfileFriendsListProps) {
       ) : (
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {friends.map((friend) => (
-            <Card
+            <Link
               key={friend.id}
-              variant="default"
-              className="cursor-pointer transition-colors hover:border-[var(--primary)]"
-              onClick={() => router.push(routes.profile(friend.userId))}
+              href={routes.profile(friend.userId)}
+              data-testid="profile-friend-link"
+              className="rounded-2xl no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             >
-              <div className="flex flex-row gap-3 items-center">
-                <EquippedPlayerAvatar
-                  name={friend.displayName ?? friend.username}
-                  equippedAvatarId={friend.equippedAvatarId}
-                  equippedBadgeId={null}
-                  size="sm"
-                />
-                <div className="flex flex-col items-stretch flex-1 min-w-0">
-                  <span className="text-[15px] font-semibold truncate text-[var(--color)]">
-                    {friend.displayName ?? friend.username}
-                  </span>
-                  <span className="text-[12px] text-[var(--textSecondary)] truncate">
-                    @{friend.username}
-                  </span>
+              <Card
+                variant="default"
+                className="transition-colors hover:border-[var(--primary)]"
+              >
+                <div className="flex flex-row gap-3 items-center">
+                  <EquippedPlayerAvatar
+                    name={friend.displayName ?? friend.username}
+                    equippedAvatarId={friend.equippedAvatarId}
+                    equippedBadgeId={null}
+                    size="sm"
+                  />
+                  <div className="flex flex-col items-stretch flex-1 min-w-0">
+                    <span className="text-[15px] font-semibold truncate text-[var(--color)]">
+                      {friend.displayName ?? friend.username}
+                    </span>
+                    <span className="text-[12px] text-[var(--textSecondary)] truncate">
+                      @{friend.username}
+                    </span>
+                  </div>
+                  <Badge
+                    variant={friend.online ? 'success' : 'neutral'}
+                    size="sm"
+                  >
+                    {friend.online
+                      ? t('games.common.profile.online')
+                      : t('games.common.profile.offline')}
+                  </Badge>
                 </div>
-                <Badge
-                  variant={friend.online ? 'success' : 'neutral'}
-                  size="sm"
-                >
-                  {friend.online
-                    ? t('games.common.profile.online')
-                    : t('games.common.profile.offline')}
-                </Badge>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

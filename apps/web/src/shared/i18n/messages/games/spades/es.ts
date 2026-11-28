@@ -144,6 +144,9 @@ export const esMessages = {
       startWithBots: 'Empezar con Bot',
       aiDifficulty: 'Dificultad IA',
       nilEnabled: 'Permitir apuestas Nil',
+      nilEnabledHint:
+        'Apuesta cero bazas para ganar un bono o una penalización',
+      targetScoreHint: 'Gana el primer equipo que llegue a esta puntuación',
       targetScore: 'Puntuación Objetivo',
     },
     gameOver: {

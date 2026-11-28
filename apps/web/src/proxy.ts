@@ -12,6 +12,17 @@ import {
   PRIVATE_GAME_SUBPATHS,
 } from '@/shared/config/noindex-pages';
 
+import {
+  STREAM_HEADER,
+  STREAM_SEGMENT,
+} from '@/features/stream/lib/streamConfig';
+import { ACCESS_COOKIE_NAMES, findCookie } from '@/shared/lib/auth-cookies';
+import {
+  applyRefreshedCookies,
+  refreshSessionForRequest,
+  withRefreshedCookies,
+} from '@/shared/lib/proxy-session';
+
 const PUBLIC_FILE =
   /\.(?:png|jpg|jpeg|webp|avif|svg|ico|txt|xml|js|map|json|woff2?|css|mp4|mp3|pdf)$/i;
 const SKIP_PREFIXES = [
@@ -174,7 +185,7 @@ function getLocaleFromCountry(countryCode?: string | null): Locale | null {
   return null;
 }
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   const feedbackPreflight = handleVercelFeedbackPreflight(req);
@@ -203,6 +214,18 @@ export function proxy(req: NextRequest) {
   // the canonical localized slug in one hop.
   if (localeFromUrl) {
     const secondSegment = segments[1];
+    // Broadcast scenes (/{locale}/stream/**) are chrome-less and anonymous:
+    // flag the request so the layouts skip header, footer, modals, analytics
+    // and the session refresh, and keep the page out of search indexes.
+    if (secondSegment === STREAM_SEGMENT) {
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set(STREAM_HEADER, '1');
+      const streamResponse = NextResponse.next({
+        request: { headers: requestHeaders },
+      });
+      streamResponse.headers.set('x-robots-tag', 'noindex, nofollow');
+      return streamResponse;
+    }
     if (localeFromUrl !== 'en' && secondSegment) {
       const key = EN_SLUG_TO_KEY[secondSegment];
       if (key) {
@@ -218,14 +241,20 @@ export function proxy(req: NextRequest) {
         }
       }
     }
-    const response = NextResponse.next();
+    const session = await refreshSessionForRequest(req);
+    const response = session
+      ? NextResponse.next({
+          request: { headers: withRefreshedCookies(req, session) },
+        })
+      : NextResponse.next();
+    if (session) applyRefreshedCookies(response, session);
     if (isPrivatePath(localeFromUrl, segments.slice(1))) {
       response.headers.set('x-robots-tag', 'noindex, nofollow');
     }
     if (
       isAdminPath(localeFromUrl, segments.slice(1)) &&
-      !req.cookies.get('access_token')?.value &&
-      !req.cookies.get('web_access_token')?.value
+      !session &&
+      !findCookie(req.cookies, ACCESS_COOKIE_NAMES)
     ) {
       return new Response(null, { status: 404 });
     }

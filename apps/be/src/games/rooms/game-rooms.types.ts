@@ -38,6 +38,8 @@ export interface GameRoomSummary {
   viewerRole?: 'host' | 'participant' | 'none';
   viewerHasJoined?: boolean;
   viewerIsHost?: boolean;
+  /** True when the viewer has a pending invitation they have not accepted. */
+  viewerInvited?: boolean;
   chatLogs?: Array<{
     id: string;
     senderId: string;
@@ -61,6 +63,10 @@ export interface ListRoomsFilters {
   participation?:
     'host' | 'participant' | 'any' | 'hosting' | 'joined' | 'not_joined';
   aiVsAi?: boolean;
+  /** Only rooms with at least one free seat (rooms without maxPlayers count as open). */
+  openSeats?: boolean;
+  /** Only rooms that contain at least one bot participant. */
+  hasBots?: boolean;
   page?: number;
   limit?: number;
   cursor?: string;

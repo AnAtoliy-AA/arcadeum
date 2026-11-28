@@ -21,7 +21,7 @@ export class SoloScore {
   @Prop({ default: 0 })
   durationMs!: number;
 
-  @Prop({ required: true, enum: ['won', 'lost'] })
+  @Prop({ required: true, enum: ['won', 'lost', 'draw'] })
   result!: string;
 
   @Prop({ required: true })

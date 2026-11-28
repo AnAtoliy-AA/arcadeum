@@ -49,7 +49,7 @@ export async function generateMetadata({
     if (profile?.player?.name) {
       const p = profile.player;
       const rankPart = p.rank ? ` (#${p.rank} ${p.tier})` : '';
-      title = `${p.name}${rankPart} — Player Profile, Stats & Match History`;
+      title = `${p.name}${rankPart} - Player Profile, Stats & Match History`;
       description = `View ${p.name}'s combat record, ${p.wins} wins (${Math.round(p.winrate * 100)}% win rate), favorite game modes, and ranking history on Arcadeum Games.`;
     }
   } catch {

@@ -27,7 +27,7 @@ export const GameInfo = ({
 }) => (
   <div
     className={cx(
-      'flex flex-row items-center gap-4 flex-wrap min-w-0 flex-1 max-[800px]:gap-2',
+      'flex flex-row items-center gap-3 flex-wrap min-w-0 flex-1 max-[800px]:gap-2',
       className,
     )}
   >
@@ -46,7 +46,7 @@ export const GameTitleText = ({
 }) => (
   <h2
     className={cx(
-      'text-[24px] font-bold',
+      'text-[24px] max-[800px]:text-[20px] leading-tight font-bold',
       gradient ? 'text-gradient shimmer-animated' : undefined,
       className,
     )}

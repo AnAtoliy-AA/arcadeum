@@ -181,7 +181,7 @@ export const GAMES: Record<GameId, GameMeta> = {
     category: 'Board Game',
     hasExpansion: false,
     hasThemes: true,
-    rules: ['idle', 'spectators'],
+    rules: ['idle', 'teams', 'spectators'],
   },
 };
 

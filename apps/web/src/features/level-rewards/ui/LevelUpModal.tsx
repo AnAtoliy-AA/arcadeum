@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Button,
   CloseIcon,
@@ -19,6 +19,7 @@ import { useSessionTokens } from '@/entities/session/model/useSessionTokens';
 import { getRewardForLevel } from '@/shared/lib/level-rewards';
 import { useLevelUpModalStore } from '../store/levelUpModalStore';
 import { claimLevelRewards } from '../api/level-rewards.api';
+import { refreshSessionXp } from '@/entities/session/lib/refreshSessionXp';
 
 export function LevelUpModal() {
   const router = useRouter();
@@ -40,12 +41,18 @@ export function LevelUpModal() {
 
   const reward = badgeId ? getRewardForLevel(level) : undefined;
 
+  const [claimError, setClaimError] = useState(false);
+
   const handleClaim = useCallback(async () => {
     if (isClaiming || isClaimed) return;
     setClaiming(true);
+    setClaimError(false);
     try {
       await claimLevelRewards(snapshot.accessToken);
       setClaimed(true);
+      void refreshSessionXp();
+    } catch {
+      setClaimError(true);
     } finally {
       setClaiming(false);
     }
@@ -146,6 +153,15 @@ export function LevelUpModal() {
               >
                 ✨ {t('stats.viewInInventory' as TranslationKey)}
               </Button>
+            )}
+            {claimError && (
+              <p
+                role="alert"
+                data-testid="level-up-claim-error"
+                className="text-center text-sm text-[var(--error)]"
+              >
+                {t('stats.claimRewardFailed' as TranslationKey)}
+              </p>
             )}
             <Button
               variant="primary"

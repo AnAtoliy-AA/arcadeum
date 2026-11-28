@@ -133,6 +133,10 @@ export const frMessages = {
       boardSize: 'Taille du plateau',
       maxPlayersShort: "jusqu'à {{n}}",
       teamMode: 'Mode équipes',
+      teamModeHint: 'Les joueurs sont répartis en équipes qui jouent ensemble',
+      expansionMarginHint:
+        'De combien le plateau grandit quand un coup est joué près du bord',
+      winLengthLabel: 'Pions alignés pour gagner',
       startWithBots: 'Commencer avec des bots',
       addBot: 'Ajouter un bot',
       waitingForPlayers: 'En attente de joueurs…',

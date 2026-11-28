@@ -1,4 +1,5 @@
 import { GamePostMatchService } from './game-post-match.service';
+import { createRealXpSettings, type FakeUsers } from '../xp/xp-test-fakes';
 
 describe('GamePostMatchService', () => {
   let service: GamePostMatchService;
@@ -10,15 +11,18 @@ describe('GamePostMatchService', () => {
     getDefinitions: jest.fn().mockResolvedValue([]),
     checkAndUnlockWithDefinitions: jest.fn().mockResolvedValue(undefined),
   };
-  const mockSessionsService = {};
+  const mockSessionsService = {
+    onSessionCompleted: jest.fn(),
+    claimPostMatchProcessing: jest.fn(),
+    getWinners: jest.fn(),
+  };
   const mockWallet = {};
-  const mockEconomy = {};
+  const mockEconomy = { getNumber: jest.fn().mockResolvedValue(0) };
   const mockPlayerStats = {
     recordGameResult: jest.fn().mockResolvedValue(undefined),
   };
   const mockChessProfiles = {};
-  const mockXpSettings = {};
-  const mockUserModel = {};
+  let users: FakeUsers;
   const mockActivityFeed = {
     recordEvent: jest.fn().mockResolvedValue(undefined),
   };
@@ -29,7 +33,32 @@ describe('GamePostMatchService', () => {
     resolveMatchForPlayers: jest.fn(),
   };
 
+  const mockPetTreats = {
+    awardWinTreats: jest.fn().mockResolvedValue(undefined),
+  };
+
+  const mockRooms = {
+    getRoomParticipants: jest.fn(),
+    updateRoomStatus: jest.fn().mockResolvedValue(undefined),
+    getRoomRaw: jest.fn().mockResolvedValue(null),
+    getRoom: jest.fn().mockResolvedValue({ gameOptions: {} }),
+  };
+  const mockLeaderboardSync = {
+    syncInMatch: jest.fn().mockResolvedValue(undefined),
+  };
+  const mockArchive = {
+    archiveSessionToAtlas: jest.fn().mockResolvedValue(undefined),
+  };
+  const mockReplay = { createReplay: jest.fn().mockResolvedValue(null) };
+  const mockRanking = {
+    recordRankedResult: jest.fn().mockResolvedValue({}),
+  };
+
   beforeEach(() => {
+    users = {
+      user_1: { xp: 0 },
+      user_2: { xp: 0 },
+    };
     service = new GamePostMatchService(
       mockDailyChallenges as never,
       mockAchievements as never,
@@ -38,13 +67,102 @@ describe('GamePostMatchService', () => {
       mockEconomy as never,
       mockPlayerStats as never,
       mockChessProfiles as never,
-      mockXpSettings as never,
-      mockUserModel as never,
+      createRealXpSettings(users),
       mockActivityFeed as never,
+      mockRooms as never,
+      mockLeaderboardSync as never,
+      mockArchive as never,
+      mockReplay as never,
+      mockRanking as never,
       mockClanWarsQueue as never,
       mockClanWarsAutomation as never,
+      mockPetTreats as never,
     );
     jest.clearAllMocks();
+    mockRooms.updateRoomStatus.mockResolvedValue(undefined);
+    mockRooms.getRoomRaw.mockResolvedValue(null);
+    mockRooms.getRoom.mockResolvedValue({ gameOptions: {} });
+  });
+
+  describe('XP awards (real XpSettingsService)', () => {
+    it('awards PvP win/loss XP to human players', async () => {
+      await service.onGameCompleted(
+        ['user_1', 'user_2'],
+        'chess_v1',
+        ['user_1'],
+        {},
+        's1',
+      );
+      expect(users.user_1?.xp).toBe(100);
+      expect(users.user_2?.xp).toBe(40);
+    });
+
+    it('awards draw XP to everyone on a draw', async () => {
+      await service.onGameCompleted(['user_1', 'user_2'], 'hearts', [], {});
+      expect(users.user_1?.xp).toBe(60);
+      expect(users.user_2?.xp).toBe(60);
+    });
+
+    it('uses the bot coefficient and never awards bots', async () => {
+      await service.onGameCompleted(
+        ['user_1', 'bot-abc'],
+        'checkers',
+        ['user_1'],
+        {},
+      );
+      expect(users.user_1?.xp).toBe(20);
+      expect(Object.keys(users)).not.toContain('bot-abc');
+    });
+
+    it('one failing user does not block the others', async () => {
+      delete users.user_1;
+      await service.onGameCompleted(
+        ['user_1', 'user_2'],
+        'chess_v1',
+        ['user_1'],
+        {},
+      );
+      expect(users.user_2?.xp).toBe(40);
+    });
+  });
+
+  describe('processCompletedSession', () => {
+    const session = {
+      id: 'sess-1',
+      roomId: 'room-1',
+      gameId: 'chess_v1',
+      status: 'completed',
+      state: {},
+    } as never;
+
+    beforeEach(() => {
+      mockRooms.getRoomParticipants.mockResolvedValue(['user_1', 'user_2']);
+      mockSessionsService.getWinners.mockResolvedValue(['user_1']);
+    });
+
+    it('registers itself as the session completion listener', () => {
+      service.onModuleInit();
+      expect(mockSessionsService.onSessionCompleted).toHaveBeenCalledTimes(1);
+    });
+
+    it('awards XP and records stats when the claim succeeds', async () => {
+      mockSessionsService.claimPostMatchProcessing.mockResolvedValue(true);
+      await service.processCompletedSession(session);
+      expect(users.user_1?.xp).toBe(100);
+      expect(users.user_2?.xp).toBe(40);
+      expect(mockPlayerStats.recordGameResult).toHaveBeenCalledTimes(1);
+      expect(mockDailyChallenges.onGameCompleted).toHaveBeenCalledTimes(1);
+    });
+
+    it('is idempotent: a second completion signal awards nothing', async () => {
+      mockSessionsService.claimPostMatchProcessing
+        .mockResolvedValueOnce(true)
+        .mockResolvedValueOnce(false);
+      await service.processCompletedSession(session);
+      await service.processCompletedSession(session);
+      expect(users.user_1?.xp).toBe(100);
+      expect(mockPlayerStats.recordGameResult).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('dispatches clan war resolution to queue when two human players compete and one wins', async () => {
@@ -111,5 +229,27 @@ describe('GamePostMatchService', () => {
     expect(
       mockClanWarsAutomation.resolveMatchForPlayers,
     ).not.toHaveBeenCalled();
+  });
+
+  it('awards pet treats from the verified session winners', async () => {
+    await service.onGameCompleted(
+      ['user_1', 'user_2'],
+      'chess_v1',
+      ['user_1'],
+      {},
+      'session-1',
+    );
+    expect(mockPetTreats.awardWinTreats).toHaveBeenCalledWith(
+      'chess_v1',
+      ['user_1'],
+      'session-1',
+    );
+  });
+
+  it('keeps post-match processing going when the treat award fails', async () => {
+    mockPetTreats.awardWinTreats.mockRejectedValueOnce(new Error('boom'));
+    await expect(
+      service.onGameCompleted(['user_1'], 'chess_v1', ['user_1'], {}, 's2'),
+    ).resolves.toBeUndefined();
   });
 });

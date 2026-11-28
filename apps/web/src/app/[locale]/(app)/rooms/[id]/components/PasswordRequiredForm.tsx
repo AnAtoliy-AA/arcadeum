@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Button } from '@arcadeum/ui/components/Button/Button';
+import { LinkButton } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
+import { useRoutes } from '@/shared/config/useRoutes';
 import {
   Card,
   IconCircle,
@@ -35,6 +37,7 @@ export function PasswordRequiredForm({
   error,
 }: PasswordRequiredFormProps) {
   const { t } = useTranslation();
+  const routes = useRoutes();
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -113,6 +116,15 @@ export function PasswordRequiredForm({
             </ErrorMessage>
           )}
         </Form>
+
+        <LinkButton
+          href={routes.rooms}
+          variant="ghost"
+          size="md"
+          className="mt-4 min-h-11 self-center"
+        >
+          {t('roomsBrowser.backToRooms')}
+        </LinkButton>
       </Card>
     </>
   );

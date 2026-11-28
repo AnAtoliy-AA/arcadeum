@@ -40,59 +40,21 @@ export default function SeaBattleLanding({
 }: Props) {
   if (!landing) return null;
 
+  const x = landing.extra;
+
   const highlightCards = [
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'teams', icon: '⚔️', ...landing.highlights.teams },
     { key: 'themes', icon: '🎨', ...landing.highlights.themes },
     { key: 'free', icon: '⚡', ...landing.highlights.free },
-    {
-      key: 'salvo',
-      icon: '💣',
-      title: 'Salvo Mode',
-      body: 'Fire multiple shots per turn - one for each surviving ship. The classic competitive variation that rewards precision targeting.',
-    },
-    {
-      key: 'speed',
-      icon: '⏱️',
-      title: 'Speed Mode',
-      body: '30-second turn timer keeps the pressure on. Think fast, shoot faster - no time for second-guessing.',
-    },
-    {
-      key: 'abilities',
-      icon: '🔱',
-      title: 'Ship Abilities',
-      body: 'Each ship class has a unique power: Scout reveals areas, Barrage fires extra shots, Torpedo guarantees a hit, and more.',
-    },
-    {
-      key: 'keyboard',
-      icon: '⌨️',
-      title: 'Keyboard Controls',
-      body: 'Navigate the grid with arrow keys or WASD, fire with Enter. Full keyboard support for fast, precise play.',
-    },
-    {
-      key: 'sonar',
-      icon: '📡',
-      title: 'Sonar & Radar',
-      body: 'Special weapons reveal hidden ships. Sonar scans a 3×3 area, Radar sweeps entire rows or columns.',
-    },
-    {
-      key: 'ai',
-      icon: '🤖',
-      title: '4-Level AI Opponents',
-      body: 'From beginner-friendly Easy to devastating Expert - AI uses probabilistic density maps and hunt-mode targeting.',
-    },
-    {
-      key: 'grids',
-      icon: '📐',
-      title: 'Flexible Board Sizes',
-      body: 'Play on 10×10, 15×15, or 20×20 grids with configurable ship counts. Customize every match to your preference.',
-    },
-    {
-      key: 'multiplayer',
-      icon: '🌐',
-      title: 'Up to 8 Players',
-      body: 'Free-for-all up to 6 players, or team battles with up to 8 across 2–4 teams. Real-time multiplayer with chat.',
-    },
+    { key: 'salvo', icon: '💣', ...x.highlights.salvo },
+    { key: 'speed', icon: '⏱️', ...x.highlights.speed },
+    { key: 'abilities', icon: '🔱', ...x.highlights.abilities },
+    { key: 'keyboard', icon: '⌨️', ...x.highlights.keyboard },
+    { key: 'sonar', icon: '📡', ...x.highlights.sonar },
+    { key: 'ai', icon: '🤖', ...x.highlights.ai },
+    { key: 'grids', icon: '📐', ...x.highlights.grids },
+    { key: 'multiplayer', icon: '🌐', ...x.highlights.multiplayer },
   ];
 
   const howToSteps = [
@@ -100,25 +62,25 @@ export default function SeaBattleLanding({
       key: 'create',
       stepNumber: 1,
       ...landing.howToPlay.steps.create,
-      tip: 'Pick your board size and enable spectator slots if you want friends to watch.',
+      tip: x.tips.create,
     },
     {
       key: 'place',
       stepNumber: 2,
       ...landing.howToPlay.steps.place,
-      tip: 'Spread out ships to prevent clustered hits by enemy salvoes.',
+      tip: x.tips.place,
     },
     {
       key: 'fire',
       stepNumber: 3,
       ...landing.howToPlay.steps.fire,
-      tip: 'Use parity search (checkerboard targeting) to find larger ships efficiently.',
+      tip: x.tips.fire,
     },
     {
       key: 'win',
       stepNumber: 4,
       ...landing.howToPlay.steps.win,
-      tip: 'Sinking an enemy ship grants a confirmation announcement.',
+      tip: x.tips.win,
     },
   ];
 
@@ -165,90 +127,99 @@ export default function SeaBattleLanding({
     translatedGames,
   );
 
+  const sp = x.specs;
   const specifications = {
-    title: 'Game Specifications',
-    kicker: 'Details',
+    title: sp.title,
+    kicker: sp.kicker,
     items: [
       {
-        label: 'Players',
-        value: '2–8',
+        label: sp.players.label,
+        value: sp.players.value,
         icon: '👥',
-        hint: 'FFA up to 6, teams up to 8',
+        hint: sp.players.hint,
       },
-      { label: 'Duration', value: '15–25 min', icon: '⏱️' },
+      { label: sp.duration.label, value: sp.duration.value, icon: '⏱️' },
       {
-        label: 'Game Modes',
-        value: 'Classic, Salvo, Speed',
+        label: sp.modes.label,
+        value: sp.modes.value,
         icon: '🎮',
-        badge: '3 modes',
+        badge: sp.modes.badge,
       },
-      { label: 'Grid Sizes', value: '10×10, 15×15, 20×20', icon: '📐' },
-      { label: 'Ship Fleet', value: '7 classes, 26 ships', icon: '🚢' },
+      { label: sp.grids.label, value: '10×10, 15×15, 20×20', icon: '📐' },
+      { label: sp.fleet.label, value: sp.fleet.value, icon: '🚢' },
       {
-        label: 'AI Difficulty',
-        value: 'Easy, Medium, Hard, Expert',
+        label: sp.ai.label,
+        value: sp.ai.value,
         icon: '🤖',
-        badge: '4 levels',
+        badge: sp.ai.badge,
       },
+      { label: sp.weapons.label, value: sp.weapons.value, icon: '📡' },
       {
-        label: 'Special Weapons',
-        value: 'Sonar, Radar, Scan Wave',
-        icon: '📡',
-      },
-      {
-        label: 'Ship Abilities',
-        value: '6 unique powers with cooldowns',
+        label: sp.abilities.label,
+        value: sp.abilities.value,
         icon: '🔱',
-        badge: 'NEW',
+        badge: sp.abilities.badge,
       },
-      { label: 'Team Mode', value: '2–4 teams, up to 8 players', icon: '⚔️' },
-      { label: 'Themes', value: '13 visual themes', icon: '🎨' },
-      { label: 'Cost', value: 'Free to Play', icon: '💰', badge: 'No ads' },
-      { label: 'Cross-Platform', value: 'Web + Mobile', icon: '🌐' },
+      { label: sp.team.label, value: sp.team.value, icon: '⚔️' },
+      { label: sp.themes.label, value: sp.themes.value, icon: '🎨' },
+      {
+        label: sp.cost.label,
+        value: sp.cost.value,
+        icon: '💰',
+        badge: sp.cost.badge,
+      },
+      { label: sp.platform.label, value: sp.platform.value, icon: '🌐' },
     ],
   };
 
+  const cmp = x.comparison;
+  const cv = cmp.values;
   const comparison = {
-    title: 'Why Arcadeum Sea Battle?',
-    kicker: 'Comparison',
-    subtitle: 'See how Arcadeum stacks up against other naval combat games',
+    title: cmp.title,
+    kicker: cmp.kicker,
+    subtitle: cmp.subtitle,
     columns: [
-      { key: 'feature', name: 'Feature' },
-      { key: 'arcadeum', name: 'Arcadeum', isHighlighted: true, badge: 'US' },
+      { key: 'feature', name: cmp.feature },
+      {
+        key: 'arcadeum',
+        name: 'Arcadeum',
+        isHighlighted: true,
+        badge: cmp.usBadge,
+      },
       { key: 'seaBattle2', name: 'Sea Battle 2' },
       { key: 'fleetBattle', name: 'Fleet Battle' },
       { key: 'battleTabs', name: 'BattleTabs' },
     ],
     rows: [
       {
-        feature: 'Game Modes',
+        feature: cmp.rows.modes,
         values: {
-          arcadeum: '3 (Classic, Salvo, Speed)',
+          arcadeum: cv.modes,
           seaBattle2: '2',
           fleetBattle: '3',
           battleTabs: '3',
         },
       },
       {
-        feature: 'Max Players',
+        feature: cmp.rows.maxPlayers,
         values: {
-          arcadeum: '8 (Team Mode)',
+          arcadeum: cv.maxPlayers,
           seaBattle2: '2',
           fleetBattle: '2',
           battleTabs: '2',
         },
       },
       {
-        feature: 'Ship Abilities',
+        feature: cmp.rows.abilities,
         values: {
-          arcadeum: '6 unique powers',
+          arcadeum: cv.abilities,
           seaBattle2: '-',
           fleetBattle: '-',
           battleTabs: '40+',
         },
       },
       {
-        feature: 'Board Sizes',
+        feature: cmp.rows.boards,
         values: {
           arcadeum: '10/15/20',
           seaBattle2: '10',
@@ -257,25 +228,25 @@ export default function SeaBattleLanding({
         },
       },
       {
-        feature: 'AI Difficulty',
+        feature: cmp.rows.ai,
         values: {
-          arcadeum: '4 levels',
+          arcadeum: cv.ai,
           seaBattle2: '1',
           fleetBattle: '3',
           battleTabs: '2',
         },
       },
       {
-        feature: 'Special Weapons',
+        feature: cmp.rows.weapons,
         values: {
-          arcadeum: 'Sonar + Radar',
+          arcadeum: cv.weapons,
           seaBattle2: '-',
           fleetBattle: '-',
-          battleTabs: 'Abilities',
+          battleTabs: cv.abilitiesShort,
         },
       },
       {
-        feature: 'Keyboard Controls',
+        feature: cmp.rows.keyboard,
         values: {
           arcadeum: true,
           seaBattle2: false,
@@ -284,21 +255,21 @@ export default function SeaBattleLanding({
         },
       },
       {
-        feature: 'Sound Effects',
+        feature: cmp.rows.sounds,
         values: {
-          arcadeum: '8 sounds',
-          seaBattle2: 'Basic',
-          fleetBattle: 'Full',
-          battleTabs: 'Full',
+          arcadeum: cv.sounds,
+          seaBattle2: cv.basic,
+          fleetBattle: cv.full,
+          battleTabs: cv.full,
         },
       },
       {
-        feature: 'Cost',
+        feature: cmp.rows.cost,
         values: {
-          arcadeum: 'Free',
-          seaBattle2: 'Free + IAP',
-          fleetBattle: 'Free + IAP',
-          battleTabs: 'Free (cosmetic)',
+          arcadeum: cv.free,
+          seaBattle2: cv.freeIap,
+          fleetBattle: cv.freeIap,
+          battleTabs: cv.freeCosmetic,
         },
       },
     ],
@@ -319,16 +290,13 @@ export default function SeaBattleLanding({
         eyebrow: landing.hero.eyebrow,
         subtitle: landing.hero.tagline,
         intro: landing.hero.intro,
-        category: 'Strategy',
-        playersBadge: '2–8 Players',
-        durationBadge: '15–25 min',
-        difficultyBadge: 'Naval Combat',
+        category: x.category,
+        playersBadge: x.badges.players,
+        durationBadge: x.badges.duration,
+        difficultyBadge: x.badges.difficulty,
         chips: landing.hero.chips,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
-        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
         browseRoomsLabel: landing.hero.ctaRooms,
-        createRoomLabel: landing.hero.ctaPlay,
         roomsHref,
         createRoomHref,
         heroVisual: (
@@ -358,12 +326,12 @@ export default function SeaBattleLanding({
         subtitle: landing.sections.themesLead,
         themes: themesList,
         baseHref: createRoomHref,
-        createRoomLabel: 'Deploy with Theme',
+        createRoomLabel: x.themesCta,
       }}
       rules={
         rules.length > 0
           ? {
-              title: rulesT?.title ?? 'Naval Combat Rules',
+              title: rulesT?.title ?? x.rulesFallbackTitle,
               kicker: landing.sections.rulesKicker,
               rules,
             }
@@ -381,8 +349,8 @@ export default function SeaBattleLanding({
         items: faqItems,
       }}
       relatedGames={{
-        title: 'More Tactical Battles',
-        kicker: 'Discover',
+        title: x.related.title,
+        kicker: x.related.kicker,
         currentGameSlug: 'sea_battle_v1',
         games: relatedGames,
       }}
@@ -392,9 +360,7 @@ export default function SeaBattleLanding({
         subtitle: landing.finalCta?.subtitle ?? landing.hero.tagline,
         roomsHref,
         gamesHref,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
-        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
         browseRoomsLabel: landing.hero.ctaRooms,
         backToGamesLabel: landing.breadcrumb.games,
       }}

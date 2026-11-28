@@ -1,12 +1,25 @@
+'use client';
+
 import Link from 'next/link';
-import { Container, GlassCard } from '@arcadeum/ui';
+import { Badge, Button } from '@arcadeum/ui';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { GameLandingLayout } from './GameLandingLayout';
 import { GameLandingLiveStats } from './GameLandingLiveStats';
+import { GameStickyPlayBar } from './GameStickyPlayBar';
+import { GameSectionNav } from './GameSectionNav';
+import { GameHowToPlay } from './GameHowToPlay';
+import { GameRulesSection } from './GameRulesSection';
+import { GameHighlightsGrid } from './GameHighlightsGrid';
+import { GameFaqSection } from './GameFaqSection';
+import type { GameSectionNavItem } from './types';
 
 export interface SoloLandingCopy {
   name: string;
   tagline: string;
   heroSubtitle: string;
   ctaPlayLabel: string;
+  /** Optional compact facts row under the primary action. */
+  facts?: Array<{ label: string; value: string }>;
   features: Array<{ icon: string; title: string; body: string }>;
   steps: Array<{ title: string; body: string }>;
   rules: Array<{ label: string; body: string }>;
@@ -22,154 +35,200 @@ export interface SoloGameLandingProps {
   accentTextClass?: string;
 }
 
+const GLOW_BY_CLASS_HINT: Array<[string, 'amber' | 'emerald' | 'blue']> = [
+  ['amber', 'amber'],
+  ['emerald', 'emerald'],
+];
+
+/** Maps the legacy Tailwind glow class onto the shared layout glow preset. */
+function resolveGlow(glowClass: string): 'amber' | 'emerald' | 'blue' {
+  const hit = GLOW_BY_CLASS_HINT.find(([hint]) => glowClass.includes(hint));
+  return hit ? hit[1] : 'blue';
+}
+
+/**
+ * Landing for single-player games. Same hierarchy as the multiplayer landing
+ * (one primary Play action, compact facts, sticky section nav, shared section
+ * components) without any bot or AI vs AI UI.
+ */
 export function SoloGameLanding({
   copy,
   playHref,
   gamesHref,
-  homeHref,
   accentGlowClass = 'from-emerald-500/15 via-teal-500/10',
-  accentTextClass = 'text-[var(--color)] bg-[var(--primary)]/15',
 }: SoloGameLandingProps) {
+  const { t } = useTranslation();
   if (!copy) return null;
 
-  const playButton = (
-    <Link
-      href={playHref}
-      className="rounded-xl bg-[var(--primary)] px-7 py-3 text-sm font-bold text-white shadow-lg shadow-[var(--primary)]/25 transition-transform hover:scale-[1.03]"
-    >
-      ▸ {copy.ctaPlayLabel}
-    </Link>
-  );
+  const hasFeatures = copy.features.length > 0;
+  const hasSteps = copy.steps.length > 0;
+  const hasRules = copy.rules.length > 0;
+  const hasFaq = copy.faq.length > 0;
+  const facts = copy.facts ?? [];
+
+  // Page order: Play, How to play, Rules, Highlights, FAQ.
+  const navItems: GameSectionNavItem[] = [
+    { id: 'play', labelKey: 'games.landing.navPlay' },
+  ];
+  if (hasSteps) {
+    navItems.push({
+      id: 'how-to-play',
+      labelKey: 'games.landing.navHowToPlay',
+    });
+  }
+  if (hasRules) {
+    navItems.push({ id: 'rules', labelKey: 'games.landing.navRules' });
+  }
+  if (hasFeatures) {
+    navItems.push({
+      id: 'highlights',
+      labelKey: 'games.landing.navHighlights',
+    });
+  }
+  if (hasFaq) {
+    navItems.push({ id: 'faq', labelKey: 'games.landing.navFaq' });
+  }
 
   return (
-    <div className="box-border relative min-h-screen overflow-hidden pb-20">
-      <div
-        className={`pointer-events-none absolute -top-40 left-1/2 h-[480px] w-[820px] -translate-x-1/2 rounded-full bg-gradient-to-b ${accentGlowClass} to-transparent blur-3xl`}
-        aria-hidden="true"
-      />
-
-      <Container size="lg">
-        {/* Hero */}
-        <header className="flex flex-col items-center gap-5 py-14 text-center sm:py-20">
-          <span className="rounded-full border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[var(--color)]">
+    <GameLandingLayout
+      accentGlow={resolveGlow(accentGlowClass)}
+      breadcrumbs={[
+        { label: t('games.landing.allGames'), href: gamesHref },
+        { label: copy.name },
+      ]}
+    >
+      <header
+        id="play"
+        data-testid="solo-landing-hero"
+        className="box-border relative w-full pt-4 pb-10 scroll-mt-32 flex flex-col gap-6 max-w-4xl"
+      >
+        <div className="box-border flex flex-wrap items-center gap-2">
+          <Badge variant="info" size="sm">
             {copy.tagline}
-          </span>
-          <h1 className="m-0 max-w-3xl text-4xl font-black tracking-tight text-[var(--foreground)] sm:text-5xl md:text-6xl">
+          </Badge>
+        </div>
+        <div className="box-border flex flex-col gap-3">
+          <h1 className="box-border m-0 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight text-[var(--foreground)] leading-[1.05]">
             {copy.name}
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-[var(--foreground)] opacity-90 sm:text-lg">
+          <p className="box-border m-0 text-base sm:text-lg text-[var(--foreground)] opacity-85 leading-relaxed max-w-2xl">
             {copy.heroSubtitle}
           </p>
+        </div>
 
-          <GameLandingLiveStats />
+        <div
+          id="solo-play-panel"
+          role="group"
+          aria-label={t('games.landing.primaryActions')}
+          className="box-border flex flex-col gap-2 p-4 sm:p-5 rounded-3xl border border-[var(--borderColor)] bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/10 backdrop-blur-xl shadow-xl max-w-md"
+        >
+          <Link href={playHref} className="box-border flex">
+            <Button variant="primary" size="lg" className="w-full min-h-14">
+              {copy.ctaPlayLabel}
+            </Button>
+          </Link>
+          <p className="box-border m-0 text-xs text-[var(--foreground)] opacity-70 text-center">
+            {t('games.landing.soloHint')}
+          </p>
+        </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
-            {playButton}
-            <Link
-              href={gamesHref}
-              className="rounded-xl border border-[var(--borderColor)] bg-[var(--glassBg)] px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--primary)]/10"
-            >
-              ← Games
-            </Link>
-          </div>
-        </header>
-
-        {/* Feature highlights */}
-        <section className="mt-12">
-          <div className="grid gap-4 sm:grid-cols-3">
-            {copy.features.map((feature) => (
-              <GlassCard
-                key={feature.title}
-                className="flex flex-col gap-2 p-5"
+        {facts.length > 0 ? (
+          <dl
+            aria-label={t('games.landing.facts')}
+            data-testid="game-hero-facts"
+            className="box-border m-0 flex flex-wrap items-stretch gap-2"
+          >
+            {facts.map((fact) => (
+              <div
+                key={fact.label}
+                className="box-border inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--borderColor)] bg-[var(--glassBg)] backdrop-blur-sm"
               >
-                <span className="text-2xl" aria-hidden="true">
-                  {feature.icon}
-                </span>
-                <h2 className="m-0 text-lg font-bold text-[var(--foreground)]">
-                  {feature.title}
-                </h2>
-                <p className="m-0 text-sm leading-relaxed text-[var(--foreground)] opacity-90">
-                  {feature.body}
-                </p>
-              </GlassCard>
-            ))}
-          </div>
-        </section>
-
-        {/* How to play */}
-        <section className="mt-12 pt-6">
-          <ol className="m-0 grid list-none gap-4 p-0 md:grid-cols-3">
-            {copy.steps.map((step, index) => (
-              <li key={step.title}>
-                <GlassCard className="h-full p-5">
-                  <span
-                    className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${accentTextClass}`}
-                  >
-                    {index + 1}
-                  </span>
-                  <h3 className="m-0 mb-1 text-base font-bold text-[var(--foreground)]">
-                    {step.title}
-                  </h3>
-                  <p className="m-0 text-sm leading-relaxed text-[var(--foreground)] opacity-90">
-                    {step.body}
-                  </p>
-                </GlassCard>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* Rules */}
-        <section className="mt-12">
-          <GlassCard className="grid gap-6 p-6 sm:grid-cols-3 sm:p-8">
-            {copy.rules.map((rule) => (
-              <div key={rule.label} className="flex flex-col gap-1">
-                <h3 className="m-0 text-sm font-bold uppercase tracking-wide text-[var(--primary)]">
-                  {rule.label}
-                </h3>
-                <p className="m-0 text-sm leading-relaxed text-[var(--foreground)] opacity-90">
-                  {rule.body}
-                </p>
+                <dt className="box-border text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground)] opacity-65">
+                  {fact.label}
+                </dt>
+                <dd className="box-border m-0 text-sm font-semibold text-[var(--foreground)]">
+                  {fact.value}
+                </dd>
               </div>
             ))}
-          </GlassCard>
-        </section>
+          </dl>
+        ) : null}
 
-        {/* FAQ */}
-        <section id="faq" className="mt-12">
-          <div className="mx-auto flex max-w-2xl flex-col gap-3">
-            {copy.faq.map((item) => (
-              <details
-                key={item.question}
-                className="rounded-xl border border-[var(--borderColor)] bg-[var(--glassBg)] p-4"
-              >
-                <summary className="cursor-pointer list-none text-sm font-semibold text-[var(--foreground)] marker:hidden">
-                  {item.question}
-                </summary>
-                <p className="mb-0 mt-2 text-sm leading-relaxed text-[var(--foreground)] opacity-90">
-                  {item.answer}
-                </p>
-              </details>
-            ))}
-          </div>
-        </section>
+        <GameLandingLiveStats />
 
-        {/* Final CTA */}
-        <section className="mt-12">
-          <div className="flex flex-col items-center gap-4 rounded-3xl border border-[var(--borderColor)] bg-gradient-to-br from-[var(--primary)]/15 to-transparent p-10 text-center">
-            <h2 className="m-0 text-2xl font-black text-[var(--foreground)] sm:text-3xl">
-              {copy.name}
-            </h2>
-            {playButton}
-            <Link
-              href={homeHref}
-              className="text-xs font-semibold text-[var(--foreground)] opacity-90 underline-offset-4 hover:underline"
-            >
-              Arcadeum
-            </Link>
-          </div>
-        </section>
-      </Container>
-    </div>
+        <GameStickyPlayBar watchId="solo-play-panel">
+          <Link href={playHref} className="box-border flex">
+            <Button variant="primary" size="lg" className="w-full">
+              {copy.ctaPlayLabel}
+            </Button>
+          </Link>
+        </GameStickyPlayBar>
+      </header>
+
+      <GameSectionNav items={navItems} />
+
+      {hasSteps ? (
+        <GameHowToPlay
+          steps={copy.steps.map((step, index) => ({
+            key: step.title,
+            stepNumber: index + 1,
+            title: step.title,
+            body: step.body,
+          }))}
+        />
+      ) : null}
+
+      {hasRules ? (
+        <GameRulesSection
+          rules={copy.rules.map((rule) => ({
+            key: rule.label,
+            head: rule.label,
+            body: rule.body,
+          }))}
+        />
+      ) : null}
+
+      {hasFeatures ? (
+        <GameHighlightsGrid
+          items={copy.features.map((feature) => ({
+            key: feature.title,
+            icon: feature.icon,
+            title: feature.title,
+            body: feature.body,
+          }))}
+        />
+      ) : null}
+
+      {hasFaq ? (
+        <GameFaqSection
+          items={copy.faq.map((item) => ({
+            key: item.question,
+            question: item.question,
+            answer: item.answer,
+          }))}
+        />
+      ) : null}
+
+      <section
+        data-testid="solo-final-cta"
+        className="box-border my-10 sm:my-12 p-8 sm:p-14 rounded-[2rem] bg-gradient-to-br from-[var(--glassBg)] to-[var(--primary)]/15 border border-[var(--borderColor)] shadow-2xl flex flex-col items-center text-center gap-8"
+      >
+        <h2 className="box-border m-0 text-3xl sm:text-5xl font-extrabold text-[var(--foreground)] tracking-tight">
+          {copy.name}
+        </h2>
+        <div className="box-border flex flex-wrap items-center justify-center gap-3">
+          <Link href={playHref} className="box-border inline-flex">
+            <Button variant="primary" size="lg">
+              {copy.ctaPlayLabel}
+            </Button>
+          </Link>
+          <Link href={gamesHref} className="box-border inline-flex">
+            <Button variant="outline" size="lg">
+              {t('games.landing.allGames')}
+            </Button>
+          </Link>
+        </div>
+      </section>
+    </GameLandingLayout>
   );
 }

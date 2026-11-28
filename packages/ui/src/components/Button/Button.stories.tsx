@@ -22,7 +22,7 @@ const meta: Meta<typeof Button> = {
         'outline',
         'victory',
       ],
-      description: 'Visual style variant — pass an array to compose',
+      description: 'Visual style variant - pass an array to compose',
     },
     shape: {
       control: 'select',
@@ -31,7 +31,7 @@ const meta: Meta<typeof Button> = {
     },
     active: {
       control: 'boolean',
-      description: 'Selected state — chip becomes gold-tinted, others get a primary highlight',
+      description: 'Selected state - chip becomes gold-tinted, others get a primary highlight',
     },
     rotatable: {
       control: 'boolean',

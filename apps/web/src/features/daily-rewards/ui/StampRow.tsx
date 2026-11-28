@@ -121,9 +121,7 @@ export function StampRow({
                   fontSize: '12px',
                   lineHeight: 1,
                   filter:
-                    state === 'locked'
-                      ? 'grayscale(0.7) opacity(0.5)'
-                      : 'none',
+                    state === 'locked' ? 'grayscale(0.7) opacity(0.5)' : 'none',
                 }}
               >
                 💎

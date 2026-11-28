@@ -5,11 +5,14 @@ import { useTranslation } from '@/shared/i18n/useTranslation';
 import { BOARD_CELL_FOCUS_CLASS } from '@/shared/lib/keyboard-navigation';
 import { PachisiTokenView } from './PachisiTokenView';
 import type { PachisiToken } from '../types';
+import { moveAriaFor } from '../lib/moveAria';
 
 export interface PlacedToken {
   ownerId: string;
   seat: number;
   token: PachisiToken;
+  /** Owned by the viewer's partner (team mode). */
+  isPartner?: boolean;
 }
 
 interface PachisiTokenStackProps {
@@ -18,8 +21,13 @@ interface PachisiTokenStackProps {
   currentUserId: string | null;
   canMove: boolean;
   movable: Set<number>;
+  /** Called with the token id; the board adds the partner owner when needed. */
   onMove: (tokenId: number) => void;
   isLandingCell?: boolean;
+  /** Current die, used to describe the destination in aria labels. */
+  die?: number | null;
+  /** Destination preview: token id on hover/focus, null on leave. */
+  onPreview?: (tokenId: number | null) => void;
 }
 
 export function PachisiTokenStack({
@@ -30,11 +38,19 @@ export function PachisiTokenStack({
   movable,
   onMove,
   isLandingCell = false,
+  die = null,
+  onPreview,
 }: PachisiTokenStackProps): ReactElement {
   const { t } = useTranslation();
 
   const isBlockade =
     tokens.length >= 2 && tokens.every((t) => t.ownerId === tokens[0].ownerId);
+  const partnerTokenAria = (id: number) =>
+    t('games.pachisi_v1.game.team.movePartnerTokenAria', { id });
+  const ownTokenAria = (placed: PlacedToken) => {
+    const { key, params } = moveAriaFor(placed.seat, placed.token, die);
+    return t(key, params);
+  };
 
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -78,11 +94,18 @@ export function PachisiTokenStack({
               isButton={movableToken}
               stackIndex={tokens.length > 1 ? i : undefined}
               isBlockade={isBlockade}
+              isPartner={placed.isPartner}
+              progress={placed.token.progress}
+              onHoverChange={
+                movableToken && onPreview
+                  ? (active) => onPreview(active ? placed.token.id : null)
+                  : undefined
+              }
               ariaLabel={
                 movableToken
-                  ? t('games.pachisi_v1.game.moveTokenAria', {
-                      id: placed.token.id,
-                    })
+                  ? placed.isPartner
+                    ? partnerTokenAria(placed.token.id)
+                    : ownTokenAria(placed)
                   : undefined
               }
               onClick={movableToken ? () => onMove(placed.token.id) : undefined}
@@ -96,6 +119,7 @@ export function PachisiTokenStack({
         {tokens.length > 1 && (
           <span
             data-testid={`stack-count-${cellKey}`}
+            style={{ transform: 'rotate(var(--pachisi-counter-rot, 0deg))' }}
             className={`pointer-events-none absolute -top-1 -right-1 z-30 flex items-center gap-0.5 rounded-full px-1 py-0.5 text-[8px] font-black shadow-sm ring-1 ${
               isBlockade
                 ? 'bg-amber-950/90 text-amber-300 ring-amber-400/60'

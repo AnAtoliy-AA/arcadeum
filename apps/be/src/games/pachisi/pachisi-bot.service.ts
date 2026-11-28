@@ -92,6 +92,7 @@ export class PachisiBotService extends PachisiBot {
             currentTurnPlayerId,
             currentSession.roomId,
             move.tokenId,
+            move.ownerId,
           );
           currentSession = updated;
           currentState = updated.state as unknown as PachisiState;

@@ -89,4 +89,32 @@ describe('GamesFilters', () => {
     fireEvent.click(clearBtn);
     expect(onClearAll).toHaveBeenCalledTimes(1);
   });
+  it('toggles open seats and bot rooms chips', () => {
+    const onOpenSeatsChange = vi.fn();
+    const onBotRoomsChange = vi.fn();
+    render(
+      <GamesFilters
+        {...defaultProps}
+        onOpenSeatsChange={onOpenSeatsChange}
+        onBotRoomsChange={onBotRoomsChange}
+      />,
+    );
+    fireEvent.click(screen.getByTestId('rooms-filter-open-seats'));
+    fireEvent.click(screen.getByTestId('rooms-filter-bot-rooms'));
+    expect(onOpenSeatsChange).toHaveBeenCalledWith(true);
+    expect(onBotRoomsChange).toHaveBeenCalledWith(true);
+  });
+
+  it('counts the new filters as active', () => {
+    render(
+      <GamesFilters
+        {...defaultProps}
+        openSeatsOnly
+        botRoomsOnly
+        onOpenSeatsChange={vi.fn()}
+        onBotRoomsChange={vi.fn()}
+      />,
+    );
+    expect(screen.getByTestId('rooms-filter-clear-all')).toHaveTextContent('2');
+  });
 });

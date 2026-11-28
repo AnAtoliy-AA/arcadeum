@@ -7,6 +7,8 @@ interface UseArcPricingResult {
   pricing: ArcPricing | null;
   loading: boolean;
   error: string | null;
+  /** True only when the backend vouches for a fresh price. */
+  priceAvailable: boolean;
   calculateArcPrice: (priceUsd: number) => number;
 }
 
@@ -39,12 +41,15 @@ export function useArcPricing(): UseArcPricingResult {
     };
   }, []);
 
+  const priceAvailable =
+    !!pricing && pricing.priceStatus === 'ok' && pricing.arcUsdPrice > 0;
+
   const calculateArcPrice = (priceUsd: number): number => {
-    if (!pricing || pricing.arcUsdPrice <= 0) return 0;
+    if (!priceAvailable) return 0;
 
     const discountedUsd = priceUsd * (1 - pricing.discountPercent / 100);
-    return Math.ceil(discountedUsd / pricing.arcUsdPrice);
+    return Math.ceil(discountedUsd / (pricing?.arcUsdPrice ?? 1));
   };
 
-  return { pricing, loading, error, calculateArcPrice };
+  return { pricing, loading, error, priceAvailable, calculateArcPrice };
 }

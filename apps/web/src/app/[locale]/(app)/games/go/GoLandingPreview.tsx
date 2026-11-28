@@ -27,7 +27,7 @@ export function GoLandingPreview() {
         return (
           <div
             aria-hidden="true"
-            className="box-border w-full max-w-[360px] mx-auto aspect-square p-3 rounded-2xl border shadow-xl relative overflow-hidden"
+            className="box-border w-full max-w-[240px] sm:max-w-[360px] mx-auto aspect-square p-3 rounded-2xl border shadow-xl relative overflow-hidden"
             style={{
               background: theme.boardBackground,
               borderColor: theme.gridLine,

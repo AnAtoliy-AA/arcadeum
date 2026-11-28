@@ -53,7 +53,7 @@ export function DiscardPile({
             where the 80×112 slot can't accommodate readable text.
 
             `zIndex: 20` deliberately sits above `LastPlayedCard`'s
-            `zIndex: 10` — without this the card painted on top of the
+            `zIndex: 10` - without this the card painted on top of the
             scrim and the description never showed.
 
             `borderRadius` matches the card's so the scrim bottom

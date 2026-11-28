@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -97,6 +97,30 @@ function makeLog(overrides: Partial<ChatLogEntry> = {}): ChatLogEntry {
 describe('GameChat', () => {
   beforeEach(() => {
     useGameChatStore.getState().clear();
+  });
+
+  it('shows an unread badge on an inactive tab and clears it when opened', () => {
+    renderChat(<GameChat currentUserId="me" />);
+    expect(screen.getByTestId('chat-tab-all')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(screen.queryByTestId('chat-tab-unread-private')).toBeNull();
+
+    act(() => {
+      useGameChatStore
+        .getState()
+        .setLogs([
+          makeLog({ id: 'w1', senderId: 'other', scope: 'private' }),
+          makeLog({ id: 'w2', senderId: 'me', scope: 'private' }),
+        ]);
+    });
+    expect(screen.getByTestId('chat-tab-unread-private')).toHaveTextContent(
+      '1',
+    );
+
+    fireEvent.click(screen.getByTestId('chat-tab-private'));
+    expect(screen.queryByTestId('chat-tab-unread-private')).toBeNull();
   });
 
   it('marks a chat message as own when senderId matches currentUserId', () => {

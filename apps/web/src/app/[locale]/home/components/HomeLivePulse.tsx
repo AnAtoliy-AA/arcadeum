@@ -5,11 +5,21 @@ import Link from 'next/link';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useRoutes } from '@/shared/config/useRoutes';
 import { useLiveStatsStore } from '@/features/live-stats';
+import { LivePulseCard, LivePulseLinkAction } from './LivePulseCard';
+import { LivePulsePickerButton } from './LivePulsePickerButton';
 
 export function HomeLivePulse() {
   const { t } = useTranslation();
   const routes = useRoutes();
-  const { stats, fetchLiveStats } = useLiveStatsStore();
+  const { stats, fetchLiveStats, lastFetchedAt } = useLiveStatsStore();
+  // Until the first response arrives zeros are unknown, not real zeros.
+  const known = lastFetchedAt !== null;
+  const fmt = (v: string) => (known ? v : '-');
+  const noOnline = known && stats.onlineUsers === 0;
+  const noActive = known && stats.activeGames === 0;
+  const noLobbies = known && stats.waitingRooms === 0;
+  const noSeeking = known && stats.waitingPlayers === 0;
+  const noToday = known && stats.matchesToday === 0;
 
   useEffect(() => {
     void fetchLiveStats();
@@ -41,7 +51,7 @@ export function HomeLivePulse() {
             >
               {t('home.liveTitle')}
             </h2>
-            <p className="mt-0.5 text-xs text-white/60 md:text-sm">
+            <p className="mt-0.5 text-xs text-white/75 md:text-sm">
               {t('home.liveSubtitle')}
             </p>
           </div>
@@ -55,131 +65,153 @@ export function HomeLivePulse() {
           </Link>
         </div>
 
-        <div className="relative z-[1] grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 md:gap-4">
-          <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-emerald-500/20 bg-gradient-to-b from-emerald-950/20 to-black/30 p-4 transition-all hover:border-emerald-500/40 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">
-                {t('home.liveBadgeOnline')}
-              </span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 text-xs">
-                👥
-              </span>
-            </div>
-            <div
-              data-testid="live-online-counter"
-              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
-            >
-              {stats.onlineUsers.toLocaleString()}
-            </div>
-            <div className="mt-1 text-[11px] font-medium text-emerald-300/60">
-              Active players now
-            </div>
-          </div>
-
-          <Link
-            href={`${routes.rooms}?status=in_progress`}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-500/20 bg-gradient-to-b from-amber-950/20 to-black/30 p-4 transition-all hover:border-amber-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(245,158,11,0.15)] active:scale-[0.98]"
+        <div className="relative z-[1] grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-5 md:gap-4">
+          <LivePulseCard
+            tone="emerald"
+            testId="live-online-card"
+            counterTestId="live-online-counter"
+            label={t('home.liveBadgeOnline')}
+            icon="👥"
+            value={fmt(stats.onlineUsers.toLocaleString())}
+            description={
+              !known
+                ? t('home.liveStatsUnknown')
+                : noOnline
+                  ? t('home.liveOnlineEmpty')
+                  : t('home.liveOnlineSub')
+            }
+            empty={noOnline}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                {t('home.liveBadgeActiveGames')}
-              </span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-500/10 text-amber-400 text-xs">
-                ⚔️
-              </span>
-            </div>
-            <div
-              data-testid="live-active-games-counter"
-              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
-            >
-              {stats.activeGames}
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-amber-300/60">
-              <span>Matches ongoing</span>
-              <span className="text-amber-400 font-bold transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </div>
-          </Link>
+            {noOnline || !known ? (
+              <LivePulsePickerButton
+                tone="emerald"
+                testId="live-online-action"
+                label={t('home.livePlayBotAction')}
+              />
+            ) : (
+              <LivePulseLinkAction
+                tone="emerald"
+                testId="live-online-action"
+                href={routes.games}
+              >
+                {t('home.liveBrowseGamesAction')}
+              </LivePulseLinkAction>
+            )}
+          </LivePulseCard>
 
-          <Link
-            data-testid="live-waiting-rooms-card"
-            href={`${routes.rooms}?status=lobby`}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-indigo-500/20 bg-gradient-to-b from-indigo-950/20 to-black/30 p-4 transition-all hover:border-indigo-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(99,102,241,0.15)] active:scale-[0.98]"
+          <LivePulseCard
+            tone="amber"
+            testId="live-active-games-card"
+            counterTestId="live-active-games-counter"
+            label={t('home.liveBadgeActiveGames')}
+            icon="⚔️"
+            value={fmt(String(stats.activeGames))}
+            description={
+              noActive ? t('home.liveActiveEmpty') : t('home.liveActiveSub')
+            }
+            empty={noActive}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400">
-                {t('home.liveBadgeWaitingRooms')}
-              </span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400 text-xs">
-                🎮
-              </span>
-            </div>
-            <div
-              data-testid="live-waiting-rooms-counter"
-              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
+            <LivePulseLinkAction
+              tone="amber"
+              testId="live-active-games-action"
+              href={
+                noActive || !known
+                  ? routes.games
+                  : `${routes.rooms}?status=in_progress`
+              }
             >
-              {stats.waitingRooms}
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-indigo-300/60">
-              <span>{t('home.liveWaitingRoomsSub')}</span>
-              <span className="text-indigo-400 font-bold transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </div>
-          </Link>
+              {noActive || !known
+                ? t('home.liveBrowseGamesAction')
+                : t('home.liveActiveAction')}
+            </LivePulseLinkAction>
+          </LivePulseCard>
 
-          <Link
-            href={routes.games}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-fuchsia-500/20 bg-gradient-to-b from-fuchsia-950/20 to-black/30 p-4 transition-all hover:border-fuchsia-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(217,70,239,0.15)] active:scale-[0.98]"
+          <LivePulseCard
+            tone="indigo"
+            testId="live-waiting-rooms-card"
+            counterTestId="live-waiting-rooms-counter"
+            label={t('home.liveBadgeWaitingRooms')}
+            icon="🎮"
+            value={fmt(String(stats.waitingRooms))}
+            description={
+              noLobbies
+                ? t('home.liveLobbiesEmpty')
+                : t('home.liveWaitingRoomsSub')
+            }
+            empty={noLobbies}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-fuchsia-400">
-                {t('home.liveBadgeWaitingPlayers')}
-              </span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fuchsia-500/10 text-fuchsia-400 text-xs">
-                🎯
-              </span>
-            </div>
-            <div
-              data-testid="live-waiting-players-counter"
-              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
-            >
-              {stats.waitingPlayers}
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-fuchsia-300/60">
-              <span>{t('home.liveWaitingPlayersSub')}</span>
-              <span className="text-fuchsia-400 font-bold transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </div>
-          </Link>
+            {noLobbies || !known ? (
+              <>
+                <LivePulseLinkAction
+                  tone="indigo"
+                  testId="live-waiting-rooms-action"
+                  href={routes.gameCreate}
+                >
+                  {t('home.liveCreateRoomAction')}
+                </LivePulseLinkAction>
+                <LivePulsePickerButton
+                  tone="indigo"
+                  testId="live-waiting-rooms-bot-action"
+                  label={t('home.livePlayBotAction')}
+                />
+              </>
+            ) : (
+              <LivePulseLinkAction
+                tone="indigo"
+                testId="live-waiting-rooms-action"
+                href={`${routes.rooms}?status=lobby`}
+              >
+                {t('home.liveLobbiesAction')}
+              </LivePulseLinkAction>
+            )}
+          </LivePulseCard>
 
-          <Link
-            href={`${routes.rooms}?status=completed`}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-cyan-500/20 bg-gradient-to-b from-cyan-950/20 to-black/30 p-4 transition-all hover:border-cyan-500/40 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] active:scale-[0.98] col-span-2 sm:col-span-1"
+          <LivePulseCard
+            tone="fuchsia"
+            testId="live-waiting-players-card"
+            counterTestId="live-waiting-players-counter"
+            label={t('home.liveBadgeWaitingPlayers')}
+            icon="🎯"
+            value={fmt(String(stats.waitingPlayers))}
+            description={
+              noSeeking ? t('home.liveSeekingEmpty') : t('home.liveSeekingSub')
+            }
+            empty={noSeeking}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
-                {t('home.liveBadgeMatchesToday')}
-              </span>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cyan-500/10 text-cyan-400 text-xs">
-                🏆
-              </span>
-            </div>
-            <div
-              data-testid="live-matches-today-counter"
-              className="mt-3 font-mono text-2xl font-black text-white md:text-3xl"
+            <LivePulsePickerButton
+              tone="fuchsia"
+              testId="live-waiting-players-action"
+              label={t('home.liveQuickMatchAction')}
+            />
+          </LivePulseCard>
+
+          <LivePulseCard
+            tone="cyan"
+            testId="live-matches-today-card"
+            counterTestId="live-matches-today-counter"
+            label={t('home.liveBadgeMatchesToday')}
+            icon="🏆"
+            value={fmt(stats.matchesToday.toLocaleString())}
+            description={
+              noToday ? t('home.liveTodayEmpty') : t('home.liveTodaySub')
+            }
+            empty={noToday}
+            className="min-[480px]:col-span-2 lg:col-span-1"
+          >
+            <LivePulseLinkAction
+              tone="cyan"
+              testId="live-matches-today-action"
+              href={
+                noToday || !known
+                  ? routes.games
+                  : `${routes.rooms}?status=completed`
+              }
             >
-              {stats.matchesToday.toLocaleString()}
-            </div>
-            <div className="mt-1 flex items-center justify-between text-[11px] font-medium text-cyan-300/60">
-              <span>Completed today</span>
-              <span className="text-cyan-400 font-bold transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </div>
-          </Link>
+              {noToday || !known
+                ? t('home.liveBrowseGamesAction')
+                : t('home.liveTodayAction')}
+            </LivePulseLinkAction>
+          </LivePulseCard>
         </div>
       </div>
     </section>

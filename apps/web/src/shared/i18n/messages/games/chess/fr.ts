@@ -178,6 +178,9 @@ export const frMessages = {
     lobby: {
       variant: 'Variante',
       timeControl: 'Contrôle de temps',
+      timeControlHint:
+        'Temps de pendule par joueur. Choisissez Sans pendule pour une partie détendue',
+      unlimited: 'Illimité',
       startWithBots: 'Commencer avec des bots',
       waitingForPlayers: 'En attente des joueurs…',
       minPlayers: 'Minimum 2 joueurs',

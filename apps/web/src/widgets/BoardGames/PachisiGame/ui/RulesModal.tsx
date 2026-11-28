@@ -32,6 +32,11 @@ export function RulesModal({ open, onClose }: RulesModalProps) {
       title: t('games.pachisi_v1.rules.sixesTitle'),
       body: t('games.pachisi_v1.rules.sixes'),
     },
+    {
+      badge: '🤝',
+      title: t('games.pachisi_v1.rules.teamsTitle'),
+      body: t('games.pachisi_v1.rules.teams'),
+    },
   ];
 
   return (

@@ -25,7 +25,6 @@ import { cx } from '@arcadeum/ui/utils/cx';
 import { ShareGameMenu } from './ShareGameMenu';
 import { MoveControls } from './MoveControls';
 import { MoreOptionsMenu } from './MoreOptionsMenu';
-import { DesktopSecondaryControls } from './DesktopSecondaryControls';
 import { sendFriendRequestByUserId } from '@/shared/api/friends';
 import { getFriends } from '@/shared/api/friends';
 import { useActiveClanWarMatch, ClanWarMatchHud } from '@/features/clans';
@@ -167,6 +166,12 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
     };
   }, [snapshot.accessToken, opponentUserId]);
 
+  const canAddFriend =
+    !!opponentUserId &&
+    !!snapshot.userId &&
+    opponentUserId !== snapshot.userId &&
+    !isAlreadyFriend;
+
   const handleCenterView = () => {
     onCenterView?.();
   };
@@ -205,7 +210,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
           )}
 
           <Button
-            className="w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0"
+            className="w-10 h-10 sm:w-9 sm:h-9 !p-0 shrink-0"
             variant="glass"
             size="sm"
             data-testid="fullscreen-button"
@@ -226,7 +231,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
           <Button
             className={cx(
-              'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
+              'w-10 h-10 sm:w-9 sm:h-9 !p-0 shrink-0',
               soundEnabled &&
                 '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
             )}
@@ -247,7 +252,7 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
           <Button
             className={cx(
-              'w-8 h-8 sm:w-9 sm:h-9 !p-0 shrink-0',
+              'w-10 h-10 sm:w-9 sm:h-9 !p-0 shrink-0',
               isChatVisible &&
                 '!border-[var(--primary)] !bg-[color:color-mix(in_srgb,var(--primary)_15%,transparent)]',
             )}
@@ -298,92 +303,17 @@ export function GamesControlPanel(props: GamesControlPanelProps) {
 
           {roomId && <ShareGameMenu roomId={roomId} inviteCode={inviteCode} />}
 
-          {opponentUserId &&
-            snapshot.userId &&
-            opponentUserId !== snapshot.userId &&
-            !isAlreadyFriend && (
-              <Button
-                className="active:scale-[0.95] text-[10px] sm:text-xs font-semibold px-2 sm:px-3"
-                variant={friendRequestSent ? 'glass' : 'secondary'}
-                size="sm"
-                onClick={handleSendFriendRequest}
-                disabled={friendRequestLoading || friendRequestSent}
-                data-testid="add-friend-button"
-              >
-                {friendRequestSent ? '✓' : '👤+'}
-                <span className="hidden sm:inline">
-                  {' ' +
-                    (friendRequestSent
-                      ? t(
-                          'games.common.postGame.friendAdded' as TranslationKey,
-                        ) || 'Sent'
-                      : t(
-                          'games.common.postGame.addFriend' as TranslationKey,
-                        ) || 'Add Friend')}
-                </span>
-              </Button>
-            )}
-
           <MoreOptionsMenu
             musicEnabled={musicEnabled}
             onToggleMusic={toggleMusic}
             onShowRules={onShowRules}
             onShowTutorial={onShowTutorial}
+            onAddFriend={canAddFriend ? handleSendFriendRequest : undefined}
+            addFriendDisabled={friendRequestLoading || friendRequestSent}
+            addFriendSent={friendRequestSent}
+            onExitRoom={handleExitRoom}
+            onLeave={snapshot.userId ? handleLeaveGame : undefined}
           />
-
-          <DesktopSecondaryControls
-            musicEnabled={musicEnabled}
-            onToggleMusic={toggleMusic}
-            onShowRules={onShowRules}
-            onShowTutorial={onShowTutorial}
-          />
-
-          <Button
-            className="!px-2 sm:px-3"
-            variant="glass"
-            size="sm"
-            onClick={handleExitRoom}
-            aria-label={
-              t('games.table.controlPanel.exitRoom' as TranslationKey) || 'Exit'
-            }
-            title={
-              t('games.table.controlPanel.exitRoomTooltip' as TranslationKey) ||
-              'Go back to lobby but stay in the game'
-            }
-            data-testid="exit-room-button"
-          >
-            🏃
-            <span className="hidden sm:inline">
-              {' ' +
-                (t('games.table.controlPanel.exitRoom' as TranslationKey) ||
-                  'Exit')}
-            </span>
-          </Button>
-
-          {snapshot.userId && (
-            <Button
-              className="!px-2 sm:px-3"
-              variant="danger"
-              size="sm"
-              onClick={handleLeaveGame}
-              aria-label={
-                t('games.common.leaveRoom.button' as TranslationKey) ||
-                'Leave Room'
-              }
-              title={
-                t('games.table.controlPanel.leaveGameTooltip') ||
-                'Remove yourself from the game and return to lobby'
-              }
-              data-testid="leave-game-button"
-            >
-              🚪
-              <span className="hidden sm:inline">
-                {' ' +
-                  (t('games.common.leaveRoom.button' as TranslationKey) ||
-                    'Leave')}
-              </span>
-            </Button>
-          )}
         </div>
 
         <ConfirmationModal

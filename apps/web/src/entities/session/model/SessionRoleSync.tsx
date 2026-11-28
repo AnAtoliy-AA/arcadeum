@@ -16,6 +16,9 @@ const INITIAL_SYNC_DEFER_MS = 2000;
 // 429 → IP-block loop from a single client.
 const RESTORE_BACKOFF_MS = [5_000, 15_000, 60_000, 300_000];
 const RESTORE_401_RETRY_DELAY_MS = 800;
+// Lock TTL is 10s; retry just after it so a skipped restore never leaves the
+// user anonymous until the next focus event.
+const LOCK_SKIP_RETRY_MS = 10_500;
 const RESTORE_401_GIVE_UP_MS = 5 * 60_000;
 
 function sleep(ms: number): Promise<void> {
@@ -41,6 +44,8 @@ export function SessionRoleSync(): null {
   const restoreRetriedAfter401Ref = useRef<boolean>(false);
 
   useEffect(() => {
+    let lockRetryTimer: ReturnType<typeof setTimeout> | null = null;
+    let runSync: () => void = () => undefined;
     const restoreBackoffMs = (): number =>
       RESTORE_BACKOFF_MS[
         Math.min(restoreFailuresRef.current, RESTORE_BACKOFF_MS.length - 1)
@@ -55,7 +60,15 @@ export function SessionRoleSync(): null {
       // to race a rotated cookie (the loser would get 401 and drop the
       // session). On the post-401 retry we bypass the lock on purpose so we
       // can pick up the freshly rotated cookie from the winning tab.
-      if (!bypassLock && !acquireRefreshLock()) return false;
+      if (!bypassLock && !acquireRefreshLock()) {
+        if (lockRetryTimer === null) {
+          lockRetryTimer = setTimeout(() => {
+            lockRetryTimer = null;
+            runSync();
+          }, LOCK_SKIP_RETRY_MS);
+        }
+        return false;
+      }
       lastRestoreAttemptAtRef.current = now;
 
       try {
@@ -179,6 +192,7 @@ export function SessionRoleSync(): null {
       }
     };
 
+    runSync = () => void sync();
     const timer = setTimeout(() => void sync(), INITIAL_SYNC_DEFER_MS);
 
     const unsubscribe = useSessionStore.subscribe((state, prev) => {
@@ -196,6 +210,7 @@ export function SessionRoleSync(): null {
 
     return () => {
       clearTimeout(timer);
+      if (lockRetryTimer !== null) clearTimeout(lockRetryTimer);
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       unsubscribe();

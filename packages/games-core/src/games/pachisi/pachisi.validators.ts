@@ -1,7 +1,11 @@
 import type { GameActionContext } from '../../base/game-engine.interface';
 import { GAME_PHASE } from './pachisi.constants';
 import type { MoveTokenPayload, PachisiState } from './pachisi.types';
-import { getAllLegalMoves, tokensByPlayer } from './pachisi.utils';
+import {
+  controllableOwners,
+  getAllLegalMoves,
+  tokensByPlayer,
+} from './pachisi.utils';
 
 export function validateRollDice(
   state: PachisiState,
@@ -37,11 +41,23 @@ export function validateMoveToken(
   if (typeof p.tokenId !== 'number') {
     return { ok: false, error: 'tokenId is required' };
   }
-  if (!tokensByPlayer(state, context.userId).some((t) => t.id === p.tokenId)) {
+  if (p.ownerId !== undefined && typeof p.ownerId !== 'string') {
+    return { ok: false, error: 'ownerId must be a string' };
+  }
+  const ownerId = p.ownerId ?? context.userId;
+  if (!controllableOwners(state, context.userId).includes(ownerId)) {
+    return { ok: false, error: "You cannot move that player's tokens" };
+  }
+  if (!tokensByPlayer(state, ownerId).some((t) => t.id === p.tokenId)) {
     return { ok: false, error: 'Unknown token for this player' };
   }
   const legal = getAllLegalMoves(state, context.userId);
-  if (!legal.some((m) => m.tokenId === p.tokenId)) {
+  if (
+    !legal.some(
+      (m) =>
+        m.tokenId === p.tokenId && (m.ownerId ?? context.userId) === ownerId,
+    )
+  ) {
     return { ok: false, error: 'Illegal move for current die roll' };
   }
   return { ok: true };

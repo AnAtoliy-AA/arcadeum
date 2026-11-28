@@ -52,8 +52,8 @@ export function LobbyHeroSection({
   findOpponentHint,
 }: LobbyHeroSectionProps) {
   return (
-    <CenterSection className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--surface)]/70 backdrop-blur-md p-6 shadow-sm [animation:slideIn_0.5s_ease-out_both]">
-      <GameIcon className="[animation:float_3s_ease-in-out_infinite]">
+    <CenterSection className="w-full rounded-2xl border border-[var(--glassBorder)] bg-[var(--surface)]/70 backdrop-blur-md p-5 shadow-sm motion-safe:[animation:slideIn_0.4s_ease-out_both]">
+      <GameIcon className="motion-safe:[animation:float_3s_ease-in-out_infinite] !text-[56px] !leading-[64px] max-[800px]:!text-[40px] max-[800px]:!leading-[48px]">
         {gameIcon}
       </GameIcon>
       <div
@@ -61,7 +61,7 @@ export function LobbyHeroSection({
         data-variant={variantName}
         className="flex flex-col items-center gap-1"
       >
-        <LobbyTitle className="[animation:slideIn_0.5s_ease-out_0.15s_both]">
+        <LobbyTitle className="!text-[22px] max-[800px]:!text-[18px]">
           {waitingLabel}
         </LobbyTitle>
         <LobbySubtitle>{subtitleText || defaultSubtitle}</LobbySubtitle>
@@ -76,9 +76,17 @@ export function LobbyHeroSection({
             {playerCount} / {maxPlayers}
           </span>
         </ProgressLabel>
-        <ProgressBar>
-          <ProgressFill width={`${progress}%`} />
-        </ProgressBar>
+        <div
+          role="progressbar"
+          aria-label={playersLabel}
+          aria-valuemin={0}
+          aria-valuemax={maxPlayers}
+          aria-valuenow={playerCount}
+        >
+          <ProgressBar>
+            <ProgressFill width={`${progress}%`} />
+          </ProgressBar>
+        </div>
       </ProgressWrapper>
 
       {roomStatus === 'lobby' && playerCount < maxPlayers && (
@@ -86,7 +94,8 @@ export function LobbyHeroSection({
           <button
             type="button"
             onClick={onToggleQueue}
-            className={`w-full rounded-xl px-5 py-3 text-sm font-semibold transition-all active:scale-[0.98] ${
+            aria-pressed={isQueued}
+            className={`w-full min-h-[44px] rounded-xl px-5 py-3 text-sm font-semibold transition-all motion-reduce:transition-none active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--primary)] ${
               isQueued
                 ? 'border border-[var(--borderColor)] bg-transparent text-[var(--textSecondary)] hover:bg-[var(--backgroundHover)]'
                 : 'bg-[var(--primary)] text-[var(--primaryText)] shadow-md hover:opacity-90'
@@ -94,7 +103,7 @@ export function LobbyHeroSection({
           >
             {isQueued ? cancelQueueLabel : findOpponentLabel}
           </button>
-          <span className="text-[11px] text-[var(--textSecondary)] text-center">
+          <span className="text-xs text-[var(--textSecondary)] text-center">
             {isQueued ? queueSearchingSubtitle : findOpponentHint}
           </span>
         </div>

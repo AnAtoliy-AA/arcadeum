@@ -71,9 +71,10 @@ export async function generateMetadata({
 
 async function getChangelogEntries(): Promise<ChangelogEntry[]> {
   for (const path of CANDIDATE_PATHS) {
-    if (existsSync(path)) {
+    // Paths are fixed candidates; tell Turbopack not to trace the whole project.
+    if (existsSync(/*turbopackIgnore: true*/ path)) {
       try {
-        const raw = await readFile(path, 'utf-8');
+        const raw = await readFile(/*turbopackIgnore: true*/ path, 'utf-8');
         return parseChangelog(raw);
       } catch {
         continue;

@@ -5,6 +5,7 @@ import {
 } from '@/features/games/ui/landing';
 import { getTranslatedSharedThemes } from '@/features/games/lib/shared-themes';
 import type { Locale } from '@/shared/i18n';
+import { WeeklyCupBanner } from '@/features/tournaments/ui/SeaBattleBlitzBanner';
 import { CheckersLandingPreview } from './CheckersLandingPreview';
 
 type CkMessages = CheckersMessages['checkers_v1'];
@@ -136,6 +137,7 @@ export default function CheckersLanding({
   return (
     <UnifiedGameLanding
       accentGlow="orange"
+      topSection={<WeeklyCupBanner game="checkers" />}
       comingSoon={comingSoon}
       breadcrumbs={[
         { label: navTranslations?.homeTab ?? 'Home', href: homeHref },
@@ -147,16 +149,13 @@ export default function CheckersLanding({
         title: landing.hero.title,
         eyebrow: 'Classic Draughts',
         subtitle: landing.hero.subtitle,
-        intro:
-          'Fast-paced board tactics of diagonal moves, forced jump combos, and king piece promotions.',
         directAnswer:
-          'Arcadeum Checkers is a free online draughts platform featuring classic 8×8 board play with forced captures, king promotion, and AI bots, playable directly in your browser with zero downloads or signup.',
+          'Free online 8×8 checkers with forced captures, king promotion and AI bots. No download or signup.',
         category: 'Board Game',
         playersBadge: '2 Players',
         durationBadge: '10–20 min',
         difficultyBadge: 'Casual / Strategy',
         chips: ['King Crowns', 'Forced Captures', 'Multi-Jumps', 'AI Bots'],
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
         createRoomLabel: 'Create Room',
@@ -244,7 +243,6 @@ export default function CheckersLanding({
           'Play against intelligent AI bots or challenge friends to a classic draughts duel.',
         roomsHref,
         gamesHref,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
         browseRoomsLabel: landing.hero.browseRooms,
         backToGamesLabel: 'All Games',

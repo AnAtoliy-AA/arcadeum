@@ -119,6 +119,8 @@ export const enMessages = {
       forcedCaptures: 'Forced Captures',
       backwardCaptures: 'Backward Captures',
       alwaysEnabled: 'always enabled',
+      forcedCapturesHint: 'You must capture whenever a capture is available',
+      backwardCapturesHint: 'Regular pieces may also capture backwards',
       ruleVariants: {
         american: {
           name: 'American',

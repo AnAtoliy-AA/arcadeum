@@ -106,8 +106,7 @@ async function DailyRewardCardInner() {
         nextRewardGems={status.nextRewardGems}
         labels={{
           claim: claimLabel,
-          gemBonusSuffix:
-            t.gemBonusSuffix ?? dailyRewardsEn.gemBonusSuffix,
+          gemBonusSuffix: t.gemBonusSuffix ?? dailyRewardsEn.gemBonusSuffix,
           claimed: claimedLabel,
           toastClaimed: toasts.claimed ?? dailyRewardsEn.toasts.claimed,
           toastGemBonusSuffix:

@@ -129,4 +129,33 @@ export const tournamentsFr: TournamentsI18n = {
     fullPageView: 'Ouvrir la Page du Tournoi',
     closeModal: 'Fermer',
   },
+  weeklyCups: {
+    checkers: {
+      ariaLabel: 'Coupe Hebdomadaire de Dames',
+      kicker: 'Championnat hebdomadaire de dames',
+      formatDetails: '{count} joueurs • Élimination directe',
+      captainsReady: 'Joueurs prêts',
+      battleStatus: 'État des matchs',
+      signInNotice: 'Connectez-vous pour rejoindre la Coupe',
+      leaveCup: 'Quitter la Coupe',
+      registerCup: "S'inscrire à la Coupe",
+      modalTitle: 'Coupe Hebdomadaire de Dames',
+      bracketPendingDesc:
+        "Le tableau sera tiré automatiquement à la fermeture des inscriptions. Les matchs commencent à l'heure prévue.",
+      rosterTitle: 'Joueurs inscrits',
+      rosterSubtitle: '{count} places sur {max} occupées',
+      rosterYou: 'Votre place',
+      rosterEmpty: "Aucun joueur inscrit pour l'instant. Soyez le premier !",
+      intelFormatDesc:
+        "Dames à élimination directe. Gagnez votre match pour avancer dans le tableau jusqu'à la grande finale.",
+      intelFleet: 'Plateau et règles',
+      intelFleetDesc:
+        'Règles classiques des Dames sur le plateau standard, comme dans une partie classée habituelle.',
+      intelClock: 'Pendule de coup',
+      intelClockDesc:
+        'Les matchs se jouent avec une minuterie de coup, surveillez donc la pendule.',
+      intelRewardsDesc:
+        'Le vainqueur de la Coupe reçoit 400 pièces, le Trophée Couronne et une place de choix au classement des Dames.',
+    },
+  },
 };

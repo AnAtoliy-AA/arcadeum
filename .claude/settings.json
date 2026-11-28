@@ -48,6 +48,18 @@
             "statusMessage": "Checking for .env* access..."
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit *)",
+            "command": "bash $PWD/.claude/hooks/pre-commit-check.sh",
+            "timeout": 120,
+            "statusMessage": "Running pre-commit checks..."
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -96,19 +108,6 @@
   "timeout": 30,
   "statusMessage": "Checking import boundaries..."
 }
-        ]
-      }
-    ],
-    "PreCommit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $PWD/.claude/hooks/pre-commit-check.sh",
-            "timeout": 120,
-            "statusMessage": "Running pre-commit checks..."
-          }
         ]
       }
     ]

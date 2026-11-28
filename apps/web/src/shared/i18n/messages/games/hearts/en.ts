@@ -144,6 +144,8 @@ export const enMessages = {
       startWithBots: 'Start with Bot',
       aiDifficulty: 'AI Difficulty',
       passingEnabled: 'Card Passing',
+      passingEnabledHint: 'Swap cards with another player before each hand',
+      targetScoreHint: 'The game ends when a player reaches this score',
       targetScore: 'Target Score',
     },
     passDirection: {

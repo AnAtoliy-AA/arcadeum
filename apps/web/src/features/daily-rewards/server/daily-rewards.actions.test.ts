@@ -12,9 +12,11 @@ vi.mock('@/shared/lib/api-base', () => ({
   resolveApiUrl: (path: string) => `${TEST_API_BASE}${path}`,
 }));
 vi.mock('@/shared/lib/server-auth-fetch', () => ({
-  serverAuthFetch: vi.fn().mockImplementation(async (path: string, init?: RequestInit) => {
-    return fetchMock(`${TEST_API_BASE}${path}`, init);
-  }),
+  serverAuthFetch: vi
+    .fn()
+    .mockImplementation(async (path: string, init?: RequestInit) => {
+      return fetchMock(`${TEST_API_BASE}${path}`, init);
+    }),
 }));
 
 // Mock global fetch
@@ -85,6 +87,18 @@ describe('claimDailyRewardAction', () => {
       expect.objectContaining({
         method: 'POST',
       }),
+    );
+  });
+
+  it('forwards the client session token so a missing cookie does not cause a 401', async () => {
+    fetchMock.mockResolvedValueOnce(makeOkResponse(sampleClaimResult));
+
+    await claimDailyRewardAction('client-session-token');
+
+    const { serverAuthFetch } = await import('@/shared/lib/server-auth-fetch');
+    expect(serverAuthFetch).toHaveBeenCalledWith(
+      '/daily-rewards/claim',
+      expect.objectContaining({ accessToken: 'client-session-token' }),
     );
   });
 

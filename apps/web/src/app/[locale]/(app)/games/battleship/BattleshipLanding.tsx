@@ -1,3 +1,4 @@
+import type { SeaBattleGamesMessages } from '@/shared/i18n/messages/games/sea-battle';
 import {
   UnifiedGameLanding,
   getRelatedGames,
@@ -70,6 +71,7 @@ interface LandingData {
     items: Record<string, { question: string; answer: string }>;
   };
   breadcrumb: { home: string; games: string; seaBattle: string };
+  extra: SeaBattleGamesMessages['sea_battle_v1']['landing']['extra'];
 }
 
 interface RulesData {
@@ -116,6 +118,9 @@ export default function BattleshipLanding({
 }: Props) {
   if (!landing) return null;
 
+  const x = landing.extra;
+  const bs = x.battleship;
+
   const highlightCards = [
     { key: 'players', icon: '👥', ...landing.highlights.players },
     { key: 'teams', icon: '⚔️', ...landing.highlights.teams },
@@ -128,25 +133,25 @@ export default function BattleshipLanding({
       key: 'create',
       stepNumber: 1,
       ...landing.howToPlay.steps.create,
-      tip: 'Pick your board size and enable spectator slots if you want friends to watch.',
+      tip: x.tips.create,
     },
     {
       key: 'place',
       stepNumber: 2,
       ...landing.howToPlay.steps.place,
-      tip: 'Spread out ships to prevent clustered hits by enemy salvoes.',
+      tip: x.tips.place,
     },
     {
       key: 'fire',
       stepNumber: 3,
       ...landing.howToPlay.steps.fire,
-      tip: 'Use parity search (checkerboard targeting) to find larger ships efficiently.',
+      tip: x.tips.fire,
     },
     {
       key: 'win',
       stepNumber: 4,
       ...landing.howToPlay.steps.win,
-      tip: 'Sinking an enemy ship grants a confirmation announcement.',
+      tip: x.tips.win,
     },
   ];
 
@@ -200,24 +205,21 @@ export default function BattleshipLanding({
       breadcrumbs={[
         { label: landing.breadcrumb.home, href: homeHref },
         { label: landing.breadcrumb.games, href: gamesHref },
-        { label: 'Battleship' },
+        { label: bs.title },
       ]}
       hero={{
         gameId: 'sea_battle_v1',
-        title: 'Battleship',
+        title: bs.title,
         eyebrow: landing.hero.eyebrow,
         subtitle: landing.hero.tagline,
         intro: landing.hero.intro,
-        category: 'Strategy',
-        playersBadge: '2-4 Players',
-        durationBadge: '15-25 min',
-        difficultyBadge: 'Naval Combat',
+        category: x.category,
+        playersBadge: bs.badges.players,
+        durationBadge: bs.badges.duration,
+        difficultyBadge: bs.badges.difficulty,
         chips: landing.hero.chips,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
-        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
         browseRoomsLabel: landing.hero.ctaRooms,
-        createRoomLabel: landing.hero.ctaPlay,
         roomsHref,
         createRoomHref,
         heroVisual: (
@@ -229,12 +231,12 @@ export default function BattleshipLanding({
         ),
       }}
       highlights={{
-        title: `Why play Battleship`,
+        title: bs.highlightsTitle,
         kicker: landing.sections.highlightsKicker,
         items: highlightCards,
       }}
       howToPlay={{
-        title: 'How to play Battleship',
+        title: bs.howToTitle,
         kicker: landing.sections.howToKicker,
         steps: howToSteps,
       }}
@@ -244,43 +246,41 @@ export default function BattleshipLanding({
         subtitle: landing.sections.themesLead,
         themes: themesList,
         baseHref: createRoomHref,
-        createRoomLabel: 'Deploy with Theme',
+        createRoomLabel: x.themesCta,
       }}
       rules={
         rules.length > 0
           ? {
-              title: rulesT?.title ?? 'Naval Combat Rules',
+              title: rulesT?.title ?? x.rulesFallbackTitle,
               kicker: landing.sections.rulesKicker,
               rules,
             }
           : undefined
       }
       strategy={{
-        title: 'Battleship strategy: how to win more games',
+        title: bs.strategyTitle,
         kicker: landing.sections.strategyKicker,
         intro: landing.strategy.intro,
         tips: strategyTips,
       }}
       faq={{
-        title: 'Frequently asked questions',
+        title: bs.faqTitle,
         kicker: landing.sections.faqKicker,
         items: faqItems,
       }}
       relatedGames={{
-        title: 'More Tactical Battles',
-        kicker: 'Discover',
+        title: x.related.title,
+        kicker: x.related.kicker,
         currentGameSlug: 'sea_battle_v1',
         games: relatedGames,
       }}
       finalCta={{
         gameId: 'sea_battle_v1',
-        title: 'Ready to play Battleship?',
+        title: bs.finalTitle,
         subtitle: landing.finalCta?.subtitle ?? landing.hero.tagline,
         roomsHref,
         gamesHref,
-        ctaQuickplayLabel: landing.hero.ctaQuickplay,
         ctaQuickplayErrorLabel: landing.hero.ctaQuickplayError,
-        ctaPlayHumanLabel: landing.hero.ctaPlayHuman,
         browseRoomsLabel: landing.hero.ctaRooms,
         backToGamesLabel: landing.breadcrumb.games,
       }}

@@ -28,14 +28,24 @@ export function RoomCard({
   );
 }
 
-const STATUS_BADGE_VARIANTS = {
-  lobby: 'bg-[var(--success)] shadow-[0_0_10px_rgba(16,185,129,0.3)]',
-  in_progress: 'bg-[var(--warning)] shadow-[0_0_10px_rgba(245,158,11,0.3)]',
-  completed: 'bg-[var(--neutral)] shadow-[0_0_10px_rgba(107,114,128,0.3)]',
+const STATUS_CHIP_VARIANTS = {
+  lobby: {
+    chip: 'bg-[color-mix(in_srgb,var(--success)_16%,transparent)] border-[color-mix(in_srgb,var(--success)_45%,transparent)]',
+    dot: 'bg-[var(--success)]',
+  },
+  in_progress: {
+    chip: 'bg-[color-mix(in_srgb,var(--warning)_16%,transparent)] border-[color-mix(in_srgb,var(--warning)_45%,transparent)]',
+    dot: 'bg-[var(--warning)]',
+  },
+  completed: {
+    chip: 'bg-[color-mix(in_srgb,var(--neutral)_16%,transparent)] border-[color-mix(in_srgb,var(--neutral)_45%,transparent)]',
+    dot: 'bg-[var(--neutral)]',
+  },
 } as const;
 
-export type StatusBadgeStatus = keyof typeof STATUS_BADGE_VARIANTS;
+export type StatusBadgeStatus = keyof typeof STATUS_CHIP_VARIANTS;
 
+/** Status chip: tinted pill with a leading dot (readable in every theme). */
 export function StatusBadge({
   status,
   className,
@@ -45,14 +55,20 @@ export function StatusBadge({
   className?: string;
   children?: ReactNode;
 }) {
+  const variant = status ? STATUS_CHIP_VARIANTS[status] : undefined;
   return (
     <span
+      data-status={status}
       className={cx(
-        'px-3 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-[0.8px] whitespace-nowrap shrink-0 text-white',
-        status ? STATUS_BADGE_VARIANTS[status] : '',
+        'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-[var(--glassBorder)] px-2.5 py-1 text-xs font-semibold text-[var(--color)]',
+        variant?.chip,
         className,
       )}
     >
+      <span
+        aria-hidden="true"
+        className={cx('h-2 w-2 rounded-full', variant?.dot)}
+      />
       {children}
     </span>
   );
@@ -71,7 +87,7 @@ export function GameName({
     <span
       style={gradient ? { backgroundImage: gradient } : undefined}
       className={cx(
-        'text-[15px] font-bold text-[var(--color)] opacity-100 truncate',
+        'text-xs font-semibold uppercase tracking-[0.06em] text-[var(--textSecondary)] opacity-100 truncate',
         gradient ? 'text-gradient' : undefined,
         className,
       )}
@@ -104,7 +120,7 @@ export function RoomActions({
 }) {
   return (
     <div
-      className={cx('flex flex-row items-stretch gap-3 shrink-0', className)}
+      className={cx('flex flex-row items-stretch gap-2 shrink-0', className)}
     >
       {children}
     </div>

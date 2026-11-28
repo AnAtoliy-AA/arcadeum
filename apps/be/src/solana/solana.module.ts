@@ -5,6 +5,13 @@ import { SolanaService } from './solana.service';
 import { SolanaController } from './solana.controller';
 import { SolanaPayController } from './solana-pay.controller';
 import { SolanaPayService } from './lib/solana-pay.service';
+import { ArcPaymentService } from './lib/arc-payment.service';
+import { ArcHealthService } from './lib/arc-health.service';
+import { ArcSignatureRegistry } from './lib/arc-signature-registry.service';
+import {
+  ArcRedeemedSignature,
+  ArcRedeemedSignatureSchema,
+} from './schemas/arc-redeemed-signature.schema';
 import { WalletModule } from '../wallet/wallet.module';
 import { EconomyModule } from '../economy/economy.module';
 import {
@@ -28,17 +35,31 @@ import { User, UserSchema } from '../auth/schemas/user.schema';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: GeoBlockedCountry.name, schema: GeoBlockedCountrySchema },
+      {
+        name: ArcRedeemedSignature.name,
+        schema: ArcRedeemedSignatureSchema,
+      },
     ]),
   ],
   controllers: [SolanaController, SolanaPayController, AdminGeoBlockController],
   providers: [
     SolanaService,
     SolanaPayService,
+    ArcHealthService,
+    ArcSignatureRegistry,
+    ArcPaymentService,
     GeoBlockService,
     GeoBlockGuard,
     GeoBlockBootstrap,
     RolesGuard,
   ],
-  exports: [SolanaService, SolanaPayService, GeoBlockService, GeoBlockGuard],
+  exports: [
+    SolanaService,
+    SolanaPayService,
+    ArcSignatureRegistry,
+    ArcPaymentService,
+    GeoBlockService,
+    GeoBlockGuard,
+  ],
 })
 export class SolanaModule {}

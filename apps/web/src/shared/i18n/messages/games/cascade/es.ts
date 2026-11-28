@@ -4,7 +4,7 @@ export const esMessages = {
     description:
       'Empareja por color o número, encadena cartas Roba-Dos y Comodín +4 para inundar al siguiente jugador, y vacía tu mano primero para ganar.',
     summary:
-      'Un juego de cartas de descarte de la familia Ochos Locos - ocho temas seleccionables, 2–10 jugadores, penalizaciones encadenables.',
+      'Un juego de cartas de descarte de la familia Ochos Locos - ocho temas seleccionables, 2-10 jugadores, penalizaciones encadenables.',
     variants: {
       cosmic: {
         name: 'Cósmico',
@@ -48,17 +48,95 @@ export const esMessages = {
       },
     },
     landing: {
+      extra: {
+        hero: {
+          eyebrow: 'Cartas rápidas para fiestas',
+          intro:
+            'El vertiginoso duelo de descartar cartas con penalizaciones acumulables sin piedad, cambios de color y 4 temas.',
+          category: 'Juego de cartas',
+          playersBadge: '2-10 jugadores',
+          durationBadge: '5-15 min',
+          difficultyBadge: 'Fiesta casual',
+          chips: [
+            'Penalizaciones acumulables',
+            '4 mazos temáticos',
+            'Hasta 10 jugadores',
+            'Partida rápida instantánea',
+          ],
+          createRoom: 'Crear sala',
+        },
+        highlights: {
+          title: 'Descarte de cartas lleno de acción',
+          kicker: 'Características clave',
+          combos: {
+            title: 'Cadenas de cartas de acción',
+            body: 'Contrarresta las cartas de ataque con penalizaciones iguales para pasar la carga de robo a tus rivales.',
+          },
+        },
+        howTo: {
+          title: 'Cómo jugar a Cascade',
+          kicker: 'Inicio rápido',
+          intro:
+            'Combina cartas por número, color o símbolo y sé el primero en quedarte sin cartas.',
+          create:
+            'Configura el tamaño de la mano inicial y las reglas de acumulación de penalizaciones.',
+          join: 'Admite hasta 10 jugadores simultáneos en una sola sala.',
+          play: 'Combina por color o número y guarda los comodines para escapes tácticos.',
+        },
+        themesSection: {
+          kicker: 'Temas de mazos',
+          cta: 'Jugar con este mazo',
+        },
+        rules: {
+          kicker: 'Reglamento',
+          fallbackTitle: 'Reglas y mecánicas',
+          objective: 'Objetivo',
+          steps: 'Cómo funciona la acumulación',
+          stacking: 'Defensa contra penalizaciones',
+        },
+        strategy: {
+          title: 'Estrategias y combos ganadores',
+          kicker: 'Consejos de experto',
+          intro:
+            'Aprende a contrarrestar las cadenas de robo y a controlar el ritmo de la partida.',
+          saveWilds: {
+            title: 'Guarda los comodines para emergencias',
+            body: 'Conserva los comodines hasta que te obliguen a un color desfavorable y recupera el ritmo.',
+          },
+          colorTracking: {
+            title: 'Sigue las preferencias de color de tus rivales',
+            body: 'Fíjate en los colores que los demás jugadores pasan y aleja de ellos el color activo.',
+          },
+          stackDefend: {
+            title: 'Conserva contraataques de +2 y +4',
+            body: 'No juegues tu última carta de robo sin necesidad si sospechas que viene una cadena de robo.',
+          },
+        },
+        faq: {
+          title: 'Preguntas frecuentes',
+          kicker: 'FAQ',
+        },
+        related: {
+          title: 'Más juegos de cartas multijugador',
+          kicker: 'Descubre',
+        },
+        finalCta: {
+          title: 'Salta a la siguiente ronda',
+          subtitle:
+            'Juega contra bots de IA inteligentes o crea una partida de alto riesgo para hasta 10 amigos.',
+        },
+      },
       meta: {
         title: 'Cascade - juego de cartas multijugador de descarte en línea',
         description:
-          'Juega a Cascade en línea - un juego de cartas de descarte con cadenas de Roba-Dos / Comodín +4 y cuatro temas visuales. 2–10 jugadores, salas gratis al instante, sin instalación.',
+          'Juega a Cascade en línea - un juego de cartas de descarte con cadenas de Roba-Dos / Comodín +4 y cuatro temas visuales. 2-10 jugadores, salas gratis al instante, sin instalación.',
         keywords:
           'cascade, ochos locos, juego de cartas multijugador, juego de cartas en línea, juego de descarte, juego de cartas de combinación',
       },
       hero: {
         title: 'Cascade - el juego de cartas de encadenado, reinventado',
         subtitle:
-          'Combina color o número. Encadena penalizaciones. Elige entre ocho temas visuales. 2–10 jugadores.',
+          'Combina color o número. Encadena penalizaciones. Elige entre ocho temas visuales. 2-10 jugadores.',
         createRoom: 'Crear sala',
         ctaQuickplay: 'Jugar contra la IA',
         ctaQuickplayError: 'No se pudo iniciar la partida - inténtalo de nuevo',
@@ -66,7 +144,7 @@ export const esMessages = {
       },
       highlights: {
         players: {
-          title: '2–10 jugadores',
+          title: '2-10 jugadores',
           body: 'Todos contra todos; los bots llenan los asientos vacíos para empezar al instante.',
         },
         themes: {
@@ -152,6 +230,7 @@ export const esMessages = {
     },
     lobby: {
       stacking: 'Permitir penalizaciones encadenables',
+      stackingAutoHint: 'Se define automáticamente según el modo de juego',
       lastCardCall:
         'Carrera por la Última Carta (pulsa Cascade cuando un rival llegue a 1)',
       startWithBots: 'Empezar con bots',

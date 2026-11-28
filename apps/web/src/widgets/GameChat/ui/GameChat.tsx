@@ -8,6 +8,10 @@ import {
   type KeyboardEvent,
 } from 'react';
 import { IconButton, CloseIcon, Typography } from '@arcadeum/ui';
+import {
+  useTranslation,
+  type TranslationKey,
+} from '@/shared/i18n/useTranslation';
 
 import { scrollbarStyles } from '@/shared/lib/styles';
 import { useGameChatStore } from '../store/gameChatStore';
@@ -65,26 +69,12 @@ interface GameChatProps {
 const FFA_SCOPES: ChatScope[] = ['all', 'players', 'private'];
 const TEAM_SCOPES: ChatScope[] = ['team', 'all', 'private'];
 
-const SCOPE_LABEL: Record<ChatScope, string> = {
-  all: 'All',
-  team: 'Team',
-  players: 'Players',
-  private: 'Whispers',
-};
-
-const SCOPE_CHIP: Record<ChatScope, string> = {
-  all: 'ALL',
-  team: 'TEAM',
-  players: 'TEAM',
-  private: 'DM',
-};
-
-const SCOPE_PLACEHOLDER: Record<ChatScope, string> = {
-  all: 'Send to everyone',
-  team: 'Send to team',
-  players: 'Send to players',
-  private: 'Private note',
-};
+const SCOPE_KEYS = {
+  all: { label: 'tabAll', chip: 'chipAll', placeholder: 'toAll' },
+  team: { label: 'tabTeam', chip: 'chipTeam', placeholder: 'toTeam' },
+  players: { label: 'tabPlayers', chip: 'chipTeam', placeholder: 'toPlayers' },
+  private: { label: 'tabWhispers', chip: 'chipDm', placeholder: 'toWhisper' },
+} as const;
 
 const SCOPE_CHIP_COLOR: Record<ChatScope, string> = {
   all: '#9CA3AF',
@@ -98,6 +88,24 @@ const MONO_STYLE: React.CSSProperties = {
     "ui-monospace, SFMono-Regular, 'JetBrains Mono', 'Menlo', monospace",
 };
 
+function countIncoming(
+  logs: ChatLogEntry[],
+  currentUserId?: string | null,
+): Record<ChatScope, number> {
+  const c: Record<ChatScope, number> = {
+    all: 0,
+    team: 0,
+    players: 0,
+    private: 0,
+  };
+  for (const log of logs) {
+    if (log.type !== 'message' || log.senderId === currentUserId) continue;
+    const s = (log as ChatLogEntry & { scope?: ChatScope }).scope ?? 'all';
+    if (s in c) c[s] += 1;
+  }
+  return c;
+}
+
 export function GameChat({
   resolveDisplayName,
   resolveEquipped,
@@ -109,9 +117,12 @@ export function GameChat({
   onEmote,
   isHost,
   onDeleteMessage,
-  signInPlaceholder = 'Sign in to chat',
+  signInPlaceholder,
   isSpectating: _isSpectating = false,
 }: GameChatProps) {
+  const { t } = useTranslation();
+  const tc = (k: string, o?: Record<string, string | number>) =>
+    t(`games.chatPanel.${k}` as TranslationKey, o);
   const logs = useGameChatStore((s) => s.logs);
   const sendMessage = useGameChatStore((s) => s.sendMessage);
   const resolveActorColor = useGameChatStore((s) => s.resolveActorColor);
@@ -122,6 +133,9 @@ export function GameChat({
   const [scope, setScope] = useState<ChatScope>(teamMode ? 'team' : 'all');
   const [collapsed, setCollapsed] = useChatCollapsed();
   const [unread, setUnread] = useState(0);
+  const [readCounts, setReadCounts] = useState<Record<ChatScope, number>>(() =>
+    countIncoming(logs, currentUserId),
+  );
   const lastSeenIdRef = useRef<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -133,6 +147,9 @@ export function GameChat({
   useEffect(() => {
     if (collapsed) return;
     lastSeenIdRef.current = logs.at(-1)?.id ?? null;
+    // Opening the chat marks everything as read; this is a reset on an
+    // external event (expand), not state derivable during render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUnread(0);
   }, [collapsed, logs]);
 
@@ -149,20 +166,25 @@ export function GameChat({
     }
   }, [logs, collapsed, currentUserId]);
 
-  const counts = useMemo(() => {
-    const c: Record<ChatScope, number> = {
-      all: 0,
-      team: 0,
-      players: 0,
-      private: 0,
-    };
-    for (const log of logs) {
-      if (log.type !== 'message') continue;
-      const s = (log as ChatLogEntry & { scope?: ChatScope }).scope ?? 'all';
-      if (s in c) c[s]! += 1;
-    }
-    return c;
-  }, [logs]);
+  const incomingCounts = useMemo(
+    () => countIncoming(logs, currentUserId),
+    [logs, currentUserId],
+  );
+
+  const selectScope = (s: ChatScope) => {
+    // Mark the tab being left as read so only later messages count as unread.
+    setReadCounts((prev) => ({
+      ...prev,
+      [scope]: incomingCounts[scope],
+      [s]: incomingCounts[s],
+    }));
+    setScope(s);
+  };
+
+  const scopeUnread = (s: ChatScope) =>
+    s === scope
+      ? 0
+      : Math.min(99, Math.max(0, incomingCounts[s] - readCounts[s]));
 
   const visibleLogs = useMemo(
     () => logs.filter((l) => logBelongsToScope(l, scope)),
@@ -188,11 +210,11 @@ export function GameChat({
     return (
       <CollapsedShell
         role="button"
-        aria-label="Expand chat"
+        aria-label={tc('expand')}
         onClick={() => setCollapsed(false)}
       >
         <TitleDot />
-        <Title>Chat</Title>
+        <Title>{tc('chat')}</Title>
         <CollapsedPreview>{lastMessagePreview(logs)}</CollapsedPreview>
         {unread > 0 ? (
           <UnreadBadge
@@ -213,13 +235,13 @@ export function GameChat({
       <Head>
         <HeadRow>
           <TitleDot />
-          <Title>Table Chat</Title>
+          <Title>{tc('title')}</Title>
           <div className="flex flex-col items-stretch flex-1" />
           <IconButton
             className="p-1"
             size="sm"
-            title="Settings"
-            aria-label="Chat settings"
+            title={tc('settings')}
+            aria-label={tc('settings')}
           >
             <span className="text-[14px]">⚙</span>
           </IconButton>
@@ -227,8 +249,8 @@ export function GameChat({
             className="p-1"
             size="sm"
             onClick={() => setCollapsed(true)}
-            title="Minimize"
-            aria-label="Minimize chat"
+            title={tc('minimize')}
+            aria-label={tc('minimize')}
           >
             <span className="text-[14px]">−</span>
           </IconButton>
@@ -237,8 +259,8 @@ export function GameChat({
               className="p-1"
               size="sm"
               onClick={onClose}
-              title="Close"
-              aria-label="Close chat"
+              title={tc('close')}
+              aria-label={tc('close')}
             >
               <CloseIcon size={14} />
             </IconButton>
@@ -251,9 +273,9 @@ export function GameChat({
             return (
               <Tab
                 key={s}
-                role="tab"
                 aria-selected={active}
-                onClick={() => setScope(s)}
+                onClick={() => selectScope(s)}
+                data-testid={`chat-tab-${s}`}
                 style={
                   active
                     ? {
@@ -264,21 +286,20 @@ export function GameChat({
                 }
               >
                 <TabLabel color={active ? '#06011b' : undefined}>
-                  {SCOPE_LABEL[s]}
+                  {tc(SCOPE_KEYS[s].label)}
                 </TabLabel>
-                {counts[s] > 0 ? (
+                {scopeUnread(s) > 0 ? (
                   <TabCount
+                    aria-label={tc('unread', { count: scopeUnread(s) })}
+                    data-testid={`chat-tab-unread-${s}`}
                     style={{
                       ...MONO_STYLE,
-                      backgroundColor: active
-                        ? 'rgba(6,1,27,0.25)'
-                        : 'rgba(255,255,255,0.08)',
-                      color: active
-                        ? 'rgba(6,1,27,0.9)'
-                        : 'rgba(255,255,255,0.7)',
+                      background: ACCENT_GRADIENT,
+                      color: '#06011b',
+                      fontWeight: 700,
                     }}
                   >
-                    {counts[s]}
+                    {scopeUnread(s) >= 99 ? '99+' : scopeUnread(s)}
                   </TabCount>
                 ) : null}
               </Tab>
@@ -295,14 +316,14 @@ export function GameChat({
           {visibleLogs.length === 0 ? (
             <div className="flex flex-col flex-1 items-center justify-center py-10">
               <Typography className={'text-center'} alpha="low" uiSize="sm">
-                No messages yet. Break the ice!
+                {tc('empty')}
               </Typography>
             </div>
           ) : (
             <ListGap role="log" aria-live="polite" aria-relevant="additions">
               <Divider>
                 <div className="flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
-                <DividerLabel style={MONO_STYLE}>Match</DividerLabel>
+                <DividerLabel style={MONO_STYLE}>{tc('match')}</DividerLabel>
                 <div className="flex flex-col items-stretch h-[1px] flex-1 bg-[rgba(255,255,255,0.06)]" />
               </Divider>
               {visibleLogs.map((log) => {
@@ -366,16 +387,20 @@ export function GameChat({
           }}
         >
           <ChannelChip style={MONO_STYLE} color={SCOPE_CHIP_COLOR[scope]}>
-            {SCOPE_CHIP[scope]}
+            {tc(SCOPE_KEYS[scope].chip)}
           </ChannelChip>
           <input
             value={draft}
             maxLength={240}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={canSend ? SCOPE_PLACEHOLDER[scope] : signInPlaceholder}
+            placeholder={
+              canSend
+                ? tc(SCOPE_KEYS[scope].placeholder)
+                : (signInPlaceholder ?? tc('signIn'))
+            }
             disabled={!canSend}
-            aria-label="Message"
+            aria-label={tc('message')}
             data-testid="chat-input"
             style={{
               flex: 1,
@@ -399,7 +424,7 @@ export function GameChat({
             size="sm"
             onClick={send}
             disabled={!draft.trim() || !canSend}
-            aria-label="Send message"
+            aria-label={tc('send')}
             data-testid="chat-send-btn"
           >
             <span className="text-[14px] text-[#06011b] font-bold">↑</span>
@@ -409,8 +434,8 @@ export function GameChat({
         <MetaLine>
           <MetaText style={MONO_STYLE}>{draft.length}/240</MetaText>
           <div className="flex flex-row gap-6 items-center">
-            <MetaText style={MONO_STYLE}>↵ send</MetaText>
-            <MetaText style={MONO_STYLE}>⇧↵ newline</MetaText>
+            <MetaText style={MONO_STYLE}>{tc('hintSend')}</MetaText>
+            <MetaText style={MONO_STYLE}>{tc('hintNewline')}</MetaText>
           </div>
         </MetaLine>
       </Foot>

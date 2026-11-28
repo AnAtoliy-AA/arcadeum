@@ -54,6 +54,9 @@ export interface GameRoomSummary {
   gameOptions?: GameOptions;
   rematchInvitedUsers?: GameRoomMemberSummary[];
   rematchDeclinedUsers?: GameRoomMemberSummary[];
+  /** True when the viewer has a pending invitation they have not accepted. */
+  viewerInvited?: boolean;
+  viewerRole?: 'host' | 'participant' | 'none';
   host?: GameRoomMemberSummary;
   members?: GameRoomMemberSummary[];
   chatLogs?: Array<{
@@ -103,12 +106,7 @@ export const SPECIAL_CARDS = ['critical_event', 'neutralizer'] as const;
 
 // ===== BASE GAME CARDS =====
 export type BaseActionCard =
-  | 'strike'
-  | 'evade'
-  | 'trade'
-  | 'reorder'
-  | 'insight'
-  | 'cancel';
+  'strike' | 'evade' | 'trade' | 'reorder' | 'insight' | 'cancel';
 
 export const BASE_ACTION_CARDS: BaseActionCard[] = [
   'strike',
@@ -233,12 +231,7 @@ export type ChatScope = 'all' | 'players' | 'private' | 'team';
  * doesn't depend on log message phrasing surviving i18n or refactors.
  */
 export type CriticalLogKind =
-  | 'play'
-  | 'draw'
-  | 'defuse'
-  | 'eliminated'
-  | 'critical'
-  | 'system';
+  'play' | 'draw' | 'defuse' | 'eliminated' | 'critical' | 'system';
 
 export interface CriticalLogEntry {
   id: string;
@@ -306,19 +299,7 @@ export interface CriticalSnapshot {
 // Texas Hold'em types
 export type Suit = 'hearts' | 'diamonds' | 'clubs' | 'spades';
 export type Rank =
-  | '2'
-  | '3'
-  | '4'
-  | '5'
-  | '6'
-  | '7'
-  | '8'
-  | '9'
-  | '10'
-  | 'J'
-  | 'Q'
-  | 'K'
-  | 'A';
+  '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K' | 'A';
 
 export interface Card {
   suit: Suit;
@@ -328,12 +309,7 @@ export interface Card {
 export type BettingRound = 'pre-flop' | 'flop' | 'turn' | 'river' | 'showdown';
 
 export type PlayerAction =
-  | 'fold'
-  | 'check'
-  | 'call'
-  | 'raise'
-  | 'all-in'
-  | 'waiting';
+  'fold' | 'check' | 'call' | 'raise' | 'all-in' | 'waiting';
 
 export interface TexasHoldemPlayerState {
   playerId: string;

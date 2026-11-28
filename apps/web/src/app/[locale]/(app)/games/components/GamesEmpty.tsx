@@ -1,60 +1,53 @@
 'use client';
 
+import { Button, CreateRoomLinkButton, EmptyState } from '@arcadeum/ui';
 import { useTranslation } from '@/shared/i18n/useTranslation';
-import { QuickplayButton } from '@/features/games/ui/QuickplayButton';
-import { Empty } from '../styles';
 
-export function GamesEmpty() {
+interface GamesEmptyProps {
+  hasFilters?: boolean;
+  onClearFilters?: () => void;
+  /** Destination of the primary "Create room" call to action. */
+  createRoomHref?: string;
+}
+
+export function GamesEmpty({
+  hasFilters = false,
+  onClearFilters,
+  createRoomHref,
+}: GamesEmptyProps) {
   const { t } = useTranslation();
 
   return (
-    <Empty data-testid="games-empty">
-      <div className="flex flex-col items-center justify-center gap-4">
-        <span
-          className="text-center text-[20px] font-semibold"
-          style={{ color: 'var(--color)' }}
-        >
-          {t('games.lounge.emptyTitle')}
-        </span>
-        <div className="mt-2 flex flex-wrap justify-center gap-3">
-          <QuickplayButton
-            gameId="chess_v1"
-            mode="human"
-            label="Find Chess Opponent"
-            buttonVariant="primary"
-          />
-          <QuickplayButton
-            gameId="chess_v1"
-            mode="ai"
-            label="Play Chess vs AI"
-            buttonVariant="secondary"
-          />
-          <QuickplayButton
-            gameId="checkers_v1"
-            mode="human"
-            label="Find Checkers Opponent"
-            buttonVariant="primary"
-          />
-          <QuickplayButton
-            gameId="checkers_v1"
-            mode="ai"
-            label="Play Checkers vs AI"
-            buttonVariant="secondary"
-          />
-          <QuickplayButton
-            gameId="sea_battle_v1"
-            mode="human"
-            label="Find Sea Battle Opponent"
-            buttonVariant="primary"
-          />
-          <QuickplayButton
-            gameId="sea_battle_v1"
-            mode="ai"
-            label="Play Sea Battle vs AI"
-            buttonVariant="secondary"
-          />
-        </div>
-      </div>
-    </Empty>
+    <div className="col-span-full" data-testid="games-empty">
+      <EmptyState
+        icon="🎲"
+        message={
+          hasFilters
+            ? t('roomsBrowser.emptyFilteredTitle')
+            : t('roomsBrowser.emptyTitle')
+        }
+        action={
+          <div className="flex flex-col items-center gap-4">
+            <p className="m-0 max-w-md text-center text-sm text-[var(--textSecondary)]">
+              {hasFilters
+                ? t('roomsBrowser.emptyFiltered')
+                : t('roomsBrowser.emptyHint')}
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              {hasFilters && onClearFilters && (
+                <Button variant="secondary" size="md" onClick={onClearFilters}>
+                  {t('roomsBrowser.clearFilters')}
+                </Button>
+              )}
+              {createRoomHref && (
+                <CreateRoomLinkButton href={createRoomHref}>
+                  {t('roomsBrowser.createRoom')}
+                </CreateRoomLinkButton>
+              )}
+            </div>
+          </div>
+        }
+      />
+    </div>
   );
 }

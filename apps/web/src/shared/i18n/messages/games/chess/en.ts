@@ -175,6 +175,9 @@ export const enMessages = {
     lobby: {
       variant: 'Variant',
       timeControl: 'Time control',
+      timeControlHint:
+        'Clock time for each player. Pick No clock for a relaxed game',
+      unlimited: 'Unlimited',
       startWithBots: 'Start with bots',
       waitingForPlayers: 'Waiting for players…',
       minPlayers: 'Minimum 2 players',

@@ -122,6 +122,9 @@ export const esMessages = {
       forcedCaptures: 'Capturas Obligatorias',
       backwardCaptures: 'Capturas Hacia Atrás',
       alwaysEnabled: 'siempre habilitadas',
+      forcedCapturesHint: 'Debes capturar siempre que sea posible',
+      backwardCapturesHint:
+        'Las piezas normales también pueden capturar hacia atrás',
       ruleVariants: {
         american: {
           name: 'Americanas',

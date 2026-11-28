@@ -30,6 +30,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { SolanaController } from './solana.controller';
 import { SolanaService } from './solana.service';
+import { ArcHealthService } from './lib/arc-health.service';
 import { EconomySettingsService } from '../economy/economy-settings.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -47,7 +48,9 @@ describe('SolanaController', () => {
 
   const solanaService = {
     getPlatformBalance: jest.fn(),
-    verifyTransaction: jest.fn(),
+    verifyTransactionDetailed: jest.fn(),
+    getRuntimeConfig: jest.fn(),
+    getArcadeumQuote: jest.fn(),
     getTokenMetadata: jest.fn(),
     getArcadeumPrice: jest.fn(),
   };
@@ -64,6 +67,7 @@ describe('SolanaController', () => {
       providers: [
         { provide: SolanaService, useValue: solanaService },
         { provide: EconomySettingsService, useValue: economyService },
+        { provide: ArcHealthService, useValue: { getHealth: jest.fn() } },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -104,7 +108,7 @@ describe('SolanaController', () => {
 
   beforeEach(() => {
     solanaService.getPlatformBalance.mockReset();
-    solanaService.verifyTransaction.mockReset();
+    solanaService.verifyTransactionDetailed.mockReset();
     solanaService.getTokenMetadata.mockReset();
   });
 
@@ -142,7 +146,10 @@ describe('SolanaController', () => {
 
   describe('POST /solana/verify-transaction', () => {
     it('returns valid when transaction is verified', async () => {
-      solanaService.verifyTransaction.mockResolvedValue(true);
+      solanaService.verifyTransactionDetailed.mockResolvedValue({
+        valid: true,
+        reason: 'ok',
+      });
 
       const res = await request(server())
         .post('/solana/verify-transaction')
@@ -158,7 +165,10 @@ describe('SolanaController', () => {
     });
 
     it('returns invalid when transaction fails verification', async () => {
-      solanaService.verifyTransaction.mockResolvedValue(false);
+      solanaService.verifyTransactionDetailed.mockResolvedValue({
+        valid: false,
+        reason: 'amount_too_low',
+      });
 
       const res = await request(server())
         .post('/solana/verify-transaction')
@@ -171,6 +181,76 @@ describe('SolanaController', () => {
 
       const body = res.body as { valid: boolean };
       expect(body.valid).toBe(false);
+      expect((res.body as { reason: string }).reason).toBe('amount_too_low');
+    });
+  });
+
+  describe('GET /solana/config', () => {
+    it('serves the one mint/pool/decimals the web must use', async () => {
+      solanaService.getRuntimeConfig.mockReturnValue({
+        mint: '7aRVHPcJnsGWBZMNe2igQsLQmQb4LCCtpuiJgxHjpump',
+        poolAddress: 'BHYF1uFfwujrZyLrAQw3vZJQFQ6XEkRk4TNxHo8kTTXj',
+      });
+
+      const res = await request(server()).get('/solana/config').expect(200);
+
+      expect(res.body).toEqual({
+        mintAddress: '7aRVHPcJnsGWBZMNe2igQsLQmQb4LCCtpuiJgxHjpump',
+        poolAddress: 'BHYF1uFfwujrZyLrAQw3vZJQFQ6XEkRk4TNxHo8kTTXj',
+        decimals: 6,
+        configured: true,
+      });
+    });
+
+    it('reports configured=false when the mint is missing', async () => {
+      solanaService.getRuntimeConfig.mockReturnValue({
+        mint: null,
+        poolAddress: 'pool',
+      });
+
+      const res = await request(server()).get('/solana/config').expect(200);
+
+      expect(res.body).toMatchObject({ mintAddress: null, configured: false });
+    });
+  });
+
+  describe('GET /solana/pricing', () => {
+    beforeEach(() => {
+      economyService.getNumber.mockResolvedValue(0);
+    });
+
+    it('exposes price status and source, quoting only an ok price', async () => {
+      solanaService.getArcadeumQuote.mockResolvedValue({
+        priceUsd: 0.0000045,
+        status: 'ok',
+        source: 'geckoterminal',
+        ageMs: 12_000,
+      });
+
+      const res = await request(server()).get('/solana/pricing').expect(200);
+
+      expect(res.body).toMatchObject({
+        arcUsdPrice: 0.0000045,
+        priceStatus: 'ok',
+        priceSource: 'geckoterminal',
+        priceAgeSeconds: 12,
+      });
+    });
+
+    it('never quotes a stale price: arcUsdPrice is 0 so checkout is blocked', async () => {
+      solanaService.getArcadeumQuote.mockResolvedValue({
+        priceUsd: 0.0000045,
+        status: 'stale',
+        source: 'coingecko',
+        ageMs: 600_000,
+      });
+
+      const res = await request(server()).get('/solana/pricing').expect(200);
+
+      expect(res.body).toMatchObject({
+        arcUsdPrice: 0,
+        priceStatus: 'stale',
+      });
     });
   });
 });

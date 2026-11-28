@@ -1,0 +1,281 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { applyDeterministicDecay } from '@arcadeum/games-core';
+import { useArcadePetStore } from './useArcadePetStore';
+import { STORAGE_KEY } from './arcade-pet-storage';
+
+describe('useArcadePetStore', () => {
+  beforeEach(() => {
+    useArcadePetStore.setState({
+      pet: null,
+      pets: [],
+      activePetId: null,
+      gemBalance: 300,
+      adoptionCount: 0,
+      queuedThemeForNextPet: null,
+      presents: [
+        {
+          id: 'test-present-1',
+          senderId: 'friend-1',
+          senderName: 'Alice',
+          species: 'dragon',
+          theme: 'fantasy',
+          petName: 'Fae Drake',
+          message: 'Enjoy this buddy!',
+          createdAt: Date.now(),
+          isOpened: false,
+        },
+      ],
+      isWidgetOpen: false,
+      activeTreat: null,
+    });
+  });
+
+  it('initializes by default with no pet until player adopts', () => {
+    useArcadePetStore.getState().initialize('test-user', 'cyberpunk');
+    const state = useArcadePetStore.getState();
+    expect(state.pet).toBeNull();
+    expect(state.pets.length).toBe(0);
+    expect(state.adoptionCount).toBe(0);
+  });
+
+  it('adopts first mount as free and sets it active', () => {
+    useArcadePetStore.getState().initialize('test-user', 'cyberpunk');
+    const result = useArcadePetStore.getState().adoptRandomPet();
+    expect(result.success).toBe(true);
+    expect(useArcadePetStore.getState().pet).toBeDefined();
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+    expect(useArcadePetStore.getState().adoptionCount).toBe(1);
+    expect(useArcadePetStore.getState().gemBalance).toBe(300);
+  });
+
+  it('adopts second pet with progressive gem cost', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 1,
+      gemBalance: 200,
+      pets: [],
+    });
+
+    const result = useArcadePetStore.getState().adoptRandomPet();
+    expect(result.success).toBe(true);
+    expect(useArcadePetStore.getState().gemBalance).toBe(150);
+    expect(useArcadePetStore.getState().adoptionCount).toBe(2);
+  });
+
+  it('prevents random adoption when gemBalance are insufficient', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 2,
+      gemBalance: 50,
+      pets: [],
+    });
+
+    const result = useArcadePetStore.getState().adoptRandomPet();
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('INSUFFICIENT_GEMS');
+  });
+
+  it('guarantees bought game theme for next pet roll', () => {
+    useArcadePetStore.getState().buyGameTheme('underwater');
+    expect(useArcadePetStore.getState().queuedThemeForNextPet).toBe(
+      'underwater',
+    );
+
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 100,
+    });
+
+    const result = useArcadePetStore.getState().adoptRandomPet();
+    expect(result.success).toBe(true);
+    expect(result.pet?.theme).toBe('underwater');
+    expect(useArcadePetStore.getState().queuedThemeForNextPet).toBeNull();
+  });
+
+  it('adopts VIP selected pet with expensive 750 gem price', () => {
+    useArcadePetStore.setState({
+      gemBalance: 800,
+      pets: [],
+      adoptionCount: 1,
+    });
+
+    const result = useArcadePetStore
+      .getState()
+      .adoptSelectedPet('cyber_cat', 'steampunk', 'Brass Whiskers');
+
+    expect(result.success).toBe(true);
+    expect(result.pet?.species).toBe('cyber_cat');
+    expect(result.pet?.theme).toBe('steampunk');
+    expect(result.pet?.name).toBe('Brass Whiskers');
+    expect(useArcadePetStore.getState().gemBalance).toBe(50);
+  });
+
+  it('keeps a directly adopted adult an adult after decay runs', () => {
+    useArcadePetStore.setState({
+      gemBalance: 800,
+      pets: [],
+      adoptionCount: 1,
+    });
+    const result = useArcadePetStore
+      .getState()
+      .adoptSelectedPet('dragon', 'steampunk', 'Brass');
+    const pet = result.pet!;
+    const later = applyDeterministicDecay(pet, Date.now() + 60 * 60 * 1000);
+    expect(later.stage).toBe('adult');
+  });
+
+  it('sanitizes the name of a directly adopted pet like the server does', () => {
+    useArcadePetStore.setState({ gemBalance: 800, pets: [], adoptionCount: 1 });
+    const result = useArcadePetStore
+      .getState()
+      .adoptSelectedPet('dragon', 'steampunk', 'x'.repeat(200));
+    expect(result.pet!.name.length).toBeLessThanOrEqual(24);
+  });
+
+  it('does not show the away summary again after it was dismissed and reloaded', () => {
+    const store = useArcadePetStore.getState();
+    store.initialize('u', 'cyberpunk');
+    store.adoptRandomPet();
+    store.hatch('Waky', 'cyber_cat', 'cyberpunk');
+    // Simulate a 5h absence: rewind the stored timestamp, then reload.
+    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}');
+    raw.pets[0].timestamps.lastInteractedAt = Date.now() - 5 * 3600_000;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(raw));
+    useArcadePetStore.setState({ pet: null, hasConfirmedCare: false });
+    useArcadePetStore.getState().initialize('u', 'cyberpunk');
+    expect(useArcadePetStore.getState().awaySummary).not.toBeNull();
+
+    useArcadePetStore.getState().dismissAwaySummary();
+    useArcadePetStore.setState({ pet: null, hasConfirmedCare: false });
+    useArcadePetStore.getState().initialize('u', 'cyberpunk');
+    expect(useArcadePetStore.getState().awaySummary).toBeNull();
+  });
+
+  it('refuses to send a gift while offline and keeps balances untouched', async () => {
+    useArcadePetStore.setState({
+      gemBalance: 100,
+      presents: [],
+      serverBacked: false,
+    });
+    const result = await useArcadePetStore
+      .getState()
+      .sendGiftPet('friend-2', 'Bob', {
+        species: 'dino',
+        theme: 'western',
+        petName: 'Sheriff Rex',
+        message: 'Happy gaming!',
+      });
+
+    expect(result).toEqual({ success: false, error: 'OFFLINE' });
+    expect(useArcadePetStore.getState().gemBalance).toBe(100);
+    expect(useArcadePetStore.getState().presents).toEqual([]);
+  });
+
+  it('rejects a gift locally when the player cannot afford it', async () => {
+    useArcadePetStore.setState({ gemBalance: 10, serverBacked: true });
+    const result = await useArcadePetStore
+      .getState()
+      .sendGiftPet('friend-2', 'Bob', {
+        species: 'dino',
+        theme: 'western',
+        petName: 'Sheriff Rex',
+      });
+    expect(result).toEqual({ success: false, error: 'INSUFFICIENT_GEMS' });
+  });
+
+  it('claims present and adds gifted pet with bonus gemBalance', () => {
+    useArcadePetStore.setState({
+      gemBalance: 100,
+      pets: [],
+    });
+
+    const result = useArcadePetStore.getState().claimPresent('test-present-1');
+
+    expect(result.success).toBe(true);
+    expect(result.present?.petName).toBe('Fae Drake');
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+    expect(useArcadePetStore.getState().pets[0]?.name).toBe('Fae Drake');
+    expect(useArcadePetStore.getState().gemBalance).toBe(150);
+  });
+
+  it('has no client-side treat minting path', () => {
+    expect('awardTreat' in useArcadePetStore.getState()).toBe(false);
+  });
+
+  it('toggles widget modal open and closed', () => {
+    expect(useArcadePetStore.getState().isWidgetOpen).toBe(false);
+    useArcadePetStore.getState().toggleWidget();
+    expect(useArcadePetStore.getState().isWidgetOpen).toBe(true);
+    useArcadePetStore.getState().toggleWidget();
+    expect(useArcadePetStore.getState().isWidgetOpen).toBe(false);
+  });
+
+  it('toggles pet home state', () => {
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+    useArcadePetStore.getState().toggleHome();
+    expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    useArcadePetStore.getState().toggleHome();
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+  });
+
+  it('sets pet home state directly', () => {
+    useArcadePetStore.getState().setAtHome(true);
+    expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    useArcadePetStore.getState().setAtHome(false);
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+  });
+
+  it('does not load unconfirmed collection or legacy unconfirmed pet without care confirmation', () => {
+    window.localStorage.setItem(
+      'arcadeum_pet_collection_v2',
+      JSON.stringify({
+        pets: [
+          {
+            id: 'legacy-pet-1',
+            name: 'ArcadePet',
+            species: 'slime',
+            stage: 'egg',
+            theme: 'retro',
+            stats: { hunger: 80, happiness: 80 },
+            timestamps: { bornAt: Date.now() },
+            inventory: {},
+          },
+        ],
+        activePetId: 'legacy-pet-1',
+        gemBalance: 300,
+        adoptionCount: 0,
+        queuedThemeForNextPet: null,
+        presents: [],
+        hasConfirmedCare: false,
+      }),
+    );
+
+    useArcadePetStore.getState().initialize('test-user', 'cyberpunk');
+    expect(useArcadePetStore.getState().pet).toBeNull();
+    expect(useArcadePetStore.getState().pets.length).toBe(0);
+    expect(useArcadePetStore.getState().hasConfirmedCare).toBe(false);
+  });
+
+  it('starts adopted pet in egg stage and unlocks interactions once grown past baby threshold', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 10,
+    });
+    const adoptRes = useArcadePetStore.getState().adoptRandomPet();
+    expect(adoptRes.success).toBe(true);
+    expect(adoptRes.pet?.stage).toBe('egg');
+
+    const feedWhileEgg = useArcadePetStore
+      .getState()
+      .performAction('feed_snack');
+    expect(feedWhileEgg.success).toBe(false);
+
+    const now = Date.now() + 120 * 1000;
+    const pet = useArcadePetStore.getState().pet!;
+    const grown = applyDeterministicDecay(pet, now);
+    useArcadePetStore.setState({ pet: grown, pets: [grown] });
+    expect(useArcadePetStore.getState().pet?.stage).toBe('baby');
+
+    const feedBaby = useArcadePetStore.getState().performAction('feed_snack');
+    expect(feedBaby.success).toBe(true);
+  });
+});

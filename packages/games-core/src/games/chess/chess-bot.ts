@@ -17,6 +17,7 @@ import type { AiDifficulty } from '../../lib/ai-difficulty';
 import type { BotPersonality } from './chess-bot-personalities';
 import { getOpeningMove } from './chess-bot-openings';
 import { toFen } from './chess-fen';
+import { getRemainingMs, isDailyClock } from './chess-clock';
 
 const INFINITY = 999999;
 const TT_SIZE = 1 << 20;
@@ -218,7 +219,8 @@ export class ChessBot {
     if (!state.clocks) return 2000;
     const clock = state.clocks[state.currentTurnColor];
     if (!clock) return 2000;
-    const remaining = clock.remainingSeconds;
+    if (isDailyClock(state)) return 2000;
+    const remaining = getRemainingMs(clock) / 1000;
     if (remaining <= 10) return Math.min(500, remaining * 30);
     if (remaining <= 60) return Math.min(2000, remaining * 15);
     return Math.min(5000, remaining * 5);

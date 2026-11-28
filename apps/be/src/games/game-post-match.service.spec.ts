@@ -163,6 +163,29 @@ describe('GamePostMatchService', () => {
       expect(users.user_1?.xp).toBe(100);
       expect(mockPlayerStats.recordGameResult).toHaveBeenCalledTimes(1);
     });
+
+    it('skips ratings, rewards and stats for an aborted game', async () => {
+      mockSessionsService.claimPostMatchProcessing.mockResolvedValue(true);
+      mockSessionsService.getWinners.mockResolvedValue([]);
+      const aborted = {
+        id: 'sess-2',
+        roomId: 'room-1',
+        gameId: 'chess_v1',
+        status: 'completed',
+        state: { gameResult: { winnerIds: [], isDraw: false, aborted: true } },
+      } as never;
+      await service.processCompletedSession(aborted);
+      expect(users.user_1?.xp).toBe(0);
+      expect(users.user_2?.xp).toBe(0);
+      expect(mockRanking.recordRankedResult).not.toHaveBeenCalled();
+      expect(mockPlayerStats.recordGameResult).not.toHaveBeenCalled();
+      expect(mockDailyChallenges.onGameCompleted).not.toHaveBeenCalled();
+      expect(mockRooms.updateRoomStatus).toHaveBeenCalledWith(
+        'room-1',
+        'completed',
+      );
+      expect(mockArchive.archiveSessionToAtlas).toHaveBeenCalledWith(aborted);
+    });
   });
 
   it('dispatches clan war resolution to queue when two human players compete and one wins', async () => {

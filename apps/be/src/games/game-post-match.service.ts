@@ -70,6 +70,21 @@ export class GamePostMatchService implements OnModuleInit {
 
     const players = await this.roomsService.getRoomParticipants(session.roomId);
 
+    // An aborted game (e.g. chess before both sides moved) has no result:
+    // no rating change, no rewards, no stats. Only close and archive it.
+    if (isAbortedSession(session)) {
+      try {
+        await this.roomsService.updateRoomStatus(session.roomId, 'completed');
+        await this.leaderboardSync.syncInMatch(players, false);
+      } catch (err) {
+        this.logger.warn(
+          `Room/leaderboard sync failed for aborted session ${session.id}: ${(err as Error).message}`,
+        );
+      }
+      await this.archiveService.archiveSessionToAtlas(session);
+      return;
+    }
+
     // Ranked ELO (no-op for unranked rooms; failures are logged inside).
     await recordRankedResultForSession(
       session,
@@ -393,4 +408,10 @@ export class GamePostMatchService implements OnModuleInit {
       );
     }
   }
+}
+
+/** True when the engine marked the finished game as aborted. */
+export function isAbortedSession(session: GameSessionSummary): boolean {
+  const result = session.state?.gameResult as { aborted?: unknown } | undefined;
+  return result?.aborted === true;
 }

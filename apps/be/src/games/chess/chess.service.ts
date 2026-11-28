@@ -25,6 +25,7 @@ import type {
   ChessState,
   MovePayload,
 } from '../engines/chess/chess.types';
+import { broadcastLiveAnalysis } from './chess-live-analysis';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
 import { ChessStockfishService } from './engine/chess-stockfish.service';
 import { ChessTournamentService } from './tournaments/chess-tournament.service';
@@ -36,6 +37,10 @@ import {
 } from '../ai-difficulty';
 import { BaseGameService } from '../common/base-game.service';
 import { getBotPersonality, type BotPersonality } from '../engines/chess';
+import {
+  isChessDraw,
+  isChessGameOver,
+} from '@arcadeum/games-core/games/chess/chess-engine-rules';
 
 @Injectable()
 export class ChessService extends BaseGameService<ChessOptions> {
@@ -117,6 +122,13 @@ export class ChessService extends BaseGameService<ChessOptions> {
   }
   async drawAccept(userId: string, roomId: string) {
     return this.runAction(userId, roomId, 'draw_accept', {});
+  }
+  async drawDecline(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'draw_decline', {});
+  }
+  /** Abort before both sides have moved: no result, no rating change. */
+  async abort(userId: string, roomId: string) {
+    return this.runAction(userId, roomId, 'abort', {});
   }
   async takebackOffer(userId: string, roomId: string) {
     return this.runAction(userId, roomId, 'takeback_offer', {});
@@ -204,13 +216,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
         getBotPersonality(personalityId);
       if (!personality) continue;
 
+      if (state.isAborted) continue;
       const botWon = state.winnerColor === player.color;
-      const isDraw =
-        state.isStalemate ||
-        state.isDrawByRepetition ||
-        state.isDrawByFiftyMoveRule ||
-        state.isInsufficientMaterial ||
-        state.isDrawByAgreement;
+      const isDraw = isChessDraw(state);
 
       let message: string | null = null;
       if (botWon && personality.chatMessages.onWin.length > 0) {
@@ -253,59 +261,15 @@ export class ChessService extends BaseGameService<ChessOptions> {
     await super.emitSessionUpdate(session);
 
     // Broadcast Stockfish analysis after each move (fire-and-forget)
-    if (moveCount > 0) {
-      if (!this.stockfishService?.isReady()) {
-        this.logger.warn(
-          `[Chess] Stockfish not ready, skipping analysis for room ${session.roomId}`,
-        );
-      } else {
-        const state = session.state as ChessState | undefined;
-        if (state) {
-          // Generate full FEN (positionHistory only stores board part)
-          const { toFen } =
-            await import('@arcadeum/games-core/games/chess/chess-fen');
-          const fullFen = toFen(state);
-          this.logger.log(
-            `[Chess] Analyzing fen for room ${session.roomId}: ${fullFen.substring(0, 50)}...`,
-          );
-          this.stockfishService
-            .analyzePositionMultiPV(fullFen, 12, 1500, 3)
-            .then((result) => {
-              this.logger.log(
-                `[Chess] Eval for room ${session.roomId}: cp=${result.cp} mate=${result.mate} depth=${result.depth}`,
-              );
-              const payload = {
-                roomId: session.roomId,
-                eval: {
-                  cp: result.cp,
-                  mate: result.mate,
-                  pv: result.pv,
-                  depth: result.depth,
-                  selDepth: result.selDepth,
-                  nodes: result.nodes,
-                  nps: result.nps,
-                  timeMs: result.timeMs,
-                },
-                alternatives: result.alternatives,
-              };
-              this.realtimeService.emitToRoom(
-                session.roomId,
-                'chess.session.analyzed',
-                payload,
-              );
-              this.realtimeService.emitToSpectators(
-                session.roomId,
-                'chess.session.analyzed',
-                payload,
-              );
-            })
-            .catch((err) => {
-              this.logger.error(
-                `[Chess] Stockfish analysis failed for room ${session.roomId}: ${err}`,
-              );
-            });
-        }
-      }
+    const state = session.state as ChessState | undefined;
+    if (moveCount > 0 && state) {
+      broadcastLiveAnalysis(
+        session.roomId,
+        state,
+        this.stockfishService,
+        this.realtimeService,
+        this.logger,
+      );
     }
   }
 
@@ -349,8 +313,9 @@ export class ChessService extends BaseGameService<ChessOptions> {
         )
       )
         return;
+      // Nobody moved: abort instead of awarding a win (no rating change).
       const p = state.players.find((p) => p.color === state.currentTurnColor);
-      if (p) await this.runAction(p.playerId, session.roomId, 'forfeit', {});
+      if (p) await this.runAction(p.playerId, session.roomId, 'abort', {});
       return;
     }
 
@@ -373,20 +338,22 @@ export class ChessService extends BaseGameService<ChessOptions> {
       return;
 
     const loser = state.players.find((p) => p.color === state.currentTurnColor);
-    if (loser)
-      await this.runAction(loser.playerId, session.roomId, 'forfeit', {});
+    if (!loser) return;
+    // A side that never made its first move aborts the game; otherwise the
+    // flag fall is judged by the engine (loss, or draw vs. no mating material).
+    const neverMoved = !state.moveHistory.some(
+      (m) => m.piece.color === loser.color,
+    );
+    await this.runAction(
+      loser.playerId,
+      session.roomId,
+      neverMoved ? 'abort' : 'timeout',
+      {},
+    );
   }
 
   private isGameOver(state: ChessState): boolean {
-    return (
-      state.isCheckmate ||
-      state.isStalemate ||
-      state.winnerColor !== null ||
-      state.isDrawByRepetition ||
-      state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial ||
-      state.isDrawByAgreement
-    );
+    return isChessGameOver(state);
   }
 
   protected resolveOptions(raw: unknown): ChessOptions {
@@ -472,12 +439,8 @@ export class ChessService extends BaseGameService<ChessOptions> {
     const black = state.players.find((p) => p.color === 'black');
     if (!white || !black) return;
 
-    const isDraw =
-      state.isDrawByAgreement ||
-      state.isDrawByRepetition ||
-      state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial ||
-      state.isStalemate;
+    if (state.isAborted) return;
+    const isDraw = isChessDraw(state);
     const result = isDraw
       ? 'draw'
       : state.winnerColor === 'white'

@@ -2,6 +2,8 @@ export type {
   Board,
   BoardPosition,
   CastlingRights,
+  CastlingRookFiles,
+  ChessEndReason,
   ChessEngineConfig,
   ChessMove,
   ChessOptions,
@@ -43,7 +45,11 @@ export {
   hashState,
   scoreMove,
 } from './chess-bot-utils';
-export type { BotPersonality, BotStyle, TimeManagement } from './chess-bot-personalities';
+export type {
+  BotPersonality,
+  BotStyle,
+  TimeManagement,
+} from './chess-bot-personalities';
 export {
   BOT_PERSONALITIES,
   getBotPersonality,
@@ -52,3 +58,10 @@ export {
 } from './chess-bot-personalities';
 export { getOpeningMove } from './chess-bot-openings';
 export { toFen } from './chess-fen';
+export {
+  canAbort,
+  isChessDraw,
+  isChessGameOver,
+  restoreFromFen,
+} from './chess-engine-rules';
+export { SAN_LETTER } from './chess.move-utils';

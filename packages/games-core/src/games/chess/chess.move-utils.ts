@@ -7,6 +7,7 @@ import type {
   ChessState,
 } from './chess.types';
 import { posToBoardCoords } from './chess.board';
+import { applyCastleToBoard } from './chess.castling';
 
 export function createMove(
   state: ChessState,
@@ -39,6 +40,16 @@ export function createMove(
   };
 }
 
+/** SAN piece letters (knight is N, not K). */
+export const SAN_LETTER: Record<PieceType, string> = {
+  pawn: '',
+  knight: 'N',
+  bishop: 'B',
+  rook: 'R',
+  queen: 'Q',
+  king: 'K',
+};
+
 function buildNotation(
   from: BoardPosition,
   to: BoardPosition,
@@ -49,13 +60,12 @@ function buildNotation(
   isEnPassant: boolean,
 ): string {
   if (isCastle) {
-    const toFile = to.file.charCodeAt(0) - 97;
-    return toFile === 6 ? 'O-O' : 'O-O-O';
+    return to.file > from.file ? 'O-O' : 'O-O-O';
   }
 
   let notation = '';
   if (piece.type !== 'pawn') {
-    notation += piece.type.charAt(0).toUpperCase();
+    notation += SAN_LETTER[piece.type];
   }
 
   if (captured || isEnPassant) {
@@ -68,16 +78,22 @@ function buildNotation(
   notation += `${to.file}${to.rank}`;
 
   if (promotion) {
-    notation += `=${promotion.charAt(0).toUpperCase()}`;
+    notation += `=${SAN_LETTER[promotion]}`;
   }
 
   return notation;
 }
 
 export function simulateMove(state: ChessState, move: ChessMove): Board {
-  const board = structuredClone(state.board);
+  // Shallow row copies are enough: pieces are never mutated in place.
+  const board: Board = state.board.map((row) => [...row]);
   const { rank: fr, file: ff } = posToBoardCoords(move.from);
   const { rank: tr, file: tf } = posToBoardCoords(move.to);
+
+  if (move.isCastle) {
+    applyCastleToBoard(board, state, move);
+    return board;
+  }
 
   if (move.isEnPassant) {
     board[fr][tf] = null;
@@ -87,30 +103,6 @@ export function simulateMove(state: ChessState, move: ChessMove): Board {
     ? { type: move.promotion, color: move.piece.color }
     : board[fr][ff];
   board[fr][ff] = null;
-
-  if (move.isCastle) {
-    if (tf === 6) {
-      let rookFrom = ff + 1;
-      for (let f = ff + 1; f < 8; f++) {
-        if (board[tr][f]?.type === 'rook') {
-          rookFrom = f;
-          break;
-        }
-      }
-      board[tr][5] = board[tr][rookFrom];
-      board[tr][rookFrom] = null;
-    } else if (tf === 2) {
-      let rookFrom = ff - 1;
-      for (let f = ff - 1; f >= 0; f--) {
-        if (board[tr][f]?.type === 'rook') {
-          rookFrom = f;
-          break;
-        }
-      }
-      board[tr][3] = board[tr][rookFrom];
-      board[tr][rookFrom] = null;
-    }
-  }
 
   return board;
 }

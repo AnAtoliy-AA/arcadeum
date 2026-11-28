@@ -21,16 +21,30 @@ import type {
 } from './chess.types';
 import {
   parseFen,
-  boardToFen,
   boardCoordsToPos,
   oppositeColor,
   isThreefoldRepetition,
   isInsufficientMaterial,
+  hasMatingMaterial,
   generateChess960BackRank,
 } from './chess.board';
 import { getLegalMoves, simulateMove } from './chess.move-generator';
 import { isInCheck } from './chess.attacks';
-import { updateCastlingRights } from './chess.castling';
+import {
+  updateCastlingRights,
+  deriveCastlingRookFiles,
+} from './chess.castling';
+import {
+  canAbort,
+  insufficientMaterialApplies,
+  isChessDraw,
+  isChessGameOver,
+  recomputeVariantCounters,
+  restoreFromFen,
+  setEndReason,
+  toLegalMoveList,
+} from './chess-engine-rules';
+import { applyMoveClock, restartTurnClock } from './chess-clock';
 import { toFen } from './chess-fen';
 import { checkKingOfTheHillWin } from './chess-variants/king-of-the-hill';
 import {
@@ -56,6 +70,9 @@ const ACTION = {
   TAKEBACK_OFFER: 'takeback_offer',
   TAKEBACK_ACCEPT: 'takeback_accept',
   TAKEBACK_DECLINE: 'takeback_decline',
+  DRAW_DECLINE: 'draw_decline',
+  ABORT: 'abort',
+  TIMEOUT: 'timeout',
 } as const;
 export class ChessEngine extends BaseGameEngine<ChessState> {
   private readonly logger = createLogger('ChessEngine');
@@ -97,15 +114,17 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     const clocks = timeControl
       ? ({
           white: {
-            remainingSeconds: timeControl.type === 'daily'
-              ? (timeControl.daysPerMove ?? 1) * 86400
-              : timeControl.initialSeconds,
+            remainingSeconds:
+              timeControl.type === 'daily'
+                ? (timeControl.daysPerMove ?? 1) * 86400
+                : timeControl.initialSeconds,
             lastMoveTimestamp: 0,
           },
           black: {
-            remainingSeconds: timeControl.type === 'daily'
-              ? (timeControl.daysPerMove ?? 1) * 86400
-              : timeControl.initialSeconds,
+            remainingSeconds:
+              timeControl.type === 'daily'
+                ? (timeControl.daysPerMove ?? 1) * 86400
+                : timeControl.initialSeconds,
             lastMoveTimestamp: 0,
           },
         } as const)
@@ -131,6 +150,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       currentTurnColor: 'white',
       gameCreatedAt: Date.now(),
       castlingRights: { ...INITIAL_CASTLING_RIGHTS },
+      castlingRookFiles: deriveCastlingRookFiles(initialBoard),
       enPassantTarget: null,
       halfMoveClock: 0,
       fullMoveNumber: 1,
@@ -148,20 +168,24 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       takebackOfferedBy: null,
       takebackMoveIndex: null,
       clocks,
-      positionHistory: [toFen({
-        board: initialBoard,
-        currentTurnColor: 'white',
-        castlingRights: { ...INITIAL_CASTLING_RIGHTS },
-        enPassantTarget: null,
-        halfMoveClock: 0,
-        fullMoveNumber: 1,
-      } as ChessState)],
+      positionHistory: [
+        toFen({
+          variant,
+          board: initialBoard,
+          currentTurnColor: 'white',
+          castlingRights: { ...INITIAL_CASTLING_RIGHTS },
+          enPassantTarget: null,
+          halfMoveClock: 0,
+          fullMoveNumber: 1,
+        } as ChessState),
+      ],
       currentTurnIndex: 0,
       logs: [
         this.createLogEntry('system', 'Chess game started. White moves first.'),
       ],
       legalMovesForCurrentPlayer: getLegalMoves(
         {
+          variant,
           board: initialBoard,
           currentTurnColor: 'white',
           castlingRights: { ...INITIAL_CASTLING_RIGHTS },
@@ -186,64 +210,60 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     context: GameActionContext,
     payload?: unknown,
   ): boolean {
-    if (state.isCheckmate || state.isStalemate || state.winnerColor) {
-      return false;
-    }
+    const player = state.players.find((p) => p.playerId === context.userId);
+    if (!player) return false;
+    if (isChessGameOver(state)) return false;
 
-    if (action === ACTION.MOVE) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      if (!player || player.color !== state.currentTurnColor) return false;
-      if (!payload) return false;
-      const movePayload = payload as MovePayload;
-      return this.isValidMove(state, movePayload);
+    switch (action) {
+      case ACTION.MOVE:
+        if (player.color !== state.currentTurnColor || !payload) return false;
+        return this.isValidMove(state, payload as MovePayload);
+      case ACTION.RESIGN:
+      case ACTION.FORFEIT:
+        return true;
+      case ACTION.TIMEOUT:
+        // Issued by the server clock for the side whose flag fell.
+        return player.color === state.currentTurnColor;
+      case ACTION.ABORT:
+        return canAbort(state);
+      case ACTION.DRAW_OFFER:
+        // FIDE 9.1.2.2: a draw may be offered at any time, once per offer.
+        return state.drawOfferedBy === null;
+      case ACTION.DRAW_ACCEPT:
+      case ACTION.DRAW_DECLINE:
+        return (
+          state.drawOfferedBy !== null && state.drawOfferedBy !== context.userId
+        );
+      case ACTION.TAKEBACK_OFFER:
+        return (
+          !state.takebackOfferedBy &&
+          this.takebackPlies(state, player.color) > 0
+        );
+      case ACTION.TAKEBACK_ACCEPT:
+      case ACTION.TAKEBACK_DECLINE:
+        return (
+          state.takebackOfferedBy !== null &&
+          state.takebackOfferedBy !== context.userId
+        );
+      default:
+        return false;
     }
+  }
 
-    if (action === ACTION.RESIGN || action === ACTION.FORFEIT) {
-      return state.players.some((p) => p.playerId === context.userId);
-    }
-
-    if (action === ACTION.DRAW_OFFER) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      if (!player || player.color !== state.currentTurnColor) return false;
-      if (state.drawOfferedBy) return false;
-      return true;
-    }
-
-    if (action === ACTION.DRAW_ACCEPT) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      if (!player) return false;
-      return (
-        state.drawOfferedBy !== null && state.drawOfferedBy !== context.userId
-      );
-    }
-
-    if (action === ACTION.TAKEBACK_OFFER) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      if (!player || player.color !== state.currentTurnColor) return false;
-      if (state.moveHistory.length < 2) return false;
-      if (state.takebackOfferedBy) return false;
-      return true;
-    }
-
-    if (action === ACTION.TAKEBACK_ACCEPT) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      if (!player) return false;
-      return (
-        state.takebackOfferedBy !== null &&
-        state.takebackOfferedBy !== context.userId
-      );
-    }
-
-    if (action === ACTION.TAKEBACK_DECLINE) {
-      const player = state.players.find((p) => p.playerId === context.userId);
-      if (!player) return false;
-      return (
-        state.takebackOfferedBy !== null &&
-        state.takebackOfferedBy !== context.userId
-      );
-    }
-
-    return false;
+  /**
+   * Plies a takeback by `color` removes: their own last move, plus the
+   * opponent's reply when it is already `color`'s turn again. Zero when
+   * `color` has not moved yet.
+   */
+  private takebackPlies(
+    state: ChessState,
+    color: ChessState['currentTurnColor'],
+  ): number {
+    const history = state.moveHistory;
+    if (history.length === 0) return 0;
+    const lastMover = history[history.length - 1].piece.color;
+    if (lastMover === color) return 1;
+    return history.length >= 2 ? 2 : 0;
   }
 
   executeAction(
@@ -252,6 +272,15 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     context: GameActionContext,
     payload?: unknown,
   ): GameActionResult<ChessState> {
+    // The session layer calls executeAction directly, so the rules in
+    // validateAction (turn order, offer and abort windows) are enforced here.
+    if (!this.validateAction(state, action, context, payload)) {
+      return this.errorResult(
+        action === ACTION.MOVE
+          ? 'Invalid move'
+          : `Action not allowed: ${action}`,
+      );
+    }
     if (action === ACTION.MOVE) {
       return this.executeMove(state, context, payload as MovePayload);
     }
@@ -273,29 +302,24 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (action === ACTION.TAKEBACK_DECLINE) {
       return this.executeTakebackDecline(state, context);
     }
+    if (action === ACTION.DRAW_DECLINE) {
+      return this.executeDrawDecline(state, context);
+    }
+    if (action === ACTION.ABORT) {
+      return this.executeAbort(state, context);
+    }
+    if (action === ACTION.TIMEOUT) {
+      return this.executeTimeout(state, context);
+    }
     return this.errorResult(`Unknown action: ${action}`);
   }
 
   isGameOver(state: ChessState): boolean {
-    return (
-      state.isCheckmate ||
-      state.isStalemate ||
-      state.winnerColor !== null ||
-      state.isDrawByRepetition ||
-      state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial ||
-      state.isDrawByAgreement
-    );
+    return isChessGameOver(state);
   }
 
   getWinners(state: ChessState): string[] {
-    const isDraw =
-      state.isDrawByRepetition ||
-      state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial ||
-      state.isStalemate ||
-      state.isDrawByAgreement;
-    if (isDraw) return [];
+    if (isChessDraw(state) || state.isAborted) return [];
     if (state.winnerColor) {
       const winner = state.players.find((p) => p.color === state.winnerColor);
       return winner ? [winner.playerId] : [];
@@ -305,13 +329,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
 
   getResult(state: ChessState) {
     if (!this.isGameOver(state)) return { winnerIds: [], isDraw: false };
-    const isDraw =
-      state.isDrawByRepetition ||
-      state.isDrawByFiftyMoveRule ||
-      state.isInsufficientMaterial ||
-      state.isStalemate ||
-      state.isDrawByAgreement;
-    if (isDraw) return { winnerIds: [], isDraw: true };
+    if (state.isAborted) return { winnerIds: [], isDraw: false, aborted: true };
+    if (isChessDraw(state)) return { winnerIds: [], isDraw: true };
     return { winnerIds: this.getWinners(state), isDraw: false };
   }
 
@@ -322,9 +341,13 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   getAvailableActions(state: ChessState, playerId: string): string[] {
     if (this.isGameOver(state)) return [];
     const player = state.players.find((p) => p.playerId === playerId);
-    if (!player || player.color !== state.currentTurnColor)
-      return [ACTION.RESIGN, ACTION.FORFEIT];
-    return [ACTION.MOVE, ACTION.RESIGN, ACTION.FORFEIT];
+    if (!player) return [];
+    const base: string[] = canAbort(state)
+      ? [ACTION.ABORT, ACTION.RESIGN, ACTION.FORFEIT]
+      : [ACTION.RESIGN, ACTION.FORFEIT];
+    return player.color === state.currentTurnColor
+      ? [ACTION.MOVE, ...base]
+      : base;
   }
 
   private isValidMove(state: ChessState, payload: MovePayload): boolean {
@@ -379,69 +402,44 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (!move) return this.errorResult('Invalid move');
 
     const newState = this.cloneState(state);
+    if (!newState.castlingRookFiles) {
+      // Legacy sessions: pin the rook files before the board changes.
+      newState.castlingRookFiles =
+        state.variant === 'chess960'
+          ? deriveCastlingRookFiles(state.board)
+          : deriveCastlingRookFiles(parseFen(INITIAL_BOARD_FEN));
+    }
     newState.board = simulateMove(state, move);
 
     newState.halfMoveClock =
       move.captured || move.piece.type === 'pawn' ? 0 : state.halfMoveClock + 1;
 
-    if (move.piece.type === 'pawn') {
-      const dr = Math.abs(toRank - fromRank);
-      if (dr === 2) {
-        newState.enPassantTarget = boardCoordsToPos(
-          (fromRank + toRank) / 2,
-          fromFile,
-        );
-      } else {
-        newState.enPassantTarget = null;
-      }
-    } else {
-      newState.enPassantTarget = null;
-    }
+    newState.enPassantTarget =
+      move.piece.type === 'pawn' && Math.abs(toRank - fromRank) === 2
+        ? boardCoordsToPos((fromRank + toRank) / 2, fromFile)
+        : null;
 
     updateCastlingRights(newState, move);
 
-    newState.moveHistory = [...state.moveHistory, move];
     newState.currentTurnColor = oppositeColor(state.currentTurnColor);
     if (state.currentTurnColor === 'black') {
       newState.fullMoveNumber++;
     }
 
-    if (newState.clocks) {
-      const movingColor = state.currentTurnColor;
-      const opponentColor = movingColor === 'white' ? 'black' : 'white';
-      const clock = { ...newState.clocks[movingColor] };
-      const opponentClock = newState.clocks[opponentColor];
-      const isFirstMove =
-        opponentClock.lastMoveTimestamp === 0 && clock.lastMoveTimestamp === 0;
-      let elapsed = 0;
-      if (isFirstMove) {
-        const gameCreatedAt =
-          (state as unknown as { gameCreatedAt?: number }).gameCreatedAt ??
-          Date.now();
-        const sinceCreation = Math.floor((Date.now() - gameCreatedAt) / 1000);
-        elapsed = Math.max(0, sinceCreation - 20);
-      } else {
-        const referenceTime =
-          opponentClock.lastMoveTimestamp > 0
-            ? opponentClock.lastMoveTimestamp
-            : ((state as unknown as { gameCreatedAt?: number }).gameCreatedAt ??
-              Date.now());
-        elapsed = Math.max(0, Math.floor((Date.now() - referenceTime) / 1000));
-      }
-      clock.remainingSeconds = Math.max(0, clock.remainingSeconds - elapsed);
-      const tc = (
-        state as unknown as { timeControl?: { incrementSeconds?: number } }
-      ).timeControl;
-      const increment = tc?.incrementSeconds ?? 0;
-      clock.remainingSeconds += increment;
-      clock.lastMoveTimestamp = Date.now();
-      newState.clocks = { ...newState.clocks, [movingColor]: clock };
+    // A move answers any pending offer from the opponent (FIDE 9.1.2.3) and
+    // invalidates any takeback request.
+    if (newState.drawOfferedBy && newState.drawOfferedBy !== context.userId) {
+      newState.drawOfferedBy = null;
     }
+    newState.takebackOfferedBy = null;
+    newState.takebackMoveIndex = null;
 
-    newState.positionHistory = [
-      ...state.positionHistory,
-      toFen(newState),
-    ];
+    applyMoveClock(newState, state.currentTurnColor);
+
+    // Atomic explosions change the board before check / mate detection.
+    if (newState.variant === 'atomic' && move.captured) {
+      newState.board = applyExplosion(newState, move.to).board;
+    }
 
     const opponentInCheck = isInCheck(
       newState.board,
@@ -458,6 +456,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     } else if (opponentInCheck) {
       notation += '+';
     }
+    newState.moveHistory = [...state.moveHistory, { ...move, notation }];
+    newState.positionHistory = [...state.positionHistory, toFen(newState)];
 
     const fromRow = 8 - move.from.rank;
     const fromCol = move.from.file.charCodeAt(0) - 97;
@@ -470,10 +470,17 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       this.createLogEntry('action', moveLog, { senderId: context.userId }),
     ];
 
+    this.applyVariantRules(newState, state, move, opponentInCheck);
+    if (newState.winnerColor) {
+      newState.legalMovesForCurrentPlayer = [];
+      return this.successResult(newState);
+    }
+
     if (!hasLegalMoves) {
       if (opponentInCheck) {
         newState.isCheckmate = true;
         newState.winnerColor = state.currentTurnColor;
+        setEndReason(newState, 'checkmate');
         newState.logs.push(
           this.createLogEntry(
             'system',
@@ -482,113 +489,103 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         );
       } else {
         newState.isStalemate = true;
+        setEndReason(newState, 'stalemate');
         newState.logs.push(this.createLogEntry('system', 'Stalemate! Draw.'));
       }
-    }
-
-    if (newState.halfMoveClock >= 100) {
-      this.markDraw(newState, 'isDrawByFiftyMoveRule', 'Draw by 50-move rule.');
-    }
-    if (isInsufficientMaterial(newState.board)) {
-      this.markDraw(
-        newState,
-        'isInsufficientMaterial',
-        'Draw by insufficient material.',
-      );
-    }
-    if (isThreefoldRepetition(newState.positionHistory)) {
-      this.markDraw(
-        newState,
-        'isDrawByRepetition',
-        'Draw by threefold repetition.',
-      );
-    }
-
-    // --- Variant-specific win conditions ---
-
-    // King of the Hill: king reaching center squares wins immediately
-    if (newState.variant === 'king_of_the_hill' && !newState.winnerColor) {
-      const kothWinner = checkKingOfTheHillWin(newState);
-      if (kothWinner) {
-        newState.winnerColor = kothWinner;
-        newState.logs.push(
-          this.createLogEntry(
-            'system',
-            `${kothWinner} wins by King of the Hill!`,
-          ),
+    } else {
+      // Checkmate takes precedence over the automatic draw rules (FIDE 9.6).
+      if (
+        insufficientMaterialApplies(newState) &&
+        isInsufficientMaterial(newState.board)
+      ) {
+        this.markDraw(
+          newState,
+          'isInsufficientMaterial',
+          'Draw by insufficient material.',
+        );
+      } else if (isThreefoldRepetition(newState.positionHistory)) {
+        this.markDraw(
+          newState,
+          'isDrawByRepetition',
+          'Draw by threefold repetition.',
+        );
+      } else if (newState.halfMoveClock >= 100) {
+        this.markDraw(
+          newState,
+          'isDrawByFiftyMoveRule',
+          'Draw by 50-move rule.',
         );
       }
     }
 
-    // Three-Check: track checks and declare winner at 3 checks
-    if (newState.variant === 'three_check' && !newState.winnerColor) {
+    newState.legalMovesForCurrentPlayer = isChessGameOver(newState)
+      ? []
+      : toLegalMoveList(newState);
+
+    return this.successResult(newState);
+  }
+
+  private applyVariantRules(
+    newState: ChessState,
+    prevState: ChessState,
+    move: ChessMove,
+    opponentInCheck: boolean,
+  ): void {
+    const declare = (
+      winner: ChessState['currentTurnColor'],
+      message: string,
+    ) => {
+      newState.winnerColor = winner;
+      setEndReason(newState, 'variant_win');
+      newState.logs.push(this.createLogEntry('system', message));
+    };
+
+    if (newState.variant === 'king_of_the_hill') {
+      const kothWinner = checkKingOfTheHillWin(newState);
+      if (kothWinner)
+        declare(kothWinner, `${kothWinner} wins by King of the Hill!`);
+    }
+
+    if (newState.variant === 'three_check') {
       const tcState = newState as ThreeCheckState;
-      if (!tcState.checkCount) {
-        tcState.checkCount = { white: 0, black: 0 };
-      }
+      if (!tcState.checkCount) tcState.checkCount = { white: 0, black: 0 };
       if (opponentInCheck) {
-        const updated = recordCheck(tcState, newState.currentTurnColor);
-        tcState.checkCount = updated.checkCount;
-        const threeCheckWinner = checkThreeCheckWin(tcState);
-        if (threeCheckWinner) {
-          newState.winnerColor = threeCheckWinner;
-          newState.logs.push(
-            this.createLogEntry(
-              'system',
-              `${threeCheckWinner} wins by Three-Check!`,
-            ),
-          );
-        }
+        tcState.checkCount = recordCheck(
+          tcState,
+          newState.currentTurnColor,
+        ).checkCount;
+        const winner = checkThreeCheckWin(tcState);
+        if (winner) declare(winner, `${winner} wins by Three-Check!`);
       }
     }
 
-    // Atomic: explosion on capture, king captured = loss
-    if (newState.variant === 'atomic' && !newState.winnerColor) {
-      if (move.captured) {
-        const capturedPos = move.to;
-        const exploded = applyExplosion(newState, capturedPos);
-        newState.board = exploded.board;
-
-        // Check if either king was captured in the explosion
-        if (isKingCaptured(newState, 'white')) {
-          newState.winnerColor = 'black';
-          newState.logs.push(
-            this.createLogEntry(
-              'system',
-              'Black wins! White king was destroyed in the explosion!',
-            ),
-          );
-        } else if (isKingCaptured(newState, 'black')) {
-          newState.winnerColor = 'white';
-          newState.logs.push(
-            this.createLogEntry(
-              'system',
-              'White wins! Black king was destroyed in the explosion!',
-            ),
-          );
-        }
+    if (newState.variant === 'atomic' && move.captured) {
+      if (isKingCaptured(newState, 'white')) {
+        declare(
+          'black',
+          'Black wins! White king was destroyed in the explosion!',
+        );
+      } else if (isKingCaptured(newState, 'black')) {
+        declare(
+          'white',
+          'White wins! Black king was destroyed in the explosion!',
+        );
       }
     }
 
-    // Crazyhouse: track captured pieces for drop rights
     if (newState.variant === 'crazyhouse') {
       const czState = newState as CrazyhouseState;
       if (!czState.capturedPieces) {
         czState.capturedPieces = { white: [], black: [] };
       }
       if (move.captured) {
-        const capturingColor = state.currentTurnColor;
-        const updated = recordCapture(czState, move.captured, capturingColor);
-        czState.capturedPieces = updated.capturedPieces;
+        czState.capturedPieces = recordCapture(
+          czState,
+          move.captured,
+          prevState.currentTurnColor,
+        ).capturedPieces;
       }
     }
-
-    newState.legalMovesForCurrentPlayer = getLegalMoves(
-      newState,
-      newState.currentTurnColor,
-    ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
-
-    return this.successResult(newState);
   }
 
   private markDraw(
@@ -597,8 +594,25 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       'isDrawByFiftyMoveRule' | 'isInsufficientMaterial' | 'isDrawByRepetition',
     message: string,
   ): void {
-    (state as Record<string, unknown>)[key] = true;
+    state[key] = true;
+    setEndReason(
+      state,
+      key === 'isDrawByFiftyMoveRule'
+        ? 'fifty_move'
+        : key === 'isInsufficientMaterial'
+          ? 'insufficient_material'
+          : 'repetition',
+    );
+    state.legalMovesForCurrentPlayer = [];
     state.logs.push(this.createLogEntry('system', message));
+  }
+
+  private finish(state: ChessState): ChessState {
+    state.drawOfferedBy = null;
+    state.takebackOfferedBy = null;
+    state.takebackMoveIndex = null;
+    state.legalMovesForCurrentPlayer = [];
+    return state;
   }
 
   private executeResign(
@@ -607,8 +621,9 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   ): GameActionResult<ChessState> {
     const player = state.players.find((p) => p.playerId === context.userId);
     if (!player) return this.errorResult('Player not found');
-    const newState = this.cloneState(state);
+    const newState = this.finish(this.cloneState(state));
     newState.winnerColor = oppositeColor(player.color);
+    setEndReason(newState, 'resignation');
     newState.logs = [
       ...state.logs,
       this.createLogEntry(
@@ -616,6 +631,62 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
         `${player.color} resigned. ${newState.winnerColor} wins!`,
         { senderId: context.userId },
       ),
+    ];
+    return this.successResult(newState);
+  }
+
+  /**
+   * Flag fall (FIDE 6.9): the flagged side loses, unless the opponent has no
+   * possible way to checkmate, in which case the game is drawn.
+   */
+  private executeTimeout(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const player = state.players.find((p) => p.playerId === context.userId);
+    if (!player) return this.errorResult('Player not found');
+    const newState = this.finish(this.cloneState(state));
+    const opponent = oppositeColor(player.color);
+    if (newState.clocks) {
+      newState.clocks = {
+        ...newState.clocks,
+        [player.color]: {
+          ...newState.clocks[player.color],
+          remainingSeconds: 0,
+        },
+      };
+    }
+    const opponentCanMate =
+      !insufficientMaterialApplies(newState) ||
+      hasMatingMaterial(newState.board, opponent);
+    let message: string;
+    if (opponentCanMate) {
+      newState.winnerColor = opponent;
+      setEndReason(newState, 'timeout');
+      message = `${player.color} ran out of time. ${opponent} wins!`;
+    } else {
+      newState.isDrawByTimeout = true;
+      setEndReason(newState, 'timeout_vs_insufficient');
+      message = `${player.color} ran out of time, but ${opponent} cannot checkmate. Draw.`;
+    }
+    newState.logs = [...state.logs, this.createLogEntry('system', message)];
+    return this.successResult(newState);
+  }
+
+  private executeAbort(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const player = state.players.find((p) => p.playerId === context.userId);
+    if (!player) return this.errorResult('Player not found');
+    const newState = this.finish(this.cloneState(state));
+    newState.isAborted = true;
+    setEndReason(newState, 'aborted');
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', 'Game aborted.', {
+        senderId: context.userId,
+      }),
     ];
     return this.successResult(newState);
   }
@@ -641,12 +712,27 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     state: ChessState,
     context: GameActionContext,
   ): GameActionResult<ChessState> {
-    const newState = this.cloneState(state);
+    const newState = this.finish(this.cloneState(state));
     newState.isDrawByAgreement = true;
-    newState.drawOfferedBy = null;
+    setEndReason(newState, 'agreement');
     newState.logs = [
       ...state.logs,
       this.createLogEntry('system', 'Draw by agreement.', {
+        senderId: context.userId,
+      }),
+    ];
+    return this.successResult(newState);
+  }
+
+  private executeDrawDecline(
+    state: ChessState,
+    context: GameActionContext,
+  ): GameActionResult<ChessState> {
+    const newState = this.cloneState(state);
+    newState.drawOfferedBy = null;
+    newState.logs = [
+      ...state.logs,
+      this.createLogEntry('system', 'Draw offer declined.', {
         senderId: context.userId,
       }),
     ];
@@ -659,9 +745,11 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
   ): GameActionResult<ChessState> {
     const player = state.players.find((p) => p.playerId === context.userId);
     if (!player) return this.errorResult('Player not found');
+    const plies = this.takebackPlies(state, player.color);
+    if (plies === 0) return this.errorResult('Nothing to take back');
     const newState = this.cloneState(state);
     newState.takebackOfferedBy = context.userId;
-    newState.takebackMoveIndex = state.moveHistory.length - 2;
+    newState.takebackMoveIndex = state.moveHistory.length - plies;
     newState.logs = [
       ...state.logs,
       this.createLogEntry('system', `${player.color} offers a takeback.`, {
@@ -678,34 +766,31 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (!state.takebackOfferedBy || state.takebackMoveIndex === null) {
       return this.errorResult('No takeback offer pending');
     }
+    const revertToIndex = Math.max(0, state.takebackMoveIndex);
+    const targetFen = state.positionHistory[revertToIndex];
+    if (!targetFen) return this.errorResult('Takeback position unavailable');
+
     const newState = this.cloneState(state);
-    const revertToIndex = state.takebackMoveIndex;
     newState.moveHistory = state.moveHistory.slice(0, revertToIndex);
-    newState.positionHistory = state.positionHistory.slice(0, revertToIndex + 1);
-    const lastFen = newState.positionHistory[newState.positionHistory.length - 1];
-    if (lastFen) {
-      const restored = parseFen(lastFen);
-      newState.board = restored;
-      const fenTurn = lastFen.split(' ')[1];
-      if (fenTurn === 'w' || fenTurn === 'b') {
-        newState.currentTurnColor = fenTurn === 'w' ? 'white' : 'black';
-      }
-    }
+    newState.positionHistory = state.positionHistory.slice(
+      0,
+      revertToIndex + 1,
+    );
+    restoreFromFen(newState, targetFen);
+    recomputeVariantCounters(newState);
     newState.takebackOfferedBy = null;
     newState.takebackMoveIndex = null;
-    newState.isCheck = false;
+    newState.drawOfferedBy = null;
     newState.isCheckmate = false;
     newState.isStalemate = false;
+    restartTurnClock(newState);
     newState.logs = [
       ...state.logs,
       this.createLogEntry('system', 'Takeback accepted.', {
         senderId: context.userId,
       }),
     ];
-    newState.legalMovesForCurrentPlayer = getLegalMoves(
-      newState,
-      newState.currentTurnColor,
-    ).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion }));
+    newState.legalMovesForCurrentPlayer = toLegalMoveList(newState);
     return this.successResult(newState);
   }
 

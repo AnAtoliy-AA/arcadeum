@@ -152,10 +152,7 @@ const DEFAULT_MODIFIERS: EvalModifiers = {
   materialWeight: 1.0,
 };
 
-export function evaluate(
-  state: ChessState,
-  modifiers?: EvalModifiers,
-): number {
+export function evaluate(state: ChessState, modifiers?: EvalModifiers): number {
   const m = modifiers ?? DEFAULT_MODIFIERS;
   if (state.isCheckmate)
     return state.currentTurnColor === 'white' ? -CHECKMATE : CHECKMATE;

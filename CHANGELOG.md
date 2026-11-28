@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.15] - 2026-11-28
+
+### Added
+- show real players, results and links in home activity feed
+
+### Fixed
+- use a div for the feed heading block
+
+
 ## [1.32.14] - 2026-11-28
 
 ### Added

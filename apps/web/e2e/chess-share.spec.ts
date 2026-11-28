@@ -84,7 +84,7 @@ test.describe('Chess Share Game Link', () => {
     }
     await settingsBtn.click();
 
-    const toggleBtn = page.locator('#chess-streamer-mode-toggle');
+    const toggleBtn = page.getByTestId('chess-streamer-mode-toggle');
     await expect(toggleBtn).toBeVisible();
   });
 
@@ -98,7 +98,7 @@ test.describe('Chess Share Game Link', () => {
     }
     await settingsBtn.click();
 
-    const toggleBtn = page.locator('#chess-streamer-mode-toggle');
+    const toggleBtn = page.getByTestId('chess-streamer-mode-toggle');
     await toggleBtn.click();
 
     await expect(page.locator('#chess-copy-obs-url')).toBeVisible();

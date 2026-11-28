@@ -23,6 +23,9 @@ import { useBoardDrawings } from '../hooks/useBoardDrawings';
 import { MemoizedChessCell } from './ChessCell';
 import { ChessPieceIcon } from './ChessPieceIcon';
 import { usePointerPieceDrag } from '../hooks/usePointerPieceDrag';
+import { useTranslation } from '@/shared/i18n/useTranslation';
+import { buildSquareLabel } from '../lib/square-label';
+import { useShowCoordinates } from '../lib/board-preferences';
 import { useChessTheme } from '../lib/ChessThemeContext';
 import { boardVars } from '../lib/theme-adapter';
 import {
@@ -92,6 +95,8 @@ function ChessBoardImpl({
   onPieceDrop,
 }: ChessBoardProps) {
   const theme = useChessTheme();
+  const { t } = useTranslation();
+  const { showCoordinates } = useShowCoordinates();
   const { activeBoardTheme } = useBoardThemePreference();
   const { pieceStyle: preferredPieceStyle } = useChessPieceStylePreference();
   const pieceStyle = pieceStyleProp ?? preferredPieceStyle ?? 'arcadeum';
@@ -351,6 +356,17 @@ function ChessBoardImpl({
                     canInteract={canInteract}
                     isLastFile={isLastFile}
                     isBottomRank={rows.ranks[rows.ranks.length - 1] === rank}
+                    showCoordinates={showCoordinates}
+                    ariaLabel={buildSquareLabel(t, {
+                      file,
+                      rank,
+                      piece,
+                      selected,
+                      legalTarget,
+                      lastMoved,
+                      kingCheck,
+                      hintMoved,
+                    })}
                     disabled={disabled}
                     cellFocusProps={getCellProps(navRow, navCol)}
                     pieceStyle={pieceStyle}

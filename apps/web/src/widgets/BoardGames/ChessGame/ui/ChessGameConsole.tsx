@@ -196,6 +196,7 @@ function ChessGameConsoleImpl({
         <button
           type="button"
           role="tab"
+          data-testid="chess-game-tab"
           aria-selected={activeTab === 'game'}
           onClick={() => setActiveTab('game')}
           className={`flex-1 px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer text-center ${
@@ -209,6 +210,7 @@ function ChessGameConsoleImpl({
         <button
           type="button"
           role="tab"
+          data-testid="chess-settings-tab"
           aria-selected={activeTab === 'settings'}
           onClick={() => setActiveTab('settings')}
           className={`flex-1 px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer text-center ${

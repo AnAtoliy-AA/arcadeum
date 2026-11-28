@@ -26,6 +26,9 @@ export interface ChessCellProps {
   canInteract: boolean;
   isLastFile: boolean;
   isBottomRank: boolean;
+  /** Localized screen-reader label for the square. */
+  ariaLabel: string;
+  showCoordinates?: boolean;
   disabled: boolean;
   cellFocusProps: Record<string, unknown>;
   onSquareClick: (file: File, rank: Rank) => void;
@@ -75,6 +78,8 @@ function ChessCell({
   canInteract,
   isLastFile,
   isBottomRank,
+  ariaLabel,
+  showCoordinates = true,
   disabled,
   cellFocusProps,
   onSquareClick,
@@ -117,7 +122,7 @@ function ChessCell({
       } motion-safe:transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)] ${bgClass} ${
         canInteract ? 'cursor-pointer' : 'cursor-default'
       } ${legalTarget && (hovered || isDragOver) ? 'brightness-125' : ''}`}
-      aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}${hintMoved ? ' suggested' : ''}`}
+      aria-label={ariaLabel}
       {...cellFocusProps}
       onClick={() => {
         if (!disabled) onSquareClick(file, rank);
@@ -125,13 +130,13 @@ function ChessCell({
       onMouseEnter={() => onHover(square)}
       onMouseLeave={() => onHover(null)}
     >
-      {isLastFile && (
+      {showCoordinates && isLastFile && (
         <span className="pointer-events-none absolute top-0.5 right-0.5 text-[9px] sm:text-[11px] font-bold font-mono text-[var(--chess-coord)] opacity-70 leading-none">
           {rank}
         </span>
       )}
 
-      {isBottomRank && (
+      {showCoordinates && isBottomRank && (
         <span className="pointer-events-none absolute bottom-0.5 left-0.5 text-[9px] sm:text-[11px] font-bold font-mono text-[var(--chess-coord)] opacity-70 leading-none">
           {file}
         </span>
@@ -183,6 +188,8 @@ function areChessCellPropsEqual(
   if (prev.canInteract !== next.canInteract) return false;
   if (prev.disabled !== next.disabled) return false;
   if (prev.pieceStyle !== next.pieceStyle) return false;
+  if (prev.ariaLabel !== next.ariaLabel) return false;
+  if (prev.showCoordinates !== next.showCoordinates) return false;
   if (prev.onSquareClick !== next.onSquareClick) return false;
   if (prev.onPieceDrop !== next.onPieceDrop) return false;
   if (prev.piece?.type !== next.piece?.type) return false;

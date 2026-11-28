@@ -1,0 +1,43 @@
+/** Chess board accessibility and settings panel strings. */
+export const byBoard = {
+  withPiece: '{{square}} {{piece}} ({{color}})',
+  white: 'белыя',
+  black: 'чорныя',
+  pieces: {
+    pawn: 'пешка',
+    knight: 'конь',
+    bishop: 'слон',
+    rook: 'ладдзя',
+    queen: 'ферзь',
+    king: 'кароль',
+  },
+  selected: 'выбрана',
+  legalMove: 'магчымы ход',
+  check: 'шах',
+  lastMove: 'апошні ход',
+  suggested: 'падказка',
+  premoveQueued: 'Перадход (у чарзе: {{count}})',
+  cancelPremoves: 'Адмена',
+  clearDrawings: 'Ачысціць',
+  clearDrawingsHint: 'Ачысціць пазнакі (левы клік або Esc)',
+  spectators: 'Гледачоў: {{count}}',
+};
+
+export const bySettings = {
+  pieceSet: 'Набор фігур',
+  boardColor: 'Колер дошкі',
+  themeDefault: 'Тэма',
+  sound: 'Гук',
+  volume: 'Гучнасць',
+  streamerMode: 'Рэжым стрымера',
+  copyObs: 'Капіяваць URL аверлэя OBS',
+  share: 'Падзяліцца',
+  copyLink: 'Капіяваць спасылку на партыю',
+  linkCopied: 'Спасылка скапіявана!',
+  flip: 'Перавярнуць дошку',
+  exportPgn: 'Экспарт PGN',
+  confirmMoves: 'Пацвярджаць хады',
+  coordinates: 'Паказваць каардынаты',
+  on: 'УКЛ',
+  off: 'ВЫКЛ',
+};

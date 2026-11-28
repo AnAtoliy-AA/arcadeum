@@ -65,10 +65,12 @@ describe('non-prod hosts', () => {
     expect(isNonProdArcadeumHost('arcadeum.games')).toBe(false);
   });
 
-  it('does not infer a domain-wide cookie for dev/staging hosts', () => {
+  it('shares dev/staging cookies with the sibling staging web host', () => {
+    // staging.arcadeum.games (web SSR) must receive the cookies minted by
+    // api-dev.arcadeum.games, so they cannot be host-only.
     expect(
       resolveCookieDomain(reqWith({ host: 'api-dev.arcadeum.games' })),
-    ).toBeUndefined();
+    ).toBe('.arcadeum.games');
     expect(
       resolveCookieDomain(
         reqWith({
@@ -76,7 +78,7 @@ describe('non-prod hosts', () => {
           'x-forwarded-host': 'staging.arcadeum.games',
         }),
       ),
-    ).toBeUndefined();
+    ).toBe('.arcadeum.games');
   });
 
   it('still honours an explicit COOKIE_DOMAIN on dev hosts', () => {

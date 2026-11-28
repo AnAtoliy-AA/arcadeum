@@ -54,10 +54,12 @@ describe('serverAuthFetch', () => {
     expect(init).not.toHaveProperty('accessToken');
   });
 
-  it('reads the dev_ prefixed cookies used on staging', async () => {
+  it('ignores staging dev_ cookies on a prod/local build', async () => {
+    // Both envs share `.arcadeum.games`; a staging token is not ours.
+    // (Staging builds read only dev_* names: see auth-cookies.test.ts.)
     cookieValues.dev_access_token = 'staging-tok';
     await serverAuthFetch('/x');
-    expect(authHeader()).toBe('Bearer staging-tok');
+    expect(authHeader()).toBeUndefined();
   });
 
   describe('server-side refresh', () => {
@@ -65,7 +67,7 @@ describe('serverAuthFetch', () => {
       const headers = new Headers();
       headers.append(
         'set-cookie',
-        'dev_access_token=newenc%3D; Path=/; Max-Age=900; HttpOnly; Secure; SameSite=Lax',
+        'access_token=newenc%3D; Path=/; Max-Age=900; HttpOnly; Secure; SameSite=Lax',
       );
       return new Response(JSON.stringify({ accessToken: 'fresh-tok' }), {
         status: 201,
@@ -74,8 +76,8 @@ describe('serverAuthFetch', () => {
     }
 
     it('refreshes and retries once when the backend answers 401', async () => {
-      cookieValues.dev_access_token = 'expired';
-      cookieValues.dev_refresh_token = 'refresh-enc';
+      cookieValues.access_token = 'expired';
+      cookieValues.refresh_token = 'refresh-enc';
       fetchMock
         .mockResolvedValueOnce({ ok: false, status: 401 })
         .mockResolvedValueOnce(refreshResponse())
@@ -93,14 +95,14 @@ describe('serverAuthFetch', () => {
       ];
       expect(refreshUrl).toBe('http://api.test/auth/refresh');
       expect((refreshInit.headers as Record<string, string>).Cookie).toBe(
-        'dev_refresh_token=refresh-enc',
+        'refresh_token=refresh-enc',
       );
       const retry = fetchMock.mock.calls[2][1] as RequestInit;
       expect((retry.headers as Record<string, string>).Authorization).toBe(
         'Bearer fresh-tok',
       );
       expect(setCookie).toHaveBeenCalledWith(
-        'dev_access_token',
+        'access_token',
         'newenc=',
         expect.objectContaining({ maxAge: 900, httpOnly: true, secure: true }),
       );

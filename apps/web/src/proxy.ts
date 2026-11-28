@@ -74,6 +74,24 @@ function isAdminPath(locale: Locale, segmentsAfterLocale: string[]): boolean {
   return LOCALE_SLUGS[locale].admin === first;
 }
 
+/** Never routed, so rendering it yields the app's styled 404 page. */
+export const ADMIN_NOT_FOUND_SEGMENT = '__not-found';
+
+/**
+ * Anonymous admin requests get a real HTTP 404 (a `notFound()` thrown from
+ * the streamed admin layout would answer 200) that looks exactly like any
+ * other missing page, so admin URLs stay non-discoverable. Rewriting to an
+ * unrouted path renders the styled not-found page instead of an empty body.
+ */
+function adminNotFound(req: NextRequest, locale: Locale): NextResponse {
+  const url = req.nextUrl.clone();
+  url.pathname = `/${locale}/${ADMIN_NOT_FOUND_SEGMENT}`;
+  url.search = '';
+  const response = NextResponse.rewrite(url);
+  response.headers.set('x-robots-tag', 'noindex, nofollow');
+  return response;
+}
+
 function isVercelFeedbackOrigin(origin: string | null): boolean {
   if (!origin) return false;
 
@@ -256,7 +274,7 @@ export async function proxy(req: NextRequest) {
       !session &&
       !findCookie(req.cookies, ACCESS_COOKIE_NAMES)
     ) {
-      return new Response(null, { status: 404 });
+      return adminNotFound(req, localeFromUrl);
     }
     return response;
   }

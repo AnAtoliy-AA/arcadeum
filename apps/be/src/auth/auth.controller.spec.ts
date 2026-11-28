@@ -69,7 +69,7 @@ describe('AuthController', () => {
     expect(authService.refreshToken).toHaveBeenCalledWith('body-token');
   });
 
-  it('sets env-prefixed host-only cookies on staging and clears legacy ones', async () => {
+  it('sets env-prefixed domain-wide cookies on staging and clears legacy ones', async () => {
     const { controller, authService } = build();
     const res = { cookie: jest.fn(), clearCookie: jest.fn() };
     const req = {
@@ -91,12 +91,21 @@ describe('AuthController', () => {
         sameSite: 'lax',
       }),
     );
-    expect(opts).not.toHaveProperty('domain');
-    const legacy = (
-      res.clearCookie.mock.calls as [string, Record<string, unknown>][]
-    ).find(([n]) => n === 'refresh_token');
+    // Shared with staging.arcadeum.games so its SSR/proxy sees the session.
+    expect(opts).toEqual(
+      expect.objectContaining({ domain: '.arcadeum.games' }),
+    );
+    const clears = res.clearCookie.mock.calls as [
+      string,
+      Record<string, unknown>,
+    ][];
+    const legacy = clears.find(([n]) => n === 'refresh_token');
     expect(legacy).toBeDefined();
     expect(legacy?.[1]).not.toHaveProperty('domain');
+    // Old host-only dev_* cookies on the API host are expired too.
+    const legacyDev = clears.find(([n]) => n === 'dev_refresh_token');
+    expect(legacyDev).toBeDefined();
+    expect(legacyDev?.[1]).not.toHaveProperty('domain');
   });
 
   it('POST /auth/logout clears live and legacy host-only cookies on prod', () => {
@@ -113,5 +122,25 @@ describe('AuthController', () => {
     const refresh = calls.filter(([n]) => n === 'refresh_token');
     expect(refresh.some(([, o]) => o.domain === '.arcadeum.games')).toBe(true);
     expect(refresh.some(([, o]) => !('domain' in o))).toBe(true);
+  });
+
+  it('POST /auth/logout on staging clears domain-wide and host-only dev_ cookies', () => {
+    const { controller } = build();
+    const res = { cookie: jest.fn(), clearCookie: jest.fn() };
+    controller.logout(
+      { get: () => 'api-dev.arcadeum.games' } as never,
+      res as never,
+    );
+    const calls = res.clearCookie.mock.calls as [
+      string,
+      Record<string, unknown>,
+    ][];
+    const refresh = calls.filter(([n]) => n === 'dev_refresh_token');
+    expect(refresh.some(([, o]) => o.domain === '.arcadeum.games')).toBe(true);
+    expect(refresh.some(([, o]) => !('domain' in o))).toBe(true);
+    // Prod-named cookies are never touched domain-wide from staging.
+    expect(calls.some(([n, o]) => n === 'refresh_token' && 'domain' in o)).toBe(
+      false,
+    );
   });
 });

@@ -137,6 +137,13 @@ function clearLegacyHostOnlyCookies(
   if (!domain && names.access === 'access_token') return;
   res.clearCookie('access_token', base);
   res.clearCookie('refresh_token', base);
+  // Non-prod builds used to write host-only `dev_*` cookies on the API host.
+  // Expire them so a stale (already rotated) refresh token cannot be sent
+  // ahead of the live domain-wide one.
+  if (domain && names.access !== 'access_token') {
+    res.clearCookie(names.access, base);
+    res.clearCookie(names.refresh, base);
+  }
 }
 
 @Controller('auth')

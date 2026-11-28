@@ -74,8 +74,13 @@ function firstHeaderValue(value: string | string[] | undefined): string {
  * the browser (`X-Forwarded-Host`, falling back to `Host`). Behind a proxy the
  * `Host` header is usually the internal upstream name, which previously
  * dropped the Domain and left host-only cookies the web app could not read.
- * Anything outside arcadeum.games, and non-prod subdomains, get no Domain
- * (host-only, safe default).
+ * Anything outside arcadeum.games gets no Domain (host-only, safe default).
+ *
+ * Non-prod hosts (api-dev.) also get `.arcadeum.games`: the staging web app
+ * lives on a sibling host (staging.), so a host-only API cookie never reaches
+ * its server and every SSR/proxy auth check there sees an anonymous user.
+ * Prod is still isolated because non-prod cookies carry the `dev_` prefix
+ * (see `resolveCookieNames`), which prod's BE and web never read.
  */
 export function resolveCookieDomain(
   req: { get(name: string): string | undefined },
@@ -84,9 +89,6 @@ export function resolveCookieDomain(
   const explicit = normalizeCookieDomain(configured);
   if (explicit) return explicit;
   for (const host of publicHosts(req)) {
-    // Non-prod hosts stay host-only unless COOKIE_DOMAIN is set explicitly,
-    // so staging never writes domain-wide cookies that prod would receive.
-    if (isNonProdArcadeumHost(host)) return undefined;
     if (isArcadeumHost(host)) return `.${ROOT_DOMAIN}`;
   }
   return undefined;

@@ -1,26 +1,7 @@
 import type { Keypair } from '@solana/web3.js';
+import { base58Decode } from './base58';
 
 let cachedKeypair: Keypair | null = null;
-
-const BASE58_ALPHABET =
-  '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-
-function base58Decode(str: string): Uint8Array {
-  let result = BigInt(0);
-  for (const char of str) {
-    const index = BASE58_ALPHABET.indexOf(char);
-    if (index === -1) throw new Error(`Invalid base58 character: ${char}`);
-    result = result * BigInt(58) + BigInt(index);
-  }
-
-  const hex = result.toString(16);
-  const paddedHex = hex.length % 2 === 0 ? hex : '0' + hex;
-  const bytes = new Uint8Array(paddedHex.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(paddedHex.slice(i * 2, i * 2 + 2), 16);
-  }
-  return bytes;
-}
 
 /**
  * Load the platform wallet keypair.

@@ -1,35 +1,76 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { getPlatformKeypair } from './lib/solana-keypair';
 import {
   toRawAmount,
   fromRawAmount,
+  ARCADEUM_DECIMALS,
   SOLANA_TOKEN_PROGRAM_IDS,
 } from './lib/arcadeum-token';
+import { fetchGeckoTerminalToken } from './lib/geckoterminal';
+import { ArcPriceOracle, type ArcPriceQuote } from './lib/arc-price-oracle';
+import {
+  readSolanaConfig,
+  redactRpcUrl,
+  type SolanaRuntimeConfig,
+} from './lib/solana-config';
+import { callWithRpcFallback, ArcRpcError } from './lib/rpc-retry';
+import {
+  matchArcTransfer,
+  type VerifyOptions,
+  type VerifyReason,
+  type VerifyResult,
+} from './lib/arc-tx-verifier';
+
+export type { VerifyOptions, VerifyReason, VerifyResult };
 
 type Web3Module = typeof import('@solana/web3.js');
 type SplTokenModule = typeof import('@solana/spl-token');
+type Web3Connection = import('@solana/web3.js').Connection;
+
+/** Thrown when ARC is not configured; never silently replaced by a default. */
+export class ArcNotConfiguredError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ArcNotConfiguredError';
+  }
+}
 
 @Injectable()
-export class SolanaService {
+export class SolanaService implements OnModuleInit {
   private readonly logger = new Logger(SolanaService.name);
-  private connection: import('@solana/web3.js').Connection | null = null;
+  private connections = new Map<string, Web3Connection>();
   private arcadeumMint: import('@solana/web3.js').PublicKey | null = null;
   private web3: Web3Module | null = null;
   private splToken: SplTokenModule | null = null;
+  private readonly runtime: SolanaRuntimeConfig;
+  private readonly oracle: ArcPriceOracle;
 
   private solPriceCache: { price: number; expiresAt: number } | null = null;
-  private arcadeumPriceCache: { price: number; expiresAt: number } | null =
-    null;
   private static readonly CACHE_TTL_MS = 60_000;
-  /**
-   * A fresh quote must be at least this fraction of the previously accepted
-   * quote. Blocks thin-market pumps / poisoned oracle responses from briefly
-   * collapsing the ARC price used to price gem packages and shop items.
-   */
-  private static readonly ARCADEUM_PRICE_MIN_FRACTION_OF_PREVIOUS = 0.25;
 
-  constructor(private readonly config: ConfigService) {}
+  constructor(private readonly config: ConfigService) {
+    this.runtime = readSolanaConfig(config);
+    this.oracle = new ArcPriceOracle(() => this.runtime.mint);
+  }
+
+  onModuleInit(): void {
+    const r = this.runtime;
+    for (const issue of r.issues) this.logger.error(`ARC config: ${issue}`);
+    this.logger.log(
+      `ARC config: mint=${r.mint ?? 'MISSING'} pool=${r.poolAddress} rpc=[${r.rpcUrls
+        .map(redactRpcUrl)
+        .join(', ')}] decimals=${ARCADEUM_DECIMALS}`,
+    );
+  }
+
+  getRuntimeConfig(): SolanaRuntimeConfig {
+    return this.runtime;
+  }
+
+  isArcConfigured(): boolean {
+    return this.runtime.mint !== null;
+  }
 
   private async loadWeb3(): Promise<Web3Module> {
     if (!this.web3) {
@@ -45,34 +86,92 @@ export class SolanaService {
     return this.splToken;
   }
 
-  private async getConnection(): Promise<import('@solana/web3.js').Connection> {
-    if (!this.connection) {
+  private async connectionFor(url: string): Promise<Web3Connection> {
+    let c = this.connections.get(url);
+    if (!c) {
       const { Connection } = await this.loadWeb3();
-      const rpcUrl =
-        this.config.get<string>('SOLANA_RPC_URL') ??
-        'https://api.mainnet-beta.solana.com';
-      this.connection = new Connection(rpcUrl, 'confirmed');
+      c = new Connection(url, 'confirmed');
+      this.connections.set(url, c);
     }
-    return this.connection;
+    return c;
+  }
+
+  /** Primary RPC connection. */
+  private async getConnection(): Promise<Web3Connection> {
+    return this.connectionFor(this.runtime.rpcUrls[0]);
+  }
+
+  /**
+   * Runs an RPC call with retry/backoff on rate limits and timeouts, then
+   * falls through the configured fallback RPC URLs.
+   */
+  private rpc<T>(fn: (c: Web3Connection) => Promise<T>): Promise<T> {
+    const [, ...fallbacks] = this.runtime.rpcUrls;
+    return callWithRpcFallback(
+      [
+        () => this.getConnection(),
+        ...fallbacks.map((u) => () => this.connectionFor(u)),
+      ],
+      fn,
+    );
+  }
+
+  /** Probes RPC health for the status endpoint (no secrets in the result). */
+  async checkRpc(): Promise<{
+    ok: boolean;
+    latencyMs: number;
+    error?: string;
+  }> {
+    const t0 = Date.now();
+    try {
+      await this.rpc((c) => c.getSlot());
+      return { ok: true, latencyMs: Date.now() - t0 };
+    } catch (err) {
+      return {
+        ok: false,
+        latencyMs: Date.now() - t0,
+        error: err instanceof Error ? err.message : String(err),
+      };
+    }
+  }
+
+  /** Latest signature that references `reference` (Solana Pay), if any. */
+  async findReferenceSignature(
+    reference: string,
+  ): Promise<{ signature: string; failed: boolean } | null> {
+    const { PublicKey } = await this.loadWeb3();
+    const key = new PublicKey(reference);
+    const sigs = await this.rpc((c) =>
+      c.getSignaturesForAddress(key, { limit: 1 }),
+    );
+    if (sigs.length === 0) return null;
+    return { signature: sigs[0].signature, failed: Boolean(sigs[0].err) };
+  }
+
+  /** Decimals of the mint as stored on chain (null when unreadable). */
+  async getMintDecimalsOnChain(): Promise<number | null> {
+    if (!this.runtime.mint) return null;
+    const mint = await this.getArcadeumMintKey();
+    const info = await this.rpc((c) => c.getParsedAccountInfo(mint));
+    const data = info.value?.data;
+    if (!data || Buffer.isBuffer(data)) return null;
+    const decimals = (data.parsed as { info?: { decimals?: number } })?.info
+      ?.decimals;
+    return typeof decimals === 'number' ? decimals : null;
   }
 
   private async getArcadeumMintKey(): Promise<
     import('@solana/web3.js').PublicKey
   > {
+    if (!this.runtime.mint) {
+      throw new ArcNotConfiguredError(
+        this.runtime.issues.find((i) => i.startsWith('ARCADEUM_MINT')) ??
+          'ARCADEUM_MINT_ADDRESS is not configured',
+      );
+    }
     if (!this.arcadeumMint) {
       const { PublicKey } = await this.loadWeb3();
-      const mintAddress =
-        this.config.get<string>('ARCADEUM_MINT_ADDRESS') ?? '';
-      const isValidMint =
-        mintAddress && /^[1-9A-HJ-NP-Za-km-z]+$/.test(mintAddress);
-      if (!isValidMint && mintAddress) {
-        this.logger.warn(
-          `ARCADEUM_MINT_ADDRESS "${mintAddress}" is not valid base58: using System Program fallback`,
-        );
-      }
-      this.arcadeumMint = isValidMint
-        ? new PublicKey(mintAddress)
-        : new PublicKey('11111111111111111111111111111111');
+      this.arcadeumMint = new PublicKey(this.runtime.mint);
     }
     return this.arcadeumMint;
   }
@@ -104,87 +203,21 @@ export class SolanaService {
     return price;
   }
 
+  /**
+   * USD per ARC for checkout. Returns 0 (unavailable) when the mint is not
+   * configured, no source answers, or the last good price is too old.
+   */
   async getArcadeumPrice(): Promise<number> {
-    const now = Date.now();
-    if (this.arcadeumPriceCache && now < this.arcadeumPriceCache.expiresAt) {
-      return this.arcadeumPriceCache.price;
-    }
+    return this.oracle.getCheckoutPrice();
+  }
 
-    const mint = await this.getArcadeumMintKey();
-    const mintAddress = mint.toBase58();
+  /** Price plus status/source/age for the UI and the status endpoint. */
+  getArcadeumQuote(): Promise<ArcPriceQuote> {
+    return this.oracle.getQuote();
+  }
 
-    // Try CoinGecko first
-    let coinGeckoPrice = 0;
-    try {
-      const res = await fetch(
-        `https://api.coingecko.com/api/v3/simple/token_price/solana?contract_addresses=${mintAddress}&vs_currencies=usd`,
-      );
-      if (res.ok) {
-        const data = (await res.json()) as Record<string, { usd?: number }>;
-        const price = data?.[mintAddress]?.usd ?? 0;
-        if (price > 0) {
-          coinGeckoPrice = price;
-        }
-      }
-    } catch {
-      // Fall through to pump.fun
-    }
-
-    // Fallback: calculate from pump.fun market cap
-    let pumpFunPrice = 0;
-    try {
-      const pfRes = await fetch(
-        `https://frontend-api-v3.pump.fun/coins/${mintAddress}`,
-      );
-      if (pfRes.ok) {
-        const pfData = (await pfRes.json()) as {
-          usd_market_cap?: number;
-          total_supply_str?: string;
-          base_decimals?: number;
-        };
-        const mc = pfData.usd_market_cap ?? 0;
-        const supply = parseFloat(pfData.total_supply_str ?? '0');
-        const decimals = pfData.base_decimals ?? 6;
-        const supplyHuman = supply / 10 ** decimals;
-        if (mc > 0 && supplyHuman > 0) {
-          pumpFunPrice = mc / supplyHuman;
-        }
-      }
-    } catch {
-      // Fall through
-    }
-
-    // Sanity band: the price drives how many ARC a payment requires, so a
-    // manipulated oracle directly changes gem pricing. Reject quotes that
-    // move too far from the previously accepted reference within one TTL
-    // window, and require the sources to roughly agree when both respond.
-    const candidate =
-      coinGeckoPrice > 0 && pumpFunPrice > 0
-        ? Math.min(coinGeckoPrice, pumpFunPrice)
-        : Math.max(coinGeckoPrice, pumpFunPrice);
-
-    if (candidate <= 0) {
-      this.logger.warn('Could not fetch ARCADEUM price from any source');
-      return 0;
-    }
-
-    const previous = this.arcadeumPriceCache?.price ?? 0;
-    if (
-      previous > 0 &&
-      candidate <
-        previous * SolanaService.ARCADEUM_PRICE_MIN_FRACTION_OF_PREVIOUS
-    ) {
-      this.logger.error(
-        `ARCADEUM price sanity check failed: candidate ${candidate} deviates too far from reference ${previous}: rejecting quote`,
-      );
-      return 0;
-    }
-
-    this.arcadeumPriceCache = {
-      price: candidate,
-      expiresAt: now + SolanaService.CACHE_TTL_MS,
-    };
-    return candidate;
+  peekArcadeumQuote(): ArcPriceQuote {
+    return this.oracle.peek();
   }
 
   async getTokenMetadata(): Promise<{
@@ -199,8 +232,8 @@ export class SolanaService {
     twitter: string | null;
     website: string | null;
   } | null> {
-    const mint = await this.getArcadeumMintKey();
-    const mintAddress = mint.toBase58();
+    if (!this.runtime.mint) return null;
+    const mintAddress = this.runtime.mint;
 
     try {
       const res = await fetch(
@@ -208,7 +241,7 @@ export class SolanaService {
       );
       if (!res.ok) {
         this.logger.warn(`pump.fun API returned ${res.status}`);
-        return null;
+        return this.getTokenMetadataFromGecko(mintAddress);
       }
 
       const data = (await res.json()) as {
@@ -237,6 +270,28 @@ export class SolanaService {
       };
     } catch {
       this.logger.warn('Failed to fetch token metadata from pump.fun');
+      return this.getTokenMetadataFromGecko(mintAddress);
+    }
+  }
+
+  private async getTokenMetadataFromGecko(mintAddress: string) {
+    try {
+      const token = await fetchGeckoTerminalToken(mintAddress);
+      if (!token?.name || !token.symbol) return null;
+      return {
+        name: token.name,
+        symbol: token.symbol,
+        description: '',
+        image: token.image,
+        pumpfunUrl: `https://pump.fun/coin/${mintAddress}`,
+        marketCapUsd: token.fdvUsd,
+        totalSupply: token.totalSupply,
+        createdAt: null,
+        twitter: null,
+        website: null,
+      };
+    } catch {
+      this.logger.warn('Failed to fetch token metadata from GeckoTerminal');
       return null;
     }
   }
@@ -244,41 +299,37 @@ export class SolanaService {
   async getPlatformBalance(): Promise<{ sol: number; arcadeum: number }> {
     const { LAMPORTS_PER_SOL, PublicKey } = await this.loadWeb3();
     const { getAssociatedTokenAddress, getAccount } = await this.loadSplToken();
-    const connection = await this.getConnection();
     const mint = await this.getArcadeumMintKey();
 
-    const treasuryAddress =
-      this.config.get<string>('SOLANA_TREASURY_ADDRESS') ?? '';
+    const treasuryAddress = this.runtime.treasury;
     if (!treasuryAddress) {
       this.logger.warn('SOLANA_TREASURY_ADDRESS not set');
       return { sol: 0, arcadeum: 0 };
     }
 
     const treasuryPubkey = new PublicKey(treasuryAddress);
-    const solBalance = await connection.getBalance(treasuryPubkey);
+    const solBalance = await this.rpc((c) => c.getBalance(treasuryPubkey));
 
-    // ARC may live under either token program — resolve both ATAs and read
+    // ARC may live under either token program: resolve both ATAs and read
     // whichever exists.
     let arcadeumBalance = 0;
     for (const programId of SOLANA_TOKEN_PROGRAM_IDS) {
+      const programPublicKey = new PublicKey(programId);
+      const ata = await getAssociatedTokenAddress(
+        mint,
+        treasuryPubkey,
+        true,
+        programPublicKey,
+      );
       try {
-        const programPublicKey = new PublicKey(programId);
-        const ata = await getAssociatedTokenAddress(
-          mint,
-          treasuryPubkey,
-          true,
-          programPublicKey,
-        );
-        const account = await getAccount(
-          connection,
-          ata,
-          'confirmed',
-          programPublicKey,
+        const account = await this.rpc((c) =>
+          getAccount(c, ata, 'confirmed', programPublicKey),
         );
         arcadeumBalance += fromRawAmount(account.amount);
-      } catch {
-        // No token account under this program — expected when the mint uses
-        // the other program or the treasury holds no ARC yet.
+      } catch (err) {
+        // A missing token account is expected (other program, or no ARC yet).
+        // RPC outages must not look like an empty treasury.
+        if (err instanceof ArcRpcError) throw err;
       }
     }
 
@@ -288,42 +339,59 @@ export class SolanaService {
     };
   }
 
-  /**
-   * Verify that `signature` is a confirmed on-chain transfer of at least
-   * `expectedAmount` ARCADEUM tokens (exact mint) into the platform
-   * treasury, initiated by `senderAddress`.
-   *
-   * Security invariants:
-   *  - The transferred token MUST match the configured ARCADEUM mint — any
-   *    other SPL asset is rejected.
-   *  - Funds MUST land in a treasury-owned destination (canonical ATA for
-   *    either token program, or an account explicitly owned by the treasury).
-   *  - Only parsed `transferChecked` instructions are accepted, so the mint,
-   *    decimals and raw amount are attested by the token program itself.
-   */
+  /** Boolean wrapper kept for callers that only need valid/invalid. */
   async verifyTransaction(
     signature: string,
     expectedAmount: number,
-    senderAddress: string,
+    senderAddress?: string,
   ): Promise<boolean> {
+    return (
+      await this.verifyTransactionDetailed(signature, expectedAmount, {
+        senderAddress,
+      })
+    ).valid;
+  }
+
+  /**
+   * Verify that `signature` is a confirmed on-chain transfer of at least
+   * `expectedAmount` ARC (exact mint) into the platform treasury.
+   *
+   * Security invariants:
+   *  - The token MUST be the configured ARC mint and the `transferChecked`
+   *    decimals MUST equal ARCADEUM_DECIMALS.
+   *  - Funds MUST land in a treasury-owned destination.
+   *  - Only parsed `transferChecked` instructions are accepted, so mint,
+   *    decimals and raw amount are attested by the token program itself.
+   *  - The deposit must not be older than ARC_TX_MAX_AGE_SECONDS.
+   *  - With `senderAddress` the authority must match it; with
+   *    `requiredReference` the Solana Pay reference must be in the tx.
+   * Distinguishes "RPC unreachable" (`rpc_error`) from "not found yet"
+   * (`not_found`) so callers can ask the user to retry instead of failing.
+   */
+  async verifyTransactionDetailed(
+    signature: string,
+    expectedAmount: number,
+    opts: VerifyOptions = {},
+  ): Promise<VerifyResult> {
+    const fail = (reason: VerifyReason): VerifyResult => ({
+      valid: false,
+      reason,
+    });
     try {
+      if (!this.runtime.mint) {
+        this.logger.error(
+          'ARCADEUM_MINT_ADDRESS is not configured: refusing to verify deposits',
+        );
+        return fail('unconfigured');
+      }
       const { PublicKey } = await this.loadWeb3();
-      const connection = await this.getConnection();
       const keypair = await this.getKeypair();
       const treasuryPubkey = keypair.publicKey;
       const mint = await this.getArcadeumMintKey();
 
-      if (mint.equals(PublicKey.default)) {
-        this.logger.error(
-          'ARCADEUM_MINT_ADDRESS is not configured: refusing to verify deposits',
-        );
-        return false;
-      }
-
       // Fail closed when the deposit recipient and the Solana Pay recipient
       // are configured as different wallets.
-      const configuredTreasury =
-        this.config.get<string>('SOLANA_TREASURY_ADDRESS') ?? '';
+      const configuredTreasury = this.runtime.treasury;
       if (
         configuredTreasury &&
         configuredTreasury !== treasuryPubkey.toBase58()
@@ -331,25 +399,43 @@ export class SolanaService {
         this.logger.error(
           'SOLANA_TREASURY_ADDRESS does not match the platform keypair public key: refusing to verify deposits',
         );
-        return false;
+        return fail('treasury_mismatch');
       }
 
-      const transaction = await connection.getParsedTransaction(signature, {
-        commitment: 'confirmed',
-        maxSupportedTransactionVersion: 0,
-      });
+      const transaction = await this.rpc((c) =>
+        c.getParsedTransaction(signature, {
+          commitment: 'confirmed',
+          maxSupportedTransactionVersion: 0,
+        }),
+      );
 
       if (!transaction) {
         this.logger.warn(`Transaction ${signature} not found`);
-        return false;
+        return fail('not_found');
       }
-
       if (transaction.meta?.err) {
         this.logger.warn(`Transaction ${signature} failed`);
-        return false;
+        return fail('tx_failed');
       }
 
-      const sender = new PublicKey(senderAddress);
+      const maxAge = this.runtime.txMaxAgeSeconds;
+      if (maxAge > 0 && typeof transaction.blockTime === 'number') {
+        if (Date.now() / 1000 - transaction.blockTime > maxAge) {
+          return fail('too_old');
+        }
+      }
+
+      if (opts.requiredReference) {
+        const keys = (
+          transaction.transaction.message.accountKeys as unknown as Array<{
+            pubkey?: { toBase58?: () => string };
+          }>
+        ).map((k) => k.pubkey?.toBase58?.() ?? '');
+        if (!keys.includes(opts.requiredReference)) {
+          return fail('reference_missing');
+        }
+      }
+
       const { getAssociatedTokenAddress } = await this.loadSplToken();
       const treasuryAtas = new Set<string>();
       for (const programId of SOLANA_TOKEN_PROGRAM_IDS) {
@@ -362,84 +448,26 @@ export class SolanaService {
           );
           treasuryAtas.add(ata.toBase58());
         } catch {
-          // Unreachable in practice; treat as "no ATA under this program".
+          // Treat as "no ATA under this program".
         }
       }
-      const treasuryBase58 = treasuryPubkey.toBase58();
-      const mintBase58 = mint.toBase58();
-
-      interface ParsedTransferInfo {
-        authority?: string;
-        multisigAuthority?: string;
-        source?: string;
-        destination?: string;
-        destinationOwner?: string;
-        mint?: string;
-        tokenAmount?: { amount?: string };
-        amount?: string | number;
+      const result = matchArcTransfer(transaction, {
+        mint: mint.toBase58(),
+        treasury: treasuryPubkey.toBase58(),
+        treasuryAtas,
+        expectedRaw: toRawAmount(expectedAmount),
+        tolerancePercent: this.runtime.tolerancePercent,
+        tokenProgramIds: SOLANA_TOKEN_PROGRAM_IDS,
+        senderAddress: opts.senderAddress,
+      });
+      if (!result.valid) {
+        this.logger.warn(`No matching ARC transfer found (${result.reason})`);
       }
-
-      const instructions = [
-        ...(transaction.transaction.message.instructions ?? []),
-        ...(transaction.meta?.innerInstructions?.flatMap(
-          (inner) => inner.instructions,
-        ) ?? []),
-      ];
-
-      const expectedRaw = toRawAmount(expectedAmount);
-
-      for (const ix of instructions) {
-        const parsedIx = ix as {
-          program?: string;
-          programId?: { toBase58?: () => string };
-          type?: string;
-          parsed?: { type?: string; info?: ParsedTransferInfo };
-        };
-
-        const isTokenProgram =
-          parsedIx.program === 'spl-token' ||
-          parsedIx.program === 'spl-token-2022' ||
-          (typeof parsedIx.programId?.toBase58 === 'function' &&
-            SOLANA_TOKEN_PROGRAM_IDS.includes(parsedIx.programId.toBase58()));
-        if (!isTokenProgram) continue;
-
-        const info = parsedIx.parsed?.info;
-        if (!info) continue;
-
-        // Only transferChecked carries an on-chain-attested mint + raw
-        // amount. Plain `transfer` cannot prove which token moved, so it is
-        // deliberately rejected.
-        if (
-          parsedIx.parsed?.type !== 'transferChecked' &&
-          parsedIx.type !== 'transferChecked'
-        ) {
-          continue;
-        }
-
-        if (info.mint !== mintBase58) continue;
-
-        const rawAmount = BigInt(info.tokenAmount?.amount ?? '0');
-        if (rawAmount < expectedRaw) continue;
-
-        const destination = info.destination ?? '';
-        const destinationOwner = info.destinationOwner ?? '';
-        const toTreasury =
-          treasuryAtas.has(destination) || destinationOwner === treasuryBase58;
-        if (!toTreasury) continue;
-
-        const authority = info.authority ?? info.multisigAuthority ?? '';
-        if (authority !== sender.toBase58()) continue;
-
-        return true;
-      }
-
-      this.logger.warn('No matching ARC transfer found in transaction');
-      return false;
+      return result;
     } catch (err) {
-      this.logger.error(
-        `Failed to verify transaction: ${err instanceof Error ? err.message : err}`,
-      );
-      return false;
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.error(`Failed to verify transaction: ${message}`);
+      return fail('rpc_error');
     }
   }
 }

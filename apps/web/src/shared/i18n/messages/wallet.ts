@@ -1,5 +1,6 @@
 import type { DeepPartial } from '../base-types';
 import * as tokenPage from './tokenPage';
+import * as arcCheckout from './arcCheckout';
 
 export interface WalletMessages {
   balance: {
@@ -19,6 +20,7 @@ export interface WalletMessages {
     copied: string;
   };
   tokenPage: tokenPage.TokenPageMessages;
+  arcCheckout: arcCheckout.ArcCheckoutMessages;
   history: {
     filterAll: string;
     filterCoins: string;
@@ -78,6 +80,7 @@ export const en: WalletMessages = {
     copied: 'Copied!',
   },
   tokenPage: tokenPage.en,
+  arcCheckout: arcCheckout.en,
   history: {
     filterAll: 'All',
     filterCoins: 'Coins',
@@ -137,6 +140,7 @@ export const ru: DeepPartial<WalletMessages> = {
     copied: 'Скопировано!',
   },
   tokenPage: tokenPage.ru,
+  arcCheckout: arcCheckout.ru,
   history: {
     filterAll: 'Все',
     filterCoins: 'Монеты',
@@ -196,6 +200,7 @@ export const es: DeepPartial<WalletMessages> = {
     copied: '¡Copiado!',
   },
   tokenPage: tokenPage.es,
+  arcCheckout: arcCheckout.es,
   history: {
     filterAll: 'Todos',
     filterCoins: 'Monedas',
@@ -256,6 +261,7 @@ export const fr: DeepPartial<WalletMessages> = {
     copied: 'Copié !',
   },
   tokenPage: tokenPage.fr,
+  arcCheckout: arcCheckout.fr,
   history: {
     filterAll: 'Tout',
     filterCoins: 'Pièces',
@@ -315,6 +321,7 @@ export const by: DeepPartial<WalletMessages> = {
     copied: 'Скапіявана!',
   },
   tokenPage: tokenPage.by,
+  arcCheckout: arcCheckout.by,
   history: {
     filterAll: 'Усе',
     filterCoins: 'Манеты',

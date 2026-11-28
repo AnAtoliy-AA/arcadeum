@@ -165,4 +165,25 @@ describe('ArcadePetSocialStage', () => {
       screen.getByTestId('arcade-pet-local-screen-pet'),
     ).toBeInTheDocument();
   });
+
+  it('wakes the pet from the house on click and announces it', () => {
+    const { pet } = useArcadePetStore.getState();
+    useArcadePetStore.setState({
+      pets: pet ? [pet] : [],
+      activePetId: pet?.id ?? null,
+      isAtHome: true,
+      wakeNotice: null,
+    });
+    render(<ArcadePetSocialStage onOpenCare={onOpenCare} />);
+
+    fireEvent.click(screen.getByTestId('arcade-pet-house-structure'));
+
+    expect(useArcadePetStore.getState().isAtHome).toBe(false);
+    expect(screen.getByTestId('arcade-pet-wake-notice')).toHaveTextContent(
+      'PixelBuddy woke up!',
+    );
+    expect(
+      screen.getByTestId('arcade-pet-local-screen-pet'),
+    ).toBeInTheDocument();
+  });
 });

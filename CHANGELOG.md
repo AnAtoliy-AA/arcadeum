@@ -11,6 +11,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chrome-less broadcast scenes for the 24/7 bot-vs-bot stream: /{locale}/stream/{roomId} and /{locale}/stream/idle
 
+## [1.31.39] - 2026-11-25
+
+### Added
+
+- add 24/7 stream director and RTMP push runner
+
+### Refactored
+
+- port stream director to a TypeScript app
+
+## [1.31.38] - 2026-11-25
+
+### Fixed
+
+- remove useless initial assignment in ARC price selection
+- harden ARC payments end to end
+
+## [1.31.37] - 2026-11-24
+
+### Fixed
+
+- keep directly adopted adults adult, persist away dismissal
+
+## [1.31.36] - 2026-11-24
+
+### Fixed
+
+- petting or feeding an asleep pet wakes it
+- clicking the sleeping pet's house wakes it
+
+## [1.31.35] - 2026-11-24
+
+### Fixed
+
+- fall back to GeckoTerminal for ARC price and token metadata
+
+## [1.31.34] - 2026-11-24
+
+### Fixed
+
+- close real games socket in live-info lobby test so broadcasts cannot override mocked stats
+
 ## [1.31.33] - 2026-11-24
 
 ### Fixed

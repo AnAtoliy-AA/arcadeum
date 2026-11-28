@@ -38,6 +38,8 @@ export interface TokenPageMessages {
     subtitle: string;
   };
   disclaimer: string;
+  loadError: string;
+  retry: string;
 }
 
 export const en: TokenPageMessages = {
@@ -84,6 +86,8 @@ export const en: TokenPageMessages = {
   },
   disclaimer:
     'ARCADEUM tokens are utility assets for in-platform use only. They have no inherent monetary value and are not investments. All purchases are final.',
+  loadError: 'Token data is temporarily unavailable.',
+  retry: 'Try again',
 };
 
 export const ru: DeepPartial<TokenPageMessages> = {
@@ -130,6 +134,8 @@ export const ru: DeepPartial<TokenPageMessages> = {
   },
   disclaimer:
     'Токены ARCADEUM - это утилитарные активы для использования только на платформе. Они не имеют внутренней денежной ценности и не являются инвестициями. Все покупки являются окончательными.',
+  loadError: 'Данные токена временно недоступны.',
+  retry: 'Повторить',
 };
 
 export const es: DeepPartial<TokenPageMessages> = {
@@ -176,6 +182,8 @@ export const es: DeepPartial<TokenPageMessages> = {
   },
   disclaimer:
     'Los tokens ARCADEUM son activos utilitarios solo para uso en la plataforma. No tienen valor monetario inherente y no son inversiones. Todas las compras son finales.',
+  loadError: 'Los datos del token no están disponibles temporalmente.',
+  retry: 'Reintentar',
 };
 
 export const fr: DeepPartial<TokenPageMessages> = {
@@ -223,6 +231,8 @@ export const fr: DeepPartial<TokenPageMessages> = {
   },
   disclaimer:
     "Les tokens ARCADEUM sont des actifs utilitaires uniquement pour une utilisation sur la plateforme. Ils n'ont pas de valeur monétaire intrinsèque et ne sont pas des investissements. Tous les achats sont définitifs.",
+  loadError: 'Les données du token sont temporairement indisponibles.',
+  retry: 'Réessayer',
 };
 
 export const by: DeepPartial<TokenPageMessages> = {
@@ -269,4 +279,6 @@ export const by: DeepPartial<TokenPageMessages> = {
   },
   disclaimer:
     "Токены ARCADEUM - гэта ўтылітарныя актывы толькі для выкарыстання на платформе. Яны не маюць унутранай грашовай кошту і не з'яўляюцца інвестыцыямі. Усе пакупкі з'яўляюцца канчатковымі.",
+  loadError: 'Даныя токена часова недаступныя.',
+  retry: 'Паўтарыць',
 };

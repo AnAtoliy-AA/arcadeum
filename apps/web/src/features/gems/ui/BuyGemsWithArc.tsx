@@ -1,11 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Typography, Button } from '@arcadeum/ui';
-import { SolanaPayQR } from '@/features/solana-pay/ui/SolanaPayQR';
+import { useCallback } from 'react';
+import { ArcPurchaseFlow } from '@/features/solana-pay/ui/ArcPurchaseFlow';
 import { apiClient } from '@/shared/lib/api-client';
-
-const ARC_MINT = '7aRVHPcJnsGWBZMNe2igQsLQmQb4LCCtpuiJgxHjpump';
 
 interface BuyGemsWithArcProps {
   packageId: string;
@@ -22,77 +19,25 @@ export function BuyGemsWithArc({
   onPurchased,
   onCancel,
 }: BuyGemsWithArcProps) {
-  const [step, setStep] = useState<'qr' | 'confirming' | 'done' | 'error'>(
-    'qr',
-  );
-  const [error, setError] = useState<string | null>(null);
-
-  const handleConfirmed = async (signature: string) => {
-    setStep('confirming');
-
-    try {
+  // The paying wallet is read from the transaction by the backend and bound
+  // to this user through the Solana Pay session, so no sender is sent.
+  const deliver = useCallback(
+    async (signature: string) => {
       await apiClient.post(
         '/payments/gems/orders/arc',
-        {
-          packageId,
-          signature,
-          senderAddress: '',
-        },
+        { packageId, signature },
         { token },
       );
-
-      setStep('done');
-      onPurchased?.();
-    } catch {
-      setError('Failed to verify payment');
-      setStep('error');
-    }
-  };
-
-  if (step === 'done') {
-    return (
-      <div className="flex flex-col items-center p-4 gap-3">
-        <Typography className={'text-[24px]'} variant="body">
-          ✓
-        </Typography>
-        <Typography variant="body" alpha="high">
-          Payment confirmed! Gems added to your account.
-        </Typography>
-        <Button onClick={onCancel} variant="secondary">
-          Close
-        </Button>
-      </div>
-    );
-  }
-
-  if (step === 'error') {
-    return (
-      <div className="flex flex-col items-center p-4 gap-3">
-        <Typography className={'text-[#dc2626]'} variant="body">
-          {error}
-        </Typography>
-        <Button onClick={onCancel} variant="secondary">
-          Close
-        </Button>
-      </div>
-    );
-  }
-
-  if (step === 'confirming') {
-    return (
-      <div className="flex flex-col items-center p-4">
-        <Typography variant="body" alpha="high">
-          Verifying payment...
-        </Typography>
-      </div>
-    );
-  }
+    },
+    [packageId, token],
+  );
 
   return (
-    <SolanaPayQR
+    <ArcPurchaseFlow
       amount={amount}
-      tokenAddress={ARC_MINT}
-      onConfirmed={handleConfirmed}
+      deliver={deliver}
+      successKey="successGems"
+      onPurchased={onPurchased}
       onCancel={onCancel}
     />
   );

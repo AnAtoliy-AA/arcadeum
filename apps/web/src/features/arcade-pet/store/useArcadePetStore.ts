@@ -3,6 +3,8 @@ import {
   applyDeterministicDecay,
   createInitialPet,
   executePetAction,
+  sanitizePetName,
+  STAGE_THRESHOLDS_HOURS,
 } from '@arcadeum/games-core';
 import {
   getPetAdoptionCost,
@@ -36,6 +38,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   presents: [DEFAULT_WELCOME_PRESENT],
   isWidgetOpen: false,
   isAtHome: false,
+  wakeNotice: null,
+  clearWakeNotice: () => set({ wakeNotice: null }),
   activeTreat: null,
   hasConfirmedCare: false,
   syncRevision: null,
@@ -49,7 +53,12 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
   newMilestones: [],
   checkMilestones: () => checkMilestones(get, set),
   dismissMilestones: () => set({ newMilestones: [] }),
-  dismissAwaySummary: () => set({ awaySummary: null }),
+  dismissAwaySummary: () => {
+    // Persist the decayed pets too: the summary is rebuilt from the stored
+    // lastInteractedAt on load, so without this "Got it" reappears on reload.
+    set({ awaySummary: null });
+    if (get().hasConfirmedCare) persistStore(get());
+  },
 
   initialize: (_userId = 'local-user', _theme = 'cyberpunk') => {
     const current = get().pet;
@@ -190,11 +199,14 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
     const newId = `pet-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
     const newPet = createInitialPet({
       id: newId,
-      name: name.trim() || 'Custom Pet',
+      name: sanitizePetName(name) ?? 'Custom Pet',
       theme,
     });
     newPet.species = species;
     newPet.stage = 'adult';
+    // Growth must match the forced stage or the next decay demotes the pet
+    // (the server does the same in the adopt_selected reducer).
+    newPet.stats.growthHours = STAGE_THRESHOLDS_HOURS.adult;
 
     const nextPets = [...pets, newPet];
     const nextGems = gemBalance - SELECT_PET_COST;
@@ -327,10 +339,15 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
 
   performAction: (action, treatId, targetPetId) => {
     const { pets, pet, coinBalance } = get();
-    const target = targetPetId
+    const found = targetPetId
       ? (pets.find((p) => p.id === targetPetId) ?? pet)
       : pet;
-    if (!target) return { success: false, error: 'NO_PET' };
+    if (!found) return { success: false, error: 'NO_PET' };
+    // A pet put to sleep (e.g. in the game room) rejects every care action, so
+    // petting or feeding it wakes it first instead of failing silently.
+    const wakesPet =
+      found.isSleeping && (action === 'praise' || action === 'feed_snack');
+    const target = wakesPet ? executePetAction(found, 'wake').state : found;
 
     if (action === 'feed_snack') {
       const petIndex = Math.max(
@@ -360,6 +377,7 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
           pets: updatedPets,
           coinBalance: nextCoins,
           actionError: null,
+          ...(wakesPet ? { wakeNotice: found.name } : {}),
         });
         persistStore({
           ...get(),
@@ -370,6 +388,8 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
           type: 'feed_snack',
           petId: target.id,
         });
+        // Feeding a pet that is resting at home wakes it up.
+        if (get().isAtHome) get().setAtHome(false);
         return { success: true };
       }
       return { success: false };
@@ -383,11 +403,17 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       );
       const nextActive =
         get().activePetId === target.id ? result.state : get().pet;
-      set({ pet: nextActive, pets: updatedPets });
+      set({
+        pet: nextActive,
+        pets: updatedPets,
+        ...(wakesPet ? { wakeNotice: found.name } : {}),
+      });
       persistStore({
         ...get(),
         pets: updatedPets,
       });
+      // Petting a pet that is resting at home wakes it up.
+      if (action === 'praise' && get().isAtHome) get().setAtHome(false);
       return { success: true };
     }
     return { success: false };
@@ -424,10 +450,12 @@ export const useArcadePetStore = create<ArcadePetStoreState>((set, get) => ({
       refreshedPets.find((p) => p.id === get().activePetId) ??
       refreshedPets[0] ??
       null;
+    const woke = prevAtHome && !atHome && active?.stage !== 'egg';
     set({
       isAtHome: atHome,
       pets: refreshedPets,
       pet: active,
+      wakeNotice: woke ? (active?.name ?? null) : null,
     });
     persistStore({
       ...get(),

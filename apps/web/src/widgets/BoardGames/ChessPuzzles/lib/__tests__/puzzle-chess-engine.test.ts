@@ -5,6 +5,7 @@ import {
   getLegalDestinations,
   getPuzzleInitialBoard,
   getPuzzleTurnColor,
+  isCheckmatingMove,
 } from '../puzzle-chess-engine';
 
 describe('puzzle-chess-engine', () => {
@@ -76,5 +77,34 @@ describe('puzzle-chess-engine', () => {
 
     expect(destinations.length).toBeGreaterThan(0);
     expect(destinations).toContainEqual({ file: 'e', rank: 8 });
+  });
+});
+
+describe('isCheckmatingMove', () => {
+  // Black king h8 boxed in by its own pawns g7/h7; white rooks a1 and b1.
+  // Both Ra8# and Rb8# mate, so either should solve a "mate in 1".
+  const fen = '7k/6pp/8/8/8/8/8/RR4K1 w - - 0 1';
+  const board = getPuzzleInitialBoard(fen);
+
+  it('accepts the stored mating move', () => {
+    expect(isCheckmatingMove(board, 'white', 'a1a8')).toBe(true);
+  });
+
+  it('accepts an alternative mating move', () => {
+    expect(isCheckmatingMove(board, 'white', 'b1b8')).toBe(true);
+  });
+
+  it('rejects a quiet move that gives no check', () => {
+    expect(isCheckmatingMove(board, 'white', 'a1a2')).toBe(false);
+  });
+
+  it('rejects an illegal move even if it would mate', () => {
+    // A rook cannot jump from a1 to h8 diagonally.
+    expect(isCheckmatingMove(board, 'white', 'a1h8')).toBe(false);
+  });
+
+  it('rejects a check the king can escape', () => {
+    const open = getPuzzleInitialBoard('7k/8/8/8/8/8/8/R5K1 w - - 0 1');
+    expect(isCheckmatingMove(open, 'white', 'a1a8')).toBe(false);
   });
 });

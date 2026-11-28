@@ -22,6 +22,7 @@ import {
   applyUciMoveToBoard,
   parseUciMove,
   getLegalDestinations,
+  isCheckmatingMove,
 } from '../lib/puzzle-chess-engine';
 import { useChessSounds } from '@/widgets/BoardGames/ChessGame/hooks/useChessSounds';
 import {
@@ -225,7 +226,15 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         expectedMove.startsWith(normalizedMove) ||
         normalizedMove.startsWith(expectedMove);
 
-      const matches = normalizedMove === expectedMove || isPromoMatch;
+      // Any checkmate on the final move solves the puzzle (the server
+      // accepts alternative mates too), not only the stored line.
+      const isFinalMove = moveIndex + 1 >= puzzle.moves.length;
+      const isAltMate =
+        !(normalizedMove === expectedMove || isPromoMatch) &&
+        isFinalMove &&
+        isCheckmatingMove(board, playerColor, normalizedMove);
+      const matches =
+        normalizedMove === expectedMove || isPromoMatch || isAltMate;
 
       if (!matches) {
         setPhase('failed');
@@ -242,7 +251,8 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         return;
       }
 
-      const activeMove = isPromoMatch ? expectedMove : normalizedMove;
+      const activeMove =
+        isPromoMatch && !isAltMate ? expectedMove : normalizedMove;
       const {
         nextBoard,
         isCapture,
@@ -348,7 +358,16 @@ export function usePuzzleState(options: UsePuzzleStateOptions = {}) {
         }
       }, 500);
     },
-    [puzzle, board, phase, moveIndex, playerMoves, playSound, options],
+    [
+      puzzle,
+      board,
+      phase,
+      moveIndex,
+      playerMoves,
+      playSound,
+      options,
+      playerColor,
+    ],
   );
 
   const retry = useCallback(() => {

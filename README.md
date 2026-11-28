@@ -138,7 +138,7 @@ graph TD
 ## Prerequisites
 
 - **Node.js**: v24+ (see `.nvmrc`)
-- **pnpm**: v9.15.9+ (Corepack enabled or installed globally — see `packageManager` in `package.json`)
+- **pnpm**: v11.29.0 (Corepack enabled or installed globally - see `packageManager` in `package.json`; needs Node >=22.13)
 - **Git**: For version control
 - **MongoDB**: For backend development (local or cloud)
 - **Redis**: Required for backend caching and BullMQ job queues

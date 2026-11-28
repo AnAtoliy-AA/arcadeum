@@ -287,22 +287,35 @@ function ChessBoardPanelImpl({
 
             <div className="chess-board-grid-wrapper relative">
               {spectatorCount > 0 && (
-                <div className="absolute top-2 right-2 z-30 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 border border-white/15 backdrop-blur-md text-white/70 text-[10px] font-semibold select-none pointer-events-none">
-                  <span>👁</span>
-                  <span>{spectatorCount}</span>
+                <div
+                  role="img"
+                  aria-label={t('games.chess_v1.board.spectators', {
+                    count: spectatorCount,
+                  })}
+                  title={t('games.chess_v1.board.spectators', {
+                    count: spectatorCount,
+                  })}
+                  className="absolute top-2 right-2 z-30 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 border border-white/15 backdrop-blur-md text-white/80 text-[10px] font-semibold select-none"
+                >
+                  <span aria-hidden="true">👁</span>
+                  <span aria-hidden="true">{spectatorCount}</span>
                 </div>
               )}
               {premoveQueue.length > 0 && (
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/50 backdrop-blur-md shadow-lg text-amber-300 text-xs font-semibold select-none pointer-events-auto">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  <span>Premove ({premoveQueue.length} queued)</span>
+                  <span>
+                    {t('games.chess_v1.board.premoveQueued', {
+                      count: premoveQueue.length,
+                    })}
+                  </span>
                   {onCancelPremoves && (
                     <button
                       type="button"
                       onClick={onCancelPremoves}
                       className="ml-1 text-[11px] text-amber-200 hover:text-white underline cursor-pointer"
                     >
-                      Cancel
+                      {t('games.chess_v1.board.cancelPremoves')}
                     </button>
                   )}
                 </div>

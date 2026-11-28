@@ -1,0 +1,43 @@
+/** Chess board accessibility and settings panel strings. */
+export const enBoard = {
+  withPiece: '{{square}} {{color}} {{piece}}',
+  white: 'white',
+  black: 'black',
+  pieces: {
+    pawn: 'pawn',
+    knight: 'knight',
+    bishop: 'bishop',
+    rook: 'rook',
+    queen: 'queen',
+    king: 'king',
+  },
+  selected: 'selected',
+  legalMove: 'legal move',
+  check: 'in check',
+  lastMove: 'last move',
+  suggested: 'suggested',
+  premoveQueued: 'Premove ({{count}} queued)',
+  cancelPremoves: 'Cancel',
+  clearDrawings: 'Clear',
+  clearDrawingsHint: 'Clear drawings (left click or Esc)',
+  spectators: '{{count}} watching',
+};
+
+export const enSettings = {
+  pieceSet: 'Chess piece set',
+  boardColor: 'Board color',
+  themeDefault: 'Theme',
+  sound: 'Sound',
+  volume: 'Sound volume',
+  streamerMode: 'Streamer mode',
+  copyObs: 'Copy OBS overlay URL',
+  share: 'Share',
+  copyLink: 'Copy game link',
+  linkCopied: 'Link copied!',
+  flip: 'Flip board',
+  exportPgn: 'Export PGN',
+  confirmMoves: 'Confirm moves',
+  coordinates: 'Show coordinates',
+  on: 'ON',
+  off: 'OFF',
+};

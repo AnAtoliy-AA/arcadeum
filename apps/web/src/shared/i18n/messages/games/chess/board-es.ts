@@ -1,0 +1,43 @@
+/** Chess board accessibility and settings panel strings. */
+export const esBoard = {
+  withPiece: '{{square}} {{piece}} {{color}}',
+  white: 'blanco',
+  black: 'negro',
+  pieces: {
+    pawn: 'peón',
+    knight: 'caballo',
+    bishop: 'alfil',
+    rook: 'torre',
+    queen: 'dama',
+    king: 'rey',
+  },
+  selected: 'seleccionada',
+  legalMove: 'jugada legal',
+  check: 'en jaque',
+  lastMove: 'última jugada',
+  suggested: 'sugerida',
+  premoveQueued: 'Premovimiento ({{count}} en cola)',
+  cancelPremoves: 'Cancelar',
+  clearDrawings: 'Borrar',
+  clearDrawingsHint: 'Borrar dibujos (clic izquierdo o Esc)',
+  spectators: '{{count}} mirando',
+};
+
+export const esSettings = {
+  pieceSet: 'Juego de piezas',
+  boardColor: 'Color del tablero',
+  themeDefault: 'Tema',
+  sound: 'Sonido',
+  volume: 'Volumen',
+  streamerMode: 'Modo streamer',
+  copyObs: 'Copiar URL de la capa OBS',
+  share: 'Compartir',
+  copyLink: 'Copiar enlace de la partida',
+  linkCopied: '¡Enlace copiado!',
+  flip: 'Girar tablero',
+  exportPgn: 'Exportar PGN',
+  confirmMoves: 'Confirmar jugadas',
+  coordinates: 'Mostrar coordenadas',
+  on: 'SÍ',
+  off: 'NO',
+};

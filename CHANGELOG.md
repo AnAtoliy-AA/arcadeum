@@ -7,33 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.4] - 2026-11-28
+
+### Fixed
+
+- show the real game-over reason instead of always checkmate (ARC-000) (ARC-000)
+
+## [1.32.3] - 2026-11-28
+
+### Fixed
+
+- enforce validateAction rules on the executeAction path
+- enforce FIDE rules for draws, castling, SAN, takebacks and timeouts
+
 ## [1.32.2] - 2026-11-28
 
 ### Fixed
-- hide engine aids from seated players during live games (ARC-000) (ARC-000)
 
+- hide engine aids from seated players during live games (ARC-000) (ARC-000)
 
 ## [1.32.1] - 2026-11-28
 
 ### Fixed
-- share staging auth cookies with the staging web host
 
+- share staging auth cookies with the staging web host
 
 ## [1.32.0] - 2026-11-28
 
 ### Changed
-- Internal improvements and maintenance
 
+- Internal improvements and maintenance
 
 ## [1.31.41] - 2026-11-28
 
 ### Added
+
 - admin Live stream page, director polling and overlay options (ARC-000) (ARC-000)
 - admin stream settings, status and command queue API (ARC-000) (ARC-000)
 
 ### Fixed
-- build the command lookup from an allow-listed literal (ARC-000) (ARC-000)
 
+- build the command lookup from an allow-listed literal (ARC-000) (ARC-000)
 
 ## [1.31.40] - 2026-11-28
 

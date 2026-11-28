@@ -1,9 +1,11 @@
 import { frControls } from './controls-fr';
+import { frEndReasons } from './end-reasons-fr';
 import { frPlay } from './play-fr';
 
 export const frMessages = {
   chess_v1: {
     controls: frControls,
+    endReason: frEndReasons,
     play: frPlay,
     name: 'Échecs',
     description:

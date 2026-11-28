@@ -1,9 +1,11 @@
 import { esControls } from './controls-es';
+import { esEndReasons } from './end-reasons-es';
 import { esPlay } from './play-es';
 
 export const esMessages = {
   chess_v1: {
     controls: esControls,
+    endReason: esEndReasons,
     play: esPlay,
     name: 'Ajedrez',
     description:

@@ -15,6 +15,13 @@ import {
 } from './chess.board';
 import { isInCheck, isSquareAttacked } from './chess.attacks';
 import { createMove, simulateMove } from './chess.move-utils';
+import {
+  CASTLE_KING_TARGET,
+  CASTLE_ROOK_TARGET,
+  backRankRow,
+  getCastlingRookFile,
+  rightsKey,
+} from './chess.castling';
 
 export function generatePseudoLegalMoves(
   state: ChessState,
@@ -38,10 +45,40 @@ export function getLegalMoves(
   color: PieceColor,
 ): ChessMove[] {
   const pseudoLegal = generatePseudoLegalMoves(state, color);
-  return pseudoLegal.filter((move) => {
+  const legal = pseudoLegal.filter((move) => {
     if (move.captured?.type === 'king') return false;
     const simulated = simulateMove(state, move);
     return !isInCheck(simulated, color);
+  });
+  return addSanDisambiguation(legal);
+}
+
+/**
+ * SAN disambiguation (FIDE Appendix C.10): when two pieces of the same type
+ * can reach the same square, add the origin file, else the rank, else both.
+ */
+export function addSanDisambiguation(moves: ChessMove[]): ChessMove[] {
+  return moves.map((move) => {
+    if (move.piece.type === 'pawn' || move.piece.type === 'king') return move;
+    const rivals = moves.filter(
+      (m) =>
+        m !== move &&
+        m.piece.type === move.piece.type &&
+        m.to.file === move.to.file &&
+        m.to.rank === move.to.rank &&
+        (m.from.file !== move.from.file || m.from.rank !== move.from.rank),
+    );
+    if (rivals.length === 0) return move;
+    const sameFile = rivals.some((m) => m.from.file === move.from.file);
+    const sameRank = rivals.some((m) => m.from.rank === move.from.rank);
+    let disambiguator: string;
+    if (!sameFile) disambiguator = move.from.file;
+    else if (!sameRank) disambiguator = String(move.from.rank);
+    else disambiguator = `${move.from.file}${move.from.rank}`;
+    return {
+      ...move,
+      notation: `${move.notation[0]}${disambiguator}${move.notation.slice(1)}`,
+    };
   });
 }
 
@@ -171,7 +208,12 @@ function generatePawnMoves(
         state.board,
         boardCoordsToPos(rank, targetFile),
       );
-      if (capturedPawn) {
+      if (
+        capturedPawn &&
+        capturedPawn.type === 'pawn' &&
+        capturedPawn.color !== piece.color &&
+        !targetPiece
+      ) {
         moves.push(
           createMove(state, pos, targetPos, piece, capturedPawn, null, true),
         );
@@ -256,22 +298,6 @@ function generateSlidingMoves(
   return moves;
 }
 
-function findRookFileForCastling(
-  board: (ChessPiece | null)[][],
-  rank: number,
-  kingFile: number,
-  direction: 'left' | 'right',
-): number | null {
-  const start = direction === 'left' ? kingFile - 1 : kingFile + 1;
-  const end = direction === 'left' ? -1 : 8;
-  const step = direction === 'left' ? -1 : 1;
-
-  for (let f = start; f !== end; f += step) {
-    if (board[rank][f]?.type === 'rook') return f;
-  }
-  return null;
-}
-
 function generateKingMoves(
   state: ChessState,
   rank: number,
@@ -302,112 +328,85 @@ function generateKingMoves(
     );
   }
 
-  const opponent = piece.color === 'white' ? 'black' : 'white';
-  const backRank = piece.color === 'white' ? 7 : 0;
+  moves.push(...generateCastlingMoves(state, rank, file, piece));
+  return moves;
+}
 
-  if (!isSquareAttacked(state.board, pos, opponent)) {
-    if (
-      state.castlingRights[
-        piece.color === 'white' ? 'whiteKingSide' : 'blackKingSide'
-      ]
-    ) {
-      const rookFile = findRookFileForCastling(
-        state.board,
-        backRank,
-        file,
-        'right',
-      );
-      if (rookFile !== null) {
-        let clear = true;
-        for (let f = file + 1; f < rookFile; f++) {
-          if (state.board[backRank][f]) {
-            clear = false;
-            break;
-          }
-        }
-        if (clear) {
-          let pathSafe = true;
-          for (let f = file + 1; f < 6; f++) {
-            if (
-              isSquareAttacked(
-                state.board,
-                boardCoordsToPos(backRank, f),
-                opponent,
-              )
-            ) {
-              pathSafe = false;
-              break;
-            }
-          }
-          if (pathSafe) {
-            moves.push(
-              createMove(
-                state,
-                pos,
-                boardCoordsToPos(backRank, 6),
-                piece,
-                null,
-                null,
-                false,
-                true,
-              ),
-            );
-          }
-        }
+/**
+ * FIDE 3.8.2 castling, generalised for Chess960: the king and the castling
+ * rook must be on the back rank, every square they cross or land on must be
+ * empty (apart from the two castling pieces), and the king may not be in
+ * check, pass through an attacked square, or land on one.
+ */
+function generateCastlingMoves(
+  state: ChessState,
+  rank: number,
+  kingFile: number,
+  piece: ChessPiece,
+): ChessMove[] {
+  const color = piece.color;
+  if (rank !== backRankRow(color) || !state.castlingRights) return [];
+  const opponent = color === 'white' ? 'black' : 'white';
+  const kingPos = boardCoordsToPos(rank, kingFile);
+  if (isSquareAttacked(state.board, kingPos, opponent)) return [];
+
+  const moves: ChessMove[] = [];
+  const is960 = state.variant === 'chess960';
+  for (const side of ['kingSide', 'queenSide'] as const) {
+    if (!state.castlingRights[rightsKey(color, side)]) continue;
+    const rookFile = getCastlingRookFile(state, color, side);
+    if (rookFile === null) continue;
+    if (side === 'kingSide' ? rookFile <= kingFile : rookFile >= kingFile) {
+      continue;
+    }
+    const rook = state.board[rank][rookFile];
+    if (rook?.type !== 'rook' || rook.color !== color) continue;
+
+    const kingTarget = CASTLE_KING_TARGET[side];
+    const rookTarget = CASTLE_ROOK_TARGET[side];
+    const lo = Math.min(kingFile, kingTarget, rookFile, rookTarget);
+    const hi = Math.max(kingFile, kingTarget, rookFile, rookTarget);
+    let clear = true;
+    for (let f = lo; f <= hi; f++) {
+      if (f === kingFile || f === rookFile) continue;
+      if (state.board[rank][f]) {
+        clear = false;
+        break;
       }
     }
-    if (
-      state.castlingRights[
-        piece.color === 'white' ? 'whiteQueenSide' : 'blackQueenSide'
-      ]
-    ) {
-      const rookFile = findRookFileForCastling(
-        state.board,
-        backRank,
-        file,
-        'left',
-      );
-      if (rookFile !== null) {
-        let clear = true;
-        for (let f = rookFile + 1; f < file; f++) {
-          if (state.board[backRank][f]) {
-            clear = false;
-            break;
-          }
-        }
-        if (clear) {
-          let pathSafe = true;
-          for (let f = 3; f < file; f++) {
-            if (
-              isSquareAttacked(
-                state.board,
-                boardCoordsToPos(backRank, f),
-                opponent,
-              )
-            ) {
-              pathSafe = false;
-              break;
-            }
-          }
-          if (pathSafe) {
-            moves.push(
-              createMove(
-                state,
-                pos,
-                boardCoordsToPos(backRank, 2),
-                piece,
-                null,
-                null,
-                false,
-                true,
-              ),
-            );
-          }
-        }
+    if (!clear) continue;
+
+    // Test the king's path with both castling pieces lifted off the board.
+    const probe = state.board.map((row) => [...row]);
+    probe[rank][kingFile] = null;
+    probe[rank][rookFile] = null;
+    const step = kingTarget >= kingFile ? 1 : -1;
+    let pathSafe = true;
+    for (let f = kingFile; f !== kingTarget + step; f += step) {
+      if (isSquareAttacked(probe, boardCoordsToPos(rank, f), opponent)) {
+        pathSafe = false;
+        break;
       }
     }
+    if (!pathSafe) continue;
+
+    // Chess960 uses king-takes-own-rook encoding so the move can never be
+    // confused with an ordinary king step to the same square.
+    const toFile = is960 ? rookFile : kingTarget;
+    if (!is960 && toFile === kingFile) continue;
+    moves.push(
+      createMove(
+        state,
+        kingPos,
+        boardCoordsToPos(rank, toFile),
+        piece,
+        null,
+        null,
+        false,
+        true,
+      ),
+    );
   }
-
   return moves;
 }
 

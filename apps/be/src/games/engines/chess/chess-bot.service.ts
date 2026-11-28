@@ -12,10 +12,20 @@ import type {
   ChessState,
 } from '@arcadeum/games-core/games/chess/chess.types';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
+import { toFen } from '@arcadeum/games-core/games/chess/chess-fen';
+import type { PieceType } from '@arcadeum/games-core/games/chess/chess.constants';
 import { ChessBot } from '@arcadeum/games-core/games/chess/chess-bot';
 import { getBotPersonality } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
 import { isAiVsAiSession } from '../../common/ai-vs-ai';
 import { ChessStockfishService } from '../../chess/engine/chess-stockfish.service';
+
+/** UCI promotion letters (e7e8q) to engine piece types. */
+export const UCI_PROMOTION: Record<string, PieceType> = {
+  q: 'queen',
+  r: 'rook',
+  b: 'bishop',
+  n: 'knight',
+};
 
 export interface ChessBotMovePayload {
   fromFile: string;
@@ -213,8 +223,6 @@ export class ChessBotService extends ChessBot {
       let move: ChessMove | null = null;
 
       if (isStockfishDifficulty && this.stockfishService?.isReady()) {
-        const { toFen } =
-          await import('@arcadeum/games-core/games/chess/chess-fen');
         const fen = toFen(state);
 
         const depth =
@@ -254,7 +262,7 @@ export class ChessBotService extends ChessBot {
               state.board[fromStr.charCodeAt(0) - 97]?.[
                 8 - parseInt(fromStr[1])
               ]?.type ?? 'pawn',
-            promotion: promoChar || undefined,
+            promotion: UCI_PROMOTION[promoChar] ?? null,
           } as unknown as ChessMove;
           this.logger.log(
             `[Bot] Stockfish best move for ${state.currentTurnColor}: ${sfResult.bestMove}`,

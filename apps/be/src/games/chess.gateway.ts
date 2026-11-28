@@ -116,7 +116,51 @@ export class ChessGateway extends BaseGameGateway<ChessOptions> {
           );
         },
       ),
+      ...this.offerHandlers(),
     };
     return handlers;
+  }
+
+  /**
+   * Draw decline, takeback and abort events. The web client already emits
+   * the takeback events; before these handlers existed they were dropped.
+   */
+  private offerHandlers(): Record<string, GameMessageHandlerFn> {
+    const simple = (
+      label: string,
+      run: (userId: string, roomId: string) => Promise<unknown>,
+      ack: string,
+    ) =>
+      this.wrapHandler(label, async (client, _payload, roomId, userId) => {
+        await run(userId, roomId);
+        client.emit(ack, maybeEncrypt({ roomId, userId }));
+      });
+    return {
+      'chess.session.draw_decline': simple(
+        'draw decline',
+        (u, r) => this.gameService.drawDecline(u, r),
+        'chess.session.draw_declined',
+      ),
+      'chess.session.takeback_offer': simple(
+        'takeback offer',
+        (u, r) => this.gameService.takebackOffer(u, r),
+        'chess.session.takeback_offered',
+      ),
+      'chess.session.takeback_accept': simple(
+        'takeback accept',
+        (u, r) => this.gameService.takebackAccept(u, r),
+        'chess.session.takeback_accepted',
+      ),
+      'chess.session.takeback_decline': simple(
+        'takeback decline',
+        (u, r) => this.gameService.takebackDecline(u, r),
+        'chess.session.takeback_declined',
+      ),
+      'chess.session.abort': simple(
+        'abort',
+        (u, r) => this.gameService.abort(u, r),
+        'chess.session.aborted',
+      ),
+    };
   }
 }

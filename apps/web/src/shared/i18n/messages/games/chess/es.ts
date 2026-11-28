@@ -1,5 +1,7 @@
+import { esMoveList } from './move-list-es';
 export const esMessages = {
   chess_v1: {
+    moveList: esMoveList,
     name: 'Ajedrez',
     description:
       'El clásico juego de tablero de estrategia con reglas completas incluyendo enroque, captura al paso y promoción',

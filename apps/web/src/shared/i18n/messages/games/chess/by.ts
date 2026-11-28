@@ -1,5 +1,7 @@
+import { byMoveList } from './move-list-by';
 export const byMessages = {
   chess_v1: {
+    moveList: byMoveList,
     name: 'Шахматы',
     description:
       'Класічная стратэгічная настольная гульня з поўнымі правіламі, уключаючы рокіраванне, узяцце на праходзе і прэміяцыю',

@@ -1,5 +1,7 @@
+import { ruMoveList } from './move-list-ru';
 export const ruMessages = {
   chess_v1: {
+    moveList: ruMoveList,
     name: 'Шахматы',
     description:
       'Классическая стратегическая настольная игра с полными правилами, включая рокировку, взятие на проходе и превращение пешки',

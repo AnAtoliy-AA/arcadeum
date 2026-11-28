@@ -1,5 +1,7 @@
+import { enMoveList } from './move-list-en';
 export const enMessages = {
   chess_v1: {
+    moveList: enMoveList,
     name: 'Chess',
     description:
       'The classic strategy board game with full rules including castling, en passant, and promotion',

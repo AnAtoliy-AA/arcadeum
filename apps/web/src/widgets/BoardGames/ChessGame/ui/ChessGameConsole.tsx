@@ -14,6 +14,7 @@ import { analyzeGame } from '@/features/analysis/lib/analyzeGame';
 import { detectOpening } from '../lib/eco-openings';
 import type { ChessPieceStyle } from '../lib/piece-style';
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
+import type { HistoryStep } from '../hooks/useMoveHistoryView';
 import type { ChessClientState } from '../types';
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
 
@@ -51,6 +52,10 @@ interface ChessGameConsoleProps {
   confirmMoves?: boolean;
   t: TranslateFn;
   onMoveHover?: (idx: number | null) => void;
+  /** Move being viewed (-1 = start position, null = live). */
+  historyIndex?: number | null;
+  onSelectMove?: (idx: number) => void;
+  onHistoryStep?: (step: HistoryStep) => void;
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
@@ -96,6 +101,9 @@ function ChessGameConsoleImpl({
   confirmMoves,
   t,
   onMoveHover,
+  historyIndex = null,
+  onSelectMove,
+  onHistoryStep,
   onOfferDraw,
   onResign,
   onAcceptDraw,
@@ -112,9 +120,6 @@ function ChessGameConsoleImpl({
   onToggleThreats,
 }: ChessGameConsoleProps) {
   const [activeTab, setActiveTab] = useState<'game' | 'settings'>('game');
-  const [selectedMoveIndex, setSelectedMoveIndex] = useState<number | null>(
-    null,
-  );
 
   const gameAnalysis = useMemo(() => {
     if (!isGameOver || snapshot.positionHistory.length < 2) return null;
@@ -257,8 +262,9 @@ function ChessGameConsoleImpl({
               state={snapshot}
               t={t}
               onMoveHover={onMoveHover}
-              onSelectMove={setSelectedMoveIndex}
-              selectedMoveIndex={selectedMoveIndex}
+              onSelectMove={onSelectMove}
+              onStep={onHistoryStep}
+              selectedMoveIndex={historyIndex}
               openingName={openingName}
               moveQualities={moveQualities}
             />

@@ -7,29 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.11] - 2026-11-28
+
+### Fixed
+- validate puzzle solutions server side and lock down import endpoints
+
+
+## [1.32.10] - 2026-11-28
+
+### Improved
+- run bot search in worker threads with natural pacing
+
+
+## [1.32.9] - 2026-11-28
+
+### Fixed
+- low-time clock alert and correct analysis board FEN (ARC-000) (ARC-000)
+
+
 ## [1.32.8] - 2026-11-28
 
 ### Fixed
-- server-authoritative clocks with flag timers and ms precision
 
+- server-authoritative clocks with flag timers and ms precision
 
 ## [1.32.7] - 2026-11-28
 
 ### Fixed
-- build web into immutable releases instead of the live tree
 
+- build web into immutable releases instead of the live tree
 
 ## [1.32.6] - 2026-11-28
 
 ### Added
-- confirm resign, decline draws, abort early games (ARC-000) (ARC-000)
 
+- confirm resign, decline draws, abort early games (ARC-000) (ARC-000)
 
 ## [1.32.5] - 2026-11-28
 
 ### Fixed
-- touch-friendly drag, capture-promotion picker and single move sound (ARC-000) (ARC-000)
 
+- touch-friendly drag, capture-promotion picker and single move sound (ARC-000) (ARC-000)
 
 ## [1.32.4] - 2026-11-28
 

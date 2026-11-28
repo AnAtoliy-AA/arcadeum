@@ -1,5 +1,12 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, UseGuards } from '@nestjs/common';
 import { ChessOpeningsService } from './chess-openings.service';
+import { JwtAuthGuard } from '../../../auth/jwt/jwt.guard';
+import { RolesGuard } from '../../../auth/guards/roles.guard';
+import { Roles } from '../../../auth/guards/roles.decorator';
+import {
+  ClassifyOpeningDto,
+  ImportOpeningsDto,
+} from './dto/import-openings.dto';
 
 @Controller('chess/openings')
 export class ChessOpeningsController {
@@ -31,32 +38,17 @@ export class ChessOpeningsController {
     );
   }
 
+  /** Bulk opening import: admin only (was unauthenticated). */
   @Post('import')
-  async importOpenings(
-    @Body()
-    body: {
-      openings: Array<{
-        moves: string[];
-        fen: string;
-        white?: number;
-        draws?: number;
-        black?: number;
-        totalGames?: number;
-        avgRating?: number;
-        opening?: string;
-        openingFamily?: string;
-        eco?: string;
-      }>;
-    },
-  ) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async importOpenings(@Body() body: ImportOpeningsDto) {
     return this.openingsService.importOpenings(body.openings);
   }
 
+  /** Public, read-only classification of a move list. */
   @Post('classify')
-  async classifyOpening(@Body() body: { moves: string[] }) {
-    if (!body.moves || body.moves.length === 0) {
-      return { error: 'moves array is required' };
-    }
+  async classifyOpening(@Body() body: ClassifyOpeningDto) {
     return this.openingsService.classifyOpening(body.moves);
   }
 }

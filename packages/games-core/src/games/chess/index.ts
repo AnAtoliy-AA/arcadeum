@@ -65,3 +65,6 @@ export {
   restoreFromFen,
 } from './chess-engine-rules';
 export { SAN_LETTER } from './chess.move-utils';
+export { searchBotMove } from './chess-bot-search';
+export type { BotSearchMove, BotSearchRequest } from './chess-bot-search';
+export { computeBotThinkTimeMs, MIN_THINK_MS } from './chess-bot-pacing';

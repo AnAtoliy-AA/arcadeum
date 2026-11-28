@@ -9,6 +9,7 @@ import { ChessBoard } from './ChessBoard';
 import { EvalBar } from './EvalBar';
 import { ChessPlayerHud } from './ChessPlayerHud';
 import { ChessGameConsole } from './ChessGameConsole';
+import { LowTimeAlert } from './LowTimeAlert';
 import { useChessPieceStylePreference } from '../lib/piece-style';
 import {
   useBoardThemePreference,
@@ -344,6 +345,16 @@ function ChessBoardPanelImpl({
         </div>
 
         <div className="chess-hud-row">{bottomPlayerHud}</div>
+        {!isSpectator && (
+          <LowTimeAlert
+            myColor={myColor}
+            clocks={snapshot.clocks}
+            currentTurnColor={snapshot.currentTurnColor}
+            isGameOver={isGameOver}
+            gameCreatedAt={createdAt}
+            t={t}
+          />
+        )}
       </div>
 
       <div className="chess-console-column">

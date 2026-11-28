@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { User, UserSchema } from '../../../auth/schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ChessPuzzle, ChessPuzzleSchema } from './chess-puzzle.schema';
 import {
@@ -17,6 +18,8 @@ import { ChessStockfishModule } from '../engine/chess-stockfish.module';
 
 @Module({
   imports: [
+    // Default connection: RolesGuard looks up the caller's role.
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     MongooseModule.forFeature(
       [
         { name: ChessPuzzle.name, schema: ChessPuzzleSchema },

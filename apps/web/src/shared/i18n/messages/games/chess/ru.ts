@@ -1,9 +1,11 @@
+import { ruClock } from './clock-ru';
 import { ruControls } from './controls-ru';
 import { ruEndReasons } from './end-reasons-ru';
 import { ruPlay } from './play-ru';
 
 export const ruMessages = {
   chess_v1: {
+    clock: ruClock,
     controls: ruControls,
     endReason: ruEndReasons,
     play: ruPlay,

@@ -215,7 +215,7 @@ function ChessPlayerHudImpl({
       <div
         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border font-mono transition-all duration-200 ${
           isUrgent
-            ? 'bg-red-500/20 border-red-500 text-red-400 animate-pulse'
+            ? 'bg-red-500/20 border-red-500 text-red-400 motion-safe:animate-pulse'
             : isWarning
               ? 'bg-amber-500/20 border-amber-500 text-amber-300'
               : isActive && !isGameOver

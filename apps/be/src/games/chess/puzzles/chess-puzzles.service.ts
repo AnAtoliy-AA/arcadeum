@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OCI_CONNECTION } from '../../../common/providers/mongo-connections.provider';
+import { isLegalPuzzleLine, isPuzzleSolved } from './chess-puzzle-solution';
 import { ChessPuzzle, type ChessPuzzleDocument } from './chess-puzzle.schema';
 import {
   ChessPuzzleUser,
@@ -157,10 +158,9 @@ export class ChessPuzzlesService {
       return { solved: false, ratingChange: 0, puzzle: null };
     }
 
-    const expectedMoves = puzzle.moves;
-    const solved =
-      playerMoves.length === expectedMoves.length &&
-      playerMoves.every((m, i) => m === expectedMoves[i]);
+    // Replays the line from the FEN: accepts player-only or full move lists
+    // and any alternative move that delivers checkmate.
+    const solved = isPuzzleSolved(puzzle.fen, puzzle.moves, playerMoves);
 
     await this.puzzleUserModel.findOneAndUpdate(
       { userId: safeUserId, puzzleId: safePuzzleId },
@@ -286,6 +286,11 @@ export class ChessPuzzlesService {
     userId: string,
     dto: import('./dto/create-custom-puzzle.dto').CreateCustomPuzzleDto,
   ): Promise<ChessPuzzleDocument> {
+    if (!isLegalPuzzleLine(dto.fen, dto.moves)) {
+      throw new BadRequestException(
+        'Puzzle moves must be legal UCI moves from the given position',
+      );
+    }
     const puzzleId = `custom_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     return this.puzzleModel.create({
       puzzleId,

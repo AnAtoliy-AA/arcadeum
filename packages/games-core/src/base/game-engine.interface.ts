@@ -54,6 +54,8 @@ export interface BaseGameState {
 export interface GameResult {
   winnerIds: string[];
   isDraw: boolean;
+  /** Game was aborted before it really started: no rating change. */
+  aborted?: boolean;
 }
 
 export interface GameActionResult<TState = unknown> {

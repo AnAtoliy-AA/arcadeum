@@ -1,94 +1,45 @@
-import { PIECE_VALUES, FILES } from './chess.constants';
-import type { ChessMove, ChessState, Rank } from './chess.types';
-import { posToBoardCoords, oppositeColor } from './chess.board';
+import { PIECE_VALUES } from './chess.constants';
+import type { ChessMove, ChessState } from './chess.types';
+import {
+  posToBoardCoords,
+  boardCoordsToPos,
+  oppositeColor,
+} from './chess.board';
 import { isInCheck } from './chess.attacks';
+import { simulateMove } from './chess.move-utils';
+import { updateCastlingRights } from './chess.castling';
 
+/**
+ * Fast make-move for search. Shares board, castling and en passant logic
+ * with the real engine so the bot never searches illegal continuations.
+ */
 export function applyBotMove(state: ChessState, move: ChessMove): ChessState {
-  const newBoard = structuredClone(state.board);
+  const newBoard = simulateMove(state, move);
   const fromCoords = posToBoardCoords(move.from);
   const toCoords = posToBoardCoords(move.to);
-
-  if (move.isEnPassant) {
-    newBoard[fromCoords.rank][toCoords.file] = null;
-  }
-
-  newBoard[toCoords.rank][toCoords.file] = move.promotion
-    ? { type: move.promotion, color: move.piece.color }
-    : newBoard[fromCoords.rank][fromCoords.file];
-  newBoard[fromCoords.rank][fromCoords.file] = null;
-
-  if (move.isCastle) {
-    if (toCoords.file === 6) {
-      let rookFrom = 7;
-      for (let f = 7; f > toCoords.file; f--) {
-        if (newBoard[toCoords.rank][f]?.type === 'rook') {
-          rookFrom = f;
-          break;
-        }
-      }
-      newBoard[toCoords.rank][5] = newBoard[toCoords.rank][rookFrom];
-      newBoard[toCoords.rank][rookFrom] = null;
-    } else if (toCoords.file === 2) {
-      let rookFrom = 0;
-      for (let f = 0; f < toCoords.file; f++) {
-        if (newBoard[toCoords.rank][f]?.type === 'rook') {
-          rookFrom = f;
-          break;
-        }
-      }
-      newBoard[toCoords.rank][3] = newBoard[toCoords.rank][rookFrom];
-      newBoard[toCoords.rank][rookFrom] = null;
-    }
-  }
 
   const newEnPassant =
     move.piece.type === 'pawn' &&
     Math.abs(toCoords.rank - fromCoords.rank) === 2
-      ? ({
-          rank: ((fromCoords.rank + toCoords.rank) / 2 + 1) as Rank,
-          file: FILES[fromCoords.file],
-        } as const)
+      ? boardCoordsToPos((fromCoords.rank + toCoords.rank) / 2, fromCoords.file)
       : null;
 
-  const newCastlingRights = structuredClone(state.castlingRights);
-  if (move.piece.type === 'king') {
-    if (move.piece.color === 'white') {
-      newCastlingRights.whiteKingSide = false;
-      newCastlingRights.whiteQueenSide = false;
-    } else {
-      newCastlingRights.blackKingSide = false;
-      newCastlingRights.blackQueenSide = false;
-    }
-  }
-  if (move.piece.type === 'rook') {
-    const kingRank = move.piece.color === 'white' ? 8 : 1;
-    if (move.from.rank === kingRank) {
-      const kingFile = findKingOnRank(newBoard, kingRank, move.piece.color);
-      if (kingFile !== null) {
-        const fromFile = move.from.file.charCodeAt(0) - 97;
-        if (fromFile > kingFile) {
-          if (move.piece.color === 'white')
-            newCastlingRights.whiteKingSide = false;
-          else newCastlingRights.blackKingSide = false;
-        } else {
-          if (move.piece.color === 'white')
-            newCastlingRights.whiteQueenSide = false;
-          else newCastlingRights.blackQueenSide = false;
-        }
-      }
-    }
-  }
+  const next: ChessState = {
+    ...state,
+    board: newBoard,
+    castlingRights: { ...state.castlingRights },
+  };
+  updateCastlingRights(next, move);
 
   const opp = oppositeColor(state.currentTurnColor);
   const isCheck = isInCheck(newBoard, opp);
 
   return {
-    ...state,
-    board: newBoard,
+    ...next,
     currentTurnColor: opp,
-    castlingRights: newCastlingRights,
     enPassantTarget: newEnPassant,
-    halfMoveClock: move.captured ? 0 : state.halfMoveClock + 1,
+    halfMoveClock:
+      move.captured || move.piece.type === 'pawn' ? 0 : state.halfMoveClock + 1,
     fullMoveNumber:
       state.currentTurnColor === 'black'
         ? state.fullMoveNumber + 1
@@ -99,19 +50,6 @@ export function applyBotMove(state: ChessState, move: ChessMove): ChessState {
     isStalemate: false,
     logs: [],
   };
-}
-
-function findKingOnRank(
-  board: ChessState['board'],
-  rank: number,
-  color: 'white' | 'black',
-): number | null {
-  const row = 8 - rank;
-  for (let f = 0; f < 8; f++) {
-    if (board[row][f]?.type === 'king' && board[row][f]?.color === color)
-      return f;
-  }
-  return null;
 }
 
 export function hasNonPawnMaterial(state: ChessState): boolean {

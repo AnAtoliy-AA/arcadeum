@@ -1,3 +1,4 @@
+import { getLegalMoves } from './chess.move-generator';
 import type { ChessState, Board } from './chess.types';
 
 const PIECE_CHAR: Record<string, string> = {
@@ -47,9 +48,19 @@ function castlingRights(state: ChessState): string {
   return rights || '-';
 }
 
+/**
+ * Only emit the en passant square when an en passant capture is actually
+ * legal, so positions compare correctly for threefold repetition (FIDE 9.2.3)
+ * and FENs match what other tools (lichess, python-chess) produce.
+ */
 function enPassantSquare(state: ChessState): string {
-  if (!state.enPassantTarget) return '-';
-  return `${state.enPassantTarget.file}${state.enPassantTarget.rank}`;
+  const target = state.enPassantTarget;
+  if (!target) return '-';
+  const hasLegalCapture = getLegalMoves(state, state.currentTurnColor).some(
+    (m) =>
+      m.isEnPassant && m.to.file === target.file && m.to.rank === target.rank,
+  );
+  return hasLegalCapture ? `${target.file}${target.rank}` : '-';
 }
 
 export function toFen(state: ChessState): string {

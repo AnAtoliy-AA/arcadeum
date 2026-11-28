@@ -1,3 +1,4 @@
+import { enClock } from './clock-en';
 import { enControls } from './controls-en';
 import { enEndReasons } from './end-reasons-en';
 import { enMoveList } from './move-list-en';
@@ -6,6 +7,7 @@ import { enPlay } from './play-en';
 export const enMessages = {
   chess_v1: {
     moveList: enMoveList,
+    clock: enClock,
     controls: enControls,
     endReason: enEndReasons,
     play: enPlay,

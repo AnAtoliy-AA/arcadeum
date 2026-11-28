@@ -1,3 +1,4 @@
+import { byClock } from './clock-by';
 import { byControls } from './controls-by';
 import { byEndReasons } from './end-reasons-by';
 import { byMoveList } from './move-list-by';
@@ -6,6 +7,7 @@ import { byPlay } from './play-by';
 export const byMessages = {
   chess_v1: {
     moveList: byMoveList,
+    clock: byClock,
     controls: byControls,
     endReason: byEndReasons,
     play: byPlay,

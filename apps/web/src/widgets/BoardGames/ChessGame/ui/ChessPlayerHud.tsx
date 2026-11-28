@@ -6,6 +6,7 @@ import type { Board, PieceColor, PieceType, PlayerClock } from '../types';
 import type { ChessPieceStyle } from '../lib/piece-style';
 import { ChessPieceIcon } from './ChessPieceIcon';
 import { useClockCountdown } from '../hooks/useClockCountdown';
+import { formatDigitalClock } from '../lib/clock-format';
 
 interface ChessPlayerHudProps {
   playerId: string;
@@ -41,14 +42,6 @@ const STARTING_COUNTS: Record<PieceType, number> = {
 };
 
 const PIECE_ORDER: PieceType[] = ['queen', 'rook', 'bishop', 'knight', 'pawn'];
-
-function formatDigitalClock(seconds: number | null): string {
-  if (seconds === null) return '--:--';
-  const total = Math.max(0, Math.ceil(seconds));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
 
 function ChessPlayerHudImpl({
   playerId,
@@ -215,7 +208,7 @@ function ChessPlayerHudImpl({
       <div
         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border font-mono transition-all duration-200 ${
           isUrgent
-            ? 'bg-red-500/20 border-red-500 text-red-400 animate-pulse'
+            ? 'bg-red-500/20 border-red-500 text-red-400 motion-safe:animate-pulse'
             : isWarning
               ? 'bg-amber-500/20 border-amber-500 text-amber-300'
               : isActive && !isGameOver

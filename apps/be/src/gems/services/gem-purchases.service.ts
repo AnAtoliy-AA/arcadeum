@@ -16,6 +16,7 @@ import {
 import { PaypalGateway } from '../../payments/lib/paypal.gateway';
 import { WalletService } from '../../wallet/wallet.service';
 import { SolanaService } from '../../solana/solana.service';
+import { ArcPaymentService } from '../../solana/lib/arc-payment.service';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
 import type { GemPurchaseView } from '../interfaces/gem-purchase.interface';
 import type { WalletBalance } from '../../wallet/interfaces/wallet-balance.interface';
@@ -54,6 +55,7 @@ export class GemPurchasesService {
     private readonly wallet: WalletService,
     private readonly config: ConfigService,
     private readonly solana: SolanaService,
+    private readonly arcPayment: ArcPaymentService,
     private readonly economy: EconomySettingsService,
   ) {}
 
@@ -235,7 +237,7 @@ export class GemPurchasesService {
     userId: string,
     packageId: string,
     signature: string,
-    senderAddress: string,
+    senderAddress?: string,
   ): Promise<{
     success: boolean;
     gemsCredited: number;
@@ -261,20 +263,23 @@ export class GemPurchasesService {
 
     const discount = await this.economy.getNumber('arcadeum_discount_percent');
     const discountedUsd = (pkg.priceUsd / 100) * (1 - discount / 100);
+    // 0 means unconfigured, no source, or too stale to quote safely.
     const arcUsdPrice = await this.solana.getArcadeumPrice();
     if (arcUsdPrice <= 0) {
       throw new BadRequestException('gems.arcPriceUnavailable');
     }
     const expectedArc = Math.ceil(discountedUsd / arcUsdPrice);
 
-    const isValid = await this.solana.verifyTransaction(
+    // Verifies the transfer, binds it to this user and claims the signature
+    // so it cannot also pay for a shop item or another account.
+    await this.arcPayment.verifyAndRedeem({
+      userId,
       signature,
-      expectedArc,
       senderAddress,
-    );
-    if (!isValid) {
-      throw new BadRequestException('gems.invalidTransaction');
-    }
+      expectedAmount: expectedArc,
+      kind: 'gems',
+      subjectId: packageId,
+    });
 
     const idempotencyKey = `gem-arc-${signature}`;
     const existing = await this.wallet.findByIdempotencyKey(idempotencyKey);

@@ -1,0 +1,288 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { useArcadePetStore } from './useArcadePetStore';
+
+describe('useArcadePetStore: care, home capacity and waking', () => {
+  beforeEach(() => {
+    useArcadePetStore.setState({
+      pet: null,
+      pets: [],
+      activePetId: null,
+      gemBalance: 300,
+      adoptionCount: 0,
+      queuedThemeForNextPet: null,
+      presents: [
+        {
+          id: 'test-present-1',
+          senderId: 'friend-1',
+          senderName: 'Alice',
+          species: 'dragon',
+          theme: 'fantasy',
+          petName: 'Fae Drake',
+          message: 'Enjoy this buddy!',
+          createdAt: Date.now(),
+          isOpened: false,
+        },
+      ],
+      isWidgetOpen: false,
+      activeTreat: null,
+    });
+  });
+
+  it('charges 1 coin when feeding a snack', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 5,
+    });
+    useArcadePetStore.getState().adoptRandomPet();
+    const current = useArcadePetStore.getState().pet!;
+    const adultPet = { ...current, stage: 'adult' as const };
+    useArcadePetStore.setState({
+      pet: adultPet,
+      pets: [adultPet],
+    });
+
+    const initialCoins = useArcadePetStore.getState().coinBalance;
+    const initialHunger = adultPet.stats.hunger;
+
+    const result = useArcadePetStore.getState().performAction('feed_snack');
+    expect(result.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(initialCoins - 1);
+    expect(
+      useArcadePetStore.getState().pet?.stats.hunger,
+    ).toBeGreaterThanOrEqual(initialHunger);
+  });
+
+  it('prevents feeding snack when coins are zero and sets actionError', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 0,
+    });
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const result = useArcadePetStore.getState().performAction('feed_snack');
+    expect(result.success).toBe(false);
+    expect(result.error).toBe('INSUFFICIENT_COINS');
+    expect(useArcadePetStore.getState().actionError).toEqual({
+      code: 'NEED_COINS_FEED',
+      params: { cost: 1, name: expect.any(String) },
+    });
+  });
+
+  it('charges escalating food cost based on pet collection index (1, 5, 20)', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 1000,
+      coinBalance: 50,
+      homeCapacity: 5,
+      pets: [],
+    });
+
+    useArcadePetStore.getState().adoptRandomPet();
+    useArcadePetStore.getState().adoptRandomPet();
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const adultPets = useArcadePetStore.getState().pets.map((p) => ({
+      ...p,
+      stage: 'adult' as const,
+    }));
+    useArcadePetStore.setState({ pets: adultPets, pet: adultPets[0] });
+
+    const pet1 = adultPets[0]!;
+    const pet2 = adultPets[1]!;
+    const pet3 = adultPets[2]!;
+
+    useArcadePetStore.getState().selectActivePet(pet1.id);
+    const res1 = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res1.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(49);
+
+    useArcadePetStore.getState().selectActivePet(pet2.id);
+    const res2 = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res2.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(44);
+
+    useArcadePetStore.getState().selectActivePet(pet3.id);
+    const res3 = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res3.success).toBe(true);
+    expect(useArcadePetStore.getState().coinBalance).toBe(24);
+  });
+
+  it('rejects snack feeding with correct error message when 2nd or 3rd pet food is unaffordable', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 1000,
+      coinBalance: 3,
+      homeCapacity: 5,
+      pets: [],
+    });
+
+    useArcadePetStore.getState().adoptRandomPet();
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const pet2 = useArcadePetStore.getState().pets[1]!;
+    useArcadePetStore.getState().selectActivePet(pet2.id);
+
+    const res = useArcadePetStore.getState().performAction('feed_snack');
+    expect(res.success).toBe(false);
+    expect(res.error).toBe('INSUFFICIENT_COINS');
+    expect(useArcadePetStore.getState().actionError).toMatchObject({
+      code: 'NEED_COINS_FEED',
+      params: { cost: 5 },
+    });
+  });
+
+  it('enforces home capacity when adopting pets', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 500,
+      coinBalance: 100,
+      homeCapacity: 1,
+      pets: [],
+    });
+
+    const first = useArcadePetStore.getState().adoptRandomPet();
+    expect(first.success).toBe(true);
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+
+    const second = useArcadePetStore.getState().adoptRandomPet();
+    expect(second.success).toBe(false);
+    expect(second.error).toBe('HOME_FULL');
+    expect(useArcadePetStore.getState().actionError).toEqual({
+      code: 'HOME_FULL',
+    });
+  });
+
+  it('upgrades home capacity using coins and allows adopting another pet', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 1,
+      gemBalance: 500,
+      coinBalance: 100,
+      homeCapacity: 1,
+      pets: [],
+    });
+
+    useArcadePetStore.getState().adoptRandomPet();
+    expect(useArcadePetStore.getState().pets.length).toBe(1);
+
+    const failedUpgrade = useArcadePetStore.getState().upgradeHome('coins');
+    expect(failedUpgrade.success).toBe(true);
+    expect(useArcadePetStore.getState().homeCapacity).toBe(2);
+    expect(useArcadePetStore.getState().coinBalance).toBe(50);
+
+    const second = useArcadePetStore.getState().adoptRandomPet();
+    expect(second.success).toBe(true);
+    expect(useArcadePetStore.getState().pets.length).toBe(2);
+  });
+
+  it('upgrades home capacity using gems when coins are insufficient', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 200,
+      coinBalance: 0,
+      homeCapacity: 1,
+      pets: [],
+    });
+
+    const coinFail = useArcadePetStore.getState().upgradeHome('coins');
+    expect(coinFail.success).toBe(false);
+    expect(coinFail.error).toBe('INSUFFICIENT_COINS');
+
+    const gemSuccess = useArcadePetStore.getState().upgradeHome('gems');
+    expect(gemSuccess.success).toBe(true);
+    expect(useArcadePetStore.getState().homeCapacity).toBe(2);
+    expect(useArcadePetStore.getState().gemBalance).toBe(100);
+  });
+
+  it('updates timestamps and applies decay when toggling home or setting home', () => {
+    useArcadePetStore.setState({
+      adoptionCount: 0,
+      gemBalance: 300,
+      coinBalance: 50,
+      isAtHome: false,
+    });
+    useArcadePetStore.getState().adoptRandomPet();
+
+    const before = Date.now();
+    useArcadePetStore.getState().toggleHome();
+    expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    const pet = useArcadePetStore.getState().pet;
+    expect(pet?.timestamps.lastInteractedAt).toBeGreaterThanOrEqual(before);
+  });
+
+  it('refuses adoption while the first server pull is pending', () => {
+    useArcadePetStore.setState({ syncPending: true, pets: [], pet: null });
+    expect(useArcadePetStore.getState().adoptRandomPet()).toEqual({
+      success: false,
+      error: 'SYNC_PENDING',
+    });
+    expect(
+      useArcadePetStore.getState().adoptSelectedPet('dragon', 'cyberpunk', 'A'),
+    ).toEqual({ success: false, error: 'SYNC_PENDING' });
+    expect(useArcadePetStore.getState().pets).toEqual([]);
+  });
+
+  describe('waking a pet resting at home', () => {
+    function adoptHatchedAtHome() {
+      const store = useArcadePetStore.getState();
+      store.initialize('u', 'cyberpunk');
+      store.adoptRandomPet();
+      store.hatch('Waky', 'cyber_cat', 'cyberpunk');
+      useArcadePetStore.setState({ isAtHome: true, coinBalance: 100 });
+    }
+
+    it('petting wakes the pet and sets a wake notice', () => {
+      adoptHatchedAtHome();
+      const result = useArcadePetStore.getState().performAction('praise');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().isAtHome).toBe(false);
+      expect(useArcadePetStore.getState().wakeNotice).toBe('Waky');
+    });
+
+    it('a snack wakes the pet', () => {
+      adoptHatchedAtHome();
+      const result = useArcadePetStore.getState().performAction('feed_snack');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().isAtHome).toBe(false);
+    });
+
+    it('a failed snack (no coins) keeps the pet resting', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.setState({ coinBalance: 0 });
+      useArcadePetStore.getState().performAction('feed_snack');
+      expect(useArcadePetStore.getState().isAtHome).toBe(true);
+    });
+
+    it('petting a pet that is asleep (isSleeping) wakes it instead of failing', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.setState((s) => {
+        const sleeping = { ...s.pet!, isSleeping: true };
+        return { pet: sleeping, pets: [sleeping], isAtHome: false };
+      });
+      const result = useArcadePetStore.getState().performAction('praise');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().pet?.isSleeping).toBe(false);
+      expect(useArcadePetStore.getState().wakeNotice).toBe('Waky');
+    });
+
+    it('a snack wakes a pet that is asleep (isSleeping)', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.setState((s) => {
+        const sleeping = { ...s.pet!, isSleeping: true };
+        return { pet: sleeping, pets: [sleeping], isAtHome: false };
+      });
+      const result = useArcadePetStore.getState().performAction('feed_snack');
+      expect(result.success).toBe(true);
+      expect(useArcadePetStore.getState().pet?.isSleeping).toBe(false);
+    });
+
+    it('toggleHome from home wakes and clears the notice when going home', () => {
+      adoptHatchedAtHome();
+      useArcadePetStore.getState().toggleHome();
+      expect(useArcadePetStore.getState().wakeNotice).toBe('Waky');
+      useArcadePetStore.getState().toggleHome();
+      expect(useArcadePetStore.getState().wakeNotice).toBeNull();
+    });
+  });
+});

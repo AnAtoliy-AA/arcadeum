@@ -9,7 +9,7 @@
 
 ## Package Manager & Build
 
-- **pnpm** (v11.29.0) with workspaces; pnpm settings (overrides, allowBuilds, hoisting) live in `pnpm-workspace.yaml`, not `package.json` or `.npmrc`
+- **pnpm** (v10.34.9) with workspaces; pnpm settings (overrides, allowBuilds, hoisting) live in `pnpm-workspace.yaml`, not `package.json` or `.npmrc`
 - **Turborepo** orchestrates builds across apps/packages
 - Run tasks from repo root: `pnpm dev`, `pnpm build`, `pnpm test`, `pnpm lint`
 

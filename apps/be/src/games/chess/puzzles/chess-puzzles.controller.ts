@@ -13,6 +13,10 @@ import { JwtAuthGuard } from '../../../auth/jwt/jwt.guard';
 import { ChessPuzzlesService } from './chess-puzzles.service';
 import { CreateCustomPuzzleDto } from './dto/create-custom-puzzle.dto';
 import { SubmitRushScoreDto } from './dto/submit-rush-score.dto';
+import { SolvePuzzleDto } from './dto/solve-puzzle.dto';
+import { ImportPuzzlesDto } from './dto/import-puzzles.dto';
+import { RolesGuard } from '../../../auth/guards/roles.guard';
+import { Roles } from '../../../auth/guards/roles.decorator';
 
 @Controller('chess/puzzles')
 export class ChessPuzzlesController {
@@ -40,12 +44,7 @@ export class ChessPuzzlesController {
   @Post('solve')
   @UseGuards(JwtAuthGuard)
   async solvePuzzle(
-    @Body()
-    body: {
-      puzzleId: string;
-      moves: string[];
-      timeMs: number;
-    },
+    @Body() body: SolvePuzzleDto,
     @Request() req: { user: { id: string } },
   ) {
     return this.puzzlesService.checkSolution(
@@ -78,21 +77,11 @@ export class ChessPuzzlesController {
     );
   }
 
+  /** Bulk puzzle import: admin only (was unauthenticated). */
   @Post('import')
-  async importPuzzles(
-    @Body()
-    body: {
-      puzzles: Array<{
-        puzzleId: string;
-        fen: string;
-        moves: string[];
-        rating: number;
-        ratingDeviation?: number;
-        themes?: string[];
-        openingTags?: string[];
-      }>;
-    },
-  ) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  async importPuzzles(@Body() body: ImportPuzzlesDto) {
     return this.puzzlesService.importPuzzles(body.puzzles);
   }
 

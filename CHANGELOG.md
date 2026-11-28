@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.1] - 2026-11-28
+
+### Fixed
+- share staging auth cookies with the staging web host
+
+
 ## [1.32.0] - 2026-11-28
 
 ### Changed

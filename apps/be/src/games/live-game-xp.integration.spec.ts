@@ -92,10 +92,19 @@ describe('live game completion awards XP', () => {
       sessions,
       {} as never,
       { getNumber: jest.fn().mockResolvedValue(0) } as never,
-      { recordGameResult: noop } as never,
+      {
+        recordGameResult: noop,
+        getRecentForms: jest.fn().mockResolvedValue(new Map()),
+      } as never,
       {} as never,
       createRealXpSettings(users),
-      { recordEvent: noop } as never,
+      {
+        recordEvent: noop,
+        recordMatch: noop,
+        recordLevelUp: noop,
+        recordAchievements: noop,
+        recordWinStreak: noop,
+      } as never,
       {
         getRoomParticipants: jest.fn().mockResolvedValue(['alice', 'bob']),
         updateRoomStatus: noop,

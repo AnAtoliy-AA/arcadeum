@@ -4,7 +4,9 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
+import { ActivityFeedService } from '../games/activity-feed/activity-feed.service';
 import { InjectModel, InjectConnection } from '@nestjs/mongoose';
 import { Connection, FilterQuery, Model, Types } from 'mongoose';
 import {
@@ -61,6 +63,8 @@ export class TournamentsService {
     private readonly model: Model<TournamentDocument>,
     @InjectConnection() private readonly connection: Connection,
     private readonly wallet: WalletService,
+    @Optional()
+    private readonly activityFeed?: ActivityFeedService,
   ) {
     this.walletOps = new TournamentWalletOps(connection, wallet, model);
   }
@@ -373,6 +377,11 @@ export class TournamentsService {
     }
 
     await this.walletOps.markCompleteWithPrize(doc, winnerUserId);
+    await this.activityFeed?.recordTournamentWin(winnerUserId, {
+      id,
+      name: doc.content?.en?.name ?? '',
+      gameId: doc.gameType,
+    });
     return this.findAdminItem(id);
   }
 

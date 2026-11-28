@@ -20,11 +20,16 @@ describe('GamePostMatchService', () => {
   const mockEconomy = { getNumber: jest.fn().mockResolvedValue(0) };
   const mockPlayerStats = {
     recordGameResult: jest.fn().mockResolvedValue(undefined),
+    getRecentForms: jest.fn().mockResolvedValue(new Map()),
   };
   const mockChessProfiles = {};
   let users: FakeUsers;
   const mockActivityFeed = {
     recordEvent: jest.fn().mockResolvedValue(undefined),
+    recordMatch: jest.fn().mockResolvedValue(undefined),
+    recordLevelUp: jest.fn().mockResolvedValue(undefined),
+    recordAchievements: jest.fn().mockResolvedValue(undefined),
+    recordWinStreak: jest.fn().mockResolvedValue(undefined),
   };
   const mockClanWarsQueue = {
     dispatchMatchResolution: jest.fn(),
@@ -152,6 +157,57 @@ describe('GamePostMatchService', () => {
       expect(users.user_2?.xp).toBe(40);
       expect(mockPlayerStats.recordGameResult).toHaveBeenCalledTimes(1);
       expect(mockDailyChallenges.onGameCompleted).toHaveBeenCalledTimes(1);
+    });
+
+    it('records one activity feed match with the replay id', async () => {
+      mockSessionsService.claimPostMatchProcessing.mockResolvedValue(true);
+      mockRooms.getRoomRaw.mockResolvedValue({ participants: [] });
+      mockReplay.createReplay.mockResolvedValueOnce({ replayId: 'rp-1' });
+      await service.processCompletedSession(session);
+      expect(mockActivityFeed.recordMatch).toHaveBeenCalledTimes(1);
+      expect(mockActivityFeed.recordMatch).toHaveBeenCalledWith({
+        playerIds: ['user_1', 'user_2'],
+        winners: ['user_1'],
+        gameId: 'chess_v1',
+        state: {},
+        replayId: 'rp-1',
+      });
+    });
+
+    it('records feed rows for newly unlocked achievements', async () => {
+      mockAchievements.getDefinitions.mockResolvedValueOnce([
+        { achievementId: 'first_win', name: 'First Win' },
+      ]);
+      mockAchievements.checkAndUnlockWithDefinitions
+        .mockResolvedValueOnce(['first_win'])
+        .mockResolvedValueOnce([]);
+      await service.onGameCompleted(
+        ['user_1', 'user_2'],
+        'chess_v1',
+        ['user_1'],
+        {},
+      );
+      expect(mockActivityFeed.recordAchievements).toHaveBeenCalledWith(
+        'user_1',
+        [{ id: 'first_win', name: 'First Win' }],
+      );
+    });
+
+    it('records a win streak milestone for the winner', async () => {
+      mockPlayerStats.getRecentForms.mockResolvedValueOnce(
+        new Map([['user_1', { currentStreak: 3 }]]),
+      );
+      await service.onGameCompleted(
+        ['user_1', 'user_2'],
+        'chess_v1',
+        ['user_1'],
+        {},
+      );
+      expect(mockActivityFeed.recordWinStreak).toHaveBeenCalledWith(
+        'user_1',
+        'chess_v1',
+        3,
+      );
     });
 
     it('is idempotent: a second completion signal awards nothing', async () => {

@@ -3,7 +3,9 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  Optional,
 } from '@nestjs/common';
+import { ActivityFeedService } from '../games/activity-feed/activity-feed.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
@@ -72,6 +74,8 @@ export class TournamentsBracketsService {
   constructor(
     @InjectModel(Tournament.name)
     private readonly model: Model<TournamentDocument>,
+    @Optional()
+    private readonly activityFeed?: ActivityFeedService,
   ) {}
 
   async generateBracket(
@@ -241,6 +245,13 @@ export class TournamentsBracketsService {
       .lean<BracketTournamentLean | null>();
     if (!updated) {
       throw new NotFoundException({ code: 'TOURNAMENT_NOT_FOUND' });
+    }
+    if ($set.status === 'completed') {
+      await this.activityFeed?.recordTournamentWin(winnerUserId, {
+        id: String(updated._id),
+        name: updated.content?.en?.name ?? '',
+        gameId: updated.gameType,
+      });
     }
     return this.toAdminItem(updated);
   }

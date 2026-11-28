@@ -4,6 +4,9 @@ import { Document, Types } from 'mongoose';
 export const ACTIVITY_FEED_TYPE_VALUES = [
   'game_completed',
   'achievement_unlocked',
+  'level_up',
+  'win_streak',
+  'tournament_won',
 ] as const;
 export type ActivityFeedType = (typeof ACTIVITY_FEED_TYPE_VALUES)[number];
 
@@ -29,6 +32,7 @@ export class ActivityFeedItem extends Document {
   @Prop({ default: '' })
   detail!: string;
 
+  /** Typed per event type, see `ActivityFeedMetadata` in activity-feed.types. */
   @Prop({ type: Object, default: {} })
   metadata!: Record<string, unknown>;
 
@@ -40,6 +44,8 @@ export type ActivityFeedItemDocument = ActivityFeedItem;
 export const ActivityFeedItemSchema =
   SchemaFactory.createForClass(ActivityFeedItem);
 ActivityFeedItemSchema.index({ createdAt: -1 });
+ActivityFeedItemSchema.index({ type: 1, createdAt: -1 });
+ActivityFeedItemSchema.index({ gameId: 1, createdAt: -1 });
 // Auto-delete activity feed items after 7 days
 ActivityFeedItemSchema.index(
   { createdAt: 1 },

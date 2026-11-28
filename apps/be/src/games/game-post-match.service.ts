@@ -18,6 +18,12 @@ import { RankingService } from '../ranking/ranking.service';
 import { recordRankedResultForSession } from './games.ranked-result';
 import { GameReplayService } from './replays/game-replay.service';
 import { ClanWarsAutomationService } from '../clans/clan-wars-automation.service';
+import { levelFromXp } from '../xp/lib/xp-level';
+import {
+  recordUnlockedAchievements,
+  recordWinStreaks,
+  type MatchFeedContext,
+} from './activity-feed/activity-feed.post-match';
 
 @Injectable()
 export class GamePostMatchService implements OnModuleInit {
@@ -106,9 +112,13 @@ export class GamePostMatchService implements OnModuleInit {
     await this.payoutGameWin(session, players);
     await this.archiveService.archiveSessionToAtlas(session);
 
+    let replayId: string | null = null;
     try {
       const room = await this.roomsService.getRoomRaw(session.roomId);
-      if (room) await this.replayService.createReplay(session, room);
+      if (room) {
+        const replay = await this.replayService.createReplay(session, room);
+        replayId = replay?.replayId ?? null;
+      }
     } catch (err) {
       this.logger.warn(
         `Replay creation failed for session ${session.id}: ${(err as Error).message}`,
@@ -122,6 +132,7 @@ export class GamePostMatchService implements OnModuleInit {
       winners,
       {},
       session.id,
+      { state: session.state, replayId },
     );
   }
 
@@ -131,6 +142,7 @@ export class GamePostMatchService implements OnModuleInit {
     winners: string[],
     stats: { shots?: number; shipsSunk?: number },
     sessionId?: string,
+    match: MatchFeedContext = {},
   ): Promise<void> {
     try {
       await this.dailyChallenges.onGameCompleted(
@@ -149,13 +161,19 @@ export class GamePostMatchService implements OnModuleInit {
       const humanPlayerIds = playerIds.filter((id) => !id.startsWith('bot-'));
       if (humanPlayerIds.length > 0) {
         const definitions = await this.achievements.getDefinitions();
-        await Promise.allSettled(
+        const unlocked = await Promise.allSettled(
           humanPlayerIds.map((playerId) =>
             this.achievements.checkAndUnlockWithDefinitions(
               playerId,
               definitions,
             ),
           ),
+        );
+        await recordUnlockedAchievements(
+          this.activityFeed,
+          humanPlayerIds,
+          unlocked,
+          definitions,
         );
       }
     } catch (err) {
@@ -170,6 +188,12 @@ export class GamePostMatchService implements OnModuleInit {
         winners,
         hasBots,
         sessionId,
+      );
+      await recordWinStreaks(
+        this.activityFeed,
+        this.playerStats,
+        winners.filter((id) => !id.startsWith('bot-')),
+        gameId,
       );
     } catch (err) {
       this.logger.warn(
@@ -200,21 +224,13 @@ export class GamePostMatchService implements OnModuleInit {
     }
 
     try {
-      const humanPlayerIds = playerIds.filter((id) => !id.startsWith('bot-'));
-      const isDraw = winners.length === 0;
-      const detail = isDraw
-        ? 'played a draw'
-        : winners.length === 1
-          ? 'won a game'
-          : 'won a team game';
-      for (const playerId of humanPlayerIds) {
-        await this.activityFeed.recordEvent({
-          type: 'game_completed',
-          userId: playerId,
-          gameId,
-          detail,
-        });
-      }
+      await this.activityFeed.recordMatch({
+        playerIds,
+        winners,
+        gameId,
+        state: match.state,
+        replayId: match.replayId,
+      });
     } catch (err) {
       this.logger.warn(
         `Activity feed recording failed: ${(err as Error).message}`,
@@ -356,7 +372,12 @@ export class GamePostMatchService implements OnModuleInit {
           hasBots,
         );
         if (amount > 0) {
-          await this.xpSettings.awardXp(userId, amount);
+          const total = await this.xpSettings.awardXp(userId, amount);
+          const before = levelFromXp(Math.max(0, total - amount));
+          const after = levelFromXp(total);
+          if (after > before) {
+            await this.activityFeed.recordLevelUp(userId, after);
+          }
         }
       } catch (err) {
         this.logger.error(

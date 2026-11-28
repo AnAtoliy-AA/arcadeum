@@ -1,6 +1,6 @@
 {
   "name": "stream-director",
-  "version": "1.32.2",
+  "version": "1.32.3",
   "description": "24/7 bot-vs-bot stream director and RTMP push runner",
   "private": true,
   "license": "UNLICENSED",

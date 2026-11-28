@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.3] - 2026-11-28
+
+### Fixed
+- enforce validateAction rules on the executeAction path
+- enforce FIDE rules for draws, castling, SAN, takebacks and timeouts
+
+
 ## [1.32.2] - 2026-11-28
 
 ### Fixed

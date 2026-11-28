@@ -1,0 +1,43 @@
+/** Chess board accessibility and settings panel strings. */
+export const frBoard = {
+  withPiece: '{{square}} {{piece}} {{color}}',
+  white: 'blanc',
+  black: 'noir',
+  pieces: {
+    pawn: 'pion',
+    knight: 'cavalier',
+    bishop: 'fou',
+    rook: 'tour',
+    queen: 'dame',
+    king: 'roi',
+  },
+  selected: 'sélectionnée',
+  legalMove: 'coup légal',
+  check: 'en échec',
+  lastMove: 'dernier coup',
+  suggested: 'suggéré',
+  premoveQueued: 'Pré-coup ({{count}} en attente)',
+  cancelPremoves: 'Annuler',
+  clearDrawings: 'Effacer',
+  clearDrawingsHint: 'Effacer les annotations (clic gauche ou Échap)',
+  spectators: '{{count}} spectateurs',
+};
+
+export const frSettings = {
+  pieceSet: 'Jeu de pièces',
+  boardColor: 'Couleur de l’échiquier',
+  themeDefault: 'Thème',
+  sound: 'Son',
+  volume: 'Volume',
+  streamerMode: 'Mode streamer',
+  copyObs: 'Copier l’URL de l’overlay OBS',
+  share: 'Partager',
+  copyLink: 'Copier le lien de la partie',
+  linkCopied: 'Lien copié !',
+  flip: 'Retourner l’échiquier',
+  exportPgn: 'Exporter le PGN',
+  confirmMoves: 'Confirmer les coups',
+  coordinates: 'Afficher les coordonnées',
+  on: 'OUI',
+  off: 'NON',
+};

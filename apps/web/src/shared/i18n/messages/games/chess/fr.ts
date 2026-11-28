@@ -1,9 +1,12 @@
+import { frBoard, frSettings } from './board-fr';
 import { frControls } from './controls-fr';
 import { frEndReasons } from './end-reasons-fr';
 import { frPlay } from './play-fr';
 
 export const frMessages = {
   chess_v1: {
+    board: frBoard,
+    settings: frSettings,
     controls: frControls,
     endReason: frEndReasons,
     play: frPlay,

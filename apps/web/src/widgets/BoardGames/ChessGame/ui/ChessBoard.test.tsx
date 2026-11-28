@@ -3,6 +3,28 @@ import { vi, beforeEach } from 'vitest';
 import { ChessBoard } from './ChessBoard';
 import type { Board, File, Rank, PieceColor } from '../types';
 import { FILES } from '../types';
+import { enMessages } from '@/shared/i18n/messages/games/chess/en';
+
+// Resolve keys against the real English chess messages so labels are
+// asserted as users (and screen readers) get them.
+vi.mock('@/shared/i18n/useTranslation', () => ({
+  useTranslation: () => ({
+    t: (key: string, params?: Record<string, string | number>) => {
+      const path = key.replace(/^games\./, '').split('.');
+      let value: unknown = enMessages;
+      for (const k of path) {
+        value =
+          value && typeof value === 'object'
+            ? (value as Record<string, unknown>)[k]
+            : undefined;
+      }
+      if (typeof value !== 'string') return key;
+      return value.replace(/\{\{(\w+)\}\}/g, (_, p: string) =>
+        String(params?.[p] ?? ''),
+      );
+    },
+  }),
+}));
 
 beforeEach(() => {
   if (typeof globalThis.ResizeObserver === 'undefined') {
@@ -181,5 +203,32 @@ describe('ChessBoard', () => {
     const king = screen.getByTestId('chess-e1');
     expect(king.className).toContain('motion-safe:animate-pulse');
     expect(king.className).not.toMatch(/(^|\s)animate-pulse/);
+  });
+
+  it('gives squares localized screen-reader labels', () => {
+    const board = createBoardWithPawn('white');
+    renderWithProvider(
+      <ChessBoard
+        {...defaultProps}
+        board={board}
+        selectedSquare={{ file: 'e', rank: 2 }}
+        lastMove={{ from: { file: 'e', rank: 2 }, to: { file: 'e', rank: 3 } }}
+      />,
+    );
+    expect(screen.getByTestId('chess-e2').getAttribute('aria-label')).toBe(
+      'e2 white pawn, selected, last move',
+    );
+    expect(screen.getByTestId('chess-a8').getAttribute('aria-label')).toBe(
+      'a8',
+    );
+  });
+
+  it('hides edge coordinates when the preference is off', () => {
+    window.localStorage.setItem('arcadeum:chess:showCoordinates', 'false');
+    renderWithProvider(
+      <ChessBoard {...defaultProps} board={createEmptyBoard()} />,
+    );
+    expect(screen.getByTestId('chess-a1').textContent).toBe('');
+    window.localStorage.removeItem('arcadeum:chess:showCoordinates');
   });
 });

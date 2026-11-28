@@ -1,9 +1,12 @@
+import { esBoard, esSettings } from './board-es';
 import { esControls } from './controls-es';
 import { esEndReasons } from './end-reasons-es';
 import { esPlay } from './play-es';
 
 export const esMessages = {
   chess_v1: {
+    board: esBoard,
+    settings: esSettings,
     controls: esControls,
     endReason: esEndReasons,
     play: esPlay,

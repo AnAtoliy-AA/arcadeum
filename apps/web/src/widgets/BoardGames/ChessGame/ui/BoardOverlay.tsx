@@ -8,6 +8,7 @@ import {
   type DrawingCircle,
 } from '../hooks/useBoardDrawings';
 import type { PremoveStep } from '../hooks/usePremoveQueue';
+import { useTranslation } from '@/shared/i18n/useTranslation';
 
 interface BoardOverlayProps {
   arrows: Arrow[];
@@ -151,6 +152,7 @@ export function BoardOverlay({
   onClear,
   onCancelPremoves,
 }: BoardOverlayProps) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
   const [isRightDragging, setIsRightDragging] = useState(false);
@@ -277,10 +279,10 @@ export function BoardOverlay({
           <button
             type="button"
             onClick={onClear}
-            title="Clear manual drawings (Left click or Esc)"
+            title={t('games.chess_v1.board.clearDrawingsHint')}
             className="px-2 py-1 rounded-lg text-[11px] font-bold text-zinc-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-transparent"
           >
-            Clear
+            {t('games.chess_v1.board.clearDrawings')}
           </button>
         </div>
       )}

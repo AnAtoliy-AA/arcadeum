@@ -136,4 +136,50 @@ describe('ChessBoard', () => {
     const targetCell = screen.getByTestId('chess-e4');
     expect(targetCell.className).toContain('ring-amber-400/70');
   });
+
+  it("stops page scrolling only on squares holding the player's own pieces", () => {
+    const board = createBoardWithPawn('white');
+    board[1][3] = { type: 'pawn', color: 'black' };
+    renderWithProvider(<ChessBoard {...defaultProps} board={board} />);
+    const own = screen.getByTestId('chess-e2');
+    expect(own.className).toContain('touch-none');
+    expect(own.getAttribute('draggable')).toBeNull();
+    expect(own.getAttribute('data-movable')).toBe('true');
+    expect(screen.getByTestId('chess-d7').className).toContain(
+      'touch-manipulation',
+    );
+    expect(screen.getByTestId('chess-d7').getAttribute('data-movable')).toBe(
+      null,
+    );
+    expect(screen.getByTestId('chess-e4').className).toContain(
+      'touch-manipulation',
+    );
+  });
+
+  it('keeps every square scrollable when the board is disabled', () => {
+    const board = createBoardWithPawn('white');
+    renderWithProvider(<ChessBoard {...defaultProps} board={board} disabled />);
+    expect(screen.getByTestId('chess-e2').className).toContain(
+      'touch-manipulation',
+    );
+    expect(screen.getByTestId('chess-e2').getAttribute('data-movable')).toBe(
+      null,
+    );
+  });
+
+  it('respects reduced motion for the check highlight', () => {
+    const board = createEmptyBoard();
+    board[7][4] = { type: 'king', color: 'white' };
+    renderWithProvider(
+      <ChessBoard
+        {...defaultProps}
+        board={board}
+        isCheck
+        kingPosition={{ file: 'e', rank: 1 }}
+      />,
+    );
+    const king = screen.getByTestId('chess-e1');
+    expect(king.className).toContain('motion-safe:animate-pulse');
+    expect(king.className).not.toMatch(/(^|\s)animate-pulse/);
+  });
 });

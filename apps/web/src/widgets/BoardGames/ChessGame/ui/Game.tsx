@@ -1,7 +1,6 @@
 'use client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
-import { UndoButton } from '@/features/games/ui/UndoButton';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -37,6 +36,8 @@ import { useStreamerMode } from '../lib/streamer-mode';
 import { calculateOptimisticChessState } from '../lib/optimisticMove';
 import { getChessA11yAnnouncement } from '../lib/a11yAnnouncement';
 import { downloadPGN } from '../lib/pgn';
+import { canShowEngineAids } from '../lib/engine-aids';
+import { isChessDraw, resolveChessThemeVariant } from '../lib/game-status';
 import { findKingPosition } from '../lib/board-utils';
 import { createDisplayNameResolver } from '../lib/displayNameResolver';
 import { ChessLobby } from './ChessLobby';
@@ -83,6 +84,8 @@ function ChessGameImpl({
     offerTakeback,
     acceptTakeback,
     declineTakeback,
+    declineDraw,
+    abort,
   } = useChessActions({ roomId, userId: currentUserId });
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
     null,
@@ -119,10 +122,16 @@ function ChessGameImpl({
     )
   );
   const coach = useChessCoach({ room, currentUserId, displaySnapshot });
+  const engineAids = canShowEngineAids({
+    snapshot: displaySnapshot,
+    currentUserId,
+    isSpectator,
+    isGameOver,
+  });
   const { eval: liveEval, analyzing: liveEvalAnalyzing } = useStockfishAnalysis(
     {
       roomId,
-      enabled: !isGameOver && !isLobby,
+      enabled: engineAids && !isGameOver && !isLobby,
       board: displaySnapshot?.board,
     },
   );
@@ -171,13 +180,7 @@ function ChessGameImpl({
     displaySnapshot?.players.find(
       (p) => p.color === displaySnapshot.winnerColor,
     )?.playerId ?? null;
-  const isDraw = !!(
-    displaySnapshot?.isStalemate ||
-    displaySnapshot?.isDrawByRepetition ||
-    displaySnapshot?.isDrawByFiftyMoveRule ||
-    displaySnapshot?.isInsufficientMaterial ||
-    displaySnapshot?.isDrawByAgreement
-  );
+  const isDraw = isChessDraw(displaySnapshot);
   const { result, resultMessages } = useGameResult({
     session,
     isGameOver,
@@ -301,6 +304,7 @@ function ChessGameImpl({
   const handlePieceDrop = useCallback(
     (fromFile: File, fromRank: Rank, toFile: File, toRank: Rank) => {
       if (isGameOver || !myColor || !displaySnapshot) return;
+      setSelectedSquare(null);
       if (!displayMyTurn) {
         handlePremovePieceDrop(fromFile, fromRank, toFile, toRank);
         return;
@@ -401,9 +405,12 @@ function ChessGameImpl({
       onOfferDraw={offerDraw}
       onResign={resign}
       onAcceptDraw={acceptDraw}
+      onDeclineDraw={declineDraw}
+      onAbort={abort}
       onOfferTakeback={offerTakeback}
       onAcceptTakeback={acceptTakeback}
       onDeclineTakeback={declineTakeback}
+      engineAids={engineAids}
       liveEval={liveEval}
       liveEvalAnalyzing={liveEvalAnalyzing}
       onFlipBoard={toggleFlip}
@@ -430,11 +437,7 @@ function ChessGameImpl({
       chatHighlightCells={chatHighlightCells}
     />
   );
-  const themeVariant =
-    (room?.gameOptions?.theme as string | undefined) ??
-    (room?.gameOptions?.cardVariant as string | undefined) ??
-    (room?.gameOptions?.variant as string | undefined) ??
-    'cyberpunk';
+  const themeVariant = resolveChessThemeVariant(room?.gameOptions);
   const modals = (
     <ChessGameModals
       showResultModal={showResultModal}
@@ -475,7 +478,6 @@ function ChessGameImpl({
           title: t('games.chess_v1.name'),
           subtitle: room?.name,
           onToggleResult: toggleResult,
-          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId:
               displaySnapshot?.players.find(

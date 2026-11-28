@@ -1,5 +1,12 @@
+import { enControls } from './controls-en';
+import { enEndReasons } from './end-reasons-en';
+import { enPlay } from './play-en';
+
 export const enMessages = {
   chess_v1: {
+    controls: enControls,
+    endReason: enEndReasons,
+    play: enPlay,
     name: 'Chess',
     description:
       'The classic strategy board game with full rules including castling, en passant, and promotion',

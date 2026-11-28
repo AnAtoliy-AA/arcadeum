@@ -85,6 +85,8 @@ describe('ChessEngine - Chess960', () => {
     });
 
     state.board = parseFen('r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R');
+    // Replacing the board invalidates the random start's rook files.
+    state.castlingRookFiles = undefined;
     state.currentTurnColor = 'white';
 
     const legalMoves = getLegalMoves(state, 'white');
@@ -188,11 +190,30 @@ describe('ChessEngine - draw conditions', () => {
   });
 
   it('should detect threefold repetition', () => {
-    const state = engine.initializeState(['p1', 'p2']);
-    const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
-    state.positionHistory = [fen, fen, fen];
-
-    expect(state.positionHistory.filter((p) => p === fen).length).toBe(3);
+    let state = engine.initializeState(['p1', 'p2']);
+    const ctx = (userId: string) => ({
+      userId,
+      roomId: 'r1',
+      sessionId: 's1',
+      timestamp: new Date(),
+    });
+    const shuffle: [string, MovePayload][] = [
+      ['p1', { fromFile: 'g', fromRank: 1, toFile: 'f', toRank: 3 }],
+      ['p2', { fromFile: 'g', fromRank: 8, toFile: 'f', toRank: 6 }],
+      ['p1', { fromFile: 'f', fromRank: 3, toFile: 'g', toRank: 1 }],
+      ['p2', { fromFile: 'f', fromRank: 6, toFile: 'g', toRank: 8 }],
+    ];
+    for (let i = 0; i < 2; i++) {
+      for (const [user, move] of shuffle) {
+        expect(state.isDrawByRepetition).toBe(false);
+        const result = engine.executeAction(state, 'move', ctx(user), move);
+        expect(result.success).toBe(true);
+        state = result.state!;
+      }
+    }
+    expect(state.isDrawByRepetition).toBe(true);
+    expect(state.endReason).toBe('repetition');
+    expect(engine.isGameOver(state)).toBe(true);
   });
 
   it('should detect insufficient material - king vs king', () => {
@@ -319,6 +340,8 @@ describe('ChessEngine - move generator edge cases', () => {
   it('should handle king side and queen side castling in standard chess', () => {
     const state = engine.initializeState(['p1', 'p2']);
     state.board = parseFen('r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R');
+    // Replacing the board invalidates the random start's rook files.
+    state.castlingRookFiles = undefined;
     state.currentTurnColor = 'white';
 
     const legalMoves = getLegalMoves(state, 'white');

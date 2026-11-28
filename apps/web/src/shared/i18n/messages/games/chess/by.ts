@@ -1,7 +1,12 @@
+import { byEndReasons } from './end-reasons-by';
 import { byMoveList } from './move-list-by';
+import { byPlay } from './play-by';
+
 export const byMessages = {
   chess_v1: {
     moveList: byMoveList,
+    endReason: byEndReasons,
+    play: byPlay,
     name: 'Шахматы',
     description:
       'Класічная стратэгічная настольная гульня з поўнымі правіламі, уключаючы рокіраванне, узяцце на праходзе і прэміяцыю',

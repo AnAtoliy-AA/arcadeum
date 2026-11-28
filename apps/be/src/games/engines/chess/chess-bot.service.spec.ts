@@ -198,4 +198,41 @@ describe('ChessBotService', () => {
       );
     });
   });
+
+  describe('Stockfish moves', () => {
+    it('maps UCI promotion letters to engine piece types', async () => {
+      const state = engine.initializeState(['bot-1', 'p2']);
+      state.botDifficulty = 'hard';
+      state.board = Array.from({ length: 8 }, () => Array<null>(8).fill(null));
+      state.board[7][0] = { type: 'king', color: 'white' }; // a1
+      state.board[0][7] = { type: 'king', color: 'black' }; // h8
+      state.board[1][0] = { type: 'pawn', color: 'white' }; // a7
+      state.currentTurnColor = 'white';
+      const session = {
+        id: 's1',
+        roomId: 'room-sf',
+        status: 'active',
+        state,
+      } as unknown as GameSessionSummary;
+      const chessService = {
+        ...(createMockChessService() as object),
+        findSessionByRoom: jest.fn().mockResolvedValue(session),
+      } as never;
+      const stockfish = {
+        isReady: () => true,
+        getBestMove: jest.fn().mockResolvedValue({ bestMove: 'a7a8q' }),
+      } as never;
+      const sfBot = new ChessBotService(chessService, stockfish);
+      const moveFn = jest.fn().mockResolvedValue({});
+      sfBot.setMoveFn(moveFn);
+      await sfBot.checkAndPlay(session);
+      expect(moveFn).toHaveBeenCalledWith('bot-1', 'room-sf', {
+        fromFile: 'a',
+        fromRank: 7,
+        toFile: 'a',
+        toRank: 8,
+        promotion: 'queen',
+      });
+    });
+  });
 });

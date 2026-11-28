@@ -56,6 +56,8 @@ interface ChessBoardPanelProps {
   onOfferTakeback: () => void;
   onAcceptTakeback: () => void;
   onDeclineTakeback: () => void;
+  /** Fair-play gate: when false, every engine aid is hidden. */
+  engineAids?: boolean;
   liveEval?: {
     cp: number | null;
     mate: number | null;
@@ -117,6 +119,7 @@ function ChessBoardPanelImpl({
   onOfferTakeback,
   onAcceptTakeback,
   onDeclineTakeback,
+  engineAids = true,
   liveEval,
   liveEvalAnalyzing,
   onFlipBoard,
@@ -267,25 +270,29 @@ function ChessBoardPanelImpl({
       >
         <div className="chess-hud-row">{topPlayerHud}</div>
 
-        <div className="chess-eval-horizontal">
-          <EvalBar
-            evalScore={liveEval?.cp ?? null}
-            mateScore={liveEval?.mate ?? null}
-            isFlipped={isFlipped}
-            orientation="horizontal"
-          />
-        </div>
+        {engineAids && (
+          <div className="chess-eval-horizontal">
+            <EvalBar
+              evalScore={liveEval?.cp ?? null}
+              mateScore={liveEval?.mate ?? null}
+              isFlipped={isFlipped}
+              orientation="horizontal"
+            />
+          </div>
+        )}
 
         <div className="chess-board-stage-wrapper">
           <div className="chess-board-stage">
-            <div className="chess-eval-container">
-              <EvalBar
-                evalScore={liveEval?.cp ?? null}
-                mateScore={liveEval?.mate ?? null}
-                isFlipped={isFlipped}
-                orientation="vertical"
-              />
-            </div>
+            {engineAids && (
+              <div className="chess-eval-container">
+                <EvalBar
+                  evalScore={liveEval?.cp ?? null}
+                  mateScore={liveEval?.mate ?? null}
+                  isFlipped={isFlipped}
+                  orientation="vertical"
+                />
+              </div>
+            )}
 
             <div className="chess-board-grid-wrapper relative">
               {spectatorCount > 0 && (
@@ -343,8 +350,8 @@ function ChessBoardPanelImpl({
                 onCancelPremoves={onCancelPremoves}
                 bestMoveArrow={bestMoveArrow}
                 threatArrows={threatArrows}
-                showBestMove={showBestMove}
-                showThreats={showThreats}
+                showBestMove={engineAids && showBestMove}
+                showThreats={engineAids && showThreats}
                 ariaLabel={t('games.chess_v1.status.boardLabel', {
                   color:
                     snapshot.currentTurnColor === 'white'
@@ -376,9 +383,10 @@ function ChessBoardPanelImpl({
           coach={coach}
           pieceStyle={pieceStyle}
           onSelectPieceStyle={setPieceStyle}
-          liveEval={liveEval}
+          engineAids={engineAids}
+          liveEval={engineAids ? liveEval : null}
           liveEvalAnalyzing={liveEvalAnalyzing}
-          moveCandidates={moveCandidates}
+          moveCandidates={engineAids ? moveCandidates : null}
           confirmMoves={confirmMoves}
           t={t}
           onMoveHover={handleMoveHover}

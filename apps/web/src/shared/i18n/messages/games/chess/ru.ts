@@ -1,7 +1,12 @@
+import { ruEndReasons } from './end-reasons-ru';
 import { ruMoveList } from './move-list-ru';
+import { ruPlay } from './play-ru';
+
 export const ruMessages = {
   chess_v1: {
     moveList: ruMoveList,
+    endReason: ruEndReasons,
+    play: ruPlay,
     name: 'Шахматы',
     description:
       'Классическая стратегическая настольная игра с полными правилами, включая рокировку, взятие на проходе и превращение пешки',

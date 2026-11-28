@@ -43,6 +43,8 @@ interface ChessGameConsoleProps {
     timeMs: number;
   } | null;
   liveEvalAnalyzing?: boolean;
+  /** Fair-play gate: when false, engine telemetry and explorer are hidden. */
+  engineAids?: boolean;
   moveCandidates?: Array<{
     move: string;
     cp: number | null;
@@ -97,6 +99,7 @@ function ChessGameConsoleImpl({
   onSelectPieceStyle,
   liveEval,
   liveEvalAnalyzing: _liveEvalAnalyzing,
+  engineAids = true,
   moveCandidates,
   confirmMoves,
   t,
@@ -209,54 +212,64 @@ function ChessGameConsoleImpl({
       <div className="chess-console-body">
         {activeTab === 'game' && (
           <div className="flex flex-col gap-2.5 shrink-0">
-            <div className="chess-telemetry-card shrink-0 flex flex-col gap-1.5 p-2 rounded-xl bg-black/30 border border-white/10 shadow-inner">
-              <div className="flex items-center justify-between font-mono">
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className={`text-xs font-black px-1.5 py-0.5 rounded ${
-                      liveEval?.cp && liveEval.cp > 50
-                        ? 'bg-emerald-500/25 text-emerald-300'
-                        : liveEval?.cp && liveEval.cp < -50
-                          ? 'bg-red-500/25 text-red-300'
-                          : 'bg-white/10 text-zinc-200'
-                    }`}
-                  >
-                    {evalLabel}
-                  </span>
-                  <span className="text-[10px] font-bold text-[var(--textSecondary)] bg-white/5 px-1.5 py-0.5 rounded">
-                    {depthDisplay}
-                  </span>
+            {!engineAids && (
+              <p
+                data-testid="chess-engine-aids-locked"
+                className="shrink-0 px-2.5 py-2 rounded-xl bg-black/20 border border-white/5 text-[11px] leading-snug text-[var(--textSecondary)]"
+              >
+                {t('games.chess_v1.play.engineLocked')}
+              </p>
+            )}
+            {engineAids && (
+              <div className="chess-telemetry-card shrink-0 flex flex-col gap-1.5 p-2 rounded-xl bg-black/30 border border-white/10 shadow-inner">
+                <div className="flex items-center justify-between font-mono">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={`text-xs font-black px-1.5 py-0.5 rounded ${
+                        liveEval?.cp && liveEval.cp > 50
+                          ? 'bg-emerald-500/25 text-emerald-300'
+                          : liveEval?.cp && liveEval.cp < -50
+                            ? 'bg-red-500/25 text-red-300'
+                            : 'bg-white/10 text-zinc-200'
+                      }`}
+                    >
+                      {evalLabel}
+                    </span>
+                    <span className="text-[10px] font-bold text-[var(--textSecondary)] bg-white/5 px-1.5 py-0.5 rounded">
+                      {depthDisplay}
+                    </span>
+                  </div>
+
+                  {bestCandidate && (
+                    <div className="flex items-center gap-1 text-[11px] font-mono">
+                      <span className="text-[9px] text-[var(--textSecondary)] opacity-85">
+                        Best:
+                      </span>
+                      <span className="font-bold text-amber-300 bg-amber-500/15 px-1.5 py-0.5 rounded border border-amber-400/30">
+                        {bestCandidate.move}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
-                {bestCandidate && (
-                  <div className="flex items-center gap-1 text-[11px] font-mono">
-                    <span className="text-[9px] text-[var(--textSecondary)] opacity-85">
-                      Best:
-                    </span>
-                    <span className="font-bold text-amber-300 bg-amber-500/15 px-1.5 py-0.5 rounded border border-amber-400/30">
-                      {bestCandidate.move}
-                    </span>
+                <div className="chess-telemetry-metrics flex items-center justify-between text-[9px] font-mono text-[var(--textSecondary)] pt-1 border-t border-white/5">
+                  <span title="Nodes Evaluated">
+                    Nodes: {formatNodes(liveEval?.nodes)}
+                  </span>
+                  <span title="Nodes per second">
+                    Speed: {formatNps(liveEval?.nps)}
+                  </span>
+                  {liveEval?.timeMs ? <span>{liveEval.timeMs}ms</span> : null}
+                </div>
+
+                {continuationLine && (
+                  <div className="chess-telemetry-line text-[10px] font-mono text-[var(--textSecondary)] bg-black/40 px-2 py-1 rounded border border-white/5 truncate">
+                    <span className="text-zinc-400 font-bold mr-1">Line:</span>
+                    <span className="text-zinc-300">{continuationLine}</span>
                   </div>
                 )}
               </div>
-
-              <div className="chess-telemetry-metrics flex items-center justify-between text-[9px] font-mono text-[var(--textSecondary)] pt-1 border-t border-white/5">
-                <span title="Nodes Evaluated">
-                  Nodes: {formatNodes(liveEval?.nodes)}
-                </span>
-                <span title="Nodes per second">
-                  Speed: {formatNps(liveEval?.nps)}
-                </span>
-                {liveEval?.timeMs ? <span>{liveEval.timeMs}ms</span> : null}
-              </div>
-
-              {continuationLine && (
-                <div className="chess-telemetry-line text-[10px] font-mono text-[var(--textSecondary)] bg-black/40 px-2 py-1 rounded border border-white/5 truncate">
-                  <span className="text-zinc-400 font-bold mr-1">Line:</span>
-                  <span className="text-zinc-300">{continuationLine}</span>
-                </div>
-              )}
-            </div>
+            )}
 
             <MoveList
               state={snapshot}
@@ -277,7 +290,7 @@ function ChessGameConsoleImpl({
               />
             )}
 
-            {moveCandidates && moveCandidates.length > 1 && (
+            {engineAids && moveCandidates && moveCandidates.length > 1 && (
               <div className="chess-candidate-lines shrink-0 p-2 rounded-xl bg-black/20 border border-white/5 flex flex-col gap-1 font-mono text-[11px]">
                 <span className="text-[9px] font-bold text-[var(--textSecondary)] uppercase tracking-wider">
                   Top Candidate Lines
@@ -302,7 +315,7 @@ function ChessGameConsoleImpl({
               </div>
             )}
 
-            {currentFen && (
+            {engineAids && currentFen && (
               <div className="chess-opening-explorer shrink-0">
                 <OpeningExplorer fen={currentFen} />
               </div>

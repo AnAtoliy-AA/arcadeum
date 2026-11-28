@@ -71,7 +71,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     openingPreference: ['Colle System'],
     timeManagement: 'steady',
     chatMessages: {
-      onWin: ['Oh my goodness!', 'I can\'t believe it!'],
+      onWin: ['Oh my goodness!', "I can't believe it!"],
       onLoss: ['I expected that...', 'Too much pressure.'],
       onBlunder: ['No no no!', 'I panicked!'],
       onGreatMove: ['Did I really do that?', 'Accident!'],
@@ -92,7 +92,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     openingPreference: ["Scholar's Mate"],
     timeManagement: 'blitz',
     chatMessages: {
-      onWin: ['Lucky me!', 'I can\'t believe that worked!'],
+      onWin: ['Lucky me!', "I can't believe that worked!"],
       onLoss: ['Good game!', 'You taught me something!'],
       onBlunder: ['Oops!', 'What happened there?'],
       onGreatMove: ['Whoa, nice one!', 'I did NOT see that coming!'],
@@ -141,7 +141,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
       onWin: ['Slow and steady wins!', 'Patience paid off.'],
       onLoss: ['You were too fast for me.', 'Good game!'],
       onBlunder: ['I moved too quickly.', 'Should have thought longer.'],
-      onGreatMove: ['Nice one!', 'I didn\'t expect that!'],
+      onGreatMove: ['Nice one!', "I didn't expect that!"],
     },
     evaluationModifiers: {
       attackWeight: 0.5,
@@ -183,7 +183,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
       onWin: ['Attack is the best defense!', 'Gambit paid off!'],
       onLoss: ['You saw through my trap.', 'Well defended.'],
       onBlunder: ['That gambit backfired.', 'Over-eager perhaps?'],
-      onGreatMove: ['Wow, sharp move!', 'Didn\'t see that coming!'],
+      onGreatMove: ['Wow, sharp move!', "Didn't see that coming!"],
     },
     evaluationModifiers: {
       attackWeight: 1.4,
@@ -247,8 +247,8 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     openingPreference: ['Caro-Kann', 'Slav Defense'],
     timeManagement: 'thinker',
     chatMessages: {
-      onWin: ['Material advantage wins!', 'Can\'t beat good trades.'],
-      onLoss: ['You outplayed me.', 'Material wasn\'t enough.'],
+      onWin: ['Material advantage wins!', "Can't beat good trades."],
+      onLoss: ['You outplayed me.', "Material wasn't enough."],
       onBlunder: ['Dropped a pawn!', 'That was greedy of me.'],
       onGreatMove: ['Free pawn!', 'Another capture!'],
     },
@@ -332,13 +332,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 1440,
     style: 'fortress',
     difficulty: 'medium',
-    openingPreference: ['Queen\'s Gambit Declined', 'Slav Defense'],
+    openingPreference: ["Queen's Gambit Declined", 'Slav Defense'],
     timeManagement: 'thinker',
     chatMessages: {
       onWin: ['Unbreakable!', 'The fortress holds!'],
       onLoss: ['You found a crack.', 'My wall crumbled.'],
       onBlunder: ['A hole in my fortress!', 'That was weak.'],
-      onGreatMove: ['Solid move!', 'I didn\'t expect that.'],
+      onGreatMove: ['Solid move!', "I didn't expect that."],
     },
     evaluationModifiers: {
       attackWeight: 0.3,
@@ -395,10 +395,10 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 1700,
     style: 'trickster',
     difficulty: 'medium',
-    openingPreference: ['Alekhine\'s Defense', 'Pirc Defense'],
+    openingPreference: ["Alekhine's Defense", 'Pirc Defense'],
     timeManagement: 'blitz',
     chatMessages: {
-      onWin: ['The trick worked!', 'Fool\'s mate!'],
+      onWin: ['The trick worked!', "Fool's mate!"],
       onLoss: ['You saw through it.', 'My trick failed.'],
       onBlunder: ['I tricked myself!', 'That was silly.'],
       onGreatMove: ['Did you expect that?', 'Surprise!'],
@@ -462,7 +462,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 1970,
     style: 'positional',
     difficulty: 'advanced',
-    openingPreference: ['Nimzo-Indian', 'Queen\'s Gambit Declined'],
+    openingPreference: ['Nimzo-Indian', "Queen's Gambit Declined"],
     timeManagement: 'thinker',
     chatMessages: {
       onWin: ['Precision prevails.', 'Every move had a purpose.'],
@@ -483,7 +483,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2050,
     style: 'gambit',
     difficulty: 'advanced',
-    openingPreference: ['King\'s Indian', 'Benko Gambit'],
+    openingPreference: ["King's Indian", 'Benko Gambit'],
     timeManagement: 'steady',
     chatMessages: {
       onWin: ['Dynamic play won!', 'The initiative was decisive.'],
@@ -504,7 +504,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2140,
     style: 'aggressive',
     difficulty: 'advanced',
-    openingPreference: ['Sicilian Dragon', 'King\'s Indian Attack'],
+    openingPreference: ['Sicilian Dragon', "King's Indian Attack"],
     timeManagement: 'steady',
     chatMessages: {
       onWin: ['Attack was irresistible!', 'The pressure was too much.'],
@@ -546,13 +546,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2320,
     style: 'trickster',
     difficulty: 'advanced',
-    openingPreference: ['Alekhine\'s Defense', 'Budapest Gambit'],
+    openingPreference: ["Alekhine's Defense", 'Budapest Gambit'],
     timeManagement: 'blitz',
     chatMessages: {
       onWin: ['The trick worked!', 'Caught you off guard!'],
       onLoss: ['You saw through it.', 'My trap failed.'],
       onBlunder: ['I fell for my own trick!', 'That was embarrassing.'],
-      onGreatMove: ['Surprise!', 'Didn\'t see that coming, did you?'],
+      onGreatMove: ['Surprise!', "Didn't see that coming, did you?"],
     },
     evaluationModifiers: {
       attackWeight: 1.1,
@@ -571,7 +571,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2410,
     style: 'positional',
     difficulty: 'strong',
-    openingPreference: ['Nimzo-Indian', 'Queen\'s Indian'],
+    openingPreference: ['Nimzo-Indian', "Queen's Indian"],
     timeManagement: 'thinker',
     chatMessages: {
       onWin: ['Positional crush.', 'The masterclass continues.'],
@@ -634,7 +634,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2670,
     style: 'balanced',
     difficulty: 'strong',
-    openingPreference: ['Catalan', 'Queen\'s Gambit'],
+    openingPreference: ['Catalan', "Queen's Gambit"],
     timeManagement: 'thinker',
     chatMessages: {
       onWin: ['The engine approves.', 'Strong play.'],
@@ -655,7 +655,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2760,
     style: 'aggressive',
     difficulty: 'strong',
-    openingPreference: ['Sicilian Najdorf', 'King\'s Indian'],
+    openingPreference: ['Sicilian Najdorf', "King's Indian"],
     timeManagement: 'steady',
     chatMessages: {
       onWin: ['Attack wins!', 'The pressure was too much.'],
@@ -701,7 +701,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 2940,
     style: 'aggressive',
     difficulty: 'hard',
-    openingPreference: ['Sicilian Dragon', 'King\'s Indian Attack'],
+    openingPreference: ['Sicilian Dragon', "King's Indian Attack"],
     timeManagement: 'steady',
     chatMessages: {
       onWin: ['Attacking chess at its finest.', 'The dragon breathes fire.'],
@@ -810,7 +810,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 3380,
     style: 'fortress',
     difficulty: 'master',
-    openingPreference: ['Queen\'s Gambit Declined', 'Slav Defense'],
+    openingPreference: ["Queen's Gambit Declined", 'Slav Defense'],
     timeManagement: 'thinker',
     chatMessages: {
       onWin: ['Unbreakable fortress.', 'The wall held.'],
@@ -831,13 +831,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 3470,
     style: 'trickster',
     difficulty: 'master',
-    openingPreference: ['Alekhine\'s Defense', 'Pirc Defense'],
+    openingPreference: ["Alekhine's Defense", 'Pirc Defense'],
     timeManagement: 'blitz',
     chatMessages: {
       onWin: ['The trick worked!', 'Caught you off guard!'],
       onLoss: ['You saw through it.', 'My trap failed.'],
       onBlunder: ['I fell for my own trick!', 'That was embarrassing.'],
-      onGreatMove: ['Surprise!', 'Didn\'t see that coming, did you?'],
+      onGreatMove: ['Surprise!', "Didn't see that coming, did you?"],
     },
     evaluationModifiers: {
       attackWeight: 1.1,
@@ -852,7 +852,7 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     rating: 3560,
     style: 'balanced',
     difficulty: 'master',
-    openingPreference: ['Catalan', 'Queen\'s Gambit'],
+    openingPreference: ['Catalan', "Queen's Gambit"],
     timeManagement: 'thinker',
     chatMessages: {
       onWin: ['Optimal play achieved.', 'The machine wins.'],

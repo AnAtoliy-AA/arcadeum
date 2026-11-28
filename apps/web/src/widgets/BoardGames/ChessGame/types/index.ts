@@ -91,6 +91,10 @@ export interface TimeControl {
 
 export interface PlayerClock {
   remainingSeconds: number;
+  /** Authoritative milliseconds left (engine lane, optional). */
+  remainingMs?: number;
+  /** Remaining lag-compensation allowance in milliseconds (optional). */
+  lagQuotaMs?: number;
   lastMoveTimestamp: number;
 }
 

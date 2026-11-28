@@ -1,7 +1,9 @@
+import { esControls } from './controls-es';
 import { esPlay } from './play-es';
 
 export const esMessages = {
   chess_v1: {
+    controls: esControls,
     play: esPlay,
     name: 'Ajedrez',
     description:

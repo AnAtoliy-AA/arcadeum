@@ -145,6 +145,10 @@ export interface ChessClientState {
   isDrawByFiftyMoveRule: boolean;
   isInsufficientMaterial: boolean;
   isDrawByAgreement: boolean;
+  /** Flag fell but the opponent could not mate (engine lane, optional). */
+  isDrawByTimeout?: boolean;
+  /** Game aborted before both sides moved: no result (optional). */
+  isAborted?: boolean;
   drawOfferedBy: string | null;
   takebackOfferedBy: string | null;
   takebackMoveIndex: number | null;

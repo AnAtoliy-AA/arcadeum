@@ -1,7 +1,9 @@
+import { byControls } from './controls-by';
 import { byPlay } from './play-by';
 
 export const byMessages = {
   chess_v1: {
+    controls: byControls,
     play: byPlay,
     name: 'Шахматы',
     description:

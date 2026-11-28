@@ -1,7 +1,9 @@
+import { ruControls } from './controls-ru';
 import { ruPlay } from './play-ru';
 
 export const ruMessages = {
   chess_v1: {
+    controls: ruControls,
     play: ruPlay,
     name: 'Шахматы',
     description:

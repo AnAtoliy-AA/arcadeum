@@ -8,6 +8,7 @@ type DrawFlags = Pick<
   | 'isDrawByFiftyMoveRule'
   | 'isInsufficientMaterial'
   | 'isDrawByAgreement'
+  | 'isDrawByTimeout'
 >;
 
 /** True when the snapshot ended (or is ending) in any kind of draw. */
@@ -17,7 +18,8 @@ export function isChessDraw(snapshot: DrawFlags | null | undefined): boolean {
     snapshot?.isDrawByRepetition ||
     snapshot?.isDrawByFiftyMoveRule ||
     snapshot?.isInsufficientMaterial ||
-    snapshot?.isDrawByAgreement
+    snapshot?.isDrawByAgreement ||
+    snapshot?.isDrawByTimeout
   );
 }
 

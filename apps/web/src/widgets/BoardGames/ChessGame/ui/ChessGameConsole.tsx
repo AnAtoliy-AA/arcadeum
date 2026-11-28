@@ -1,8 +1,8 @@
 'use client';
 
 import { memo, useState, useMemo } from 'react';
-import { Button } from '@arcadeum/ui';
 import { MoveList } from './MoveList';
+import { ChessGameActions } from './ChessGameActions';
 import {
   MoveAccuracySummary,
   computePlayerAccuracy,
@@ -56,6 +56,8 @@ interface ChessGameConsoleProps {
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
+  onDeclineDraw?: () => void;
+  onAbort?: () => void;
   onOfferTakeback: () => void;
   onAcceptTakeback: () => void;
   onDeclineTakeback: () => void;
@@ -102,6 +104,8 @@ function ChessGameConsoleImpl({
   onOfferDraw,
   onResign,
   onAcceptDraw,
+  onDeclineDraw,
+  onAbort,
   onOfferTakeback,
   onAcceptTakeback,
   onDeclineTakeback,
@@ -179,9 +183,15 @@ function ChessGameConsoleImpl({
 
   return (
     <div className="flex flex-col h-full rounded-2xl bg-[var(--glassBg)] border border-[var(--glassBorder)] backdrop-blur-xl shadow-xl overflow-hidden min-w-0">
-      <div className="chess-console-header flex items-center gap-1.5 p-2 border-b border-[var(--glassBorder)] bg-black/25">
+      <div
+        role="tablist"
+        aria-label={t('games.chess_v1.controls.panelLabel')}
+        className="chess-console-header flex items-center gap-1.5 p-2 border-b border-[var(--glassBorder)] bg-black/25"
+      >
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'game'}
           onClick={() => setActiveTab('game')}
           className={`flex-1 px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer text-center ${
             activeTab === 'game'
@@ -189,10 +199,12 @@ function ChessGameConsoleImpl({
               : 'text-[var(--textSecondary)] hover:text-white hover:bg-white/5 border border-transparent'
           }`}
         >
-          Game & Engine
+          {t('games.chess_v1.controls.tabGame')}
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'settings'}
           onClick={() => setActiveTab('settings')}
           className={`flex-1 px-3 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer text-center ${
             activeTab === 'settings'
@@ -200,7 +212,7 @@ function ChessGameConsoleImpl({
               : 'text-[var(--textSecondary)] hover:text-white hover:bg-white/5 border border-transparent'
           }`}
         >
-          Tools & Settings
+          {t('games.chess_v1.controls.tabSettings')}
         </button>
       </div>
 
@@ -238,7 +250,7 @@ function ChessGameConsoleImpl({
                   {bestCandidate && (
                     <div className="flex items-center gap-1 text-[11px] font-mono">
                       <span className="text-[9px] text-[var(--textSecondary)] opacity-85">
-                        Best:
+                        {t('games.chess_v1.controls.best')}
                       </span>
                       <span className="font-bold text-amber-300 bg-amber-500/15 px-1.5 py-0.5 rounded border border-amber-400/30">
                         {bestCandidate.move}
@@ -248,18 +260,24 @@ function ChessGameConsoleImpl({
                 </div>
 
                 <div className="chess-telemetry-metrics flex items-center justify-between text-[9px] font-mono text-[var(--textSecondary)] pt-1 border-t border-white/5">
-                  <span title="Nodes Evaluated">
-                    Nodes: {formatNodes(liveEval?.nodes)}
+                  <span>
+                    {t('games.chess_v1.controls.nodes', {
+                      value: formatNodes(liveEval?.nodes),
+                    })}
                   </span>
-                  <span title="Nodes per second">
-                    Speed: {formatNps(liveEval?.nps)}
+                  <span>
+                    {t('games.chess_v1.controls.speed', {
+                      value: formatNps(liveEval?.nps),
+                    })}
                   </span>
                   {liveEval?.timeMs ? <span>{liveEval.timeMs}ms</span> : null}
                 </div>
 
                 {continuationLine && (
                   <div className="chess-telemetry-line text-[10px] font-mono text-[var(--textSecondary)] bg-black/40 px-2 py-1 rounded border border-white/5 truncate">
-                    <span className="text-zinc-400 font-bold mr-1">Line:</span>
+                    <span className="text-zinc-400 font-bold mr-1">
+                      {t('games.chess_v1.controls.line')}
+                    </span>
                     <span className="text-zinc-300">{continuationLine}</span>
                   </div>
                 )}
@@ -287,7 +305,7 @@ function ChessGameConsoleImpl({
             {engineAids && moveCandidates && moveCandidates.length > 1 && (
               <div className="chess-candidate-lines shrink-0 p-2 rounded-xl bg-black/20 border border-white/5 flex flex-col gap-1 font-mono text-[11px]">
                 <span className="text-[9px] font-bold text-[var(--textSecondary)] uppercase tracking-wider">
-                  Top Candidate Lines
+                  {t('games.chess_v1.controls.candidates')}
                 </span>
                 {moveCandidates.slice(0, 3).map((alt, idx) => (
                   <div
@@ -348,60 +366,23 @@ function ChessGameConsoleImpl({
       </div>
 
       {!isSpectator && !isGameOver && (
-        <div className="p-2.5 border-t border-[var(--glassBorder)] bg-black/25 flex flex-col gap-2 shrink-0">
-          {hasTakebackOffer && !isMyTakebackOffer && (
-            <div className="flex gap-2">
-              <Button
-                variant="primary"
-                size="sm"
-                fullWidth
-                onClick={onAcceptTakeback}
-              >
-                Accept Takeback
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                fullWidth
-                onClick={onDeclineTakeback}
-              >
-                Decline
-              </Button>
-            </div>
-          )}
-
-          {hasDrawOffer && !isMyDrawOffer && (
-            <Button
-              variant="primary"
-              size="sm"
-              fullWidth
-              onClick={onAcceptDraw}
-            >
-              Accept Draw
-            </Button>
-          )}
-
-          <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={hasTakebackOffer}
-              onClick={onOfferTakeback}
-            >
-              Takeback
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={hasDrawOffer}
-              onClick={onOfferDraw}
-            >
-              Draw
-            </Button>
-            <Button variant="outline" size="sm" onClick={onResign}>
-              Resign
-            </Button>
-          </div>
+        <div className="p-2.5 border-t border-[var(--glassBorder)] bg-black/25 shrink-0">
+          <ChessGameActions
+            t={t}
+            hasDrawOffer={hasDrawOffer}
+            isMyDrawOffer={isMyDrawOffer}
+            hasTakebackOffer={hasTakebackOffer}
+            isMyTakebackOffer={isMyTakebackOffer}
+            canAbort={snapshot.moveHistory.length < 2}
+            onOfferDraw={onOfferDraw}
+            onAcceptDraw={onAcceptDraw}
+            onDeclineDraw={onDeclineDraw}
+            onResign={onResign}
+            onAbort={onAbort}
+            onOfferTakeback={onOfferTakeback}
+            onAcceptTakeback={onAcceptTakeback}
+            onDeclineTakeback={onDeclineTakeback}
+          />
         </div>
       )}
     </div>

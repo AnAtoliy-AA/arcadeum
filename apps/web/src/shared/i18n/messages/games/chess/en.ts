@@ -1,7 +1,9 @@
+import { enControls } from './controls-en';
 import { enPlay } from './play-en';
 
 export const enMessages = {
   chess_v1: {
+    controls: enControls,
     play: enPlay,
     name: 'Chess',
     description:

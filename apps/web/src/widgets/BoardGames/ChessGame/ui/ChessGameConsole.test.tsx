@@ -70,7 +70,9 @@ describe('ChessGameConsole', () => {
 
   it('hides admin streamer assists in settings when user is not admin', () => {
     render(<ChessGameConsole {...defaultProps} isAdmin={false} />);
-    const settingsTabBtn = screen.getByText('Tools & Settings');
+    const settingsTabBtn = screen.getByText(
+      'games.chess_v1.controls.tabSettings',
+    );
     fireEvent.click(settingsTabBtn);
 
     expect(screen.queryByText('Admin Streamer Assists')).toBeNull();
@@ -93,7 +95,9 @@ describe('ChessGameConsole', () => {
       />,
     );
 
-    const settingsTabBtn = screen.getByText('Tools & Settings');
+    const settingsTabBtn = screen.getByText(
+      'games.chess_v1.controls.tabSettings',
+    );
     fireEvent.click(settingsTabBtn);
 
     expect(screen.getByText('Admin Streamer Assists')).toBeDefined();
@@ -134,8 +138,8 @@ describe('ChessGameConsole', () => {
     expect(screen.getByTestId('chess-engine-aids-locked').textContent).toBe(
       'games.chess_v1.play.engineLocked',
     );
-    expect(screen.queryByText('Best:')).toBeNull();
-    expect(screen.queryByText('Top Candidate Lines')).toBeNull();
+    expect(screen.queryByText('games.chess_v1.controls.best')).toBeNull();
+    expect(screen.queryByText('games.chess_v1.controls.candidates')).toBeNull();
     expect(screen.queryByText('+1.2')).toBeNull();
   });
 
@@ -149,7 +153,9 @@ describe('ChessGameConsole', () => {
       />,
     );
     expect(screen.queryByTestId('chess-engine-aids-locked')).toBeNull();
-    expect(screen.getByText('Best:')).toBeDefined();
-    expect(screen.getByText('Top Candidate Lines')).toBeDefined();
+    expect(screen.getByText('games.chess_v1.controls.best')).toBeDefined();
+    expect(
+      screen.getByText('games.chess_v1.controls.candidates'),
+    ).toBeDefined();
   });
 });

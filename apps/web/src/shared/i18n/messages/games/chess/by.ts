@@ -1,8 +1,10 @@
+import { byClock } from './clock-by';
 import { byEndReasons } from './end-reasons-by';
 import { byPlay } from './play-by';
 
 export const byMessages = {
   chess_v1: {
+    clock: byClock,
     endReason: byEndReasons,
     play: byPlay,
     name: 'Шахматы',

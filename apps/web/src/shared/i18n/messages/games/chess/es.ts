@@ -1,8 +1,10 @@
+import { esClock } from './clock-es';
 import { esEndReasons } from './end-reasons-es';
 import { esPlay } from './play-es';
 
 export const esMessages = {
   chess_v1: {
+    clock: esClock,
     endReason: esEndReasons,
     play: esPlay,
     name: 'Ajedrez',

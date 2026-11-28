@@ -1,8 +1,10 @@
+import { ruClock } from './clock-ru';
 import { ruEndReasons } from './end-reasons-ru';
 import { ruPlay } from './play-ru';
 
 export const ruMessages = {
   chess_v1: {
+    clock: ruClock,
     endReason: ruEndReasons,
     play: ruPlay,
     name: 'Шахматы',

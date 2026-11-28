@@ -4,19 +4,27 @@ import {
   Logger,
   forwardRef,
   Optional,
+  type OnModuleDestroy,
 } from '@nestjs/common';
 import { ChessService } from '../../chess/chess.service';
 import type { ChessService as IChessService } from '../../chess/chess.service';
 import type {
-  ChessMove,
   ChessState,
+  File,
+  Rank,
 } from '@arcadeum/games-core/games/chess/chess.types';
+import type { PieceColor } from '@arcadeum/games-core/games/chess/chess.constants';
+import type { BotSearchMove } from '@arcadeum/games-core/games/chess/chess-bot-search';
+import { computeBotThinkTimeMs } from '@arcadeum/games-core/games/chess/chess-bot-pacing';
+import { evaluate } from '@arcadeum/games-core/games/chess/chess-bot-eval';
+import type { BotPersonality } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
+import { ChessBotSearchPool } from './chess-bot-search.pool';
 import type { GameSessionSummary } from '../../sessions/game-sessions.service';
 import { toFen } from '@arcadeum/games-core/games/chess/chess-fen';
 import type { PieceType } from '@arcadeum/games-core/games/chess/chess.constants';
 import { ChessBot } from '@arcadeum/games-core/games/chess/chess-bot';
 import { getBotPersonality } from '@arcadeum/games-core/games/chess/chess-bot-personalities';
-import { isAiVsAiSession } from '../../common/ai-vs-ai';
+import { getAiMoveDelayMs, isAiVsAiSession } from '../../common/ai-vs-ai';
 import { ChessStockfishService } from '../../chess/engine/chess-stockfish.service';
 
 /** UCI promotion letters (e7e8q) to engine piece types. */
@@ -36,8 +44,12 @@ export interface ChessBotMovePayload {
 }
 
 @Injectable()
-export class ChessBotService extends ChessBot {
+export class ChessBotService extends ChessBot implements OnModuleDestroy {
   private readonly logger = new Logger(ChessBotService.name);
+  /** Off-main-thread search so a thinking bot never blocks other games. */
+  readonly searchPool = new ChessBotSearchPool();
+  /** Think-time pause; overridable in tests. */
+  pause: (ms: number) => Promise<void> = sleep;
   private readonly processing = new Set<string>();
   private moveFn:
     | ((
@@ -119,6 +131,45 @@ export class ChessBotService extends ChessBot {
     return { skillLevel, contempt, aggression };
   }
 
+  async onModuleDestroy(): Promise<void> {
+    await this.searchPool.destroy();
+  }
+
+  /** Stockfish move for hard / master / expert bots, when the engine is up. */
+  private async findStockfishMove(
+    state: ChessState,
+    personality: BotPersonality | null,
+  ): Promise<BotSearchMove | null> {
+    const difficulty = state.botDifficulty;
+    if (
+      (difficulty !== 'hard' &&
+        difficulty !== 'master' &&
+        difficulty !== 'expert') ||
+      !this.stockfishService?.isReady()
+    ) {
+      return null;
+    }
+    const depth = difficulty === 'hard' ? 8 : difficulty === 'master' ? 12 : 15;
+    const timeMs =
+      difficulty === 'hard' ? 1000 : difficulty === 'master' ? 1500 : 2000;
+    const sfResult = await this.stockfishService.getBestMove(
+      toFen(state),
+      depth,
+      timeMs,
+      this.buildStockfishUciOptions(personality),
+    );
+    const uci = sfResult.bestMove;
+    if (!uci || uci.length < 4) return null;
+    this.logger.log(
+      `[Bot] Stockfish best move for ${state.currentTurnColor}: ${uci}`,
+    );
+    return {
+      from: { file: uci[0] as File, rank: Number(uci[1]) as Rank },
+      to: { file: uci[2] as File, rank: Number(uci[3]) as Rank },
+      promotion: UCI_PROMOTION[uci.slice(4)] ?? null,
+    };
+  }
+
   async checkAndPlay(session: GameSessionSummary): Promise<void> {
     const freshSession = await this.chessService.findSessionByRoom(
       session.roomId,
@@ -168,10 +219,19 @@ export class ChessBotService extends ChessBot {
       state.drawOfferedBy &&
       state.drawOfferedBy !== botPlayer.playerId
     ) {
-      await this.chessService.drawAccept(
-        botPlayer.playerId,
-        freshSession.roomId,
-      );
+      // Accept only when the bot is not clearly better; otherwise decline
+      // and keep playing (the offer would otherwise stay pending).
+      if (shouldBotAcceptDraw(state, botPlayer.color)) {
+        await this.chessService.drawAccept(
+          botPlayer.playerId,
+          freshSession.roomId,
+        );
+      } else {
+        await this.chessService.drawDecline(
+          botPlayer.playerId,
+          freshSession.roomId,
+        );
+      }
       return;
     }
 
@@ -193,12 +253,7 @@ export class ChessBotService extends ChessBot {
     this.processing.add(session.roomId);
 
     try {
-      this.tt.clear();
-      this.killers = Array.from({ length: 20 }, (): ChessMove[] => []);
-      this.history = Array.from({ length: 8 }, (): number[] => [
-        0, 0, 0, 0, 0, 0, 0, 0,
-      ]);
-
+      const startedAt = Date.now();
       const currentColor = state.currentTurnColor;
       const options = (
         session as unknown as { options?: Record<string, unknown> }
@@ -214,71 +269,44 @@ export class ChessBotService extends ChessBot {
       const personality = personalityId
         ? (getBotPersonality(personalityId) ?? null)
         : null;
-      this.setPersonality(personality);
 
-      const isStockfishDifficulty =
-        state.botDifficulty === 'hard' ||
-        state.botDifficulty === 'master' ||
-        state.botDifficulty === 'expert';
-      let move: ChessMove | null = null;
-
-      if (isStockfishDifficulty && this.stockfishService?.isReady()) {
-        const fen = toFen(state);
-
-        const depth =
-          state.botDifficulty === 'hard'
-            ? 8
-            : state.botDifficulty === 'master'
-              ? 12
-              : 15;
-        const timeMs =
-          state.botDifficulty === 'hard'
-            ? 1000
-            : state.botDifficulty === 'master'
-              ? 1500
-              : 2000;
-
-        const uciOptions = this.buildStockfishUciOptions(personality);
-        const sfResult = await this.stockfishService.getBestMove(
-          fen,
-          depth,
-          timeMs,
-          uciOptions,
-        );
-        if (sfResult.bestMove) {
-          const fromStr = sfResult.bestMove.slice(0, 2);
-          const toStr = sfResult.bestMove.slice(2, 4);
-          const promoChar = sfResult.bestMove.slice(4);
-          move = {
-            from: {
-              file: fromStr[0] as ChessMove['from']['file'],
-              rank: parseInt(fromStr[1]) as ChessMove['from']['rank'],
-            },
-            to: {
-              file: toStr[0] as ChessMove['to']['file'],
-              rank: parseInt(toStr[1]) as ChessMove['to']['rank'],
-            },
-            piece:
-              state.board[fromStr.charCodeAt(0) - 97]?.[
-                8 - parseInt(fromStr[1])
-              ]?.type ?? 'pawn',
-            promotion: UCI_PROMOTION[promoChar] ?? null,
-          } as unknown as ChessMove;
-          this.logger.log(
-            `[Bot] Stockfish best move for ${state.currentTurnColor}: ${sfResult.bestMove}`,
-          );
-        }
-      }
-
+      let move = await this.findStockfishMove(state, personality);
       if (!move) {
-        const timeBudget = this.computeTimeBudget(state);
-        move = this.findBestMoveWithTimeBudget(state, timeBudget, Date.now());
+        move = await this.searchPool.search({
+          state,
+          timeBudgetMs: this.computeTimeBudget(state),
+          difficulty: state.botDifficulty,
+          personalityId: personalityId ?? null,
+        });
+      }
+      if (!move) return;
+
+      // Natural pacing: never answer instantly, vary the think time.
+      const target =
+        getAiMoveDelayMs(freshSession) ??
+        computeBotThinkTimeMs(
+          state,
+          state.legalMovesForCurrentPlayer?.length ?? 2,
+        );
+      const waitMs = target - (Date.now() - startedAt);
+      if (waitMs > 0) await this.pause(waitMs);
+
+      // The position may have changed while thinking (resign, takeback...).
+      const latest = await this.chessService.findSessionByRoom(session.roomId);
+      const latestState = latest?.state as unknown as ChessState | undefined;
+      if (
+        !latest ||
+        latest.status !== 'active' ||
+        !latestState ||
+        latestState.currentTurnColor !== currentColor ||
+        latestState.moveHistory.length !== state.moveHistory.length
+      ) {
+        return;
       }
 
-      if (!move) return;
       if (this.moveFn) {
         this.logger.log(
-          `[Bot] ${currentId} moving ${state.currentTurnColor} in ${session.roomId}: ${move.from.file}${move.from.rank}-${move.to.file}${move.to.rank}`,
+          `[Bot] ${currentId} moving ${currentColor} in ${session.roomId}: ${move.from.file}${move.from.rank}-${move.to.file}${move.to.rank}`,
         );
         await this.moveFn(currentId, session.roomId, {
           fromFile: move.from.file,
@@ -287,9 +315,6 @@ export class ChessBotService extends ChessBot {
           toRank: move.to.rank,
           promotion: move.promotion ?? undefined,
         });
-        this.logger.log(
-          `[Bot] ${currentId} move completed in ${session.roomId}`,
-        );
       } else {
         this.logger.warn(`[Bot] moveFn not set for ${session.roomId}`);
       }
@@ -299,4 +324,21 @@ export class ChessBotService extends ChessBot {
       this.processing.delete(session.roomId);
     }
   }
+}
+
+const sleep = (ms: number) =>
+  new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+/** Bot accepts a draw unless it is ahead by more than this (centipawns). */
+export const BOT_DRAW_ACCEPT_MAX_EVAL = 50;
+
+/** Static evaluation from the bot's point of view decides draw offers. */
+export function shouldBotAcceptDraw(
+  state: ChessState,
+  botColor: PieceColor,
+): boolean {
+  const sideToMoveScore = evaluate(state);
+  const botScore =
+    state.currentTurnColor === botColor ? sideToMoveScore : -sideToMoveScore;
+  return botScore <= BOT_DRAW_ACCEPT_MAX_EVAL;
 }

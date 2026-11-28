@@ -106,12 +106,8 @@ export function applyUciMoveToBoard(
   };
 }
 
-export function getLegalDestinations(
-  board: Board,
-  turnColor: PieceColor,
-  from: BoardPosition,
-): BoardPosition[] {
-  const dummyState: ChessState = {
+function puzzleState(board: Board, turnColor: PieceColor): ChessState {
+  return {
     variant: 'standard',
     gameCreatedAt: 0,
     timeControl: null,
@@ -148,8 +144,14 @@ export function getLegalDestinations(
     logs: [],
     legalMovesForCurrentPlayer: [],
   };
+}
 
-  const legalMoves = getLegalMoves(dummyState, turnColor);
+export function getLegalDestinations(
+  board: Board,
+  turnColor: PieceColor,
+  from: BoardPosition,
+): BoardPosition[] {
+  const legalMoves = getLegalMoves(puzzleState(board, turnColor), turnColor);
   return legalMoves
     .filter((m) => m.from.file === from.file && m.from.rank === from.rank)
     .map((m) => m.to);
@@ -162,4 +164,24 @@ export function getPuzzleInitialBoard(fen: string): Board {
 export function getPuzzleTurnColor(fen: string): PieceColor {
   const parts = fen.split(' ');
   return (parts[1] === 'b' ? 'black' : 'white') as PieceColor;
+}
+
+/**
+ * True when `uci` is a legal move for `mover` that checkmates the opponent.
+ * Puzzles accept any mate on the final move, not only the stored line.
+ */
+export function isCheckmatingMove(
+  board: Board,
+  mover: PieceColor,
+  uci: string,
+): boolean {
+  const { from, to } = parseUciMove(uci);
+  const legal = getLegalDestinations(board, mover, from).some(
+    (sq) => sq.file === to.file && sq.rank === to.rank,
+  );
+  if (!legal) return false;
+  const { nextBoard, isCheck } = applyUciMoveToBoard(board, uci);
+  if (!isCheck) return false;
+  const opponent: PieceColor = mover === 'white' ? 'black' : 'white';
+  return getLegalMoves(puzzleState(nextBoard, opponent), opponent).length === 0;
 }

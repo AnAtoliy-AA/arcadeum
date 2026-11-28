@@ -2,18 +2,6 @@ jest.mock('./lib/solana-keypair', () => ({
   getPlatformKeypair: jest.fn(),
 }));
 
-jest.mock('./lib/arcadeum-token', () => ({
-  getArcadeumMint: jest
-    .fn()
-    .mockResolvedValue({ toBase58: () => 'mock-mint-address' }),
-  toRawAmount: jest.fn((n: number) => BigInt(Math.round(n * 1e9))),
-  fromRawAmount: jest.fn((n: bigint) => Number(n) / 1e9),
-  ARCADEUM_DECIMALS: 9,
-  TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
-  TOKEN_2022_PROGRAM_ID: 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
-  SOLANA_TOKEN_PROGRAM_IDS: ['token-program', 'token-2022-program'],
-}));
-
 import { getPlatformKeypair } from './lib/solana-keypair';
 import { SolanaService } from './solana.service';
 import { ConfigService } from '@nestjs/config';
@@ -97,7 +85,7 @@ describe('SolanaService', () => {
       );
       // First token program has an account; the second does not.
       mockSplToken.getAccount
-        .mockResolvedValueOnce({ amount: BigInt(100_000_000_000) })
+        .mockResolvedValueOnce({ amount: BigInt(100_000_000) }) // 100 ARC at the real 6 decimals
         .mockRejectedValueOnce(new Error('Account not found'));
 
       const result = await service.getPlatformBalance();

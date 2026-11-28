@@ -2,12 +2,12 @@ import { Logger } from '@nestjs/common';
 import type { Connection } from 'mongoose';
 import type Redis from 'ioredis';
 import type { Server as SocketIOServer } from 'socket.io';
-import { AI_VS_AI_DELAYS_MS, isAiVsAiSession } from './common/ai-vs-ai';
+import { AI_VS_AI_MAX_DELAY_MS, isAiVsAiSession } from './common/ai-vs-ai';
 import { GameSessionsService } from './sessions/game-sessions.service';
 import type { GameSessionSummary } from './sessions/game-sessions.service';
 
 const INTERVAL_MS = 10_000;
-export const STALE_THRESHOLD_MS = Math.max(...AI_VS_AI_DELAYS_MS) * 2;
+export const STALE_THRESHOLD_MS = AI_VS_AI_MAX_DELAY_MS * 2;
 const MAX_BACKOFF_MS = 300_000;
 const SESSION_LIMIT = 100;
 const READY_STATE = 1;

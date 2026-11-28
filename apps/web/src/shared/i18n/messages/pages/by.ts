@@ -7,6 +7,7 @@ import { adminWalletBy } from './admin-wallet/by';
 import { gemsBy } from './gems/by';
 import { adminGemPackagesBy } from './admin-gem-packages/by';
 import { adminEconomyBy } from './admin-economy/by';
+import { adminStreamBy } from './admin-stream/by';
 import { adminStatisticsBy } from './admin-statistics/by';
 import { dailyRewardsBy } from './daily-rewards/by';
 import { dailyChallengesBy } from './daily-challenges/by';
@@ -30,6 +31,8 @@ import { changelogBy } from './changelog/by';
 import { featuresBy } from './features/by';
 import { roadmapBy } from './roadmap/by';
 
+import { streamBy } from './stream/by';
+
 export const by = {
   admin: {
     title: 'Адмін',
@@ -46,6 +49,7 @@ export const by = {
       announcements: "Аб'явы",
       tournaments: 'Турніры',
       economy: 'Эканоміка',
+      stream: 'Прамы эфір',
       shop: 'Крама',
       gemPackages: 'Пакеты Гемаў',
       games: 'Гульні',
@@ -466,6 +470,7 @@ export const by = {
   gems: gemsBy,
   adminGemPackages: adminGemPackagesBy,
   adminEconomy: adminEconomyBy,
+  adminStream: adminStreamBy,
   dailyRewards: dailyRewardsBy,
   dailyChallenges: dailyChallengesBy,
   achievements: achievementsBy,
@@ -479,4 +484,5 @@ export const by = {
   changelog: changelogBy,
   features: featuresBy,
   roadmap: roadmapBy,
+  stream: streamBy,
 };

@@ -8,6 +8,7 @@ export interface AdminSidebarItem {
     | 'announcements'
     | 'tournaments'
     | 'economy'
+    | 'stream'
     | 'gemPackages'
     | 'shop'
     | 'games'
@@ -28,6 +29,7 @@ export const ADMIN_SIDEBAR_ITEMS: readonly AdminSidebarItem[] = [
   { id: 'payments', href: '/admin/payments', enabled: true },
   { id: 'tournaments', href: '/admin/tournaments', enabled: true },
   { id: 'economy', href: '/admin/economy', enabled: true },
+  { id: 'stream', href: '/admin/stream', enabled: true },
   { id: 'gemPackages', href: '/admin/gem-packages', enabled: true },
   { id: 'shop', href: '/admin/shop', enabled: true },
   { id: 'bulkRewards', href: '/admin/bulk-rewards', enabled: true },

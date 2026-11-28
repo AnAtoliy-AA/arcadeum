@@ -9,6 +9,10 @@ import { GemPurchase } from '../schemas/gem-purchase.schema';
 import { PaypalGateway } from '../../payments/lib/paypal.gateway';
 import { WalletService } from '../../wallet/wallet.service';
 import { SolanaService } from '../../solana/solana.service';
+jest.mock('../../solana/lib/arc-payment.service', () => ({
+  ArcPaymentService: class {},
+}));
+import { ArcPaymentService } from '../../solana/lib/arc-payment.service';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
 
 const oid = () => new Types.ObjectId();
@@ -59,6 +63,7 @@ describe('GemPurchasesService - APPROVED → captureOrder flow', () => {
         { provide: PaypalGateway, useValue: paypal },
         { provide: WalletService, useValue: wallet },
         { provide: SolanaService, useValue: {} },
+        { provide: ArcPaymentService, useValue: {} },
         { provide: ConfigService, useValue: { get: jest.fn() } },
         {
           provide: EconomySettingsService,

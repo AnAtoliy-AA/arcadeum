@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import type { PetSpecies } from '@arcadeum/games-core';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { useArcadePetStore } from '../store/useArcadePetStore';
@@ -49,6 +49,8 @@ export function ArcadePetSocialStage({
   const isAtHome = useArcadePetStore((s) => s.isAtHome);
   const setAtHome = useArcadePetStore((s) => s.setAtHome);
   const toggleHome = useArcadePetStore((s) => s.toggleHome);
+  const wakeNotice = useArcadePetStore((s) => s.wakeNotice);
+  const clearWakeNotice = useArcadePetStore((s) => s.clearWakeNotice);
   const pets = useArcadePetStore((s) => s.pets);
   const homeCapacity = useArcadePetStore((s) => s.homeCapacity);
   const upgradeHome = useArcadePetStore((s) => s.upgradeHome);
@@ -68,6 +70,12 @@ export function ArcadePetSocialStage({
     otherPlayer?.displayName?.length && otherPlayer.displayName.length % 2 === 0
       ? 'cyber_cat'
       : 'dragon';
+
+  useEffect(() => {
+    if (!wakeNotice) return;
+    const timer = setTimeout(clearWakeNotice, 3500);
+    return () => clearTimeout(timer);
+  }, [wakeNotice, clearWakeNotice]);
 
   const { sim, handleOpenDoor, handleLocalClick, handleRemoteClick } =
     usePetStageSimulation({
@@ -100,6 +108,15 @@ export function ArcadePetSocialStage({
       data-testid="arcade-pet-social-stage"
     >
       <div className={styles.petTrack}>
+        {wakeNotice && (
+          <div
+            role="status"
+            data-testid="arcade-pet-wake-notice"
+            className="pointer-events-none fixed bottom-20 left-1/2 z-40 -translate-x-1/2 rounded-full border border-[var(--glassBorderStrong)] bg-[var(--glassBg)] px-3 py-1.5 text-xs font-semibold text-[var(--color)] shadow-lg backdrop-blur-md"
+          >
+            {t('arcadePetCompanion.wokeUp', { name: wakeNotice })}
+          </div>
+        )}
         {isAtHome && (
           <ArcadePetHomeBooth
             isAtHome={isAtHome}

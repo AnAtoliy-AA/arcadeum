@@ -7,23 +7,98 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.41] - 2026-11-28
+
+### Added
+- admin Live stream page, director polling and overlay options (ARC-000) (ARC-000)
+- admin stream settings, status and command queue API (ARC-000) (ARC-000)
+
+### Fixed
+- build the command lookup from an allow-listed literal (ARC-000) (ARC-000)
+
+
+## [1.31.40] - 2026-11-28
+
+### Added
+
+- add chrome-less broadcast scenes for the 24/7 bot stream
+
+### Documentation
+
+- add changelog entry for broadcast scenes
+
+## [1.31.39] - 2026-11-25
+
+### Added
+
+- add 24/7 stream director and RTMP push runner
+
+### Refactored
+
+- port stream director to a TypeScript app
+
+## [1.31.38] - 2026-11-25
+
+### Fixed
+
+- remove useless initial assignment in ARC price selection
+- harden ARC payments end to end
+
+## [1.31.37] - 2026-11-24
+
+### Fixed
+
+- keep directly adopted adults adult, persist away dismissal
+
+## [1.31.36] - 2026-11-24
+
+### Fixed
+
+- petting or feeding an asleep pet wakes it
+- clicking the sleeping pet's house wakes it
+
+## [1.31.35] - 2026-11-24
+
+### Fixed
+
+- fall back to GeckoTerminal for ARC price and token metadata
+
+## [1.31.34] - 2026-11-24
+
+### Fixed
+
+- close real games socket in live-info lobby test so broadcasts cannot override mocked stats
+
+## [1.31.33] - 2026-11-24
+
+### Fixed
+
+- serve fixed open-lobby stats in live-info card test so WebKit does not stay on Create a room
+
+## [1.31.32] - 2026-11-24
+
+### Fixed
+
+- push ARC coin balance after commit and keep header chip live
+
 ## [1.31.31] - 2026-11-24
 
 ### Added
+
 - wire manifest into factory/gameplay, sidecar length class, --feature and --length flags
 - length class analytics, weights and manifest recorder
 - per-format length classes, structured scripts and QA ranges
 
-
 ## [1.31.30] - 2026-11-24
 
 ### Added
+
 - hook, captions, voice rotation, ducking, CTA A/B, platform metadata and QA gate for renders
 
 ### Documentation
+
 - keep changelog diff minimal (no reformat)
 - changelog entry for render pipeline
-
 
 ## [1.31.29] - 2026-11-23
 

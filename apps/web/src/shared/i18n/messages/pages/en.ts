@@ -7,6 +7,7 @@ import { adminWalletEn } from './admin-wallet/en';
 import { gemsEn } from './gems/en';
 import { adminGemPackagesEn } from './admin-gem-packages/en';
 import { adminEconomyEn } from './admin-economy/en';
+import { adminStreamEn } from './admin-stream/en';
 import { adminStatisticsEn } from './admin-statistics/en';
 import { dailyRewardsEn } from './daily-rewards/en';
 import { dailyChallengesEn } from './daily-challenges/en';
@@ -30,6 +31,8 @@ import { changelogEn } from './changelog/en';
 import { featuresEn } from './features/en';
 import { roadmapEn } from './roadmap/en';
 
+import { streamEn } from './stream/en';
+
 export const en = {
   admin: {
     title: 'Admin',
@@ -46,6 +49,7 @@ export const en = {
       announcements: 'Announcements',
       tournaments: 'Tournaments',
       economy: 'Economy',
+      stream: 'Live stream',
       shop: 'Shop',
       gemPackages: 'Gem Packages',
       games: 'Games',
@@ -472,6 +476,7 @@ export const en = {
   gems: gemsEn,
   adminGemPackages: adminGemPackagesEn,
   adminEconomy: adminEconomyEn,
+  adminStream: adminStreamEn,
   dailyRewards: dailyRewardsEn,
   dailyChallenges: dailyChallengesEn,
   achievements: achievementsEn,
@@ -485,4 +490,5 @@ export const en = {
   changelog: changelogEn,
   features: featuresEn,
   roadmap: roadmapEn,
+  stream: streamEn,
 };

@@ -13,6 +13,10 @@ import { GemPurchase } from '../schemas/gem-purchase.schema';
 import { PaypalGateway } from '../../payments/lib/paypal.gateway';
 import { WalletService } from '../../wallet/wallet.service';
 import { SolanaService } from '../../solana/solana.service';
+jest.mock('../../solana/lib/arc-payment.service', () => ({
+  ArcPaymentService: class {},
+}));
+import { ArcPaymentService } from '../../solana/lib/arc-payment.service';
 import { EconomySettingsService } from '../../economy/economy-settings.service';
 
 const oid = () => new Types.ObjectId();
@@ -88,10 +92,12 @@ describe('GemPurchasesService', () => {
   let wallet: {
     credit: jest.Mock;
     getBalance: jest.Mock;
+    findByIdempotencyKey: jest.Mock;
   };
   let configService: {
     get: jest.Mock;
   };
+  let arcPayment: { verifyAndRedeem: jest.Mock };
 
   beforeEach(async () => {
     packageModel = {
@@ -115,6 +121,7 @@ describe('GemPurchasesService', () => {
     configService = {
       get: jest.fn(),
     };
+    arcPayment = { verifyAndRedeem: jest.fn().mockResolvedValue('new') };
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -128,9 +135,9 @@ describe('GemPurchasesService', () => {
           provide: SolanaService,
           useValue: {
             getArcadeumPrice: jest.fn().mockResolvedValue(0.000002),
-            verifyTransaction: jest.fn().mockResolvedValue(true),
           },
         },
+        { provide: ArcPaymentService, useValue: arcPayment },
         {
           provide: EconomySettingsService,
           useValue: { getNumber: jest.fn().mockResolvedValue(0) },

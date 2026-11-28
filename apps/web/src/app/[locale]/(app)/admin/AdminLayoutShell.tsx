@@ -16,6 +16,7 @@ interface AdminNavTranslations {
   announcements?: string;
   tournaments?: string;
   economy?: string;
+  stream?: string;
   shop?: string;
   gemPackages?: string;
   games?: string;
@@ -54,6 +55,7 @@ export default async function AdminLayoutShell({
       announcements: navT?.announcements,
       tournaments: navT?.tournaments,
       economy: navT?.economy,
+      stream: navT?.stream,
       shop: navT?.shop,
       gemPackages: navT?.gemPackages,
       games: navT?.games,

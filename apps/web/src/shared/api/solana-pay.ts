@@ -10,12 +10,22 @@ export interface SolanaPayRequest {
 }
 
 export interface SolanaPayStatus {
-  status: 'pending' | 'confirmed' | 'expired';
+  status: 'pending' | 'confirmed' | 'failed' | 'expired';
   signature?: string;
+  /** Confirmed after the request window closed. */
+  late?: boolean;
+  /** Machine readable cause when `failed`. */
+  reason?: string;
 }
+
+export type ArcPriceStatus = 'ok' | 'stale' | 'unavailable' | 'unconfigured';
 
 export interface ArcPricing {
   arcUsdPrice: number;
+  /** Anything but `ok` means the price must not be shown or used. */
+  priceStatus: ArcPriceStatus;
+  priceSource: string | null;
+  priceAgeSeconds: number | null;
   gemToUsdRate: number;
   discountPercent: number;
   gemsAllowArc: boolean;

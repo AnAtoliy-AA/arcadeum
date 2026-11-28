@@ -7,6 +7,7 @@ import { adminWalletEs } from './admin-wallet/es';
 import { gemsEs } from './gems/es';
 import { adminGemPackagesEs } from './admin-gem-packages/es';
 import { adminEconomyEs } from './admin-economy/es';
+import { adminStreamEs } from './admin-stream/es';
 import { adminStatisticsEs } from './admin-statistics/es';
 import { dailyRewardsEs } from './daily-rewards/es';
 import { dailyChallengesEs } from './daily-challenges/es';
@@ -30,6 +31,8 @@ import { changelogEs } from './changelog/es';
 import { featuresEs } from './features/es';
 import { roadmapEs } from './roadmap/es';
 
+import { streamEs } from './stream/es';
+
 export const es = {
   admin: {
     title: 'Administración',
@@ -46,6 +49,7 @@ export const es = {
       announcements: 'Anuncios',
       tournaments: 'Torneos',
       economy: 'Economía',
+      stream: 'Directo',
       shop: 'Tienda',
       gemPackages: 'Paquetes de Gemas',
       games: 'Juegos',
@@ -472,6 +476,7 @@ export const es = {
   gems: gemsEs,
   adminGemPackages: adminGemPackagesEs,
   adminEconomy: adminEconomyEs,
+  adminStream: adminStreamEs,
   dailyRewards: dailyRewardsEs,
   dailyChallenges: dailyChallengesEs,
   achievements: achievementsEs,
@@ -485,4 +490,5 @@ export const es = {
   changelog: changelogEs,
   features: featuresEs,
   roadmap: roadmapEs,
+  stream: streamEs,
 };

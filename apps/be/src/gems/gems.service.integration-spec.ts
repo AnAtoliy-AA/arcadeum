@@ -14,6 +14,15 @@ jest.mock('../solana/solana.service', () => ({ SolanaService: class {} }));
 jest.mock('../solana/lib/solana-pay.service', () => ({
   SolanaPayService: class {},
 }));
+jest.mock('../solana/lib/arc-payment.service', () => ({
+  ArcPaymentService: class {},
+}));
+jest.mock('../solana/lib/arc-signature-registry.service', () => ({
+  ArcSignatureRegistry: class {},
+}));
+jest.mock('../solana/lib/arc-health.service', () => ({
+  ArcHealthService: class {},
+}));
 jest.mock('../common/guards/geo-block.guard', () => ({
   GeoBlockService: class {},
   GeoBlockGuard: class {},

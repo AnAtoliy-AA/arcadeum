@@ -16,6 +16,9 @@ import {
   getBoardThemeCssVars,
 } from '../lib/board-theme';
 import type { UseChessCoachResult } from '../hooks/useChessCoach';
+import { useMoveHistoryView } from '../hooks/useMoveHistoryView';
+import { useHistoryHotkeys } from '../hooks/useHistoryHotkeys';
+import { HistoryViewBanner } from './HistoryViewBanner';
 import './styles/chess-arena.scss';
 import type { ChessClientState, BoardPosition, File, Rank } from '../types';
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
@@ -93,6 +96,8 @@ interface ChessBoardPanelProps {
   chatHighlightCells?: { row: number; col: number }[];
 }
 
+const NO_MOVES: BoardPosition[] = [];
+
 function ChessBoardPanelImpl({
   snapshot,
   myColor,
@@ -145,6 +150,8 @@ function ChessBoardPanelImpl({
   const { activeBoardTheme } = useBoardThemePreference();
   const isFullscreen = useWidgetFullscreen();
   const createdAt = snapshot?.gameCreatedAt ?? 0;
+  const history = useMoveHistoryView(snapshot);
+  useHistoryHotkeys(history.step, (snapshot?.moveHistory.length ?? 0) > 0);
 
   const { snapshot: sessionSnapshot } = useSessionTokens();
   const isAdmin = sessionSnapshot.role === 'admin';
@@ -160,8 +167,15 @@ function ChessBoardPanelImpl({
         to: snapshot.moveHistory[hoveredMoveIdx].to,
       };
     }
+    if (history.isViewingHistory) return history.viewedLastMove;
     return lastMove;
-  }, [hoveredMoveIdx, snapshot?.moveHistory, lastMove]);
+  }, [
+    hoveredMoveIdx,
+    snapshot?.moveHistory,
+    lastMove,
+    history.isViewingHistory,
+    history.viewedLastMove,
+  ]);
 
   const hintMove = useMemo(() => {
     if (coach.hint) return { from: coach.hint.from, to: coach.hint.to };
@@ -320,21 +334,34 @@ function ChessBoardPanelImpl({
                   )}
                 </div>
               )}
+              {history.isViewingHistory && (
+                <HistoryViewBanner
+                  viewIndex={history.viewIndex}
+                  sanAt={
+                    snapshot.moveHistory[history.viewIndex ?? -1]?.notation
+                  }
+                  onGoLive={history.goLive}
+                  t={t}
+                />
+              )}
               <ChessBoard
                 board={
-                  premoveQueue.length > 0 && virtualBoard
+                  history.viewedBoard ??
+                  (premoveQueue.length > 0 && virtualBoard
                     ? virtualBoard
-                    : snapshot.board
+                    : snapshot.board)
                 }
                 myColor={myColor}
                 isFlipped={isFlipped}
-                disabled={isGameOver || isSpectator}
-                selectedSquare={selectedSquare}
-                legalMoves={legalMoves}
+                disabled={isGameOver || isSpectator || history.isViewingHistory}
+                selectedSquare={
+                  history.isViewingHistory ? null : selectedSquare
+                }
+                legalMoves={history.isViewingHistory ? NO_MOVES : legalMoves}
                 lastMove={highlightMove}
                 hintMove={hintMove}
                 pendingMove={pendingMove}
-                isCheck={snapshot.isCheck}
+                isCheck={!history.isViewingHistory && snapshot.isCheck}
                 kingPosition={kingPosition}
                 pieceStyle={pieceStyle}
                 premoveQueue={premoveQueue}
@@ -391,6 +418,9 @@ function ChessBoardPanelImpl({
           confirmMoves={confirmMoves}
           t={t}
           onMoveHover={handleMoveHover}
+          historyIndex={history.viewIndex}
+          onSelectMove={history.select}
+          onHistoryStep={history.step}
           onOfferDraw={onOfferDraw}
           onResign={onResign}
           onAcceptDraw={onAcceptDraw}

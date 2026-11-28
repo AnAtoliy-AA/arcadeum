@@ -2,10 +2,12 @@ import { frBoard, frSettings } from './board-fr';
 import { frClock } from './clock-fr';
 import { frControls } from './controls-fr';
 import { frEndReasons } from './end-reasons-fr';
+import { frMoveList } from './move-list-fr';
 import { frPlay } from './play-fr';
 
 export const frMessages = {
   chess_v1: {
+    moveList: frMoveList,
     board: frBoard,
     settings: frSettings,
     clock: frClock,

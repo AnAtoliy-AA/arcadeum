@@ -83,8 +83,13 @@ export interface TimeControl {
 }
 
 export interface PlayerClock {
+  /** Whole seconds left (rounded up), kept for display compatibility. */
   remainingSeconds: number;
   lastMoveTimestamp: number;
+  /** Authoritative time left in milliseconds (server clock). */
+  remainingMs?: number;
+  /** Remaining lag-compensation allowance in milliseconds. */
+  lagQuotaMs?: number;
 }
 
 export interface LegalMove {

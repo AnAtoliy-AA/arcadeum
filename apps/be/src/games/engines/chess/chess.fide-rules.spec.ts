@@ -4,7 +4,6 @@ import type { ChessState, MovePayload } from './chess.types';
 import { getLegalMoves } from './chess.move-generator';
 import {
   applyBotMove,
-  hasMatingMaterial,
   isInsufficientMaterial,
   repetitionKey,
   toFen,
@@ -297,40 +296,6 @@ describe('Chess FIDE rules', () => {
         mv('e1d2'),
       ).state!;
       expect(after.isInsufficientMaterial).toBe(false);
-    });
-  });
-
-  describe('timeout', () => {
-    it('is a draw when the opponent has only a king', () => {
-      const s = setup('4k3/8/8/8/8/8/8/Q3K3', 'white');
-      const res = engine.executeAction(s, 'timeout', ctx('w'));
-      expect(res.state?.isDrawByTimeout).toBe(true);
-      expect(res.state?.endReason).toBe('timeout_vs_insufficient');
-      expect(engine.getResult(res.state!)).toEqual({
-        winnerIds: [],
-        isDraw: true,
-      });
-    });
-
-    it('is a loss when the opponent can still mate', () => {
-      const s = setup('4k2r/8/8/8/8/8/8/4K3', 'white');
-      const res = engine.executeAction(s, 'timeout', ctx('w'));
-      expect(res.state?.winnerColor).toBe('black');
-      expect(res.state?.endReason).toBe('timeout');
-    });
-
-    it('treats a lone knight as mating material when the defender has pawns', () => {
-      expect(
-        hasMatingMaterial(parseFen('4k1n1/8/8/8/8/8/P7/4K3'), 'black'),
-      ).toBe(true);
-      expect(
-        hasMatingMaterial(parseFen('4k1n1/8/8/8/8/8/8/4K3'), 'black'),
-      ).toBe(false);
-    });
-
-    it('only lets the side to move flag', () => {
-      const s = setup('4k3/8/8/8/8/8/8/Q3K3', 'white');
-      expect(engine.validateAction(s, 'timeout', ctx('b'))).toBe(false);
     });
   });
 

@@ -44,7 +44,12 @@ import {
   setEndReason,
   toLegalMoveList,
 } from './chess-engine-rules';
-import { applyMoveClock, restartTurnClock } from './chess-clock';
+import {
+  applyMoveClock,
+  isFlagged,
+  restartTurnClock,
+  zeroClock,
+} from './chess-clock';
 import { toFen } from './chess-fen';
 import { checkKingOfTheHillWin } from './chess-variants/king-of-the-hill';
 import {
@@ -222,8 +227,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       case ACTION.FORFEIT:
         return true;
       case ACTION.TIMEOUT:
-        // Issued by the server clock for the side whose flag fell.
-        return player.color === state.currentTurnColor;
+        // Issued by the server clock, only once the mover has run out of time.
+        return player.color === state.currentTurnColor && isFlagged(state);
       case ACTION.ABORT:
         return canAbort(state);
       case ACTION.DRAW_OFFER:
@@ -400,6 +405,8 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
       payload.promotion,
     );
     if (!move) return this.errorResult('Invalid move');
+    // Server-authoritative clock: no moves once the flag has fallen.
+    if (isFlagged(state)) return this.errorResult('Time expired');
 
     const newState = this.cloneState(state);
     if (!newState.castlingRookFiles) {
@@ -647,15 +654,7 @@ export class ChessEngine extends BaseGameEngine<ChessState> {
     if (!player) return this.errorResult('Player not found');
     const newState = this.finish(this.cloneState(state));
     const opponent = oppositeColor(player.color);
-    if (newState.clocks) {
-      newState.clocks = {
-        ...newState.clocks,
-        [player.color]: {
-          ...newState.clocks[player.color],
-          remainingSeconds: 0,
-        },
-      };
-    }
+    zeroClock(newState, player.color);
     const opponentCanMate =
       !insufficientMaterialApplies(newState) ||
       hasMatingMaterial(newState.board, opponent);

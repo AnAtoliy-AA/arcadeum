@@ -211,35 +211,13 @@ jobs:
 
             pnpm install --frozen-lockfile
 
-            # Load staging env so NEXT_PUBLIC_* are baked into the build
-            set -a; source "$WEB_ENV"; set +a
-            pnpm --filter @arcadeum/games-core build
-            (cd apps/web && pnpm build)
-
-            # Copy static assets + public into standalone output
-            STANDALONE="apps/web/.next/standalone/apps/web"
-            cp -r apps/web/.next/static "$STANDALONE/.next/static"
-            cp -r apps/web/public "$STANDALONE/public" 2>/dev/null || true
-
-            mkdir -p "${DEPLOY_DIR}/scripts"
-            printf '#!/usr/bin/env bash\nset -a\nsource /opt/arcadeum-dev/apps/web/.env.dev\nset +a\nexport PORT=%s HOSTNAME=0.0.0.0\ncd /opt/arcadeum-dev/apps/web/.next/standalone/apps/web\nexec node server.js\n' "$WEB_PORT" > "${DEPLOY_DIR}/scripts/start-web-dev.sh"
-            chmod +x "${DEPLOY_DIR}/scripts/start-web-dev.sh"
-
-            pm2 restart arcadeum-web-dev --update-env || pm2 start "${DEPLOY_DIR}/scripts/start-web-dev.sh" --name arcadeum-web-dev
-            pm2 save
-
-            # Health check: fail the deploy if the web app does not come up
-            ok=0
-            for i in $(seq 1 30); do
-              code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:${WEB_PORT}/" || true)
-              if [ "$code" -ge 200 ] && [ "$code" -lt 400 ]; then ok=1; break; fi
-              sleep 2
-            done
-            if [ "$ok" != "1" ]; then
-              echo "ERROR: web health check failed (last HTTP $code)"
-              pm2 logs arcadeum-web-dev --lines 40 --nostream || true
-              exit 1
-            fi
+            # Same release flow as prod (scripts/deploy-web-release.sh): build in the
+            # checkout, copy to /opt/arcadeum-dev-releases/web/releases/<id>, switch
+            # the `current` symlink, restart pm2, health-check, roll back on failure.
+            # WEB_ENV_FILE is sourced before the build (NEXT_PUBLIC_*) and at runtime.
+            DEPLOY_DIR="$DEPLOY_DIR" PM2_NAME=arcadeum-web-dev WEB_PORT="$WEB_PORT" \
+              WEB_ENV_FILE="$WEB_ENV" \
+              bash "$DEPLOY_DIR/scripts/deploy-web-release.sh"
 
             echo "==> Dev web deploy done (branch: $BRANCH, port: $WEB_PORT)!"
             pm2 list arcadeum-web-dev

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.8] - 2026-11-28
+
+### Fixed
+- server-authoritative clocks with flag timers and ms precision
+
+
 ## [1.32.7] - 2026-11-28
 
 ### Fixed

@@ -26,6 +26,7 @@ import type {
   MovePayload,
 } from '../engines/chess/chess.types';
 import { broadcastLiveAnalysis } from './chess-live-analysis';
+import { ChessClockWatcher } from './chess-clock-watcher';
 import { ChessBotService } from '../engines/chess/chess-bot.service';
 import { ChessStockfishService } from './engine/chess-stockfish.service';
 import { ChessTournamentService } from './tournaments/chess-tournament.service';
@@ -55,6 +56,8 @@ export class ChessService extends BaseGameService<ChessOptions> {
   /** Stockfish 19 engine — always available after module init. */
   readonly stockfishService: ChessStockfishService;
 
+  private readonly clockWatcher: ChessClockWatcher;
+
   /** Chess tournament service — injected optionally. */
   private readonly tournamentService: ChessTournamentService | null;
 
@@ -75,12 +78,22 @@ export class ChessService extends BaseGameService<ChessOptions> {
       realtimeService,
       botService,
       mongoConnection,
-      (session) => this.checkClockTimeout(session),
+      (session) => this.clockWatcher.check(session).then(() => undefined),
       redis,
     );
     this.botService = botService;
     this.stockfishService = stockfishService;
+    this.clockWatcher = new ChessClockWatcher(
+      (roomId) => this.sessionsService.findSessionByRoom(roomId),
+      (userId, roomId, action) => this.runAction(userId, roomId, action, {}),
+      this.logger,
+    );
     this.tournamentService = tournamentService;
+  }
+
+  override onModuleDestroy() {
+    super.onModuleDestroy();
+    this.clockWatcher.stopAll();
   }
 
   override onModuleInit() {
@@ -110,11 +123,19 @@ export class ChessService extends BaseGameService<ChessOptions> {
 
   override async findSessionByRoom(roomId: string) {
     const result = await super.findSessionByRoom(roomId);
-    if (result) this.backfillLegalMoves(result);
+    if (result) {
+      this.backfillLegalMoves(result);
+      // Flag on reconnect / state request if the clock ran out meanwhile.
+      void this.clockWatcher.check(result);
+    }
     return result;
   }
 
   async move(userId: string, roomId: string, payload: MovePayload) {
+    const session = await this.sessionsService.findSessionByRoom(roomId);
+    if (session && (await this.clockWatcher.check(session))) {
+      throw new Error('Time expired');
+    }
     return this.runAction(userId, roomId, 'move', payload);
   }
   async drawOffer(userId: string, roomId: string) {
@@ -259,6 +280,7 @@ export class ChessService extends BaseGameService<ChessOptions> {
       `[Chess] emitSessionUpdate room=${session.roomId} moveCount=${moveCount}`,
     );
     await super.emitSessionUpdate(session);
+    this.clockWatcher.schedule(session);
 
     // Broadcast Stockfish analysis after each move (fire-and-forget)
     const state = session.state as ChessState | undefined;
@@ -271,85 +293,6 @@ export class ChessService extends BaseGameService<ChessOptions> {
         this.logger,
       );
     }
-  }
-
-  private isTimeExpired(
-    elapsedMs: number,
-    remaining: number,
-    isDaily: boolean,
-    daysPerMove: number,
-  ): boolean {
-    return isDaily
-      ? elapsedMs / 86_400_000 >= daysPerMove
-      : Math.floor(elapsedMs / 1000) >= remaining;
-  }
-
-  private async checkClockTimeout(session: GameSessionSummary) {
-    const state = session.state as ChessState | undefined;
-    if (!state || !state.clocks || this.isGameOver(state)) return;
-
-    const isDaily = state.timeControl?.type === 'daily';
-    const daysPerMove = state.timeControl?.daysPerMove ?? 1;
-    const currentClock = state.clocks[state.currentTurnColor];
-    if (!currentClock) return;
-
-    const isFirstMove =
-      state.clocks.white.lastMoveTimestamp === 0 &&
-      state.clocks.black.lastMoveTimestamp === 0;
-
-    if (isFirstMove) {
-      const gca =
-        state.gameCreatedAt > 0
-          ? state.gameCreatedAt
-          : new Date(session.createdAt).getTime();
-      const elapsed = Date.now() - gca - 20_000;
-      if (
-        elapsed < 0 ||
-        !this.isTimeExpired(
-          elapsed,
-          currentClock.remainingSeconds,
-          isDaily,
-          daysPerMove,
-        )
-      )
-        return;
-      // Nobody moved: abort instead of awarding a win (no rating change).
-      const p = state.players.find((p) => p.color === state.currentTurnColor);
-      if (p) await this.runAction(p.playerId, session.roomId, 'abort', {});
-      return;
-    }
-
-    const opponentClock =
-      state.clocks[state.currentTurnColor === 'white' ? 'black' : 'white'];
-    const turnStartedAt =
-      opponentClock?.lastMoveTimestamp > 0
-        ? opponentClock.lastMoveTimestamp
-        : state.gameCreatedAt > 0
-          ? state.gameCreatedAt
-          : new Date(session.createdAt).getTime();
-    if (
-      !this.isTimeExpired(
-        Date.now() - turnStartedAt,
-        currentClock.remainingSeconds,
-        isDaily,
-        daysPerMove,
-      )
-    )
-      return;
-
-    const loser = state.players.find((p) => p.color === state.currentTurnColor);
-    if (!loser) return;
-    // A side that never made its first move aborts the game; otherwise the
-    // flag fall is judged by the engine (loss, or draw vs. no mating material).
-    const neverMoved = !state.moveHistory.some(
-      (m) => m.piece.color === loser.color,
-    );
-    await this.runAction(
-      loser.playerId,
-      session.roomId,
-      neverMoved ? 'abort' : 'timeout',
-      {},
-    );
   }
 
   private isGameOver(state: ChessState): boolean {

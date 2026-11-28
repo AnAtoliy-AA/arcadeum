@@ -85,4 +85,15 @@ describe('getChessA11yAnnouncement', () => {
     );
     expect(msg).toBe('games.chess_v1.status.draw');
   });
+
+  it('announces a draw by insufficient material instead of a winner', () => {
+    const msg = getChessA11yAnnouncement(
+      { ...baseSnapshot, isInsufficientMaterial: true },
+      true,
+      'p1',
+      (id) => id,
+      t,
+    );
+    expect(msg).toBe('games.chess_v1.status.draw');
+  });
 });

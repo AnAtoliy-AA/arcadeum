@@ -7,6 +7,7 @@ import type { GameResultStats } from '@/features/games/ui/GameResultStatsGrid';
 import type { GameTheme } from '@/features/games/lib/shared-themes';
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessClientState } from '../types';
+import { getChessEndReason } from '../lib/end-reason';
 import type { SharedResult } from '@/features/games/hooks/useGameResultModal';
 
 interface ChessGameResultModalProps {
@@ -46,6 +47,17 @@ export function ChessGameResultModal({
         }
       : undefined);
 
+  // The generic won/lost copy always says "Checkmate"; replace it with the
+  // actual reason (resignation, timeout, repetition...) when we know it.
+  const endReason = getChessEndReason(snapshot, true);
+  const resolvedMessages =
+    messages && endReason
+      ? {
+          title: messages.title,
+          message: t(`games.chess_v1.endReason.${endReason}` as TranslationKey),
+        }
+      : messages;
+
   const rawName = t('games.names.chess' as TranslationKey);
   const resolvedGameName =
     rawName && rawName !== 'games.names.chess' ? rawName : 'Chess';
@@ -76,7 +88,7 @@ export function ChessGameResultModal({
       onRematch={onRematch}
       rematchLoading={rematchLoading}
       t={t}
-      messages={messages}
+      messages={resolvedMessages}
       theme={theme}
       stats={computedStats}
       analysis={

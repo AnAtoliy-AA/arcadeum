@@ -1,7 +1,9 @@
+import { esEndReasons } from './end-reasons-es';
 import { esPlay } from './play-es';
 
 export const esMessages = {
   chess_v1: {
+    endReason: esEndReasons,
     play: esPlay,
     name: 'Ajedrez',
     description:

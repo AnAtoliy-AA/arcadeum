@@ -1,7 +1,9 @@
+import { byEndReasons } from './end-reasons-by';
 import { byPlay } from './play-by';
 
 export const byMessages = {
   chess_v1: {
+    endReason: byEndReasons,
     play: byPlay,
     name: 'Шахматы',
     description:

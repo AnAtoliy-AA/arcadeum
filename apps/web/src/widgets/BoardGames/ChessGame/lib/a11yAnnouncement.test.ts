@@ -69,7 +69,9 @@ describe('getChessA11yAnnouncement', () => {
       (id) => (id === 'p1' ? 'Alice' : id),
       t,
     );
-    expect(msg).toBe('games.chess_v1.status.winner');
+    expect(msg).toBe(
+      'games.chess_v1.status.winner. games.chess_v1.endReason.resignation',
+    );
     expect(t).toHaveBeenCalledWith('games.chess_v1.status.winner', {
       player: 'Alice',
     });
@@ -83,7 +85,9 @@ describe('getChessA11yAnnouncement', () => {
       (id) => id,
       t,
     );
-    expect(msg).toBe('games.chess_v1.status.draw');
+    expect(msg).toBe(
+      'games.chess_v1.status.draw. games.chess_v1.endReason.stalemate',
+    );
   });
 
   it('announces a draw by insufficient material instead of a winner', () => {
@@ -94,6 +98,21 @@ describe('getChessA11yAnnouncement', () => {
       (id) => id,
       t,
     );
-    expect(msg).toBe('games.chess_v1.status.draw');
+    expect(msg).toBe(
+      'games.chess_v1.status.draw. games.chess_v1.endReason.insufficient_material',
+    );
+  });
+
+  it('announces a checkmate win with its reason', () => {
+    const msg = getChessA11yAnnouncement(
+      { ...baseSnapshot, winnerColor: 'black', isCheckmate: true },
+      true,
+      'p1',
+      (id) => id,
+      t,
+    );
+    expect(msg).toBe(
+      'games.chess_v1.status.winner. games.chess_v1.endReason.checkmate',
+    );
   });
 });

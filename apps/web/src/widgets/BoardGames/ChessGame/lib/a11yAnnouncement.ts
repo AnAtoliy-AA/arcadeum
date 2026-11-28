@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessClientState } from '../types';
-import { isChessDraw } from './game-status';
+import { getChessEndReason } from './end-reason';
 
 type TranslateFn = (
   key: TranslationKey,
@@ -25,10 +25,16 @@ export function getChessA11yAnnouncement(
     const winner = snapshot.players.find(
       (p) => p.color === snapshot.winnerColor,
     );
-    if (isChessDraw(snapshot)) return t('games.chess_v1.status.draw');
-    return t('games.chess_v1.status.winner', {
-      player: winner?.playerId ? resolveName(winner.playerId) : '',
-    });
+    const headline = winner
+      ? t('games.chess_v1.status.winner', {
+          player: winner.playerId ? resolveName(winner.playerId) : '',
+        })
+      : t('games.chess_v1.status.draw');
+    const reason = getChessEndReason(snapshot, true);
+    if (!reason) return headline;
+    // An aborted game has no winner and is not a draw.
+    if (reason === 'aborted') return t('games.chess_v1.endReason.aborted');
+    return `${headline}. ${t(`games.chess_v1.endReason.${reason}` as TranslationKey)}`;
   }
 
   if (snapshot.isCheck) return t('games.chess_v1.status.check');

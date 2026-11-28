@@ -1,8 +1,10 @@
+import { ruControls } from './controls-ru';
 import { ruEndReasons } from './end-reasons-ru';
 import { ruPlay } from './play-ru';
 
 export const ruMessages = {
   chess_v1: {
+    controls: ruControls,
     endReason: ruEndReasons,
     play: ruPlay,
     name: 'Шахматы',

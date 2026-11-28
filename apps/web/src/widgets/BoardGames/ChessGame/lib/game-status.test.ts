@@ -21,6 +21,7 @@ describe('isChessDraw', () => {
     'isDrawByFiftyMoveRule',
     'isInsufficientMaterial',
     'isDrawByAgreement',
+    'isDrawByTimeout',
   ] as const)('is true when %s is set', (flag) => {
     expect(isChessDraw({ ...noDraw, [flag]: true })).toBe(true);
   });

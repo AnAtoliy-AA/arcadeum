@@ -1,8 +1,10 @@
+import { byControls } from './controls-by';
 import { byEndReasons } from './end-reasons-by';
 import { byPlay } from './play-by';
 
 export const byMessages = {
   chess_v1: {
+    controls: byControls,
     endReason: byEndReasons,
     play: byPlay,
     name: 'Шахматы',

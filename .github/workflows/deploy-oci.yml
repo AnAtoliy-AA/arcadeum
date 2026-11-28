@@ -185,19 +185,15 @@ jobs:
             echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
             npx playwright install chromium
 
-            cd apps/web
-            pnpm build
-
-            # Copy static assets + public into standalone output
-            STANDALONE=".next/standalone/apps/web"
-            cp -r .next/static "$STANDALONE/.next/static"
-            cp -r public "$STANDALONE/public" 2>/dev/null || true
-
-            cd "$DEPLOY_DIR"
-            pm2 restart arcadeum-web
+            # Build in the checkout, then copy into an immutable release under
+            # /opt/arcadeum-releases/web and switch pm2 to it atomically. The live
+            # server never runs from apps/web/.next, so `next build` cannot race
+            # with its ISR/route-cache writes, and a failed build leaves the
+            # current release serving. Health-checked with automatic rollback.
+            DEPLOY_DIR="$DEPLOY_DIR" PM2_NAME=arcadeum-web WEB_PORT=3000 \
+              bash "$DEPLOY_DIR/scripts/deploy-web-release.sh"
 
             echo "==> Web deploy done (branch: $BRANCH)!"
-            pm2 list arcadeum-web
 
   deploy-be-reserve:
     name: Deploy Reserve Backend (Worker)

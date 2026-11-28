@@ -23,7 +23,7 @@ test.describe('Shared Checkerboard Field Experience', () => {
     const chessBoard = page.getByRole('grid', { name: 'Chess puzzle board' });
     await expect(chessBoard).toBeVisible();
 
-    const playerPieces = page.locator('[role="gridcell"][draggable="true"]');
+    const playerPieces = page.locator('[role="gridcell"][data-movable="true"]');
     const firstPiece = playerPieces.first();
     await expect(firstPiece).toBeVisible();
     await firstPiece.click();
@@ -47,7 +47,7 @@ test.describe('Shared Checkerboard Field Experience', () => {
     const flipBtn = page.getByTestId('flip-board-btn');
     await expect(flipBtn).toBeVisible();
 
-    const playerPieces = page.locator('[role="gridcell"][draggable="true"]');
+    const playerPieces = page.locator('[role="gridcell"][data-movable="true"]');
     const firstPiece = playerPieces.first();
     await expect(firstPiece).toBeVisible();
 

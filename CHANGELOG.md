@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.7] - 2026-11-28
+
+### Fixed
+- build web into immutable releases instead of the live tree
+
+
 ## [1.32.6] - 2026-11-28
 
 ### Added

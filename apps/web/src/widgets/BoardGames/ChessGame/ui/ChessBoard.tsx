@@ -21,6 +21,8 @@ import { useBoardKeyboardNavigation } from '@/shared/lib/a11y';
 import { BoardOverlay } from './BoardOverlay';
 import { useBoardDrawings } from '../hooks/useBoardDrawings';
 import { MemoizedChessCell } from './ChessCell';
+import { ChessPieceIcon } from './ChessPieceIcon';
+import { usePointerPieceDrag } from '../hooks/usePointerPieceDrag';
 import { useChessTheme } from '../lib/ChessThemeContext';
 import { boardVars } from '../lib/theme-adapter';
 import {
@@ -148,6 +150,46 @@ function ChessBoardImpl({
   const { arrows, circles, addArrow, toggleCircle, clearDrawings } =
     useBoardDrawings();
 
+  const gridRef = useRef<HTMLDivElement>(null);
+  const pieceAt = useCallback(
+    (sq: BoardPosition) => board[8 - sq.rank]?.[FILES.indexOf(sq.file)] ?? null,
+    [board],
+  );
+  const canDrag = useCallback(
+    (sq: BoardPosition) => {
+      const piece = pieceAt(sq);
+      return !!piece && piece.color === myColor;
+    },
+    [pieceAt, myColor],
+  );
+  const handleDragStart = useCallback(
+    (from: BoardPosition) => {
+      // Select the piece so its legal-move dots show while dragging.
+      if (
+        selectedSquare?.file !== from.file ||
+        selectedSquare?.rank !== from.rank
+      )
+        onSquareClick(from.file, from.rank);
+    },
+    [selectedSquare, onSquareClick],
+  );
+  const handleDrop = useCallback(
+    (from: BoardPosition, to: BoardPosition) => {
+      if (onPieceDrop) onPieceDrop(from.file, from.rank, to.file, to.rank);
+      else onSquareClick(to.file, to.rank);
+    },
+    [onPieceDrop, onSquareClick],
+  );
+  const { drag, handlers: dragHandlers } = usePointerPieceDrag({
+    gridRef,
+    isFlipped,
+    enabled: !disabled,
+    canDrag,
+    onDragStart: handleDragStart,
+    onDrop: handleDrop,
+  });
+  const dragPiece = drag ? pieceAt(drag.from) : null;
+
   const handleCellClick = useCallback(
     (row: number, col: number) => {
       const rank = (8 - row) as Rank;
@@ -253,7 +295,11 @@ function ChessBoardImpl({
         onClear={clearDrawings}
         onCancelPremoves={onCancelPremoves}
       >
-        <div className="relative z-10 w-full h-full aspect-square rounded-xl overflow-hidden shadow-inner border border-white/10 flex flex-col">
+        <div
+          ref={gridRef}
+          className="relative z-10 w-full h-full aspect-square rounded-xl overflow-hidden shadow-inner border border-white/10 flex flex-col"
+          {...dragHandlers}
+        >
           {rows.ranks.map((rank) => (
             <div key={rank} role="row" className="flex flex-1">
               {rows.files.map((file) => {
@@ -275,7 +321,11 @@ function ChessBoardImpl({
                 );
                 const canInteract =
                   !disabled && (isMyPiece || legalTarget || isPremoveGhost);
-                const isDragOver = dragOverSquare === `${file}-${rank}`;
+                const isDragOver =
+                  dragOverSquare === `${file}-${rank}` ||
+                  (drag?.over?.file === file && drag?.over?.rank === rank);
+                const isDragSource =
+                  drag?.from.file === file && drag?.from.rank === rank;
                 const isLastFile = rows.files[rows.files.length - 1] === file;
                 const navRow = rows.ranks.indexOf(rank);
                 const navCol = rows.files.indexOf(file);
@@ -295,6 +345,7 @@ function ChessBoardImpl({
                     kingCheck={kingCheck}
                     hovered={hovered}
                     isDragOver={isDragOver}
+                    isDragSource={isDragSource}
                     isMyPiece={isMyPiece}
                     isPremoveGhost={isPremoveGhost}
                     canInteract={canInteract}
@@ -313,6 +364,16 @@ function ChessBoardImpl({
               })}
             </div>
           ))}
+          {drag && dragPiece && (
+            <div
+              aria-hidden="true"
+              data-testid="chess-drag-ghost"
+              className="pointer-events-none absolute z-40 w-[14%] h-[14%] -translate-x-1/2 -translate-y-1/2 drop-shadow-xl"
+              style={{ left: drag.x, top: drag.y }}
+            >
+              <ChessPieceIcon piece={dragPiece} pieceStyle={pieceStyle} />
+            </div>
+          )}
         </div>
       </BoardOverlay>
     </div>

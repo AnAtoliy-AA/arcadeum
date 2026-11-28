@@ -301,6 +301,7 @@ function ChessGameImpl({
   const handlePieceDrop = useCallback(
     (fromFile: File, fromRank: Rank, toFile: File, toRank: Rank) => {
       if (isGameOver || !myColor || !displaySnapshot) return;
+      setSelectedSquare(null);
       if (!displayMyTurn) {
         handlePremovePieceDrop(fromFile, fromRank, toFile, toRank);
         return;

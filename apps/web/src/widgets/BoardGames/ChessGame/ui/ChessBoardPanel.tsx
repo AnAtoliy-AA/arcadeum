@@ -53,6 +53,8 @@ interface ChessBoardPanelProps {
   onOfferDraw: () => void;
   onResign: () => void;
   onAcceptDraw: () => void;
+  onDeclineDraw?: () => void;
+  onAbort?: () => void;
   onOfferTakeback: () => void;
   onAcceptTakeback: () => void;
   onDeclineTakeback: () => void;
@@ -116,6 +118,8 @@ function ChessBoardPanelImpl({
   onOfferDraw,
   onResign,
   onAcceptDraw,
+  onDeclineDraw,
+  onAbort,
   onOfferTakeback,
   onAcceptTakeback,
   onDeclineTakeback,
@@ -396,6 +400,8 @@ function ChessBoardPanelImpl({
           onOfferDraw={onOfferDraw}
           onResign={onResign}
           onAcceptDraw={onAcceptDraw}
+          onDeclineDraw={onDeclineDraw}
+          onAbort={onAbort}
           onOfferTakeback={onOfferTakeback}
           onAcceptTakeback={onAcceptTakeback}
           onDeclineTakeback={onDeclineTakeback}

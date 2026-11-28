@@ -10,6 +10,10 @@ echo "==> Syncing Playwright browsers (shorts-factory runs on this host)..."
 npx playwright install chromium
 
 pnpm --filter be build
-pnpm --filter web build
-pm2 restart arcadeum-be arcadeum-web
+pm2 restart arcadeum-be
+
+# Web: build + immutable release + atomic switch + health check (never build
+# into the directory the live server runs from). See docs/deploy/web-releases.md.
+DEPLOY_DIR=/opt/arcadeum PM2_NAME=arcadeum-web WEB_PORT=3000 \
+  bash /opt/arcadeum/scripts/deploy-web-release.sh
 echo "==> Prod deployed from origin/main: $(git log -1 --oneline)"

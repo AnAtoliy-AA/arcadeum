@@ -10,6 +10,7 @@ import {
 } from '../types';
 import type { ChessClientState } from '../types';
 import type { SoundType } from '../lib/sounds';
+import { isPromotionMove } from '../lib/promotion';
 
 interface UseSquareClickArgs {
   displaySnapshot: ChessClientState | null;
@@ -31,7 +32,8 @@ interface UseSquareClickArgs {
     toRank: Rank,
     promotion?: PieceType,
   ) => void;
-  playSound: (type: SoundType) => void;
+  /** @deprecated sounds come from useChessGameSounds; kept for callers. */
+  playSound?: (type: SoundType) => void;
   confirmMoves: boolean;
   pendingMove: { from: BoardPosition; to: BoardPosition } | null;
   setPendingMove: (
@@ -51,33 +53,22 @@ export function useSquareClick({
   isGameOver,
   movePiece,
   applyOptimisticMove,
-  playSound,
   confirmMoves,
   pendingMove,
   setPendingMove,
   setSelectedSquare,
   setPendingPromotion,
 }: UseSquareClickArgs) {
+  // Move sounds are played by useChessGameSounds when the move lands in the
+  // (optimistic) history, which also knows about check and castling.
   const executeMove = useCallback(
     (from: BoardPosition, to: BoardPosition) => {
       if (!displaySnapshot || !myColor) return;
-      const piece =
-        displaySnapshot.board[8 - to.rank]?.[FILES.indexOf(to.file)];
-      const isPromotion =
-        piece === null &&
-        from.rank === (myColor === 'white' ? 7 : 2) &&
-        displaySnapshot.board[8 - from.rank]?.[FILES.indexOf(from.file)]
-          ?.type === 'pawn';
-      if (isPromotion) {
+      if (isPromotionMove(displaySnapshot, from, to)) {
         setPendingPromotion({ from, to });
       } else {
         applyOptimisticMove(from.file, from.rank, to.file, to.rank);
         movePiece(from.file, from.rank, to.file, to.rank);
-        playSound(
-          displaySnapshot.board[8 - to.rank]?.[FILES.indexOf(to.file)]
-            ? 'capture'
-            : 'move',
-        );
       }
     },
     [
@@ -85,7 +76,6 @@ export function useSquareClick({
       myColor,
       movePiece,
       applyOptimisticMove,
-      playSound,
       setPendingPromotion,
     ],
   );
@@ -94,6 +84,16 @@ export function useSquareClick({
     (file: File, rank: Rank) => {
       if (!displaySnapshot || !myColor || isGameOver) return;
       const piece = displaySnapshot.board[8 - rank]?.[FILES.indexOf(file)];
+      if (
+        selectedSquare &&
+        selectedSquare.file === file &&
+        selectedSquare.rank === rank
+      ) {
+        // Tapping the selected piece again deselects it.
+        setSelectedSquare(null);
+        setPendingMove(null);
+        return;
+      }
       if (selectedSquare) {
         const isLegal = legalMoves.some(
           (m) => m.file === file && m.rank === rank,
@@ -135,6 +135,16 @@ export function useSquareClick({
       if (piece?.color === myColor) setSelectedSquare({ file, rank });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [displaySnapshot, myColor, selectedSquare, legalMoves, isGameOver, confirmMoves, pendingMove, executeMove, setPendingMove],
+    [
+      displaySnapshot,
+      myColor,
+      selectedSquare,
+      legalMoves,
+      isGameOver,
+      confirmMoves,
+      pendingMove,
+      executeMove,
+      setPendingMove,
+    ],
   );
 }

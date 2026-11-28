@@ -1,7 +1,6 @@
 'use client';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { GameWidgetContainer } from '@/features/games/ui/GameWidgetContainer';
-import { UndoButton } from '@/features/games/ui/UndoButton';
 import {
   useGameChatIntegration,
   useGameChatSend,
@@ -85,6 +84,8 @@ function ChessGameImpl({
     offerTakeback,
     acceptTakeback,
     declineTakeback,
+    declineDraw,
+    abort,
   } = useChessActions({ roomId, userId: currentUserId });
   const [selectedSquare, setSelectedSquare] = useState<BoardPosition | null>(
     null,
@@ -303,6 +304,7 @@ function ChessGameImpl({
   const handlePieceDrop = useCallback(
     (fromFile: File, fromRank: Rank, toFile: File, toRank: Rank) => {
       if (isGameOver || !myColor || !displaySnapshot) return;
+      setSelectedSquare(null);
       if (!displayMyTurn) {
         handlePremovePieceDrop(fromFile, fromRank, toFile, toRank);
         return;
@@ -403,6 +405,8 @@ function ChessGameImpl({
       onOfferDraw={offerDraw}
       onResign={resign}
       onAcceptDraw={acceptDraw}
+      onDeclineDraw={declineDraw}
+      onAbort={abort}
       onOfferTakeback={offerTakeback}
       onAcceptTakeback={acceptTakeback}
       onDeclineTakeback={declineTakeback}
@@ -474,7 +478,6 @@ function ChessGameImpl({
           title: t('games.chess_v1.name'),
           subtitle: room?.name,
           onToggleResult: toggleResult,
-          extraActions: <UndoButton disabled={isGameOver} />,
           turn: {
             onClockUserId:
               displaySnapshot?.players.find(

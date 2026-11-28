@@ -1,3 +1,4 @@
+import { enControls } from './controls-en';
 import { enEndReasons } from './end-reasons-en';
 import { enMoveList } from './move-list-en';
 import { enPlay } from './play-en';
@@ -5,6 +6,7 @@ import { enPlay } from './play-en';
 export const enMessages = {
   chess_v1: {
     moveList: enMoveList,
+    controls: enControls,
     endReason: enEndReasons,
     play: enPlay,
     name: 'Chess',

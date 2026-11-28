@@ -1,3 +1,4 @@
+import { esControls } from './controls-es';
 import { esEndReasons } from './end-reasons-es';
 import { esMoveList } from './move-list-es';
 import { esPlay } from './play-es';
@@ -5,6 +6,7 @@ import { esPlay } from './play-es';
 export const esMessages = {
   chess_v1: {
     moveList: esMoveList,
+    controls: esControls,
     endReason: esEndReasons,
     play: esPlay,
     name: 'Ajedrez',

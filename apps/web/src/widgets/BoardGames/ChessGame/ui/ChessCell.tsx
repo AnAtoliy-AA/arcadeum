@@ -19,6 +19,8 @@ export interface ChessCellProps {
   kingCheck: boolean;
   hovered: boolean;
   isDragOver: boolean;
+  /** The piece on this square is currently being dragged elsewhere. */
+  isDragSource?: boolean;
   isMyPiece: boolean;
   isPremoveGhost?: boolean;
   canInteract: boolean;
@@ -67,6 +69,7 @@ function ChessCell({
   kingCheck,
   hovered,
   isDragOver,
+  isDragSource = false,
   isMyPiece,
   isPremoveGhost = false,
   canInteract,
@@ -75,9 +78,9 @@ function ChessCell({
   disabled,
   cellFocusProps,
   onSquareClick,
-  onPieceDrop,
+  onPieceDrop: _onPieceDrop,
   onHover,
-  onDragOver,
+  onDragOver: _onDragOver,
   animating: _animating,
 }: ChessCellProps) {
   const square = `${file}-${rank}`;
@@ -90,7 +93,7 @@ function ChessCell({
       'bg-[var(--chess-selected-square)] ring-2 ring-amber-400/80 inset-ring';
   } else if (kingCheck) {
     bgClass =
-      'bg-[var(--chess-check-square)] ring-2 ring-red-500 animate-pulse';
+      'bg-[var(--chess-check-square)] ring-2 ring-red-500 motion-safe:animate-pulse';
   } else if (isPremoveGhost) {
     bgClass = 'bg-amber-500/25 ring-2 ring-amber-400/70 inset-ring';
   } else if (pendingTarget) {
@@ -108,37 +111,19 @@ function ChessCell({
     <div
       role="gridcell"
       data-testid={`chess-${file}${rank}`}
-      className={`flex-1 aspect-square relative flex items-center justify-center overflow-hidden select-none touch-manipulation transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)] ${bgClass} ${
+      data-movable={isMyPiece && !disabled ? 'true' : undefined}
+      className={`flex-1 aspect-square relative flex items-center justify-center overflow-hidden select-none ${
+        isMyPiece && !disabled ? 'touch-none' : 'touch-manipulation'
+      } motion-safe:transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)] ${bgClass} ${
         canInteract ? 'cursor-pointer' : 'cursor-default'
       } ${legalTarget && (hovered || isDragOver) ? 'brightness-125' : ''}`}
       aria-label={`${file}${rank}${piece ? ` ${piece.color} ${piece.type}` : ''}${selected ? ' selected' : ''}${legalTarget ? ' legal move' : ''}${hintMoved ? ' suggested' : ''}`}
       {...cellFocusProps}
-      draggable={isMyPiece && !disabled}
       onClick={() => {
         if (!disabled) onSquareClick(file, rank);
       }}
       onMouseEnter={() => onHover(square)}
       onMouseLeave={() => onHover(null)}
-      onDragStart={(e) => {
-        e.dataTransfer.setData('text/plain', square);
-        e.dataTransfer.effectAllowed = 'move';
-      }}
-      onDragOver={(e) => {
-        e.preventDefault();
-        onDragOver(square);
-      }}
-      onDragLeave={() => onDragOver(null)}
-      onDrop={(e) => {
-        e.preventDefault();
-        onDragOver(null);
-        const data = e.dataTransfer.getData('text/plain');
-        if (data) {
-          const [f, r] = data.split('-');
-          if (f && r && onPieceDrop) {
-            onPieceDrop(f as File, parseInt(r, 10) as Rank, file, rank);
-          }
-        }
-      }}
     >
       {isLastFile && (
         <span className="pointer-events-none absolute top-0.5 right-0.5 text-[9px] sm:text-[11px] font-bold font-mono text-[var(--chess-coord)] opacity-70 leading-none">
@@ -162,7 +147,9 @@ function ChessCell({
 
       {piece && (
         <div
-          className={`pointer-events-none relative z-10 w-[82%] h-[82%] flex items-center justify-center transition-transform hover:scale-105 active:scale-95 ${
+          className={`pointer-events-none relative z-10 w-[82%] h-[82%] flex items-center justify-center motion-safe:transition-transform ${
+            isDragSource ? 'opacity-30' : ''
+          } ${
             isPremoveGhost
               ? 'opacity-70 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]'
               : 'drop-shadow-md'
@@ -190,6 +177,7 @@ function areChessCellPropsEqual(
   if (prev.kingCheck !== next.kingCheck) return false;
   if (prev.hovered !== next.hovered) return false;
   if (prev.isDragOver !== next.isDragOver) return false;
+  if (prev.isDragSource !== next.isDragSource) return false;
   if (prev.isMyPiece !== next.isMyPiece) return false;
   if (prev.isPremoveGhost !== next.isPremoveGhost) return false;
   if (prev.canInteract !== next.canInteract) return false;

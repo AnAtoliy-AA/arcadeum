@@ -25,9 +25,13 @@ function makeService(stockfishReady = false) {
     }),
   };
   const bot = { setMoveFn: jest.fn(), checkAndPlay: jest.fn() };
+  const sessions = {
+    sanitizeSummaryForPlayer: jest.fn(),
+    findSessionByRoom: jest.fn().mockResolvedValue(null),
+  };
   const service = new ChessService(
     {} as never,
-    { sanitizeSummaryForPlayer: jest.fn() } as never,
+    sessions as never,
     realtime as never,
     bot as never,
     stockfish as never,
@@ -41,7 +45,7 @@ function makeService(stockfishReady = false) {
       'runAction',
     )
     .mockResolvedValue({});
-  return { service, realtime, stockfish, runAction };
+  return { service, realtime, stockfish, runAction, sessions };
 }
 
 const engine = new ChessEngine();
@@ -70,9 +74,9 @@ const session = (state: ChessState): GameSessionSummary =>
 const check = (service: ChessService, s: GameSessionSummary) =>
   (
     service as unknown as {
-      checkClockTimeout: (x: GameSessionSummary) => Promise<void>;
+      clockWatcher: { check: (x: GameSessionSummary) => Promise<boolean> };
     }
-  ).checkClockTimeout(s);
+  ).clockWatcher.check(s);
 
 describe('ChessService clock flag handling', () => {
   it('aborts when white never makes a first move', async () => {
@@ -122,6 +126,74 @@ describe('ChessService clock flag handling', () => {
     const state = timedState();
     await check(service, session(state));
     expect(runAction).not.toHaveBeenCalled();
+  });
+
+  it('rejects a move and applies the flag when time is up', async () => {
+    const { service, runAction, sessions } = makeService();
+    let state = timedState();
+    state = engine.executeAction(state, 'move', ctx('w'), {
+      fromFile: 'e',
+      fromRank: 2,
+      toFile: 'e',
+      toRank: 4,
+    }).state!;
+    state = engine.executeAction(state, 'move', ctx('b'), {
+      fromFile: 'e',
+      fromRank: 7,
+      toFile: 'e',
+      toRank: 5,
+    }).state!;
+    state.clocks!.black.lastMoveTimestamp = Date.now() - 120_000;
+    sessions.findSessionByRoom.mockResolvedValue(session(state));
+    await expect(
+      service.move('w', 'r1', {
+        fromFile: 'g',
+        fromRank: 1,
+        toFile: 'f',
+        toRank: 3,
+      }),
+    ).rejects.toThrow('Time expired');
+    expect(runAction).toHaveBeenCalledWith('w', 'r1', 'timeout', {});
+    expect(runAction).not.toHaveBeenCalledWith(
+      'w',
+      'r1',
+      'move',
+      expect.anything(),
+    );
+  });
+
+  it('arms a flag timer that fires at the deadline', async () => {
+    jest.useFakeTimers();
+    try {
+      const { service, runAction, sessions } = makeService();
+      let state = timedState();
+      state = engine.executeAction(state, 'move', ctx('w'), {
+        fromFile: 'e',
+        fromRank: 2,
+        toFile: 'e',
+        toRank: 4,
+      }).state!;
+      state = engine.executeAction(state, 'move', ctx('b'), {
+        fromFile: 'e',
+        fromRank: 7,
+        toFile: 'e',
+        toRank: 5,
+      }).state!;
+      const s = session(state);
+      sessions.findSessionByRoom.mockResolvedValue(s);
+      const watcher = (
+        service as unknown as {
+          clockWatcher: { schedule: (x: GameSessionSummary) => void };
+        }
+      ).clockWatcher;
+      watcher.schedule(s);
+      await jest.advanceTimersByTimeAsync(30_000);
+      expect(runAction).not.toHaveBeenCalled();
+      await jest.advanceTimersByTimeAsync(31_000);
+      expect(runAction).toHaveBeenCalledWith('w', 'r1', 'timeout', {});
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });
 

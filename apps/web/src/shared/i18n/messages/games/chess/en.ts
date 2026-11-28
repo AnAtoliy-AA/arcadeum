@@ -1,4 +1,5 @@
 import { enBoard, enSettings } from './board-en';
+import { enClock } from './clock-en';
 import { enControls } from './controls-en';
 import { enEndReasons } from './end-reasons-en';
 import { enPlay } from './play-en';
@@ -7,6 +8,7 @@ export const enMessages = {
   chess_v1: {
     board: enBoard,
     settings: enSettings,
+    clock: enClock,
     controls: enControls,
     endReason: enEndReasons,
     play: enPlay,

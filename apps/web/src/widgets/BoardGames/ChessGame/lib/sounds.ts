@@ -9,4 +9,5 @@ export type SoundType =
   | 'drawOffer'
   | 'notification'
   | 'error'
-  | 'illegal';
+  | 'illegal'
+  | 'lowTime';

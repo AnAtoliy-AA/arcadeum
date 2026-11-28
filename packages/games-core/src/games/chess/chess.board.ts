@@ -7,7 +7,9 @@ export function parseFen(fen: string): Board {
   for (let i = 0; i < 8; i++) {
     board.push(new Array<ChessPiece | null>(8).fill(null));
   }
-  const rows = fen.split('/');
+  // Accept either a bare piece-placement field or a full FEN string.
+  const placement = fen.trim().split(/\s+/)[0] ?? '';
+  const rows = placement.split('/');
   const charToType: Record<string, PieceType> = {
     p: 'pawn',
     n: 'knight',
@@ -18,12 +20,14 @@ export function parseFen(fen: string): Board {
   };
   for (let r = 0; r < 8; r++) {
     let col = 0;
-    for (const ch of rows[r]) {
+    for (const ch of rows[r] ?? '') {
+      if (col > 7) break;
       if (ch >= '1' && ch <= '8') {
         col += parseInt(ch);
       } else {
-        const color = ch === ch.toUpperCase() ? 'white' : 'black';
         const type = charToType[ch.toLowerCase()];
+        if (!type) continue;
+        const color = ch === ch.toUpperCase() ? 'white' : 'black';
         board[r][col] = { type, color };
         col++;
       }
@@ -170,59 +174,93 @@ export function generateChess960BackRank(): (ChessPiece | null)[] {
   return pieces.map((type) => (type ? { type, color: 'white' } : null));
 }
 
+/**
+ * FIDE 9.2: positions are identical when the same pieces occupy the same
+ * squares, the same side is to move, and castling / en passant rights are
+ * the same. The halfmove clock and fullmove number are NOT part of it, so
+ * they are stripped from the stored FEN before comparing.
+ */
+export function repetitionKey(fen: string): string {
+  return fen.trim().split(/\s+/).slice(0, 4).join(' ');
+}
+
 export function isThreefoldRepetition(history: string[]): boolean {
-  if (history.length < 6) return false;
-  const current = history[history.length - 1];
+  if (history.length < 5) return false;
+  const current = repetitionKey(history[history.length - 1]);
   let count = 0;
   for (const pos of history) {
-    if (pos === current) count++;
+    if (repetitionKey(pos) === current) count++;
   }
   return count >= 3;
 }
 
-export function isInsufficientMaterial(board: Board): boolean {
-  const pieces: ChessPiece[] = [];
+interface MaterialSummary {
+  pieces: { piece: ChessPiece; squareColor: number }[];
+}
+
+function summarizeMaterial(board: Board): MaterialSummary {
+  const pieces: MaterialSummary['pieces'] = [];
   for (let r = 0; r < 8; r++) {
     for (let f = 0; f < 8; f++) {
-      if (board[r][f]) {
-        pieces.push(board[r][f]!);
+      const piece = board[r]?.[f];
+      if (piece && piece.type !== 'king') {
+        pieces.push({ piece, squareColor: (r + f) % 2 });
       }
     }
   }
+  return { pieces };
+}
 
-  if (pieces.length === 2) return true;
-  if (pieces.length === 3) {
-    const hasBishop = pieces.some((p) => p.type === 'bishop');
-    const hasKnight = pieces.some((p) => p.type === 'knight');
-    if (hasBishop || hasKnight) return true;
+/**
+ * Dead position by material (FIDE 5.2.2 / 9.6.2): neither side can ever
+ * checkmate. Covers K v K, K+minor v K, and any number of bishops (either
+ * side) that all stand on the same square colour.
+ */
+export function isInsufficientMaterial(board: Board): boolean {
+  const { pieces } = summarizeMaterial(board);
+  if (pieces.length === 0) return true;
+  if (
+    pieces.length === 1 &&
+    (pieces[0].piece.type === 'bishop' || pieces[0].piece.type === 'knight')
+  ) {
+    return true;
   }
-  if (pieces.length === 4) {
-    const bishops = pieces.filter((p) => p.type === 'bishop');
-    if (bishops.length === 2 && bishops[0].color !== bishops[1].color) {
-      const b1 = findPiecePosition(board, bishops[0]);
-      const b2 = findPiecePosition(board, bishops[1]);
-      if (b1 && b2 && (b1.rank + b1.file) % 2 === (b2.rank + b2.file) % 2) {
-        return true;
-      }
-    }
+  if (pieces.every((p) => p.piece.type === 'bishop')) {
+    const shade = pieces[0].squareColor;
+    return pieces.every((p) => p.squareColor === shade);
   }
-
   return false;
 }
 
-function findPiecePosition(
-  board: Board,
-  target: ChessPiece,
-): { rank: number; file: number } | null {
-  for (let r = 0; r < 8; r++) {
-    for (let f = 0; f < 8; f++) {
-      if (
-        board[r][f]?.type === target.type &&
-        board[r][f]?.color === target.color
-      ) {
-        return { rank: r, file: f };
-      }
-    }
+/**
+ * FIDE 6.9: when a player's flag falls, the game is drawn if the opponent
+ * cannot checkmate by any possible series of legal moves. Conservative
+ * (lichess-style): returns false only for material that can never mate.
+ */
+export function hasMatingMaterial(board: Board, color: PieceColor): boolean {
+  const { pieces } = summarizeMaterial(board);
+  const own = pieces.filter((p) => p.piece.color === color);
+  const theirs = pieces.filter((p) => p.piece.color !== color);
+  if (own.length === 0) return false;
+  if (own.some((p) => p.piece.type !== 'bishop' && p.piece.type !== 'knight')) {
+    return true;
   }
-  return null;
+  if (own.length === 1 && own[0].piece.type === 'knight') {
+    // A lone knight can only mate if the defender has blocking material.
+    return theirs.length > 0;
+  }
+  if (own.every((p) => p.piece.type === 'bishop')) {
+    const shade = own[0].squareColor;
+    const allSameShade = own.every((p) => p.squareColor === shade);
+    if (!allSameShade) return true;
+    // Same-shade bishops need a defender piece that can block on the
+    // opposite shade (pawn, knight, or bishop of the other colour).
+    return theirs.some(
+      (p) =>
+        p.piece.type === 'pawn' ||
+        p.piece.type === 'knight' ||
+        (p.piece.type === 'bishop' && p.squareColor !== shade),
+    );
+  }
+  return true;
 }

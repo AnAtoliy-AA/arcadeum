@@ -14,8 +14,11 @@ echo "==> Starting MongoDB..."
 sudo systemctl start mongod
 sudo systemctl enable mongod
 
+# Keep in sync with "packageManager" in the root package.json. A different
+# global pnpm still works: it downloads and switches to the packageManager
+# version on every run.
 echo "==> Installing pnpm..."
-sudo npm install -g pnpm
+sudo npm install -g pnpm@10.34.9
 
 echo "==> Installing PM2..."
 sudo npm install -g pm2

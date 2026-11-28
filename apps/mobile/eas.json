@@ -8,10 +8,12 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      }
+      },
+      "corepack": true
     },
     "production": {
-      "distribution": "store"
+      "distribution": "store",
+      "corepack": true
     }
   },
   "submit": {

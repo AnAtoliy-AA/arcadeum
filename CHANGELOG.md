@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.10] - 2026-11-28
+
+### Improved
+- run bot search in worker threads with natural pacing
+
+
 ## [1.32.9] - 2026-11-28
 
 ### Fixed

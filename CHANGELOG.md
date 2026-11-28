@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.31.41] - 2026-11-28
 
-- admin control for the 24/7 stream: /admin/stream page, stream settings, status and command API, director polling with live apply
+### Added
+- admin Live stream page, director polling and overlay options (ARC-000) (ARC-000)
+- admin stream settings, status and command queue API (ARC-000) (ARC-000)
+
+### Fixed
+- build the command lookup from an allow-listed literal (ARC-000) (ARC-000)
+
 
 ## [1.31.40] - 2026-11-28
 

@@ -1,5 +1,6 @@
 import type { TranslationKey } from '@/shared/i18n/useTranslation';
 import type { ChessClientState } from '../types';
+import { isChessDraw } from './game-status';
 
 type TranslateFn = (
   key: TranslationKey,
@@ -24,12 +25,7 @@ export function getChessA11yAnnouncement(
     const winner = snapshot.players.find(
       (p) => p.color === snapshot.winnerColor,
     );
-    const isDraw =
-      snapshot.isDrawByAgreement ||
-      snapshot.isStalemate ||
-      snapshot.isDrawByRepetition ||
-      snapshot.isDrawByFiftyMoveRule;
-    if (isDraw) return t('games.chess_v1.status.draw');
+    if (isChessDraw(snapshot)) return t('games.chess_v1.status.draw');
     return t('games.chess_v1.status.winner', {
       player: winner?.playerId ? resolveName(winner.playerId) : '',
     });

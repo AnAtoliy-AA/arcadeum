@@ -1,5 +1,8 @@
+import { esPlay } from './play-es';
+
 export const esMessages = {
   chess_v1: {
+    play: esPlay,
     name: 'Ajedrez',
     description:
       'El clásico juego de tablero de estrategia con reglas completas incluyendo enroque, captura al paso y promoción',

@@ -111,6 +111,7 @@ function ChessCell({
     <div
       role="gridcell"
       data-testid={`chess-${file}${rank}`}
+      data-movable={isMyPiece && !disabled ? 'true' : undefined}
       className={`flex-1 aspect-square relative flex items-center justify-center overflow-hidden select-none ${
         isMyPiece && !disabled ? 'touch-none' : 'touch-manipulation'
       } motion-safe:transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--primary)] ${bgClass} ${

@@ -144,8 +144,12 @@ describe('ChessBoard', () => {
     const own = screen.getByTestId('chess-e2');
     expect(own.className).toContain('touch-none');
     expect(own.getAttribute('draggable')).toBeNull();
+    expect(own.getAttribute('data-movable')).toBe('true');
     expect(screen.getByTestId('chess-d7').className).toContain(
       'touch-manipulation',
+    );
+    expect(screen.getByTestId('chess-d7').getAttribute('data-movable')).toBe(
+      null,
     );
     expect(screen.getByTestId('chess-e4').className).toContain(
       'touch-manipulation',
@@ -157,6 +161,9 @@ describe('ChessBoard', () => {
     renderWithProvider(<ChessBoard {...defaultProps} board={board} disabled />);
     expect(screen.getByTestId('chess-e2').className).toContain(
       'touch-manipulation',
+    );
+    expect(screen.getByTestId('chess-e2').getAttribute('data-movable')).toBe(
+      null,
     );
   });
 

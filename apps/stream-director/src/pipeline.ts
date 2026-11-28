@@ -5,7 +5,7 @@ import type { SpawnFn } from './streamRunner';
 import { Director } from './director';
 import { createBrowser } from './browser';
 import { createApi } from './api';
-import { listTracks, writeConcatList } from './music';
+import { filterTracks, listTracks, writeConcatList } from './music';
 import { ensureVirtualSink } from './audioSetup';
 import type { Health } from './health';
 import type {
@@ -39,13 +39,18 @@ function prepareAudio(config: StreamConfig, log: Logger): AudioInputs {
   } else if (source) {
     log.warn('PulseAudio not available, streaming without game audio');
   }
-  const tracks = listTracks(config.audio.musicDir);
+  const tracks = filterTracks(
+    listTracks(config.audio.musicDir),
+    config.audio.trackNames,
+  );
   if (tracks.length) {
     audio.musicList = writeConcatList(
       tracks,
       path.join(os.tmpdir(), 'arcadeum-stream-music.ffconcat'),
     );
     log.info('music bed', { tracks: tracks.length });
+  } else if (config.audio.trackNames) {
+    log.warn('no music file matches the allowed track names, no music');
   } else {
     log.warn(
       'no music tracks found (set STREAM_MUSIC_DIR to a folder of licensed tracks)',
@@ -58,6 +63,8 @@ export interface Pipeline {
   director: Director;
   start(onFinished?: () => void): Promise<void>;
   stop(): Promise<void>;
+  /** Profile/audio settings changed: restart ffmpeg at the next game boundary. */
+  markFfmpegDirty(): void;
 }
 
 /** One start()/stop() unit: ffmpeg runner + browser + director. */
@@ -79,11 +86,27 @@ export function createPipeline({
   const director = new Director({ config, api, browser, health, log, alert });
   let runner: StreamRunner | null = null;
   let loop: Promise<void> = Promise.resolve();
+  let audio: AudioInputs = {};
+  let ffmpegDirty = false;
+  let browserSize = `${config.profile.width}x${config.profile.height}`;
+
+  // Between games: apply a pending profile/audio change with a clean restart.
+  director.onBoundary = async () => {
+    if (!ffmpegDirty || !runner) return;
+    ffmpegDirty = false;
+    audio = prepareAudio(config, log);
+    await runner.restart('settings changed');
+    const size = `${config.profile.width}x${config.profile.height}`;
+    if (size !== browserSize) {
+      browserSize = size;
+      await director.restartBrowser();
+    }
+  };
 
   return {
     director,
     start(onFinished) {
-      const audio = prepareAudio(config, log);
+      audio = prepareAudio(config, log);
       const r = new StreamRunner({
         config,
         spawnFn,
@@ -112,6 +135,9 @@ export function createPipeline({
           log.error('director crashed', { error: err.message }),
         );
       return Promise.resolve();
+    },
+    markFfmpegDirty() {
+      ffmpegDirty = true;
     },
     async stop() {
       director.stop();

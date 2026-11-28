@@ -9,8 +9,19 @@ export interface GameConfig {
   stuckMs: number;
   moveDelayMs: number;
   themes: string[];
+  /** Relative frequency in the rotation (1 = normal). */
+  weight: number;
   /** Optional [white, black] bot personality ids; BE picks random when null. */
   personalities: [string, string] | null;
+}
+
+/** Overlay options passed to the scenes as query params. */
+export interface SceneOverlay {
+  joinUrl: string;
+  showQr: boolean;
+  banner: string;
+  /** Overlay parts to hide (players, status, cta, moves, arc). */
+  hide: string[];
 }
 
 export interface Profile {
@@ -49,19 +60,31 @@ export interface StreamConfig {
   audio: {
     pulseSource: string;
     musicDir: string;
+    /** 0-1 fraction (admin setting 0-100 divided by 100). */
     musicVolume: number;
     gameVolume: number;
+    /** Track file names the admin allows; null = every track in the folder. */
+    trackNames: string[] | null;
   };
   niceness: number;
   ffmpegBin: string;
   stallMs: number;
   backoff: { minMs: number; maxMs: number; stableMs: number };
   web: { baseUrl: string; locale: string };
+  scene: { overlay: SceneOverlay };
+  control: {
+    enabled: boolean;
+    /** STREAM_SERVICE_TOKEN; empty = authenticate with the stream user JWT. */
+    serviceToken: string;
+    pollMs: number;
+    statusMs: number;
+  };
   be: { url: string; email: string; password: string };
   director: {
     idleSeconds: number;
     pollMs: number;
     moveDelayMs: number | null;
+    botDifficulty: string | null;
     recycleBrowserEvery: number;
     maxApiErrors: number;
     games: GameConfig[];
@@ -96,6 +119,7 @@ export interface CreateAiVsAiRequest {
   gameId: string;
   theme?: string;
   aiMoveDelayMs?: number;
+  botDifficulty?: string;
   botPersonalityWhite?: string;
   botPersonalityBlack?: string;
 }
@@ -125,7 +149,13 @@ export interface LoginResponse {
 }
 
 export type Verdict =
-  'continue' | 'finished' | 'timeout' | 'stuck' | 'error' | 'stopped';
+  | 'continue'
+  | 'finished'
+  | 'timeout'
+  | 'stuck'
+  | 'error'
+  | 'stopped'
+  | 'skipped';
 
 export interface GameClockInput {
   now: number;
@@ -144,6 +174,7 @@ export interface DirectorApi {
     gameId: string;
     theme: string;
     moveDelayMs: number;
+    botDifficulty?: string | null;
     personalities: [string, string] | null;
   }): Promise<RoomSummary>;
   getRoomInfo(roomId: string): Promise<RoomInfoResponse>;

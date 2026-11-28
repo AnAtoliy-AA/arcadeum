@@ -78,6 +78,9 @@ On non-Linux machines capture falls back to an ffmpeg test pattern
 | `STREAM_STATUS_FILE`, `STREAM_STATUS_PORT`                                   | unset                           | health JSON file / 127.0.0.1 HTTP                                                            |
 | `STREAM_ALERT_WEBHOOK_URL`                                                   | unset                           | JSON `{text, content, key}`                                                                  |
 | `STREAM_WEB_URL`, `STREAM_BE_URL`, `STREAM_LOCALE`                           | localhost                       |                                                                                              |
+| `STREAM_SERVICE_TOKEN`                                                       | unset                           | secret (min 24 chars) shared with the BE; see Admin control                                  |
+| `STREAM_CONTROL`                                                             | on                              | `0` disables the admin control loop (env settings only)                                      |
+| `STREAM_CONTROL_POLL_SECONDS`, `STREAM_STATUS_REPORT_SECONDS`                | 5, 10                           | config/command poll and status report intervals                                              |
 
 Per-game rotation settings (themes, `moveDelayMs`, `maxDurationMs`, `stuckMs`,
 optional bot personalities) live in `src/games.ts`. Bot difficulty is chosen by
@@ -107,6 +110,64 @@ texas_holdem and glimworm are excluded.
   passwords and the RTMP URL are redacted.
 - Note: ffmpeg receives the RTMP URL (with key) as an argument, so it is
   visible to local users via `ps`. Run on a host without untrusted users.
+
+## Admin control (live stream settings)
+
+Admins control the stream from `/admin/stream` in the web app (Start, Stop,
+Skip, settings, audit trail). The director polls the backend and applies it.
+The stream key and RTMP URL are **never** stored in the BE or returned by any
+API: they stay in this VM's environment (`STREAM_RTMP_URL`, `STREAM_KEY_FILE`).
+
+How it works:
+
+- Every `STREAM_CONTROL_POLL_SECONDS` (5 s) the director calls
+  `GET {BE}/stream/config` with `If-None-Match` (cheap `304` when unchanged)
+  and `GET {BE}/stream/commands`. Every `STREAM_STATUS_REPORT_SECONDS` (10 s)
+  it `POST`s `/stream/status` (state, current game, uptime, fps, restarts,
+  last errors, applied config version). The admin page shows the applied
+  version next to the saved one, so you can see when it was picked up.
+- Auth: `Authorization: Bearer $STREAM_SERVICE_TOKEN` when set (same value in
+  the BE env), otherwise the stream user's JWT (`STREAM_BOT_PASSWORD`). Admin
+  JWTs are rejected on these endpoints. Without credentials (or with
+  `--stub`) the control loop is off and env settings apply as before.
+- Remote values are validated with zod. An invalid payload is ignored and
+  logged (`ignoring invalid remote config`); the last good config keeps
+  running.
+- Backend unreachable: the stream keeps running on the last good config (or
+  the env defaults), status reports are skipped, an alert is sent after about
+  1 minute of failures. The local kill switch file always works and always
+  wins, even when the backend says `enabled`.
+
+When a change takes effect:
+
+| Setting                                                                             | Takes effect                                                                                                                             |
+| ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Start / Stop (`enabled`), Skip, Restart browser                                     | Within one poll (about 5 s)                                                                                                              |
+| Max duration per game                                                               | Live, also for the running game                                                                                                          |
+| Enabled games, weights, themes, bot difficulty, bot move delay, pause between games | Next game (nothing is interrupted)                                                                                                       |
+| Overlay: join URL, QR, banner text, visible parts                                   | Next scene load (the next idle scene or game start)                                                                                      |
+| Resolution, fps, bitrate, x264 preset, music volume, music track allow-list         | Next game boundary: ffmpeg restarts cleanly during the idle scene (a short blip); a resolution change also relaunches the browser window |
+
+Stop: with "finish the current game first" the stream ends after the running
+game; without it the stream stops within seconds, exactly like the kill
+switch file. Start resumes. The same flag is stored with the settings.
+
+Music track allow-list: names only (file names inside `STREAM_MUSIC_DIR`).
+Empty means every track in the folder. If none of the names match a file the
+stream runs without music and logs a warning.
+
+Backend env (see `apps/be/.env.example`): `STREAM_SERVICE_TOKEN` (the same
+secret), optional `STREAM_BOT_USERNAME` (default `arcadeum_live`).
+Generate a token with `openssl rand -hex 32`, put it in the BE environment and
+in `/etc/arcadeum-stream/stream.env` (chmod 600). Rotate by changing both and
+restarting both services.
+
+Hard limits (clamped by the BE and validated again by the director): bot move
+delay 500-8000 ms, max game duration 1-30 min, pause between games 5-120 s,
+music volume 0-100, bitrate 1500-6000 kbps, 720p/1080p, 25/30 fps, banner at
+most 80 characters (no links or profanity), at least 2 games enabled. Defaults
+match the old hard-coded values (720p30, 3500 kbps, veryfast, 2 s delay, 15 s
+pause, expert bots, all 12 games with weight 1).
 
 ## Resource risk (ESTIMATE, not measured)
 

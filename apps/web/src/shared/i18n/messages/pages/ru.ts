@@ -7,6 +7,7 @@ import { adminWalletRu } from './admin-wallet/ru';
 import { gemsRu } from './gems/ru';
 import { adminGemPackagesRu } from './admin-gem-packages/ru';
 import { adminEconomyRu } from './admin-economy/ru';
+import { adminStreamRu } from './admin-stream/ru';
 import { adminStatisticsRu } from './admin-statistics/ru';
 import { dailyRewardsRu } from './daily-rewards/ru';
 import { dailyChallengesRu } from './daily-challenges/ru';
@@ -48,6 +49,7 @@ export const ru = {
       announcements: 'Объявления',
       tournaments: 'Турниры',
       economy: 'Экономика',
+      stream: 'Прямой эфир',
       shop: 'Магазин',
       gemPackages: 'Пакеты Гемов',
       games: 'Игры',
@@ -477,6 +479,7 @@ export const ru = {
   gems: gemsRu,
   adminGemPackages: adminGemPackagesRu,
   adminEconomy: adminEconomyRu,
+  adminStream: adminStreamRu,
   dailyRewards: dailyRewardsRu,
   dailyChallenges: dailyChallengesRu,
   achievements: achievementsRu,

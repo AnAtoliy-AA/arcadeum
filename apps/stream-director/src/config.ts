@@ -99,14 +99,12 @@ export const envSchema = z.object({
   STREAM_POLL_SECONDS: optInt,
   STREAM_MOVE_DELAY_MS: z.preprocess(
     blankToUndefined,
-    z.coerce
-      .number()
-      .refine(
-        (n) => [1000, 2000, 5000].includes(n),
-        'must be 1000, 2000 or 5000',
-      )
-      .optional(),
+    z.coerce.number().int().min(500).max(8000).optional(),
   ),
+  STREAM_SERVICE_TOKEN: optStr,
+  STREAM_CONTROL: optBool,
+  STREAM_CONTROL_POLL_SECONDS: optInt,
+  STREAM_STATUS_REPORT_SECONDS: optInt,
   STREAM_RECYCLE_BROWSER_EVERY: optInt,
   STREAM_KILL_FILE: optStr,
   STREAM_KILL_SWITCH: optBool,
@@ -202,6 +200,7 @@ export function loadConfig(
       musicDir: env.STREAM_MUSIC_DIR ?? '',
       musicVolume: env.STREAM_MUSIC_VOLUME ?? 0.25,
       gameVolume: env.STREAM_GAME_VOLUME ?? 0.6,
+      trackNames: null,
     },
     niceness: env.STREAM_NICE ?? 0,
     ffmpegBin: env.STREAM_FFMPEG_BIN ?? 'ffmpeg',
@@ -210,6 +209,17 @@ export function loadConfig(
     web: {
       baseUrl: trimSlash(env.STREAM_WEB_URL ?? 'http://localhost:3000'),
       locale: env.STREAM_LOCALE ?? 'en',
+    },
+    scene: { overlay: { joinUrl: '', showQr: true, banner: '', hide: [] } },
+    control: {
+      // The admin control loop needs credentials and a real BE (not --stub).
+      enabled:
+        (env.STREAM_CONTROL ?? true) &&
+        !(args.has('--stub') || (env.STREAM_STUB ?? false)) &&
+        Boolean(env.STREAM_SERVICE_TOKEN || env.STREAM_BOT_PASSWORD),
+      serviceToken: (env.STREAM_SERVICE_TOKEN ?? '').trim(),
+      pollMs: Math.max(2, env.STREAM_CONTROL_POLL_SECONDS ?? 5) * 1000,
+      statusMs: Math.max(5, env.STREAM_STATUS_REPORT_SECONDS ?? 10) * 1000,
     },
     be: {
       url: trimSlash(
@@ -222,6 +232,7 @@ export function loadConfig(
       idleSeconds: env.STREAM_IDLE_SECONDS ?? 15,
       pollMs: (env.STREAM_POLL_SECONDS ?? 3) * 1000,
       moveDelayMs: env.STREAM_MOVE_DELAY_MS ?? null,
+      botDifficulty: null,
       recycleBrowserEvery: env.STREAM_RECYCLE_BROWSER_EVERY ?? 10,
       maxApiErrors: 5,
       games: GAMES,

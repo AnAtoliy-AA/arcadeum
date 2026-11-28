@@ -22,11 +22,12 @@ export function createBrowser({
   log: Logger;
   loadPlaywright?: PlaywrightLoader;
 }): ManagedBrowser {
-  const { width, height } = config.profile;
   let browser: Browser | null = null;
   let page: Page | null = null;
 
   async function launch(): Promise<Page> {
+    // Read at launch so a profile change (resolution) applies after a recycle.
+    const { width, height } = config.profile;
     const { chromium } = await loadPlaywright();
     browser = await chromium.launch({
       headless: false,

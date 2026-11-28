@@ -15,7 +15,8 @@ import { GamesRealtimeService } from '../games.realtime.service';
 import { OCI_CONNECTION } from '../../common/providers/mongo-connections.provider';
 import {
   AI_VS_AI_DEFAULT_DELAY_MS,
-  AI_VS_AI_DELAYS_MS,
+  AI_VS_AI_MAX_DELAY_MS,
+  AI_VS_AI_MIN_DELAY_MS,
 } from '../common/ai-vs-ai';
 import { ChessService } from '../chess/chess.service';
 import { CheckersService } from '../checkers/checkers.service';
@@ -136,6 +137,7 @@ export class AiVsAiService {
       variant?: string;
       theme?: string;
       aiMoveDelayMs?: number;
+      botDifficulty?: string;
       botPersonalityWhite?: string;
       botPersonalityBlack?: string;
     },
@@ -168,9 +170,11 @@ export class AiVsAiService {
       (gameSettings.aivsaiDifficulties as string[]) ??
       DEFAULT_AIVSAI_DIFFICULTIES;
     const selectedDifficulty =
+      dto.botDifficulty ??
       aivsaiDifficulties[
         Math.floor(Math.random() * aivsaiDifficulties.length)
-      ] ?? 'expert';
+      ] ??
+      'expert';
 
     const gameOptions: Record<string, unknown> = {
       aiVsAi: true,
@@ -212,12 +216,14 @@ export class AiVsAiService {
     return summary;
   }
 
-  private resolveDelay(delay?: number): (typeof AI_VS_AI_DELAYS_MS)[number] {
+  private resolveDelay(delay?: number): number {
     if (
       delay !== undefined &&
-      (AI_VS_AI_DELAYS_MS as readonly number[]).includes(delay)
+      Number.isFinite(delay) &&
+      delay >= AI_VS_AI_MIN_DELAY_MS &&
+      delay <= AI_VS_AI_MAX_DELAY_MS
     ) {
-      return delay as (typeof AI_VS_AI_DELAYS_MS)[number];
+      return Math.round(delay);
     }
     return AI_VS_AI_DEFAULT_DELAY_MS;
   }

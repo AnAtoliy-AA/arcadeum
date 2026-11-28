@@ -17,6 +17,7 @@ const mk = (over: Partial<GameConfig>): GameConfig => ({
   stuckMs: 1,
   moveDelayMs: 2000,
   themes: ['a'],
+  weight: 1,
   personalities: null,
   ...over,
 });
@@ -34,7 +35,7 @@ describe('games config', () => {
   it('rejects excluded, bad delay and duplicates', () => {
     const p = validateGames([
       mk({ id: 'glimworm_v1' }),
-      mk({ id: 'chess_v1', moveDelayMs: 3000 }),
+      mk({ id: 'chess_v1', moveDelayMs: 100 }),
       mk({ id: 'chess_v1' }),
     ]).join('|');
     expect(p).toMatch(/not supported/);
@@ -87,5 +88,43 @@ describe('Rotation', () => {
 
   it('needs two games', () => {
     expect(() => new Rotation([GAMES[0]])).toThrow();
+  });
+});
+
+describe('Rotation weights and live updates', () => {
+  const g = (id: string, weight: number) => mk({ id, weight });
+
+  it('plays a heavier game more often but never back to back', () => {
+    const r = new Rotation([g('a', 3), g('b', 1), g('c', 1)], seeded(11));
+    const counts: Record<string, number> = { a: 0, b: 0, c: 0 };
+    let prev: string | null = null;
+    for (let i = 0; i < 500; i++) {
+      const { game } = r.next();
+      expect(game.id).not.toBe(prev);
+      prev = game.id;
+      counts[game.id] += 1;
+    }
+    expect(counts.a).toBeGreaterThan(counts.b);
+    expect(counts.a).toBeGreaterThan(counts.c);
+  });
+
+  it('survives a dominant weight with only two games', () => {
+    const r = new Rotation([g('a', 10), g('b', 1)], seeded(5));
+    let prev: string | null = null;
+    for (let i = 0; i < 100; i++) {
+      const { game } = r.next();
+      expect(game.id).not.toBe(prev);
+      prev = game.id;
+    }
+  });
+
+  it('setGames drops disabled games and applies new weights live', () => {
+    const r = new Rotation([g('a', 1), g('b', 1), g('c', 1)], seeded(2));
+    r.next();
+    r.setGames([g('b', 1), g('c', 1)]);
+    for (let i = 0; i < 40; i++) {
+      expect(['b', 'c']).toContain(r.next().game.id);
+    }
+    expect(() => r.setGames([g('b', 1)])).toThrow();
   });
 });

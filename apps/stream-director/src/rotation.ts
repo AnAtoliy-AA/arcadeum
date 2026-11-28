@@ -7,30 +7,59 @@ import type { GameConfig } from './types';
  * looks different each time it comes around.
  */
 export class Rotation {
+  private games: GameConfig[];
   private bag: GameConfig[] = [];
   private lastGameId: string | null = null;
   private lastTheme: string | null = null;
   private readonly themeCursor = new Map<string, number>();
 
   constructor(
-    private readonly games: GameConfig[],
+    games: GameConfig[],
     private readonly rng: () => number = Math.random,
   ) {
     if (!games || games.length < 2) throw new Error('rotation needs 2+ games');
+    this.games = games;
+  }
+
+  /**
+   * Swap the game list live (admin settings). The current bag is dropped so
+   * disabled games stop appearing and new weights apply from the next pick;
+   * the last game/theme memory is kept so there is no back-to-back repeat.
+   */
+  setGames(games: GameConfig[]): void {
+    if (!games || games.length < 2) throw new Error('rotation needs 2+ games');
+    this.games = games;
+    this.bag = [];
   }
 
   private refill(): void {
-    const bag = this.games.slice();
+    // A game with weight N appears N times per bag (more often, same cycle).
+    const bag: GameConfig[] = [];
+    for (const g of this.games) {
+      const copies = Math.max(1, Math.round(g.weight ?? 1));
+      for (let c = 0; c < copies; c++) bag.push(g);
+    }
     for (let i = bag.length - 1; i > 0; i--) {
       const j = Math.floor(this.rng() * (i + 1));
       [bag[i], bag[j]] = [bag[j], bag[i]];
     }
-    // Never open a new bag with the game that just finished.
-    if (bag[0].id === this.lastGameId) {
-      const k = bag.findIndex((g) => g.id !== this.lastGameId);
-      [bag[0], bag[k]] = [bag[k], bag[0]];
+    // Never play the same game back to back, also across duplicate copies.
+    let prev = this.lastGameId;
+    for (let i = 0; i < bag.length; i++) {
+      if (bag[i].id !== prev) {
+        prev = bag[i].id;
+        continue;
+      }
+      const k = bag.findIndex((g, idx) => idx > i && g.id !== prev);
+      if (k === -1) {
+        // Only duplicates of one game are left: drop them rather than repeat.
+        bag.splice(i);
+        break;
+      }
+      [bag[i], bag[k]] = [bag[k], bag[i]];
+      prev = bag[i].id;
     }
-    this.bag = bag;
+    this.bag = bag.length ? bag : this.games.filter((g) => g.id !== prev);
   }
 
   private nextTheme(game: GameConfig): string {

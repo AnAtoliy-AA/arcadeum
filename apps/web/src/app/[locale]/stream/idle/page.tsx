@@ -4,6 +4,7 @@ import {
   parseCaptionLang,
   parseDebug,
   parseGameId,
+  parseOverlayOptions,
   parseSeconds,
   sanitizeText,
   type RawSearchParams,
@@ -33,6 +34,7 @@ export default async function StreamIdleRoute({ searchParams }: PageProps) {
       result={sanitizeText(query.result)}
       seconds={parseSeconds(query.seconds)}
       debug={parseDebug(query.debug)}
+      overlay={parseOverlayOptions(query)}
     />
   );
 }

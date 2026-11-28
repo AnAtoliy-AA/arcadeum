@@ -97,6 +97,19 @@ describe('StreamRunner', () => {
   });
 });
 
+describe('StreamRunner restart', () => {
+  it('restarts cleanly on request without counting a failure or backoff', async () => {
+    const { fn, children } = fakeSpawn();
+    const r = mk(fn, () => 0);
+    r.start();
+    await r.restart('settings changed');
+    expect(children).toHaveLength(2);
+    expect(children[0].killed).toEqual(['SIGINT']);
+    expect(r.restarts).toBe(0);
+    await r.stop();
+  });
+});
+
 describe('ops helpers', () => {
   it('alert webhook: cooldown, discord + text fields, noop without url', async () => {
     const sent: Array<Record<string, unknown>> = [];

@@ -112,6 +112,70 @@ export function parseCaptionLang(value: SearchParamValue): CaptionLang {
   return 'en';
 }
 
+/** Overlay pieces an admin may hide (`?hide=players,cta`). */
+export const OVERLAY_PARTS = [
+  'players',
+  'status',
+  'cta',
+  'moves',
+  'arc',
+] as const;
+export type OverlayPart = (typeof OVERLAY_PARTS)[number];
+
+export interface OverlayOptions {
+  joinUrl: string;
+  showQr: boolean;
+  banner: string;
+  parts: Record<OverlayPart, boolean>;
+}
+
+/** `?join=` override for the call to action: http(s) only, bounded length. */
+export function parseJoinUrl(value: SearchParamValue): string | null {
+  const raw = first(value)?.trim();
+  if (!raw || raw.length > 200) return null;
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' || url.protocol === 'http:'
+      ? url.toString().replace(/\/$/, '')
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** `?hide=players,cta` lists parts to hide; unknown names are ignored. */
+export function parseOverlayParts(
+  value: SearchParamValue,
+): Record<OverlayPart, boolean> {
+  const hidden = new Set(
+    (first(value) ?? '')
+      .split(',')
+      .map((p) => p.trim().toLowerCase())
+      .filter(Boolean),
+  );
+  return {
+    players: !hidden.has('players'),
+    status: !hidden.has('status'),
+    cta: !hidden.has('cta'),
+    moves: !hidden.has('moves'),
+    arc: !hidden.has('arc'),
+  };
+}
+
+/**
+ * Overlay options written by the stream director from the admin settings:
+ * `?join=&qr=0&banner=&hide=`. Everything is validated; defaults match the
+ * original scene (env join URL, everything visible, no banner).
+ */
+export function parseOverlayOptions(query: RawSearchParams): OverlayOptions {
+  return {
+    joinUrl: parseJoinUrl(query.join) ?? getStreamJoinUrl(),
+    showQr: first(query.qr) !== '0',
+    banner: sanitizeText(query.banner, 80),
+    parts: parseOverlayParts(query.hide),
+  };
+}
+
 /** Room ids are Mongo ids or short codes; reject anything else early. */
 export function isValidRoomId(value: string): boolean {
   return /^[A-Za-z0-9_-]{1,64}$/.test(value);

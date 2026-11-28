@@ -164,8 +164,8 @@ describe('loadConfig', () => {
     expect(() => loadConfig({ STREAM_FPS: 'abc' }, [])).toThrow(
       /invalid environment/,
     );
-    expect(() => loadConfig({ STREAM_MOVE_DELAY_MS: '3000' }, [])).toThrow(
-      /1000, 2000 or 5000/,
+    expect(() => loadConfig({ STREAM_MOVE_DELAY_MS: '100' }, [])).toThrow(
+      /Number must be greater than or equal to 500/,
     );
     expect(() => loadConfig({ STREAM_RESOLUTION: 'big' }, [])).toThrow();
     const c = loadConfig({ STREAM_FPS: '', STREAM_MOVE_DELAY_MS: '5000' }, []);

@@ -233,4 +233,29 @@ describe('BroadcastOverlay', () => {
       /\$|price|yield|apy|apr|profit|earn|invest|moon|pump|buy|sell|airdrop|%/i,
     );
   });
+
+  it('applies admin overlay options: hidden parts, no QR and a banner', () => {
+    renderOverlay(model({ moveCount: 12 }), {
+      overlay: {
+        showQr: false,
+        banner: 'Weekend tournament',
+        parts: {
+          players: false,
+          status: false,
+          cta: true,
+          moves: false,
+          arc: false,
+        },
+      },
+    });
+    expect(screen.queryByTestId('overlay-player')).toBeNull();
+    expect(screen.queryByTestId('overlay-status')).toBeNull();
+    expect(screen.queryByTestId('overlay-moves')).toBeNull();
+    expect(screen.queryByTestId('overlay-arc')).toBeNull();
+    expect(screen.getByTestId('overlay-cta')).toBeInTheDocument();
+    expect(screen.queryByTestId('stream-qr')).toBeNull();
+    expect(screen.getByTestId('overlay-banner')).toHaveTextContent(
+      'Weekend tournament',
+    );
+  });
 });

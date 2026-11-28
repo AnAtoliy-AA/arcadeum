@@ -7,14 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- admin control for the 24/7 stream: /admin/stream page, stream settings, status and command API, director polling with live apply
+
 ## [1.31.40] - 2026-11-28
 
 ### Added
+
 - add chrome-less broadcast scenes for the 24/7 bot stream
 
 ### Documentation
-- add changelog entry for broadcast scenes
 
+- add changelog entry for broadcast scenes
 
 ## [1.31.39] - 2026-11-25
 

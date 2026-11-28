@@ -36,6 +36,8 @@ export type InputProps = {
   'data-testid'?: string;
   'aria-label'?: string;
   'aria-required'?: boolean | 'true' | 'false';
+  /** Id of the element that describes the field (hint or error text). */
+  'aria-describedby'?: string;
   className?: string;
   style?: React.CSSProperties;
 };
@@ -80,6 +82,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     'data-testid': dataTestId,
     'aria-label': ariaLabel,
     'aria-required': ariaRequired,
+    'aria-describedby': ariaDescribedBy,
     className,
     style,
   },
@@ -125,6 +128,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       data-testid={dataTestId}
       aria-label={ariaLabel}
       aria-required={ariaRequired}
+      aria-describedby={ariaDescribedBy}
+      aria-invalid={error ? true : undefined}
     />
   );
 });

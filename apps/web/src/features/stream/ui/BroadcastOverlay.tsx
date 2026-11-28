@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { useTranslation } from '@/shared/i18n/useTranslation';
 import { getStreamJoinHost } from '../lib/streamConfig';
+import type { OverlayOptions } from '../lib/streamConfig';
 import type { OverlayModel } from '../lib/overlayModel';
 import { MoveTimer } from './MoveTimer';
 import { PlayerCard } from './PlayerCard';
@@ -13,6 +14,8 @@ export interface BroadcastOverlayProps {
   title: string;
   model: OverlayModel | null;
   joinUrl: string;
+  /** Admin overlay options (hidden parts, QR, banner). Defaults: all shown. */
+  overlay?: Pick<OverlayOptions, 'showQr' | 'banner' | 'parts'>;
   /** Epoch ms of the last position change, for the move timer. */
   lastChangeAt: number;
   /** Diagnostics strip, only when `?debug=1`. */
@@ -72,6 +75,12 @@ function StatusLine({
   );
 }
 
+const DEFAULT_OVERLAY: NonNullable<BroadcastOverlayProps['overlay']> = {
+  showQr: true,
+  banner: '',
+  parts: { players: true, status: true, cta: true, moves: true, arc: true },
+};
+
 /**
  * HTML broadcast overlay. Everything here is plain DOM so the capture
  * pipeline only has to record the page. No backdrop-filter, no looping
@@ -84,10 +93,12 @@ export function BroadcastOverlay({
   title,
   model,
   joinUrl,
+  overlay = DEFAULT_OVERLAY,
   lastChangeAt,
   debug,
   children,
 }: BroadcastOverlayProps) {
+  const { parts, showQr, banner } = overlay;
   const { t } = useTranslation();
   const host = getStreamJoinHost(joinUrl);
   const chess = model?.gameId === 'chess_v1';
@@ -120,17 +131,19 @@ export function BroadcastOverlay({
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-[1.4cqw] text-[1.3cqw] font-semibold text-[var(--neutral)]">
-          {model?.moveCount != null ? (
+          {parts.moves && model?.moveCount != null ? (
             <span data-testid="overlay-moves">
               {t('pages.stream.moves', { count: model.moveCount })}
             </span>
           ) : null}
-          <span
-            data-testid="overlay-arc"
-            className="rounded-[0.4cqw] border border-[var(--borderColor)] px-[0.7cqw] text-[1.15cqw] font-bold tracking-widest"
-          >
-            {t('pages.stream.arc')}
-          </span>
+          {parts.arc ? (
+            <span
+              data-testid="overlay-arc"
+              className="rounded-[0.4cqw] border border-[var(--borderColor)] px-[0.7cqw] text-[1.15cqw] font-bold tracking-widest"
+            >
+              {t('pages.stream.arc')}
+            </span>
+          ) : null}
         </div>
       </header>
 
@@ -144,32 +157,47 @@ export function BroadcastOverlay({
 
         <aside className="flex min-h-0 flex-col gap-[1cqw]">
           <div className="flex min-h-0 flex-1 flex-col gap-[0.8cqw]">
-            {(model?.players ?? []).map((p) => (
-              <PlayerCard key={p.id} player={p} chess={chess} />
-            ))}
+            {parts.players
+              ? (model?.players ?? []).map((p) => (
+                  <PlayerCard key={p.id} player={p} chess={chess} />
+                ))
+              : null}
           </div>
 
-          <div
-            data-testid="overlay-status"
-            className="shrink-0 rounded-[0.9cqw] border border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)] px-[1.1cqw] py-[0.8cqw] text-[1.6cqw] font-bold leading-tight"
-          >
-            <StatusLine model={model} lastChangeAt={lastChangeAt} />
-          </div>
+          {banner ? (
+            <div
+              data-testid="overlay-banner"
+              className="shrink-0 rounded-[0.9cqw] border border-[var(--goldAccent)] px-[1.1cqw] py-[0.7cqw] text-[1.4cqw] font-bold leading-tight text-[var(--goldAccent)]"
+            >
+              {banner}
+            </div>
+          ) : null}
 
-          <div
-            data-testid="overlay-cta"
-            className="flex shrink-0 items-center gap-[1.1cqw] rounded-[0.9cqw] border border-[var(--accent)] bg-[rgba(56,189,248,0.1)] p-[0.9cqw]"
-          >
-            <StreamQr url={joinUrl} />
-            <div className="min-w-0">
-              <div className="text-[1.5cqw] font-extrabold leading-tight">
-                {t('pages.stream.playAt', { host })}
-              </div>
-              <div className="text-[1.05cqw] leading-snug text-[var(--neutral)]">
-                {t('pages.stream.scanToPlay')}
+          {parts.status ? (
+            <div
+              data-testid="overlay-status"
+              className="shrink-0 rounded-[0.9cqw] border border-[var(--borderColor)] bg-[rgba(255,255,255,0.04)] px-[1.1cqw] py-[0.8cqw] text-[1.6cqw] font-bold leading-tight"
+            >
+              <StatusLine model={model} lastChangeAt={lastChangeAt} />
+            </div>
+          ) : null}
+
+          {parts.cta ? (
+            <div
+              data-testid="overlay-cta"
+              className="flex shrink-0 items-center gap-[1.1cqw] rounded-[0.9cqw] border border-[var(--accent)] bg-[rgba(56,189,248,0.1)] p-[0.9cqw]"
+            >
+              {showQr ? <StreamQr url={joinUrl} /> : null}
+              <div className="min-w-0">
+                <div className="text-[1.5cqw] font-extrabold leading-tight">
+                  {t('pages.stream.playAt', { host })}
+                </div>
+                <div className="text-[1.05cqw] leading-snug text-[var(--neutral)]">
+                  {t('pages.stream.scanToPlay')}
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </aside>
       </div>
 

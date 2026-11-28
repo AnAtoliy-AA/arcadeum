@@ -9,6 +9,7 @@ import { useStreamRoom } from '../hooks/useStreamRoom';
 import { useStreamGameWidget } from '../hooks/useStreamGameWidget';
 import { buildOverlayModel } from '../lib/overlayModel';
 import { getStreamJoinUrl } from '../lib/streamConfig';
+import type { OverlayOptions } from '../lib/streamConfig';
 import { BoardStage } from './BoardStage';
 import { BroadcastOverlay } from './BroadcastOverlay';
 import { StreamFrame } from './StreamFrame';
@@ -35,14 +36,19 @@ function titleFor(gameId: string | undefined): string {
 export function BroadcastScene({
   roomId,
   debug,
+  overlay,
 }: {
   roomId: string;
   debug: boolean;
+  overlay?: OverlayOptions;
 }) {
   const { room, session, storeSession, isConnected, viewerId } =
     useStreamRoom(roomId);
   const Widget = useStreamGameWidget(room?.gameId);
-  const joinUrl = useMemo(() => getStreamJoinUrl(), []);
+  const joinUrl = useMemo(
+    () => overlay?.joinUrl ?? getStreamJoinUrl(),
+    [overlay?.joinUrl],
+  );
 
   const model = useMemo(
     () => buildOverlayModel(room, session),
@@ -88,6 +94,7 @@ export function BroadcastScene({
         title={titleFor(room?.gameId)}
         model={model}
         joinUrl={joinUrl}
+        overlay={overlay}
         lastChangeAt={lastChangeAt}
         debug={debugInfo}
       >

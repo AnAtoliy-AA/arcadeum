@@ -11,9 +11,12 @@ import { validateGames } from './games';
 import { createLogger } from './log';
 import { Health } from './health';
 import { createAlerter } from './alerts';
-import { isKilled } from './killSwitch';
 import { createPipeline } from './pipeline';
-import type { Pipeline } from './pipeline';
+import { createApi } from './api';
+import { ControlLoop } from './control';
+import { createControlClient } from './controlClient';
+import { ErrorRing, withErrorRing } from './errorRing';
+import { Supervisor } from './supervisor';
 import { startStub } from './stubServer';
 import type { StubServer } from './stubServer';
 
@@ -60,18 +63,26 @@ async function main(): Promise<void> {
     capture: config.capture.mode,
   });
 
-  let pipeline: Pipeline | null = null;
+  const ring = new ErrorRing(10);
+  const rlog = withErrorRing(log, ring);
+
   let shuttingDown = false;
-  const stopPipeline = async (): Promise<void> => {
-    const p = pipeline;
-    pipeline = null;
-    await p?.stop();
-  };
+  const supervisor = new Supervisor({
+    config,
+    log: rlog,
+    health,
+    alert,
+    createPipeline: () => createPipeline({ config, log: rlog, health, alert }),
+    onFinished: () => void shutdown('dry run finished'),
+  });
+  let control: ControlLoop | null = null;
+
   const shutdown = async (reason: string, code = 0): Promise<void> => {
     if (shuttingDown) return;
     shuttingDown = true;
     log.info('shutting down', { reason });
-    await stopPipeline();
+    control?.stop();
+    await supervisor.stopPipeline();
     await stub?.close();
     health.update({ state: 'stopped' });
     process.exit(code);
@@ -79,24 +90,34 @@ async function main(): Promise<void> {
   process.on('SIGINT', () => void shutdown('SIGINT'));
   process.on('SIGTERM', () => void shutdown('SIGTERM'));
 
-  // Supervisor: the kill switch stops streaming gracefully and keeps the
-  // process alive (so systemd does not flap); removing the flag resumes.
-  const tick = async (): Promise<void> => {
-    if (shuttingDown) return;
-    const killed = isKilled(config.ops);
-    if (killed && pipeline) {
-      log.warn('kill switch active, stopping stream');
-      await alert('kill-switch', 'Kill switch active: stream stopped');
-      await stopPipeline();
-      health.update({ state: 'killed', killed: true, currentGame: null });
-    } else if (!killed && !pipeline) {
-      health.update({ killed: false });
-      pipeline = createPipeline({ config, log, health, alert });
-      await pipeline.start(() => void shutdown('dry run finished'));
-    }
-  };
-  await tick();
-  setInterval(() => void tick(), config.ops.killPollMs);
+  if (config.control.enabled) {
+    const api = createApi({ be: config.be });
+    control = new ControlLoop({
+      config,
+      client: createControlClient({
+        baseUrl: config.be.url,
+        serviceToken: config.control.serviceToken,
+        getToken: (force) => api.getToken(force),
+      }),
+      supervisor,
+      health,
+      ring,
+      log: rlog,
+      alert,
+    });
+    log.info('admin control enabled', {
+      auth: config.control.serviceToken ? 'service-token' : 'stream-user-jwt',
+    });
+  } else {
+    log.info('admin control disabled (local settings only)');
+  }
+
+  // The kill switch file stops the stream gracefully within about 3s and
+  // keeps the process alive (so systemd does not flap); removing it resumes.
+  // The remote "enabled" flag is reconciled by the same supervisor.
+  await supervisor.tick();
+  setInterval(() => void supervisor.tick(), config.ops.killPollMs);
+  control?.start();
 }
 
 main().catch((err: Error) => {

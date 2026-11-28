@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.31.40] - 2026-11-28
 
-- chrome-less broadcast scenes for the 24/7 bot-vs-bot stream: /{locale}/stream/{roomId} and /{locale}/stream/idle
+### Added
+- add chrome-less broadcast scenes for the 24/7 bot stream
+
+### Documentation
+- add changelog entry for broadcast scenes
+
 
 ## [1.31.39] - 2026-11-25
 

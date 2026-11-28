@@ -36,6 +36,18 @@ describe('getChessEndReason', () => {
     ).toBe('timeout');
   });
 
+  it('honours the optional aborted and draw-by-timeout flags', () => {
+    expect(
+      getChessEndReason({ ...base, winnerColor: null, isAborted: true }, true),
+    ).toBe('aborted');
+    expect(
+      getChessEndReason(
+        { ...base, winnerColor: null, isDrawByTimeout: true },
+        true,
+      ),
+    ).toBe('timeout_vs_insufficient');
+  });
+
   it('ignores an unknown server endReason', () => {
     expect(
       getChessEndReason(

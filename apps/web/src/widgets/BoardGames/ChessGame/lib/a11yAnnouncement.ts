@@ -32,6 +32,8 @@ export function getChessA11yAnnouncement(
       : t('games.chess_v1.status.draw');
     const reason = getChessEndReason(snapshot, true);
     if (!reason) return headline;
+    // An aborted game has no winner and is not a draw.
+    if (reason === 'aborted') return t('games.chess_v1.endReason.aborted');
     return `${headline}. ${t(`games.chess_v1.endReason.${reason}` as TranslationKey)}`;
   }
 

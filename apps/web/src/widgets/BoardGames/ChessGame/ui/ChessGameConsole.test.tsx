@@ -107,4 +107,49 @@ describe('ChessGameConsole', () => {
     fireEvent.click(threatsBtn);
     expect(onToggleThreats).toHaveBeenCalledTimes(1);
   });
+  const liveEval = {
+    cp: 120,
+    mate: null,
+    pv: ['e2e4', 'e7e5'],
+    depth: 12,
+    selDepth: 14,
+    nodes: 1000,
+    nps: 1000,
+    timeMs: 10,
+  };
+  const candidates = [
+    { move: 'e2e4', cp: 120, mate: null, pv: ['e2e4'] },
+    { move: 'd2d4', cp: 100, mate: null, pv: ['d2d4'] },
+  ];
+
+  it('hides engine telemetry and candidate lines when engine aids are locked', () => {
+    render(
+      <ChessGameConsole
+        {...defaultProps}
+        engineAids={false}
+        liveEval={liveEval}
+        moveCandidates={candidates}
+      />,
+    );
+    expect(screen.getByTestId('chess-engine-aids-locked').textContent).toBe(
+      'games.chess_v1.play.engineLocked',
+    );
+    expect(screen.queryByText('Best:')).toBeNull();
+    expect(screen.queryByText('Top Candidate Lines')).toBeNull();
+    expect(screen.queryByText('+1.2')).toBeNull();
+  });
+
+  it('shows engine telemetry when engine aids are allowed', () => {
+    render(
+      <ChessGameConsole
+        {...defaultProps}
+        engineAids
+        liveEval={liveEval}
+        moveCandidates={candidates}
+      />,
+    );
+    expect(screen.queryByTestId('chess-engine-aids-locked')).toBeNull();
+    expect(screen.getByText('Best:')).toBeDefined();
+    expect(screen.getByText('Top Candidate Lines')).toBeDefined();
+  });
 });

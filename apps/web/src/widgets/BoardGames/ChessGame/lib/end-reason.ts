@@ -27,7 +27,7 @@ type EndReasonSnapshot = Pick<
   | 'isDrawByFiftyMoveRule'
   | 'isInsufficientMaterial'
   | 'isDrawByAgreement'
-> & { endReason?: unknown };
+> & { endReason?: unknown; isAborted?: boolean; isDrawByTimeout?: boolean };
 
 const VARIANT_WIN_VARIANTS = new Set<ChessClientState['variant']>([
   'king_of_the_hill',
@@ -53,6 +53,8 @@ export function getChessEndReason(
 ): ChessEndReason | null {
   if (!snapshot || !isGameOver) return null;
   if (isKnownReason(snapshot.endReason)) return snapshot.endReason;
+  if (snapshot.isAborted) return 'aborted';
+  if (snapshot.isDrawByTimeout) return 'timeout_vs_insufficient';
   if (snapshot.isCheckmate) return 'checkmate';
   if (snapshot.isStalemate) return 'stalemate';
   if (snapshot.isDrawByRepetition) return 'repetition';

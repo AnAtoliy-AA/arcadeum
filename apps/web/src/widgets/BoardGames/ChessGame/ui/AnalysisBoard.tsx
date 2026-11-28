@@ -14,6 +14,7 @@ import {
   PIECE_SYMBOLS,
 } from '@arcadeum/games-core/games/chess/chess.constants';
 import { parseFen } from '@arcadeum/games-core/games/chess/chess.board';
+import { toFen } from '@arcadeum/games-core/games/chess/chess-fen';
 import { getLegalMoves } from '@arcadeum/games-core/games/chess/chess.move-generator';
 import { analyzePositionWithStockfish } from '@/features/analysis/lib/stockfish-api';
 import { useTranslation } from '@/shared/i18n/useTranslation';
@@ -74,41 +75,8 @@ function parseFullFen(fen: string): ChessState | null {
   }
 }
 
-function boardToFen(state: ChessState): string {
-  const rows: string[] = [];
-  for (let r = 0; r < 8; r++) {
-    let empty = 0;
-    let row = '';
-    for (let c = 0; c < 8; c++) {
-      const piece = state.board[r][c];
-      if (piece) {
-        if (empty > 0) {
-          row += empty;
-          empty = 0;
-        }
-        row +=
-          piece.color === 'white'
-            ? piece.type.charAt(0).toUpperCase()
-            : piece.type.charAt(0);
-      } else {
-        empty++;
-      }
-    }
-    if (empty > 0) row += empty;
-    rows.push(row);
-  }
-  const turn = state.currentTurnColor === 'white' ? 'w' : 'b';
-  let castling = '';
-  if (state.castlingRights.whiteKingSide) castling += 'K';
-  if (state.castlingRights.whiteQueenSide) castling += 'Q';
-  if (state.castlingRights.blackKingSide) castling += 'k';
-  if (state.castlingRights.blackQueenSide) castling += 'q';
-  if (!castling) castling = '-';
-  const ep = state.enPassantTarget
-    ? `${state.enPassantTarget.file}${state.enPassantTarget.rank}`
-    : '-';
-  return `${rows.join('/')} ${turn} ${castling} ${ep} ${state.halfMoveClock} ${state.fullMoveNumber}`;
-}
+// Shared FEN writer (the old local copy wrote knights as kings: 'K'/'k').
+const boardToFen = (state: ChessState): string => toFen(state);
 
 export function AnalysisBoard() {
   const { t } = useTranslation();

@@ -18,9 +18,15 @@ const SOUND_MAP: Record<SoundType, GameSoundId> = {
   notification: 'chess_notification',
   error: 'chess_error',
   illegal: 'chess_error',
+  lowTime: 'chess_notification',
 };
 
-const MINIMAL_SOUNDS = new Set<SoundType>(['capture', 'check', 'gameEnd']);
+const MINIMAL_SOUNDS = new Set<SoundType>([
+  'capture',
+  'check',
+  'gameEnd',
+  'lowTime',
+]);
 
 export function useChessSounds() {
   const { play } = useGameSound('chess_v1');

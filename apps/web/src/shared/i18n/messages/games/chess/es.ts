@@ -1,9 +1,11 @@
+import { esClock } from './clock-es';
 import { esControls } from './controls-es';
 import { esEndReasons } from './end-reasons-es';
 import { esPlay } from './play-es';
 
 export const esMessages = {
   chess_v1: {
+    clock: esClock,
     controls: esControls,
     endReason: esEndReasons,
     play: esPlay,

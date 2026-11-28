@@ -19,6 +19,22 @@ export interface LiveClock {
 const FIRST_MOVE_DEADLINE_MS = 20_000;
 const FIRST_MOVE_SECONDS = FIRST_MOVE_DEADLINE_MS / 1000;
 const ZERO_CLOCK: LiveClock = { white: 0, black: 0 };
+/** Below this many seconds the display shows tenths, so tick finer. */
+export const TENTHS_BELOW_SECONDS = 10;
+
+/** Seconds left, preferring the server's authoritative milliseconds. */
+export function clockSeconds(clock: PlayerClock): number {
+  return typeof clock.remainingMs === 'number'
+    ? clock.remainingMs / 1000
+    : clock.remainingSeconds;
+}
+
+/** Display bucket for a clock value: whole seconds, or tenths when low. */
+function displayBucket(seconds: number): number {
+  return seconds < TENTHS_BELOW_SECONDS
+    ? Math.ceil(seconds * 10) / 10
+    : Math.ceil(seconds);
+}
 
 function computeLiveClocks(
   clocks: Record<PieceColor, PlayerClock>,
@@ -28,8 +44,8 @@ function computeLiveClocks(
 ): LiveClock {
   if (isGameOver) {
     return {
-      white: clocks.white.remainingSeconds,
-      black: clocks.black.remainingSeconds,
+      white: clockSeconds(clocks.white),
+      black: clockSeconds(clocks.black),
     };
   }
 
@@ -44,20 +60,20 @@ function computeLiveClocks(
     if (gameCreatedAt <= 0) {
       return {
         white: FIRST_MOVE_SECONDS,
-        black: blackClock.remainingSeconds,
+        black: clockSeconds(blackClock),
       };
     }
     const sinceCreation = (now - gameCreatedAt) / 1000;
     if (sinceCreation <= FIRST_MOVE_SECONDS) {
       return {
         white: Math.max(0, FIRST_MOVE_SECONDS - sinceCreation),
-        black: blackClock.remainingSeconds,
+        black: clockSeconds(blackClock),
       };
     }
     const clockElapsed = sinceCreation - FIRST_MOVE_SECONDS;
     return {
-      white: Math.max(0, whiteClock.remainingSeconds - clockElapsed),
-      black: blackClock.remainingSeconds,
+      white: Math.max(0, clockSeconds(whiteClock) - clockElapsed),
+      black: clockSeconds(blackClock),
     };
   }
 
@@ -74,18 +90,18 @@ function computeLiveClocks(
   const elapsedSeconds = Math.max(0, (now - turnStartedAt) / 1000);
   const activeRemaining = Math.max(
     0,
-    activeClock.remainingSeconds - elapsedSeconds,
+    clockSeconds(activeClock) - elapsedSeconds,
   );
 
   return {
     white:
       currentTurnColor === 'white'
         ? activeRemaining
-        : inactiveClock.remainingSeconds,
+        : clockSeconds(inactiveClock),
     black:
       currentTurnColor === 'black'
         ? activeRemaining
-        : inactiveClock.remainingSeconds,
+        : clockSeconds(inactiveClock),
   };
 }
 
@@ -131,8 +147,8 @@ export function useClockCountdown({
       const next = computeLiveClocks(c, ctc, gca, go);
       setLive((prev) => {
         if (
-          Math.ceil(prev.white) === Math.ceil(next.white) &&
-          Math.ceil(prev.black) === Math.ceil(next.black)
+          displayBucket(prev.white) === displayBucket(next.white) &&
+          displayBucket(prev.black) === displayBucket(next.black)
         ) {
           return prev;
         }
@@ -143,7 +159,7 @@ export function useClockCountdown({
     tick();
     if (isGameOver || !clocks) return;
 
-    const id = setInterval(tick, 250);
+    const id = setInterval(tick, 100);
     return () => clearInterval(id);
   }, [isGameOver, clocks, currentTurnColor, gameCreatedAt]);
 

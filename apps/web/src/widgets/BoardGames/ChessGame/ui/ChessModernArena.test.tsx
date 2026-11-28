@@ -124,7 +124,8 @@ describe('ChessModernArena Components', () => {
       />,
     );
 
-    expect(screen.getByText('00:08')).toBeDefined();
+    // Final ten seconds show tenths.
+    expect(screen.getByText('00:08.0')).toBeDefined();
   });
 
   it('renders Arcadeum sprite piece style with use href symbol target', () => {

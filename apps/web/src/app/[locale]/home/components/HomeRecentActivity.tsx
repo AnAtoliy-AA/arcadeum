@@ -8,11 +8,24 @@ export function HomeRecentActivity() {
   return (
     <section
       data-testid="home-recent-activity"
-      className="mx-auto flex w-full max-w-[1400px] flex-col gap-3 px-4 py-8"
+      aria-labelledby="home-recent-activity-title"
+      className="mx-auto flex w-full max-w-[1400px] flex-col gap-4 px-4 py-8"
     >
-      <h2 className="text-[24px] font-bold text-color">
-        {t('home.homeRecentActivityTitle')}
-      </h2>
+      <div className="flex flex-col gap-1">
+        <h2
+          id="home-recent-activity-title"
+          className="m-0 flex items-center gap-2 text-[24px] font-bold text-color"
+        >
+          {t('home.homeRecentActivityTitle')}
+          <span
+            aria-hidden
+            className="h-2 w-2 rounded-full bg-[var(--success)] motion-safe:animate-pulse"
+          />
+        </h2>
+        <p className="m-0 text-[14px] text-[var(--textSecondary)]">
+          {t('home.activityFeed.subtitle')}
+        </p>
+      </div>
       <ActivityFeed />
     </section>
   );

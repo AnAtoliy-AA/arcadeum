@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.6] - 2026-11-28
+
+### Added
+- confirm resign, decline draws, abort early games (ARC-000) (ARC-000)
+
+
 ## [1.32.5] - 2026-11-28
 
 ### Fixed

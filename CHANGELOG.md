@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.13] - 2026-11-28
+
+### Added
+- use authoritative clock milliseconds and show tenths when low (ARC-000) (ARC-000)
+
+
 ## [1.32.12] - 2026-11-28
 
 ### Changed

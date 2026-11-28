@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.9] - 2026-11-28
+
+### Fixed
+- low-time clock alert and correct analysis board FEN (ARC-000) (ARC-000)
+
+
 ## [1.32.8] - 2026-11-28
 
 ### Fixed
